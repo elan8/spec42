@@ -440,17 +440,18 @@ fn lsp_feature_inspector_exposes_effective_semantics_and_inherited_features() {
     let usage_inherited = rover_usage["result"]["containingElement"]["inheritedFeatures"]
         .as_array()
         .expect("rover usage effective features");
-    // `Rover` redefines `wheel` anonymously, so the named declaration is still Vehicle's. The
-    // publication reports the type that declares the feature rather than the nearest type that
-    // redefines it under no name of its own.
+    // The anonymous redefinition replaces Vehicle::wheel by identity; only spare is inherited.
     assert!(
         usage_inherited.iter().any(|entry| {
-            entry["feature"]["name"].as_str() == Some("wheel")
+            entry["feature"]["name"].as_str() == Some("spare")
                 && entry["declaredIn"]["name"].as_str() == Some("Vehicle")
                 && entry["isDirect"].as_bool() == Some(false)
         }),
         "typed usages should expose effective features from their definition: {usage_inherited:#?}"
     );
+    assert!(usage_inherited
+        .iter()
+        .all(|entry| entry["feature"]["name"].as_str() != Some("wheel")));
 }
 
 #[test]

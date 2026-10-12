@@ -7903,11 +7903,19 @@ fn parse_editor_probes(
         let mut qualifier = None;
         let mut rename_to = None;
         let probe_index = probes.len();
+        let mut features = false;
         for option in fields {
             if let Some(value) = option.strip_prefix("qualifier=") {
                 qualifier = Some(value.to_string());
             } else if let Some(value) = option.strip_prefix("rename=") {
                 rename_to = Some(value.to_string());
+            } else if option == "features" {
+                if features {
+                    return Err(format!(
+                        "{fallback_name}: duplicate editor probe option {option:?}"
+                    ));
+                }
+                features = true;
             } else if option == "hover" {
                 if !hover.insert(probe_index) {
                     return Err(format!(
@@ -7925,6 +7933,7 @@ fn parse_editor_probes(
             position: TextPosition { line, character },
             qualifier,
             rename_to,
+            features,
         });
     }
     Ok(EditorProbes {
@@ -9970,8 +9979,8 @@ mod tests {
     }
 
     #[test]
-    fn parses_hover_as_an_editor_probe_projection() {
-        let fixture = "# SOURCE\n## model.sysml\n~~~sysml\npackage Example {}\n~~~\n# EDITOR QUERIES\n~~~text\nprobe model.sysml 0 8 hover\nprobe model.sysml 0 16 rename=Renamed\n~~~\n";
+    fn parses_optional_editor_probe_projections() {
+        let fixture = "# SOURCE\n## model.sysml\n~~~sysml\npackage Example {}\n~~~\n# EDITOR QUERIES\n~~~text\nprobe model.sysml 0 8 hover features\nprobe model.sysml 0 16 rename=Renamed\n~~~\n";
         let parsed = parse_editor_probes(
             fixture,
             &[SourceDocument {
@@ -9985,7 +9994,19 @@ mod tests {
 
         assert_eq!(parsed.queries.len(), 2);
         assert_eq!(parsed.hover, BTreeSet::from([0]));
+        assert!(parsed.queries[0].features);
+        assert!(!parsed.queries[1].features);
         assert_eq!(parsed.queries[1].rename_to.as_deref(), Some("Renamed"));
+        assert!(parse_editor_probes(
+            &fixture.replace("hover features", "features features"),
+            &[SourceDocument {
+                name: "model.sysml".to_string(),
+                language: SourceLanguage::SysML,
+                text: "package Example {}".to_string(),
+            }],
+            "fixture.md",
+        )
+        .is_err());
     }
 
     #[test]

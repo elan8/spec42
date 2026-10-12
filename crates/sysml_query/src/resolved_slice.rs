@@ -60,6 +60,7 @@ pub use sysml_resolution::source::RootDigest;
 pub use sysml_resolution::source::SourceKind;
 /// The schema version [`PublishedModel::projection`] is recorded under.
 pub use sysml_resolution::MODEL_PROJECTION_SCHEMA_VERSION;
+pub use sysml_resolution::{EffectiveIdentification, EffectiveName, EffectiveNameProvenance};
 
 /// Opaque published semantic state. Share it behind `Arc`; do not duplicate its owner.
 ///
@@ -914,6 +915,13 @@ impl InspectionQueries<'_> {
     pub fn effective_features(&self, symbol: SymbolId) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.effective_features(symbol)
     }
+
+    pub fn effective_identification(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<EffectiveIdentification<'_>> {
+        self.model.effective_identification(symbol)
+    }
 }
 
 pub struct DebugQueries<'a> {
@@ -926,6 +934,8 @@ pub struct EditorProbe {
     pub position: TextPosition,
     pub qualifier: Option<String>,
     pub rename_to: Option<String>,
+    /// Include ordered feature collections and effective identification in the projection.
+    pub features: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1015,6 +1025,16 @@ impl DebugQueries<'_> {
                     .model
                     .element_details_at(&probe.document, probe.position),
             )?;
+            if probe.features {
+                let details = self
+                    .model
+                    .element_details_at(&probe.document, probe.position);
+                if let QueryAnswer::Resolved(at) = &details.answer {
+                    if let Some(element) = &at.containing {
+                        write_feature_queries(model, output, element.inspection.identity)?;
+                    }
+                }
+            }
             writeln!(output, "  )")?;
         }
         // Once per probed document rather than once per probe: the outline is a property of the
@@ -1318,6 +1338,120 @@ fn write_members_outcome(
         _ => write!(output, "(status unavailable)")?,
     }
     writeln!(output, ")")
+}
+
+fn write_effective_identification(
+    output: &mut dyn fmt::Write,
+    outcome: &QueryOutcome<EffectiveIdentification<'_>>,
+) -> fmt::Result {
+    write!(
+        output,
+        " (effective-identification (status {})",
+        outcome_status(outcome)
+    )?;
+    if let QueryAnswer::Resolved(value) = &outcome.answer {
+        for (label, component) in [("name", &value.name), ("short-name", &value.short_name)] {
+            write!(output, " ({label} ")?;
+            match component {
+                EffectiveName::Resolved(name) => write!(output, "(resolved {name:?})")?,
+                EffectiveName::Absent => write!(output, "absent")?,
+                EffectiveName::Unresolved => write!(output, "unresolved")?,
+                EffectiveName::NonConverged => write!(output, "non-converged")?,
+            }
+            write!(output, ")")?;
+        }
+        write!(output, " (provenance {:?})", value.provenance)?;
+    }
+    write!(output, ")")
+}
+
+fn write_feature_queries(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    symbol: SymbolId,
+) -> fmt::Result {
+    writeln!(output, "    (feature-queries")?;
+    write!(output, "      ")?;
+    write_effective_identification(output, &model.effective_identification(symbol))?;
+    writeln!(output)?;
+    let effective = model.effective_features(symbol);
+    writeln!(
+        output,
+        "      (effective-features (status {})",
+        outcome_status(&effective)
+    )?;
+    if let QueryAnswer::Resolved(features) = &effective.answer {
+        for feature in features.iter() {
+            write!(
+                output,
+                "        (feature (qualified-name {:?})",
+                model.qualified_name(feature.identity).unwrap_or_default(),
+            )?;
+            match &feature.name {
+                Some(name) => write!(output, " (authored-name {name:?})")?,
+                None => write!(output, " (authored-name absent)")?,
+            }
+            write_effective_identification(
+                output,
+                &model.effective_identification(feature.identity),
+            )?;
+            writeln!(output, ")")?;
+        }
+    }
+    writeln!(output, "      )")?;
+    let owned = model.type_derived_elements(symbol, TypeDerivedElementCollection::OwnedFeature);
+    write!(
+        output,
+        "      (owned-features (status {})",
+        outcome_status(&owned)
+    )?;
+    if let QueryAnswer::Resolved(features) = &owned.answer {
+        for feature in features.iter() {
+            write!(
+                output,
+                " (member {:?})",
+                model.qualified_name(*feature).unwrap_or_default()
+            )?;
+        }
+    }
+    writeln!(output, ")")?;
+    for kind in [
+        DefinitionUsageDerivedKind::DefinitionOwnedPart,
+        DefinitionUsageDerivedKind::UsageNestedPart,
+        DefinitionUsageDerivedKind::DefinitionOwnedView,
+        DefinitionUsageDerivedKind::UsageNestedView,
+    ] {
+        let derived = model.definition_usage_derived(symbol, kind);
+        write!(
+            output,
+            "      (derived (kind {kind:?}) (status {})",
+            outcome_status(&derived)
+        )?;
+        if let QueryAnswer::Resolved(value) = &derived.answer {
+            match value {
+                DefinitionUsageDerivedOutcome::Elements(features) => {
+                    for feature in features.iter() {
+                        write!(
+                            output,
+                            " (member {:?})",
+                            model.qualified_name(*feature).unwrap_or_default()
+                        )?;
+                    }
+                }
+                DefinitionUsageDerivedOutcome::Unsupported { prerequisite } => {
+                    write!(output, " (unsupported (prerequisite {prerequisite:?}))")?;
+                }
+                DefinitionUsageDerivedOutcome::Boolean(value) => {
+                    write!(output, " (value {value})")?
+                }
+                DefinitionUsageDerivedOutcome::Memberships(values) => {
+                    write!(output, " (membership-count {})", values.len())?;
+                }
+            }
+        }
+        writeln!(output, ")")?;
+    }
+    writeln!(output, "    )")
 }
 
 fn write_details_at_outcome(

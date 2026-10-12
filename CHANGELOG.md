@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Feature queries preserve redefinition and member order.** Effective feature lists exclude
+  replaced inherited features, ordered owned/nested derivations retain authored order, and a
+  dedicated query exposes effective names with provenance while retaining authored names (#208).
+
 ## [0.55.0] - 2026-10-12
 
 - **Feature Inspector starts with directly inherited features.** Features declared by more

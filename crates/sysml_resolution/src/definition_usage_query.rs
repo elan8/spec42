@@ -13,7 +13,8 @@ pub use sysml_contract::DefinitionUsageDerivedPrerequisite;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DefinitionUsageDerivedOutcome {
     /// A final element-valued collection. The declarations retain their canonical identities and
-    /// are deterministically ordered by the owner-defined symbol projection.
+    /// retain authored member order for owned/nested collections, and canonical effective
+    /// membership order for inherited collections.
     Elements(Box<[SymbolId]>),
     /// A relationship-valued collection. Each handle addresses the canonical Membership record;
     /// it is not the identity of the member element in another guise.

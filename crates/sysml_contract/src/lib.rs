@@ -17,6 +17,7 @@ mod diagram;
 mod document;
 mod element;
 mod element_kind;
+mod identification;
 mod membership;
 mod position;
 mod publication;
@@ -47,6 +48,7 @@ pub use element::{
 pub use element_kind::{
     ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
 };
+pub use identification::{EffectiveIdentification, EffectiveName, EffectiveNameProvenance};
 pub use membership::MembershipId;
 pub use position::{OccurrenceRole, TextPosition, TextRange};
 pub use publication::{

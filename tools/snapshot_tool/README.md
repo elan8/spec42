@@ -95,6 +95,14 @@ checked-in source snapshots and their canonical S-expression sections.
 
 ## Editor and hover probes
 
+Add `features` to an editor probe to record the public effective-feature query, effective
+identification with naming provenance, and the ordered owned/nested part and view derivations.
+This projection retains authored names separately and keeps unresolved naming states explicit.
+
+```text
+probe model.sysml 4 9 features
+```
+
 `EDITOR QUERIES` uses zero-based line and UTF-16 character positions. A normal probe exercises the
 canonical editor queries. Add the `hover` option to also append the presentation-independent
 `hover-report` for that occurrence in `HOVER RESULTS` and generate its exact renderer output in

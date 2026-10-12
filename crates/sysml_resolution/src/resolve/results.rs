@@ -51,19 +51,7 @@ pub(crate) struct EffectiveNameFacts {
     pub(crate) provenance: EffectiveNameProvenance,
 }
 
-/// The source of an element's effective identification.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum EffectiveNameProvenance {
-    /// The element's own authored identification, or none.
-    Declared,
-    /// Both components come from the first Feature it redefines (KerML `Feature::effectiveName`).
-    FirstRedefinition,
-    /// Both components come from the action a perform usage performs (SysML
-    /// `PerformActionUsage::namingFeature`).
-    PerformedAction,
-    /// `~` + the original definition's name (SysML `ConjugatedPortDefinition::effectiveName`).
-    OriginalPortDefinition,
-}
+pub(crate) use sysml_contract::EffectiveNameProvenance;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub(crate) struct ResolutionWork {
