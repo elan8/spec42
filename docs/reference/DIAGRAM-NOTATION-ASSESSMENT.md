@@ -67,7 +67,7 @@ them.
 | Terminate node | Circle with a cross | Circle with a cross | Conforms |
 | Transition | Solid line, open arrowhead | Solid line, open arrowhead since this change; it was filled | Conforms |
 | Transition label | Plain text: trigger, guard, `/` effect | Plain text. Trigger, guard and effect are joined as published. Three or more transitions with one label into one state share a line and one label at that state | Conforms; the shared line is an extension |
-| Composite state | The state symbol with its state transition view inside | The state with its states, their transitions and its initial node inside it. A transition between a nested state and a state outside is drawn straight, without a route | Conforms |
+| Composite state | The state symbol with its state transition view inside | The state with its states, their transitions and its initial node inside it. A transition between a nested state and a state outside is routed around the states in its way | Conforms |
 | View frame | Frame with the view's name compartment | A frame with the name in a compartment in its upper left corner, also for the action flow view. The sequence view still has a title | Conforms |
 
 ## Action flow view (8.2.3.17)
@@ -89,7 +89,6 @@ them.
 
 ## What to change next, by effect on a reader
 
-1. Routes for transitions that cross the boundary of a containing state.
-2. Flow nodes on a connection, where a flow and a connection join the same two ports.
-3. Swimlanes in an action flow.
+1. Flow nodes on a connection, where a flow and a connection join the same two ports.
+2. Swimlanes in an action flow.
 

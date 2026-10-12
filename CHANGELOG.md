@@ -62,6 +62,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tank.outlet.fuel to engine.inlet.fuel;` was not drawn, because its ends are features of the
   ports and not the ports. It now runs between the two ports, and a flow is labelled with its
   item, after its name when it has one.
+- **Lines go around boxes (#262).** In a general view a typing, subsetting or specialization
+  line between two boxes of the tree was drawn in three segments through whatever stood
+  between them. It is now routed along the gaps and meets each box at the middle of a side. A
+  transition between a nested state and a state outside its owner is routed the same way, and
+  one whose end is written as a feature chain (`first on.ready`) is drawn at all.
 - **Figures read better on a page (#262).** A long list of members in a general view continues
   in columns (webshop structure: 256 × 1949 px at 2.8 pt becomes 622 × 831 px at 6.6 pt). Action
   flows and sequences are spaced by the labels they hold, not by fixed gaps. Interconnection

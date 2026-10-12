@@ -649,6 +649,17 @@ fn hierarchy_general_layout(
                 let (Some(from), Some(to)) = (rect(&source), rect(&target)) else {
                     return edge.clone();
                 };
+                // A line that is not part of the tree goes around the boxes between its ends.
+                let others: Vec<crate::ortho_route::Rect> = order
+                    .iter()
+                    .filter(|id| **id != source && **id != target)
+                    .filter_map(|id| rect(id))
+                    .collect();
+                if let Some(route) = crate::ortho_route::route(from, to, &others, 8.0) {
+                    let mut out = edge.clone();
+                    out["layout"] = json!({ "sections": [section(&route)] });
+                    return out;
+                }
                 let from_x = from.0 + from.2 / 2.0;
                 let to_x = to.0 + to.2 / 2.0;
                 if (from.1 - to.1).abs() < 1.0 {
@@ -1135,6 +1146,68 @@ fn layout_nested_behavior(
         header: 0.0,
     };
     place(top, 80.0 - min_x, 80.0 - min_y, &mut levels, &mut out);
+    // An edge between two levels, such as a transition from a nested state to a state outside
+    // its owner, was not routed at either level. It goes around the boxes on its way, crossing
+    // only the boundaries of the containers its ends are in.
+    let rect_of = |id: &str| -> Option<crate::ortho_route::Rect> {
+        let rect = out.positions.get(id)?;
+        Some((
+            num(field(rect, "x")),
+            num(field(rect, "y")),
+            num(field(rect, "width")),
+            num(field(rect, "height")),
+        ))
+    };
+    let container_of = |id: &str| -> Option<String> {
+        nodes
+            .iter()
+            .find(|node| as_string(field(node, "id"), "") == id)
+            .map(|node| as_string(field(field(node, "attributes"), "containerId"), ""))
+            .filter(|container| ids.contains(container))
+    };
+    let ancestors = |id: &str| -> HashSet<String> {
+        let mut found = HashSet::new();
+        let mut current = id.to_owned();
+        while let Some(container) = container_of(&current) {
+            if !found.insert(container.clone()) {
+                break;
+            }
+            current = container;
+        }
+        found
+    };
+    let mut crossing = Vec::new();
+    for edge in as_array(field(prepared, "edges")) {
+        let id = as_string(field(edge, "id"), "");
+        let source = as_string(field(edge, "source"), "");
+        let target = as_string(field(edge, "target"), "");
+        if out.sections.contains_key(&id) || source == target {
+            continue;
+        }
+        let (Some(from), Some(to)) = (rect_of(&source), rect_of(&target)) else {
+            continue;
+        };
+        let mut around = ancestors(&source);
+        around.extend(ancestors(&target));
+        around.extend([source.clone(), target.clone()]);
+        let boxes: Vec<crate::ortho_route::Rect> = ids
+            .iter()
+            .filter(|other| !around.contains(*other))
+            .filter_map(|other| rect_of(other))
+            .collect();
+        if let Some(route) = crate::ortho_route::route(from, to, &boxes, 10.0) {
+            let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
+            crossing.push((
+                id,
+                json!([{
+                    "startPoint": point(&route[0]),
+                    "bendPoints": route[1..route.len() - 1].iter().map(point).collect::<Vec<_>>(),
+                    "endPoint": point(&route[route.len() - 1]),
+                }]),
+            ));
+        }
+    }
+    out.sections.extend(crossing);
     Ok(Some(json!({
         "positions": out.positions,
         "edgeSectionsById": out.sections,

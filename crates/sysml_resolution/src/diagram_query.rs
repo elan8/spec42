@@ -904,6 +904,41 @@ impl PublishedResolution {
                 edges.push(edge);
                 continue;
             }
+            // An end of a transition written as a feature chain (`first on.ready`) is published
+            // as a `memberAccessOperand`, not as `transitionSource` / `transitionTarget`. The
+            // operands are the ends that are missing, in the order they are written.
+            if element.kind == ElementKind::TransitionUsage {
+                let named = |wanted: DiagramRelationshipKind| {
+                    outgoing
+                        .iter()
+                        .find(|relationship| relationship.kind == wanted)
+                        .and_then(|relationship| resolved_target(&relationship.target))
+                };
+                let mut operands = outgoing
+                    .iter()
+                    .filter(|relationship| {
+                        relationship.kind == DiagramRelationshipKind::MemberAccessOperand
+                    })
+                    .filter_map(|relationship| resolved_target(&relationship.target));
+                let source = named(DiagramRelationshipKind::TransitionSource);
+                let target = named(DiagramRelationshipKind::TransitionTarget);
+                let (source, target) = match (source, target) {
+                    (None, Some(target)) => (operands.next(), Some(target)),
+                    (Some(source), None) => (Some(source), operands.next()),
+                    (None, None) => (operands.next(), operands.next()),
+                    both => both,
+                };
+                if let (Some(source), Some(target), None) = (source, target, operands.next()) {
+                    edges.push(edge_from_relationships(
+                        origin as u32,
+                        source,
+                        target,
+                        DiagramEdgeKind::Transition,
+                        &outgoing,
+                    ));
+                    continue;
+                }
+            }
             if let Some(edge) = composed_edge(
                 origin as u32,
                 &outgoing,
