@@ -505,6 +505,18 @@ pub(crate) struct DeclarationFacts {
     pub(crate) is_initial_node_marker: bool,
     /// On the continuation or the node a `then` declares: where its succession starts.
     pub(crate) then_source: Option<ThenSource>,
+    /// On a conditional succession: when it is taken.
+    pub(crate) succession_guard: Option<SuccessionGuard>,
+}
+
+/// When a conditional succession is taken (SysML 7.17.5): `first a if g then b;`, and in the
+/// `then` shorthand `if g then b;` and `else b;`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum SuccessionGuard {
+    /// The guard expression as it is written, with its white space collapsed.
+    Condition(Box<str>),
+    /// `else`: taken when the guards of the conditional successions before it are all false.
+    Else,
 }
 
 /// The source of the succession a `then` shorthand declares (SysML 7.17.4): the nearest

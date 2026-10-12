@@ -96,7 +96,8 @@ pub use diagram_query::{
     DiagramSemanticReference, DiagramSequenceEndpoint, DiagramSequenceMessage,
     DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
     DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
-    DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
+    DiagramSuccessionGuard, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection,
 };
 pub use evaluation::{
     AnalysisEvaluation, AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure,

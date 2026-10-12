@@ -941,6 +941,10 @@ impl GeneratorModelView {
                     sysml_query::resolved_slice::StateSubactionKind::Do => "do",
                     sysml_query::resolved_slice::StateSubactionKind::Exit => "exit",
                 }.to_owned()),
+                succession_guard: element.succession_guard.as_ref().map(|guard| match guard {
+                    sysml_query::resolved_slice::DiagramSuccessionGuard::Condition(text) => text.to_string(),
+                    sysml_query::resolved_slice::DiagramSuccessionGuard::Else => "else".to_owned(),
+                }),
             }))
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
         let relationships = projection

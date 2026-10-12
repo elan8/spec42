@@ -891,6 +891,7 @@ package InterconnectionExample {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -906,6 +907,7 @@ package InterconnectionExample {
         "reference": 13,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -921,6 +923,7 @@ package InterconnectionExample {
         "reference": 14,
         "source": 8,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -944,6 +947,7 @@ package InterconnectionExample {
         "reference": 3,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -959,6 +963,7 @@ package InterconnectionExample {
         "reference": 4,
         "source": 4,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -974,6 +979,7 @@ package InterconnectionExample {
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -989,6 +995,7 @@ package InterconnectionExample {
         "reference": 5,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

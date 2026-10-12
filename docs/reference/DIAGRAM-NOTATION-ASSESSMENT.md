@@ -17,7 +17,8 @@ transitions and the view frame were checked in rendered diagrams against the not
 
 The rows on the action flow and state transition views were checked on models written to use
 each element (`tests/snapshots/generation/diagram_action_flow_then_successions.md`,
-`diagram_state_actions.md`, `diagram_composite_state.md`), since the example models use few of
+`diagram_action_flow_conditional_successions.md`, `diagram_state_actions.md`,
+`diagram_composite_state.md`), since the example models use few of
 them.
 
 ## General view (8.2.3.6, 8.2.3.11)
@@ -76,8 +77,8 @@ them.
 | Action definition | Rectangle with square corners, `«action def»` | Drawn as the frame of the flow | Conforms |
 | Start node | Filled circle | Filled circle, where a succession starts at `start` | Conforms |
 | Done node | Circle around a filled circle | Circle around a filled circle, where a succession ends at `done` | Conforms |
-| Succession | Dashed line, open arrowhead, optional guard | Dashed line, open arrowhead, for `first a then b;` and for the `then` shorthand, from the nearest occurrence before it (7.17.4). No guard is drawn | Conforms without guards |
-| Conditional succession | A succession with its guard in brackets | `first a if g then b;` is drawn as a succession without its guard, which is not published. `if g then b; else c;` after a `decide` is read as an if action and drawn as a node, with no line from the decision | Deviates |
+| Succession | Dashed line, open arrowhead, optional guard | Dashed line, open arrowhead, for `first a then b;` and for the `then` shorthand, from the nearest occurrence before it (7.17.4) | Conforms |
+| Conditional succession | A succession with its guard in brackets | The guard as it is written, in brackets beside the line, for `first a if g then b;` and for `if g then b;` in the `then` shorthand; `[else]` for `else b;` | Conforms |
 | Decision and merge | Diamond | Diamond | Conforms |
 | Fork and join | Bar | Bar | Conforms |
 | Parameters | Small squares on the action's boundary, with direction | Small squares on the boundary, inputs on the left and outputs on the right, with the name beside them. Inherited parameters are included | Conforms; the side stands for the direction |
@@ -87,8 +88,7 @@ them.
 
 ## What to change next, by effect on a reader
 
-1. The guards of conditional successions in an action flow, `if ... then` after a `decide`,
-   and `then accept`.
+1. `then accept` in an action flow.
 2. The direction a port takes from the features of its definition.
 3. Flows on connections in an interconnection view.
 4. Routes for transitions that cross the boundary of a containing state.

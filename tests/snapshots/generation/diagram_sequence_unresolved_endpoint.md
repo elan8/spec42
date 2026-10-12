@@ -891,6 +891,7 @@ package SequenceUnresolved {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -906,6 +907,7 @@ package SequenceUnresolved {
         "reference": 1,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -921,6 +923,7 @@ package SequenceUnresolved {
         "reference": 20,
         "source": 6,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -936,6 +939,7 @@ package SequenceUnresolved {
         "reference": 22,
         "source": 6,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -951,6 +955,7 @@ package SequenceUnresolved {
         "reference": 21,
         "source": 7,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -966,6 +971,7 @@ package SequenceUnresolved {
         "reference": 23,
         "source": 7,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -989,6 +995,7 @@ package SequenceUnresolved {
         "reference": 6,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1004,6 +1011,7 @@ package SequenceUnresolved {
         "reference": 7,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1027,6 +1035,7 @@ package SequenceUnresolved {
         "reference": 4,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1042,6 +1051,7 @@ package SequenceUnresolved {
         "reference": 5,
         "source": 4,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

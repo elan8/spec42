@@ -119,6 +119,17 @@ pub struct DiagramElement {
     /// action usages that only their membership tells apart, so it is carried here; `None` for
     /// every other element.
     pub state_subaction: Option<StateSubactionKind>,
+    /// On a conditional succession: when it is taken. `None` for every other element.
+    pub succession_guard: Option<DiagramSuccessionGuard>,
+}
+
+/// When a conditional succession is taken (SysML 7.17.5).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DiagramSuccessionGuard {
+    /// The guard expression as it is written, with its white space collapsed.
+    Condition(Box<str>),
+    /// `else`: taken when the guards of the conditional successions before it are all false.
+    Else,
 }
 
 /// A stable, contextual identity for one occurrence in a diagram projection.
@@ -677,6 +688,7 @@ impl PublishedResolution {
                     direction,
                     conjugated,
                     state_subaction: self.model.state_subaction_kind(entry.identity),
+                    succession_guard: self.model.succession_guard(entry.identity),
                 }
             })
             .collect::<Vec<_>>();

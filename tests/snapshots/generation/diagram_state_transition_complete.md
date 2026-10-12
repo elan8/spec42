@@ -1173,6 +1173,7 @@ package StateExample {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1205,6 +1206,7 @@ package StateExample {
         "reference": 3,
         "source": 6,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1220,6 +1222,7 @@ package StateExample {
         "reference": 23,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1243,6 +1246,7 @@ package StateExample {
         "reference": 21,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1258,6 +1262,7 @@ package StateExample {
         "reference": 24,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1273,6 +1278,7 @@ package StateExample {
         "reference": 22,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1288,6 +1294,7 @@ package StateExample {
         "reference": 22,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1303,6 +1310,7 @@ package StateExample {
         "reference": 22,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1318,6 +1326,7 @@ package StateExample {
         "reference": 2,
         "source": 4,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1333,6 +1342,7 @@ package StateExample {
         "reference": 20,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1348,6 +1358,7 @@ package StateExample {
         "reference": 6,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

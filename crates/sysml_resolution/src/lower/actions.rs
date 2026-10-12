@@ -13,6 +13,7 @@ use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::SuccessionEndMultiplicities;
+use crate::lower::facts::SuccessionGuard;
 use crate::lower::facts::ThenSource;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::kerml::kerml_bare_end_multiplicity;
@@ -884,6 +885,9 @@ impl SemanticModelBuilder {
                     None,
                     kerml_bare_end_multiplicity(&node.value.target),
                 ),
+                succession_guard: Some(SuccessionGuard::Condition(
+                    self.guard_text(document, &node.value.guard),
+                )),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1167,17 +1171,93 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<ThenAction>,
     ) -> Result<(), ConstructionError> {
+        self.lower_then_action_declared(document, owner, family, node)
+            .map(|_| ())
+    }
+
+    /// Lowers a `then` and returns what it declared: the first member it added to its body,
+    /// which is the continuation to a named feature or the node written after the keyword.
+    fn lower_then_action_declared(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<ThenAction>,
+    ) -> Result<Option<usize>, ConstructionError> {
         let first_new = self.declarations.len();
         let source = self.then_source(owner, first_new);
         self.lower_then_target(document, owner, family, node)?;
-        // What the `then` declared is the first member it added to its body: the continuation
-        // to a named feature, or the node written after the keyword.
         let declared = (first_new..self.declarations.len())
             .find(|index| self.declarations[*index].owner == Some(owner));
         if let (Some(source), Some(declared)) = (source, declared) {
             self.declaration_facts[declared].then_source = Some(source);
         }
-        Ok(())
+        Ok(declared)
+    }
+
+    /// The guard of a conditional succession as it is written, with its white space collapsed.
+    fn guard_text(&self, document: DocumentIdx, guard: &Node<Expression>) -> Box<str> {
+        let source = self.documents[document.index()].parsed.source.as_str();
+        source
+            .get(guard.span.offset..guard.span.offset + guard.span.len)
+            .unwrap_or("")
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .into()
+    }
+
+    /// The target of a brace-less `then <feature>;` branch of an `if`, when the branch is one.
+    fn conditional_succession_branch(body: &ActionBranchBody) -> Option<&Node<ThenAction>> {
+        match body {
+            ActionBranchBody::Shorthand(element) => match &element.value {
+                ActionDefBodyElement::ThenAction(then)
+                    if matches!(then.value.target, ThenTarget::Feature(_)) =>
+                {
+                    Some(then)
+                }
+                _ => None,
+            },
+            ActionBranchBody::Braced(_) => None,
+        }
+    }
+
+    /// Lowers `if <guard> then <feature>; (else <feature>;)?` written without braces. An
+    /// `IfNode` has a braced body (SysML 8.2.2.17.3), so this text is a `GuardedTargetSuccession`
+    /// and a `DefaultTargetSuccession` (8.2.2.17.8): conditional successions in the `then`
+    /// shorthand, from the same source as a plain `then` at this place. Returns `false` when
+    /// `node` is not of that form.
+    fn lower_conditional_target_successions(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &IfStmt,
+    ) -> Result<bool, ConstructionError> {
+        let Some(then) = Self::conditional_succession_branch(&node.then_body) else {
+            return Ok(false);
+        };
+        let otherwise = match &node.else_body {
+            None => None,
+            Some(body) => match Self::conditional_succession_branch(body) {
+                Some(otherwise) => Some(otherwise),
+                None => return Ok(false),
+            },
+        };
+        let guard = self.guard_text(document, &node.condition);
+        if let Some(declared) = self.lower_then_action_declared(document, owner, family, then)? {
+            self.declaration_facts[declared].succession_guard =
+                Some(SuccessionGuard::Condition(guard));
+        }
+        self.lower_constraint_expression(document, owner, family, &node.condition)?;
+        if let Some(otherwise) = otherwise {
+            if let Some(declared) =
+                self.lower_then_action_declared(document, owner, family, otherwise)?
+            {
+                self.declaration_facts[declared].succession_guard = Some(SuccessionGuard::Else);
+            }
+        }
+        Ok(true)
     }
 
     /// The source of a `then` about to be lowered into the body of `owner`, whose members so
@@ -1493,6 +1573,9 @@ impl SemanticModelBuilder {
         span: Span,
         node: &IfStmt,
     ) -> Result<(), ConstructionError> {
+        if self.lower_conditional_target_successions(document, owner, family, node)? {
+            return Ok(());
+        }
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),

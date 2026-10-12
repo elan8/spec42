@@ -2537,6 +2537,7 @@ package Lamp {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2569,6 +2570,7 @@ package Lamp {
         "reference": 11,
         "source": 15,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2584,6 +2586,7 @@ package Lamp {
         "reference": 42,
         "source": 14,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2607,6 +2610,7 @@ package Lamp {
         "reference": 40,
         "source": 14,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2622,6 +2626,7 @@ package Lamp {
         "reference": 43,
         "source": 14,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2637,6 +2642,7 @@ package Lamp {
         "reference": 41,
         "source": 14,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2652,6 +2658,7 @@ package Lamp {
         "reference": 41,
         "source": 14,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2667,6 +2674,7 @@ package Lamp {
         "reference": 41,
         "source": 14,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2699,6 +2707,7 @@ package Lamp {
         "reference": 8,
         "source": 20,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2714,6 +2723,7 @@ package Lamp {
         "reference": 38,
         "source": 19,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2737,6 +2747,7 @@ package Lamp {
         "reference": 36,
         "source": 19,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2752,6 +2763,7 @@ package Lamp {
         "reference": 39,
         "source": 19,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2767,6 +2779,7 @@ package Lamp {
         "reference": 37,
         "source": 19,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2782,6 +2795,7 @@ package Lamp {
         "reference": 37,
         "source": 19,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2797,6 +2811,7 @@ package Lamp {
         "reference": 37,
         "source": 19,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2812,6 +2827,7 @@ package Lamp {
         "reference": 30,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2827,6 +2843,7 @@ package Lamp {
         "reference": 29,
         "source": 1,
         "stateSubaction": "entry",
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2858,6 +2875,7 @@ package Lamp {
         "reference": 3,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2882,6 +2900,7 @@ package Lamp {
         "reference": 33,
         "source": 11,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2897,6 +2916,7 @@ package Lamp {
         "reference": 35,
         "source": 11,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2912,6 +2932,7 @@ package Lamp {
         "reference": 34,
         "source": 11,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2927,6 +2948,7 @@ package Lamp {
         "reference": 34,
         "source": 11,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2942,6 +2964,7 @@ package Lamp {
         "reference": 32,
         "source": 7,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2957,6 +2980,7 @@ package Lamp {
         "reference": 31,
         "source": 6,
         "stateSubaction": "entry",
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2972,6 +2996,7 @@ package Lamp {
         "reference": 6,
         "source": 10,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -2987,6 +3012,7 @@ package Lamp {
         "reference": 7,
         "source": 9,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -3002,6 +3028,7 @@ package Lamp {
         "reference": 2,
         "source": 4,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

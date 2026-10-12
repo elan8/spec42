@@ -612,7 +612,7 @@ pub fn render_action_flow_view(
         ));
         flow_layer = flow_layer.child(path_edge_hit_target(&path, &edge.id, Some(&tooltip_text)));
 
-        let label = truncate_label(&edge.label, 20);
+        let label = edge.label.clone();
         if !label.is_empty() && !["flow", "first", "bind"].contains(&label.to_lowercase().as_str())
         {
             let elk_label = layout
@@ -637,9 +637,10 @@ pub fn render_action_flow_view(
                         .attr_f("width", elk.width)
                         .attr_f("height", elk.height)
                         .attr("rx", "3")
+                        // Plain text beside the line; the unframed backing only keeps it
+                        // legible where another line passes behind it.
                         .style("fill", theme.canvas_background)
-                        .style("stroke", theme.edge_default)
-                        .style("stroke-width", "1px"),
+                        .style("stroke", "none"),
                 );
             }
             flow_layer = flow_layer.child(

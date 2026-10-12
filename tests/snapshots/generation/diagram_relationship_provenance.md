@@ -572,6 +572,7 @@ package ProvenanceExample {
         "reference": 2,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -587,6 +588,7 @@ package ProvenanceExample {
         "reference": 3,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -602,6 +604,7 @@ package ProvenanceExample {
         "reference": 11,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -617,6 +620,7 @@ package ProvenanceExample {
         "reference": 12,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

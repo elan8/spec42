@@ -453,6 +453,7 @@ package RecursiveExample {
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -468,6 +469,7 @@ package RecursiveExample {
         "reference": 4,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -491,6 +493,7 @@ package RecursiveExample {
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -506,6 +509,7 @@ package RecursiveExample {
         "reference": 3,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

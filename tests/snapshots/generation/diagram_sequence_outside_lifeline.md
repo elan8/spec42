@@ -795,6 +795,7 @@ package SequenceOutside {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -810,6 +811,7 @@ package SequenceOutside {
         "reference": 1,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -825,6 +827,7 @@ package SequenceOutside {
         "reference": 19,
         "source": 4,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -840,6 +843,7 @@ package SequenceOutside {
         "reference": 21,
         "source": 4,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -855,6 +859,7 @@ package SequenceOutside {
         "reference": 20,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -870,6 +875,7 @@ package SequenceOutside {
         "reference": 22,
         "source": 5,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -893,6 +899,7 @@ package SequenceOutside {
         "reference": 4,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -908,6 +915,7 @@ package SequenceOutside {
         "reference": 5,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

@@ -503,6 +503,7 @@ package ConnectorIncomplete {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -518,6 +519,7 @@ package ConnectorIncomplete {
         "reference": 9,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -533,6 +535,7 @@ package ConnectorIncomplete {
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

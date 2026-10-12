@@ -302,6 +302,7 @@ package GeneralExample {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -317,6 +318,7 @@ package GeneralExample {
         "reference": 1,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

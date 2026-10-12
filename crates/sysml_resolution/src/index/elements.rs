@@ -798,6 +798,28 @@ impl<D> SemanticModel<D> {
         }
     }
 
+    /// When a conditional succession is taken: its guard as written, or `else`. `None` for
+    /// every other element. Settled where the succession is lowered.
+    pub(crate) fn succession_guard(
+        &self,
+        symbol: SymbolId,
+    ) -> Option<crate::diagram_query::DiagramSuccessionGuard> {
+        use crate::diagram_query::DiagramSuccessionGuard;
+        use crate::lower::facts::SuccessionGuard;
+        let id = self.declaration_of(symbol)?;
+        Some(
+            match self
+                .storage
+                .declaration_facts(id)?
+                .succession_guard
+                .as_ref()?
+            {
+                SuccessionGuard::Condition(text) => DiagramSuccessionGuard::Condition(text.clone()),
+                SuccessionGuard::Else => DiagramSuccessionGuard::Else,
+            },
+        )
+    }
+
     /// Where the succession of a `then` shorthand starts, keyed by the [`SymbolId`] of what the
     /// `then` declared: its continuation to a named feature, or the node written after it.
     ///
