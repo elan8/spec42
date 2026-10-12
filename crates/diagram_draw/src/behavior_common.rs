@@ -71,6 +71,10 @@ pub struct BehaviorLayoutResult {
     pub edge_sections_by_id: BTreeMap<String, Vec<EdgeSection>>,
     #[serde(rename = "edgeLabelsById", default)]
     pub edge_labels_by_id: BTreeMap<String, Vec<ElkLabelBox>>,
+    /// Edges that run into a line shared with other edges of the same label and target; the
+    /// label is written once, on the edge of the group that is not listed here.
+    #[serde(rename = "sharedLabelEdgeIds", default)]
+    pub shared_label_edge_ids: std::collections::BTreeSet<String>,
 }
 
 /// Port of `nodeKind`: `String(node.kind || "action").toLowerCase()`.

@@ -8,7 +8,7 @@ without enlarging it. A layout change shows its effect here.
 | Model | View | Kind | Size (px) | Smallest text |
 | --- | --- | --- | --- | ---: |
 | examples/drone | `Views::connections` | interconnection-view | 1962 × 775 | 2.8 pt |
-| examples/drone | `Views::flightModeStateMachine` | state-transition-view | 2327 × 1528 | 2.3 pt |
+| examples/drone | `Views::flightModeStateMachine` | state-transition-view | 896 × 1434 | 3.8 pt |
 | examples/drone | `Views::structure` | general-view | 242 × 662 | 6.8 pt |
 | examples/intersection | `Views::connections` | interconnection-view | 1044 × 312 | 5.3 pt |
 | examples/intersection | `Views::controllerStateMachine` | state-transition-view | 545 × 616 | 6.8 pt |
