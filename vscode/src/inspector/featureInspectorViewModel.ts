@@ -32,6 +32,17 @@ export interface FeatureInspectorViewModel {
   primaryElement?: FeatureInspectorElement;
   referencedFrom?: FeatureInspectorElement;
   value?: FeatureInspectorValueContext;
+  inheritedFeatures?: {
+    direct: FeatureInspectorElement["inheritedFeatures"];
+    indirect: FeatureInspectorElement["inheritedFeatures"];
+  };
+}
+
+function inheritedFeatures(element: FeatureInspectorElement) {
+  return {
+    direct: (element.inheritedFeatures || []).filter((feature) => feature.isDirect),
+    indirect: (element.inheritedFeatures || []).filter((feature) => !feature.isDirect),
+  };
 }
 
 /** The evaluated value with its unit, when the publication settled on one.
@@ -188,6 +199,7 @@ export function buildFeatureInspectorViewModel(
       mode: "reference",
       sections: elementSections(referenced),
       primaryElement: referenced,
+      inheritedFeatures: inheritedFeatures(referenced),
       referencedFrom: result.containingElement,
     };
   }
@@ -213,6 +225,7 @@ export function buildFeatureInspectorViewModel(
       mode: "element",
       sections: elementSections(result.containingElement),
       primaryElement: result.containingElement,
+      inheritedFeatures: inheritedFeatures(result.containingElement),
     };
   }
 

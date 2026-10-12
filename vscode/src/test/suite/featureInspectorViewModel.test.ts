@@ -57,6 +57,25 @@ function assertMode(
 }
 
 describe("FeatureInspectorViewModel", () => {
+  it("keeps immediate features visible and ancestor features available for expansion", () => {
+    const base = element("Base", "definition");
+    const ancestor = element("Ancestor", "definition");
+    const direct = { feature: element("command", "usage"), declaredIn: base, isDirect: true };
+    const indirect = { feature: element("status", "usage"), declaredIn: ancestor, isDirect: false };
+    const target = element("Derived", "definition", { inheritedFeatures: [direct, indirect] });
+    const viewModel = buildFeatureInspectorViewModel(result({ kind: "element" }, target));
+    assert.deepStrictEqual(viewModel.inheritedFeatures, { direct: [direct], indirect: [indirect] });
+
+    const referenced = result({ kind: "reference" });
+    referenced.referenced = { status: "resolved", element: target };
+    assert.deepStrictEqual(buildFeatureInspectorViewModel(referenced).inheritedFeatures,
+      { direct: [direct], indirect: [indirect] });
+    target.inheritedFeatures = [indirect];
+    const ancestorOnly = buildFeatureInspectorViewModel(result({ kind: "element" }, target));
+    assert.deepStrictEqual(ancestorOnly.inheritedFeatures, { direct: [], indirect: [indirect] });
+    assert.ok(ancestorOnly.sections.includes("Inherited features"));
+  });
+
   it("renders a keyword as language help only", () => {
     const input = result({ kind: "keyword", text: "part" }, element("RobotLidar", "definition"));
     input.languageHelp = {
@@ -117,7 +136,7 @@ describe("FeatureInspectorViewModel", () => {
       documentation: "A specialized vehicle.",
       subsetting: { status: "notApplicable", targets: [] },
       redefinition: { status: "resolved", targets: [base] },
-      inheritedFeatures: [{ feature: element("command", "usage"), declaredIn: base }],
+      inheritedFeatures: [{ feature: element("command", "usage"), declaredIn: base, isDirect: true }],
       metadata: [element("SafetyCritical", "usage")],
     });
 

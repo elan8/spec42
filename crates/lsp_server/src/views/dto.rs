@@ -99,6 +99,7 @@ pub struct SysmlFeatureInspectorRelationshipDto {
 pub struct SysmlFeatureInspectorInheritedFeatureDto {
     pub feature: SysmlFeatureInspectorElementRefDto,
     pub declared_in: SysmlFeatureInspectorElementRefDto,
+    pub is_direct: bool,
 }
 
 /// The publication's evaluation state for one element, projected at the transport boundary.

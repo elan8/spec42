@@ -84,6 +84,8 @@ pub struct EffectiveTyping {
 pub struct InheritedFeature {
     pub feature: SymbolEntry,
     pub declared_in: SymbolEntry,
+    /// Declared by an immediate type or supertype of the inspected element.
+    pub is_direct: bool,
 }
 
 /// The candidate-dependent result of applying all effective conditions of a view to one element.

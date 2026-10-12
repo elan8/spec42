@@ -24,21 +24,19 @@ fn lsp_feature_inspector_accepts_library_documents_outside_the_editor_root() {
     let library_uri = url::Url::from_file_path(library.join("ScalarValues.kerml")).unwrap();
     let library_text = "library package ScalarValues { datatype Boolean; datatype String; }";
     std::fs::write(library.join("ScalarValues.kerml"), library_text).unwrap();
+    std::fs::write(workspace.join("App.sysml"), "package App;").unwrap();
     let mut session = TestSession::new();
     session.initialize_with_root_and_options(
         "library_inspector_routing",
         Some(&root_uri),
-        Some(serde_json::json!({
-            "libraryPaths": [library.to_string_lossy()],
-            // Include the fixture in startup diagnostics so its publication is observable
-            // even when didOpen arrives while the workspace is still indexing.
-            "diagnostics": {"includeLibraryPaths": true}
-        })),
+        Some(serde_json::json!({"libraryPaths": [library.to_string_lossy()]})),
     );
-    session.did_open(app_uri.as_str(), "package App;", 1);
+    // Finish startup first: the unreferenced library has only a search index entry.
+    // Opening identical text must promote it into the semantic publication.
+    session.wait_for_publications(&[app_uri.as_str()]);
     session.did_open(library_uri.as_str(), library_text, 1);
     // Processing didOpen does not wait for the asynchronous library publication.
-    session.wait_for_publications(&[app_uri.as_str(), library_uri.as_str()]);
+    session.wait_for_publications(&[library_uri.as_str()]);
     for context in [None, Some(app_uri.as_str())] {
         let mut params = serde_json::json!({"textDocument": {"uri": library_uri},
             "position": {"line": 0, "character": 40}});
@@ -408,6 +406,7 @@ fn lsp_feature_inspector_exposes_effective_semantics_and_inherited_features() {
         inherited.iter().any(|entry| {
             entry["feature"]["name"].as_str() == Some("spare")
                 && entry["declaredIn"]["name"].as_str() == Some("Vehicle")
+                && entry["isDirect"].as_bool() == Some(true)
         }),
         "expected Vehicle::spare as inherited feature, got {inherited:#?}"
     );
@@ -448,6 +447,7 @@ fn lsp_feature_inspector_exposes_effective_semantics_and_inherited_features() {
         usage_inherited.iter().any(|entry| {
             entry["feature"]["name"].as_str() == Some("wheel")
                 && entry["declaredIn"]["name"].as_str() == Some("Vehicle")
+                && entry["isDirect"].as_bool() == Some(false)
         }),
         "typed usages should expose effective features from their definition: {usage_inherited:#?}"
     );

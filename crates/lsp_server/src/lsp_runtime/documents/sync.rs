@@ -32,12 +32,13 @@ pub(crate) async fn did_open(
         .perf_logging_enabled;
 
     // Check whether the file is already indexed with identical content before
-    // mutating. If so, the startup scan already published this URI and no expensive
-    // rebuild is needed.
+    // mutating. Only entries admitted to the semantic publication qualify: a search-only
+    // library entry still needs promotion when the editor opens its unchanged text.
     let open_status = {
         let snap = handle.snapshot();
         match snap.index.get(&uri_norm) {
             None => "newFile",
+            Some(entry) if !entry.admitted_to_publication => "searchOnly",
             Some(entry) if entry.content() != text => "contentChanged",
             _ => "alreadyIndexed",
         }

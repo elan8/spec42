@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.55.0] - 2026-10-12
 
+- **Feature Inspector starts with directly inherited features.** Features declared by more
+  distant ancestors remain available under **Show all inherited features**, with their declaring
+  types preserved.
+
 - **Inspecting standard-library definitions works outside the workspace.** Navigating to a
   definition such as `Boolean` or `String` no longer produces feature-inspector errors about
   the document being outside the configured projects. Library inspection uses an admitted

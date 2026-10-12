@@ -267,6 +267,7 @@ fn inherited_feature(
     SysmlFeatureInspectorInheritedFeatureDto {
         feature: element_ref(model, &feature.feature),
         declared_in: element_ref(model, &feature.declared_in),
+        is_direct: feature.is_direct,
     }
 }
 

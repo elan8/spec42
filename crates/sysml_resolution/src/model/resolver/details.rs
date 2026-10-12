@@ -741,6 +741,10 @@ impl<D> SemanticModel<D> {
             .collect::<Vec<_>>();
         seed.sort_by_key(|target| self.symbol_id(*target));
         seed.dedup();
+        let direct_owners = seed
+            .iter()
+            .copied()
+            .collect::<std::collections::BTreeSet<_>>();
         queue.extend(seed);
 
         // A feature the element declares shadows an inherited one of the same name, and a feature
@@ -788,6 +792,7 @@ impl<D> SemanticModel<D> {
                 inherited.push(InheritedFeature {
                     feature,
                     declared_in: declared_in.clone(),
+                    is_direct: direct_owners.contains(&owner),
                 });
             }
             let mut bases = self

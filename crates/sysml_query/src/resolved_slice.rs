@@ -1535,13 +1535,14 @@ fn write_element(
     for feature in details.inherited_features.iter() {
         writeln!(
             output,
-            "{indent}  (inherited-feature (qualified-name {:?}) (declared-in {:?}))",
+            "{indent}  (inherited-feature (qualified-name {:?}) (declared-in {:?}) (direct {}))",
             model
                 .qualified_name(feature.feature.identity)
                 .unwrap_or_default(),
             model
                 .qualified_name(feature.declared_in.identity)
-                .unwrap_or_default()
+                .unwrap_or_default(),
+            feature.is_direct
         )?;
     }
     for entry in details.metadata.iter() {
