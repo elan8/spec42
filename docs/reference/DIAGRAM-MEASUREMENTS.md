@@ -7,13 +7,13 @@ without enlarging it. A layout change shows its effect here.
 
 | Model | View | Kind | Size (px) | Smallest text |
 | --- | --- | --- | --- | ---: |
-| examples/drone | `Views::connections` | interconnection-view | 1962 × 775 | 2.8 pt |
+| examples/drone | `Views::connections` | interconnection-view | 1916 × 765 | 2.9 pt |
 | examples/drone | `Views::flightModeStateMachine` | state-transition-view | 896 × 1434 | 3.8 pt |
 | examples/drone | `Views::structure` | general-view | 242 × 662 | 6.8 pt |
-| examples/intersection | `Views::connections` | interconnection-view | 1044 × 312 | 5.3 pt |
+| examples/intersection | `Views::connections` | interconnection-view | 1139 × 434 | 4.9 pt |
 | examples/intersection | `Views::controllerStateMachine` | state-transition-view | 420 × 922 | 5.9 pt |
 | examples/intersection | `Views::structure` | general-view | 236 × 545 | 6.8 pt |
-| examples/office | `Office::connections` | interconnection-view | 983 × 569 | 5.4 pt |
+| examples/office | `Office::connections` | interconnection-view | 921 × 572 | 5.4 pt |
 | examples/office | `Office::structure` | general-view | 174 × 733 | 6.8 pt |
 | examples/timer | `Views::connections` | interconnection-view | 991 × 298 | 5.6 pt |
 | examples/timer | `Views::structure` | general-view | 174 × 433 | 6.8 pt |

@@ -206,6 +206,7 @@ package GeometryExample {
         "compartments": [],
         "conjugated": false,
         "direction": null,
+        "featureDirection": null,
         "metaclass": "PartDefinition",
         "name": "Shape",
         "notationRole": "definition",

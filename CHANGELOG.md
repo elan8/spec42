@@ -45,11 +45,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transitions with one trigger into one state share a line and are labelled once, at that
   state. The view is drawn in a frame that carries its name, as is the action flow view.
 - **Diagram product and generator ABI (#262).** A diagram node carries `stateSubaction`
-  (`"entry"`, `"do"`, `"exit"` or `null`) and `successionGuard` (the guard as written, `"else"`
-  or `null`), and `direction` is now set for every directed feature, not only for a port;
+  (`"entry"`, `"do"`, `"exit"` or `null`), `successionGuard` (the guard as written, `"else"`
+  or `null`) and `featureDirection` (see below), and `direction` is now set for every directed
+  feature, not only for a port;
   `schemaVersion` stays 5, as these are additions. In the generator protocol `DiagramElement`
-  gains `state_subaction` and `succession_guard`, which changes the compatibility token:
+  gains `state_subaction`, `succession_guard` and `feature_direction`, which changes the
+  compatibility token:
   **a generator plugin built against 0.55.0 is refused and must be rebuilt.**
+- **A port shows the direction of its features (#262).** The arrow in a port's square was
+  drawn only for a direction written on the port usage. A port without one now takes it from
+  its directed features and those of its definitions: `in`, `out`, or `inout` when both occur,
+  reversed by a conjugated typing. It is published as `featureDirection`, apart from the
+  authored `direction`. Ports are placed on the side their direction calls for, so some
+  interconnection views are arranged differently.
 - **Figures read better on a page (#262).** A long list of members in a general view continues
   in columns (webshop structure: 256 × 1949 px at 2.8 pt becomes 622 × 831 px at 6.6 pt). Action
   flows and sequences are spaced by the labels they hold, not by fixed gaps. Interconnection

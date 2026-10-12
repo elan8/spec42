@@ -880,6 +880,9 @@ pub struct DiagramElement {
     /// On a conditional succession, when it is taken: its guard expression as written, or
     /// `"else"`. `None` for every other element.
     pub succession_guard: Option<String>,
+    /// On a port: the direction (`"in"` / `"out"` / `"inout"`) its directed features give it as
+    /// a whole, with a conjugated typing applied. Derived, unlike the authored `direction`.
+    pub feature_direction: Option<String>,
 }
 
 /// Contextual identity of one projected occurrence. The semantic references remain canonical
@@ -1323,7 +1326,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x0823_3123_48b9_e6e6,
+            SCHEMA_FINGERPRINT, 0xf58d_c614_fefb_46d6,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1331,7 +1334,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x75e8_fa4d_44cf_4b61,
+            COMPATIBILITY_TOKEN, 0x3372_b411_f3f5_d7e6,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

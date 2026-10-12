@@ -45,7 +45,7 @@ them.
 | Part that shows its parts | The same solid part symbol with the nested view inside | Solid since this change; it was dashed, the notation of a reference | Conforms |
 | Port | Small square on the boundary | Small square on the boundary | Conforms |
 | Port label | Beside the port, outside the part | Outside the part, below the connector, since this change; it was inside | Conforms |
-| Port direction | Arrow inside the port square for `in`, `out`, `inout` | Drawn for a port usage with an authored direction. A port whose direction follows only from the features of its definition gets none | Conforms for authored directions |
+| Port direction | Arrow inside the port square for `in`, `out`, `inout` | Drawn from the direction written on the port usage, or else from the directed features of the port and of its definitions, reversed by a conjugated typing. Features a definition inherits are not followed | Conforms |
 | Conjugated port | `~` before the type in the port's declaration | The port is labelled `name : ~Type`; other ports by name only | Conforms |
 | Connection | Solid line between ports or parts, optional name | Solid line, name or `: Type` where there is room | Conforms |
 | Connection colour | Not defined | One colour for each port type | Extension, harmless |
@@ -88,8 +88,7 @@ them.
 
 ## What to change next, by effect on a reader
 
-1. The direction a port takes from the features of its definition.
-2. Flows on connections in an interconnection view.
-3. Routes for transitions that cross the boundary of a containing state.
-4. Swimlanes in an action flow.
+1. Flows on connections in an interconnection view.
+2. Routes for transitions that cross the boundary of a containing state.
+3. Swimlanes in an action flow.
 

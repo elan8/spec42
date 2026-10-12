@@ -1933,7 +1933,12 @@ fn interconnection_scene_from_typed_projection(
                 "ownerNodeId": id_for(owner),
                 "name": as_string(field(element, "name"), &id_for(index)),
                 "typeName": type_name(element),
-                "direction": field(element, "direction").as_str().map(str::to_string),
+                // The arrow in a port's square shows the direction written on the port, or
+                // else the one its directed features give it (SysML 8.2.3.12).
+                "direction": field(element, "direction")
+                    .as_str()
+                    .or_else(|| field(element, "featureDirection").as_str())
+                    .map(str::to_string),
                 "conjugated": field(element, "conjugated") == &json!(true),
                 "sideHint": "",
                 "uri": uri,
