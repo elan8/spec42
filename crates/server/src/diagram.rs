@@ -13,7 +13,7 @@ use generator_api::{
 use serde::Serialize;
 
 use crate::cli::{Cli, DiagramArgs, DiagramFormat};
-use crate::headless_renderer::render_native_svg;
+use crate::headless_renderer::render_nested_svg;
 use crate::host_snapshot::load_snapshot_for_paths;
 
 #[derive(Serialize)]
@@ -58,7 +58,7 @@ pub fn run_diagram(cli: &Cli, args: &DiagramArgs) -> Result<ExitCode, String> {
             let product = String::from_utf8(product).expect("serde_json writes UTF-8");
             match args.format {
                 DiagramFormat::Json => product,
-                DiagramFormat::Svg => render_native_svg(&product)?,
+                DiagramFormat::Svg => render_nested_svg(&product, args.depth)?,
             }
         }
     };

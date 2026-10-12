@@ -1270,7 +1270,7 @@ fn prepare_state_machine(machine: &Value, visualization: &Value) -> Value {
         "meta": {
             "selectedDiagramId": as_string(field(machine, "id"), ""),
             "selectedDiagramName": as_string(field(machine, "name"), ""),
-            "layoutDirection": as_string(field(visualization, "stateLayoutDirection"), "horizontal"),
+            "layoutDirection": as_string(field(visualization, "stateLayoutDirection"), "auto"),
             "stateMachine": machine,
             "parentContext": as_string(field(machine, "name"), ""),
         },
@@ -1313,7 +1313,7 @@ fn prepare_state(visualization: &Value) -> Value {
         prepared["meta"] = json!({
             "selectedDiagramId": as_string(field(&selected_state_diagram, "id"), ""),
             "selectedDiagramName": as_string(field(&selected_state_diagram, "name"), ""),
-            "layoutDirection": as_string(field(visualization, "stateLayoutDirection"), "horizontal"),
+            "layoutDirection": as_string(field(visualization, "stateLayoutDirection"), "auto"),
             "stateDiagram": selected_state_diagram,
         });
         return prepared;
@@ -2905,7 +2905,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
             "meta": {
                 "sceneKind": field(scene, "kind"),
                 "frame": frame,
-                "layoutDirection": "horizontal",
+                "layoutDirection": "auto",
             },
         })));
     }

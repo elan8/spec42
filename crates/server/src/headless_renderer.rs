@@ -19,3 +19,17 @@ pub fn render_native_svg(payload_json: &str) -> Result<String, String> {
         },
     )
 }
+
+/// Renders a diagram product for a file or a document, drawing `nesting` levels of parts in an
+/// interconnection view. The figure is as large as its content.
+pub fn render_nested_svg(
+    payload_json: &str,
+    nesting: diagram_draw::Nesting,
+) -> Result<String, String> {
+    diagram_draw::pipeline::render_svg_from_payload_str_nested(payload_json, nesting).map_err(
+        |err| match err {
+            PipelineError::Draw(DrawError::UnsupportedView(_)) => err.to_string(),
+            other => format!("Native diagram export failed: {other}"),
+        },
+    )
+}

@@ -14,10 +14,13 @@ use crate::theme::Theme;
 
 const HEADER_Y: f64 = 64.0;
 const LIFELINE_TOP: f64 = 118.0;
-const LIFELINE_GAP: f64 = 220.0;
-const MESSAGE_GAP: f64 = 78.0;
+// Two lifelines are far enough apart for a message name of 28 characters, the longest that is
+// drawn, above the arrow between them. Messages are a line of text and its arrow apart.
+const LIFELINE_GAP: f64 = 176.0;
+const MESSAGE_GAP: f64 = 52.0;
 const LIFELINE_BOX_WIDTH: f64 = 132.0;
 const LIFELINE_BOX_HEIGHT: f64 = 38.0;
+const TITLE_FONT_SIZE: f64 = 14.0;
 
 fn as_object(value: &Value) -> Option<&serde_json::Map<String, Value>> {
     value.as_object()
@@ -125,20 +128,27 @@ pub fn render_sequence_view(
     messages.sort_by(|a, b| as_f64(get(a, "order"), 0.0).total_cmp(&as_f64(get(b, "order"), 0.0)));
     let activations = as_array(get(&diagram, "activations")).to_vec();
     let fragments = as_array(get(&diagram, "fragments")).to_vec();
+    let title = if prepared.title.is_empty() {
+        "Sequence"
+    } else {
+        &prepared.title
+    };
+    let title_x = (80.0_f64).max(
+        (width - ((lifelines.len() as f64 - 1.0).max(0.0) * LIFELINE_GAP + LIFELINE_BOX_WIDTH))
+            / 2.0,
+    ) - LIFELINE_BOX_WIDTH / 2.0;
 
     root = root.child(
         Element::new("text")
-            .attr_f("x", width / 2.0)
+            // At the left edge of the first lifeline, like the title of every other view; not
+            // centred on a viewer's canvas.
+            .attr_f("x", title_x)
             .attr_f("y", 32.0)
-            .attr("text-anchor", "middle")
-            .style("font-size", "14px")
+            .attr("text-anchor", "start")
+            .style("font-size", format!("{}px", n(TITLE_FONT_SIZE)))
             .style("font-weight", "700")
             .style("fill", theme.text_primary)
-            .text(if prepared.title.is_empty() {
-                "Sequence".to_string()
-            } else {
-                prepared.title.clone()
-            }),
+            .text(title),
     );
 
     if lifelines.is_empty() || messages.is_empty() {
@@ -528,11 +538,19 @@ pub fn render_sequence_view(
     }
     root = root.insert_before_child("sequence-messages", fragment_layer);
 
+    // From the first lifeline's box to the last one's, including the title. SVG uses the
+    // viewer's font, so reserve a conservative one-em advance per title character rather
+    // than an average that would crop wide glyphs such as W.
+    let half_box = LIFELINE_BOX_WIDTH / 2.0;
+    let title_right = title_x + title.chars().count() as f64 * TITLE_FONT_SIZE;
     let extents = (
+        (x_offset - half_box)
+            .min(0.0)
+            .max(x_offset - half_box - 16.0),
         0.0,
-        0.0,
-        x_offset + lifelines.len() as f64 * LIFELINE_GAP + 80.0,
-        lifeline_bottom + 60.0,
+        (x_offset + (lifelines.len() as f64 - 1.0).max(0.0) * LIFELINE_GAP + half_box + 16.0)
+            .max(title_right),
+        lifeline_bottom + 24.0,
     );
     (root, extents)
 }

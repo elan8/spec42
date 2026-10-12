@@ -8,6 +8,49 @@ use diagram_draw::behavior_common::PreparedView;
 use diagram_draw::render_sequence_view_svg;
 use diagram_draw::theme::LIGHT;
 use diagram_draw::xml;
+use serde_json::json;
+
+#[test]
+fn a_single_lifeline_export_keeps_long_titles_inside_the_view_box() {
+    // The normal title is about 246 px in a 14 px bold serif font; the wide-glyph title
+    // needs over 500 px. Neither fits in the 164 px available in the old export.
+    for (title, minimum_width) in [
+        ("MotorControllerInitializationSequence", 246.0),
+        ("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", 520.0),
+    ] {
+        let prepared: PreparedView = serde_json::from_value(json!({
+            "title": title, "view": "sequence-view", "nodes": [], "edges": [],
+            "meta": {"sequenceDiagram": {
+                "lifelines": [{"id": "controller", "name": "Controller"}],
+                "messages": [{"id": "init", "name": "initialize", "source": "controller",
+                    "target": "controller", "order": 1}]
+            }}
+        }))
+        .unwrap();
+        for canvas_width in [0.0, 1280.0] {
+            let svg = render_sequence_view_svg(&prepared, &LIGHT, canvas_width, 900.0);
+            let tree = xml::parse(&svg);
+            let view_box: Vec<f64> = tree.attrs["viewBox"]
+                .split_whitespace()
+                .map(|value| value.parse().unwrap())
+                .collect();
+            let content = tree
+                .children
+                .iter()
+                .find(|node| node.attrs.get("class").map(String::as_str) == Some("viz-root"))
+                .unwrap();
+            let drawn_title = &content.children[0];
+            assert_eq!(drawn_title.text, title);
+            let title_x: f64 = drawn_title.attrs["x"].parse().unwrap();
+            assert!(view_box[0] <= title_x);
+            assert!(
+                view_box[0] + view_box[2] >= title_x + minimum_width,
+                "title {title} is cropped in viewBox {}",
+                tree.attrs["viewBox"]
+            );
+        }
+    }
+}
 
 #[test]
 fn sequence_view_rendered_svg_matches_the_real_typescript_output() {

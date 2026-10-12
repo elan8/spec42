@@ -36,7 +36,7 @@ pub const BADGE_MIN_WIDTH: f64 = 18.0;
 const OVERFLOW_LINE_HEIGHT: f64 = 12.0;
 const AVERAGE_GLYPH_RATIO_REGULAR: f64 = 0.54;
 const AVERAGE_GLYPH_RATIO_BOLD: f64 = 0.6;
-pub const NODE_WIDTH_MIN: f64 = 200.0;
+pub const NODE_WIDTH_MIN: f64 = 120.0;
 pub const NODE_WIDTH_MAX: f64 = 320.0;
 
 /// General View nodes cap each compartment at this many rows and show a `+n more` line
@@ -779,14 +779,30 @@ pub fn compute_node_width(compartments: &Compartments, state: &NodeChromeState) 
     } else {
         compartments.name.as_str()
     };
-    let per_name_line = ((utf16_len(name) as f64) / NAME_MAX_LINES as f64).ceil();
+    // The fewest characters a line must hold for the name to wrap into its lines whole: a name
+    // breaks only where `wrap_element_name` breaks it, so half its length is not always enough.
+    let name_length = utf16_len(name);
+    let even_split = name_length.div_ceil(NAME_MAX_LINES);
+    let per_name_line = (even_split..=name_length)
+        .find(|characters| {
+            wrap_element_name(name, *characters, NAME_MAX_LINES)
+                .iter()
+                .map(|line| utf16_len(line))
+                .sum::<usize>()
+                >= name_length.saturating_sub(NAME_MAX_LINES - 1)
+                && !wrap_element_name(name, *characters, NAME_MAX_LINES)
+                    .iter()
+                    .any(|line| line.ends_with('\u{2026}') || line.ends_with("..."))
+        })
+        .unwrap_or(name_length) as f64;
     let stereotype = format_stereotype(&compartments.stereotype);
     let typing_width = compartments
         .typed_by_name
         .as_ref()
         .map(|typed| (utf16_len(typed) + 2) as f64 * TYPING_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR)
         .unwrap_or(0.0);
-    let header_content = (per_name_line * NAME_FONT_SIZE * AVERAGE_GLYPH_RATIO_BOLD)
+    // The drawing fits a name line at 0.6 of the font size for each character.
+    let header_content = ((per_name_line + 1.0) * NAME_FONT_SIZE * 0.6)
         .max(utf16_len(&stereotype) as f64 * STEREOTYPE_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR)
         .max(typing_width);
     let mut widest = gutter * 2.0 + header_content;

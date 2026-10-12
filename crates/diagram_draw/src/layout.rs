@@ -1,7 +1,7 @@
 //! Port of `render/layout.ts`, `views/behavior-common.ts` layout, and
 //! `render/interconnection-elk-input.ts` onto `diagram_layout` (elkrs).
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 use serde_json::{json, Map, Value};
 
@@ -26,24 +26,44 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
     match view.as_str() {
         "sequence-view" | "browser-view" | "grid-view" | "geometry-view" => Ok(prepared.clone()),
         "action-flow-view" | "state-transition-view" => {
-            let horizontal = as_string(field(field(prepared, "meta"), "layoutDirection"), "")
-                .eq_ignore_ascii_case("horizontal");
-            let mode = if view == "state-transition-view" {
-                BehaviorMode::State
-            } else {
-                BehaviorMode::Action
-            };
-            let behavior_layout = if view == "action-flow-view" {
+            let direction = as_string(field(field(prepared, "meta"), "layoutDirection"), "");
+            let horizontal = direction.eq_ignore_ascii_case("horizontal");
+            if view == "state-transition-view" {
+                // A state machine has no natural direction. Unless the caller chose one, lay it
+                // out both ways and keep the one that is larger on the reference page.
+                let (behavior_layout, horizontal) =
+                    if horizontal || direction.eq_ignore_ascii_case("vertical") {
+                        let (layout, _) =
+                            layout_behavior_graph(prepared, horizontal, BehaviorMode::State)?;
+                        (layout, horizontal)
+                    } else {
+                        let (across, across_size) =
+                            layout_behavior_graph(prepared, true, BehaviorMode::State)?;
+                        let (down, down_size) =
+                            layout_behavior_graph(prepared, false, BehaviorMode::State)?;
+                        // On a tie the horizontal layout wins, so the choice is deterministic.
+                        if reference_page_scale(down_size) > reference_page_scale(across_size) {
+                            (down, false)
+                        } else {
+                            (across, true)
+                        }
+                    };
+                let mut prepared = prepared.clone();
+                prepared["meta"]["layoutDirection"] =
+                    json!(if horizontal { "horizontal" } else { "vertical" });
+                return Ok(json!({
+                    "prepared": prepared,
+                    "behaviorLayout": behavior_layout,
+                }));
+            }
+            let behavior_layout =
                 if let Some(nested) = layout_nested_action_flow(prepared, horizontal)? {
                     nested
                 } else if let Some(compact) = layout_simple_action_chain(prepared) {
                     compact
                 } else {
-                    layout_behavior_graph(prepared, horizontal, mode)?
-                }
-            } else {
-                layout_behavior_graph(prepared, horizontal, mode)?
-            };
+                    layout_behavior_graph(prepared, horizontal, BehaviorMode::Action)?.0
+                };
             Ok(json!({
                 "prepared": prepared,
                 "behaviorLayout": behavior_layout,
@@ -52,6 +72,24 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
         "interconnection-view" => layout_interconnection_prepared(prepared),
         _ => layout_general_prepared(prepared),
     }
+}
+
+/// The page a diagram is laid out to be readable on, in CSS pixels: the text area of an A4
+/// sheet, upright (165 x 215 mm) or turned (245 x 135 mm). A diagram is placed on whichever of
+/// the two shows it larger. Layout aims at this page so that a figure in a document keeps
+/// legible text; on a screen the same compact layout simply needs less panning.
+const REFERENCE_PAGE_UPRIGHT: (f64, f64) = (624.0, 813.0);
+const REFERENCE_PAGE_TURNED: (f64, f64) = (926.0, 510.0);
+
+/// The factor a diagram of `size` is scaled by to fit the reference page. A diagram is never
+/// enlarged, so 1.0 means it fits at its drawn size and its text keeps its authored size.
+fn reference_page_scale((width, height): (f64, f64)) -> f64 {
+    let fit = |(page_width, page_height): (f64, f64)| {
+        (page_width / width.max(1.0)).min(page_height / height.max(1.0))
+    };
+    fit(REFERENCE_PAGE_UPRIGHT)
+        .max(fit(REFERENCE_PAGE_TURNED))
+        .min(1.0)
 }
 
 #[derive(Clone, Copy)]
@@ -88,24 +126,29 @@ fn build_elk_layout_options(
         ElkViewKind::Interconnection => &[
             ("elk.hierarchyHandling", "INCLUDE_CHILDREN"),
             ("elk.direction", "RIGHT"),
-            ("elk.spacing.nodeNode", "150"),
-            ("elk.layered.spacing.nodeNodeBetweenLayers", "220"),
-            ("elk.spacing.edgeNode", "110"),
-            ("elk.spacing.edgeEdge", "90"),
+            ("elk.spacing.nodeNode", "36"),
+            ("elk.layered.spacing.nodeNodeBetweenLayers", "88"),
+            ("elk.spacing.edgeNode", "24"),
+            ("elk.spacing.edgeEdge", "14"),
             ("elk.layered.crossingMinimization.strategy", "LAYER_SWEEP"),
-            ("elk.padding", "[top=70,left=70,bottom=70,right=70]"),
+            ("elk.padding", "[top=20,left=20,bottom=20,right=20]"),
             ("org.eclipse.elk.portConstraints", "FIXED_ORDER"),
             ("org.eclipse.elk.portAlignment.default", "CENTER"),
         ],
         ElkViewKind::BehaviorState => &[
             ("elk.hierarchyHandling", "INCLUDE_CHILDREN"),
             ("elk.layered.crossingMinimization.strategy", "LAYER_SWEEP"),
-            ("elk.layered.spacing.nodeNodeBetweenLayers", "230"),
-            ("elk.spacing.nodeNode", "190"),
-            ("elk.spacing.edgeNode", "130"),
-            ("elk.spacing.edgeEdge", "110"),
-            ("elk.spacing.edgeLabel", "12"),
-            ("elk.padding", "[top=100,left=90,bottom=90,right=90]"),
+            // Room for one orthogonal channel with its transition label between two layers,
+            // and for an arrowhead between two states of a layer.
+            // Follow the transitions from the initial state, so that the layers read in the
+            // order a run passes through the states and only the returns go backwards.
+            ("elk.layered.cycleBreaking.strategy", "DEPTH_FIRST"),
+            ("elk.layered.spacing.nodeNodeBetweenLayers", "40"),
+            ("elk.spacing.nodeNode", "28"),
+            ("elk.spacing.edgeNode", "18"),
+            ("elk.spacing.edgeEdge", "14"),
+            ("elk.spacing.edgeLabel", "6"),
+            ("elk.padding", "[top=48,left=24,bottom=24,right=24]"),
         ],
         ElkViewKind::BehaviorAction => &[
             ("elk.layered.crossingMinimization.strategy", "LAYER_SWEEP"),
@@ -505,183 +548,98 @@ fn fallback_general_layout(nodes: &[Value], edges: &[Value]) -> Value {
     json!({ "nodes": laid_out_nodes, "edges": laid_out_edges })
 }
 
+/// Lays out a general view that shows containment as a tree: boxes by `tree_layout`, aimed at
+/// the reference page, with each containment line following the tree and every other
+/// relationship drawn as a three-segment line between the two boxes.
 fn hierarchy_general_layout(
     nodes: &[Value],
     edges: &[Value],
     parent_by_id: &HashMap<String, String>,
 ) -> Value {
-    let node_order: HashMap<String, usize> = nodes
+    let order: Vec<String> = nodes
         .iter()
-        .enumerate()
-        .map(|(index, node)| (as_string(field(node, "id"), ""), index))
+        .map(|node| as_string(field(node, "id"), ""))
         .collect();
-    let mut children_by_parent: HashMap<String, Vec<Value>> = HashMap::new();
-    for node in nodes {
-        if let Some(parent) = parent_by_id.get(&as_string(field(node, "id"), "")) {
-            children_by_parent
-                .entry(parent.clone())
-                .or_default()
-                .push(node.clone());
-        }
-    }
-    for children in children_by_parent.values_mut() {
-        children.sort_by_key(|node| {
-            node_order
+    let measured: Vec<(f64, f64, crate::sysml_node::Compartments)> =
+        nodes.iter().map(general_node_box).collect();
+    let sizes: HashMap<String, (f64, f64)> = order
+        .iter()
+        .zip(&measured)
+        .map(|(id, (width, height, _))| (id.clone(), (*width, *height)))
+        .collect();
+    let tree =
+        crate::tree_layout::layout_tree_for(&order, &sizes, parent_by_id, reference_page_scale);
+    let laid_out_nodes: Vec<Value> = nodes
+        .iter()
+        .zip(&measured)
+        .map(|(node, (width, height, compartments))| {
+            let (x, y) = tree
+                .positions
                 .get(&as_string(field(node, "id"), ""))
                 .copied()
-                .unwrap_or(0)
-        });
-    }
-    let mut rows: Vec<Vec<Value>> = Vec::new();
-    let mut visited = HashSet::new();
-    let mut current: Vec<Value> = nodes
-        .iter()
-        .filter(|node| !parent_by_id.contains_key(&as_string(field(node, "id"), "")))
-        .cloned()
-        .collect();
-    while !current.is_empty() {
-        let row: Vec<Value> = current
-            .iter()
-            .filter(|node| !visited.contains(&as_string(field(node, "id"), "")))
-            .cloned()
-            .collect();
-        if row.is_empty() {
-            break;
-        }
-        for node in &row {
-            visited.insert(as_string(field(node, "id"), ""));
-        }
-        current = row
-            .iter()
-            .flat_map(|node| {
-                children_by_parent
-                    .get(&as_string(field(node, "id"), ""))
-                    .cloned()
-                    .unwrap_or_default()
-            })
-            .collect();
-        rows.push(row);
-    }
-    let unvisited: Vec<Value> = nodes
-        .iter()
-        .filter(|node| !visited.contains(&as_string(field(node, "id"), "")))
-        .cloned()
-        .collect();
-    if !unvisited.is_empty() {
-        rows.push(unvisited);
-    }
-    let horizontal_gap = 140.0;
-    let vertical_gap = 180.0;
-    let measured_rows: Vec<Vec<(Value, f64, f64, crate::sysml_node::Compartments)>> = rows
-        .iter()
-        .map(|row| {
-            row.iter()
-                .map(|node| {
-                    let (width, height, compartments) = general_node_box(node);
-                    (node.clone(), width, height, compartments)
-                })
-                .collect()
-        })
-        .collect();
-    let row_widths: Vec<f64> = measured_rows
-        .iter()
-        .map(|row| {
-            row.iter().map(|(_, width, _, _)| *width).sum::<f64>()
-                + (row.len().saturating_sub(1) as f64) * horizontal_gap
-        })
-        .collect();
-    let diagram_width = row_widths.iter().copied().fold(0.0, f64::max);
-    let mut laid_out_nodes = Vec::new();
-    let mut y = 0.0;
-    for (row_index, row) in measured_rows.iter().enumerate() {
-        let mut x = (diagram_width - row_widths[row_index]) / 2.0;
-        let row_height = NODE_HEIGHT.max(
-            row.iter()
-                .map(|(_, _, height, _)| *height)
-                .fold(0.0, f64::max),
-        );
-        for (node, width, height, compartments) in row {
+                .unwrap_or((0.0, 0.0));
             let mut out = node.clone();
             out["compartments"] = compartments_to_value(compartments);
             out["x"] = json!(x);
             out["y"] = json!(y);
             out["width"] = json!(*width);
             out["height"] = json!(*height);
-            laid_out_nodes.push(out);
-            x += width + horizontal_gap;
-        }
-        y += row_height + vertical_gap;
-    }
-    let by_id: HashMap<String, Value> = laid_out_nodes
-        .iter()
-        .map(|node| (as_string(field(node, "id"), ""), node.clone()))
-        .collect();
-    let row_for: HashMap<String, usize> = rows
-        .iter()
-        .enumerate()
-        .flat_map(|(depth, row)| {
-            row.iter()
-                .map(move |node| (as_string(field(node, "id"), ""), depth))
+            out
         })
         .collect();
-    let mut same_row_lane = 0usize;
+    let rect = |id: &str| -> Option<(f64, f64, f64, f64)> {
+        let (x, y) = tree.positions.get(id).copied()?;
+        let (width, height) = sizes.get(id).copied()?;
+        Some((x, y, width, height))
+    };
+    let section = |points: &[(f64, f64)]| -> Value {
+        let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
+        json!({
+            "startPoint": point(&points[0]),
+            "bendPoints": points[1..points.len() - 1].iter().map(point).collect::<Vec<_>>(),
+            "endPoint": point(&points[points.len() - 1]),
+        })
+    };
     let laid_out_edges: Vec<Value> = edges
         .iter()
         .map(|edge| {
-            let source_node = by_id.get(&as_string(field(edge, "source"), ""));
-            let target_node = by_id.get(&as_string(field(edge, "target"), ""));
-            let (Some(source_node), Some(target_node)) = (source_node, target_node) else {
-                return edge.clone();
+            let source = as_string(field(edge, "source"), "");
+            let target = as_string(field(edge, "target"), "");
+            // A containment line follows the tree, from the parent to the child.
+            let along_tree = |parent: &str, child: &str| {
+                (parent_by_id.get(child).map(String::as_str) == Some(parent))
+                    .then(|| tree.routes.get(child))
+                    .flatten()
             };
-            let source_x = num(field(source_node, "x")) + num(field(source_node, "width")) / 2.0;
-            let target_x = num(field(target_node, "x")) + num(field(target_node, "width")) / 2.0;
-            let source_depth = row_for
-                .get(&as_string(field(edge, "source"), ""))
-                .copied()
-                .unwrap_or(0);
-            let target_depth = row_for
-                .get(&as_string(field(edge, "target"), ""))
-                .copied()
-                .unwrap_or(0);
-            let section = if source_depth == target_depth {
-                let lane_y = num(field(source_node, "y")).min(num(field(target_node, "y")))
-                    - 28.0
-                    - (same_row_lane % 12) as f64 * 10.0;
-                same_row_lane += 1;
-                json!({
-                    "startPoint": { "x": source_x, "y": field(source_node, "y") },
-                    "bendPoints": [
-                        { "x": source_x, "y": lane_y },
-                        { "x": target_x, "y": lane_y },
-                    ],
-                    "endPoint": { "x": target_x, "y": field(target_node, "y") },
-                })
+            let points: Vec<(f64, f64)> = if let Some(route) = along_tree(&source, &target) {
+                route.clone()
+            } else if let Some(route) = along_tree(&target, &source) {
+                route.iter().rev().copied().collect()
             } else {
-                let downward = num(field(target_node, "y")) > num(field(source_node, "y"));
-                let start_y = num(field(source_node, "y"))
-                    + if downward {
-                        num(field(source_node, "height"))
-                    } else {
-                        0.0
-                    };
-                let end_y = num(field(target_node, "y"))
-                    + if downward {
-                        0.0
-                    } else {
-                        num(field(target_node, "height"))
-                    };
-                let middle_y = (start_y + end_y) / 2.0;
-                json!({
-                    "startPoint": { "x": source_x, "y": start_y },
-                    "bendPoints": [
-                        { "x": source_x, "y": middle_y },
-                        { "x": target_x, "y": middle_y },
-                    ],
-                    "endPoint": { "x": target_x, "y": end_y },
-                })
+                let (Some(from), Some(to)) = (rect(&source), rect(&target)) else {
+                    return edge.clone();
+                };
+                let from_x = from.0 + from.2 / 2.0;
+                let to_x = to.0 + to.2 / 2.0;
+                if (from.1 - to.1).abs() < 1.0 {
+                    // Two boxes at the same height: over the top of both.
+                    let lane = from.1 - 14.0;
+                    vec![(from_x, from.1), (from_x, lane), (to_x, lane), (to_x, to.1)]
+                } else {
+                    let downward = to.1 > from.1;
+                    let start = if downward { from.1 + from.3 } else { from.1 };
+                    let end = if downward { to.1 } else { to.1 + to.3 };
+                    let middle = (start + end) / 2.0;
+                    vec![
+                        (from_x, start),
+                        (from_x, middle),
+                        (to_x, middle),
+                        (to_x, end),
+                    ]
+                }
             };
             let mut out = edge.clone();
-            out["layout"] = json!({ "sections": [section] });
+            out["layout"] = json!({ "sections": [section(&points)] });
             out
         })
         .collect();
@@ -786,7 +744,7 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             } else if kind.contains("composite") {
                 (340.0, 320.0)
             } else {
-                (240.0, 180.0)
+                state_box(node)
             }
         }
         BehaviorMode::Action => {
@@ -805,6 +763,41 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             }
         }
     }
+}
+
+/// The box of a simple state: as wide as its name and its `entry`/`do`/`exit` lines need, and as
+/// high as the lines it shows. The drawing truncates the name at 28 and an action line at 34
+/// characters, so the box never has to grow beyond those.
+fn state_box(node: &Value) -> (f64, f64) {
+    const NAME_CHARACTER: f64 = 7.4; // 12 px bold
+    const ACTION_CHARACTER: f64 = 5.6; // 10 px
+    let attributes = field(node, "attributes");
+    let characters = |text: &str, limit: usize| text.chars().count().min(limit) as f64;
+    let name = as_string(
+        first_nonempty([field(node, "label"), field(node, "name")]),
+        "",
+    );
+    let mut width = characters(&name, 28) * NAME_CHARACTER + 32.0;
+    let mut actions = 0.0;
+    for (prefix, keys) in [
+        ("entry / ", ["entry", "entryAction"]),
+        ("do / ", ["do", "doAction"]),
+        ("exit / ", ["exit", "exitAction"]),
+    ] {
+        let action = as_string(first_nonempty(keys.map(|key| field(attributes, key))), "");
+        if !action.is_empty() {
+            actions += 1.0;
+            let line = format!("{prefix}{action}");
+            width = width.max(characters(&line, 34) * ACTION_CHARACTER + 24.0);
+        }
+    }
+    // The keyword and the name sit on a 38 px header; action lines follow on a 16 px pitch.
+    let height = if actions == 0.0 {
+        42.0
+    } else {
+        48.0 + actions * 16.0
+    };
+    (width.max(96.0).ceil(), height)
 }
 
 /// Space inside an action container: the name compartment on top, then padding around the flow.
@@ -903,7 +896,7 @@ fn layout_nested_action_flow(
                     }
                 },
             }),
-            None => layout_behavior_graph(&level, horizontal, BehaviorMode::Action)?,
+            None => layout_behavior_graph(&level, horizontal, BehaviorMode::Action)?.0,
         };
         let positions = as_object(field(&laid_out, "positions"));
         let sections = as_object(field(&laid_out, "edgeSectionsById"));
@@ -1203,11 +1196,17 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
         .iter()
         .map(|node| {
             let (width, height) = node_dimensions(node, mode);
-            json!({
+            let mut child = json!({
                 "id": field(node, "id"),
                 "width": width,
                 "height": height,
-            })
+            });
+            // A state machine reads from its initial state, so that state leads the layout
+            // whatever cycles the transitions form.
+            if matches!(mode, BehaviorMode::State) && node_kind(node).contains("initial") {
+                child["layoutOptions"] = json!({ "elk.layered.layering.layerConstraint": "FIRST" });
+            }
+            child
         })
         .collect();
     let edges: Vec<Value> = as_array(field(prepared, "edges"))
@@ -1317,11 +1316,12 @@ fn collect_elk_edge_labels(
     }
 }
 
+/// Lays out a behaviour graph; returns the layout and the size of the laid-out graph.
 fn layout_behavior_graph(
     prepared: &Value,
     horizontal: bool,
     mode: BehaviorMode,
-) -> Result<Value, diagram_layout::LayoutError> {
+) -> Result<(Value, (f64, f64)), diagram_layout::LayoutError> {
     let graph = build_behavior_elk_graph(prepared, horizontal, mode);
     let laid_out = diagram_layout::layout_value(&graph)?;
     let mut positions = Map::new();
@@ -1347,11 +1347,18 @@ fn layout_behavior_graph(
     }
     let mut edge_labels = BTreeMap::new();
     collect_elk_edge_labels(&laid_out, Point { x: 0.0, y: 0.0 }, &mut edge_labels);
-    Ok(json!({
-        "positions": positions,
-        "edgeSectionsById": edge_sections,
-        "edgeLabelsById": edge_labels,
-    }))
+    let size = (
+        num(field(&laid_out, "width")),
+        num(field(&laid_out, "height")),
+    );
+    Ok((
+        json!({
+            "positions": positions,
+            "edgeSectionsById": edge_sections,
+            "edgeLabelsById": edge_labels,
+        }),
+        size,
+    ))
 }
 
 #[derive(Clone)]
@@ -1433,6 +1440,121 @@ fn js_hash_stable_side(key: &str) -> &'static str {
 struct PortUsage {
     source_count: i32,
     target_count: i32,
+}
+
+/// Spreads the children of every container of an ELK graph over several layers when too many of
+/// them would share one.
+///
+/// A layered layout puts a part in the layer its connectors to its siblings call for. Parts that
+/// connect only to the boundary of their container, or to nothing, all land in the first layer
+/// and stack into one tall column. Here each layer the sibling connectors call for is split into
+/// columns of at most about the square root of the number of siblings, and the order of the
+/// columns is given to ELK as partitions. Connectors between siblings keep their direction:
+/// a part never moves in front of a sibling that feeds it.
+///
+/// The pinned `elkrs` reads `elk.partitioning.activate` on the top-level graph only, so today
+/// this spreads the roots of a view and not yet the parts inside one container.
+fn spread_crowded_layers(graph: &mut Value) {
+    let edges: Vec<(String, String)> = as_array(field(graph, "edges"))
+        .iter()
+        .filter_map(|edge| {
+            Some((
+                as_array(field(edge, "sources"))
+                    .first()?
+                    .as_str()?
+                    .to_owned(),
+                as_array(field(edge, "targets"))
+                    .first()?
+                    .as_str()?
+                    .to_owned(),
+            ))
+        })
+        .collect();
+    fn collect_ids(node: &Value, ids: &mut Vec<String>) {
+        ids.push(as_string(field(node, "id"), ""));
+        for port in as_array(field(node, "ports")) {
+            ids.push(as_string(field(port, "id"), ""));
+        }
+        for child in as_array(field(node, "children")) {
+            collect_ids(child, ids);
+        }
+    }
+    fn spread(node: &mut Value, edges: &[(String, String)]) {
+        let count = as_array(field(node, "children")).len();
+        // Which child each node or port below this container belongs to.
+        let mut child_of: HashMap<String, usize> = HashMap::new();
+        for (index, child) in as_array(field(node, "children")).iter().enumerate() {
+            let mut ids = Vec::new();
+            collect_ids(child, &mut ids);
+            for id in ids {
+                child_of.insert(id, index);
+            }
+        }
+        let mut feeds: Vec<BTreeSet<usize>> = vec![BTreeSet::new(); count];
+        for (source, target) in edges {
+            if let (Some(&from), Some(&to)) = (child_of.get(source), child_of.get(target)) {
+                if from != to {
+                    feeds[from].insert(to);
+                }
+            }
+        }
+        // The layer the sibling connectors call for: the longest chain of siblings that leads
+        // to the child. A cycle stops counting after as many steps as there are children.
+        let mut layer = vec![0usize; count];
+        for _ in 0..count {
+            let mut changed = false;
+            for from in 0..count {
+                for &to in &feeds[from] {
+                    if layer[to] < layer[from] + 1 && layer[from] + 1 < count {
+                        layer[to] = layer[from] + 1;
+                        changed = true;
+                    }
+                }
+            }
+            if !changed {
+                break;
+            }
+        }
+        let column = ((count as f64).sqrt().ceil() as usize).max(3);
+        let layers = layer.iter().copied().max().map_or(0, |deepest| deepest + 1);
+        let crowded =
+            (0..layers).any(|wanted| layer.iter().filter(|l| **l == wanted).count() > column);
+        if crowded {
+            let mut partition = vec![0usize; count];
+            let mut next = 0;
+            for wanted in 0..layers {
+                let members: Vec<usize> =
+                    (0..count).filter(|child| layer[*child] == wanted).collect();
+                for chunk in members.chunks(column) {
+                    for child in chunk {
+                        partition[*child] = next;
+                    }
+                    next += 1;
+                }
+            }
+            node["layoutOptions"]["elk.partitioning.activate"] = json!("true");
+            if let Some(children) = node.get_mut("children").and_then(Value::as_array_mut) {
+                for (child, partition) in children.iter_mut().zip(partition) {
+                    child["layoutOptions"]["elk.partitioning.partition"] =
+                        json!(partition.to_string());
+                }
+            }
+        }
+        if let Some(children) = node.get_mut("children").and_then(Value::as_array_mut) {
+            for child in children {
+                spread(child, edges);
+            }
+        }
+    }
+    spread(graph, &edges);
+}
+
+/// The part that contains `node` in a prepared interconnection view, when it has one.
+fn container_of_node(node: &Value) -> Option<String> {
+    match field(field(node, "attributes"), "containerId") {
+        Value::String(id) if !id.is_empty() => Some(id.clone()),
+        _ => None,
+    }
 }
 
 fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_layout::LayoutError> {
@@ -1622,10 +1744,19 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             return "EAST";
         }
         let usage = usage_for_port(node, port);
-        if usage.target_count > usage.source_count {
+        // A port of the outermost part is only used from inside: what it feeds lies to its
+        // right, so it sits on the left, and what feeds it lies to its left.
+        let used_from_inside = container_of_node(node).is_none()
+            && children_by_parent.contains_key(&as_string(field(node, "id"), ""));
+        let (toward_right, toward_left) = if used_from_inside {
+            (usage.source_count, usage.target_count)
+        } else {
+            (usage.target_count, usage.source_count)
+        };
+        if toward_right > toward_left {
             return "WEST";
         }
-        if usage.source_count > usage.target_count {
+        if toward_left > toward_right {
             return "EAST";
         }
         let fallback_key = format!("{}::{}", as_string(field(node, "id"), ""), port.name);
@@ -1676,17 +1807,50 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             .iter()
             .filter(|child| child.is_object() && !as_string(field(child, "name"), "").is_empty())
             .count();
-        let content_height = (content_line_count.min(8) as f64) * 12.0 + 10.0;
+        let content_height = if content_line_count == 0 {
+            0.0
+        } else {
+            (content_line_count.min(8) as f64) * 12.0 + 10.0
+        };
+        // A port row is the 10 px port with its label and the gap to the next one.
         let ports_height = if ports.is_empty() {
             0.0
         } else {
-            port_rows as f64 * 26.0 + 22.0
+            port_rows as f64 * 16.0 + 12.0
         };
-        IBD_NODE_HEIGHT
-            .max(header_height + content_height + ports_height)
-            .min(340.0)
+        // The note that inner parts are not shown takes one line at the bottom.
+        let note_height = if field(attrs, "closedParts").as_u64().unwrap_or(0) > 0 {
+            14.0
+        } else {
+            0.0
+        };
+        (header_height + content_height + ports_height + note_height + 8.0).clamp(56.0, 340.0)
     }
 
+    // Two parts that face each other are far enough apart for a visible run of connector, the
+    // labels of their facing ports, and the longest connector name set beside its line with
+    // clear space to both parts. Unnamed connectors need only the first two.
+    let layer_gap = {
+        const GENERIC: [&str; 7] = [
+            "",
+            "connect",
+            "connection",
+            "connector",
+            "flow",
+            "binding",
+            "interface",
+        ];
+        let longest_name = as_array(field(prepared, "edges"))
+            .iter()
+            .map(|edge| as_string(field(edge, "label"), ""))
+            .filter(|label| !GENERIC.contains(&label.trim().to_ascii_lowercase().as_str()))
+            .map(|label| label.trim().encode_utf16().count().min(18))
+            .max();
+        match longest_name {
+            Some(characters) => (characters as f64 * 6.5 + 10.0 + 44.0).max(88.0),
+            None => 88.0,
+        }
+    };
     let root_header_height = 28.0;
     let container_top_inset = root_header_height + 20.0;
 
@@ -1700,6 +1864,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         port_details_for: &impl Fn(&Value) -> Vec<PreparedPort>,
         root_header_height: f64,
         container_top_inset: f64,
+        layer_gap: f64,
     ) -> Value {
         let ports = port_details_for(node);
         let (west_ports, east_ports) = split_ports(node, &ports);
@@ -1722,6 +1887,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
                             port_details_for,
                             root_header_height,
                             container_top_inset,
+                            layer_gap,
                         )
                     })
                     .collect()
@@ -1731,28 +1897,22 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let is_synthetic_package = field(attrs, "isSyntheticPackage") == &json!(true);
         let is_container =
             field(attrs, "isSyntheticContainer") == &json!(true) || !children.is_empty();
-        let base_width = if is_container { 420.0 } else { IBD_NODE_WIDTH };
-        let label_width = as_string(field(node, "label"), "").encode_utf16().count() as f64 * 6.0;
-        let port_width = ports
-            .iter()
-            .map(|port| port.name.encode_utf16().count() as f64 * 5.0)
-            .fold(0.0, f64::max);
-        let mut width = base_width.max(180.0 + label_width.max(port_width));
+        // A part is as wide as its name and its type need. The drawing truncates a name and a
+        // type at 32 characters.
+        let characters = |text: &str| text.encode_utf16().count().min(32) as f64;
+        let label_width = characters(&as_string(field(node, "label"), "")) * 6.8;
+        let type_width = (characters(&as_string(field(attrs, "partType"), "")) + 2.0) * 5.4;
+        let base_width: f64 = if is_container { 220.0 } else { 132.0 };
+        // Port labels sit outside the part, so they do not make it wider.
+        let width = base_width.max(label_width.max(type_width) + 28.0).ceil();
         let mut height = if is_container {
             root_header_height + 72.0
         } else {
             compute_ibd_leaf_height(node, &ports, port_rows)
         };
         if is_container && !children.is_empty() {
-            let child_width_sum: f64 = children
-                .iter()
-                .map(|child| field(child, "width").as_f64().unwrap_or(IBD_NODE_WIDTH))
-                .sum();
-            width = if is_synthetic_package {
-                width.max((child_width_sum + children.len() as f64 * 44.0).min(980.0))
-            } else {
-                width.max((child_width_sum + children.len() as f64 * 72.0).min(1040.0))
-            };
+            // A container is as large as the layout of its parts makes it; this is only the
+            // least it needs for its own name and boundary ports.
             height = if is_synthetic_package {
                 root_header_height + 72.0
             } else {
@@ -1760,6 +1920,13 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
                     + 72.0_f64.max(132.0_f64.min(58.0 + children.len() as f64 * 14.0))
             };
         }
+        let ports_top = if is_container {
+            container_top_inset
+        } else if as_string(field(attrs, "partType"), "").is_empty() {
+            38.0
+        } else {
+            50.0
+        };
         let build_elk_port = |port: &PreparedPort, side: &str, index: usize| {
             let id = port_id_for(&as_string(field(node, "id"), ""), &port.name);
             let label_text = ibd_port_label_text(&port.name);
@@ -1782,9 +1949,12 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let node_layout_options = json!({
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
             "org.eclipse.elk.portAlignment.default": "CENTER",
-            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.portLabels.placement": "OUTSIDE",
             "org.eclipse.elk.spacing.labelPortHorizontal": "6",
             "org.eclipse.elk.spacing.labelPortVertical": "4",
+            // Ports start below the name and type of the part, never on top of them.
+            "org.eclipse.elk.spacing.portsSurrounding":
+                format!("[top={ports_top},left=0,bottom=6,right=0]"),
             "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
             "org.eclipse.elk.nodeSize.minimum": format!("({width},{height})"),
         });
@@ -1795,13 +1965,17 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             // ELK does not inherit the root graph's spacing for nested layered graphs. Without
             // these options, sibling parts are separated by the default 40 px, leaving only a
             // 20 px line between two 10 px boundary ports (the office two-monitor case).
-            options.insert("elk.spacing.nodeNode".into(), json!("90"));
+            // A gap leaves room for the connector channels between two parts and for the labels
+            // of the boundary ports that face each other.
+            // Two parts that face each other keep 88 px between them: the labels of their ports
+            // sit outside the boxes, and a connector needs a visible run and room for its name.
+            options.insert("elk.spacing.nodeNode".into(), json!("36"));
             options.insert(
                 "elk.layered.spacing.nodeNodeBetweenLayers".into(),
-                json!("140"),
+                json!(layer_gap.to_string()),
             );
-            options.insert("elk.spacing.edgeNode".into(), json!("50"));
-            options.insert("elk.spacing.edgeEdge".into(), json!("30"));
+            options.insert("elk.spacing.edgeNode".into(), json!("24"));
+            options.insert("elk.spacing.edgeEdge".into(), json!("14"));
             options.insert(
                 "elk.padding".into(),
                 Value::String(if is_synthetic_package {
@@ -1846,6 +2020,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             &port_details_for,
             root_header_height,
             container_top_inset,
+            layer_gap,
         ));
     }
 
@@ -1891,9 +2066,17 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })
         .collect();
 
-    let elk_graph_input = json!({
+    let mut elk_graph_input = json!({
         "id": "root",
-        "layoutOptions": build_elk_layout_options(ElkViewKind::Interconnection, &[]),
+        "layoutOptions": build_elk_layout_options(
+            ElkViewKind::Interconnection,
+            &[
+                (
+                    "elk.layered.spacing.nodeNodeBetweenLayers",
+                    Some(&layer_gap.to_string()),
+                ),
+            ],
+        ),
         "children": elk_children,
         "edges": elk_edges.iter().map(|edge| json!({
             "id": field(edge, "id"),
@@ -1902,6 +2085,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })).collect::<Vec<_>>(),
     });
 
+    spread_crowded_layers(&mut elk_graph_input);
     let laid_out = diagram_layout::layout_value(&elk_graph_input)?;
 
     let mut laid_out_nodes: HashMap<String, LaidOutNode> = HashMap::new();
@@ -2258,4 +2442,68 @@ fn fallback_edge_sections(
         ],
         "endPoint": { "x": end.x, "y": end.y },
     })])
+}
+
+#[cfg(test)]
+mod crowded_layer_tests {
+    use super::*;
+
+    fn partitions(graph: &Value) -> Vec<Option<String>> {
+        as_array(field(graph, "children"))
+            .iter()
+            .map(|child| {
+                field(field(child, "layoutOptions"), "elk.partitioning.partition")
+                    .as_str()
+                    .map(str::to_owned)
+            })
+            .collect()
+    }
+
+    fn graph(children: usize, edges: &[(&str, &str)]) -> Value {
+        json!({
+            "id": "root",
+            "children": (0..children).map(|i| json!({ "id": format!("n{i}") })).collect::<Vec<_>>(),
+            "edges": edges
+                .iter()
+                .map(|(from, to)| json!({ "sources": [from], "targets": [to] }))
+                .collect::<Vec<_>>(),
+        })
+    }
+
+    #[test]
+    fn unconnected_siblings_are_spread_over_columns() {
+        let mut crowded = graph(10, &[]);
+        spread_crowded_layers(&mut crowded);
+        let columns: Vec<String> = partitions(&crowded).into_iter().flatten().collect();
+        // Ten siblings: columns of four, in order.
+        assert_eq!(columns, ["0", "0", "0", "0", "1", "1", "1", "1", "2", "2"]);
+        assert_eq!(
+            field(
+                field(&crowded, "layoutOptions"),
+                "elk.partitioning.activate"
+            ),
+            &json!("true")
+        );
+    }
+
+    #[test]
+    fn a_sibling_never_moves_in_front_of_one_that_feeds_it() {
+        // n0 feeds n9, so n9 belongs to a later layer than every column of the first.
+        let mut crowded = graph(10, &[("n0", "n9")]);
+        spread_crowded_layers(&mut crowded);
+        let columns: Vec<usize> = partitions(&crowded)
+            .into_iter()
+            .map(|partition| partition.unwrap().parse().unwrap())
+            .collect();
+        assert!(columns[9] > columns[0]);
+        assert_eq!(columns[9], *columns.iter().max().unwrap());
+    }
+
+    #[test]
+    fn a_layout_that_is_not_crowded_is_left_alone() {
+        let mut small = graph(3, &[]);
+        let before = small.clone();
+        spread_crowded_layers(&mut small);
+        assert_eq!(small, before);
+    }
 }

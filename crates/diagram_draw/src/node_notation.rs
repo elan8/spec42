@@ -66,10 +66,14 @@ pub fn resolve_node_chrome(role: NotationRole, opts: ChromeOptions) -> NodeChrom
             is_definition: false,
             is_container: true,
             corner_radius: 8.0,
-            stroke_dasharray: if opts.is_package_container {
-                None
-            } else {
-                Some("4,4")
+            // SysML 8.2.3.11: a part that shows its parts is still a solid part symbol; a
+            // dashed outline is the notation of a reference. Only a frame Spec42 adds itself
+            // to group elements, which is no model element, stays dashed.
+            stroke_dasharray: match role {
+                _ if opts.is_package_container => None,
+                NotationRole::Definition | NotationRole::Usage => None,
+                NotationRole::ReferenceUsage => Some("2,4"),
+                _ => Some("4,4"),
             },
             structure_class: "viz-node--container",
             node_class_suffix: "",

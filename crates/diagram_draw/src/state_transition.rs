@@ -146,10 +146,21 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
                 .style("stroke", theme.node_border)
                 .style("stroke-width", "2px"),
         );
+        // SysML 8.2.3.18: the name compartment of a state is its keyword, then its name.
+        g = g.child(
+            Element::new("text")
+                .attr("class", "state-keyword")
+                .attr_f("x", layout.width / 2.0)
+                .attr_f("y", 14.0)
+                .attr("text-anchor", "middle")
+                .style("font-size", "9px")
+                .style("fill", theme.text_secondary)
+                .text("\u{ab}state\u{bb}"),
+        );
         g = g.child(
             Element::new("text")
                 .attr_f("x", layout.width / 2.0)
-                .attr_f("y", 22.0)
+                .attr_f("y", 28.0)
                 .attr("text-anchor", "middle")
                 .style("font-size", "12px")
                 .style("font-weight", "700")
@@ -172,8 +183,8 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
                     .attr("class", "state-compartment-divider")
                     .attr_f("x1", 0.0)
                     .attr_f("x2", layout.width)
-                    .attr_f("y1", 34.0)
-                    .attr_f("y2", 34.0)
+                    .attr_f("y1", 38.0)
+                    .attr_f("y2", 38.0)
                     .style("stroke", theme.node_border)
                     .style("stroke-width", "1px"),
             );
@@ -183,7 +194,7 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
                 Element::new("text")
                     .attr("class", "state-action-compartment")
                     .attr_f("x", 12.0)
-                    .attr_f("y", 54.0 + index as f64 * 16.0)
+                    .attr_f("y", 56.0 + index as f64 * 16.0)
                     .style("font-size", "10px")
                     .style("fill", theme.text_secondary)
                     .text(truncate_label(line, 34)),
@@ -243,8 +254,8 @@ pub fn render_state_transition_view(
     prepared: &PreparedView,
     layout: &BehaviorLayoutResult,
     theme: &Theme,
-    width: f64,
-    height: f64,
+    _width: f64,
+    _height: f64,
 ) -> (Element, (f64, f64, f64, f64)) {
     let nodes_by_id: HashMap<&str, &PreparedNode> = prepared
         .nodes
@@ -344,16 +355,17 @@ pub fn render_state_transition_view(
                 Some(elk) => (elk.x, elk.y),
                 None => (label_x - label_width / 2.0, label_y - 10.0),
             };
+            // SysML 8.2.3.18: a transition label is plain text beside its line. The unframed
+            // backing only keeps the text legible where another line passes behind it.
             edge_layer = edge_layer.child(
                 Element::new("rect")
+                    .attr("class", "transition-label-backing")
                     .attr_f("x", rect_x)
                     .attr_f("y", rect_y)
                     .attr_f("width", label_width)
                     .attr_f("height", label_height)
-                    .attr("rx", "4")
                     .style("fill", theme.canvas_background)
-                    .style("stroke", theme.edge_default)
-                    .style("stroke-width", "1px"),
+                    .style("stroke", "none"),
             );
             edge_layer = edge_layer.child(
                 Element::new("text")
@@ -382,20 +394,9 @@ pub fn render_state_transition_view(
     }
     root = root.child(node_layer);
 
-    let mut min_x = 0.0_f64;
-    let mut min_y = 0.0_f64;
-    let mut max_x = width;
-    let mut max_y = height;
-    for rect in layout.positions.values() {
-        min_x = min_x.min(rect.x);
-        min_y = min_y.min(rect.y);
-        max_x = max_x.max(rect.x + rect.width);
-        max_y = max_y.max(rect.y + rect.height + 20.0);
-    }
-    (
-        root,
-        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0),
-    )
+    // The figure is as large as what is drawn. The viewer's canvas does not enter into it: a
+    // diagram smaller than a screen must not be padded out to one.
+    (root, crate::behavior_common::layout_extent(layout))
 }
 
 /// Port of `addStateTransitionMarkers`.
@@ -409,8 +410,11 @@ pub fn state_transition_marker(theme: &Theme) -> Element {
         .attr("markerHeight", "6")
         .attr("orient", "auto")
         .child(
+            // SysML 8.2.3.18: a transition ends in an open arrowhead.
             Element::new("path")
                 .attr("d", "M0,-5L10,0L0,5")
-                .style("fill", theme.edge_default),
+                .style("fill", "none")
+                .style("stroke", theme.edge_default)
+                .style("stroke-width", "1.5"),
         )
 }

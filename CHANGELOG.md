@@ -22,6 +22,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   other occurrence usage body, `perform a redefines b;`, and a keyword-less action body member
   that starts with `:`, `:>` or `:>>`. Pins sysml-v2-parser `c28ca768` (`PARSE_AST_VERSION` 268),
   the merge commit of `elan8/sysml-v2-parser#185`.
+
+- **Diagram notation follows SysML 8.2.3 more closely.** An assessment of the general,
+  interconnection, state transition and action flow views against the graphical notation is
+  in `docs/reference/DIAGRAM-NOTATION-ASSESSMENT.md`. Fixed from it:
+  - A transition ends in an open arrowhead and its label is plain text, not a framed box.
+  - A state shows `«state»` above its name.
+  - A part that shows its parts keeps the solid outline of a part; it was dashed, which is the
+    notation of a reference.
+  - A part drawn closed is marked by `...` in its lower left corner, and a connector that ends
+    on a feature inside it ends on a proxy, a filled dot on the boundary labelled with the
+    feature's path. Each proxy has its own row, like a port. Parallel relationships retain
+    their identities and kinds when they share a proxy.
+  - Names and types in an interconnection view are no longer cut at 18 characters, nor port
+    labels at 20; the part is as wide as its labels need.
+  - A port label sits outside the part, beside its port, and a port usage with an authored
+    direction carries an arrow in its square. A part is as wide as its name and type.
+  - In a general view the definition (typing) line is solid with a hollow triangle and two
+    dots at the definition, and the subsetting line is solid with a hollow triangle. Both were
+    dashed with an open arrowhead.
+  - The shaded header of a part in an interconnection view holds its keyword, name and type;
+    the type line hung below it. The shading no longer paints over the part's border.
+  - Roots of an interconnection view that are not connected to each other are spread over
+    columns with layout partitions instead of stacking in one. The same is prepared for the
+    parts inside a container, but the pinned `elkrs` honours partitions on the top-level
+    graph only.
+  - A sequence view places lifelines 176 px apart and messages 52 px, and an exported one is
+    as wide as its lifelines and title, so long titles are not cropped.
+  - The figure of an interconnection view includes its ports and their labels.
+
+- **Diagrams are laid out to be read on a page.** A figure exported for a document came out
+  with text of 0.2 to 4 pt once it was fitted to an A4 page: boxes had a fixed size whatever
+  they held, parts and states were 140 to 230 px apart, a state machine always ran left to
+  right, and every figure was padded out to a 1280 x 900 canvas. The editor shows the same
+  layout, so the same diagrams needed constant panning there.
+  - A state is as large as its name and its `entry`/`do`/`exit` lines; a part in an
+    interconnection view as large as its name, type and port labels. A container takes the size
+    of its content.
+  - Spacing is what orthogonal routing and labels need. In an interconnection view the gap
+    between facing parts grows with the longest connector name it has to hold.
+  - A state machine is laid out both across and down, and the one that is larger on an A4 page
+    is kept, unless `stateLayoutDirection` chooses. It starts at its initial state.
+  - A port of the outermost part of an interconnection view sits on the side its inner
+    connectors lead away from.
+  - An exported figure is as large as its content plus a 16 px margin; the background covers
+    exactly the view box.
+  - A general view that shows containment is laid out as a compact tree instead of one row
+    for each depth: members without members of their own are listed below their owner, other
+    members stand side by side and wrap into rows, and the wrap that is largest on an A4 page
+    is kept. A box is as narrow as 120 px when its text allows.
+  - `spec42 diagram --depth <levels|all>` (default `1`) limits how many levels a view draws
+    below its exposed elements. In an interconnection view a part with deeper content is drawn
+    closed, and a connector that ends inside it ends on a proxy on its boundary. In a general view deeper members stay listed in the compartments
+    of the last level drawn, as in the editor before an element is expanded. The diagram
+    product is unchanged. `diagram_draw::Nesting` and
+    `pipeline::render_svg_from_payload_str_nested` expose the same choice to embedders; the
+    editor still draws every level of an interconnection view.
+
 - **`satisfy` of a requirement definition is reported (#251).** `satisfy ReqDef by drone;`
   reported nothing: `satisfy_invalid_endpoint_kind` accepted any requirement, definition or
   usage. `validateSatisfyRequirementUsageReference` requires a requirement usage. Write `satisfy

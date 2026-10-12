@@ -30,8 +30,10 @@
   "markerIds": [
     "general-d3-arrow",
     "general-d3-arrow-open",
+    "general-d3-defined-by",
     "general-d3-diamond",
     "general-d3-specializes",
+    "general-d3-subsets",
     "ibd-connection-dot",
     "ibd-flow-arrow",
     "ibd-interface-arrow",

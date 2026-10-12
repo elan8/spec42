@@ -13,7 +13,9 @@ use crate::tooltip::{port_tooltip_descriptor, tooltip_fallback_text};
 use crate::types::{InterconnectionLayoutNodeDto, InterconnectionLayoutPortAnchor, LaidOutNode};
 
 const IBD_PORT_LABEL_FONT_SIZE: f64 = 8.0;
-const IBD_PORT_LABEL_MAX_LENGTH: usize = 20;
+// A label is cut only when it is longer than any reasonable name or feature path; the part
+// is drawn wide enough for the labels it has.
+const IBD_PORT_LABEL_MAX_LENGTH: usize = 40;
 const IBD_PORT_LABEL_CHARACTER_WIDTH: f64 = 5.0;
 
 /// Port of `formatIbdPortLabel` + `ibdPortLabelText` (the `detail` parameter is explicitly unused
@@ -147,6 +149,21 @@ pub fn draw_ibd_ports(
             .filter(|t| !t.is_empty())
             .unwrap_or_else(|| ibd_port_label_text(name));
 
+        // SysML 8.2.3.12: a proxy for a feature nested in a part that is drawn closed is a
+        // filled dot on the boundary; a port is a small square.
+        let is_proxy = detail.and_then(|d| d.get("proxy")) == Some(&Value::Bool(true));
+        if is_proxy {
+            elements.push(
+                Element::new("circle")
+                    .attr("class", "proxy-node")
+                    .attr("data-port-name", name)
+                    .attr("data-port-side", resolved_side)
+                    .attr_f("cx", x)
+                    .attr_f("cy", y)
+                    .attr_f("r", 3.5)
+                    .style("fill", color),
+            );
+        }
         let mut icon_el = Element::new("rect")
             .attr("class", "port-icon")
             .attr("data-port-name", name)
@@ -187,7 +204,56 @@ pub fn draw_ibd_ports(
                 .attr("aria-label", text.replace('\n', "; "))
                 .child(Element::new("title").text(text.clone()));
         }
-        elements.push(icon_el);
+        if !is_proxy {
+            elements.push(icon_el);
+            // SysML 8.2.3.12: a directed port carries an arrow in its square: into the part
+            // for `in`, out of it for `out`, both ways for `inout`.
+            let direction = detail
+                .and_then(|d| d.get("direction"))
+                .and_then(Value::as_str)
+                .unwrap_or("");
+            let into_part = if resolved_side == "WEST" { 1.0 } else { -1.0 };
+            let head = |toward: f64| {
+                let tip = x + toward * 3.0;
+                let back = x + toward * 0.8;
+                format!(
+                    "M{},{}L{},{}L{},{}",
+                    crate::svg::format_number(back),
+                    crate::svg::format_number(y - 2.2),
+                    crate::svg::format_number(tip),
+                    crate::svg::format_number(y),
+                    crate::svg::format_number(back),
+                    crate::svg::format_number(y + 2.2),
+                )
+            };
+            let heads = match direction {
+                "in" => Some(head(into_part)),
+                "out" => Some(head(-into_part)),
+                "inout" => Some(format!("{}{}", head(1.0), head(-1.0))),
+                _ => None,
+            };
+            if let Some(heads) = heads {
+                elements.push(
+                    Element::new("path")
+                        .attr("class", "port-direction")
+                        .attr("data-port-name", name)
+                        .attr(
+                            "d",
+                            format!(
+                                "M{},{}L{},{}{heads}",
+                                crate::svg::format_number(x - 3.0),
+                                crate::svg::format_number(y),
+                                crate::svg::format_number(x + 3.0),
+                                crate::svg::format_number(y),
+                            ),
+                        )
+                        .style("fill", "none")
+                        .style("stroke", color)
+                        .style("stroke-width", "1px")
+                        .style("pointer-events", "none"),
+                );
+            }
+        }
 
         let label_x = label_layout
             .map(|l| l.x)
