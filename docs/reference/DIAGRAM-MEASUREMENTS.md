@@ -7,21 +7,21 @@ without enlarging it. A layout change shows its effect here.
 
 | Model | View | Kind | Size (px) | Smallest text |
 | --- | --- | --- | --- | ---: |
-| examples/drone | `Views::connections` | interconnection-view | 1881 × 775 | 3.0 pt |
-| examples/drone | `Views::flightModeStateMachine` | state-transition-view | 2319 × 1522 | 2.3 pt |
+| examples/drone | `Views::connections` | interconnection-view | 1962 × 775 | 2.8 pt |
+| examples/drone | `Views::flightModeStateMachine` | state-transition-view | 2327 × 1528 | 2.3 pt |
 | examples/drone | `Views::structure` | general-view | 242 × 662 | 6.8 pt |
-| examples/intersection | `Views::connections` | interconnection-view | 914 × 312 | 6.0 pt |
-| examples/intersection | `Views::controllerStateMachine` | state-transition-view | 537 × 610 | 6.8 pt |
+| examples/intersection | `Views::connections` | interconnection-view | 1044 × 312 | 5.3 pt |
+| examples/intersection | `Views::controllerStateMachine` | state-transition-view | 545 × 616 | 6.8 pt |
 | examples/intersection | `Views::structure` | general-view | 236 × 545 | 6.8 pt |
-| examples/office | `Office::connections` | interconnection-view | 811 × 569 | 5.4 pt |
+| examples/office | `Office::connections` | interconnection-view | 983 × 569 | 5.4 pt |
 | examples/office | `Office::structure` | general-view | 174 × 733 | 6.8 pt |
-| examples/timer | `Views::connections` | interconnection-view | 986 × 298 | 5.6 pt |
+| examples/timer | `Views::connections` | interconnection-view | 991 × 298 | 5.6 pt |
 | examples/timer | `Views::structure` | general-view | 174 × 433 | 6.8 pt |
-| examples/timer | `Views::timerStateMachine` | state-transition-view | 776 × 272 | 6.8 pt |
+| examples/timer | `Views::timerStateMachine` | state-transition-view | 784 × 278 | 6.8 pt |
 | examples/webshop | `Views::checkoutFlow` | sequence-view | 1074 × 788 | 4.9 pt |
-| examples/webshop | `Views::checkoutPipeline` | action-flow-view | 738 × 686 | 6.3 pt |
-| examples/webshop | `Views::connections` | interconnection-view | 2149 × 617 | 2.6 pt |
+| examples/webshop | `Views::checkoutPipeline` | action-flow-view | 690 × 660 | 6.8 pt |
+| examples/webshop | `Views::connections` | interconnection-view | 1949 × 617 | 2.9 pt |
 | examples/webshop | `Views::orderEventFanout` | sequence-view | 898 × 632 | 6.1 pt |
-| examples/webshop | `Views::orderLifecycle` | state-transition-view | 475 × 740 | 6.8 pt |
+| examples/webshop | `Views::orderLifecycle` | state-transition-view | 483 × 746 | 6.8 pt |
 | examples/webshop | `Views::requirements` | general-view | 402 × 815 | 6.7 pt |
-| examples/webshop | `Views::structure` | general-view | 256 × 1949 | 2.8 pt |
+| examples/webshop | `Views::structure` | general-view | 622 × 831 | 6.6 pt |
