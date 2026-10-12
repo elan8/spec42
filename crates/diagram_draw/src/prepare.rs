@@ -2775,7 +2775,13 @@ fn prepare_typed_action_flow(
                 "id": format!("e:{index}"),
                 "source": format!("n:{source}"),
                 "target": format!("n:{target}"),
-                "label": "",
+                // SysML 8.2.3.17: a conditional succession carries its guard in brackets.
+                "label": field(edge, "origin")
+                    .as_u64()
+                    .and_then(|origin| raw_nodes.get(origin as usize))
+                    .and_then(|origin| field(origin, "successionGuard").as_str())
+                    .map(|guard| format!("[{guard}]"))
+                    .unwrap_or_default(),
                 "attributes": {
                     "succession": kind == "succession",
                     "streamingFlow": kind == "flow",

@@ -373,6 +373,7 @@ package BrowserExample {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -396,6 +397,7 @@ package BrowserExample {
         "reference": 1,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -411,6 +413,7 @@ package BrowserExample {
         "reference": 2,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

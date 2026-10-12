@@ -7,4 +7,8 @@ export type DiagramNode = { reference: number, metaclass: string, notationRole: 
 /**
  * `"entry"`, `"do"` or `"exit"` for the action a state owns in that role.
  */
-stateSubaction: string | null, };
+stateSubaction: string | null, 
+/**
+ * On a conditional succession: its guard expression as written, or `"else"`.
+ */
+successionGuard: string | null, };

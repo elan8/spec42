@@ -928,6 +928,7 @@ package GeneralSubsetting {
         "reference": 7,
         "source": 12,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -958,6 +959,7 @@ package GeneralSubsetting {
         "reference": 3,
         "source": 8,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -973,6 +975,7 @@ package GeneralSubsetting {
         "reference": 4,
         "source": 10,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -988,6 +991,7 @@ package GeneralSubsetting {
         "reference": 2,
         "source": 6,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1003,6 +1007,7 @@ package GeneralSubsetting {
         "reference": 6,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1027,6 +1032,7 @@ package GeneralSubsetting {
         "reference": 0,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1042,6 +1048,7 @@ package GeneralSubsetting {
         "reference": 1,
         "source": 4,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1063,6 +1070,7 @@ package GeneralSubsetting {
         "reference": 2,
         "source": 6,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1078,6 +1086,7 @@ package GeneralSubsetting {
         "reference": 5,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

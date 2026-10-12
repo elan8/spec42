@@ -523,6 +523,7 @@ package ActionFlowExample {
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -538,6 +539,7 @@ package ActionFlowExample {
         "reference": 9,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -553,6 +555,7 @@ package ActionFlowExample {
         "reference": 2,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -568,6 +571,7 @@ package ActionFlowExample {
         "reference": 3,
         "source": 1,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

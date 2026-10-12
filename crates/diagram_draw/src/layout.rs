@@ -1229,7 +1229,7 @@ fn layout_simple_action_chain(prepared: &Value) -> Option<Value> {
     };
     let succession_label = longest(
         &mut edges.iter().map(|edge| as_string(field(edge, "label"), "")),
-        20,
+        usize::MAX,
     );
     let parameter_room = |keys: [&str; 2]| {
         nodes
@@ -1447,7 +1447,6 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
             transition_display_label(&as_string(field(edge, "label"), ""))
                 .encode_utf16()
                 .count()
-                .min(20)
         })
         .max()
         .unwrap_or(0) as f64;

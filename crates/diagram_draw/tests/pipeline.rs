@@ -718,6 +718,57 @@ fn an_action_flow_written_with_then_draws_its_whole_flow() {
 }
 
 #[test]
+fn conditional_successions_carry_their_guards() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_action_flow_conditional_successions.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("action flow lays out");
+    let nodes = input["prepared"]["nodes"].as_array().expect("nodes");
+    let id_of = |label: &str, kind: &str| {
+        nodes
+            .iter()
+            .find(|node| node["label"] == label && node["kind"] == kind)
+            .unwrap_or_else(|| panic!("no {kind} node labelled `{label}`"))["id"]
+            .as_str()
+            .unwrap()
+            .to_owned()
+    };
+    let label = |source: &str, target: &str| {
+        input["prepared"]["edges"]
+            .as_array()
+            .expect("edges")
+            .iter()
+            .find(|edge| edge["source"] == source && edge["target"] == target)
+            .unwrap_or_else(|| panic!("no succession {source} -> {target}"))["label"]
+            .as_str()
+            .unwrap()
+            .to_owned()
+    };
+    let outcome = id_of("outcome", "DecisionNode");
+    let (ship, repair, expedite, check) = (
+        id_of("ship", "ActionUsage"),
+        id_of("repair", "ActionUsage"),
+        id_of("expedite", "ActionUsage"),
+        id_of("check", "ActionUsage"),
+    );
+    let done = id_of("", "final");
+    // A brace-less `if g then x; else y;` after a `decide` is two conditional successions
+    // from the decision, not an if action.
+    assert_eq!(label(&outcome, &ship), "[ready]");
+    assert_eq!(label(&outcome, &repair), "[else]");
+    assert!(nodes.iter().all(|node| node["kind"] != "IfActionUsage"));
+    // Written in full, the guard is kept as it is authored.
+    assert_eq!(label(&ship, &expedite), "[urgent]");
+    assert_eq!(label(&ship, &done), "[not urgent]");
+    assert_eq!(label(&repair, &check), "");
+
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw action flow");
+    for guard in ["[ready]", "[else]", "[urgent]", "[not urgent]"] {
+        assert!(svg.contains(guard), "`{guard}` is not drawn");
+    }
+}
+
+#[test]
 fn a_state_lists_its_entry_do_and_exit_actions() {
     let payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_state_actions.md"

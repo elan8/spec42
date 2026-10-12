@@ -479,6 +479,7 @@ package DirectTypingExample {
         "reference": 4,
         "source": 3,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -500,6 +501,7 @@ package DirectTypingExample {
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -521,6 +523,7 @@ package DirectTypingExample {
         "reference": 2,
         "source": 2,
         "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

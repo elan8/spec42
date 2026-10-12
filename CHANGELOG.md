@@ -28,17 +28,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     inherited ones included, and flows between the actions that own the two parameters. An
     accept action carries a notched flag and a send action a pointed one. A send action was
     drawn as a final node.
-  Not drawn yet: the guard of a conditional succession (`first a if g then b;` is drawn as a
-  plain succession), `if g then b;` after a `decide`, and `then accept ...;`.
+  - conditional successions with their guard in brackets, as it is written, and `[else]`.
+  Not drawn yet: `then accept ...;`.
+- **A brace-less `if g then x; else y;` is two conditional successions (#262).** It was
+  lowered as an `IfActionUsage` that owned the two `then`s. An if node has a braced body
+  (SysML 8.2.2.17.3); without braces this text is a guarded and a default target succession
+  (8.2.2.17.8), which is how a `decide` gets its outgoing successions. Both are now members of
+  the body they are written in, starting where a plain `then` at that place starts, and the
+  if action is no longer published for them. `if g { ... } else { ... }` is unchanged.
 - **A state transition view shows state actions and nested states (#262).** The entry, do and
   exit actions of a state are listed in a `state actions` compartment, and a state that owns
   states shows them, their transitions and its initial node inside it. Three or more
   transitions with one trigger into one state share a line and are labelled once, at that
   state. The view is drawn in a frame that carries its name, as is the action flow view.
 - **Diagram product and generator ABI (#262).** A diagram node carries `stateSubaction`
-  (`"entry"`, `"do"`, `"exit"` or `null`), and `direction` is now set for every directed
-  feature, not only for a port; `schemaVersion` stays 5, as both are additions. In the generator
-  protocol `DiagramElement` gains `state_subaction`, which changes the compatibility token:
+  (`"entry"`, `"do"`, `"exit"` or `null`) and `successionGuard` (the guard as written, `"else"`
+  or `null`), and `direction` is now set for every directed feature, not only for a port;
+  `schemaVersion` stays 5, as these are additions. In the generator protocol `DiagramElement`
+  gains `state_subaction` and `succession_guard`, which changes the compatibility token:
   **a generator plugin built against 0.55.0 is refused and must be rebuilt.**
 - **Figures read better on a page (#262).** A long list of members in a general view continues
   in columns (webshop structure: 256 × 1949 px at 2.8 pt becomes 622 × 831 px at 6.6 pt). Action
