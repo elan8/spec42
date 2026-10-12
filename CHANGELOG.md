@@ -58,6 +58,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reversed by a conjugated typing. It is published as `featureDirection`, apart from the
   authored `direction`. Ports are placed on the side their direction calls for, so some
   interconnection views are arranged differently.
+- **An interconnection view shows flows between port features (#262).** `flow of Fuel from
+  tank.outlet.fuel to engine.inlet.fuel;` was not drawn, because its ends are features of the
+  ports and not the ports. It now runs between the two ports, and a flow is labelled with its
+  item, after its name when it has one.
 - **Figures read better on a page (#262).** A long list of members in a general view continues
   in columns (webshop structure: 256 × 1949 px at 2.8 pt becomes 622 × 831 px at 6.6 pt). Action
   flows and sequences are spaced by the labels they hold, not by fixed gaps. Interconnection

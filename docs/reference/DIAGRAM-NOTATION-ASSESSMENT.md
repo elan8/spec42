@@ -18,7 +18,8 @@ transitions and the view frame were checked in rendered diagrams against the not
 The rows on the action flow and state transition views were checked on models written to use
 each element (`tests/snapshots/generation/diagram_action_flow_then_successions.md`,
 `diagram_action_flow_conditional_successions.md`, `diagram_state_actions.md`,
-`diagram_composite_state.md`), since the example models use few of
+`diagram_composite_state.md`, `diagram_interconnection_flows.md`,
+`diagram_interconnection_feature_direction.md`), since the example models use few of
 them.
 
 ## General view (8.2.3.6, 8.2.3.11)
@@ -52,7 +53,7 @@ them.
 | Left-out nested parts | `...` in the lower left corner | `...` in the lower left corner | Conforms |
 | Connector end on a nested feature of a closed part | Proxy: filled dot on the boundary, labelled with the feature | Filled dot on the boundary, labelled with the feature's path | Conforms |
 | Names | Written in full | Written in full; the part and the gap beside it are sized for them | Conforms |
-| Flow on a connection | Flow node (arrow) on the line with the item | Not drawn on the connection | Missing |
+| Flow | A line with a filled arrowhead and the item, or a flow node on a connection | A line with a filled arrowhead between the two ports, labelled with the item (after the name of the flow when it has one). A flow between features of two ports attaches to those ports. A flow is drawn as a line of its own, not as a node on a connection between the same ports | Conforms for flows; flow nodes on connections are missing |
 
 ## State transition view (8.2.3.18)
 
@@ -88,7 +89,7 @@ them.
 
 ## What to change next, by effect on a reader
 
-1. Flows on connections in an interconnection view.
-2. Routes for transitions that cross the boundary of a containing state.
+1. Routes for transitions that cross the boundary of a containing state.
+2. Flow nodes on a connection, where a flow and a connection join the same two ports.
 3. Swimlanes in an action flow.
 

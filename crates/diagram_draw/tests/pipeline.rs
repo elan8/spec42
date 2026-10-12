@@ -751,6 +751,54 @@ fn a_port_takes_its_direction_from_the_features_of_its_definition() {
 }
 
 #[test]
+fn a_flow_between_port_features_runs_between_the_ports() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_interconnection_flows.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("interconnection lays out");
+    let part = |id: &serde_json::Value| {
+        input["nodes"]
+            .as_array()
+            .expect("nodes")
+            .iter()
+            .find(|node| &node["id"] == id)
+            .map(|node| node["label"].as_str().unwrap().to_owned())
+            .unwrap()
+    };
+    let flows: Vec<(String, String, String)> = input["edges"]
+        .as_array()
+        .expect("edges")
+        .iter()
+        .filter(|edge| edge["edgeKind"] == "flow")
+        .map(|edge| {
+            (
+                part(&edge["source"]),
+                part(&edge["target"]),
+                edge["attributes"]["itemType"]
+                    .as_str()
+                    .unwrap_or("")
+                    .to_owned(),
+            )
+        })
+        .collect();
+    // `tank.outlet.fuel` is a feature of the port, which the view does not draw: the flow
+    // attaches to the port. It is labelled with its item, after its name when it has one.
+    assert!(
+        flows.contains(&("tank".into(), "engine".into(), "Fuel".into())),
+        "{flows:?}"
+    );
+    assert!(
+        flows.contains(&("spare".into(), "engine".into(), "topUp".into())),
+        "{flows:?}"
+    );
+    assert_eq!(flows.len(), 2);
+    let routed = input["interconnectionLayout"]["edges"]
+        .as_array()
+        .expect("routes");
+    assert_eq!(routed.len(), 2);
+}
+
+#[test]
 fn conditional_successions_carry_their_guards() {
     let payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_action_flow_conditional_successions.md"
