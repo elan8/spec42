@@ -263,19 +263,17 @@ pub fn render_state_transition_view(
         .map(|node| (node.id.as_str(), node))
         .collect();
 
-    let mut root = Element::new("g").attr("class", "viz-root").child(
-        Element::new("text")
-            .attr_f("x", 24.0)
-            .attr_f("y", 28.0)
-            .style("font-size", "14px")
-            .style("font-weight", "700")
-            .style("fill", theme.text_primary)
-            .text(if prepared.title.is_empty() {
-                "State Transition".to_string()
-            } else {
-                prepared.title.clone()
-            }),
+    // SysML 8.2.3.5: the view is drawn in a frame that carries its name.
+    let (frame, extent) = crate::behavior_common::view_frame(
+        if prepared.title.is_empty() {
+            "State Transition"
+        } else {
+            &prepared.title
+        },
+        crate::behavior_common::content_extent(layout),
+        theme,
     );
+    let mut root = Element::new("g").attr("class", "viz-root").child(frame);
 
     let horizontal = {
         let mode = prepared
@@ -396,7 +394,7 @@ pub fn render_state_transition_view(
 
     // The figure is as large as what is drawn. The viewer's canvas does not enter into it: a
     // diagram smaller than a screen must not be padded out to one.
-    (root, crate::behavior_common::layout_extent(layout))
+    (root, extent)
 }
 
 /// Port of `addStateTransitionMarkers`.

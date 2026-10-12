@@ -416,8 +416,8 @@ pub fn render_action_flow_view(
     prepared: &PreparedView,
     layout: &BehaviorLayoutResult,
     theme: &Theme,
-    width: f64,
-    height: f64,
+    _width: f64,
+    _height: f64,
 ) -> (Element, (f64, f64, f64, f64)) {
     let nodes_by_id: HashMap<&str, &PreparedNode> = prepared
         .nodes
@@ -433,19 +433,19 @@ pub fn render_action_flow_view(
         == "horizontal";
     let typed_projection = prepared.meta.get("typedProjection") == Some(&Value::Bool(true));
 
-    let mut root = Element::new("g").attr("class", "viz-root").child(
-        Element::new("text")
-            .attr_f("x", 24.0)
-            .attr_f("y", 28.0)
-            .style("font-size", "14px")
-            .style("font-weight", "700")
-            .style("fill", theme.text_primary)
-            .text(if prepared.title.is_empty() {
-                "Action Flow".to_string()
-            } else {
-                prepared.title.clone()
-            }),
+    // SysML 8.2.3.5: the view is drawn in a frame that carries its name. A fork's name is
+    // written below its bar, so the content reaches one line further down.
+    let content = crate::behavior_common::content_extent(layout);
+    let (frame, extent) = crate::behavior_common::view_frame(
+        if prepared.title.is_empty() {
+            "Action Flow"
+        } else {
+            &prepared.title
+        },
+        (content.0, content.1, content.2, content.3 + 20.0),
+        theme,
     );
+    let mut root = Element::new("g").attr("class", "viz-root").child(frame);
 
     let mut lane_extents: Vec<(String, LaneExtent)> = Vec::new();
     for node in &prepared.nodes {
@@ -682,22 +682,7 @@ pub fn render_action_flow_view(
     root = root.insert_before_child("activity-flows", lane_layer);
     root = root.child(node_layer);
 
-    let mut min_x = 0.0_f64;
-    let mut min_y = 0.0_f64;
-    let mut max_x = if typed_projection { 200.0 } else { width };
-    let mut max_y = if typed_projection { 50.0 } else { height };
-    for rect in layout.positions.values() {
-        min_x = min_x.min(rect.x);
-        min_y = min_y.min(rect.y);
-        max_x = max_x.max(rect.x + rect.width);
-        max_y = max_y.max(rect.y + rect.height + 20.0);
-    }
-    let extents = if typed_projection {
-        (40.0, 40.0, max_x + 40.0, max_y + 40.0)
-    } else {
-        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0)
-    };
-    (root, extents)
+    (root, extent)
 }
 
 /// Port of `addActionFlowMarkers`.
