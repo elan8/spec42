@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.55.0] - 2026-10-12
+
+- **Upgrade notes.** The semantic contract version is now
+  `spec-rule-burndown-element-kinds-v43`; consumers of `model-export` and the published model
+  must accept the new element kinds and memberships listed below. Three changes alter results
+  for models that were clean on 0.54.1: members without authored visibility are public in every
+  namespace (#231), comment and documentation bodies are published processed instead of as
+  authored (#210), and the many new KerML/SysML validations can report on existing models.
+  Pins sysml-v2-parser `c28ca768` (`PARSE_AST_VERSION` 268).
 - **An inherited `perform Pkg::action;` can be redefined by name.** `part variant :> family {
   perform action :>> providePower { ... } }` reported `unresolved_reference` when `family` wrote
   `perform Tree::providePower;`. An anonymous perform usage is named by the action it performs
