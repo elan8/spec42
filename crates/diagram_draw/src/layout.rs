@@ -1705,7 +1705,11 @@ struct PortUsage {
 /// a part never moves in front of a sibling that feeds it.
 ///
 /// The pinned `elkrs` reads `elk.partitioning.activate` on the top-level graph only, so today
-/// this spreads the roots of a view and not yet the parts inside one container.
+/// this spreads the roots of a view and not yet the parts inside one container. Reading it for
+/// nested graphs as well is not enough: with that change `elkrs` refuses a container whose
+/// parts connect to its boundary ("layer constraint set to FIRST, but has at least one
+/// incoming edge"), which is the case this is for, and a container it does accept came out
+/// wider. The partitions need to take the boundary connectors into account first.
 fn spread_crowded_layers(graph: &mut Value) {
     let edges: Vec<(String, String)> = as_array(field(graph, "edges"))
         .iter()
