@@ -606,7 +606,6 @@ pub struct CompartmentBlockLayout {
     pub overflow_count: usize,
     pub divider_y: f64,
     pub label_baseline: f64,
-    pub label_text_x: f64,
     pub item_baselines: Vec<f64>,
     pub overflow_baseline: Option<f64>,
     /// Full-width pointer target for a collapsible compartment's label row.
@@ -695,11 +694,6 @@ pub fn layout_compartment_blocks(
             width: DISCLOSURE_BOX_SIZE,
             height: DISCLOSURE_BOX_SIZE,
         });
-        let label_text_x = if section.collapsible {
-            PADDING + DISCLOSURE_BOX_SIZE + 5.0
-        } else {
-            PADDING
-        };
         let item_top = label_top + COMPARTMENT_LABEL_HEIGHT;
         let item_baselines: Vec<f64> = (0..shown_items.len())
             .map(|index| item_top + (index + 1) as f64 * LINE_HEIGHT - 3.0)
@@ -734,7 +728,6 @@ pub fn layout_compartment_blocks(
             overflow_count,
             divider_y: cursor,
             label_baseline,
-            label_text_x,
             item_baselines,
             overflow_baseline,
             label_region,
