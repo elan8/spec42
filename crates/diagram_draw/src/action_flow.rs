@@ -90,7 +90,7 @@ fn draw_parameters(
     layout: &crate::behavior_common::LaidOutRect,
     theme: &Theme,
 ) -> Element {
-    for (index, item) in items.iter().take(4).enumerate() {
+    for (index, item) in items.iter().enumerate() {
         let name = parameter_name(item);
         let y = 20.0 + index as f64 * 14.0;
         let boundary = if side == "input" { 0.0 } else { layout.width };
@@ -126,7 +126,7 @@ fn draw_parameters(
                 .attr("text-anchor", if side == "input" { "end" } else { "start" })
                 .style("font-size", "8px")
                 .style("fill", theme.text_secondary)
-                .text(truncate_label(&name, 14)),
+                .text(name),
         );
     }
     g

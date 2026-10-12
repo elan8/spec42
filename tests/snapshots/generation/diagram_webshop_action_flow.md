@@ -12226,6 +12226,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": null,
         "reference": 1,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12240,6 +12241,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 21,
         "source": 21,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12254,6 +12256,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 22,
         "source": 24,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12268,6 +12271,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 23,
         "source": 27,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12282,6 +12286,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 24,
         "source": 30,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12304,6 +12309,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 13,
         "source": 6,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12311,13 +12317,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "cartValid",
         "notationRole": "reference-usage",
         "owner": 5,
         "reference": 14,
         "source": 7,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -12346,6 +12353,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 3,
         "source": 9,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12353,13 +12361,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "paymentOk",
         "notationRole": "reference-usage",
         "owner": 7,
         "reference": 4,
         "source": 10,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -12388,6 +12397,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 7,
         "source": 18,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12395,13 +12405,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "done",
         "notationRole": "reference-usage",
         "owner": 9,
         "reference": 8,
         "source": 19,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -12430,6 +12441,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 11,
         "source": 12,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12437,13 +12449,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "stockReserved",
         "notationRole": "reference-usage",
         "owner": 11,
         "reference": 12,
         "source": 13,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -12472,6 +12485,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 9,
         "source": 15,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -12479,13 +12493,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "orderEventPublished",
         "notationRole": "reference-usage",
         "owner": 13,
         "reference": 10,
         "source": 16,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -12499,13 +12514,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "checkoutStatus",
         "notationRole": "reference-usage",
         "owner": 0,
         "reference": 6,
         "source": 4,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -12519,13 +12535,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "cartId",
         "notationRole": "reference-usage",
         "owner": 0,
         "reference": 5,
         "source": 2,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [

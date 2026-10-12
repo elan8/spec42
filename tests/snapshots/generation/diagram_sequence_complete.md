@@ -1531,6 +1531,7 @@ package SequenceExample {
         "owner": null,
         "reference": 1,
         "source": 0,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1545,6 +1546,7 @@ package SequenceExample {
         "owner": 0,
         "reference": 28,
         "source": 14,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1559,6 +1561,7 @@ package SequenceExample {
         "owner": 0,
         "reference": 3,
         "source": 8,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1573,6 +1576,7 @@ package SequenceExample {
         "owner": 2,
         "reference": 29,
         "source": 9,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1587,6 +1591,7 @@ package SequenceExample {
         "owner": 3,
         "reference": 31,
         "source": 9,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1601,6 +1606,7 @@ package SequenceExample {
         "owner": 2,
         "reference": 30,
         "source": 10,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1615,6 +1621,7 @@ package SequenceExample {
         "owner": 5,
         "reference": 32,
         "source": 10,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1629,6 +1636,7 @@ package SequenceExample {
         "owner": 0,
         "reference": 9,
         "source": 11,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1643,6 +1651,7 @@ package SequenceExample {
         "owner": 7,
         "reference": 33,
         "source": 12,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1657,6 +1666,7 @@ package SequenceExample {
         "owner": 8,
         "reference": 35,
         "source": 12,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1671,6 +1681,7 @@ package SequenceExample {
         "owner": 7,
         "reference": 34,
         "source": 13,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1685,6 +1696,7 @@ package SequenceExample {
         "owner": 10,
         "reference": 36,
         "source": 13,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1708,6 +1720,7 @@ package SequenceExample {
         "owner": 0,
         "reference": 6,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1728,6 +1741,7 @@ package SequenceExample {
         "owner": 12,
         "reference": 7,
         "source": 4,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1742,6 +1756,7 @@ package SequenceExample {
         "owner": 12,
         "reference": 8,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1764,6 +1779,7 @@ package SequenceExample {
         "owner": 0,
         "reference": 12,
         "source": 5,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1784,6 +1800,7 @@ package SequenceExample {
         "owner": 15,
         "reference": 13,
         "source": 7,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }

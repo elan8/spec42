@@ -452,6 +452,7 @@ package RecursiveExample {
         "owner": null,
         "reference": 1,
         "source": 0,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -466,6 +467,7 @@ package RecursiveExample {
         "owner": 0,
         "reference": 4,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -488,6 +490,7 @@ package RecursiveExample {
         "owner": 0,
         "reference": 2,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -502,6 +505,7 @@ package RecursiveExample {
         "owner": 2,
         "reference": 3,
         "source": 2,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }

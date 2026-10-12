@@ -212,6 +212,7 @@ package GeometryExample {
         "owner": null,
         "reference": 0,
         "source": 0,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }

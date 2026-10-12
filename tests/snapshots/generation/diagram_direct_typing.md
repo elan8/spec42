@@ -478,6 +478,7 @@ package DirectTypingExample {
         "owner": null,
         "reference": 4,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -498,6 +499,7 @@ package DirectTypingExample {
         "owner": 0,
         "reference": 1,
         "source": 0,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -518,6 +520,7 @@ package DirectTypingExample {
         "owner": 0,
         "reference": 2,
         "source": 2,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }

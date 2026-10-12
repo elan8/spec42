@@ -571,6 +571,7 @@ package ProvenanceExample {
         "owner": null,
         "reference": 2,
         "source": 0,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -585,6 +586,7 @@ package ProvenanceExample {
         "owner": 0,
         "reference": 3,
         "source": 2,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -599,6 +601,7 @@ package ProvenanceExample {
         "owner": 1,
         "reference": 11,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -606,13 +609,14 @@ package ProvenanceExample {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
         "reference": 12,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }

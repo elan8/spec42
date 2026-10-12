@@ -41,6 +41,7 @@ use crate::lower::facts::OwnedEndFeature;
 use crate::lower::facts::OwnedEndRecord;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
+use crate::lower::facts::ThenSource;
 use crate::lower::facts::UnsupportedRecord;
 use crate::lower::intern::SymbolPathArena;
 use crate::lower::intern::SymbolTable;
@@ -300,6 +301,19 @@ impl SemanticModelBuilder {
                 expression_result: facts
                     .expression_result
                     .map(|result| relocation.declaration(result))
+                    .transpose()?,
+                then_source: facts
+                    .then_source
+                    .map(|source| {
+                        Ok::<_, ConstructionError>(match source {
+                            ThenSource::Declaration(id) => {
+                                ThenSource::Declaration(relocation.declaration(id)?)
+                            }
+                            ThenSource::InitialNode(id) => {
+                                ThenSource::InitialNode(relocation.declaration(id)?)
+                            }
+                        })
+                    })
                     .transpose()?,
                 ..facts.clone()
             });

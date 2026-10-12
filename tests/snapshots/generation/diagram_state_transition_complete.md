@@ -1172,6 +1172,7 @@ package StateExample {
         "owner": null,
         "reference": 0,
         "source": 0,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1203,6 +1204,7 @@ package StateExample {
         "owner": 0,
         "reference": 3,
         "source": 6,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1217,6 +1219,7 @@ package StateExample {
         "owner": 1,
         "reference": 23,
         "source": 5,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1235,10 +1238,11 @@ package StateExample {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 1,
         "reference": 21,
         "source": 5,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1246,13 +1250,14 @@ package StateExample {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 3,
         "reference": 24,
         "source": 5,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1267,6 +1272,7 @@ package StateExample {
         "owner": 1,
         "reference": 22,
         "source": 5,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1274,13 +1280,14 @@ package StateExample {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
         "reference": 22,
         "source": 5,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1288,13 +1295,14 @@ package StateExample {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
         "reference": 22,
         "source": 5,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1309,6 +1317,7 @@ package StateExample {
         "owner": 0,
         "reference": 2,
         "source": 4,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1323,6 +1332,7 @@ package StateExample {
         "owner": 0,
         "reference": 20,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -1337,6 +1347,7 @@ package StateExample {
         "owner": 0,
         "reference": 6,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }

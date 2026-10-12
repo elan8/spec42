@@ -372,6 +372,7 @@ package BrowserExample {
         "owner": null,
         "reference": 0,
         "source": 0,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -394,6 +395,7 @@ package BrowserExample {
         "owner": 0,
         "reference": 1,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -408,6 +410,7 @@ package BrowserExample {
         "owner": 1,
         "reference": 2,
         "source": 2,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }

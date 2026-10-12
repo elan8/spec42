@@ -759,7 +759,22 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             } else if kind.contains("fork") || kind.contains("join") {
                 (220.0, 14.0)
             } else {
-                (220.0, 68.0)
+                // An action is high enough for the parameters on its fuller side.
+                let attributes = field(node, "attributes");
+                let rows = [
+                    ["inputs", "inputParameters"],
+                    ["outputs", "outputParameters"],
+                ]
+                .iter()
+                .map(|keys| {
+                    keys.iter()
+                        .map(|key| as_array(field(attributes, key)).len())
+                        .max()
+                        .unwrap_or(0)
+                })
+                .max()
+                .unwrap_or(0);
+                (220.0, (68.0_f64).max(26.0 + rows as f64 * 14.0))
             }
         }
     }
@@ -800,6 +815,28 @@ fn state_box(node: &Value) -> (f64, f64) {
         62.0 + actions * 16.0
     };
     (width.max(96.0).ceil(), height)
+}
+
+/// The room the names of an action's parameters on one side take beside it: the square on the
+/// boundary, a gap, and the longest name in 8 px text. Zero for an action without them.
+fn parameter_label_room(node: &Value, keys: [&str; 2]) -> f64 {
+    let attributes = field(node, "attributes");
+    keys.iter()
+        .map(|key| as_array(field(attributes, key)))
+        .find(|items| !items.is_empty())
+        .unwrap_or_default()
+        .iter()
+        .map(|item| {
+            as_string(
+                first_nonempty([field(item, "name"), field(item, "label"), item]),
+                "",
+            )
+            .trim()
+            .encode_utf16()
+            .count()
+        })
+        .max()
+        .map_or(0.0, |characters| characters as f64 * 4.6 + 12.0)
 }
 
 /// Space inside an action container: the name compartment on top, then padding around the flow.
@@ -910,11 +947,21 @@ fn layout_nested_action_flow(
             bounds.2 = bounds.2.max(x);
             bounds.3 = bounds.3.max(y);
         };
-        for rect in positions.values() {
+        for (id, rect) in positions.iter() {
             let (x, y) = (num(field(rect, "x")), num(field(rect, "y")));
-            include(x, y);
+            // The names of an action's parameters stand outside it, beside their squares.
+            let member = members
+                .iter()
+                .find(|member| as_string(field(member, "id"), "") == *id);
+            let (before, after) = member.map_or((0.0, 0.0), |member| {
+                (
+                    parameter_label_room(member, ["inputs", "inputParameters"]),
+                    parameter_label_room(member, ["outputs", "outputParameters"]),
+                )
+            });
+            include(x - before, y);
             include(
-                x + num(field(rect, "width")),
+                x + num(field(rect, "width")) + after,
                 y + num(field(rect, "height")),
             );
         }
@@ -1108,38 +1155,15 @@ fn layout_simple_action_chain(prepared: &Value) -> Option<Value> {
         &mut edges.iter().map(|edge| as_string(field(edge, "label"), "")),
         20,
     );
-    let parameter_names = |keys: [&str; 2]| {
-        longest(
-            &mut nodes.iter().flat_map(|node| {
-                let attributes = field(node, "attributes");
-                let items = keys
-                    .iter()
-                    .map(|key| as_array(field(attributes, key)))
-                    .find(|items| !items.is_empty())
-                    .unwrap_or_default();
-                items
-                    .iter()
-                    .map(|item| {
-                        as_string(
-                            first_nonempty([field(item, "name"), field(item, "label"), item]),
-                            "",
-                        )
-                    })
-                    .collect::<Vec<_>>()
-            }),
-            14,
-        )
-    };
-    let parameter_room = |characters: f64| {
-        if characters == 0.0 {
-            0.0
-        } else {
-            characters * 4.6 + 12.0
-        }
+    let parameter_room = |keys: [&str; 2]| {
+        nodes
+            .iter()
+            .map(|node| parameter_label_room(node, keys))
+            .fold(0.0_f64, f64::max)
     };
     let gap_x = (56.0_f64).max(succession_label * 6.0 + 36.0).max(
-        parameter_room(parameter_names(["outputs", "outputParameters"]))
-            + parameter_room(parameter_names(["inputs", "inputParameters"]))
+        parameter_room(["outputs", "outputParameters"])
+            + parameter_room(["inputs", "inputParameters"])
             + 32.0,
     );
     let gap_y = if succession_label == 0.0 { 56.0 } else { 76.0 };
@@ -1357,7 +1381,17 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
             .iter()
             .any(|key| !as_array(field(attributes, key)).is_empty())
     });
-    let beside_parameters = if has_parameters { 120.0 } else { 40.0 };
+    let beside_parameters = if has_parameters {
+        let room = |keys: [&str; 2]| {
+            as_array(field(prepared, "nodes"))
+                .iter()
+                .map(|node| parameter_label_room(node, keys))
+                .fold(0.0_f64, f64::max)
+        };
+        room(["outputs", "outputParameters"]) + room(["inputs", "inputParameters"]) + 32.0
+    } else {
+        40.0
+    };
     let (action_layer_gap, action_node_gap) = if horizontal {
         (
             (64.0_f64)

@@ -620,6 +620,112 @@ fn schema5_state_transition_non_numeric_endpoint_is_an_error() {
 }
 
 #[test]
+fn an_action_flow_written_with_then_draws_its_whole_flow() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_action_flow_then_successions.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("action flow lays out");
+    let nodes = input["prepared"]["nodes"].as_array().expect("nodes");
+    let id_of = |label: &str, kind: &str| {
+        nodes
+            .iter()
+            .find(|node| node["label"] == label && node["kind"] == kind)
+            .unwrap_or_else(|| panic!("no {kind} node labelled `{label}`"))["id"]
+            .as_str()
+            .unwrap()
+            .to_owned()
+    };
+    // The library's `start` and `done` are the initial and final nodes; they carry no name.
+    let (start, done) = (id_of("", "initial"), id_of("", "final"));
+    let (prepare, left, right, finish) = (
+        id_of("prepare", "ActionUsage"),
+        id_of("left", "ActionUsage"),
+        id_of("right", "ActionUsage"),
+        id_of("finish", "ActionUsage"),
+    );
+    let (split, joined, choice) = (
+        id_of("split", "ForkNode"),
+        id_of("joined", "JoinNode"),
+        id_of("choice", "DecisionNode"),
+    );
+    let accept = id_of("waitForPayment", "AcceptActionUsage");
+    let edges = input["prepared"]["edges"].as_array().expect("edges");
+    let has = |source: &str, target: &str, flow: bool| {
+        edges.iter().any(|edge| {
+            edge["source"] == source
+                && edge["target"] == target
+                && edge["attributes"]["streamingFlow"] == flow
+        })
+    };
+    // SysML 7.17.4: a `then` continues from the nearest occurrence written before it, so
+    // `then prepare;` and `then fork split;` both start at `start`, and both `then`s after
+    // the fork start at the fork.
+    for (source, target) in [
+        (&start, &prepare),
+        (&start, &split),
+        (&split, &left),
+        (&split, &right),
+        (&left, &joined),
+        (&right, &joined),
+        (&joined, &choice),
+        (&choice, &accept),
+        (&accept, &finish),
+        (&finish, &done),
+    ] {
+        assert!(
+            has(source, target, false),
+            "no succession {source} -> {target}"
+        );
+    }
+    assert_eq!(
+        edges
+            .iter()
+            .filter(|edge| edge["attributes"]["succession"] == true)
+            .count(),
+        10
+    );
+    // The flow between two parameters is drawn between the actions that own them.
+    assert!(has(&prepare, &left, true));
+    let node = |id: &str| nodes.iter().find(|node| node["id"] == id).unwrap();
+    assert_eq!(node(&prepare)["attributes"]["outputs"][0]["name"], "order");
+    assert_eq!(node(&left)["attributes"]["inputs"][0]["name"], "order");
+
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw action flow");
+    assert!(svg.contains("accept-action-icon"), "{svg}");
+    assert_eq!(svg.matches("action-parameter-badge").count(), 2);
+}
+
+#[test]
+fn a_state_lists_its_entry_do_and_exit_actions() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_state_actions.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("state machine lays out");
+    let state = |label: &str| {
+        input["prepared"]["nodes"]
+            .as_array()
+            .expect("nodes")
+            .iter()
+            .find(|node| node["label"] == label)
+            .unwrap_or_else(|| panic!("no state `{label}`"))["attributes"]
+            .clone()
+    };
+    let idle = state("idle");
+    assert_eq!(idle["entry"], "warmUp");
+    assert_eq!(idle["do"], "hold");
+    assert_eq!(idle["exit"], "coolDown");
+    let baking = state("baking");
+    assert_eq!(baking["do"], "bake");
+    assert!(baking["entry"].is_null() && baking["exit"].is_null());
+
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw state machine");
+    for line in ["entry warmUp", "do hold", "exit coolDown", "do bake"] {
+        assert!(svg.contains(line), "`{line}` is not drawn: {svg}");
+    }
+    assert_eq!(svg.matches("state actions").count(), 2);
+}
+
+#[test]
 fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::theme::LIGHT;
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};

@@ -13,6 +13,7 @@ use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::SuccessionEndMultiplicities;
+use crate::lower::facts::ThenSource;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::kerml::kerml_bare_end_multiplicity;
 use crate::lower::SemanticModelBuilder;
@@ -804,6 +805,7 @@ impl SemanticModelBuilder {
                     multiplicity_facts(node.value.first_multiplicity.as_ref()),
                     multiplicity_facts(node.value.then_multiplicity.as_ref()),
                 ),
+                is_initial_node_marker: node.value.then.is_none(),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1159,6 +1161,59 @@ impl SemanticModelBuilder {
     /// `Transition`'s own `TransitionAccept::Payload`/`TimeTrigger` deferral) and falls through to
     /// the existing unsupported-member diagnostic.
     pub(crate) fn lower_then_action(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<ThenAction>,
+    ) -> Result<(), ConstructionError> {
+        let first_new = self.declarations.len();
+        let source = self.then_source(owner, first_new);
+        self.lower_then_target(document, owner, family, node)?;
+        // What the `then` declared is the first member it added to its body: the continuation
+        // to a named feature, or the node written after the keyword.
+        let declared = (first_new..self.declarations.len())
+            .find(|index| self.declarations[*index].owner == Some(owner));
+        if let (Some(source), Some(declared)) = (source, declared) {
+            self.declaration_facts[declared].then_source = Some(source);
+        }
+        Ok(())
+    }
+
+    /// The source of a `then` about to be lowered into the body of `owner`, whose members so
+    /// far are the declarations before `end`. See [`ThenSource`].
+    fn then_source(&self, owner: DeclarationId, end: usize) -> Option<ThenSource> {
+        use crate::model::element_kind::element_kind;
+        use crate::ElementKind;
+        for index in (owner.index() + 1..end).rev() {
+            let declaration = &self.declarations[index];
+            if declaration.owner != Some(owner) {
+                continue;
+            }
+            let id = DeclarationId::from_index(index).ok()?;
+            if self.declaration_facts[index].is_initial_node_marker {
+                return Some(ThenSource::InitialNode(id));
+            }
+            // A conditional succession is a transition usage, which is an action usage; the
+            // rule skips it like any other succession.
+            if declaration.kind != DeclarationKind::Transition
+                && element_kind(declaration.kind).conforms_to(ElementKind::OccurrenceUsage)
+            {
+                return Some(ThenSource::Declaration(id));
+            }
+        }
+        // A `then` in the body of a control node continues from that node.
+        matches!(
+            self.declarations[owner.index()].kind,
+            DeclarationKind::Decide
+                | DeclarationKind::Merge
+                | DeclarationKind::Fork
+                | DeclarationKind::Join
+        )
+        .then_some(ThenSource::Declaration(owner))
+    }
+
+    fn lower_then_target(
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
