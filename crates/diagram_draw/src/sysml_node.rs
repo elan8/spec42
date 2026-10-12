@@ -880,6 +880,71 @@ pub fn compartments_to_value(compartments: &Compartments) -> Value {
 
 /// `+`/`-` glyph inside a disclosure box, drawn as filled bars so it stays legible at any zoom.
 /// Port of `disclosureGlyphPaths` in `sysml-node-builder.ts`.
+/// The +/- control that expands or collapses an element's nested elements. The client toggles
+/// the id of the enclosing `data-node-id` group when it is activated.
+pub(crate) fn disclosure_control(
+    target: &Region,
+    expanded: bool,
+    element_name: &str,
+    theme: &Theme,
+) -> Element {
+    let box_region = Region {
+        x: target.x + (target.width - DISCLOSURE_BOX_SIZE) / 2.0,
+        y: target.y + (target.height - DISCLOSURE_BOX_SIZE) / 2.0,
+        width: DISCLOSURE_BOX_SIZE,
+        height: DISCLOSURE_BOX_SIZE,
+    };
+    let verb = if expanded { "Collapse" } else { "Expand" };
+    let tooltip = if expanded {
+        format!("Collapse {element_name}: hide its nested elements and their relationships.")
+    } else {
+        format!("Expand {element_name}: show its nested elements and their relationships.")
+    };
+    let mut control = Element::new("g")
+        .attr("class", "general-node-toggle sysml-disclosure")
+        .attr("role", "button")
+        .attr("tabindex", "0")
+        .attr("aria-label", format!("{verb} {element_name}"))
+        .attr("aria-expanded", if expanded { "true" } else { "false" })
+        .attr(
+            "data-disclosure-state",
+            if expanded { "expanded" } else { "collapsed" },
+        )
+        .child(Element::new("title").text(tooltip))
+        .child(
+            Element::new("rect")
+                .attr("class", "sysml-disclosure-target")
+                .attr_f("x", target.x)
+                .attr_f("y", target.y)
+                .attr_f("width", target.width)
+                .attr_f("height", target.height)
+                .attr("rx", "4")
+                .style("fill", "transparent")
+                .style("pointer-events", "all"),
+        )
+        .child(
+            Element::new("rect")
+                .attr("class", "sysml-disclosure-box")
+                .attr_f("x", box_region.x)
+                .attr_f("y", box_region.y)
+                .attr_f("width", box_region.width)
+                .attr_f("height", box_region.height)
+                .attr("rx", "2")
+                .style("fill", theme.control_fill)
+                .style("stroke", theme.control_stroke)
+                .style("stroke-width", "1px"),
+        );
+    for d in disclosure_glyph_paths(&box_region, expanded) {
+        control = control.child(
+            Element::new("path")
+                .attr("class", "sysml-disclosure-glyph")
+                .attr("d", d)
+                .style("fill", theme.control_foreground),
+        );
+    }
+    control
+}
+
 fn disclosure_glyph_paths(box_region: &Region, expanded: bool) -> Vec<String> {
     let thickness = (box_region.width * 0.14).max(1.4);
     let arm = box_region.width * 0.54;
@@ -1115,70 +1180,12 @@ pub fn render_node(compartments: &Compartments, options: RenderNodeOptions<'_>) 
 
     if let Some(disclosure_target) = &header.disclosure_target {
         let expanded = options.state.disclosure == Some("expanded");
-        let box_region = Region {
-            x: disclosure_target.x + (disclosure_target.width - DISCLOSURE_BOX_SIZE) / 2.0,
-            y: disclosure_target.y + (disclosure_target.height - DISCLOSURE_BOX_SIZE) / 2.0,
-            width: DISCLOSURE_BOX_SIZE,
-            height: DISCLOSURE_BOX_SIZE,
-        };
-        let verb = if expanded { "Collapse" } else { "Expand" };
-        let tooltip = if expanded {
-            format!(
-                "Collapse {}: hide its nested elements and their relationships.",
-                options.data_element_name
-            )
-        } else {
-            format!(
-                "Expand {}: show its nested elements and their relationships.",
-                options.data_element_name
-            )
-        };
-        let mut control = Element::new("g")
-            .attr("class", "general-node-toggle sysml-disclosure")
-            .attr("role", "button")
-            .attr("tabindex", "0")
-            .attr(
-                "aria-label",
-                format!("{verb} {}", options.data_element_name),
-            )
-            .attr("aria-expanded", if expanded { "true" } else { "false" })
-            .attr(
-                "data-disclosure-state",
-                if expanded { "expanded" } else { "collapsed" },
-            )
-            .child(Element::new("title").text(tooltip))
-            .child(
-                Element::new("rect")
-                    .attr("class", "sysml-disclosure-target")
-                    .attr_f("x", disclosure_target.x)
-                    .attr_f("y", disclosure_target.y)
-                    .attr_f("width", disclosure_target.width)
-                    .attr_f("height", disclosure_target.height)
-                    .attr("rx", "4")
-                    .style("fill", "transparent")
-                    .style("pointer-events", "all"),
-            )
-            .child(
-                Element::new("rect")
-                    .attr("class", "sysml-disclosure-box")
-                    .attr_f("x", box_region.x)
-                    .attr_f("y", box_region.y)
-                    .attr_f("width", box_region.width)
-                    .attr_f("height", box_region.height)
-                    .attr("rx", "2")
-                    .style("fill", theme.control_fill)
-                    .style("stroke", theme.control_stroke)
-                    .style("stroke-width", "1px"),
-            );
-        for d in disclosure_glyph_paths(&box_region, expanded) {
-            control = control.child(
-                Element::new("path")
-                    .attr("class", "sysml-disclosure-glyph")
-                    .attr("d", d)
-                    .style("fill", theme.control_foreground),
-            );
-        }
-        node = node.child(control);
+        node = node.child(disclosure_control(
+            disclosure_target,
+            expanded,
+            options.data_element_name,
+            theme,
+        ));
     }
 
     if let Some((badge, badge_text)) = &header.badge {

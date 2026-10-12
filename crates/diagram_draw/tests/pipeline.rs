@@ -832,6 +832,48 @@ fn a_state_that_owns_states_shows_them_inside_it() {
 }
 
 #[test]
+fn interconnection_view_opens_a_part_when_its_control_is_toggled() {
+    use diagram_draw::theme::LIGHT;
+    use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
+
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_timer_interconnection.md"
+    ));
+    let draw = |expanded: &[&str]| {
+        render_svg_from_payload_with_options(
+            &payload,
+            &LIGHT,
+            1280.0,
+            900.0,
+            Some(&DisclosureState {
+                expanded_node_ids: expanded.iter().map(|id| (*id).to_owned()).collect(),
+                section_states: vec![],
+            }),
+        )
+        .expect("draw timer")
+    };
+    let parts = |svg: &str| svg.matches("class=\"ibd-part").count();
+
+    // As the editor first draws it: the exposed part with its direct parts, closed.
+    let closed = draw(&[]);
+    assert!(closed.contains("aria-label=\"Expand pcb\""), "{closed}");
+    assert!(!closed.contains("aria-label=\"Collapse"), "{closed}");
+    // The exposed part is always open, so it has no control.
+    assert!(!closed.contains("aria-label=\"Expand timerInstance\""));
+
+    // `n:6` is `pcb`, the id its control toggles.
+    assert!(closed.contains("data-node-id=\"n:6\" data-element-name=\"pcb\""));
+    let opened = draw(&["n:6"]);
+    assert!(opened.contains("aria-label=\"Collapse pcb\""), "{opened}");
+    assert!(parts(&opened) > parts(&closed));
+
+    // A file export has no reader, so it has no controls.
+    let exported = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw timer");
+    assert!(!exported.contains("general-node-toggle"));
+    assert!(parts(&exported) >= parts(&opened));
+}
+
+#[test]
 fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::theme::LIGHT;
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
