@@ -902,6 +902,18 @@ fn a_state_that_owns_states_shows_them_inside_it() {
             "`{nested}` {inner:?} is not inside `on` {outer:?}"
         );
     }
+    // `first on.ready ... then fault` leaves the nested state for one outside its owner. It is
+    // routed, around the states in its way, and not left to a straight fallback line.
+    let fault = node("fault")["id"].as_str().unwrap();
+    let ready = node("ready")["id"].as_str().unwrap();
+    let crossing = input["prepared"]["edges"]
+        .as_array()
+        .expect("edges")
+        .iter()
+        .find(|edge| edge["source"] == ready && edge["target"] == fault)
+        .expect("the transition out of the nested state");
+    let sections = &input["behaviorLayout"]["edgeSectionsById"][crossing["id"].as_str().unwrap()];
+    assert!(sections[0]["startPoint"].is_object(), "{sections}");
     // The containing state is drawn below the transitions, the others above them.
     let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw state machine");
     let layer = |class: &str| svg.find(&format!("class=\"{class}\"")).unwrap();
