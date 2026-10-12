@@ -1731,6 +1731,7 @@ fn is_interconnection_edge_kind(kind: &str) -> bool {
 
 type NavigationFn<'a> = Box<dyn Fn(&Value) -> Value + 'a>;
 
+#[allow(clippy::too_many_arguments)]
 fn prepare_interconnection_from_typed_projection(
     name: &str,
     nodes: &[Value],
@@ -1795,6 +1796,7 @@ fn prepare_interconnection_from_typed_projection(
     prepared
 }
 
+#[allow(clippy::too_many_arguments)]
 fn interconnection_scene_from_typed_projection(
     name: &str,
     raw_nodes: &[Value],
