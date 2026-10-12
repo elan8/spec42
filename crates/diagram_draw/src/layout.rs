@@ -1095,7 +1095,54 @@ fn layout_simple_action_chain(prepared: &Value) -> Option<Value> {
     {
         return None;
     }
-    let (gap_x, gap_y) = (130.0, 125.0);
+    // The gap between two actions holds a visible run of succession, its label when it has
+    // one, and the names of the parameters on the facing sides. It follows what is drawn, so
+    // a flow of plain steps is not spread over a fixed pitch.
+    let longest = |texts: &mut dyn Iterator<Item = String>, limit: usize| {
+        texts
+            .map(|text| text.trim().encode_utf16().count().min(limit))
+            .max()
+            .unwrap_or(0) as f64
+    };
+    let succession_label = longest(
+        &mut edges.iter().map(|edge| as_string(field(edge, "label"), "")),
+        20,
+    );
+    let parameter_names = |keys: [&str; 2]| {
+        longest(
+            &mut nodes.iter().flat_map(|node| {
+                let attributes = field(node, "attributes");
+                let items = keys
+                    .iter()
+                    .map(|key| as_array(field(attributes, key)))
+                    .find(|items| !items.is_empty())
+                    .unwrap_or_default();
+                items
+                    .iter()
+                    .map(|item| {
+                        as_string(
+                            first_nonempty([field(item, "name"), field(item, "label"), item]),
+                            "",
+                        )
+                    })
+                    .collect::<Vec<_>>()
+            }),
+            14,
+        )
+    };
+    let parameter_room = |characters: f64| {
+        if characters == 0.0 {
+            0.0
+        } else {
+            characters * 4.6 + 12.0
+        }
+    };
+    let gap_x = (56.0_f64).max(succession_label * 6.0 + 36.0).max(
+        parameter_room(parameter_names(["outputs", "outputParameters"]))
+            + parameter_room(parameter_names(["inputs", "inputParameters"]))
+            + 32.0,
+    );
+    let gap_y = if succession_label == 0.0 { 56.0 } else { 76.0 };
     let columns = (1..=nodes.len()).min_by(|&left, &right| {
         let score = |columns: usize| {
             let rows = nodes.len().div_ceil(columns);
@@ -1292,6 +1339,40 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
         BehaviorMode::State => ElkViewKind::BehaviorState,
         BehaviorMode::Action => ElkViewKind::BehaviorAction,
     };
+    // The gaps of an action flow follow what stands in them: the longest label of a flow or
+    // succession between two layers, and the names of parameters beside an action.
+    let longest_label = as_array(field(prepared, "edges"))
+        .iter()
+        .map(|edge| {
+            transition_display_label(&as_string(field(edge, "label"), ""))
+                .encode_utf16()
+                .count()
+                .min(20)
+        })
+        .max()
+        .unwrap_or(0) as f64;
+    let has_parameters = as_array(field(prepared, "nodes")).iter().any(|node| {
+        let attributes = field(node, "attributes");
+        ["inputs", "inputParameters", "outputs", "outputParameters"]
+            .iter()
+            .any(|key| !as_array(field(attributes, key)).is_empty())
+    });
+    let beside_parameters = if has_parameters { 120.0 } else { 40.0 };
+    let (action_layer_gap, action_node_gap) = if horizontal {
+        (
+            (64.0_f64)
+                .max(longest_label * 6.0 + 48.0)
+                .max(beside_parameters),
+            40.0,
+        )
+    } else {
+        (
+            if longest_label == 0.0 { 64.0 } else { 84.0 },
+            (40.0_f64).max(beside_parameters),
+        )
+    };
+    let (action_layer_gap, action_node_gap) =
+        (action_layer_gap.to_string(), action_node_gap.to_string());
     let overrides: Vec<(&str, Option<&str>)> = match mode {
         BehaviorMode::State => vec![(
             "elk.direction",
@@ -1302,13 +1383,10 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
                 "elk.direction",
                 Some(if horizontal { "RIGHT" } else { "DOWN" }),
             ),
-            (
-                "elk.spacing.nodeNode",
-                Some(if horizontal { "90" } else { "120" }),
-            ),
+            ("elk.spacing.nodeNode", Some(action_node_gap.as_str())),
             (
                 "elk.layered.spacing.nodeNodeBetweenLayers",
-                Some(if horizontal { "190" } else { "170" }),
+                Some(action_layer_gap.as_str()),
             ),
         ],
     };
