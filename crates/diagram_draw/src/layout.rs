@@ -8,7 +8,7 @@ use serde_json::{json, Map, Value};
 use crate::graph_normalization::{
     is_connector_usage_element_type, is_overview_visual_element_type, normalize_edge_kind,
 };
-use crate::ibd_ports::{ibd_port_label_text, ibd_port_label_width};
+use crate::ibd_ports::{ibd_port_detail_label, ibd_port_label_width};
 use crate::ibd_route::{lca_offset_for_nodes, resolve_ibd_route_points};
 use crate::json_util::{as_array, as_object, as_string, field};
 use crate::sysml_node::{
@@ -1897,9 +1897,8 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let is_synthetic_package = field(attrs, "isSyntheticPackage") == &json!(true);
         let is_container =
             field(attrs, "isSyntheticContainer") == &json!(true) || !children.is_empty();
-        // A part is as wide as its name and its type need. The drawing truncates a name and a
-        // type at 32 characters.
-        let characters = |text: &str| text.encode_utf16().count().min(32) as f64;
+        // A part is as wide as its name and its type need; both are written in full.
+        let characters = |text: &str| text.encode_utf16().count() as f64;
         let label_width = characters(&as_string(field(node, "label"), "")) * 6.8;
         let type_width = (characters(&as_string(field(attrs, "partType"), "")) + 2.0) * 5.4;
         let base_width: f64 = if is_container { 220.0 } else { 132.0 };
@@ -1937,7 +1936,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         };
         let build_elk_port = |port: &PreparedPort, side: &str, index: usize| {
             let id = port_id_for(&as_string(field(node, "id"), ""), &port.name);
-            let label_text = ibd_port_label_text(&port.name);
+            let label_text = ibd_port_detail_label(&port.raw);
             json!({
                 "id": id,
                 "width": 10,

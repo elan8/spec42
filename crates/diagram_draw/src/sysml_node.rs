@@ -1305,14 +1305,15 @@ pub fn render_node(compartments: &Compartments, options: RenderNodeOptions<'_>) 
                 );
             }
         }
+        // SysML 8.2.3.6: a compartment label is centred, italic and lower case (`parts`).
         label_group = label_group.child(
             Element::new("text")
-                .attr_f("x", block.label_text_x)
+                .attr_f("x", options.width / 2.0)
                 .attr_f("y", block.label_baseline)
-                .text(block.title.clone())
+                .attr("text-anchor", "middle")
+                .text(block.title.to_lowercase())
                 .style("font-size", format!("{}px", n(COMPARTMENT_FONT_SIZE)))
-                .style("font-weight", "600")
-                .style("letter-spacing", "0.02em")
+                .style("font-style", "italic")
                 .style("fill", theme.text_secondary)
                 .style("pointer-events", "none"),
         );
@@ -1339,7 +1340,9 @@ pub fn render_node(compartments: &Compartments, options: RenderNodeOptions<'_>) 
                         .attr("class", "sysml-compartment-overflow")
                         .attr_f("x", PADDING)
                         .attr_f("y", overflow_baseline)
-                        .text(format!("+{} more", block.overflow_count))
+                        // SysML 8.2.3.6: members that are left out are marked by `…` after
+                        // the listed ones. How many is in the title.
+                        .text("\u{2026}")
                         .style("font-size", format!("{}px", n(COMPARTMENT_FONT_SIZE)))
                         .style("font-style", "italic")
                         .style("fill", theme.text_secondary)

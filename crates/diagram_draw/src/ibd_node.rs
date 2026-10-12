@@ -191,7 +191,7 @@ pub fn render_ibd_node(
             .attr_f("x", width / 2.0)
             .attr_f("y", 31.0)
             .attr("text-anchor", "middle")
-            .text(truncate(&node.label, 32))
+            .text(node.label.clone())
             .style("font-size", "11px")
             .style("font-weight", "bold")
             .style("fill", theme.text_primary),
@@ -204,7 +204,7 @@ pub fn render_ibd_node(
                 .attr_f("x", width / 2.0)
                 .attr_f("y", 43.0)
                 .attr("text-anchor", "middle")
-                .text(format!(": {}", truncate(&typed_by, 32)))
+                .text(format!(": {typed_by}"))
                 .style("font-size", "10px")
                 .style("font-style", "italic")
                 .style("fill", theme.text_primary),
