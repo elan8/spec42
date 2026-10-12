@@ -561,7 +561,7 @@ probe model.sysml 11 16 hover
           (relationship (kind "typeFeaturing") (provenance implied) (target resolved))
           (typing (outcome resolved) (target "DomainTypes::RecordAvailabilityState"))
           (effective-typing (outcome resolved) (type (qualified-name "DomainTypes::RecordAvailabilityState") (origin direct) (provenance authored)))
-          (inherited-feature (qualified-name "DomainTypes::RecordAvailabilityState::availableControlled") (declared-in "DomainTypes::RecordAvailabilityState"))
+          (inherited-feature (qualified-name "DomainTypes::RecordAvailabilityState::availableControlled") (declared-in "DomainTypes::RecordAvailabilityState") (direct true))
           (incoming (kind "redefinition") (peer "Model::maintenanceReviewRecord::") (provenance authored))
           (outgoing (kind "typeFeaturing") (peer "DomainTypes::ExternalRecordReference") (provenance implied))
           (outgoing (kind "typing") (peer "DomainTypes::RecordAvailabilityState") (provenance authored))

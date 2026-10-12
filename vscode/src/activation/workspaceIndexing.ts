@@ -41,7 +41,11 @@ export function registerWorkspaceIndexing(
 ): void {
   const syncActive = () => {
     const editor = vscode.window.activeTextEditor;
-    if (editor && isSysmlDoc(editor.document)) void syncInspector(handles, inspectorProvider, editor, editor.selection.active, logPerf);
+    if (editor && isSysmlDoc(editor.document)) {
+      // Remember navigation provenance even while the inspector is hidden or pinned.
+      handles.lspModelProvider.setInspectorProjectContext(editor.document.uri.toString());
+      void syncInspector(handles, inspectorProvider, editor, editor.selection.active, logPerf);
+    }
   };
   context.subscriptions.push(inspectorProvider.onResumeRequested(syncActive));
   context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection((event) => {

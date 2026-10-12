@@ -30,7 +30,7 @@ export interface FeatureInspectorResolution { status: "resolved" | "partial" | "
 export interface FeatureInspectorRelationship { type: string; peer: FeatureInspectorElementRef; provenance: "authored" | "implied" }
 export type FeatureInspectorEvaluation = { state: "notApplicable" } | { state: "notRun" } | { state: "literal"; value: unknown; unit?: string } | { state: "evaluated"; value: unknown; unit?: string } | { state: "nonConstant" } | { state: "cyclic" } | { state: "unsupported" } | { state: "failed"; reason: string };
 export type FeatureInspectorAnalysis = { state: "notApplicable" } | { state: "notRun" } | { state: "verdict"; passed: boolean } | { state: "computed"; value: unknown; unit?: string } | { state: "unsettled"; evaluation: string };
-export interface FeatureInspectorInheritedFeature { feature: FeatureInspectorElementRef; declaredIn: FeatureInspectorElementRef }
+export interface FeatureInspectorInheritedFeature { feature: FeatureInspectorElementRef; declaredIn: FeatureInspectorElementRef; isDirect: boolean }
 export interface FeatureInspectorElement extends FeatureInspectorElementRef { role: "definition" | "usage" | "relationship" | "namespace" | "other"; declaration: string; parent?: FeatureInspectorElementRef; documentation?: string; multiplicity?: string; direction?: string; modifiers?: string[]; evaluation: FeatureInspectorEvaluation; analysis: FeatureInspectorAnalysis; typing: FeatureInspectorResolution; effectiveTyping?: FeatureInspectorResolution; specialization: FeatureInspectorResolution; subsetting?: FeatureInspectorResolution; redefinition?: FeatureInspectorResolution; inheritedFeatures?: FeatureInspectorInheritedFeature[]; metadata?: FeatureInspectorElementRef[]; incomingRelationships: FeatureInspectorRelationship[]; outgoingRelationships: FeatureInspectorRelationship[] }
 export type FeatureInspectorSelectionKind = "keyword" | "element" | "reference" | "value" | "unit" | "other";
 export interface FeatureInspectorSelection { kind: FeatureInspectorSelectionKind; text?: string; range?: { start: PositionDTO; end: PositionDTO } }
@@ -48,14 +48,22 @@ export function isClientNotRunningError(error: unknown): boolean {
 
 /** Thin adapter for the custom RPCs still consumed by the extension. */
 export class LspModelProvider {
+  private inspectorProjectUri: string | undefined;
   constructor(private readonly client: LanguageClient, private readonly whenReady: Promise<void> = Promise.resolve()) {}
   private sendRequest<R>(method: string, params: unknown, token?: vscode.CancellationToken): Promise<R> {
     return token === undefined ? this.client.sendRequest<R>(method, params) : this.client.sendRequest<R>(method, params, token);
   }
+  setInspectorProjectContext(uri: string): void {
+    if (vscode.workspace.getWorkspaceFolder(vscode.Uri.parse(uri))) this.inspectorProjectUri = uri;
+  }
   async getFeatureInspector(uri: string, position: PositionDTO, token?: vscode.CancellationToken): Promise<FeatureInspectorResult> {
     await this.whenReady;
+    // Keep the editor's project context when navigation opens an admitted library outside
+    // the workspace. The server verifies admission; shared libraries have several consumers.
+    this.setInspectorProjectContext(uri);
+    const projectUri = this.inspectorProjectUri;
     try {
-      return await this.sendRequest<FeatureInspectorResult>("sysml/featureInspector", { textDocument: { uri }, uri, position }, token);
+      return await this.sendRequest<FeatureInspectorResult>("sysml/featureInspector", { textDocument: { uri }, uri, position, ...(projectUri ? { projectUri } : {}) }, token);
     } catch (error) { logError("getFeatureInspector failed", error); throw error; }
   }
   async getServerStats(): Promise<SysMLServerStats | undefined> {

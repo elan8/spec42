@@ -46,6 +46,9 @@ pub struct SysmlFeatureInspectorParamsDto {
     /// Accepted for compatibility with early 0.46 clients that sent the document URI flat.
     #[serde(default)]
     pub uri: Option<String>,
+    /// Workspace document identifying the publication to use for a shared library.
+    #[serde(default)]
+    pub project_uri: Option<String>,
     pub position: PositionDto,
 }
 
@@ -96,6 +99,7 @@ pub struct SysmlFeatureInspectorRelationshipDto {
 pub struct SysmlFeatureInspectorInheritedFeatureDto {
     pub feature: SysmlFeatureInspectorElementRefDto,
     pub declared_in: SysmlFeatureInspectorElementRefDto,
+    pub is_direct: bool,
 }
 
 /// The publication's evaluation state for one element, projected at the transport boundary.

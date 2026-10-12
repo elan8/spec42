@@ -16,7 +16,9 @@ Depending on the selected element, the inspector can show:
 - The fully qualified name and declaration text.
 - Declared type and effective type.
 - Specialization, subsetting, and redefinition targets.
-- Inherited features.
+- Inherited features declared by immediate types or supertypes. Expand **Show all inherited
+  features** to include features declared further up the inheritance chain. Each row identifies
+  its declaring type; local redefinitions and shadowing still apply to the complete list.
 - Incoming and outgoing relationships.
 - Values, evaluated values, units, and quantity types.
 - Metadata, documentation, and source location.

@@ -341,18 +341,28 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
     }
 
     function inheritedFeaturesSection(nodes, inheritedFeatures) {
-      if (!inheritedFeatures || !inheritedFeatures.length) return;
+      if (!inheritedFeatures) return;
+      const direct = inheritedFeatures.direct || [];
+      const indirect = inheritedFeatures.indirect || [];
+      if (!direct.length && !indirect.length) return;
       const section = el('div', 'section');
       section.appendChild(el('div', 'title', 'Inherited features'));
-      inheritedFeatures.forEach((inherited) => {
+      function appendFeature(parent, inherited) {
         const row = elementRefRow(inherited.feature);
         const subtitle = row.querySelector('.row-sub');
         if (subtitle) {
           subtitle.textContent = 'Declared in ' +
             (inherited.declaredIn.qualifiedName || inherited.declaredIn.name || '');
         }
-        section.appendChild(row);
-      });
+        parent.appendChild(row);
+      }
+      direct.forEach((inherited) => appendFeature(section, inherited));
+      if (indirect.length) {
+        const details = el('details', '');
+        details.appendChild(el('summary', '', 'Show all inherited features (' + indirect.length + ' more)'));
+        indirect.forEach((inherited) => appendFeature(details, inherited));
+        section.appendChild(details);
+      }
       nodes.push(section);
     }
 
@@ -493,7 +503,7 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       resolutionSection(nodes, 'Specializes', element.specialization);
       resolutionSection(nodes, 'Subsets', element.subsetting);
       resolutionSection(nodes, 'Redefines', element.redefinition);
-      inheritedFeaturesSection(nodes, element.inheritedFeatures);
+      inheritedFeaturesSection(nodes, viewModel.inheritedFeatures);
 
       const doc = element.documentation;
       if (doc) {
