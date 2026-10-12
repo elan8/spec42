@@ -28,11 +28,17 @@ fn lsp_feature_inspector_accepts_library_documents_outside_the_editor_root() {
     session.initialize_with_root_and_options(
         "library_inspector_routing",
         Some(&root_uri),
-        Some(serde_json::json!({"libraryPaths": [library.to_string_lossy()]})),
+        Some(serde_json::json!({
+            "libraryPaths": [library.to_string_lossy()],
+            // Include the fixture in startup diagnostics so its publication is observable
+            // even when didOpen arrives while the workspace is still indexing.
+            "diagnostics": {"includeLibraryPaths": true}
+        })),
     );
     session.did_open(app_uri.as_str(), "package App;", 1);
     session.did_open(library_uri.as_str(), library_text, 1);
-    session.barrier();
+    // Processing didOpen does not wait for the asynchronous library publication.
+    session.wait_for_publications(&[app_uri.as_str(), library_uri.as_str()]);
     for context in [None, Some(app_uri.as_str())] {
         let mut params = serde_json::json!({"textDocument": {"uri": library_uri},
             "position": {"line": 0, "character": 40}});
