@@ -1193,7 +1193,48 @@ fn estimate_elk_label_box(id: &str, text: &str) -> Value {
     })
 }
 
+/// Transitions of a state machine that share a label and a target, when there are three or more:
+/// each edge id with the id of the port of the target its group runs into, and whether it is
+/// the one edge of its group that carries the label. A machine in which every state reacts to
+/// the same trigger in the same way is then drawn with one labelled line into the target, not
+/// with a labelled line from every state.
+/// Two transitions with one label read well as two labelled lines; from three on, the labels
+/// crowd out the lines.
+const SHARED_TRANSITION_MINIMUM: usize = 3;
+
+fn shared_transition_ports(prepared: &Value) -> BTreeMap<String, (String, bool)> {
+    let mut groups: BTreeMap<(String, String), Vec<String>> = BTreeMap::new();
+    for edge in as_array(field(prepared, "edges")) {
+        let label = transition_display_label(&as_string(field(edge, "label"), ""));
+        let source = as_string(field(edge, "source"), "");
+        let target = as_string(field(edge, "target"), "");
+        if label.is_empty() || source == target {
+            continue;
+        }
+        groups
+            .entry((target, label))
+            .or_default()
+            .push(as_string(field(edge, "id"), ""));
+    }
+    let mut shared = BTreeMap::new();
+    for (index, ((target, _), edges)) in groups
+        .into_iter()
+        .filter(|(_, edges)| edges.len() >= SHARED_TRANSITION_MINIMUM)
+        .enumerate()
+    {
+        let port = format!("{target}::shared-transition-{index}");
+        for (position, edge) in edges.into_iter().enumerate() {
+            shared.insert(edge, (port.clone(), position == 0));
+        }
+    }
+    shared
+}
+
 fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMode) -> Value {
+    let shared = match mode {
+        BehaviorMode::State => shared_transition_ports(prepared),
+        BehaviorMode::Action => BTreeMap::new(),
+    };
     let children: Vec<Value> = as_array(field(prepared, "nodes"))
         .iter()
         .map(|node| {
@@ -1203,6 +1244,18 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
                 "width": width,
                 "height": height,
             });
+            let node_id = as_string(field(node, "id"), "");
+            let ports: BTreeSet<&String> = shared
+                .values()
+                .map(|(port, _)| port)
+                .filter(|port| port.starts_with(&format!("{node_id}::shared-transition-")))
+                .collect();
+            if !ports.is_empty() {
+                child["ports"] = ports
+                    .into_iter()
+                    .map(|port| json!({ "id": port, "width": 1, "height": 1 }))
+                    .collect();
+            }
             // A state machine reads from its initial state, so that state leads the layout
             // whatever cycles the transitions form.
             if matches!(mode, BehaviorMode::State) && node_kind(node).contains("initial") {
@@ -1215,18 +1268,20 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
         .iter()
         .map(|edge| {
             let display_label = transition_display_label(&as_string(field(edge, "label"), ""));
+            let group = shared.get(&as_string(field(edge, "id"), ""));
             let mut base = json!({
                 "id": field(edge, "id"),
                 "sources": [field(edge, "source")],
-                "targets": [field(edge, "target")],
+                "targets": [group.map_or_else(|| field(edge, "target").clone(), |(port, _)| json!(port))],
             });
-            if display_label.is_empty() {
+            if display_label.is_empty() || group.is_some_and(|(_, labelled)| !labelled) {
                 return base;
             }
             let id = format!("{}::label", as_string(field(edge, "id"), ""));
             let mut label_box = estimate_elk_label_box(&id, &display_label);
             label_box["layoutOptions"] = json!({
-                "org.eclipse.elk.edgeLabels.placement": "CENTER",
+                // The label of a shared line sits at its target, where the lines have joined.
+                "org.eclipse.elk.edgeLabels.placement": if group.is_some() { "HEAD" } else { "CENTER" },
                 "org.eclipse.elk.edgeLabels.inline": "false",
             });
             base["labels"] = json!([label_box]);
@@ -1358,6 +1413,14 @@ fn layout_behavior_graph(
             "positions": positions,
             "edgeSectionsById": edge_sections,
             "edgeLabelsById": edge_labels,
+            "sharedLabelEdgeIds": match mode {
+                BehaviorMode::State => shared_transition_ports(prepared)
+                    .into_iter()
+                    .filter(|(_, (_, labelled))| !labelled)
+                    .map(|(edge, _)| edge)
+                    .collect::<Vec<_>>(),
+                BehaviorMode::Action => Vec::new(),
+            },
         }),
         size,
     ))
@@ -2507,5 +2570,53 @@ mod crowded_layer_tests {
         let before = small.clone();
         spread_crowded_layers(&mut small);
         assert_eq!(small, before);
+    }
+
+    #[test]
+    fn transitions_with_one_label_and_target_share_a_line_from_three_on() {
+        let edge = |id: &str, source: &str, target: &str, label: &str| json!({ "id": id, "source": source, "target": target, "label": label });
+        let nodes =
+            ["a", "b", "c", "home"].map(|id| json!({ "id": id, "label": id, "kind": "state" }));
+        let prepared = json!({
+            "nodes": nodes,
+            "edges": [
+                edge("a-home", "a", "home", "Reset"),
+                edge("b-home", "b", "home", "Reset"),
+                edge("c-home", "c", "home", "Reset"),
+                edge("a-b", "a", "b", "Go"),
+                edge("c-b", "c", "b", "Go"),
+                edge("home-home", "home", "home", "Reset"),
+            ],
+        });
+        let shared = shared_transition_ports(&prepared);
+        // The three into `home` share one port and one of them carries the label. Two with
+        // one label keep their own lines, and a self-loop is never part of a group.
+        assert_eq!(shared.len(), 3);
+        let ports: BTreeSet<&String> = shared.values().map(|(port, _)| port).collect();
+        assert_eq!(ports.len(), 1);
+        assert_eq!(shared.values().filter(|(_, labelled)| *labelled).count(), 1);
+
+        let graph = build_behavior_elk_graph(&prepared, true, BehaviorMode::State);
+        let port = ports.into_iter().next().unwrap();
+        let home = &as_array(field(&graph, "children"))[3];
+        assert_eq!(
+            field(&as_array(field(home, "ports"))[0], "id"),
+            &json!(port)
+        );
+        let labelled = as_array(field(&graph, "edges"))
+            .iter()
+            .filter(|edge| field(edge, "targets") == &json!([port]))
+            .filter(|edge| !as_array(field(edge, "labels")).is_empty())
+            .count();
+        assert_eq!(labelled, 1);
+        // In an action flow nothing is shared.
+        let graph = build_behavior_elk_graph(&prepared, true, BehaviorMode::Action);
+        assert!(as_array(field(&graph, "edges"))
+            .iter()
+            .all(|edge| field(edge, "targets")
+                .to_string()
+                .matches("shared-transition")
+                .count()
+                == 0));
     }
 }

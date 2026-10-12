@@ -354,7 +354,8 @@ pub fn render_state_transition_view(
         edge_layer = edge_layer.child(path_edge_hit_target(&path, &edge.id, Some(&tooltip_text)));
 
         let label = transition_display_label(&edge.label);
-        if !label.is_empty() {
+        // A transition that joins a shared line leaves the label to the one that carries it.
+        if !label.is_empty() && !layout.shared_label_edge_ids.contains(&edge.id) {
             let elk_label = layout
                 .edge_labels_by_id
                 .get(&edge.id)
