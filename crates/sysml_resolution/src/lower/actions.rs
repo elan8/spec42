@@ -1729,19 +1729,10 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a `then accept ...;` shorthand trigger (BNF `ThenTarget::Accept`, `ast::
-    /// TransitionAccept`) -- the inline accept-trigger form reused unchanged from `Transition`'s
-    /// own `accept` clause, deliberately deferred by `39bd06fc`. Sourced directly at `owner` (the
-    /// enclosing action def/usage declaration), not an anonymous nested declaration: an accept
-    /// trigger's operand is looked up in the action's own enclosing scope (e.g. `accept sig after
-    /// ...;`'s `sig`, `accept when b.f;`'s `b`), not among the action's own children the way a
-    /// `Succession`/`Decide`/`Merge` end is. Dispatches on the three `TransitionAccept` shapes:
-    /// `Shorthand`'s expression and `TimeTrigger`'s (`at`/`when`/`after`) expression both reuse
-    /// `lower_constraint_expression` directly (picking up its `FeatureRef`/`MemberAccess`/
-    /// `Invocation`/`Constructor` dispatch, e.g. `accept at new Time::Iso8601DateTime(...)`'s
-    /// constructor callee/argument); `Payload`'s typed `: Type` suffix reuses
-    /// `lower_payload_clause_type`. Either shape's optional trailing `via <port>` clause resolves
-    /// as an `AcceptVia` reference through `lower_satisfy_operand`.
+    /// Lowers a `then accept ...;` (BNF `ThenTarget::Accept`, `ast::TransitionAccept`) as the
+    /// anonymous accept action it declares, with the trigger lowered at that action exactly as
+    /// for a named `action a accept ...;` (see `lower_accept_trigger`). Names in the trigger are
+    /// still found in the enclosing action's scope, which a member's lookup reaches.
     pub(crate) fn lower_then_accept(
         &mut self,
         document: DocumentIdx,
@@ -1749,7 +1740,38 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         accept: &Node<TransitionAccept>,
     ) -> Result<(), ConstructionError> {
-        self.lower_accept_trigger(document, owner, family, &accept.value, accept.span)
+        // `then accept ...;` is the `then` shorthand before an accept action node (BNF
+        // `AcceptNode`), like `then action a;` before an action. The node is anonymous: the
+        // name after `accept` is that of its payload parameter, not of the action.
+        let (has_payload_argument, has_receiver_argument) = match &accept.value {
+            TransitionAccept::Shorthand(_, via) => (true, via.is_some()),
+            TransitionAccept::TimeTrigger(_, _) => (true, false),
+            TransitionAccept::Payload(_, via) => (false, via.is_some()),
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::AcceptActionUsage,
+            None,
+            accept.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    composite: true,
+                    ..DeclarationModifiers::default()
+                },
+                is_trigger_action: Some(false),
+                accept_has_payload_argument: Some(has_payload_argument),
+                accept_has_receiver_argument: Some(has_receiver_argument),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            accept.span,
+        )?;
+        self.lower_accept_trigger(document, declaration, family, &accept.value, accept.span)
     }
 
     /// Lowers an `accept when|at|after <argument>` trigger as its own SysML
