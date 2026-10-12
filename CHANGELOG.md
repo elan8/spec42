@@ -67,6 +67,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   between them. It is now routed along the gaps and meets each box at the middle of a side. A
   transition between a nested state and a state outside its owner is routed the same way, and
   one whose end is written as a feature chain (`first on.ready`) is drawn at all.
+- **Parts inside an interconnection container can stand in columns (#262).** Parts that
+  connect only to the boundary of their container all stand in one column. The layout can now
+  spread them, inside a container as well as at the root of the view, which needed a fix in
+  `elkrs` (elan8/elkrs#6, pinned at its commit until it is merged). A view is laid out plain,
+  with its roots spread and with every container spread, and the one that fits a page best is
+  kept. On the reference views the single column still fits best, because every column brings
+  the labels of its ports with it.
 - **Figures read better on a page (#262).** A long list of members in a general view continues
   in columns (webshop structure: 256 × 1949 px at 2.8 pt becomes 622 × 831 px at 6.6 pt). Action
   flows and sequences are spaced by the labels they hold, not by fixed gaps. Interconnection

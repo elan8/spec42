@@ -9,7 +9,7 @@ use std::collections::BTreeMap;
 use serde_json::Value;
 use thiserror::Error;
 
-pub const ELKRS_REVISION: &str = "84f95ae55688fe1e0d269d3a5080edf61b218c87";
+pub const ELKRS_REVISION: &str = "572944fd9e90e700b7079991e5640fa94ca7aea3";
 pub const ELK_COMPATIBILITY_BASELINE: &str = "ELK 0.11.0";
 
 #[derive(Debug, Error, PartialEq, Eq)]

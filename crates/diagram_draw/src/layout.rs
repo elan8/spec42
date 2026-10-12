@@ -1777,13 +1777,20 @@ struct PortUsage {
 /// columns is given to ELK as partitions. Connectors between siblings keep their direction:
 /// a part never moves in front of a sibling that feeds it.
 ///
-/// The pinned `elkrs` reads `elk.partitioning.activate` on the top-level graph only, so today
-/// this spreads the roots of a view and not yet the parts inside one container. Reading it for
-/// nested graphs as well is not enough: with that change `elkrs` refuses a container whose
-/// parts connect to its boundary ("layer constraint set to FIRST, but has at least one
-/// incoming edge"), which is the case this is for, and a container it does accept came out
-/// wider. The partitions need to take the boundary connectors into account first.
+/// Whether the spread layout is used is decided by the caller, which keeps it only when it
+/// fits a page better: every column brings the labels of its ports with it, so a spread view
+/// is often too wide to gain from being shorter.
+///
+/// Inside a container this needs an `elkrs` that reads `elk.partitioning.activate` on nested
+/// graphs and does not pin a partitioned node that connects only to its container's boundary;
+/// with an older one the partitions of a nested graph are ignored.
+#[cfg(test)]
 fn spread_crowded_layers(graph: &mut Value) {
+    spread_crowded_layers_to(graph, true);
+}
+
+/// As `spread_crowded_layers`; with `nested` false only the roots of the view are spread.
+fn spread_crowded_layers_to(graph: &mut Value, nested: bool) {
     let edges: Vec<(String, String)> = as_array(field(graph, "edges"))
         .iter()
         .filter_map(|edge| {
@@ -1808,7 +1815,7 @@ fn spread_crowded_layers(graph: &mut Value) {
             collect_ids(child, ids);
         }
     }
-    fn spread(node: &mut Value, edges: &[(String, String)]) {
+    fn spread(node: &mut Value, edges: &[(String, String)], nested: bool) {
         let count = as_array(field(node, "children")).len();
         // Which child each node or port below this container belongs to.
         let mut child_of: HashMap<String, usize> = HashMap::new();
@@ -1869,13 +1876,16 @@ fn spread_crowded_layers(graph: &mut Value) {
                 }
             }
         }
+        if !nested {
+            return;
+        }
         if let Some(children) = node.get_mut("children").and_then(Value::as_array_mut) {
             for child in children {
-                spread(child, edges);
+                spread(child, edges, nested);
             }
         }
     }
-    spread(graph, &edges);
+    spread(graph, &edges, nested);
 }
 
 /// The part that contains `node` in a prepared interconnection view, when it has one.
@@ -2403,7 +2413,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })
         .collect();
 
-    let mut elk_graph_input = json!({
+    let elk_graph_input = json!({
         "id": "root",
         "layoutOptions": build_elk_layout_options(
             ElkViewKind::Interconnection,
@@ -2422,8 +2432,33 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })).collect::<Vec<_>>(),
     });
 
-    spread_crowded_layers(&mut elk_graph_input);
-    let laid_out = diagram_layout::layout_value(&elk_graph_input)?;
+    // Spreading the parts of a crowded layer over columns makes a view shorter and wider,
+    // and every column brings the labels of its ports with it. Which of the two fits a page
+    // better depends on the view, so both are laid out and the larger one on the reference
+    // page is kept: the plain layout, the one with only the roots of the view spread, or the
+    // one with the parts of every container spread; on a tie the earlier of these.
+    let size = |laid_out: &Value| {
+        (
+            num(field(laid_out, "width")),
+            num(field(laid_out, "height")),
+        )
+    };
+    let mut laid_out = diagram_layout::layout_value(&elk_graph_input)?;
+    let mut tried = vec![elk_graph_input.clone()];
+    for nested in [false, true] {
+        let mut candidate = elk_graph_input.clone();
+        spread_crowded_layers_to(&mut candidate, nested);
+        if tried.contains(&candidate) {
+            continue;
+        }
+        // A layout the engine cannot do with partitions is no reason to fail the view.
+        if let Ok(spread) = diagram_layout::layout_value(&candidate) {
+            if reference_page_scale(size(&spread)) > reference_page_scale(size(&laid_out)) {
+                laid_out = spread;
+            }
+        }
+        tried.push(candidate);
+    }
 
     let mut laid_out_nodes: HashMap<String, LaidOutNode> = HashMap::new();
     let mut port_centers: HashMap<String, Point> = HashMap::new();

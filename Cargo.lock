@@ -710,8 +710,8 @@ checksum = "9e5e8f6c15a24b9a3ee5efec809ccd006d3b30e8b3bb63c39af737c7f87daa1d"
 
 [[package]]
 name = "elkrs"
-version = "0.1.1"
-source = "git+https://github.com/elan8/elkrs.git?rev=84f95ae55688fe1e0d269d3a5080edf61b218c87#84f95ae55688fe1e0d269d3a5080edf61b218c87"
+version = "0.1.2"
+source = "git+https://github.com/elan8/elkrs.git?rev=572944fd9e90e700b7079991e5640fa94ca7aea3#572944fd9e90e700b7079991e5640fa94ca7aea3"
 dependencies = [
  "indexmap",
  "serde",
