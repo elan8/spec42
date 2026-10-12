@@ -4,6 +4,9 @@
 //! visible, which memberships stay listed as compartments, and the `disclosure` /
 //! `compartmentSectionState` attributes drawing reads.
 //!
+//! Interconnection View: `expanded_node_ids` names the parts below the exposed roots that show
+//! the parts inside them; the roots are always open. `nesting` closes the others.
+//!
 //! Browser View: `expanded_node_ids` is the set of **collapsed** row ids (the toggle set the
 //! client already mutates). Empty means every row is expanded, matching the former TypeScript
 //! local `collapsed` Set. Drawing reads `meta.collapsedRowIds`.
@@ -49,6 +52,10 @@ pub fn apply_general_disclosure(prepared: &mut Value, state: &DisclosureState) {
     match as_string(field(prepared, "view"), "").as_str() {
         "general-view" => apply_general_view_disclosure(prepared, state),
         "browser-view" => apply_browser_disclosure(prepared, state),
+        "interconnection-view" => crate::nesting::apply_interconnection_disclosure(
+            prepared,
+            &state.expanded_node_ids.iter().cloned().collect(),
+        ),
         _ => {}
     }
 }

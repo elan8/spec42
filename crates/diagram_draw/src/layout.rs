@@ -1903,8 +1903,16 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let label_width = characters(&as_string(field(node, "label"), "")) * 6.8;
         let type_width = (characters(&as_string(field(attrs, "partType"), "")) + 2.0) * 5.4;
         let base_width: f64 = if is_container { 220.0 } else { 132.0 };
+        // The expand control sits left of the centred name, which keeps clear of it on both sides.
+        let control_reserve = if field(attrs, "disclosure").is_string() {
+            2.0 * crate::sysml_node::DISCLOSURE_TARGET_SIZE
+        } else {
+            0.0
+        };
         // Port labels sit outside the part, so they do not make it wider.
-        let width = base_width.max(label_width.max(type_width) + 28.0).ceil();
+        let width = base_width
+            .max(label_width.max(type_width) + 28.0 + control_reserve)
+            .ceil();
         let mut height = if is_container {
             root_header_height + 72.0
         } else {

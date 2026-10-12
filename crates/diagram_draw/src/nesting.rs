@@ -10,7 +10,7 @@
 //! names the feature it ends on (SysML 8.2.3.12). A connector that lies wholly inside one closed
 //! part is not drawn.
 
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use serde_json::{json, Value};
 
@@ -103,6 +103,25 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
     let Nesting::Levels(levels) = nesting else {
         return;
     };
+    close_interconnection_parts(prepared, OpenParts::Levels(levels));
+}
+
+/// Draws an interconnection view the way its reader has opened it: the exposed roots are open,
+/// and a part below them is open when `expanded` names it. Every part that has parts of its own
+/// gets the `disclosure` attribute the drawing turns into an expand control.
+pub fn apply_interconnection_disclosure(prepared: &mut Value, expanded: &HashSet<String>) {
+    close_interconnection_parts(prepared, OpenParts::Named(expanded));
+}
+
+/// Which parts of an interconnection view show the parts inside them.
+enum OpenParts<'a> {
+    /// The parts with fewer than this many parts above them.
+    Levels(usize),
+    /// The exposed roots and the parts named here.
+    Named(&'a HashSet<String>),
+}
+
+fn close_interconnection_parts(prepared: &mut Value, open: OpenParts<'_>) {
     if as_string(field(prepared, "view"), "") != "interconnection-view" {
         return;
     }
@@ -135,12 +154,57 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
         }
         level
     };
-    let drawn: BTreeSet<String> = by_id
-        .keys()
-        .filter(|id| level(id) <= levels)
-        .cloned()
-        .collect();
-    if drawn.len() == nodes.len() {
+    let is_open = |id: &str| -> bool {
+        if by_id.get(id).is_some_and(|node| is_synthetic(node)) {
+            return true;
+        }
+        match &open {
+            OpenParts::Levels(levels) => level(id) < *levels,
+            OpenParts::Named(expanded) => level(id) == 0 || expanded.contains(id),
+        }
+    };
+    // A part is drawn when every part above it is open.
+    let is_drawn = |id: &str| -> bool {
+        let mut current = id.to_owned();
+        let mut guard = nodes.len();
+        while let Some(above) = parent(&current) {
+            if !is_open(&above) {
+                return false;
+            }
+            current = above;
+            guard = guard.saturating_sub(1);
+            if guard == 0 {
+                break;
+            }
+        }
+        true
+    };
+    let drawn: BTreeSet<String> = by_id.keys().filter(|id| is_drawn(id)).cloned().collect();
+    // The parts a reader can open or close: those below the roots that have parts of their own.
+    let disclosure: HashMap<String, &'static str> = match &open {
+        OpenParts::Levels(_) => HashMap::new(),
+        OpenParts::Named(_) => {
+            let with_parts: BTreeSet<String> = by_id.keys().filter_map(|id| parent(id)).collect();
+            with_parts
+                .into_iter()
+                .filter(|id| drawn.contains(id) && level(id) > 0)
+                .filter(|id| {
+                    by_id
+                        .get(id.as_str())
+                        .is_some_and(|node| !is_synthetic(node))
+                })
+                .map(|id| {
+                    let state = if is_open(&id) {
+                        "expanded"
+                    } else {
+                        "collapsed"
+                    };
+                    (id, state)
+                })
+                .collect()
+        }
+    };
+    if drawn.len() == nodes.len() && disclosure.is_empty() {
         return;
     }
     // The drawn part a part belongs to: itself, or its nearest drawn ancestor.
@@ -267,6 +331,9 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
             if let Some(count) = closed.get(&id) {
                 node["attributes"]["closedParts"] = json!(count);
             }
+            if let Some(state) = disclosure.get(&id) {
+                node["attributes"]["disclosure"] = json!(state);
+            }
             if let Some(paths) = proxies.get(&id) {
                 let mut details =
                     as_array(field(field(&node, "attributes"), "portDetails")).to_vec();
@@ -284,7 +351,9 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
 
     prepared["nodes"] = Value::Array(kept_nodes);
     prepared["edges"] = Value::Array(kept_edges);
-    prepared["meta"]["nestingLevels"] = json!(levels);
+    if let OpenParts::Levels(levels) = open {
+        prepared["meta"]["nestingLevels"] = json!(levels);
+    }
     prepared["meta"]["closedPartCount"] = json!(nodes.len() - drawn.len());
 }
 
@@ -448,6 +517,56 @@ mod tests {
             apply_interconnection_nesting(&mut prepared, nesting);
             assert_eq!(prepared, view());
         }
+    }
+
+    #[test]
+    fn a_reader_opens_parts_one_at_a_time() {
+        let disclosure = |prepared: &Value, id: &str| {
+            as_array(field(prepared, "nodes"))
+                .iter()
+                .find(|node| as_string(field(node, "id"), "") == id)
+                .map(|node| field(field(node, "attributes"), "disclosure").clone())
+        };
+        // Nothing opened: the root shows its parts, and each part with parts can be opened.
+        let mut prepared = view();
+        apply_interconnection_disclosure(&mut prepared, &HashSet::new());
+        assert_eq!(ids(&prepared, "nodes"), ["robot", "base", "top"]);
+        assert_eq!(disclosure(&prepared, "robot"), Some(Value::Null));
+        assert_eq!(disclosure(&prepared, "base"), Some(json!("collapsed")));
+        assert_eq!(disclosure(&prepared, "top"), Some(Value::Null));
+        assert_eq!(
+            field(field(&prepared, "meta"), "nestingLevels"),
+            &Value::Null
+        );
+
+        // Opening `base` shows its parts; `motor` stays closed and keeps its own control.
+        let mut prepared = view();
+        apply_interconnection_disclosure(&mut prepared, &HashSet::from(["base".to_owned()]));
+        assert_eq!(
+            ids(&prepared, "nodes"),
+            ["robot", "base", "top", "motor", "gear"]
+        );
+        assert_eq!(disclosure(&prepared, "base"), Some(json!("expanded")));
+        assert_eq!(disclosure(&prepared, "motor"), Some(json!("collapsed")));
+        assert!(ids(&prepared, "edges").contains(&"inside-base".to_owned()));
+
+        // A part opened inside a closed part stays hidden until that part is opened.
+        let mut prepared = view();
+        apply_interconnection_disclosure(&mut prepared, &HashSet::from(["motor".to_owned()]));
+        assert_eq!(ids(&prepared, "nodes"), ["robot", "base", "top"]);
+
+        // With everything open nothing is left out, and the controls are still there.
+        let mut prepared = view();
+        apply_interconnection_disclosure(
+            &mut prepared,
+            &HashSet::from(["base".to_owned(), "motor".to_owned()]),
+        );
+        assert_eq!(as_array(field(&prepared, "nodes")).len(), 6);
+        assert_eq!(disclosure(&prepared, "motor"), Some(json!("expanded")));
+        assert_eq!(
+            as_array(field(&prepared, "edges")),
+            as_array(field(&view(), "edges"))
+        );
     }
 
     #[test]

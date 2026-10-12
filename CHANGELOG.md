@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The editor opens an interconnection view one part at a time (#262).** It drew every level
+  of parts, so a view of a product with a few levels could not be read. It now starts as `spec42
+  diagram --depth 1` draws it: the exposed parts with their direct parts closed. A part that has
+  parts of its own carries the `+` / `-` control the general view has; opening it draws its parts
+  and the connectors between them, and a connector that ends inside a closed part ends on a
+  proxy at its boundary. The exposed parts are always open. `spec42 diagram` output is unchanged.
+
 ## [0.55.0] - 2026-10-12
 
 - **Upgrade notes.** The semantic contract version is now
