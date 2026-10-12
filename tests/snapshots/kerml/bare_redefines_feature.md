@@ -146,7 +146,7 @@ class A {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "spaceTimeEnclosedPoints")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "spaceTimeEnclosedPoints")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "portions")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "portions")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "spaceTimeEnclosedPoints")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )

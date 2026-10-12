@@ -146,7 +146,7 @@ pub enum LibrarySpecializationAnchorBranch {
 ///
 /// Distinct from "not constant" and "cyclic", which are answers rather than failures: an
 /// expression over a feature with no constant value is correctly not constant, and a value cycle
-/// is a property of the model. These three are cases where the expression could not be folded at
+/// is a property of the model. These are cases where the expression could not be folded at
 /// all.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum EvaluationFailure {
@@ -161,6 +161,9 @@ pub enum EvaluationFailure {
     /// An operand reference that resolution left unresolved, ambiguous, unsupported or
     /// non-converged, so what it would evaluate to is unknown.
     UnresolvedOperand,
+    /// Constant quantities require unit conversion or a dimensional operation this evaluator
+    /// does not implement. Their magnitudes are constant, so this is not `NonConstant`.
+    UnsupportedUnitOperation,
 }
 
 impl EvaluationFailure {
@@ -170,6 +173,7 @@ impl EvaluationFailure {
             Self::DivisionByZero => "division-by-zero",
             Self::TypeMismatch => "type-mismatch",
             Self::UnresolvedOperand => "unresolved-operand",
+            Self::UnsupportedUnitOperation => "unsupported-unit-operation",
         }
     }
 }

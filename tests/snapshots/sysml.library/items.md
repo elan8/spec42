@@ -322,6 +322,12 @@ standard library package Items {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 60 3) (end 60 101))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 60 23) (end 60 57))
@@ -376,6 +382,12 @@ standard library package Items {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 87 4) (end 87 85))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 87 24) (end 87 32))
@@ -397,6 +409,12 @@ standard library package Items {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 89 20) (end 89 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 92 4) (end 93 68))
       )
       (diagnostic
         (severity warning)
@@ -1062,12 +1080,12 @@ standard library package Items {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item) (name "items")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item) (name "items")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 0)) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 1)) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 0)) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 1)) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind attribute) (name "isSolid")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind attribute) (name "isSolid")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

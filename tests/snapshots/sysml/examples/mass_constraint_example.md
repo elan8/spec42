@@ -262,6 +262,12 @@ package MassConstraintExample {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 68 1) (end 73 2))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 69 17) (end 69 26))
@@ -796,7 +802,7 @@ package MassConstraintExample {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc::totalMass"))) (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind constraint-def) (name "MassConstraint3")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind constraint-def) (name "MassConstraint3")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind constraint-def) (name "MassLimit")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle1")) (named (kind attribute) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle2")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
@@ -807,7 +813,7 @@ package MassConstraintExample {
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle5")) (named (kind attribute) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle5")) (named (kind assert-constraint) (name "ml")) (named (kind parameter) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle5")) (named (kind assert-constraint) (name "ml")) (named (kind parameter) (name "maxMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
-    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind constraint) (name "mc")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind constraint) (name "mc")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (unit (declaration (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle5")) (named (kind assert-constraint) (name "ml")) (named (kind parameter) (name "maxMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "kg") (start 102 22) (end 102 24) (outcome (status catalog-unavailable)))
   )
 )

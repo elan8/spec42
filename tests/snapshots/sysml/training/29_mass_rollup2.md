@@ -194,8 +194,8 @@ package MassRollup2 {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "filteredMassThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/29_mass_rollup2.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "filteredMassThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

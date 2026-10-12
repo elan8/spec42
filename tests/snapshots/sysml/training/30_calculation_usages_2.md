@@ -239,7 +239,7 @@ package 'Calculation Usages-2' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::wheelPower"))) (target (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_2.md") (path (named (kind package) (name "Calculation Usages-2")) (named (kind part-def) (name "VehicleDynamics")) (named (kind calc) (name "updateState")) (named (kind attribute) (name "totalPower")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_2.md") (path (named (kind package) (name "Calculation Usages-2")) (named (kind part-def) (name "VehicleDynamics")) (named (kind calc) (name "updateState")) (named (kind attribute) (name "totalPower")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

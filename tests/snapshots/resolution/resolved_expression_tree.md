@@ -43,6 +43,12 @@ package Expressions {
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 16 8) (end 18 9))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 17 36) (end 17 41))
@@ -56,6 +62,12 @@ package Expressions {
 (fixture-diagnostics
   (document "memory://snapshot/resolved_expression_tree.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 16 8) (end 18 9))
+      )
       (diagnostic
         (severity warning)
         (code "unresolved_reference")
@@ -157,7 +169,7 @@ package Expressions {
     (evaluated (declaration (node (document "memory://snapshot/resolved_expression_tree.md") (path (named (kind package) (name "Expressions")) (named (kind part-def) (name "Vehicle")) (named (kind constraint) (name "balanced")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/resolved_expression_tree.md") (path (named (kind package) (name "Expressions")) (named (kind part-def) (name "Vehicle")) (named (kind constraint) (name "massBudget")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/resolved_expression_tree.md") (path (named (kind package) (name "Expressions")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "netMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/resolved_expression_tree.md") (path (named (kind package) (name "Expressions")) (named (kind part-def) (name "Vehicle")) (named (kind constraint) (name "withInvocation")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/resolved_expression_tree.md") (path (named (kind package) (name "Expressions")) (named (kind part-def) (name "Vehicle")) (named (kind constraint) (name "withInvocation")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

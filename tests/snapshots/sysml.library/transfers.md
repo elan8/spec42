@@ -1871,7 +1871,7 @@ standard library package Transfers {
     (evaluated (declaration (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "SendPerformance")) (named (kind kerml-feature) (name "sender")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "SendPerformance")) (named (kind kerml-feature) (name "sentTransfer")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "Transfer")) (named (kind default-reference) (name "instantNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "payloadNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "payloadNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
