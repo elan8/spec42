@@ -671,6 +671,8 @@ fn an_action_flow_written_with_then_draws_its_whole_flow() {
         id_of("choice", "DecisionNode"),
     );
     let accept = id_of("waitForPayment", "AcceptActionUsage");
+    // `then accept ...;` declares an accept action without a name of its own.
+    let then_accept = id_of("accept", "AcceptActionUsage");
     let edges = input["prepared"]["edges"].as_array().expect("edges");
     let has = |source: &str, target: &str, flow: bool| {
         edges.iter().any(|edge| {
@@ -691,7 +693,8 @@ fn an_action_flow_written_with_then_draws_its_whole_flow() {
         (&right, &joined),
         (&joined, &choice),
         (&choice, &accept),
-        (&accept, &finish),
+        (&accept, &then_accept),
+        (&then_accept, &finish),
         (&finish, &done),
     ] {
         assert!(
@@ -704,7 +707,7 @@ fn an_action_flow_written_with_then_draws_its_whole_flow() {
             .iter()
             .filter(|edge| edge["attributes"]["succession"] == true)
             .count(),
-        10
+        11
     );
     // The flow between two parameters is drawn between the actions that own them.
     assert!(has(&prepare, &left, true));

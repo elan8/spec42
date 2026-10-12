@@ -83,13 +83,13 @@ them.
 | Fork and join | Bar | Bar | Conforms |
 | Parameters | Small squares on the action's boundary, with direction | Small squares on the boundary, inputs on the left and outputs on the right, with the name beside them. Inherited parameters are included | Conforms; the side stands for the direction |
 | Flow | Solid line, filled arrowhead, optional `«flow»` and item | Solid line with a filled arrowhead between the actions that own the two parameters; the item is not named | Conforms without the item |
-| Accept and send actions | The action symbol with a notched or a pointed flag in its upper left corner | As specified for `action a accept ...;` and `then send ...;`. `then accept ...;` is not lowered as an action of its own and is not drawn | Conforms, except `then accept` |
+| Accept and send actions | The action symbol with a notched or a pointed flag in its upper left corner | As specified. An accept or send action without a name is labelled `accept` or `send` | Conforms |
 | Swimlanes | Supported by the notation | Not drawn | Missing |
 
 ## What to change next, by effect on a reader
 
-1. `then accept` in an action flow.
-2. The direction a port takes from the features of its definition.
-3. Flows on connections in an interconnection view.
-4. Routes for transitions that cross the boundary of a containing state.
+1. The direction a port takes from the features of its definition.
+2. Flows on connections in an interconnection view.
+3. Routes for transitions that cross the boundary of a containing state.
+4. Swimlanes in an action flow.
 

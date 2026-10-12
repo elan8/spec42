@@ -29,7 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     accept action carries a notched flag and a send action a pointed one. A send action was
     drawn as a final node.
   - conditional successions with their guard in brackets, as it is written, and `[else]`.
-  Not drawn yet: `then accept ...;`.
+- **`then accept ...;` declares an accept action (#262).** Its trigger was attached to the
+  enclosing action and no accept action was published, so a flow written `then accept sig;
+  then ...` had a hole in it. It is now the anonymous `AcceptActionUsage` the text declares,
+  with its trigger, like `action a accept ...;`.
 - **A brace-less `if g then x; else y;` is two conditional successions (#262).** It was
   lowered as an `IfActionUsage` that owned the two `then`s. An if node has a braced body
   (SysML 8.2.2.17.3); without braces this text is a guarded and a default target succession
