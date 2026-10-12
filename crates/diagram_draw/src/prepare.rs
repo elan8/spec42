@@ -2678,6 +2678,28 @@ fn prepare_typed_action_flow(
         }
         None
     };
+    // The parameters of an action: the directed features it owns, by the side they are drawn on.
+    let parameters = |action: usize, directions: &[&str]| -> Vec<Value> {
+        raw_nodes
+            .iter()
+            .filter(|node| field(node, "owner").as_u64() == Some(action as u64))
+            .filter(|node| {
+                field(node, "direction")
+                    .as_str()
+                    .is_some_and(|direction| directions.contains(&direction))
+            })
+            .filter_map(|node| field(node, "name").as_str())
+            .map(|name| json!({ "name": name }))
+            .collect()
+    };
+    // A flow runs between parameters; it is drawn between the actions that own them.
+    let flow_end = |index: usize| -> Option<usize> {
+        if action_indexes.contains(&index) {
+            return Some(index);
+        }
+        let owner = field(raw_nodes.get(index)?, "owner").as_u64()? as usize;
+        action_indexes.contains(&owner).then_some(owner)
+    };
     let mut ordered_indexes: Vec<usize> = action_indexes.iter().copied().collect();
     ordered_indexes.sort_unstable();
     let nodes: Vec<Value> = ordered_indexes
@@ -2688,10 +2710,36 @@ fn prepare_typed_action_flow(
             let semantic_reference = field(element, "reference")
                 .as_u64()
                 .and_then(|reference| references.get(reference as usize));
+            // The start and done nodes of a flow are the `start` and `done` features every
+            // action inherits from the library; they are known by that identity.
+            let library_node = semantic_reference
+                .map(|reference| as_string(field(reference, "qualifiedName"), ""))
+                .and_then(|qualified_name| match qualified_name.as_str() {
+                    "Actions::Action::start" => Some("initial"),
+                    "Actions::Action::done" => Some("final"),
+                    _ => None,
+                });
+            let metaclass = as_string(field(element, "metaclass"), "ActionUsage");
+            // An unnamed node is labelled by what it is, not by the name of its metaclass.
+            let unnamed = match metaclass.as_str() {
+                "IfActionUsage" => "if",
+                "WhileLoopActionUsage" => "while",
+                "ForLoopActionUsage" => "for",
+                "AssignmentActionUsage" => "assign",
+                "TerminateActionUsage" => "terminate",
+                "AcceptActionUsage" => "accept",
+                "SendActionUsage" => "send",
+                "PerformActionUsage" | "PerformUsage" => "perform",
+                _ => "",
+            };
             json!({
                 "id": format!("n:{index}"),
-                "label": as_string(field(element, "name"), &as_string(field(element, "metaclass"), "Action")),
-                "kind": as_string(field(element, "metaclass"), "ActionUsage"),
+                "label": if library_node.is_some() {
+                    String::new()
+                } else {
+                    as_string(field(element, "name"), unnamed)
+                },
+                "kind": library_node.map_or(metaclass, str::to_owned),
                 "uri": field(&source, "uri"),
                 "range": field(&source, "range"),
                 "attributes": {
@@ -2699,6 +2747,8 @@ fn prepare_typed_action_flow(
                     "notationRole": field(element, "notationRole"),
                     "owner": field(element, "owner"),
                     "containerId": container_of(index).map(|owner| format!("n:{owner}")),
+                    "inputs": parameters(index, &["in", "inout"]),
+                    "outputs": parameters(index, &["out"]),
                 },
             })
         })
@@ -2713,6 +2763,11 @@ fn prepare_typed_action_flow(
             }
             let source = field(edge, "source").as_u64()? as usize;
             let target = field(edge, "target").as_u64()? as usize;
+            let (source, target) = if kind == "flow" {
+                (flow_end(source)?, flow_end(target)?)
+            } else {
+                (source, target)
+            };
             if !action_indexes.contains(&source) || !action_indexes.contains(&target) {
                 return None;
             }
@@ -2802,6 +2857,29 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
             return None;
         }
         let frame = field(scene, "frame");
+        // The entry, do and exit actions of a state are the action nodes it owns in those
+        // roles. A vertex and its state node name the same source.
+        let projected_nodes = as_array(field(projection, "nodes"));
+        let subaction = |vertex: &Value, role: &str| -> Option<String> {
+            let state = projected_nodes.iter().position(|node| {
+                field(node, "source") == field(vertex, "navigation")
+                    && as_string(field(node, "metaclass"), "").contains("State")
+            })?;
+            let action = projected_nodes.iter().find(|node| {
+                field(node, "owner").as_u64() == Some(state as u64)
+                    && field(node, "stateSubaction").as_str() == Some(role)
+            })?;
+            // Named by its own name, or by the action it is typed by when it has none.
+            field(action, "name")
+                .as_str()
+                .map(str::to_owned)
+                .or_else(|| {
+                    as_array(field(field(action, "typing"), "types"))
+                        .first()
+                        .and_then(|typed| field(typed, "label").as_str())
+                        .map(str::to_owned)
+                })
+        };
         let nodes: Vec<Value> = as_array(field(scene, "vertices"))
             .iter()
             .enumerate()
@@ -2821,7 +2899,12 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "kind": as_string(field(vertex, "kind"), "state"),
                     "uri": field(&source, "uri"),
                     "range": field(&source, "range"),
-                    "attributes": { "semanticSceneId": field(vertex, "id") },
+                    "attributes": {
+                        "semanticSceneId": field(vertex, "id"),
+                        "entry": subaction(vertex, "entry"),
+                        "do": subaction(vertex, "do"),
+                        "exit": subaction(vertex, "exit"),
+                    },
                 })
             })
             .collect();

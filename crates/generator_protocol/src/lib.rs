@@ -866,13 +866,17 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceReference,
     pub compartments: Vec<DiagramCompartment>,
-    /// A port's authored direction (`"in"` / `"out"` / `"inout"`). `None` for a port with no
-    /// authored direction and for every non-port element; a generator or renderer must not derive
-    /// a side or a direction from this element's name or its owner's when it is `None`.
+    /// The authored direction (`"in"` / `"out"` / `"inout"`) of a port or of a directed feature
+    /// such as a parameter of an action. `None` for an element with no authored direction; a
+    /// generator or renderer must not derive a side or a direction from this element's name or
+    /// its owner's when it is `None`.
     pub direction: Option<String>,
     /// Whether a port's authored typing conjugates the definition it names (`port p : ~PD;`).
     /// `false` for a port with no conjugated typing and for every non-port element.
     pub conjugated: bool,
+    /// `"entry"`, `"do"` or `"exit"` for the action a state owns in that role. The three are
+    /// action usages that only their membership tells apart. `None` for every other element.
+    pub state_subaction: Option<String>,
 }
 
 /// Contextual identity of one projected occurrence. The semantic references remain canonical
@@ -1316,7 +1320,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x2b66_c8aa_fc3c_a533,
+            SCHEMA_FINGERPRINT, 0x48c4_783d_bf7b_b32f,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1324,7 +1328,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x85ed_4e42_ffb0_4022,
+            COMPATIBILITY_TOKEN, 0xc2d6_ee7d_1dbc_6456,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

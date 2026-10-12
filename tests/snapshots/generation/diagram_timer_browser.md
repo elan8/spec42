@@ -16850,6 +16850,7 @@ package TimerBrowser {
         "owner": null,
         "reference": 1,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -16870,6 +16871,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 215,
         "source": 183,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -16884,6 +16886,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 216,
         "source": 186,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -16898,6 +16901,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 217,
         "source": 189,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -16912,6 +16916,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 218,
         "source": 192,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -16926,6 +16931,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 219,
         "source": 195,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -16961,6 +16967,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 103,
         "source": 175,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -16981,6 +16988,7 @@ package TimerBrowser {
         "owner": 6,
         "reference": 224,
         "source": 151,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -16995,6 +17003,7 @@ package TimerBrowser {
         "owner": 6,
         "reference": 225,
         "source": 154,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17009,6 +17018,7 @@ package TimerBrowser {
         "owner": 6,
         "reference": 226,
         "source": 157,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17023,6 +17033,7 @@ package TimerBrowser {
         "owner": 6,
         "reference": 227,
         "source": 160,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17047,6 +17058,7 @@ package TimerBrowser {
         "owner": 6,
         "reference": 120,
         "source": 149,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17077,6 +17089,7 @@ package TimerBrowser {
         "owner": 11,
         "reference": 80,
         "source": 113,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17097,6 +17110,7 @@ package TimerBrowser {
         "owner": 12,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17111,6 +17125,7 @@ package TimerBrowser {
         "owner": 13,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17118,13 +17133,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 14,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17139,6 +17155,7 @@ package TimerBrowser {
         "owner": 14,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17153,6 +17170,7 @@ package TimerBrowser {
         "owner": 12,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17167,6 +17185,7 @@ package TimerBrowser {
         "owner": 17,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17174,13 +17193,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 18,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17195,6 +17215,7 @@ package TimerBrowser {
         "owner": 18,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17202,13 +17223,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 12,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17240,6 +17262,7 @@ package TimerBrowser {
         "owner": 11,
         "reference": 82,
         "source": 107,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17260,6 +17283,7 @@ package TimerBrowser {
         "owner": 22,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17274,6 +17298,7 @@ package TimerBrowser {
         "owner": 23,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17281,13 +17306,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 24,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17302,6 +17328,7 @@ package TimerBrowser {
         "owner": 24,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17316,6 +17343,7 @@ package TimerBrowser {
         "owner": 22,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17330,6 +17358,7 @@ package TimerBrowser {
         "owner": 27,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17337,13 +17366,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 28,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17358,6 +17388,7 @@ package TimerBrowser {
         "owner": 28,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17365,13 +17396,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 22,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17386,6 +17418,7 @@ package TimerBrowser {
         "owner": 22,
         "reference": 207,
         "source": 109,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17400,6 +17433,7 @@ package TimerBrowser {
         "owner": 32,
         "reference": 208,
         "source": 112,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17407,13 +17441,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 33,
         "reference": 209,
         "source": 112,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17428,6 +17463,7 @@ package TimerBrowser {
         "owner": 33,
         "reference": 210,
         "source": 111,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17450,6 +17486,7 @@ package TimerBrowser {
         "owner": 11,
         "reference": 81,
         "source": 105,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17463,13 +17500,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
         "owner": 36,
         "reference": 57,
         "source": 81,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17518,6 +17556,7 @@ package TimerBrowser {
         "owner": 6,
         "reference": 122,
         "source": 143,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17552,10 +17591,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "ExhibitStateUsage",
         "name": "timerMode",
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 38,
         "reference": 116,
         "source": 103,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17593,6 +17633,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 24,
         "source": 35,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17607,6 +17648,7 @@ package TimerBrowser {
         "owner": 40,
         "reference": 166,
         "source": 34,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17625,10 +17667,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 40,
         "reference": 164,
         "source": 34,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17636,13 +17679,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 42,
         "reference": 167,
         "source": 34,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17657,6 +17701,7 @@ package TimerBrowser {
         "owner": 40,
         "reference": 165,
         "source": 34,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17664,13 +17709,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 40,
         "reference": 165,
         "source": 34,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17678,13 +17724,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 40,
         "reference": 165,
         "source": 34,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17716,6 +17763,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 36,
         "source": 15,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17730,6 +17778,7 @@ package TimerBrowser {
         "owner": 47,
         "reference": 182,
         "source": 14,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17748,10 +17797,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 47,
         "reference": 180,
         "source": 14,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17759,13 +17809,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 49,
         "reference": 183,
         "source": 14,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17780,6 +17831,7 @@ package TimerBrowser {
         "owner": 47,
         "reference": 181,
         "source": 14,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17787,13 +17839,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 47,
         "reference": 181,
         "source": 14,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17801,13 +17854,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 47,
         "reference": 181,
         "source": 14,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17839,6 +17893,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 14,
         "source": 25,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17853,6 +17908,7 @@ package TimerBrowser {
         "owner": 54,
         "reference": 158,
         "source": 24,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17871,10 +17927,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 54,
         "reference": 156,
         "source": 24,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17882,13 +17939,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 56,
         "reference": 159,
         "source": 24,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17903,6 +17961,7 @@ package TimerBrowser {
         "owner": 54,
         "reference": 157,
         "source": 24,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17910,13 +17969,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 54,
         "reference": 157,
         "source": 24,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17924,13 +17984,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 54,
         "reference": 157,
         "source": 24,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17962,6 +18023,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 19,
         "source": 20,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17976,6 +18038,7 @@ package TimerBrowser {
         "owner": 61,
         "reference": 162,
         "source": 19,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -17994,10 +18057,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 61,
         "reference": 160,
         "source": 19,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18005,13 +18069,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 63,
         "reference": 163,
         "source": 19,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18026,6 +18091,7 @@ package TimerBrowser {
         "owner": 61,
         "reference": 161,
         "source": 19,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18033,13 +18099,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 61,
         "reference": 161,
         "source": 19,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18047,13 +18114,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 61,
         "reference": 161,
         "source": 19,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18085,6 +18153,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 39,
         "source": 40,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18099,6 +18168,7 @@ package TimerBrowser {
         "owner": 68,
         "reference": 186,
         "source": 39,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18117,10 +18187,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 68,
         "reference": 184,
         "source": 39,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18128,13 +18199,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 70,
         "reference": 187,
         "source": 39,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18149,6 +18221,7 @@ package TimerBrowser {
         "owner": 68,
         "reference": 185,
         "source": 39,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18156,13 +18229,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 68,
         "reference": 185,
         "source": 39,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18170,13 +18244,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 68,
         "reference": 185,
         "source": 39,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18208,6 +18283,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 30,
         "source": 45,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18222,6 +18298,7 @@ package TimerBrowser {
         "owner": 75,
         "reference": 174,
         "source": 44,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18240,10 +18317,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 75,
         "reference": 172,
         "source": 44,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18251,13 +18329,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 77,
         "reference": 175,
         "source": 44,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18272,6 +18351,7 @@ package TimerBrowser {
         "owner": 75,
         "reference": 173,
         "source": 44,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18279,13 +18359,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 75,
         "reference": 173,
         "source": 44,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18293,13 +18374,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 75,
         "reference": 173,
         "source": 44,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18331,6 +18413,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 27,
         "source": 50,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18345,6 +18428,7 @@ package TimerBrowser {
         "owner": 82,
         "reference": 170,
         "source": 49,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18363,10 +18447,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 82,
         "reference": 168,
         "source": 49,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18374,13 +18459,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 84,
         "reference": 171,
         "source": 49,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18395,6 +18481,7 @@ package TimerBrowser {
         "owner": 82,
         "reference": 169,
         "source": 49,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18402,13 +18489,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 82,
         "reference": 169,
         "source": 49,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18416,13 +18504,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 82,
         "reference": 169,
         "source": 49,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18454,6 +18543,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 33,
         "source": 30,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18468,6 +18558,7 @@ package TimerBrowser {
         "owner": 89,
         "reference": 178,
         "source": 29,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18486,10 +18577,11 @@ package TimerBrowser {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 89,
         "reference": 176,
         "source": 29,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18497,13 +18589,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 91,
         "reference": 179,
         "source": 29,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18518,6 +18611,7 @@ package TimerBrowser {
         "owner": 89,
         "reference": 177,
         "source": 29,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18525,13 +18619,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 89,
         "reference": 177,
         "source": 29,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18539,13 +18634,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 89,
         "reference": 177,
         "source": 29,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18560,6 +18656,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 155,
         "source": 4,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18574,6 +18671,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 154,
         "source": 3,
+        "stateSubaction": "entry",
         "typing": {
           "status": "absent"
         }
@@ -18588,6 +18686,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 18,
         "source": 6,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18608,6 +18707,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 22,
         "source": 10,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18628,6 +18728,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 17,
         "source": 12,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18648,6 +18749,7 @@ package TimerBrowser {
         "owner": 39,
         "reference": 23,
         "source": 8,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18676,6 +18778,7 @@ package TimerBrowser {
         "owner": 38,
         "reference": 108,
         "source": 91,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18689,13 +18792,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
         "owner": 102,
         "reference": 59,
         "source": 75,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18733,6 +18837,7 @@ package TimerBrowser {
         "owner": 38,
         "reference": 111,
         "source": 97,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18753,6 +18858,7 @@ package TimerBrowser {
         "owner": 104,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18767,6 +18873,7 @@ package TimerBrowser {
         "owner": 105,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18774,13 +18881,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 106,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18795,6 +18903,7 @@ package TimerBrowser {
         "owner": 106,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18809,6 +18918,7 @@ package TimerBrowser {
         "owner": 104,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18823,6 +18933,7 @@ package TimerBrowser {
         "owner": 109,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18830,13 +18941,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 110,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18851,6 +18963,7 @@ package TimerBrowser {
         "owner": 110,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18858,13 +18971,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 104,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18879,6 +18993,7 @@ package TimerBrowser {
         "owner": 104,
         "reference": 220,
         "source": 99,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18893,6 +19008,7 @@ package TimerBrowser {
         "owner": 114,
         "reference": 221,
         "source": 102,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18900,13 +19016,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 115,
         "reference": 222,
         "source": 102,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18921,6 +19038,7 @@ package TimerBrowser {
         "owner": 115,
         "reference": 223,
         "source": 101,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18947,6 +19065,7 @@ package TimerBrowser {
         "owner": 38,
         "reference": 105,
         "source": 89,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18960,13 +19079,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
         "owner": 118,
         "reference": 55,
         "source": 66,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18980,13 +19100,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
         "owner": 118,
         "reference": 53,
         "source": 68,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19000,13 +19121,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
         "owner": 118,
         "reference": 54,
         "source": 64,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19020,13 +19142,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
         "owner": 118,
         "reference": 51,
         "source": 72,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19040,13 +19163,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
         "owner": 118,
         "reference": 52,
         "source": 70,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19075,6 +19199,7 @@ package TimerBrowser {
         "owner": 38,
         "reference": 110,
         "source": 93,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19088,13 +19213,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
         "owner": 124,
         "reference": 61,
         "source": 78,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19123,6 +19249,7 @@ package TimerBrowser {
         "owner": 38,
         "reference": 106,
         "source": 95,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19136,13 +19263,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
         "owner": 126,
         "reference": 57,
         "source": 81,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19163,6 +19291,7 @@ package TimerBrowser {
         "owner": 38,
         "reference": 107,
         "source": 83,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19183,6 +19312,7 @@ package TimerBrowser {
         "owner": 38,
         "reference": 115,
         "source": 87,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19203,6 +19333,7 @@ package TimerBrowser {
         "owner": 38,
         "reference": 109,
         "source": 85,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19232,6 +19363,7 @@ package TimerBrowser {
         "owner": 6,
         "reference": 119,
         "source": 147,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19269,6 +19401,7 @@ package TimerBrowser {
         "owner": 131,
         "reference": 69,
         "source": 129,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19289,6 +19422,7 @@ package TimerBrowser {
         "owner": 132,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19303,6 +19437,7 @@ package TimerBrowser {
         "owner": 133,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19310,13 +19445,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 134,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19331,6 +19467,7 @@ package TimerBrowser {
         "owner": 134,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19345,6 +19482,7 @@ package TimerBrowser {
         "owner": 132,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19359,6 +19497,7 @@ package TimerBrowser {
         "owner": 137,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19366,13 +19505,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 138,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19387,6 +19527,7 @@ package TimerBrowser {
         "owner": 138,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19394,13 +19535,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 132,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19415,6 +19557,7 @@ package TimerBrowser {
         "owner": 132,
         "reference": 199,
         "source": 131,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19429,6 +19572,7 @@ package TimerBrowser {
         "owner": 142,
         "reference": 200,
         "source": 134,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19436,13 +19580,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 143,
         "reference": 201,
         "source": 134,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19457,6 +19602,7 @@ package TimerBrowser {
         "owner": 143,
         "reference": 202,
         "source": 133,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19483,6 +19629,7 @@ package TimerBrowser {
         "owner": 131,
         "reference": 68,
         "source": 127,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19496,13 +19643,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
         "owner": 146,
         "reference": 55,
         "source": 66,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19516,13 +19664,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
         "owner": 146,
         "reference": 53,
         "source": 68,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19536,13 +19685,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
         "owner": 146,
         "reference": 54,
         "source": 64,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19556,13 +19706,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
         "owner": 146,
         "reference": 51,
         "source": 72,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19576,13 +19727,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
         "owner": 146,
         "reference": 52,
         "source": 70,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19620,6 +19772,7 @@ package TimerBrowser {
         "owner": 6,
         "reference": 121,
         "source": 145,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19648,6 +19801,7 @@ package TimerBrowser {
         "owner": 152,
         "reference": 88,
         "source": 117,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19661,13 +19815,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
         "owner": 153,
         "reference": 59,
         "source": 75,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19705,6 +19860,7 @@ package TimerBrowser {
         "owner": 152,
         "reference": 91,
         "source": 121,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19725,6 +19881,7 @@ package TimerBrowser {
         "owner": 155,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19739,6 +19896,7 @@ package TimerBrowser {
         "owner": 156,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19746,13 +19904,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 157,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19767,6 +19926,7 @@ package TimerBrowser {
         "owner": 157,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19781,6 +19941,7 @@ package TimerBrowser {
         "owner": 155,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19795,6 +19956,7 @@ package TimerBrowser {
         "owner": 160,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19802,13 +19964,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 161,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19823,6 +19986,7 @@ package TimerBrowser {
         "owner": 161,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19830,13 +19994,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 155,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19851,6 +20016,7 @@ package TimerBrowser {
         "owner": 155,
         "reference": 211,
         "source": 123,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19865,6 +20031,7 @@ package TimerBrowser {
         "owner": 165,
         "reference": 212,
         "source": 126,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19872,13 +20039,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 166,
         "reference": 213,
         "source": 126,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19893,6 +20061,7 @@ package TimerBrowser {
         "owner": 166,
         "reference": 214,
         "source": 125,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19915,6 +20084,7 @@ package TimerBrowser {
         "owner": 152,
         "reference": 90,
         "source": 119,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19928,13 +20098,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
         "owner": 169,
         "reference": 61,
         "source": 78,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19955,6 +20126,7 @@ package TimerBrowser {
         "owner": 152,
         "reference": 89,
         "source": 115,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19990,6 +20162,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 101,
         "source": 179,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20027,6 +20200,7 @@ package TimerBrowser {
         "owner": 172,
         "reference": 75,
         "source": 137,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20047,6 +20221,7 @@ package TimerBrowser {
         "owner": 173,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20061,6 +20236,7 @@ package TimerBrowser {
         "owner": 174,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20068,13 +20244,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 175,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20089,6 +20266,7 @@ package TimerBrowser {
         "owner": 175,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20103,6 +20281,7 @@ package TimerBrowser {
         "owner": 173,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20117,6 +20296,7 @@ package TimerBrowser {
         "owner": 178,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20124,13 +20304,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 179,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20145,6 +20326,7 @@ package TimerBrowser {
         "owner": 179,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20152,13 +20334,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 173,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20173,6 +20356,7 @@ package TimerBrowser {
         "owner": 173,
         "reference": 203,
         "source": 139,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20187,6 +20371,7 @@ package TimerBrowser {
         "owner": 183,
         "reference": 204,
         "source": 142,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20194,13 +20379,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 184,
         "reference": 205,
         "source": 142,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20215,6 +20401,7 @@ package TimerBrowser {
         "owner": 184,
         "reference": 206,
         "source": 141,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20229,6 +20416,7 @@ package TimerBrowser {
         "owner": 172,
         "reference": 74,
         "source": 135,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20266,6 +20454,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 100,
         "source": 177,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20296,6 +20485,7 @@ package TimerBrowser {
         "owner": 188,
         "reference": 65,
         "source": 169,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20316,6 +20506,7 @@ package TimerBrowser {
         "owner": 189,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20330,6 +20521,7 @@ package TimerBrowser {
         "owner": 190,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20337,13 +20529,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 191,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20358,6 +20551,7 @@ package TimerBrowser {
         "owner": 191,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20372,6 +20566,7 @@ package TimerBrowser {
         "owner": 189,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20386,6 +20581,7 @@ package TimerBrowser {
         "owner": 194,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20393,13 +20589,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 195,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20414,6 +20611,7 @@ package TimerBrowser {
         "owner": 195,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20421,13 +20619,14 @@ package TimerBrowser {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 189,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20442,6 +20641,7 @@ package TimerBrowser {
         "owner": 188,
         "reference": 64,
         "source": 165,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20462,6 +20662,7 @@ package TimerBrowser {
         "owner": 188,
         "reference": 66,
         "source": 167,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20482,6 +20683,7 @@ package TimerBrowser {
         "owner": 188,
         "reference": 63,
         "source": 163,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20511,6 +20713,7 @@ package TimerBrowser {
         "owner": 0,
         "reference": 102,
         "source": 181,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20531,6 +20734,7 @@ package TimerBrowser {
         "owner": 202,
         "reference": 97,
         "source": 171,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20551,6 +20755,7 @@ package TimerBrowser {
         "owner": 202,
         "reference": 96,
         "source": 173,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [

@@ -174,6 +174,8 @@ pub struct DiagramNode {
     pub compartments: Vec<Compartment>,
     pub direction: Option<String>,
     pub conjugated: bool,
+    /// `"entry"`, `"do"` or `"exit"` for the action a state owns in that role.
+    pub state_subaction: Option<String>,
 }
 
 #[derive(Deserialize, TS)]

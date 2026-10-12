@@ -500,6 +500,24 @@ pub(crate) struct DeclarationFacts {
     pub(crate) multiplicity_bound_form: Option<MultiplicityBoundForm>,
     /// This declaration is the implicit Multiplicity required by individual syntax.
     pub(crate) is_individual_multiplicity: bool,
+    /// On a `first <node>;` written without a `then`: the declaration marks `<node>` as an
+    /// initial node of its body (BNF `InitialNodeMember`) and is no succession between two.
+    pub(crate) is_initial_node_marker: bool,
+    /// On the continuation or the node a `then` declares: where its succession starts.
+    pub(crate) then_source: Option<ThenSource>,
+}
+
+/// The source of the succession a `then` shorthand declares (SysML 7.17.4): the nearest
+/// occurrence usage lexically previous to the `then` in its body, skipping successions and
+/// non-occurrence usages, so that several `then`s after one node all start at that node.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ThenSource {
+    /// An occurrence usage declared earlier in the same body, or the control node whose own
+    /// body holds the `then`.
+    Declaration(DeclarationId),
+    /// The node a `first <node>;` marker names. The marker's `Succession` reference resolves
+    /// it.
+    InitialNode(DeclarationId),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

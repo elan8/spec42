@@ -33,6 +33,7 @@ use crate::OccurrenceRole;
 use crate::QueryAnswer;
 use crate::QueryOutcome;
 use crate::SourceLocation;
+use crate::StateSubactionKind;
 use crate::SymbolId;
 use crate::TextPosition;
 use source_identity::SourceRole;
@@ -783,6 +784,44 @@ impl<D> SemanticModel<D> {
             ParameterDirection::InOut => FeatureDirection::InOut,
         });
         Some((direction, self.port_is_conjugated(id)))
+    }
+
+    /// Whether an element is the entry, do or exit action of the state that owns it, keyed by
+    /// [`SymbolId`] like [`Self::port_direction_and_conjugation`]. The three are action usages;
+    /// only their membership tells them apart. `None` for every other element.
+    pub(crate) fn state_subaction_kind(&self, symbol: SymbolId) -> Option<StateSubactionKind> {
+        match self.effective_membership_role(self.declaration_of(symbol)?)? {
+            MembershipRole::StateSubaction(kind) => Some(kind),
+            _ => None,
+        }
+    }
+
+    /// Where the succession of a `then` shorthand starts, keyed by the [`SymbolId`] of what the
+    /// `then` declared: its continuation to a named feature, or the node written after it.
+    ///
+    /// The source is settled when the body is lowered (SysML 7.17.4, see
+    /// [`crate::lower::facts::ThenSource`]); a consumer must not work it out from the order of
+    /// the members it happens to see. `None` for an element no `then` declared, and when the
+    /// node a `first <node>;` names does not resolve.
+    pub(crate) fn then_source(&self, symbol: SymbolId) -> Option<SymbolId> {
+        use crate::lower::facts::ThenSource;
+        let id = self.declaration_of(symbol)?;
+        match self.storage.declaration_facts(id)?.then_source? {
+            ThenSource::Declaration(source) => self.symbol_id(source),
+            ThenSource::InitialNode(marker) => self
+                .outgoing_reference_ids(marker)
+                .iter()
+                .filter(|reference| {
+                    self.storage
+                        .references
+                        .get(reference.index())
+                        .is_some_and(|record| record.kind == ReferenceKind::Succession)
+                })
+                .find_map(|reference| match self.resolution.outcome(*reference) {
+                    Some(ResolutionStatus::Resolved(target)) => self.symbol_id(target),
+                    _ => None,
+                }),
+        }
     }
 
     pub(crate) fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {

@@ -18426,6 +18426,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": null,
         "reference": 9,
         "source": 55,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18440,6 +18441,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 133,
         "source": 123,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18454,6 +18456,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 134,
         "source": 126,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18468,6 +18471,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 135,
         "source": 129,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18482,6 +18486,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 136,
         "source": 132,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18496,6 +18501,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 137,
         "source": 135,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18510,6 +18516,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 138,
         "source": 138,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18524,6 +18531,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 139,
         "source": 141,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18538,6 +18546,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 140,
         "source": 144,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18552,6 +18561,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 132,
         "source": 56,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18566,6 +18576,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 50,
         "source": 103,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18580,6 +18591,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 10,
         "reference": 165,
         "source": 105,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18594,6 +18606,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 11,
         "reference": 167,
         "source": 105,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18608,6 +18621,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 10,
         "reference": 166,
         "source": 106,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18622,6 +18636,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 13,
         "reference": 168,
         "source": 106,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18636,6 +18651,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 53,
         "source": 107,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18650,6 +18666,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 15,
         "reference": 169,
         "source": 109,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18664,6 +18681,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 16,
         "reference": 171,
         "source": 109,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18678,6 +18696,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 15,
         "reference": 170,
         "source": 110,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18692,6 +18711,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 18,
         "reference": 172,
         "source": 110,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18706,6 +18726,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 59,
         "source": 87,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18720,6 +18741,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 20,
         "reference": 173,
         "source": 89,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18734,6 +18756,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 21,
         "reference": 175,
         "source": 89,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18748,6 +18771,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 20,
         "reference": 174,
         "source": 90,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18762,6 +18786,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 23,
         "reference": 176,
         "source": 90,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18776,6 +18801,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 22,
         "source": 119,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18790,6 +18816,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 25,
         "reference": 149,
         "source": 121,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18804,6 +18831,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 26,
         "reference": 151,
         "source": 121,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18818,6 +18846,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 25,
         "reference": 150,
         "source": 122,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18832,6 +18861,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 28,
         "reference": 152,
         "source": 122,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18846,6 +18876,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 33,
         "source": 91,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18860,6 +18891,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 30,
         "reference": 153,
         "source": 93,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18874,6 +18906,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 31,
         "reference": 155,
         "source": 93,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18888,6 +18921,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 30,
         "reference": 154,
         "source": 94,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18902,6 +18936,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 33,
         "reference": 156,
         "source": 94,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18916,6 +18951,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 41,
         "source": 99,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18930,6 +18966,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 35,
         "reference": 157,
         "source": 101,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18944,6 +18981,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 36,
         "reference": 159,
         "source": 101,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18958,6 +18996,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 35,
         "reference": 158,
         "source": 102,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18972,6 +19011,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 38,
         "reference": 160,
         "source": 102,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -18986,6 +19026,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 16,
         "source": 95,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19000,6 +19041,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 40,
         "reference": 141,
         "source": 97,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19014,6 +19056,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 41,
         "reference": 143,
         "source": 97,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19028,6 +19071,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 40,
         "reference": 142,
         "source": 98,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19042,6 +19086,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 43,
         "reference": 144,
         "source": 98,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19056,6 +19101,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 19,
         "source": 115,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19070,6 +19116,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 45,
         "reference": 145,
         "source": 117,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19084,6 +19131,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 46,
         "reference": 147,
         "source": 117,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19098,6 +19146,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 45,
         "reference": 146,
         "source": 118,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19112,6 +19161,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 48,
         "reference": 148,
         "source": 118,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19126,6 +19176,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 47,
         "source": 111,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19140,6 +19191,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 50,
         "reference": 161,
         "source": 113,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19154,6 +19206,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 51,
         "reference": 163,
         "source": 113,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19168,6 +19221,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 50,
         "reference": 162,
         "source": 114,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19182,6 +19236,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 53,
         "reference": 164,
         "source": 114,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19226,6 +19281,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 11,
         "source": 61,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19246,6 +19302,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 12,
         "source": 64,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19260,6 +19317,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 15,
         "source": 63,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19274,6 +19332,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 14,
         "source": 65,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19288,6 +19347,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 13,
         "source": 66,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19302,6 +19362,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 5,
         "source": 22,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19316,6 +19377,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 6,
         "source": 21,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19330,6 +19392,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 7,
         "source": 20,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19344,6 +19407,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 8,
         "source": 19,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19358,6 +19422,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 129,
         "source": 16,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19372,6 +19437,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 64,
         "reference": 130,
         "source": 18,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19379,13 +19445,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 65,
         "reference": 131,
         "source": 18,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19400,6 +19467,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 74,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19420,6 +19488,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 55,
         "reference": 104,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19465,6 +19534,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 56,
         "source": 57,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19485,6 +19555,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 69,
         "reference": 58,
         "source": 59,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19499,6 +19570,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 69,
         "reference": 57,
         "source": 60,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19513,6 +19585,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 69,
         "reference": 110,
         "source": 15,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19527,6 +19600,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 69,
         "reference": 111,
         "source": 14,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19541,6 +19615,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 69,
         "reference": 195,
         "source": 11,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19555,6 +19630,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 74,
         "reference": 196,
         "source": 13,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19562,13 +19638,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 75,
         "reference": 197,
         "source": 13,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19583,6 +19660,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 69,
         "reference": 104,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19637,6 +19715,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 25,
         "source": 67,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19657,6 +19736,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 30,
         "source": 75,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19671,6 +19751,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 32,
         "source": 72,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19685,6 +19766,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 27,
         "source": 70,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19699,6 +19781,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 28,
         "source": 69,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19713,6 +19796,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 31,
         "source": 73,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19727,6 +19811,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 29,
         "source": 74,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19741,6 +19826,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 26,
         "source": 71,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19755,6 +19841,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 74,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19775,6 +19862,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 104,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19795,6 +19883,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 71,
         "source": 27,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19809,6 +19898,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 70,
         "source": 30,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19823,6 +19913,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 72,
         "source": 28,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19837,6 +19928,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 69,
         "source": 29,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19851,6 +19943,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 68,
         "source": 26,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19865,6 +19958,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 78,
         "reference": 177,
         "source": 23,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19879,6 +19973,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 93,
         "reference": 178,
         "source": 25,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19886,13 +19981,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 94,
         "reference": 179,
         "source": 25,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19934,6 +20030,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 44,
         "source": 76,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19954,6 +20051,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 96,
         "reference": 45,
         "source": 79,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19968,6 +20066,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 96,
         "reference": 46,
         "source": 78,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -19982,6 +20081,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 96,
         "reference": 74,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20002,6 +20102,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 96,
         "reference": 104,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20022,6 +20123,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 96,
         "reference": 102,
         "source": 36,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20036,6 +20138,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 96,
         "reference": 101,
         "source": 35,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20050,6 +20153,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 96,
         "reference": 100,
         "source": 34,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20064,6 +20168,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 96,
         "reference": 192,
         "source": 31,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20078,6 +20183,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 104,
         "reference": 193,
         "source": 33,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20085,13 +20191,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 105,
         "reference": 194,
         "source": 33,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20134,6 +20241,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 36,
         "source": 80,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20154,6 +20262,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 37,
         "source": 83,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20168,6 +20277,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 38,
         "source": 82,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20182,6 +20292,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 74,
         "source": 3,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20202,6 +20313,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 104,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20222,6 +20334,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 81,
         "source": 42,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20236,6 +20349,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 80,
         "source": 41,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20250,6 +20364,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 82,
         "source": 43,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20264,6 +20379,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 79,
         "source": 40,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20278,6 +20394,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 107,
         "reference": 180,
         "source": 37,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20292,6 +20409,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 116,
         "reference": 181,
         "source": 39,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20299,13 +20417,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 117,
         "reference": 182,
         "source": 39,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20348,6 +20467,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 0,
         "reference": 39,
         "source": 84,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20368,6 +20488,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 40,
         "source": 86,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20382,6 +20503,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 85,
         "source": 9,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20402,6 +20524,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 84,
         "source": 5,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20422,6 +20545,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 86,
         "source": 7,
+        "stateSubaction": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -20442,6 +20566,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 92,
         "source": 54,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20456,6 +20581,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 93,
         "source": 53,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20470,6 +20596,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 183,
         "source": 44,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20484,6 +20611,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 126,
         "reference": 186,
         "source": 46,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20491,13 +20619,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 127,
         "reference": 189,
         "source": 46,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20512,6 +20641,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 184,
         "source": 47,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20526,6 +20656,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 129,
         "reference": 187,
         "source": 49,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20533,13 +20664,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 130,
         "reference": 190,
         "source": 49,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20554,6 +20686,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 119,
         "reference": 185,
         "source": 50,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20568,6 +20701,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "owner": 132,
         "reference": 188,
         "source": 52,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -20575,13 +20709,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 133,
         "reference": 191,
         "source": 52,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }

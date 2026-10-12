@@ -410,6 +410,7 @@ package BehaviorModel {
         "owner": null,
         "reference": 0,
         "source": 0,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
@@ -424,6 +425,7 @@ package BehaviorModel {
         "owner": 0,
         "reference": 1,
         "source": 1,
+        "stateSubaction": null,
         "typing": {
           "status": "absent"
         }
