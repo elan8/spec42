@@ -575,24 +575,22 @@ impl Backend {
     }
 
     fn state_for_uri(&self, uri: &Url) -> Result<Arc<ServerState>> {
-        if let Some(error) = self.projects.admission_error_for_uri(uri) {
-            return Err(tower_lsp::jsonrpc::Error::invalid_params(error));
-        }
         self.projects
-            .existing_handle_for_uri(uri)
+            .query_handle_for_uri(uri, None)
             .map(|handle| handle.snapshot())
-            .ok_or_else(|| {
-                tower_lsp::jsonrpc::Error::invalid_params(
-                    "document URI is outside the configured workspace projects",
-                )
-            })
+            .map_err(tower_lsp::jsonrpc::Error::invalid_params)
     }
     async fn sysml_feature_inspector(
         &self,
         params: serde_json::Value,
     ) -> Result<dto::SysmlFeatureInspectorResultDto> {
-        let (uri, _) = crate::views::parse_sysml_feature_inspector_params(&params)?;
-        let state = self.state_for_uri(&uri)?;
+        let (uri, _, project_uri) =
+            crate::views::feature_inspector::parse_sysml_feature_inspector_context(&params)?;
+        let state = self
+            .projects
+            .query_handle_for_uri(&uri, project_uri.as_ref())
+            .map_err(tower_lsp::jsonrpc::Error::invalid_params)?
+            .snapshot();
         sysml_feature_inspector_result(&state, params)
     }
 

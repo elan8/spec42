@@ -1,10 +1,11 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
+import type { LanguageClient } from "vscode-languageclient/node";
+import { LspModelProvider } from "../../providers/lspModelProvider";
 import { FeatureInspectorViewProvider } from "../../inspector/featureInspectorViewProvider";
 import { buildFeatureInspectorViewModel } from "../../inspector/featureInspectorViewModel";
 import type {
   FeatureInspectorResult,
-  LspModelProvider,
 } from "../../providers/lspModelProvider";
 
 class FakeWebview {
@@ -74,6 +75,31 @@ function inspectorResult(name: string): FeatureInspectorResult {
 }
 
 describe("FeatureInspectorViewProvider", () => {
+  it("keeps workspace project provenance when inspecting an external library", async () => {
+    const requests: unknown[] = [];
+    const client = {
+      sendRequest: async (_method: string, params: unknown) => {
+        requests.push(params);
+        return inspectorResult("Boolean");
+      },
+    } as unknown as LanguageClient;
+    const provider = new LspModelProvider(client);
+    const libraryUri = "file:///c:/spec42-library/ScalarValues.kerml";
+    const position = { line: 0, character: 40 };
+    await provider.getFeatureInspector(libraryUri, position);
+    assert.deepStrictEqual(requests[0], { textDocument: { uri: libraryUri }, uri: libraryUri, position });
+
+    const folder = vscode.workspace.workspaceFolders?.[0];
+    assert.ok(folder, "the UX test workspace must be open");
+    const workspaceUri = vscode.Uri.joinPath(folder.uri, "App.sysml").toString();
+    // Project tracking must not depend on the inspector being visible or requesting the source.
+    provider.setInspectorProjectContext(workspaceUri);
+    await provider.getFeatureInspector(libraryUri, position);
+    assert.deepStrictEqual(requests[1], {
+      textDocument: { uri: libraryUri }, uri: libraryUri, position, projectUri: workspaceUri,
+    });
+  });
+
   it("replays a pinned inspection that completed before the lazy webview was ready", async () => {
     const result = inspectorResult("motor");
     const modelProvider = {

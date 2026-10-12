@@ -234,6 +234,46 @@ impl ProjectRegistry {
             .collect()
     }
 
+    /// Route reads to an owning publication, including admitted documents outside its root.
+    /// Shared libraries need an explicit project context rather than an arbitrary consumer.
+    pub(crate) fn query_handle_for_uri(
+        &self,
+        uri: &Url,
+        project_uri: Option<&Url>,
+    ) -> Result<WorkspaceHandle, String> {
+        if let Some(error) = self.admission_error_for_uri(uri) {
+            return Err(error);
+        }
+        // Workspace and loose documents already have an owner. Project provenance only
+        // disambiguates library reads; a previous editor's context cannot override ownership.
+        if let Some(handle) = self.existing_handle_for_uri(uri) {
+            return Ok(handle);
+        }
+        if let Some(project_uri) = project_uri {
+            if let Some(error) = self.admission_error_for_uri(project_uri) {
+                return Err(error);
+            }
+            let handle = self.existing_handle_for_uri(project_uri).ok_or_else(|| {
+                "project context URI is outside the configured workspace projects".to_owned()
+            })?;
+            let admits_library = self
+                .handles_admitting_library_uri(uri)
+                .iter()
+                .any(|consumer| consumer.same_session(&handle));
+            return if admits_library {
+                Ok(handle)
+            } else {
+                Err("document URI is not admitted by the requested project".to_owned())
+            };
+        }
+        let handles = self.handles_admitting_library_uri(uri);
+        match handles.as_slice() {
+            [handle] => Ok(handle.clone()),
+            [] => Err("document URI is outside the configured workspace projects".to_owned()),
+            _ => Err("shared library document requires project provenance".to_owned()),
+        }
+    }
+
     /// Every project publication that explicitly admits this library document.
     ///
     /// A library can be shared by several projects, so editor mutations to an opened library
@@ -427,6 +467,76 @@ fn boundary_root_for_uri(uri: &Url, workspace_roots: &[Url]) -> Option<PathBuf> 
 mod tests {
     use super::*;
     use std::fs;
+
+    #[tokio::test]
+    async fn library_queries_use_admission_and_require_context_when_shared() {
+        let temp = tempfile::tempdir().unwrap();
+        let a = temp.path().join("a");
+        let b = temp.path().join("b");
+        let library = temp.path().join("library");
+        for path in [&a, &b, &library] {
+            fs::create_dir_all(path).unwrap();
+        }
+        let a_uri = Url::from_file_path(a.join("App.sysml")).unwrap();
+        let b_uri = Url::from_file_path(b.join("App.sysml")).unwrap();
+        let library_uri = Url::from_file_path(library.join("ScalarValues.kerml")).unwrap();
+        fs::write(
+            library.join("ScalarValues.kerml"),
+            "library package ScalarValues;",
+        )
+        .unwrap();
+        let foreign_uri = Url::from_file_path(temp.path().join("unadmitted.kerml")).unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        let library_root = Url::from_directory_path(&library).unwrap();
+        for (libraries, standard_libraries) in [
+            (vec![library_root.clone()], Vec::new()),
+            (Vec::new(), vec![library_root.clone()]),
+        ] {
+            registry
+                .configure(
+                    vec![Url::from_directory_path(&a).unwrap()],
+                    libraries,
+                    standard_libraries,
+                )
+                .await;
+            let owner = registry.existing_handle_for_uri(&a_uri).unwrap();
+            assert!(registry
+                .query_handle_for_uri(&library_uri, None)
+                .unwrap()
+                .same_session(&owner));
+            assert!(registry.query_handle_for_uri(&foreign_uri, None).is_err());
+            assert!(registry
+                .query_handle_for_uri(&foreign_uri, Some(&a_uri))
+                .is_err());
+        }
+
+        registry
+            .configure(
+                vec![
+                    Url::from_directory_path(&a).unwrap(),
+                    Url::from_directory_path(&b).unwrap(),
+                ],
+                vec![library_root.clone()],
+                vec![library_root],
+            )
+            .await;
+        assert!(registry.query_handle_for_uri(&library_uri, None).is_err());
+        for project_uri in [&a_uri, &b_uri] {
+            let owner = registry.existing_handle_for_uri(project_uri).unwrap();
+            assert!(registry
+                .query_handle_for_uri(&library_uri, Some(project_uri))
+                .unwrap()
+                .same_session(&owner));
+        }
+        assert!(registry
+            .query_handle_for_uri(&a_uri, Some(&b_uri))
+            .unwrap()
+            .same_session(&registry.existing_handle_for_uri(&a_uri).unwrap()));
+    }
 
     #[tokio::test]
     async fn sibling_manifest_projects_receive_distinct_handles() {

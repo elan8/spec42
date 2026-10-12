@@ -487,6 +487,12 @@ pub(crate) fn covers_name(details: &ElementDetails, position: Position) -> bool 
 }
 
 pub fn parse_sysml_feature_inspector_params(v: &serde_json::Value) -> Result<(Url, Position)> {
+    parse_sysml_feature_inspector_context(v).map(|(uri, position, _)| (uri, position))
+}
+
+pub(crate) fn parse_sysml_feature_inspector_context(
+    v: &serde_json::Value,
+) -> Result<(Url, Position, Option<Url>)> {
     // vscode-jsonrpc versions can encode `sendRequest(method, params, undefined)`
     // as `[params, null]`. Accept that transition artifact at the protocol boundary
     // while clients migrate to omitting the absent cancellation-token argument.
@@ -511,7 +517,19 @@ pub fn parse_sysml_feature_inspector_params(v: &serde_json::Value) -> Result<(Ur
     })?;
     let uri = util::normalize_file_uri(&uri);
     let position = Position::new(params.position.line, params.position.character);
-    Ok((uri, position))
+    let project_uri = params
+        .project_uri
+        .map(|raw| {
+            Url::parse(&raw)
+                .map(|uri| util::normalize_file_uri(&uri))
+                .map_err(|_| {
+                    tower_lsp::jsonrpc::Error::invalid_params(
+                        "sysml/featureInspector: invalid projectUri",
+                    )
+                })
+        })
+        .transpose()?;
+    Ok((uri, position, project_uri))
 }
 
 pub fn empty_feature_inspector_response(

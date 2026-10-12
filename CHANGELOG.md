@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.55.0] - 2026-10-12
 
+- **Inspecting standard-library definitions works outside the workspace.** Navigating to a
+  definition such as `Boolean` or `String` no longer produces feature-inspector errors about
+  the document being outside the configured projects. Library inspection uses an admitted
+  project publication and retains project context when navigating into shared libraries.
 - **Upgrade notes.** The semantic contract version is now
   `spec-rule-burndown-element-kinds-v43`; consumers of `model-export` and the published model
   must accept the new element kinds and memberships listed below. Three changes alter results

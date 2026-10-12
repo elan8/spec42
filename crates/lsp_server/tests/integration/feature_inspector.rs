@@ -13,6 +13,46 @@ fn inspect(session: &mut TestSession, uri: &str, line: u32, character: u32) -> s
 }
 
 #[test]
+fn lsp_feature_inspector_accepts_library_documents_outside_the_editor_root() {
+    let temp = tempfile::tempdir().unwrap();
+    let workspace = temp.path().join("workspace");
+    let library = temp.path().join("library");
+    std::fs::create_dir_all(&workspace).unwrap();
+    std::fs::create_dir_all(&library).unwrap();
+    let root_uri = url::Url::from_directory_path(&workspace).unwrap();
+    let app_uri = url::Url::from_file_path(workspace.join("App.sysml")).unwrap();
+    let library_uri = url::Url::from_file_path(library.join("ScalarValues.kerml")).unwrap();
+    let library_text = "library package ScalarValues { datatype Boolean; datatype String; }";
+    std::fs::write(library.join("ScalarValues.kerml"), library_text).unwrap();
+    let mut session = TestSession::new();
+    session.initialize_with_root_and_options(
+        "library_inspector_routing",
+        Some(&root_uri),
+        Some(serde_json::json!({"libraryPaths": [library.to_string_lossy()]})),
+    );
+    session.did_open(app_uri.as_str(), "package App;", 1);
+    session.did_open(library_uri.as_str(), library_text, 1);
+    session.barrier();
+    for context in [None, Some(app_uri.as_str())] {
+        let mut params = serde_json::json!({"textDocument": {"uri": library_uri},
+            "position": {"line": 0, "character": 40}});
+        if let Some(context) = context {
+            params["projectUri"] = serde_json::json!(context);
+        }
+        let response = session.request("sysml/featureInspector", params);
+        assert!(response.get("error").is_none(), "{response:#?}");
+        assert_eq!(
+            response["result"]["sourceUri"],
+            sysml_query::source::normalize_uri(&library_uri).as_str()
+        );
+        assert!(
+            response["result"].get("containingElement").is_some(),
+            "{response:#?}"
+        );
+    }
+}
+
+#[test]
 fn lsp_feature_inspector_accepts_standard_and_legacy_uri_shapes() {
     let mut session = TestSession::new();
     let uri = "file:///c:/spec42-lsp-tests/feature_inspector_request_shape.sysml";

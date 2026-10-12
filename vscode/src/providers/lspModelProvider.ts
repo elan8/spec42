@@ -48,14 +48,22 @@ export function isClientNotRunningError(error: unknown): boolean {
 
 /** Thin adapter for the custom RPCs still consumed by the extension. */
 export class LspModelProvider {
+  private inspectorProjectUri: string | undefined;
   constructor(private readonly client: LanguageClient, private readonly whenReady: Promise<void> = Promise.resolve()) {}
   private sendRequest<R>(method: string, params: unknown, token?: vscode.CancellationToken): Promise<R> {
     return token === undefined ? this.client.sendRequest<R>(method, params) : this.client.sendRequest<R>(method, params, token);
   }
+  setInspectorProjectContext(uri: string): void {
+    if (vscode.workspace.getWorkspaceFolder(vscode.Uri.parse(uri))) this.inspectorProjectUri = uri;
+  }
   async getFeatureInspector(uri: string, position: PositionDTO, token?: vscode.CancellationToken): Promise<FeatureInspectorResult> {
     await this.whenReady;
+    // Keep the editor's project context when navigation opens an admitted library outside
+    // the workspace. The server verifies admission; shared libraries have several consumers.
+    this.setInspectorProjectContext(uri);
+    const projectUri = this.inspectorProjectUri;
     try {
-      return await this.sendRequest<FeatureInspectorResult>("sysml/featureInspector", { textDocument: { uri }, uri, position }, token);
+      return await this.sendRequest<FeatureInspectorResult>("sysml/featureInspector", { textDocument: { uri }, uri, position, ...(projectUri ? { projectUri } : {}) }, token);
     } catch (error) { logError("getFeatureInspector failed", error); throw error; }
   }
   async getServerStats(): Promise<SysMLServerStats | undefined> {

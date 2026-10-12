@@ -406,7 +406,7 @@ impl TestSession {
         self.initialize_with_root_and_options(client_name, None, initialization_options);
     }
 
-    fn initialize_with_root_and_options(
+    pub fn initialize_with_root_and_options(
         &mut self,
         client_name: &str,
         root_uri: Option<&url::Url>,
