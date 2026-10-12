@@ -28,7 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     inherited ones included, and flows between the actions that own the two parameters. An
     accept action carries a notched flag and a send action a pointed one. A send action was
     drawn as a final node.
-  Not drawn yet: conditional successions (`first a if g then b;`), and `then accept ...;`.
+  Not drawn yet: the guard of a conditional succession (`first a if g then b;` is drawn as a
+  plain succession), `if g then b;` after a `decide`, and `then accept ...;`.
 - **A state transition view shows state actions and nested states (#262).** The entry, do and
   exit actions of a state are listed in a `state actions` compartment, and a state that owns
   states shows them, their transitions and its initial node inside it. Three or more
