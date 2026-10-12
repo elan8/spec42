@@ -780,9 +780,9 @@ fn state_box(node: &Value) -> (f64, f64) {
     let mut width = characters(&name, 28) * NAME_CHARACTER + 32.0;
     let mut actions = 0.0;
     for (prefix, keys) in [
-        ("entry / ", ["entry", "entryAction"]),
-        ("do / ", ["do", "doAction"]),
-        ("exit / ", ["exit", "exitAction"]),
+        ("entry ", ["entry", "entryAction"]),
+        ("do ", ["do", "doAction"]),
+        ("exit ", ["exit", "exitAction"]),
     ] {
         let action = as_string(first_nonempty(keys.map(|key| field(attributes, key))), "");
         if !action.is_empty() {
@@ -791,11 +791,13 @@ fn state_box(node: &Value) -> (f64, f64) {
             width = width.max(characters(&line, 34) * ACTION_CHARACTER + 24.0);
         }
     }
-    // The keyword and the name sit on a 38 px header; action lines follow on a 16 px pitch.
+    // The keyword and the name sit on a 38 px header; the label of the state actions
+    // compartment and its lines follow on a 16 px pitch.
     let height = if actions == 0.0 {
         42.0
     } else {
-        48.0 + actions * 16.0
+        width = width.max(96.0);
+        62.0 + actions * 16.0
     };
     (width.max(96.0).ceil(), height)
 }
