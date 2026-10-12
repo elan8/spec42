@@ -22,11 +22,44 @@ package Assignments {
 	}
 }
 ~~~
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/assignment_value_conformance.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "assignment_value_incompatible")
+        (source "semantic")
+        (range (start 8 3) (end 8 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/assignment_value_conformance.md")
+            (range (start 2 2) (end 2 47))
+          )
+        )
+      )
+    )
+  )
+)
+~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/assignment_value_conformance.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "assignment_value_incompatible")
+        (source "semantic")
+        (range (start 8 3) (end 8 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/assignment_value_conformance.md")
+            (range (start 2 2) (end 2 47))
+          )
+        )
+      )
     )
   )
 )

@@ -23,11 +23,56 @@ package Values {
 	}
 }
 ~~~
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/attribute_value_conformance.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 7 45) (end 7 52))
+      )
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 10 47) (end 10 54))
+      )
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 12 29) (end 12 41))
+      )
+    )
+  )
+)
+~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/attribute_value_conformance.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 7 45) (end 7 52))
+      )
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 10 47) (end 10 54))
+      )
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 12 29) (end 12 41))
+      )
     )
   )
 )
