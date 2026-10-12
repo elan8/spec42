@@ -55,7 +55,12 @@ fn drawn_regions(node: &PreparedNode) -> Vec<String> {
 /// Baseline area of the state actions compartment: its label ends here and its lines follow.
 pub(crate) const STATE_ACTIONS_TOP: f64 = 52.0;
 
-fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> Element {
+fn draw_state_node(
+    node: &PreparedNode,
+    layout: &LaidOutRect,
+    theme: &Theme,
+    contains_states: bool,
+) -> Element {
     let kind = node_kind(node);
     let entry = first_non_empty(node, &["entry", "entryAction"]);
     let do_action = first_non_empty(node, &["do", "doAction"]);
@@ -182,7 +187,7 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
         if let Some(exit) = &exit {
             action_lines.push(format!("exit {exit}"));
         }
-        if !action_lines.is_empty() || is_composite {
+        if !action_lines.is_empty() || is_composite || contains_states {
             g = g.child(
                 Element::new("line")
                     .attr("class", "state-compartment-divider")
@@ -382,7 +387,18 @@ pub fn render_state_transition_view(
                     .attr_f("y", rect_y)
                     .attr_f("width", label_width)
                     .attr_f("height", label_height)
-                    .style("fill", theme.canvas_background)
+                    .style(
+                        "fill",
+                        // Inside a state that shows its states, the label lies on that
+                        // state's fill, not on the canvas.
+                        if nodes_by_id.get(edge.source.as_str()).is_some_and(|source| {
+                            !crate::types::attr_text(&source.attributes, "containerId").is_empty()
+                        }) {
+                            theme.node_fill
+                        } else {
+                            theme.canvas_background
+                        },
+                    )
                     .style("stroke", "none"),
             );
             edge_layer = edge_layer.child(
@@ -400,15 +416,50 @@ pub fn render_state_transition_view(
     root = root.child(edge_layer);
 
     let mut node_layer = Element::new("g").attr("class", "state-nodes");
-    for node in &prepared.nodes {
+    // A state is drawn before the states it contains, so that they lie on top of it.
+    let container_of =
+        |node: &PreparedNode| crate::types::attr_text(&node.attributes, "containerId");
+    let depth = |node: &PreparedNode| {
+        let mut depth = 0;
+        let mut container = container_of(node);
+        while let Some(above) = nodes_by_id.get(container.as_str()) {
+            depth += 1;
+            if depth > prepared.nodes.len() {
+                break;
+            }
+            container = container_of(above);
+        }
+        depth
+    };
+    let containers: std::collections::HashSet<String> = prepared
+        .nodes
+        .iter()
+        .map(container_of)
+        .filter(|container| nodes_by_id.contains_key(container.as_str()))
+        .collect();
+    let mut ordered: Vec<&PreparedNode> = prepared.nodes.iter().collect();
+    ordered.sort_by_key(|node| depth(node));
+    // SysML 8.2.3.18: a state that owns states shows its own state transition view inside
+    // it. It lies below the transitions, which would otherwise be hidden by its fill.
+    let mut container_layer = Element::new("g").attr("class", "state-containers");
+    for node in ordered {
         let Some(position) = layout.positions.get(&node.id) else {
             continue;
         };
+        let contains_states = containers.contains(&node.id);
         // `attachBehaviorNodeClick` runs unconditionally for every node here (unlike
         // sequence-view's lifelines); in headless export it always resolves to
         // `.style("cursor", "")`, which `VirtualStyle` keeps as a literal empty declaration.
-        let node_group = draw_state_node(node, position, theme).style("cursor", "");
-        node_layer = node_layer.child(node_group);
+        let node_group =
+            draw_state_node(node, position, theme, contains_states).style("cursor", "");
+        if contains_states {
+            container_layer = container_layer.child(node_group);
+        } else {
+            node_layer = node_layer.child(node_group);
+        }
+    }
+    if !containers.is_empty() {
+        root = root.insert_before_child("state-transitions", container_layer);
     }
     root = root.child(node_layer);
 

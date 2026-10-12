@@ -726,6 +726,58 @@ fn a_state_lists_its_entry_do_and_exit_actions() {
 }
 
 #[test]
+fn a_state_that_owns_states_shows_them_inside_it() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_composite_state.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("state machine lays out");
+    let nodes = input["prepared"]["nodes"].as_array().expect("nodes");
+    let node = |label: &str| {
+        nodes
+            .iter()
+            .find(|node| node["label"] == label && node["kind"] == "state")
+            .unwrap_or_else(|| panic!("no state `{label}`"))
+    };
+    let on = node("on")["id"].as_str().unwrap();
+    assert!(node("off")["attributes"]["containerId"].is_null());
+    for nested in ["warming", "ready"] {
+        assert_eq!(node(nested)["attributes"]["containerId"], on);
+    }
+    // The initial node of the nested machine is inside it as well.
+    assert_eq!(
+        nodes
+            .iter()
+            .filter(|node| node["kind"] == "initial" && node["attributes"]["containerId"] == on)
+            .count(),
+        1
+    );
+    // Each nested state lies within the box of the state that owns it.
+    let rect = |id: &str| {
+        let position = &input["behaviorLayout"]["positions"][id];
+        let value = |key: &str| position[key].as_f64().unwrap();
+        (
+            value("x"),
+            value("y"),
+            value("x") + value("width"),
+            value("y") + value("height"),
+        )
+    };
+    let outer = rect(on);
+    for nested in ["warming", "ready"] {
+        let inner = rect(node(nested)["id"].as_str().unwrap());
+        assert!(
+            outer.0 < inner.0 && outer.1 < inner.1 && inner.2 < outer.2 && inner.3 < outer.3,
+            "`{nested}` {inner:?} is not inside `on` {outer:?}"
+        );
+    }
+    // The containing state is drawn below the transitions, the others above them.
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw state machine");
+    let layer = |class: &str| svg.find(&format!("class=\"{class}\"")).unwrap();
+    assert!(layer("state-containers") < layer("state-transitions"));
+    assert!(layer("state-transitions") < layer("state-nodes"));
+}
+
+#[test]
 fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::theme::LIGHT;
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
