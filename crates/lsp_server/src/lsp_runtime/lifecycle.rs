@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use tower_lsp::lsp_types::{InitializeParams, Url};
 
 pub(crate) fn workspace_roots_from_initialize(params: &InitializeParams) -> Vec<Url> {
@@ -21,17 +23,27 @@ pub(crate) fn scan_roots(workspace_roots: &[Url], library_paths: &[Url]) -> Vec<
 /// Resolves an editor document to its nearest manifest project, bounded by the most specific
 /// containing workspace folder. The folder is the manifestless fallback, never semantic proof
 /// that every source below it belongs to one project.
+///
+/// Paths are canonicalised before the prefix check. On Windows an agent write is often reported
+/// with a different spelling of a directory (`Workspace` versus `workspace`); `Path::starts_with`
+/// is case-sensitive for those components, so the raw spellings miss and the file is admitted
+/// again as a loose project.
 pub(crate) fn project_boundary_for_uri(
     document: &Url,
     workspace_roots: &[Url],
 ) -> Option<sysml_query::source::ProjectBoundary> {
-    let document = document.to_file_path().ok()?;
+    let document = canonicalize_or_self(&document.to_file_path().ok()?);
     let ceiling = workspace_roots
         .iter()
         .filter_map(|root| root.to_file_path().ok())
+        .map(|root| canonicalize_or_self(&root))
         .filter(|root| document.starts_with(root))
         .max_by_key(|root| root.components().count())?;
     sysml_query::source::discover_project_boundary(&document, &ceiling)
+}
+
+fn canonicalize_or_self(path: &Path) -> PathBuf {
+    std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
 }
 
 #[cfg(test)]
