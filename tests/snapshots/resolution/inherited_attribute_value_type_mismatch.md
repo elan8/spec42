@@ -24,6 +24,30 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/inherited_attribute_value_type_mismatch.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 10 8) (end 10 38))
+        (related-information
+          (related
+            (uri "memory://snapshot/inherited_attribute_value_type_mismatch.md")
+            (range (start 5 8) (end 5 49))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 10 8) (end 10 38))
+        (related-information
+          (related
+            (uri "memory://snapshot/inherited_attribute_value_type_mismatch.md")
+            (range (start 5 8) (end 5 49))
+          )
+        )
+      )
     )
   )
 )

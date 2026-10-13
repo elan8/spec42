@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Inherited names and literal bindings are checked.** Typed usages report inherited feature
+  collisions and missing `:>>` operators. Namespace comparisons use metaclass conformance and
+  effective names; scalar literals must satisfy every receiver type, including quantity types (#230).
+
 - **Engineering constants evaluate through quantities and feature chains.** Same-unit arithmetic,
   numeric scaling, and `NumericalFunctions::sum`, `max`, and `min` fold constant operands.
   Feature chains honor usage redefinitions, compound unit literals retain their authored unit

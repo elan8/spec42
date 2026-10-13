@@ -63,6 +63,22 @@ package Paths {
         (range (start 16 4) (end 19 5))
       )
       (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 17 8) (end 17 38))
+        (related-information
+          (related
+            (uri "memory://snapshot/connector_complete_paths.md")
+            (range (start 13 8) (end 13 25))
+          )
+          (related
+            (uri "memory://snapshot/connector_complete_paths.md")
+            (range (start 14 8) (end 14 25))
+          )
+        )
+      )
+      (diagnostic
         (severity error)
         (code "ambiguous_reference")
         (source "semantic")

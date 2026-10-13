@@ -11,7 +11,7 @@ package Inheritance {
     part def Item;
     part def Ancestor { part distant : Item; part shadow : Item; }
     part def Base :> Ancestor { part immediate : Item; }
-    part def Derived :> Base { part shadow : Item; }
+    part def Derived :> Base { part shadow : Item :>> Ancestor::shadow; }
     part usage : Derived;
     part def Other :> Ancestor;
     part def Diamond :> Base, Other;
@@ -39,7 +39,7 @@ probe direct_inherited_features.md 9 15
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7d41258f461b95024befa5f0eeac41c83b190424b7ae66f0446a034aa9f4b5a1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b10ba4aa2004c198c115bcf54dd5ca863c9d851909ec8896b26cf87ce72e9cf1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Ancestor"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -48,7 +48,7 @@ probe direct_inherited_features.md 9 15
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Ancestor")))))
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base::immediate"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Item")))))
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
-    (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Item")))))
+    (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Item")) (redefinition (reference "Ancestor::shadow")))))
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Diamond"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")) (specialization (reference "Other")))))
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Other"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Ancestor")))))
@@ -76,6 +76,9 @@ probe direct_inherited_features.md 9 15
     (reference (id (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (kind featureTyping) (ordinal 0))
       (authored-target "Item")
       (outcome (status resolved) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")))))
+    (reference (id (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (kind redefinition) (ordinal 0))
+      (authored-target "Ancestor::shadow")
+      (outcome (status resolved) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Ancestor::shadow")))))
     (reference (id (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Diamond"))) (kind specialization) (ordinal 0))
       (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base")))))
@@ -108,6 +111,7 @@ probe direct_inherited_features.md 9 15
     (relationship (kind typing) (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base::immediate"))) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base::immediate"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived"))) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Ancestor::shadow"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (kind redefinition) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Diamond"))) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Diamond"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Diamond"))) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Other"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Diamond"))) (kind specialization) (ordinal 1)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Other"))) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Ancestor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Other"))) (kind specialization) (ordinal 0)))
@@ -146,6 +150,7 @@ probe direct_inherited_features.md 9 15
       (type (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")) (provenance authored))
       (effective-type (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")) (source direct))
       (supertype (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")) (scopes any))
+      (subtype (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base")))
       (supertype (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Ancestor")) (scopes any subclassification))
@@ -169,6 +174,8 @@ probe direct_inherited_features.md 9 15
       (featured-by (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived")))
       (type (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")) (provenance authored))
       (effective-type (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")) (source direct))
+      (effective-type (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")) (source inherited) (from (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Ancestor::shadow"))))
+      (supertype (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Ancestor::shadow")) (scopes any feature))
       (supertype (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Diamond")))
@@ -242,6 +249,11 @@ probe direct_inherited_features.md 9 15
       (outcome (status resolved) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Item")))))
     )
   )
+  (query (document "memory://snapshot/direct_inherited_features.md") (range (start 4 54) (end 4 70)) (probe (position 4 54))
+    (reference (id (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Derived::shadow"))) (kind redefinition) (ordinal 0) (authored-target "Ancestor::shadow")
+      (outcome (status resolved) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Ancestor::shadow")))))
+    )
+  )
   (query (document "memory://snapshot/direct_inherited_features.md") (range (start 7 24) (end 7 28)) (probe (position 7 24))
     (reference (id (source (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Diamond"))) (kind specialization) (ordinal 0) (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/direct_inherited_features.md") (qualified-name "Inheritance::Base")))))
@@ -299,7 +311,7 @@ probe direct_inherited_features.md 9 15
           (name "Derived")
           (qualified-name "Inheritance::Derived")
           (location (document "memory://snapshot/direct_inherited_features.md") (range (start 4 13) (end 4 20)) (role Declaration))
-          (declaration (range (start 4 4) (end 4 52)))
+          (declaration (range (start 4 4) (end 4 73)))
           (membership (kind owning) (visibility public) (provenance default))
           (relationship (kind "specialization") (provenance authored) (authored "Base") (target resolved))
           (specialization (outcome resolved) (target "Inheritance::Base"))
@@ -427,8 +439,8 @@ probe direct_inherited_features.md 9 15
     (symbol (kind "PartUsage") (name "shadow") (qualified-name "Inheritance::Ancestor::shadow") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 2 50) (end 2 56)) (role Declaration)) (declaration (range (start 2 45) (end 2 64))))
     (symbol (kind "PartDefinition") (name "Base") (qualified-name "Inheritance::Base") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 3 13) (end 3 17)) (role Declaration)) (declaration (range (start 3 4) (end 3 56))))
     (symbol (kind "PartUsage") (name "immediate") (qualified-name "Inheritance::Base::immediate") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 3 37) (end 3 46)) (role Declaration)) (declaration (range (start 3 32) (end 3 54))))
-    (symbol (kind "PartDefinition") (name "Derived") (qualified-name "Inheritance::Derived") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 4 13) (end 4 20)) (role Declaration)) (declaration (range (start 4 4) (end 4 52))))
-    (symbol (kind "PartUsage") (name "shadow") (qualified-name "Inheritance::Derived::shadow") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 4 36) (end 4 42)) (role Declaration)) (declaration (range (start 4 31) (end 4 50))))
+    (symbol (kind "PartDefinition") (name "Derived") (qualified-name "Inheritance::Derived") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 4 13) (end 4 20)) (role Declaration)) (declaration (range (start 4 4) (end 4 73))))
+    (symbol (kind "PartUsage") (name "shadow") (qualified-name "Inheritance::Derived::shadow") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 4 36) (end 4 42)) (role Declaration)) (declaration (range (start 4 31) (end 4 71))))
     (symbol (kind "PartUsage") (name "usage") (qualified-name "Inheritance::usage") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 5 9) (end 5 14)) (role Declaration)) (declaration (range (start 5 4) (end 5 25))))
     (symbol (kind "PartDefinition") (name "Other") (qualified-name "Inheritance::Other") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 6 13) (end 6 18)) (role Declaration)) (declaration (range (start 6 4) (end 6 31))))
     (symbol (kind "PartDefinition") (name "Diamond") (qualified-name "Inheritance::Diamond") (location (document "memory://snapshot/direct_inherited_features.md") (range (start 7 13) (end 7 20)) (role Declaration)) (declaration (range (start 7 4) (end 7 36))))

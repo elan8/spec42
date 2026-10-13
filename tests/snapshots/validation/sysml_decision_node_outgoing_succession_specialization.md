@@ -34,6 +34,22 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_decision_node_outgoing_succession_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 7 8) (end 7 52))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/control_performances.md")
+            (range (start 33 4) (end 33 57))
+          )
+          (related
+            (uri "memory://snapshot/sysml.library/occurrences.md")
+            (range (start 927 2) (end 927 108))
+          )
+        )
+      )
     )
   )
 )

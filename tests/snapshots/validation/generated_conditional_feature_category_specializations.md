@@ -42,6 +42,18 @@ package FeatureCategorySpecializations {
         (source "semantic")
         (range (start 7 4) (end 9 5))
       )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 8 8) (end 8 40))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/links.md")
+            (range (start 15 8) (end 15 62))
+          )
+        )
+      )
     )
   )
 )

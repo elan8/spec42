@@ -27,6 +27,18 @@ package StateExample {
 (fixture-diagnostics
   (document "memory://snapshot/diagram_state_transition_complete.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 6 8) (end 6 19))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/states.md")
+            (range (start 33 2) (end 33 74))
+          )
+        )
+      )
     )
   )
 )
@@ -445,7 +457,7 @@ package StateExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:c61a25bd8f43b1e96ca0955842a6c6fc92afc1911f03440196e1323b3cab364a",
+  "modelDigest": "blake3:3c1418dcda79fe2b5f8dafb1aa66141c004dbc143ba63f505c70bd890567fe8b",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_complete.md",

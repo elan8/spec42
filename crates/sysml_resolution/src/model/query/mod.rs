@@ -1116,11 +1116,21 @@ impl<D> SemanticModel<D> {
             .collect()
     }
 
-    /// Records every member `member` redefines, from settled `Redefinition` facts.
-    ///
-    /// Authored and implied redefinitions are read alike: an implied redefinition is a canonical
-    /// relationship of the publication, and a member it replaces is inherited no more than one a
-    /// written `:>>` replaces.
+    /// Every strict redefinition ancestor, from the canonical specialization closure.
+    fn collect_all_redefined_members(
+        &self,
+        member: DeclarationId,
+        into: &mut std::collections::BTreeSet<DeclarationId>,
+    ) {
+        into.extend(
+            self.types
+                .specialization()
+                .ancestors_in_scope(member, types::ScopeBits::Redefinition),
+        );
+    }
+
+    /// The direct Redefinition targets owned by one Feature, preserving the distinction from
+    /// its transitive redefinition ancestors used by Type::removeRedefinedFeatures.
     pub(crate) fn collect_redefined_members(
         &self,
         member: DeclarationId,
@@ -1145,33 +1155,79 @@ impl<D> SemanticModel<D> {
 
     /// The canonical inherited FeatureMembership closure of one Type.
     ///
-    /// KerML derives `inheritedMembership` from the memberships of the general types reached
-    /// through specialization, minus the ones a nearer member redefines. The closure itself is the
-    /// specialization index this resolver already owns, so a member reached through two paths is
-    /// inherited once and a cyclic hierarchy -- which has no closure -- inherits nothing.
+    /// KerML derives `inheritedMembership` from each direct general's non-private memberships,
+    /// with redefinition reduction applied at every type boundary. Flattening all ancestors would
+    /// resurrect a membership an intermediate type removed. Cycles use the normative excluded-type
+    /// set; acyclic results may be reused within this immutable query.
     pub(crate) fn inherited_feature_members(
         &self,
         declaration: DeclarationId,
     ) -> Vec<DeclarationId> {
-        let ancestors = self
-            .types
-            .specialization()
-            .scoped_ancestors(declaration)
-            .map(|(ancestor, _)| ancestor)
-            .collect::<Vec<_>>();
-        if ancestors.is_empty() {
-            return Vec::new();
+        self.inherited_feature_members_excluding(
+            declaration,
+            &mut std::collections::BTreeSet::new(),
+            &mut std::collections::BTreeMap::new(),
+        )
+    }
+
+    fn inherited_feature_members_excluding(
+        &self,
+        declaration: DeclarationId,
+        excluded: &mut std::collections::BTreeSet<DeclarationId>,
+        memo: &mut std::collections::BTreeMap<DeclarationId, Vec<DeclarationId>>,
+    ) -> Vec<DeclarationId> {
+        let cyclic = self.types.specialization().is_cyclic(declaration);
+        if !cyclic {
+            if let Some(members) = memo.get(&declaration) {
+                return members.clone();
+            }
         }
+        excluded.insert(declaration);
         let mut candidates = Vec::new();
-        for ancestor in ancestors {
-            candidates.extend(self.owned_feature_members(ancestor));
+        for general in self.types.ordered_generals(declaration) {
+            if excluded.contains(general) {
+                continue;
+            }
+            candidates.extend(
+                self.owned_feature_members(*general)
+                    .into_iter()
+                    .filter(|member| {
+                        self.memberships.get(*member).is_some_and(|membership| {
+                            membership.visibility
+                                != crate::resolve::names::EffectiveVisibility::Private
+                        })
+                    }),
+            );
+            candidates.extend(self.inherited_feature_members_excluding(*general, excluded, memo));
         }
+        excluded.remove(&declaration);
+        let mut seen = std::collections::BTreeSet::new();
+        candidates.retain(|candidate| seen.insert(*candidate));
         let owned = self.owned_feature_members(declaration);
-        let mut redefined = std::collections::BTreeSet::new();
-        for member in owned.iter().chain(candidates.iter()) {
-            self.collect_redefined_members(*member, &mut redefined);
+        let mut owned_targets = std::collections::BTreeSet::new();
+        for member in &owned {
+            self.collect_redefined_members(*member, &mut owned_targets);
         }
-        candidates.retain(|candidate| !redefined.contains(candidate));
+        let mut redefined = std::collections::BTreeSet::new();
+        for member in &candidates {
+            self.collect_all_redefined_members(*member, &mut redefined);
+        }
+        // KerML Type::removeRedefinedFeatures has two conditions: remove a member redefined
+        // by another inherited member, and remove one whose redefinition chain contains a
+        // directly redefined target of an owned feature. The second condition also handles an
+        // explicit redefinition that names a grandparent rather than its nearest redefiner.
+        candidates.retain(|candidate| {
+            !redefined.contains(candidate)
+                && !owned_targets.contains(candidate)
+                && !self
+                    .types
+                    .specialization()
+                    .ancestors_in_scope(*candidate, types::ScopeBits::Redefinition)
+                    .any(|ancestor| owned_targets.contains(&ancestor))
+        });
+        if !cyclic {
+            memo.insert(declaration, candidates.clone());
+        }
         candidates
     }
 

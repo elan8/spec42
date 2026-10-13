@@ -121,7 +121,7 @@ package GeometryExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:6c4351176805b0b1e355dece60d8eba07cb57df8d8303c724b149a62691b3e48",
+  "modelDigest": "blake3:ee2f86ab9336e37411944e8472f653411a278f1fe595e216a6e11610db9c4eec",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_geometry_incomplete.md",

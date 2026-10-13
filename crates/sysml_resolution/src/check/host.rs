@@ -51,7 +51,7 @@ use crate::TextRange;
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use crate::check::conformance::{Family, Role};
+use crate::check::conformance::Family;
 use crate::evaluation::{EvaluatedScalar, EvaluationState};
 
 /// The note attached to the earlier member a duplicate name collides with.
@@ -83,17 +83,6 @@ pub(crate) const STANDARD_VIEW_DEFINITIONS: &[&str] = &[
     "SequenceView",
     "StateTransitionView",
 ];
-
-/// Whether a declaration kind is a package-like namespace.
-///
-/// The narrow sense: what a qualified name addresses as a scope of its own. Used by the
-/// name-collision rule, where a package's definitions share one identity domain.
-pub(crate) fn is_namespace_kind(kind: DeclarationKind) -> bool {
-    matches!(
-        kind,
-        DeclarationKind::Namespace | DeclarationKind::Package | DeclarationKind::LibraryPackage
-    )
-}
 
 /// Whether a declaration kind states a state, either half of the family.
 ///
@@ -250,21 +239,6 @@ pub(crate) fn is_action_body_kind(kind: DeclarationKind) -> bool {
     )
 }
 
-/// Whether two declarations owned by one namespace must be distinguishable by name.
-///
-/// KerML requires member names to be unique within a namespace, but the publication models kinds
-/// the parser keeps apart -- a `doc`, an anonymous transition, a synthesized binding -- that never
-/// competed for a name. Two members of the same kind always collide; two definitions collide inside
-/// a package, where a definition is the thing a qualified name addresses.
-pub(crate) fn names_must_be_distinguishable(
-    owner: DeclarationKind,
-    left: (Family, Role),
-    right: (Family, Role),
-) -> bool {
-    left == right
-        || (is_namespace_kind(owner) && left.1 == Role::Definition && right.1 == Role::Definition)
-}
-
 impl<D> SemanticModel<D> {
     /// Appends every host-reported conformance diagnostic authored in `document`.
     pub(crate) fn collect_host_conformance(
@@ -412,11 +386,12 @@ impl<D> SemanticModel<D> {
     // Namespace identity
     // ------------------------------------------------------------------------------------------
 
-    /// Reports a namespace that declares two members resolution cannot tell apart.
+    /// Reports indistinguishable owned and inherited memberships of a Namespace.
     ///
-    /// Reported at the later member, with the first as related information, so the diagnostic
-    /// points at the declaration that introduced the collision. Both the authored name and the
-    /// authored short name are identities resolution addresses a member by, so both collide.
+    /// Owned collisions point to the declaration that introduced them. Inherited-only collisions
+    /// point to the inheriting Namespace with both members as related information. Canonical
+    /// effective names and short names identify memberships; metaclass conformance determines
+    /// whether a same-named pair is distinguishable.
     pub(crate) fn collect_namespace_identity(
         &self,
         declared: &[DeclarationId],
@@ -424,30 +399,15 @@ impl<D> SemanticModel<D> {
     ) -> Result<(), ResolutionError> {
         for owner in declared.iter().copied() {
             let owner_kind = self.kind_of(owner).ok_or(ResolutionError::InvalidStorage)?;
-            if !matches!(
-                owner_kind,
-                DeclarationKind::Namespace
-                    | DeclarationKind::Package
-                    | DeclarationKind::LibraryPackage
-                    | DeclarationKind::PartDefinition
-                    | DeclarationKind::RequirementDefinition
-                    | DeclarationKind::UseCaseDefinition
-                    | DeclarationKind::KermlType
-                    | DeclarationKind::KermlClassifier
-                    | DeclarationKind::KermlStructure
-                    | DeclarationKind::KermlAssociation
-                    | DeclarationKind::KermlAssociationStructure
-                    | DeclarationKind::KermlDataType
-                    | DeclarationKind::KermlMetaclass
-                    | DeclarationKind::KermlBehavior
-                    | DeclarationKind::KermlFunction
-                    | DeclarationKind::KermlPredicate
-                    | DeclarationKind::KermlInteraction
-            ) {
+            if !crate::model::element_kind::element_kind(owner_kind)
+                .conforms_to(sysml_contract::ElementKind::Namespace)
+            {
                 continue;
             }
+            let owned = self.child_declarations(owner);
+            let inherited = self.inherited_feature_members(owner);
             let mut by_identifier: BTreeMap<&str, Vec<DeclarationId>> = BTreeMap::new();
-            for child in self.child_declarations(owner) {
+            for child in owned.iter().chain(inherited.iter()) {
                 let declaration = self
                     .storage
                     .declaration(*child)
@@ -458,16 +418,19 @@ impl<D> SemanticModel<D> {
                 ) {
                     continue;
                 }
-                for name in [
-                    declaration.name,
-                    self.storage
-                        .declaration_facts(*child)
-                        .and_then(|facts| facts.short_name),
-                ]
-                .into_iter()
-                .flatten()
-                .filter_map(|name| self.storage.symbol(name))
-                .filter(|name| !name.trim().is_empty())
+                let Some(identification) = self.resolution.effective_names.get(child.index())
+                else {
+                    continue;
+                };
+                for name in [identification.name, identification.short_name]
+                    .into_iter()
+                    .filter_map(|name| match name {
+                        crate::resolve::results::EffectiveNameOutcome::Resolved(name) => Some(name),
+                        crate::resolve::results::EffectiveNameOutcome::Absent
+                        | crate::resolve::results::EffectiveNameOutcome::Unresolved
+                        | crate::resolve::results::EffectiveNameOutcome::NonConverged => None,
+                    })
+                    .filter_map(|name| self.storage.symbol(name))
                 {
                     let entry = by_identifier.entry(name).or_default();
                     if !entry.contains(child) {
@@ -479,23 +442,68 @@ impl<D> SemanticModel<D> {
                 if members.len() < 2 {
                     continue;
                 }
-                members.sort_by_key(|member| self.declaration_range(*member));
-                let Some((first, duplicate)) = self.first_collision(owner_kind, &members) else {
+                // Inherited memberships precede owned ones so an owned collision is reported
+                // where the author can fix it, regardless of either source's declaration order.
+                members.sort_by_key(|member| {
+                    (
+                        owned.contains(member),
+                        self.storage.declaration(*member).map(|declaration| {
+                            writer::document_identity(self, declaration.document)
+                        }),
+                        self.declaration_range(*member),
+                    )
+                });
+                let Some((first, duplicate)) = self.first_collision(&members) else {
                     continue;
                 };
+                let subject = if owned.contains(&duplicate) {
+                    duplicate
+                } else {
+                    owner
+                };
                 let mut diagnostic = self.declaration_message_diagnostic(
-                    duplicate,
+                    subject,
                     DiagnosticCode::DuplicateNamespaceMember,
                     DiagnosticSeverity::Warning,
                     Some(format!(
-                        "'{}' declares '{name}' more than once; member names must be unique \
-                         within a namespace.",
+                        "'{}' has indistinguishable memberships named '{name}'.",
                         self.display_name(owner)
                     )),
                 )?;
-                diagnostic.related =
-                    Box::from([self.related_declaration(first, RELATED_FIRST_DECLARATION)?]);
+                diagnostic.related = if subject == owner {
+                    Box::from([
+                        self.related_declaration(first, RELATED_FIRST_DECLARATION)?,
+                        self.related_declaration(duplicate, RELATED_FIRST_DECLARATION)?,
+                    ])
+                } else {
+                    Box::from([self.related_declaration(first, RELATED_FIRST_DECLARATION)?])
+                };
                 diagnostics.push(diagnostic);
+                let document = self
+                    .storage
+                    .declaration(owner)
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .document;
+                for local in members
+                    .iter()
+                    .copied()
+                    .filter(|member| owned.contains(member))
+                {
+                    for ancestor in members
+                        .iter()
+                        .copied()
+                        .filter(|member| !owned.contains(member))
+                    {
+                        if self.first_collision(&[ancestor, local]).is_some() {
+                            self.collect_inherited_value_pair(
+                                local,
+                                ancestor,
+                                document,
+                                diagnostics,
+                            )?;
+                        }
+                    }
+                }
             }
         }
         Ok(())
@@ -504,34 +512,22 @@ impl<D> SemanticModel<D> {
     /// The first pair of same-named members whose kinds must be distinguishable.
     pub(crate) fn first_collision(
         &self,
-        owner: DeclarationKind,
         members: &[DeclarationId],
     ) -> Option<(DeclarationId, DeclarationId)> {
         for (index, member) in members.iter().enumerate().skip(1) {
-            let later = self.declaration_family(*member);
             for earlier_id in &members[..index] {
-                let indistinguishable = match (self.declaration_family(*earlier_id), later) {
-                    (Some(earlier), Some(later)) => {
-                        names_must_be_distinguishable(owner, earlier, later)
-                    }
-                    // A member outside the SysML family table (a KerML type or feature, or a
-                    // usage form the table does not classify) is compared by the normative
-                    // `Membership::isDistinguishableFrom`: same-named members are
-                    // indistinguishable when either member's metaclass conforms to the other's.
-                    _ => {
-                        let (Some(earlier), Some(later)) =
-                            (self.kind_of(*earlier_id), self.kind_of(*member))
-                        else {
-                            continue;
-                        };
-                        let (earlier, later) = (
-                            crate::model::element_kind::element_kind(earlier),
-                            crate::model::element_kind::element_kind(later),
-                        );
-                        earlier.conforms_to(later) || later.conforms_to(earlier)
-                    }
+                let (Some(earlier), Some(later)) =
+                    (self.kind_of(*earlier_id), self.kind_of(*member))
+                else {
+                    continue;
                 };
-                if indistinguishable {
+                let (earlier, later) = (
+                    crate::model::element_kind::element_kind(earlier),
+                    crate::model::element_kind::element_kind(later),
+                );
+                // KerML Membership::isDistinguishableFrom compares the memberElement
+                // metaclasses, including conformance across SysML families.
+                if earlier.conforms_to(later) || later.conforms_to(earlier) {
                     return Some((*earlier_id, *member));
                 }
             }
@@ -1877,121 +1873,145 @@ impl<D> SemanticModel<D> {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for relationship in self.resolution.implied_relationships.iter() {
-            if relationship.kind != ReferenceKind::Redefinition {
-                continue;
+            if relationship.kind == ReferenceKind::Redefinition {
+                self.collect_inherited_value_pair(
+                    relationship.source,
+                    relationship.target,
+                    document,
+                    diagnostics,
+                )?;
             }
-            let source = relationship.source;
-            let declaration = self
-                .storage
-                .declaration(source)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document {
-                continue;
-            }
-            // Only a value that overrides. `default = e` states a value the specialization may
-            // replace, which is exactly what redeclaring an inherited parameter to give it a
-            // default means, so it is not a silent override.
-            // KerML 8.4.4.5 specifies implicit redefinition for the parameters of a specializing
-            // behavior, so a specializing function restating `in v : T` or `return u : T = ...` is
-            // the authored way to give a body, not a silent override.
-            let is_parameter = self
-                .storage
-                .declaration_facts(source)
-                .is_some_and(|facts| facts.direction.is_some());
-            if is_parameter
-                || matches!(
-                    declaration.kind,
-                    DeclarationKind::ParameterUsage | DeclarationKind::SubjectUsage
-                )
-            {
-                continue;
-            }
-            let Some(value) = self
-                .storage
-                .feature_values
-                .iter()
-                .find(|value| value.declaration == source && !value.is_default)
-            else {
-                continue;
-            };
-            if !self
-                .authored_references(source, &[ReferenceKind::Redefinition])
-                .is_empty()
-            {
-                continue;
-            }
-            let target = relationship.target;
-            // Only a redefinition the *name* implies. The resolver also derives positional
-            // redefinitions -- a specializing function's `return u : T = ...` redefines the return
-            // parameter it inherits whatever either is called -- and those are the authored way to
-            // state a body, not a silently overridden member.
-            let named_collision = self
-                .storage
-                .declaration(source)
-                .and_then(|declaration| declaration.name)
-                .is_some_and(|name| {
-                    self.storage
-                        .declaration(target)
-                        .and_then(|declaration| declaration.name)
-                        == Some(name)
-                });
-            if !named_collision {
-                continue;
-            }
-            let mut diagnostic = self.declaration_message_diagnostic(
-                source,
-                DiagnosticCode::ImplicitRedefinitionWithoutOperator,
-                DiagnosticSeverity::Error,
-                Some(format!(
-                    "'{}' overrides inherited member '{}' but is missing the explicit ':>>' \
-                     operator.",
-                    self.display_name(source),
-                    self.display_name(target)
-                )),
-            )?;
-            diagnostic.related = Box::from([self.related_declaration(target, RELATED_INHERITED)?]);
-            diagnostics.push(diagnostic);
-
-            // A string bound to a member the inherited declaration types by an enumeration names
-            // no enumeration literal. Read from the settled value and the settled type, not from
-            // the authored text.
-            if declaration.kind != DeclarationKind::AttributeUsage {
-                continue;
-            }
-            if !matches!(
-                self.evaluation_for(source).value(),
-                Some(EvaluatedScalar::String(_))
-            ) {
-                continue;
-            }
-            let enumerated = self
-                .types
-                .effective_types(target)
-                .iter()
-                .any(|(type_id, _)| {
-                    self.kind_of(*type_id) == Some(DeclarationKind::EnumerationDefinition)
-                });
-            if !enumerated {
-                continue;
-            }
-            let mut diagnostic = self.declaration_message_diagnostic(
-                source,
-                DiagnosticCode::InheritedAttributeValueTypeMismatch,
-                DiagnosticSeverity::Error,
-                Some(format!(
-                    "'{}' is typed by an enumeration through '{}' but was assigned a string \
-                     literal; use an enumeration value.",
-                    self.display_name(source),
-                    self.display_name(target)
-                )),
-            )?;
-            diagnostic.location = DiagnosticLocation {
-                document: writer::document_identity(self, document).into(),
-                range: document_range(&self.storage, document, &value.span)?,
-            };
-            diagnostic.related = Box::from([self.related_declaration(target, RELATED_INHERITED)?]);
-            diagnostics.push(diagnostic);
         }
+        Ok(())
+    }
+
+    /// Applies the same authoring policy to an implied redefinition and a collision with a
+    /// canonical inherited membership. Neither path fabricates an authored relationship.
+    fn collect_inherited_value_pair(
+        &self,
+        source: DeclarationId,
+        target: DeclarationId,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let declaration = self
+            .storage
+            .declaration(source)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if declaration.document != document {
+            return Ok(());
+        }
+        // Only a value that overrides. `default = e` states a value the specialization may
+        // replace, which is exactly what redeclaring an inherited parameter to give it a
+        // default means, so it is not a silent override.
+        // KerML 8.4.4.5 specifies implicit redefinition for the parameters of a specializing
+        // behavior, so a specializing function restating `in v : T` or `return u : T = ...` is
+        // the authored way to give a body, not a silent override.
+        let is_parameter = self
+            .storage
+            .declaration_facts(source)
+            .is_some_and(|facts| facts.direction.is_some());
+        if is_parameter
+            || matches!(
+                declaration.kind,
+                DeclarationKind::ParameterUsage | DeclarationKind::SubjectUsage
+            )
+        {
+            return Ok(());
+        }
+        let Some(value) = self
+            .storage
+            .feature_values
+            .iter()
+            .find(|value| value.declaration == source && !value.is_default)
+        else {
+            return Ok(());
+        };
+        if !self
+            .authored_references(source, &[ReferenceKind::Redefinition])
+            .is_empty()
+        {
+            return Ok(());
+        }
+        // Only a redefinition the *name* implies. The resolver also derives positional
+        // redefinitions -- a specializing function's `return u : T = ...` redefines the return
+        // parameter it inherits whatever either is called -- and those are the authored way to
+        // state a body, not a silently overridden member.
+        let named_collision = self
+            .resolution
+            .effective_names
+            .get(source.index())
+            .zip(self.resolution.effective_names.get(target.index()))
+            .is_some_and(|(source, target)| {
+                matches!(
+                    source.name,
+                    crate::resolve::results::EffectiveNameOutcome::Resolved(_)
+                ) && source.name == target.name
+            });
+        if !named_collision {
+            return Ok(());
+        }
+        let mut diagnostic = self.declaration_message_diagnostic(
+            source,
+            DiagnosticCode::ImplicitRedefinitionWithoutOperator,
+            DiagnosticSeverity::Error,
+            Some(format!(
+                "'{}' overrides inherited member '{}' but is missing the explicit ':>>' \
+                 operator.",
+                self.display_name(source),
+                self.display_name(target)
+            )),
+        )?;
+        diagnostic.related = Box::from([self.related_declaration(target, RELATED_INHERITED)?]);
+        diagnostics.push(diagnostic);
+
+        // A string bound to a member the inherited declaration types by an enumeration names
+        // no enumeration literal. Read from the settled value and the settled type, not from
+        // the authored text.
+        // A name collision alone creates no redefinition and inherits no typing. Keep this
+        // enumeration rule restricted to the canonical redefinition relationships it diagnoses.
+        if declaration.kind != DeclarationKind::AttributeUsage
+            || !self.types.specialization().reaches(
+                source,
+                target,
+                crate::index::types::ScopeBits::Redefinition,
+            )
+        {
+            return Ok(());
+        }
+        if !matches!(
+            self.evaluation_for(source).value(),
+            Some(EvaluatedScalar::String(_))
+        ) {
+            return Ok(());
+        }
+        let enumerated = self
+            .types
+            .effective_types(target)
+            .iter()
+            .any(|(type_id, _)| {
+                self.kind_of(*type_id) == Some(DeclarationKind::EnumerationDefinition)
+            });
+        if !enumerated {
+            return Ok(());
+        }
+        let mut diagnostic = self.declaration_message_diagnostic(
+            source,
+            DiagnosticCode::InheritedAttributeValueTypeMismatch,
+            DiagnosticSeverity::Error,
+            Some(format!(
+                "'{}' is typed by an enumeration through '{}' but was assigned a string \
+                 literal; use an enumeration value.",
+                self.display_name(source),
+                self.display_name(target)
+            )),
+        )?;
+        diagnostic.location = DiagnosticLocation {
+            document: writer::document_identity(self, document).into(),
+            range: document_range(&self.storage, document, &value.span)?,
+        };
+        diagnostic.related = Box::from([self.related_declaration(target, RELATED_INHERITED)?]);
+        diagnostics.push(diagnostic);
         Ok(())
     }
 

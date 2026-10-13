@@ -26,6 +26,18 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/action_def_with_and_without_body.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 12 8) (end 12 22))
+        (related-information
+          (related
+            (uri "memory://snapshot/action_def_with_and_without_body.md")
+            (range (start 10 8) (end 10 33))
+          )
+        )
+      )
     )
   )
 )

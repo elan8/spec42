@@ -10,7 +10,7 @@ libraries=standard
 ~~~sysml
 package Remaining {
     item def Box {
-        item envelopingShapes {
+        item envelopingShapes :>> Items::Item::envelopingShapes {
             ref item envelopedItem :>> that;
             attribute dim = envelopedItem.innerSpaceDimension;
             attribute outer = envelopedItem.outerSpaceDimension;
@@ -37,6 +37,12 @@ package Remaining {
 (fixture-semantics
   (relationship
     (kind redefinition)
+    (source "Remaining::Box::envelopingShapes")
+    (target "Items::Item::envelopingShapes")
+    (provenance authored)
+    (outcome resolved))
+  (relationship
+    (kind redefinition)
     (source "Remaining::Box::envelopingShapes::envelopedItem")
     (target "Base::things::that")
     (provenance authored)
@@ -54,11 +60,11 @@ package Remaining {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:783c995472b7e76dbe45b74f146ebd70489320daab06794f07a73707904a0a18") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6f5ad2698dd62d97080fa862c3b09920b90b6aef2865e7d2fb7586c64864a29f") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box"))) (kind item-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes"))) (kind item) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes"))) (kind item) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "Items::Item::envelopingShapes")))))
     (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes::dim"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "envelopedItem::innerSpaceDimension")))))
     (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
@@ -90,6 +96,9 @@ package Remaining {
     (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind flow-def) (name "Message")) (named (kind action) (name "thisConnection")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes"))) (kind redefinition) (ordinal 0))
+      (authored-target "Items::Item::envelopingShapes")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item::envelopingShapes")))))
     (reference (id (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "envelopedItem::innerSpaceDimension")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::innerSpaceDimension")))))
@@ -107,6 +116,7 @@ package Remaining {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::done")))))
   )
   (relationships
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item::envelopingShapes"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes"))) (kind redefinition) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::innerSpaceDimension"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes::envelopedItem"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes::envelopedItem"))) (kind redefinition) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "outer")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::outerSpaceDimension"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "outer")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
@@ -220,15 +230,19 @@ package Remaining {
     (declaration (id (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes")))
       (featured-by (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item::envelopingShapes"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item::envelopingShapes")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
@@ -639,6 +653,11 @@ package Remaining {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (range (start 2 34) (end 2 63)) (probe (position 2 34))
+    (reference (id (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (qualified-name "Remaining::Box::envelopingShapes"))) (kind redefinition) (ordinal 0) (authored-target "Items::Item::envelopingShapes")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item::envelopingShapes")))))
+    )
+  )
   (query (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (range (start 4 28) (end 4 61)) (probe (position 4 28))
     (reference (id (source (node (document "memory://snapshot/ref_decl_kind_inherits_usage_members.md") (path (named (kind package) (name "Remaining")) (named (kind item-def) (name "Box")) (named (kind item) (name "envelopingShapes")) (named (kind attribute) (name "dim")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "envelopedItem::innerSpaceDimension")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::innerSpaceDimension")))))

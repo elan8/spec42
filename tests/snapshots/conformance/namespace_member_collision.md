@@ -21,18 +21,6 @@ package Separate {
   (document "memory://snapshot/namespace_member_collision.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 2 4) (end 2 22))
-        (related-information
-          (related
-            (uri "memory://snapshot/namespace_member_collision.md")
-            (range (start 1 4) (end 1 20))
-          )
-        )
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")

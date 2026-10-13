@@ -10,7 +10,7 @@ libraries=standard
 ~~~sysml
 package Remaining {
     view def Box {
-        satisfy requirement viewpointConformance by that;
+        satisfy requirement conformance references viewpointConformance by that;
     }
 }
 ~~~
@@ -35,24 +35,28 @@ package Remaining {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0e3567c76ea1adb3346f64858466c679ba7b485dfc8a79d443423c89d494cd93") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ed57f2094a403da74a56e69743031ea40d09536366fab40b5384a83d7eed4ae") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box"))) (kind view-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfyTarget (reference "that")))))
+    (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "viewpointConformance")) (satisfyTarget (reference "that")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (kind satisfyTarget) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "viewpointConformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View::viewpointConformance")))))
+    (reference (id (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (kind satisfyTarget) (ordinal 0))
       (authored-target "that")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that")))))
   )
   (relationships
-    (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (kind satisfyTarget) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View::viewpointConformance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (kind satisfyTarget) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (target (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
   )
   (evaluation
   )
@@ -69,7 +73,7 @@ package Remaining {
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any subclassification))
     )
-    (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance")))
+    (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance")))
       (featured-by (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
@@ -98,14 +102,20 @@ package Remaining {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View::viewpointConformance")) (scopes any feature))
     )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/satisfy_by_that.md") (range (start 2 52) (end 2 56)) (probe (position 2 52))
-    (reference (id (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (kind satisfyTarget) (ordinal 0) (authored-target "that")
+  (query (document "memory://snapshot/satisfy_by_that.md") (range (start 2 51) (end 2 71)) (probe (position 2 51))
+    (reference (id (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (kind referenceSubsetting) (ordinal 0) (authored-target "viewpointConformance")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View::viewpointConformance")))))
+    )
+  )
+  (query (document "memory://snapshot/satisfy_by_that.md") (range (start 2 75) (end 2 79)) (probe (position 2 75))
+    (reference (id (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::conformance"))) (kind satisfyTarget) (ordinal 0) (authored-target "that")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that")))))
     )
   )

@@ -44,15 +44,16 @@ package Functions {
     part family {
         perform Tree::providePower;
         perform stepA;
-        perform stepA;
+        perform action repeated references stepA;
     }
     part variant :> family {
         perform action :>> providePower {
             action :>> generate = fourCylinder;
         }
     }
-    // A qualified redefinition steps through the anonymous perform onto a member
-    // inherited from the action it performs.
+    // A qualified redefinition resolves through the anonymous perform to the performed
+    // action's member. Moving that composite action into a part context also inherits
+    // indistinguishable `this` memberships from subactions and ownedActions.
     part inspected :> family {
         action :>> providePower::generate;
     }
@@ -76,6 +77,22 @@ package Functions {
 (fixture-diagnostics
   (document "memory://snapshot/perform_in_action_usage_body.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 49 8) (end 49 42))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/actions.md")
+            (range (start 62 3) (end 68 4))
+          )
+          (related
+            (uri "memory://snapshot/sysml.library/parts.md")
+            (range (start 50 4) (end 55 4))
+          )
+        )
+      )
     )
   )
 )
@@ -85,6 +102,22 @@ package Functions {
 (fixture-diagnostics
   (document "memory://snapshot/perform_in_action_usage_body.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 49 8) (end 49 42))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/actions.md")
+            (range (start 62 3) (end 68 4))
+          )
+          (related
+            (uri "memory://snapshot/sysml.library/parts.md")
+            (range (start 50 4) (end 55 4))
+          )
+        )
+      )
     )
   )
 )
@@ -92,7 +125,7 @@ package Functions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:16e9630faacb2dfb1de57c66069bc127783f24a654f7a807b48c24347e66c031") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e3f2223d5549734fd08264022044bf21035c2ef4b7004a4ed9784046ca9a2122") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -123,7 +156,7 @@ package Functions {
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (effective-identification (name "providePower") (short-name absent) (provenance performed-action)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "Tree::providePower")))))
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 1))))) (kind perform-action) (membership (kind feature) (visibility default)) (effective-identification (name "stepA") (short-name absent) (provenance performed-action)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "stepA")))))
-    (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2))))) (kind perform-action) (membership (kind feature) (visibility default)) (effective-identification (name "stepA") (short-name absent) (provenance performed-action)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "stepA")))))
+    (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family::repeated"))) (kind perform-action) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::fourCylinder"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::group"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (effective-identification (name "stepA") (short-name absent) (provenance performed-action)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "stepA")))))
@@ -186,9 +219,6 @@ package Functions {
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 1))))) (kind referenceSubsetting) (ordinal 0))
       (authored-target "stepA")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
-    (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2))))) (kind referenceSubsetting) (ordinal 0))
-      (authored-target "stepA")
-      (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0))
       (authored-target "stepA")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
@@ -236,7 +266,6 @@ package Functions {
     (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "engine")) (named (kind occurrence) (name "warmUp")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "engine")) (named (kind occurrence) (name "warmUp")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Tree::providePower"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 1))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 1))))) (kind referenceSubsetting) (ordinal 0)))
-    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2))))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (named (kind action) (name "nested")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepB"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (named (kind action) (name "nested")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::group::second"))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepB"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::group::second"))) (kind subsetting) (ordinal 0)))
@@ -298,13 +327,13 @@ package Functions {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 1))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2))))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::performedActions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::performedActions"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::performedActions"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family::repeated"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family::repeated"))) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family::repeated"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::performedActions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::fourCylinder"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::group"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
@@ -831,9 +860,8 @@ package Functions {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
-    (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2)))))
+    (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family::repeated")))
       (featured-by (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family")))
-      (effective-type (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Step")) (source inherited) (from (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::performedActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
@@ -842,8 +870,6 @@ package Functions {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::involvingPerformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::enactedPerformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
-      (supertype (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Step")) (scopes any))
-      (supertype (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -1034,7 +1060,6 @@ package Functions {
       (subtype (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind while) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "engine")) (named (kind occurrence) (name "warmUp")) (anonymous (kind perform-action) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 1)))) (scopes any feature))
-      (subtype (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (anonymous (kind perform-action) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepB")))
@@ -1172,32 +1197,32 @@ package Functions {
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 54 14) (end 54 19)) (probe (position 54 14))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 55 14) (end 55 19)) (probe (position 55 14))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "start")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 55 19) (end 55 20)) (probe (position 55 19))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 56 19) (end 56 20)) (probe (position 56 19))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind while) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "i")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Run::i")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 61 13) (end 61 17)) (probe (position 61 13))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 62 13) (end 62 17)) (probe (position 62 13))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (kind thenTarget) (ordinal 0) (authored-target "done")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::done")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 56 20) (end 56 25)) (probe (position 56 20))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 57 20) (end 57 25)) (probe (position 57 20))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind while) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "stepA")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 59 20) (end 59 25)) (probe (position 59 20))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 60 20) (end 60 25)) (probe (position 60 20))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "stepB")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepB")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 53 22) (end 53 43)) (probe (position 53 22))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 54 22) (end 54 43)) (probe (position 54 22))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Run::i"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
     )
@@ -1237,11 +1262,6 @@ package Functions {
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 38 16) (end 38 21)) (probe (position 38 16))
-    (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "family")) (anonymous (kind perform-action) (ordinal 2))))) (kind referenceSubsetting) (ordinal 0) (authored-target "stepA")
-      (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
-    )
-  )
   (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 7 16) (end 7 21)) (probe (position 7 16))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action) (name "group")) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "stepA")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
@@ -1257,12 +1277,12 @@ package Functions {
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepB")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 47 22) (end 47 28)) (probe (position 47 22))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 48 22) (end 48 28)) (probe (position 48 22))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::inspected"))) (kind subsetting) (ordinal 0) (authored-target "family")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 48 19) (end 48 41)) (probe (position 48 19))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 49 19) (end 49 41)) (probe (position 49 19))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "inspected")) (anonymous (kind action) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "providePower::generate")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Torque::generate")))))
     )

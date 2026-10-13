@@ -1442,11 +1442,6 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
             queue.push_back(index);
             continue;
         }
-        if !is_feature_declaration(declaration.kind) {
-            settled[index] = true;
-            queue.push_back(index);
-            continue;
-        }
         let short_name = declaration_facts
             .and_then(|facts| facts.get(index))
             .and_then(|facts| facts.short_name);
@@ -1459,6 +1454,11 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
                     .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
                 provenance: EffectiveNameProvenance::Declared,
             };
+            settled[index] = true;
+            queue.push_back(index);
+            continue;
+        }
+        if !is_feature_declaration(declaration.kind) {
             settled[index] = true;
             queue.push_back(index);
             continue;

@@ -53,6 +53,34 @@ package GeneratedActionNodes {
         (source "semantic")
         (range (start 8 8) (end 8 18))
       )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 10 38) (end 10 50))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/actions.md")
+            (range (start 506 2) (end 511 3))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 17 8) (end 17 38))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/control_performances.md")
+            (range (start 54 4) (end 54 55))
+          )
+          (related
+            (uri "memory://snapshot/sysml.library/occurrences.md")
+            (range (start 928 2) (end 928 104))
+          )
+        )
+      )
     )
   )
 )

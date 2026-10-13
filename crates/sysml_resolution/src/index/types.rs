@@ -256,6 +256,18 @@ impl SpecializationClosure {
         })
     }
 
+    /// Every strict ancestor reached within one canonical specialization scope.
+    pub(crate) fn ancestors_in_scope(
+        &self,
+        declaration: DeclarationId,
+        scope: ScopeBits,
+    ) -> impl Iterator<Item = DeclarationId> + '_ {
+        self.entries(declaration)
+            .iter()
+            .filter(move |(_, scopes)| scopes & scope.bit() != 0)
+            .map(|(ancestor, _)| *ancestor)
+    }
+
     /// Every strict ancestor of `declaration` with the scopes that reach it.
     pub(crate) fn scoped_ancestors(
         &self,
@@ -1160,4 +1172,33 @@ pub(crate) fn merge_scopes(row: &mut Vec<(DeclarationId, u8)>) {
         written += 1;
     }
     row.truncate(written);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{edge_scopes, saturate, ScopeBits};
+    use crate::model::{DeclarationId, ReferenceKind};
+
+    #[test]
+    fn transitive_redefinitions_preserve_scope_across_a_competing_typing_path() {
+        let id = |index| DeclarationId::from_index(index).unwrap();
+        let redefinition = edge_scopes(ReferenceKind::Redefinition).unwrap();
+        let typing = edge_scopes(ReferenceKind::FeatureTyping).unwrap();
+        let direct = vec![
+            vec![(id(1), redefinition), (id(5), typing)],
+            vec![(id(2), redefinition)],
+            vec![(id(3), redefinition)],
+            vec![(id(4), redefinition)],
+            vec![],
+            vec![(id(4), typing)],
+        ];
+        let closure = saturate(&direct, direct.len()).unwrap();
+        let redefined: Vec<_> = closure[0]
+            .iter()
+            .filter(|(_, scopes)| scopes & ScopeBits::Redefinition.bit() != 0)
+            .map(|(ancestor, _)| *ancestor)
+            .collect();
+        assert_eq!(redefined, vec![id(1), id(2), id(3), id(4)]);
+        assert_eq!(closure[0].last(), Some(&(id(5), typing)));
+    }
 }
