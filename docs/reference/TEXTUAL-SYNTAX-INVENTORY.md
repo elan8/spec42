@@ -1,6 +1,6 @@
 # SysML/KerML textual syntax coverage (generated)
 
-Source: `https://github.com/Systems-Modeling/SysML-v2-Release` release `2026-04`, parser `5d5455b4d39100c3494357d9c66699a3d0ef748a`.
+Source: `https://github.com/Systems-Modeling/SysML-v2-Release` release `2026-04`, parser `8e7962b2931a663399263ea0250a03da2bd81774`.
 
 Productions: **640** (SysML 350, KerML 290); supported: **40**; recovered: **0**; unsupported: **0**; untested: **600**.
 

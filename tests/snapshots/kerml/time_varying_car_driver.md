@@ -193,7 +193,7 @@ package TimeVaryingCarDriver {
       )
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 56 8) (end 57 4))
       )
@@ -343,7 +343,7 @@ package TimeVaryingCarDriver {
       )
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 114 8) (end 117 4))
       )

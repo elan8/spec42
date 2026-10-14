@@ -91,7 +91,7 @@ package Features {
       )
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 35 5) (end 36 1))
       )

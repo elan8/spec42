@@ -771,7 +771,7 @@ impl SemanticModelBuilder {
     /// Body walker for `interface def` bodies (`InterfaceDefBody`/`InterfaceDefBodyElement`),
     /// mirroring `lower_connection_body`. `end` declarations and `connect` statements carry the
     /// connector-end structure through the same `lower_end_decl`/`lower_connect_stmt` helpers
-    /// `connection def` uses; everything else beyond attribute/item/port members falls through to
+    /// `connection def` uses; everything else beyond attribute/item/port/part members falls through to
     /// `unsupported_interface_definition_member`.
     pub(crate) fn lower_interface_body(
         &mut self,
@@ -832,6 +832,11 @@ impl SemanticModelBuilder {
                     }
                     InterfaceDefBodyElement::PortUsage(port_usage) => {
                         self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
+                    // `StructureUsageElement` admits `PartUsage`, including `end part`, exactly
+                    // as in an interface usage body.
+                    InterfaceDefBodyElement::PartUsage(node) => {
+                        self.lower_part_usage(document, Some(declaration), node)?;
                     }
                     InterfaceDefBodyElement::RefDecl(node) => {
                         self.lower_ref_decl(document, Some(declaration), node)?;
