@@ -1,5 +1,3 @@
-#![recursion_limit = "512"]
-
 //! End-to-end checks of the guest ABI against real WebAssembly modules.
 //!
 //! These are written as WAT rather than built with the Rust SDK on purpose: the SDK always

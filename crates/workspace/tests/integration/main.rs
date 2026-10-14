@@ -1,5 +1,3 @@
-#![recursion_limit = "512"]
-
 //! The workspace crate's integration tests, one binary. Each module was a separate test binary
 //! that linked the whole engine; one binary links it once.
 

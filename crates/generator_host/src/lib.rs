@@ -1,7 +1,3 @@
-// Public types reach `sysml_query::Services`, whose lowering memo retains parser AST fragments;
-// proving their auto traits walks the parser's AST type graph, which is deeper than the default
-// limit of 128 (rustdoc derives every auto trait for every documented type).
-#![recursion_limit = "256"]
 //! Sandboxed runtime for Spec42 core WebAssembly generator modules.
 
 use std::path::Path;

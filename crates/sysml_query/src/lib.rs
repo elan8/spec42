@@ -1,5 +1,3 @@
-#![recursion_limit = "256"]
-
 //! The facade: the only crate a consumer names for anything SysML.
 //!
 //! A host obtains one [`Services`] value and works with its handles — [`source::SourceService`],

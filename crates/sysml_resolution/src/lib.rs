@@ -1,5 +1,3 @@
-#![recursion_limit = "256"]
-
 //! The semantic authority.
 //!
 //! The only crate that calls the parser, holds parsed trees ([`syntax`]), lowers and resolves,

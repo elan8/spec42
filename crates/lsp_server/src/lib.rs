@@ -1,5 +1,3 @@
-#![recursion_limit = "256"]
-
 //! The editor host: document lifecycle, workspace orchestration, LSP handlers,
 //! DTO assembly and host adapters over the `sysml_query` services. It parses nothing and owns no
 //! semantic state of its own; its `ServerState` holds the facade's `PublicationSession` inside a

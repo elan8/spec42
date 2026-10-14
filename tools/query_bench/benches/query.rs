@@ -1,5 +1,3 @@
-#![recursion_limit = "512"]
-
 //! The admission benchmark for representation changes.
 //!
 //! `design.md`: a representation change is admitted with a benchmark showing it neutral-or-better
