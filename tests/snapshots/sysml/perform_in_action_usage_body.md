@@ -52,8 +52,7 @@ package Functions {
         }
     }
     // A qualified redefinition resolves through the anonymous perform to the performed
-    // action's member. Moving that composite action into a part context also inherits
-    // indistinguishable `this` memberships from subactions and ownedActions.
+    // action's member.
     part inspected :> family {
         action :>> providePower::generate;
     }
@@ -77,22 +76,6 @@ package Functions {
 (fixture-diagnostics
   (document "memory://snapshot/perform_in_action_usage_body.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 49 8) (end 49 42))
-        (related-information
-          (related
-            (uri "memory://snapshot/sysml.library/actions.md")
-            (range (start 62 3) (end 68 4))
-          )
-          (related
-            (uri "memory://snapshot/sysml.library/parts.md")
-            (range (start 50 4) (end 55 4))
-          )
-        )
-      )
     )
   )
 )
@@ -102,22 +85,6 @@ package Functions {
 (fixture-diagnostics
   (document "memory://snapshot/perform_in_action_usage_body.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 49 8) (end 49 42))
-        (related-information
-          (related
-            (uri "memory://snapshot/sysml.library/actions.md")
-            (range (start 62 3) (end 68 4))
-          )
-          (related
-            (uri "memory://snapshot/sysml.library/parts.md")
-            (range (start 50 4) (end 55 4))
-          )
-        )
-      )
     )
   )
 )
@@ -125,7 +92,7 @@ package Functions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:14ebb72e1b8d5bec5c1405cabe87f02384fca3ea3040e60410f41f3b00469c33") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1490960f8af27372137c9d6a527805db43ac68e8508adb110a009c1a198b4bcd") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -1197,32 +1164,32 @@ package Functions {
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 55 14) (end 55 19)) (probe (position 55 14))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 54 14) (end 54 19)) (probe (position 54 14))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "start")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 56 19) (end 56 20)) (probe (position 56 19))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 55 19) (end 55 20)) (probe (position 55 19))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind while) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "i")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Run::i")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 62 13) (end 62 17)) (probe (position 62 13))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 61 13) (end 61 17)) (probe (position 61 13))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (kind thenTarget) (ordinal 0) (authored-target "done")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::done")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 57 20) (end 57 25)) (probe (position 57 20))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 56 20) (end 56 25)) (probe (position 56 20))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind while) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "stepA")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepA")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 60 20) (end 60 25)) (probe (position 60 20))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 59 20) (end 59 25)) (probe (position 59 20))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind action-def) (name "Run")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "stepB")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepB")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 54 22) (end 54 43)) (probe (position 54 22))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 53 22) (end 53 43)) (probe (position 53 22))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Run::i"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Integer")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
     )
@@ -1277,12 +1244,12 @@ package Functions {
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::stepB")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 48 22) (end 48 28)) (probe (position 48 22))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 47 22) (end 47 28)) (probe (position 47 22))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::inspected"))) (kind subsetting) (ordinal 0) (authored-target "family")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 49 19) (end 49 41)) (probe (position 49 19))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 48 19) (end 48 41)) (probe (position 48 19))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (path (named (kind package) (name "Functions")) (named (kind part) (name "inspected")) (anonymous (kind action) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "providePower::generate")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Torque::generate")))))
     )

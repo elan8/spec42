@@ -108,6 +108,8 @@ impl<D> SemanticModel<D> {
     ///
     /// Unit-bearing values have no scalar datatype and are checked by dimension instead. Bare
     /// scalar values still have to satisfy the receiving feature's types, including quantity types.
+    /// A value written as an expression body (`default {true}`) is an Expression, not a scalar, and
+    /// is not compared.
     pub(crate) fn collect_value_conformance(
         &self,
         document: DocumentIdx,
@@ -118,7 +120,9 @@ impl<D> SemanticModel<D> {
                 .storage
                 .declaration(value.declaration)
                 .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document {
+            // An expression body binds the feature to the Expression, whose type is not the
+            // scalar type of the result it evaluates to.
+            if declaration.document != document || value.is_expression_body {
                 continue;
             }
             if !self.value_type_conflicts(value.declaration, value.declaration) {

@@ -1811,3 +1811,22 @@ fn a_declaration_with_no_authored_facts_publishes_no_fact_block() {
         "expected no feature-value block, got: {sexpr}"
     );
 }
+
+/// A nested `part` usage inside an `attribute def` body (BNF `AttributeBodyElement::PartUsage`,
+/// shared with `item def`/`item` usage bodies per the OMG `14c-Language Extensions.sysml`
+/// FMEA library example) must lower as its own `part` declaration, not fall through to
+/// `unsupported_attribute_member`.
+#[test]
+fn nested_part_usage_inside_attribute_def_body_lowers_as_part() {
+    let sexpr = semantic_sexpr_for(
+        "package P { attribute def Show { part chassis : Frame; attribute def Frame; } }",
+    );
+    assert!(
+        sexpr.contains("P::Show::chassis"),
+        "expected nested part declaration, got: {sexpr}"
+    );
+    assert!(
+        !sexpr.contains("unsupported_attribute_member"),
+        "did not expect unsupported_attribute_member, got: {sexpr}"
+    );
+}

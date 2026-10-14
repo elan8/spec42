@@ -600,6 +600,10 @@ pub(crate) struct FeatureValueRecord {
     pub(crate) kind: FeatureValueKind,
     pub(crate) is_default: bool,
     pub(crate) has_operator: bool,
+    /// Whether the value is written as an expression body (`default {true}`). Such a value binds
+    /// the feature to the Expression itself -- an Evaluation, typically of an expression-typed
+    /// feature such as `whileTest : BooleanEvaluation` -- not to the scalar its body evaluates to.
+    pub(crate) is_expression_body: bool,
     pub(crate) span: Span,
 }
 

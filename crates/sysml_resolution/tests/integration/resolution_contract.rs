@@ -6660,3 +6660,72 @@ fn redefined_derivation_ends_name_the_standard_features_and_prefix_metadata_inve
         placed_derived.redefinition.targets
     );
 }
+
+/// A recursive import spanning documents brings the nested library members into the workspace
+/// scope, the same as a same-document one.
+#[test]
+fn recursive_import_resolves_across_documents() {
+    let published = publication_for(&[
+        (
+            "memory://lib.sysml",
+            "package Lib { package Nested { part def CelestialBody; } }",
+        ),
+        (
+            "memory://model.sysml",
+            "package Model { private import Lib::**; part def Orbit { ref primary : CelestialBody; } }",
+        ),
+    ]);
+    let mut output = String::new();
+    published.debug().write_semantic_sexpr(&mut output).unwrap();
+    assert!(
+        output.contains("(authored-target \"CelestialBody\")\n      (outcome (status resolved) (target (node (document \"memory://lib.sysml\") (qualified-name \"Lib::Nested::CelestialBody\"))))"),
+        "expected the cross-document recursive import to resolve `CelestialBody`, got:\n{output}"
+    );
+}
+
+/// The header-level specialization clauses four lowerings used to drop.
+///
+/// `ItemUsage.subsets`, `KermlFeature.references`/`crosses`, `ViewpointUsage.subsets`/
+/// `redefines` and `SubjectDecl.redefines` are all ordinary `SubsettingRelationship`s that the
+/// shared `lower_subsetting_relationship` already maps; only the call was missing. `references`
+/// and `crosses` publish as `unsupported` outcomes, which is the pre-existing treatment of
+/// those two reference kinds -- the point here is that the authored clause reaches the model
+/// at all instead of being silently discarded.
+#[test]
+fn header_specialization_clauses_reach_the_model() {
+    let item = build_semantic_sexpr(
+        "package Demo {\n\titem def Item;\n\titem objects : Item;\n\titem things : Item :> objects;\n}\n",
+    );
+    assert!(
+        item.contains(
+            "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::things\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::objects\")))"
+        ),
+        "expected item usage `:>` to resolve to objects, got:\n{item}"
+    );
+
+    let feature = build_semantic_sexpr(
+        "package Demo {\n\tclassifier C {\n\t\tfeature base;\n\t\tfeature aliased references base;\n\t}\n}\n",
+    );
+    assert!(
+        feature.contains("(referenceSubsetting (reference \"base\"))"),
+        "expected the KerML feature `references` clause to publish a reference, got:\n{feature}"
+    );
+
+    let viewpoint = build_semantic_sexpr(
+        "package Demo {\n\tviewpoint base;\n\tviewpoint refined :> base;\n}\n",
+    );
+    assert!(
+        viewpoint.contains(
+            "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::refined\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::base\")))"
+        ),
+        "expected viewpoint usage `:>` to resolve to base, got:\n{viewpoint}"
+    );
+
+    let subject = build_semantic_sexpr(
+        "package Demo {\n\tpart def Vehicle;\n\trequirement def R {\n\t\tsubject vehicle : Vehicle;\n\t}\n\trequirement def S :> R {\n\t\tsubject subVehicle :>> vehicle;\n\t}\n}\n",
+    );
+    assert!(
+        subject.contains("(redefinition (reference \"vehicle\"))"),
+        "expected the subject `:>>` clause to publish a redefinition, got:\n{subject}"
+    );
+}

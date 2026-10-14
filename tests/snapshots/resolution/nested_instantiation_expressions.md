@@ -56,22 +56,6 @@ package Nested {
 (fixture-diagnostics
   (document "memory://snapshot/nested_instantiation_expressions.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 11 8) (end 11 46))
-        (related-information
-          (related
-            (uri "memory://snapshot/sysml.library/base.md")
-            (range (start 30 2) (end 30 51))
-          )
-          (related
-            (uri "memory://snapshot/sysml.library/parts.md")
-            (range (start 25 2) (end 25 32))
-          )
-        )
-      )
     )
   )
 )

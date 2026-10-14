@@ -386,12 +386,17 @@ impl<D> SemanticModel<D> {
     // Namespace identity
     // ------------------------------------------------------------------------------------------
 
-    /// Reports indistinguishable owned and inherited memberships of a Namespace.
+    /// Reports an owned membership of a Namespace that is indistinguishable from another of its
+    /// memberships, owned or inherited.
     ///
-    /// Owned collisions point to the declaration that introduced them. Inherited-only collisions
-    /// point to the inheriting Namespace with both members as related information. Canonical
-    /// effective names and short names identify memberships; metaclass conformance determines
-    /// whether a same-named pair is distinguishable.
+    /// Canonical effective names and short names identify memberships (`memberName` is the member's
+    /// effective name, so `perform drive;` beside an owned `action drive` collides, as KerML
+    /// `isDistinguishableFrom` specifies), and metaclass conformance decides whether a same-named
+    /// pair is distinguishable. A pair of two inherited memberships is not reported: it is not
+    /// introduced by this Namespace, it repeats on every subtype and usage below the one that
+    /// introduced it, and inside the standard library it would blame user declarations for
+    /// library structure. Each colliding pair is reported once, however many of its names and
+    /// short names coincide, and always on the owned member, where the author can fix it.
     pub(crate) fn collect_namespace_identity(
         &self,
         declared: &[DeclarationId],
@@ -402,6 +407,13 @@ impl<D> SemanticModel<D> {
             if !crate::model::element_kind::element_kind(owner_kind)
                 .conforms_to(sysml_contract::ElementKind::Namespace)
             {
+                continue;
+            }
+            // A usage whose grammar parameters lowering does not mint (a loop's body action, an
+            // `if`'s clauses, ...) lacks the implicit redefinitions that would hide inherited
+            // parameters, so its membership set is not a fact to judge: `perform body;` inside
+            // `while` would collide with the inherited `WhileLoopAction::body` it should replace.
+            if crate::resolve::parameter_positions::has_unlowered_grammar_parameters(owner_kind) {
                 continue;
             }
             let owned = self.child_declarations(owner);
@@ -438,63 +450,60 @@ impl<D> SemanticModel<D> {
                     }
                 }
             }
+            let document = self
+                .storage
+                .declaration(owner)
+                .ok_or(ResolutionError::InvalidStorage)?
+                .document;
+            let owned_set: BTreeSet<DeclarationId> = owned.iter().copied().collect();
+            let mut reported = BTreeSet::new();
+            let mut value_pairs = BTreeSet::new();
             for (name, mut members) in by_identifier {
                 if members.len() < 2 {
                     continue;
                 }
                 // Inherited memberships precede owned ones so an owned collision is reported
-                // where the author can fix it, regardless of either source's declaration order.
+                // on the later owned member, regardless of either source's declaration order.
                 members.sort_by_key(|member| {
                     (
-                        owned.contains(member),
+                        owned_set.contains(member),
                         self.storage.declaration(*member).map(|declaration| {
                             writer::document_identity(self, declaration.document)
                         }),
                         self.declaration_range(*member),
                     )
                 });
-                let Some((first, duplicate)) = self.first_collision(&members) else {
+                let Some((first, duplicate)) = self.first_owned_collision(&members, &owned_set)
+                else {
                     continue;
                 };
-                let subject = if owned.contains(&duplicate) {
-                    duplicate
-                } else {
-                    owner
-                };
-                let mut diagnostic = self.declaration_message_diagnostic(
-                    subject,
-                    DiagnosticCode::DuplicateNamespaceMember,
-                    DiagnosticSeverity::Warning,
-                    Some(format!(
-                        "'{}' has indistinguishable memberships named '{name}'.",
-                        self.display_name(owner)
-                    )),
-                )?;
-                diagnostic.related = if subject == owner {
-                    Box::from([
-                        self.related_declaration(first, RELATED_FIRST_DECLARATION)?,
-                        self.related_declaration(duplicate, RELATED_FIRST_DECLARATION)?,
-                    ])
-                } else {
-                    Box::from([self.related_declaration(first, RELATED_FIRST_DECLARATION)?])
-                };
-                diagnostics.push(diagnostic);
-                let document = self
-                    .storage
-                    .declaration(owner)
-                    .ok_or(ResolutionError::InvalidStorage)?
-                    .document;
+                if reported.insert((first, duplicate)) {
+                    let mut diagnostic = self.declaration_message_diagnostic(
+                        duplicate,
+                        DiagnosticCode::DuplicateNamespaceMember,
+                        DiagnosticSeverity::Warning,
+                        Some(format!(
+                            "'{}' has indistinguishable memberships named '{name}'.",
+                            self.display_name(owner)
+                        )),
+                    )?;
+                    diagnostic.related =
+                        Box::from([self.related_declaration(first, RELATED_FIRST_DECLARATION)?]);
+                    diagnostics.push(diagnostic);
+                }
                 for local in members
                     .iter()
                     .copied()
-                    .filter(|member| owned.contains(member))
+                    .filter(|member| owned_set.contains(member))
                 {
                     for ancestor in members
                         .iter()
                         .copied()
-                        .filter(|member| !owned.contains(member))
+                        .filter(|member| !owned_set.contains(member))
                     {
-                        if self.first_collision(&[ancestor, local]).is_some() {
+                        if self.first_collision(&[ancestor, local]).is_some()
+                            && value_pairs.insert((local, ancestor))
+                        {
                             self.collect_inherited_value_pair(
                                 local,
                                 ancestor,
@@ -507,6 +516,26 @@ impl<D> SemanticModel<D> {
             }
         }
         Ok(())
+    }
+
+    /// The first pair, in `members` order, of an owned member and an earlier member it cannot be
+    /// distinguished from.
+    fn first_owned_collision(
+        &self,
+        members: &[DeclarationId],
+        owned: &BTreeSet<DeclarationId>,
+    ) -> Option<(DeclarationId, DeclarationId)> {
+        members
+            .iter()
+            .enumerate()
+            .skip(1)
+            .filter(|(_, member)| owned.contains(member))
+            .find_map(|(index, member)| {
+                members[..index]
+                    .iter()
+                    .find(|earlier| self.first_collision(&[**earlier, *member]).is_some())
+                    .map(|earlier| (*earlier, *member))
+            })
     }
 
     /// The first pair of same-named members whose kinds must be distinguishable.

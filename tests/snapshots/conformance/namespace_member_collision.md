@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=A namespace reports the later of two members it cannot tell apart
+description=A namespace reports the later of two same-named members only when neither metaclass distinguishes them (KerML Membership::isDistinguishableFrom); a part def and an action def named Shared are distinguishable
 type=file
 ~~~
 # SOURCE

@@ -377,6 +377,7 @@ impl SemanticModelBuilder {
                 kind: record.kind,
                 is_default: record.is_default,
                 has_operator: record.has_operator,
+                is_expression_body: record.is_expression_body,
                 span: record.span,
             });
         }

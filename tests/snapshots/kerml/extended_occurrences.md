@@ -115,22 +115,6 @@ package ExtendedOccurrences {
       )
       (diagnostic
         (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 26 40) (end 26 62))
-        (related-information
-          (related
-            (uri "memory://snapshot/extended_occurrences.md")
-            (range (start 4 8) (end 4 36))
-          )
-          (related
-            (uri "memory://snapshot/extended_occurrences.md")
-            (range (start 17 12) (end 17 35))
-          )
-        )
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 29 41) (end 29 65))

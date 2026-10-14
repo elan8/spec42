@@ -30,17 +30,7 @@ const EXPECTED_KPAR_COUNT: usize = 10;
 /// a change here is a deliberate inventory change that belongs in the same commit.
 const EXPECTED_DOCUMENT_COUNT: usize = 94;
 
-/// Reviewed inventory of the pinned `2026-04` bundle under the current checker.
-///
-/// `attribute_value_type_mismatch` is the two Boolean `default {true}` / `{false}` bindings on
-/// `WhileLoopAction` whose inherited types are not all comparable to `Boolean`.
-/// `duplicate_namespace_member` is inherited `self`, `body`, and `quantityPowerFactors`
-/// memberships the library does not distinguish with an explicit redefinition.
-const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[
-    ("ambiguous_reference", 2),
-    ("attribute_value_type_mismatch", 2),
-    ("duplicate_namespace_member", 6),
-];
+const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[("ambiguous_reference", 2)];
 
 fn base_cli() -> Cli {
     Cli {
@@ -174,13 +164,13 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
 
         assert_eq!(
             report.summary.error_count,
-            4,
+            2,
             "bundled standard-library errors changed:\n  {}",
             offenders.join("\n  ")
         );
         assert_eq!(
             report.summary.warning_count,
-            6,
+            0,
             "bundled standard-library warnings changed:\n  {}",
             offenders.join("\n  ")
         );

@@ -29,22 +29,6 @@ package Redefinition {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_for_loop_action_usage_var_redefinition.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 3 8) (end 3 50))
-        (related-information
-          (related
-            (uri "memory://snapshot/sysml.library/base.md")
-            (range (start 30 2) (end 30 51))
-          )
-          (related
-            (uri "memory://snapshot/sysml.library/items.md")
-            (range (start 30 2) (end 30 34))
-          )
-        )
-      )
     )
   )
 )

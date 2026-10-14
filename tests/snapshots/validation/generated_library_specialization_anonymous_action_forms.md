@@ -39,18 +39,6 @@ package GeneratedAnonymousActionForms {
 (fixture-diagnostics
   (document "memory://snapshot/generated_library_specialization_anonymous_action_forms.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "duplicate_namespace_member")
-        (source "semantic")
-        (range (start 7 42) (end 7 54))
-        (related-information
-          (related
-            (uri "memory://snapshot/sysml.library/actions.md")
-            (range (start 506 2) (end 511 3))
-          )
-        )
-      )
     )
   )
 )
