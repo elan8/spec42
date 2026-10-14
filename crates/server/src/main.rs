@@ -1,4 +1,6 @@
-﻿use std::process::ExitCode;
+﻿#![recursion_limit = "512"]
+
+use std::process::ExitCode;
 
 use clap::Parser;
 use lsp_server::host::logging::init_tracing;
