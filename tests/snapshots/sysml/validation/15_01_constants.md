@@ -98,6 +98,12 @@ package '15_01-Constants' {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 22 9) (end 22 73))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 22 29) (end 22 34))
@@ -107,6 +113,12 @@ package '15_01-Constants' {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 24 22) (end 24 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 25 9) (end 25 74))
       )
       (diagnostic
         (severity warning)
@@ -269,13 +281,14 @@ package '15_01-Constants' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "electron to proton mass ratio")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.000544617021487))) (unit "one")))
     (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "fine structure constant")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 0.0072973525693))) (unit "one")))
-    (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "speed of light in vacuum")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "speed of light in vacuum")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 299792458))) (unit "m/s")))
     (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Global Context")) (named (kind attribute) (name "nominal earth gravitational acceleration")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 9.80665))) (unit "m/s²")))
-    (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute) (name "e")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute) (name "pi")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute) (name "e")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute) (name "pi")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Model X Context")) (named (kind attribute) (name "amplifier gain")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind real) (real 3.5))) (unit "one")))
     (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "electron to proton mass ratio")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "one") (start 43 88) (end 43 91) (outcome (status catalog-unavailable)))
     (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "fine structure constant")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "one") (start 42 87) (end 42 90) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "speed of light in vacuum")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "m/s") (start 44 74) (end 44 77) (outcome (status catalog-unavailable)))
     (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Global Context")) (named (kind attribute) (name "nominal earth gravitational acceleration")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "m/s²") (start 48 90) (end 48 97) (outcome (status catalog-unavailable)))
     (unit (declaration (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Model X Context")) (named (kind attribute) (name "amplifier gain")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "one") (start 52 60) (end 52 63) (outcome (status catalog-unavailable)))
   )
@@ -336,7 +349,7 @@ package '15_01-Constants' {
 (expressions
   (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "electron to proton mass ratio")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 0.000544617021487))) (unit "one"))))
   (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "fine structure constant")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 0.0072973525693))) (unit "one"))))
-  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "speed of light in vacuum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "speed of light in vacuum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 299792458))) (unit "m/s"))))
   (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Global Context")) (named (kind attribute) (name "nominal earth gravitational acceleration")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 9.80665))) (unit "m/s²"))))
   (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute) (name "e")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "==" (unsupported (operator "*" (feature-reference "e" (target (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants::e")))) (literal (value (kind real) (real 100000000000000000000))))) (literal (value (kind real) (real 271828182845904520000)))))
   (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute) (name "pi")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "==" (unsupported (operator "*" (feature-reference "pi" (target (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants::pi")))) (literal (value (kind real) (real 100000000000000000000))))) (literal (value (kind real) (real 314159265358979330000)))))

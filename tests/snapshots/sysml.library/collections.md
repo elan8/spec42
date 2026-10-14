@@ -574,7 +574,7 @@ standard library package Collections {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
     (evaluated (declaration (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "flattenedSize")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "rank")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "rank")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

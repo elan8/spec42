@@ -670,7 +670,7 @@ standard library package Views {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view) (name "views")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view) (name "views")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view-def) (name "View")) (named (kind satisfy) (name "viewpointConformance")) (anonymous (kind require-constraint) (ordinal 0)) (named (kind default-reference) (name "ref")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view-def) (name "View")) (named (kind satisfy) (name "viewpointConformance")) (anonymous (kind require-constraint) (ordinal 0)) (named (kind default-reference) (name "ref")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

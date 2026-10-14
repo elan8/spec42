@@ -370,7 +370,7 @@ package '10a-Analysis' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (named (kind package) (name "VehicleDesignModel")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (named (kind package) (name "VehicleDesignModel")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

@@ -165,7 +165,7 @@ package Behaviors {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-step) (name "b")) (named (kind kerml-feature) (name "x1")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-feature) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind class-def) (name "C")) (named (kind kerml-feature) (name "z")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind class-def) (name "C")) (named (kind kerml-feature) (name "z")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

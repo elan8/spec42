@@ -301,15 +301,20 @@ impl PublicationAuthority {
         libraries: &[(&SourceDocument, SourceInput)],
     ) -> Result<Arc<LibraryStratum>, PublicationBuildFailure> {
         let key = library_key(libraries.iter().map(|(document, _)| *document));
-        let mut cached = self
-            .library
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner);
-        if let Some(entry) = cached.as_ref() {
-            if entry.key == key {
-                return Ok(Arc::clone(&entry.stratum));
+        {
+            let cached = self
+                .library
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            if let Some(entry) = cached.as_ref() {
+                if entry.key == key {
+                    return Ok(Arc::clone(&entry.stratum));
+                }
             }
         }
+        // Construction can run nested Rayon jobs, which may steal another publication request
+        // from the same pool. Holding this cache lock would let that request wait on itself.
+        // Concurrent misses may build the same immutable stratum; reconcile only after building.
         let stratum = Arc::new(
             build_library_stratum_memoized(
                 libraries.iter().map(|(_, source)| source.clone()).collect(),
@@ -320,6 +325,15 @@ impl PublicationAuthority {
                 PublicationBuildFailure::at(PublicationFailureStage::LibraryConstruction, error)
             })?,
         );
+        let mut cached = self
+            .library
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if let Some(entry) = cached.as_ref() {
+            if entry.key == key {
+                return Ok(Arc::clone(&entry.stratum));
+            }
+        }
         *cached = Some(CachedLibraryStratum {
             key,
             stratum: Arc::clone(&stratum),
@@ -609,6 +623,51 @@ mod tests {
 
         assert_eq!(error.stage(), PublicationFailureStage::LibraryConstruction);
         assert!(authority.library.lock().unwrap().is_none());
+    }
+
+    #[test]
+    fn concurrent_library_preparation_does_not_hold_the_cache_lock_across_nested_work() {
+        use rayon::prelude::*;
+
+        let authority = authority();
+        let documents: Vec<_> = (0..8)
+            .map(|index| {
+                document(
+                    &format!("memory://library/lib{index}.sysml"),
+                    &format!("standard library package Lib{index} {{ part def P; }}"),
+                    SourceKind::StandardLibrary,
+                )
+            })
+            .collect();
+        let pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(1)
+            .stack_size(16 * 1024 * 1024)
+            .build()
+            .unwrap();
+        let identities: Vec<_> = pool.install(|| {
+            (0..8)
+                .into_par_iter()
+                .map(|_| {
+                    authority
+                        .prepare(&documents, [])
+                        .unwrap()
+                        .identity()
+                        .clone()
+                })
+                .collect()
+        });
+        let warm = authority
+            .prepare(&documents, [])
+            .unwrap()
+            .identity()
+            .clone();
+        let cold = self::authority()
+            .prepare(&documents, [])
+            .unwrap()
+            .identity()
+            .clone();
+        assert!(identities.iter().all(|identity| identity == &warm));
+        assert_eq!(warm, cold);
     }
 
     #[test]

@@ -5,8 +5,9 @@ use sysml_v2_parser::{
     ParsedDocument,
 };
 
+use crate::evaluate::fold::CallTarget;
 use crate::evaluate::fold::{
-    eval_node_is_pure_literal, fold_eval_node, literal_expression_value, EvalNode,
+    eval_node_is_pure_literal, fold_eval_node, literal_expression_value, EvalNode, EvalOperand,
 };
 use crate::lower::facts::{AuthoredExpression, ExpressionGrammar, FilterPredicate};
 use crate::lower::storage::ParsedSources;
@@ -50,7 +51,7 @@ pub(crate) fn classify_constraint_node(
             literal_expression_value(parsed, node).map(EvalNode::Literal)
         }
         Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
-            let leaf = EvalNode::Operand(*ordinal);
+            let leaf = EvalNode::Operand(EvalOperand::Ordinal(*ordinal));
             *ordinal += 1;
             Some(leaf)
         }
@@ -69,7 +70,7 @@ pub(crate) fn classify_constraint_node(
                     ordinal,
                 )?);
             }
-            Some(EvalNode::Invocation(children))
+            Some(EvalNode::Sequence(children))
         }
         Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
             classify_constraint_node(parsed, &body.value.result.as_ref()?.value, ordinal)
@@ -88,7 +89,7 @@ pub(crate) fn classify_constraint_node(
         }
         Expression::Select { base, .. } => {
             let base = classify_constraint_node(parsed, &base.value, ordinal)?;
-            let selector = EvalNode::Operand(*ordinal);
+            let selector = EvalNode::Operand(EvalOperand::Ordinal(*ordinal));
             *ordinal += 1;
             Some(EvalNode::Invocation(vec![base, selector]))
         }
@@ -119,12 +120,15 @@ pub(crate) fn classify_constraint_node(
                 Box::new(right),
             ))
         }
-        Expression::Invocation { args, .. } => {
+        Expression::Invocation { callee, args } => {
             let mut children = Vec::with_capacity(args.len());
             for arg in args {
                 children.push(classify_constraint_node(parsed, &arg.value, ordinal)?);
             }
-            Some(EvalNode::Invocation(children))
+            Some(EvalNode::Call(
+                CallTarget::AuthoredEnd(callee.span.offset.checked_add(callee.span.len)?),
+                children,
+            ))
         }
         Expression::Constructor { args, .. } => {
             let mut children = Vec::with_capacity(args.len());
@@ -157,9 +161,14 @@ pub(crate) fn classify_constraint_node(
             Some(EvalNode::Invocation(vec![base]))
         }
         // A dotted feature chain (`s.error`) is lowered as one `MemberAccessOperand`, not an
-        // `ExpressionOperand`, so it must not advance `ordinal`. Constant folding treats it as a
-        // non-constant leaf; the published expression tree attaches the resolved reference.
-        Expression::MemberAccess { .. } => Some(EvalNode::Invocation(vec![])),
+        // `ExpressionOperand`, so it must not advance that ordinal. Its authored token end joins
+        // directly to the canonical member-access reference's settled target.
+        Expression::MemberAccess { member, .. } => {
+            let span = parsed.qualified_reference(*member)?.metadata.span;
+            Some(EvalNode::Operand(EvalOperand::MemberAccessEnd(
+                span.offset.checked_add(span.len)?,
+            )))
+        }
         _ => None,
     }
 }
@@ -221,7 +230,7 @@ pub(crate) fn classify_calc_node(
             literal_expression_value(parsed, node).map(EvalNode::Literal)
         }
         Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
-            let leaf = EvalNode::Operand(*ordinal);
+            let leaf = EvalNode::Operand(EvalOperand::Ordinal(*ordinal));
             *ordinal += 1;
             Some(leaf)
         }
@@ -240,7 +249,7 @@ pub(crate) fn classify_calc_node(
                     ordinal,
                 )?);
             }
-            Some(EvalNode::Invocation(children))
+            Some(EvalNode::Sequence(children))
         }
         Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
             classify_calc_node(parsed, &body.value.result.as_ref()?.value, ordinal)
@@ -259,7 +268,7 @@ pub(crate) fn classify_calc_node(
         }
         Expression::Select { base, .. } => {
             let base = classify_calc_node(parsed, &base.value, ordinal)?;
-            let selector = EvalNode::Operand(*ordinal);
+            let selector = EvalNode::Operand(EvalOperand::Ordinal(*ordinal));
             *ordinal += 1;
             Some(EvalNode::Invocation(vec![base, selector]))
         }
@@ -272,12 +281,15 @@ pub(crate) fn classify_calc_node(
                 Box::new(right),
             ))
         }
-        Expression::Invocation { args, .. } => {
+        Expression::Invocation { callee, args } => {
             let mut children = Vec::with_capacity(args.len());
             for arg in args {
                 children.push(classify_calc_node(parsed, &arg.value, ordinal)?);
             }
-            Some(EvalNode::Invocation(children))
+            Some(EvalNode::Call(
+                CallTarget::AuthoredEnd(callee.span.offset.checked_add(callee.span.len)?),
+                children,
+            ))
         }
         Expression::Constructor { args, .. } => {
             let mut children = Vec::with_capacity(args.len());
@@ -309,9 +321,13 @@ pub(crate) fn classify_calc_node(
             let base = classify_calc_node(parsed, &base.value, ordinal)?;
             Some(EvalNode::Invocation(vec![base]))
         }
-        // See `classify_constraint_node`: a dotted chain is a non-constant leaf and does not
-        // consume an `ExpressionOperand` ordinal.
-        Expression::MemberAccess { .. } => Some(EvalNode::Invocation(vec![])),
+        // A dotted chain consumes its member-access occurrence, not an ExpressionOperand ordinal.
+        Expression::MemberAccess { member, .. } => {
+            let span = parsed.qualified_reference(*member)?.metadata.span;
+            Some(EvalNode::Operand(EvalOperand::MemberAccessEnd(
+                span.offset.checked_add(span.len)?,
+            )))
+        }
         _ => None,
     }
 }

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Engineering constants evaluate through quantities and feature chains.** Same-unit arithmetic,
+  numeric scaling, and `NumericalFunctions::sum`, `max`, and `min` fold constant operands.
+  Feature chains honor usage redefinitions, compound unit literals retain their authored unit
+  syntax, and operations needing unit conversion report an explicit failure (#259).
+
 - **Feature queries preserve redefinition and member order.** Effective feature lists exclude
   replaced inherited features, ordered owned/nested derivations retain authored order, and a
   dedicated query exposes effective names with provenance while retaining authored names (#208).

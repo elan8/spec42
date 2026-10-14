@@ -877,7 +877,7 @@ package ServerSequenceRealization_2 {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/server_sequence_realization_2.md") (path (named (kind package) (name "ServerSequenceRealization_2")) (named (kind part) (name "realization_2")) (named (kind part) (name "server")) (anonymous (kind occurrence) (ordinal 2)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/server_sequence_realization_2.md") (path (named (kind package) (name "ServerSequenceRealization_2")) (named (kind part) (name "realization_2")) (named (kind part) (name "server")) (anonymous (kind occurrence) (ordinal 2)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/server_sequence_realization_2.md") (path (named (kind package) (name "ServerSequenceRealization_2")) (named (kind package) (name "Configuration")) (named (kind part) (name "server_2")) (named (kind state) (name "serverBehavior")) (named (kind transition) (name "delivering")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/server_sequence_realization_2.md") (path (named (kind package) (name "ServerSequenceRealization_2")) (named (kind package) (name "Configuration")) (named (kind part) (name "server_2")) (named (kind state) (name "serverBehavior")) (named (kind transition) (name "delivering")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

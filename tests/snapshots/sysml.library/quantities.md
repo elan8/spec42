@@ -240,6 +240,12 @@ standard library package Quantities {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 36 8) (end 36 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 36 51) (end 36 63))
@@ -618,8 +624,8 @@ standard library package Quantities {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute) (name "vectorQuantities")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute) (name "vectorQuantities")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute-def) (name "TensorQuantityValue")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute-def) (name "TensorQuantityValue")) (named (kind assert-constraint) (name "boundMatch")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute-def) (name "TensorQuantityValue")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute-def) (name "TensorQuantityValue")) (named (kind assert-constraint) (name "boundMatch")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute-def) (name "TensorQuantityValue")) (named (kind assert-constraint) (name "orderSum")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )

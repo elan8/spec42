@@ -7,6 +7,45 @@ use sysml_v2_parser::{
 
 use crate::model::EvaluatedValue;
 
+/// Authored occurrence keys join the classifier to canonical resolved reference facts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum EvalOperand {
+    Ordinal(u32),
+    /// The end of the terminal member token within this expression's source document.
+    MemberAccessEnd(usize),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum NumericalFunction {
+    Sum,
+    Max,
+    Min,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CallTarget {
+    AuthoredEnd(usize),
+    Numerical(NumericalFunction),
+    Unresolved,
+    Unsupported,
+}
+
+/// Binary operators share the same absorbing-state priority, independent of operand order.
+fn absorbing_outcome(left: &EvaluatedValue, right: &EvaluatedValue) -> Option<EvaluatedValue> {
+    use EvaluatedValue::*;
+    match (left, right) {
+        (NonConverged, _) | (_, NonConverged) => Some(NonConverged),
+        (UnresolvedOperand, _) | (_, UnresolvedOperand) => Some(UnresolvedOperand),
+        (NonConstant, _) | (_, NonConstant) => Some(NonConstant),
+        (DivisionByZero, _) | (_, DivisionByZero) => Some(DivisionByZero),
+        (TypeMismatch, _) | (_, TypeMismatch) => Some(TypeMismatch),
+        (UnsupportedUnitOperation, _) | (_, UnsupportedUnitOperation) => {
+            Some(UnsupportedUnitOperation)
+        }
+        _ => None,
+    }
+}
+
 /// A construction-time-classified mirror of a supported constraint/calc expression tree, built by
 /// `classify_expression` in lockstep with
 /// `lower_constraint_expression`/`lower_calc_expression`'s own left-to-right traversal: each
@@ -20,7 +59,7 @@ pub(crate) enum EvalNode {
     Literal(EvaluatedValue),
     /// The n-th (0-based) `ExpressionOperand` reference sourced at the owning declaration, in
     /// left-to-right expression order.
-    Operand(u32),
+    Operand(EvalOperand),
     Comparison(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
     /// Slice 4 (`classify_calc_node`): an arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/`Mod`)
     /// found in a calc-body expression. Widened by the arithmetic/logical-combinator slice:
@@ -43,15 +82,13 @@ pub(crate) enum EvalNode {
     /// straight to `EvaluatedValue::NonConstant` regardless of its children's folded values,
     /// exactly as evaluating an invocation's function/constructor semantics is out of scope.
     ///
-    /// Also reused, unchanged, for `Expression::Tuple` (`(a, b, c)`, e.g.
-    /// `quantityPowerFactors = (lengthPF, massPF, durationPF)`): a tuple has no callee to resolve,
-    /// but is otherwise identical in shape -- a plain `Vec<Node<Expression>>` of elements, each
-    /// recursed back into the same classifier/lowerer, with the tuple as a whole never evaluated as
-    /// a single scalar (folds to `NonConstant`, like an invocation). Reusing this variant rather
-    /// than adding a distinct `Tuple` one keeps the "one EvalNode shape per fold behavior" property:
-    /// nothing downstream (`fold_eval_node_pending`, `eval_node_is_pure_literal`) needs to
-    /// distinguish "called with args" from "grouped as a sequence" since both fold identically.
+    /// Unsupported constructor, collection, indexing, and type-check shapes retain their
+    /// children for authored operand alignment and stay explicitly nonconstant.
     Invocation(Vec<EvalNode>),
+    /// A sequence can be consumed by `sum`, while scalar evaluation remains nonconstant.
+    Sequence(Vec<EvalNode>),
+    /// An ordinary function call; phase 5 binds its occurrence to a settled callee.
+    Call(CallTarget, Vec<EvalNode>),
     /// A unary prefix `UnaryOp` (`-x` negation or `not x` logical negation, see
     /// `UnaryOperator::Minus`/`UnaryOperator::Not`) wrapping a single classified operand, built by
     /// both `classify_constraint_node` and `classify_calc_node` using the exact same recursive
@@ -72,6 +109,9 @@ pub(crate) fn fold_literal_comparison(
     left: EvaluatedValue,
     right: EvaluatedValue,
 ) -> EvaluatedValue {
+    if let Some(outcome) = absorbing_outcome(&left, &right) {
+        return outcome;
+    }
     fn as_f64(value: EvaluatedValue) -> Option<f64> {
         match value {
             EvaluatedValue::Integer(value) => Some(value as f64),
@@ -80,6 +120,15 @@ pub(crate) fn fold_literal_comparison(
         }
     }
     let result = match (left, right) {
+        (EvaluatedValue::Integer(left), EvaluatedValue::Integer(right)) => Some(match op {
+            BinaryOperator::Eq | BinaryOperator::StrictEq => left == right,
+            BinaryOperator::Ne | BinaryOperator::StrictNe => left != right,
+            BinaryOperator::Lt => left < right,
+            BinaryOperator::Le => left <= right,
+            BinaryOperator::Gt => left > right,
+            BinaryOperator::Ge => left >= right,
+            _ => return EvaluatedValue::NonConstant,
+        }),
         // KerML's strict-identity `===`/`!==` (`StrictEq`/`StrictNe`) fold identically to
         // `==`/`!=` for the already-literal-scalar operands this fold ever sees -- there is no
         // separate "same object identity, different value" case to distinguish once both sides
@@ -131,18 +180,39 @@ pub(crate) fn fold_arithmetic(
     left: EvaluatedValue,
     right: EvaluatedValue,
 ) -> EvaluatedValue {
+    if let Some(outcome) = absorbing_outcome(&left, &right) {
+        return outcome;
+    }
     match (left, right) {
-        (EvaluatedValue::NonConverged, _) | (_, EvaluatedValue::NonConverged) => {
-            EvaluatedValue::NonConverged
-        }
-        (EvaluatedValue::UnresolvedOperand, _) | (_, EvaluatedValue::UnresolvedOperand) => {
-            EvaluatedValue::UnresolvedOperand
-        }
-        (EvaluatedValue::NonConstant, _) | (_, EvaluatedValue::NonConstant) => {
-            EvaluatedValue::NonConstant
-        }
         (EvaluatedValue::Boolean(_), _) | (_, EvaluatedValue::Boolean(_)) => {
             EvaluatedValue::TypeMismatch
+        }
+        (
+            EvaluatedValue::Quantity(left, left_unit),
+            EvaluatedValue::Quantity(right, right_unit),
+        ) => {
+            if left_unit != right_unit || !matches!(op, BinaryOperator::Add | BinaryOperator::Sub) {
+                return EvaluatedValue::UnsupportedUnitOperation;
+            }
+            quantity_result(fold_arithmetic(op, *left, *right), left_unit)
+        }
+        (
+            EvaluatedValue::Quantity(magnitude, unit),
+            scalar @ (EvaluatedValue::Integer(_) | EvaluatedValue::Real(_)),
+        ) => {
+            if !matches!(op, BinaryOperator::Mul | BinaryOperator::Div) {
+                return EvaluatedValue::UnsupportedUnitOperation;
+            }
+            quantity_result(fold_arithmetic(op, *magnitude, scalar), unit)
+        }
+        (
+            scalar @ (EvaluatedValue::Integer(_) | EvaluatedValue::Real(_)),
+            EvaluatedValue::Quantity(magnitude, unit),
+        ) => {
+            if !matches!(op, BinaryOperator::Mul) {
+                return EvaluatedValue::UnsupportedUnitOperation;
+            }
+            quantity_result(fold_arithmetic(op, scalar, *magnitude), unit)
         }
         (EvaluatedValue::Integer(left), EvaluatedValue::Integer(right))
             if matches!(op, BinaryOperator::Pow | BinaryOperator::Exp) =>
@@ -232,16 +302,10 @@ pub(crate) fn fold_logical(
     left: EvaluatedValue,
     right: EvaluatedValue,
 ) -> EvaluatedValue {
+    if let Some(outcome) = absorbing_outcome(&left, &right) {
+        return outcome;
+    }
     match (left, right) {
-        (EvaluatedValue::NonConverged, _) | (_, EvaluatedValue::NonConverged) => {
-            EvaluatedValue::NonConverged
-        }
-        (EvaluatedValue::UnresolvedOperand, _) | (_, EvaluatedValue::UnresolvedOperand) => {
-            EvaluatedValue::UnresolvedOperand
-        }
-        (EvaluatedValue::NonConstant, _) | (_, EvaluatedValue::NonConstant) => {
-            EvaluatedValue::NonConstant
-        }
         (EvaluatedValue::Boolean(left), EvaluatedValue::Boolean(right)) => {
             EvaluatedValue::Boolean(match op {
                 // `BitAnd`/`BitOr` are KerML's single-`&`/single-`|` spellings of boolean
@@ -272,6 +336,12 @@ pub(crate) fn fold_logical(
 /// unchanged, in the same priority order the binary folds already use.
 pub(crate) fn fold_unary(op: &UnaryOperator, value: EvaluatedValue) -> EvaluatedValue {
     match value {
+        EvaluatedValue::Quantity(magnitude, unit) if matches!(op, UnaryOperator::Minus) => {
+            quantity_result(fold_unary(op, *magnitude), unit)
+        }
+        EvaluatedValue::DivisionByZero => EvaluatedValue::DivisionByZero,
+        EvaluatedValue::TypeMismatch => EvaluatedValue::TypeMismatch,
+        EvaluatedValue::UnsupportedUnitOperation => EvaluatedValue::UnsupportedUnitOperation,
         EvaluatedValue::NonConverged => EvaluatedValue::NonConverged,
         EvaluatedValue::UnresolvedOperand => EvaluatedValue::UnresolvedOperand,
         EvaluatedValue::NonConstant => EvaluatedValue::NonConstant,
@@ -290,6 +360,16 @@ pub(crate) fn fold_unary(op: &UnaryOperator, value: EvaluatedValue) -> Evaluated
             _ => EvaluatedValue::NonConstant,
         },
         _ => EvaluatedValue::NonConstant,
+    }
+}
+
+/// Keep failures outside a quantity value; only a numeric magnitude can carry a unit.
+fn quantity_result(magnitude: EvaluatedValue, unit: String) -> EvaluatedValue {
+    match magnitude {
+        EvaluatedValue::Integer(_) | EvaluatedValue::Real(_) => {
+            EvaluatedValue::Quantity(Box::new(magnitude), unit)
+        }
+        other => other,
     }
 }
 
@@ -322,10 +402,9 @@ pub(crate) fn literal_expression_value(
 /// The pinned parser models `27316[K]` as `Expression::Bracket`, whose operands are ordinary
 /// typed expressions rather than a copied unit string: a unit-looking `SI::mm` stays a
 /// source-backed qualified reference. This reads that reference's decoded segments, so the unit
-/// identity comes from the arena rather than from re-serializing source text. Any other operand
-/// shape -- a computed unit such as `N * m`, or a multi-operand list -- returns `None`, so the
-/// caller falls through to `NonConstant`/`Unsupported` exactly as before rather than inventing a
-/// unit.
+/// spelling comes from the arena rather than from re-serializing source text. A compound unit
+/// retains its authored expression text, without claiming a resolved unit identity. Multiple
+/// bracket operands are outside the quantity-literal shape and return `None`.
 pub(crate) fn quantity_unit_text(
     parsed: &ParsedDocument,
     operands: &SequenceExpressionList,
@@ -336,7 +415,37 @@ pub(crate) fn quantity_unit_text(
     let (Expression::FeatureRef(target) | Expression::FeatureChainRef(target)) =
         &element.expression.value
     else {
-        return None;
+        fn unit_expression(expression: &Expression) -> bool {
+            match expression {
+                Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => true,
+                Expression::BinaryOp {
+                    op: BinaryOperator::Mul | BinaryOperator::Div,
+                    left,
+                    right,
+                } => unit_expression(&left.value) && unit_expression(&right.value),
+                Expression::BinaryOp {
+                    op: BinaryOperator::Pow | BinaryOperator::Exp,
+                    left,
+                    right,
+                } => {
+                    unit_expression(&left.value)
+                        && matches!(right.value, Expression::LiteralInteger(_))
+                }
+                Expression::Sequence { operands, .. } => {
+                    matches!(operands.value.elements.as_slice(), [only] if unit_expression(&only.expression.value))
+                }
+                _ => false,
+            }
+        }
+        if !unit_expression(&element.expression.value) {
+            return None;
+        }
+        // This is authored unit syntax, not a resolved unit identity. The unit catalog keeps
+        // compound expressions explicitly unsupported while the literal retains its magnitude.
+        return parsed
+            .source
+            .slice(&element.expression.span)
+            .map(str::to_owned);
     };
     let reference = parsed.qualified_reference(*target)?;
     let mut text = String::new();
@@ -363,7 +472,7 @@ pub(crate) fn eval_node_is_pure_literal(node: &EvalNode) -> bool {
         EvalNode::Unary(_, operand) => eval_node_is_pure_literal(operand),
         // Always `NonConstant` once folded (see `EvalNode::Invocation`'s doc comment), never a
         // "genuinely known" literal, regardless of how many/which literal arguments it carries.
-        EvalNode::Invocation(_) => false,
+        EvalNode::Invocation(_) | EvalNode::Sequence(_) | EvalNode::Call(..) => false,
     }
 }
 
@@ -372,7 +481,7 @@ pub(crate) fn eval_node_is_pure_literal(node: &EvalNode) -> bool {
 /// resolver) and for `compute_evaluation`'s resolution-time constant-propagation fold (slice 3).
 pub(crate) fn fold_eval_node(
     node: &EvalNode,
-    resolve_operand: &mut impl FnMut(u32) -> EvaluatedValue,
+    resolve_operand: &mut impl FnMut(EvalOperand) -> EvaluatedValue,
 ) -> EvaluatedValue {
     fold_eval_node_pending(node, &mut |ordinal| Some(resolve_operand(ordinal)))
         .expect("resolve_operand never returns None")
@@ -385,7 +494,7 @@ pub(crate) fn fold_eval_node(
 /// final once produced).
 pub(crate) fn fold_eval_node_pending(
     node: &EvalNode,
-    resolve_operand: &mut impl FnMut(u32) -> Option<EvaluatedValue>,
+    resolve_operand: &mut impl FnMut(EvalOperand) -> Option<EvaluatedValue>,
 ) -> Option<EvaluatedValue> {
     match node {
         EvalNode::Literal(value) => Some(value.clone()),
@@ -416,10 +525,121 @@ pub(crate) fn fold_eval_node_pending(
             let right = fold_eval_node_pending(right, resolve_operand)?;
             Some(fold_logical(op.clone(), left, right))
         }
-        EvalNode::Invocation(_) => Some(EvaluatedValue::NonConstant),
+        EvalNode::Invocation(_) | EvalNode::Sequence(_) => Some(EvaluatedValue::NonConstant),
+        EvalNode::Call(target, arguments) => {
+            let function = match target {
+                CallTarget::Numerical(function) => *function,
+                CallTarget::Unresolved => return Some(EvaluatedValue::UnresolvedOperand),
+                CallTarget::Unsupported | CallTarget::AuthoredEnd(_) => {
+                    return Some(EvaluatedValue::NonConstant)
+                }
+            };
+            fn collect(
+                argument: &EvalNode,
+                flatten: bool,
+                resolver: &mut impl FnMut(EvalOperand) -> Option<EvaluatedValue>,
+                values: &mut Vec<EvaluatedValue>,
+            ) -> Option<()> {
+                if let EvalNode::Sequence(elements) = argument {
+                    if flatten {
+                        for element in elements {
+                            collect(element, true, resolver, values)?;
+                        }
+                        return Some(());
+                    }
+                }
+                values.push(fold_eval_node_pending(argument, resolver)?);
+                Some(())
+            }
+            let mut values = Vec::new();
+            for argument in arguments {
+                collect(
+                    argument,
+                    matches!(function, NumericalFunction::Sum),
+                    resolve_operand,
+                    &mut values,
+                )?;
+            }
+            Some(fold_numerical(function, values))
+        }
         EvalNode::Unary(op, operand) => {
             let operand = fold_eval_node_pending(operand, resolve_operand)?;
             Some(fold_unary(op, operand))
         }
     }
+}
+
+fn fold_numerical(function: NumericalFunction, values: Vec<EvaluatedValue>) -> EvaluatedValue {
+    fn numeric(value: &EvaluatedValue) -> bool {
+        match value {
+            EvaluatedValue::Integer(_) | EvaluatedValue::Real(_) => true,
+            EvaluatedValue::Quantity(magnitude, _) => matches!(
+                magnitude.as_ref(),
+                EvaluatedValue::Integer(_) | EvaluatedValue::Real(_)
+            ),
+            _ => false,
+        }
+    }
+    let mut failure = None;
+    for value in &values {
+        if let Some(outcome) = absorbing_outcome(
+            value,
+            failure.as_ref().unwrap_or(&EvaluatedValue::Integer(0)),
+        ) {
+            failure = Some(outcome);
+        }
+    }
+    if let Some(failure) = failure {
+        return failure;
+    }
+    if values.iter().any(|value| !numeric(value)) {
+        return EvaluatedValue::TypeMismatch;
+    }
+    if !matches!(function, NumericalFunction::Sum) && values.len() != 2 {
+        return EvaluatedValue::TypeMismatch;
+    }
+    let mut values = values.into_iter();
+    let Some(mut result) = values.next() else {
+        return EvaluatedValue::NonConstant;
+    };
+    for value in values {
+        result = match function {
+            NumericalFunction::Sum => fold_arithmetic(BinaryOperator::Add, result, value),
+            NumericalFunction::Max | NumericalFunction::Min => {
+                if let Some(outcome) = absorbing_outcome(&result, &value) {
+                    outcome
+                } else {
+                    let comparison = match (&result, &value) {
+                        (
+                            EvaluatedValue::Quantity(left, left_unit),
+                            EvaluatedValue::Quantity(right, right_unit),
+                        ) if left_unit == right_unit => fold_literal_comparison(
+                            BinaryOperator::Ge,
+                            *left.clone(),
+                            *right.clone(),
+                        ),
+                        (EvaluatedValue::Quantity(..), _) | (_, EvaluatedValue::Quantity(..)) => {
+                            EvaluatedValue::UnsupportedUnitOperation
+                        }
+                        _ => fold_literal_comparison(
+                            BinaryOperator::Ge,
+                            result.clone(),
+                            value.clone(),
+                        ),
+                    };
+                    match comparison {
+                        EvaluatedValue::Boolean(left_is_greater) => {
+                            if left_is_greater == matches!(function, NumericalFunction::Max) {
+                                result
+                            } else {
+                                value
+                            }
+                        }
+                        other => other,
+                    }
+                }
+            }
+        };
+    }
+    result
 }

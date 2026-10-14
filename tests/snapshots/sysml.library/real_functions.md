@@ -1486,9 +1486,9 @@ standard library package RealFunctions {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "arg")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-literal-rational) (ordinal 0))))) (state literal) (value (kind real) (real 0)))
     (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "im")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-literal-rational) (ordinal 0))))) (state literal) (value (kind real) (real 0)))
-    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

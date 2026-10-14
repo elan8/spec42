@@ -86,6 +86,12 @@ package 'Constraint Assertions-2' {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 13 1) (end 18 2))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 14 18) (end 14 27))
@@ -281,7 +287,7 @@ package 'Constraint Assertions-2' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_2.md") (path (named (kind package) (name "Constraint Assertions-2")) (named (kind part-def) (name "Vehicle")) (anonymous (kind assert-constraint) (ordinal 0)) (named (kind parameter) (name "massLimit")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg")))
     (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_2.md") (path (named (kind package) (name "Constraint Assertions-2")) (named (kind part-def) (name "Vehicle")) (anonymous (kind assert-constraint) (ordinal 0)) (named (kind parameter) (name "partMasses")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_2.md") (path (named (kind package) (name "Constraint Assertions-2")) (named (kind constraint) (name "massConstraint")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/31_constraint_assertions_2.md") (path (named (kind package) (name "Constraint Assertions-2")) (named (kind constraint) (name "massConstraint")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (unit (declaration (node (document "memory://snapshot/31_constraint_assertions_2.md") (path (named (kind package) (name "Constraint Assertions-2")) (named (kind part-def) (name "Vehicle")) (anonymous (kind assert-constraint) (ordinal 0)) (named (kind parameter) (name "massLimit")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "kg") (start 23 23) (end 23 25) (outcome (status catalog-unavailable)))
   )
 )
