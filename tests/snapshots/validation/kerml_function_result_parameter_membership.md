@@ -28,7 +28,7 @@ package Functions {
 
     // Invalid: two return parameters.
     function Two {
-        return feature first : Thing;
+        return feature 'first' : Thing;
         return feature second : Thing;
     }
 }
@@ -66,7 +66,7 @@ package Functions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:29f7c1d7d7a7a179da776c74bf509c2737743cf237da332fc59c967b5661a82f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:79542504b89f3d803bb3e6734caca2652db763d7b3cbf0364aa978176eed8e35"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::None"))) (kind kerml-function) (membership (kind owning) (visibility default)))
@@ -154,7 +154,7 @@ package Functions {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_function_result_parameter_membership.md") (range (start 16 31) (end 16 36)) (probe (position 16 31))
+  (query (document "memory://snapshot/kerml_function_result_parameter_membership.md") (range (start 16 33) (end 16 38)) (probe (position 16 33))
     (reference (id (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::first"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing")))))
     )

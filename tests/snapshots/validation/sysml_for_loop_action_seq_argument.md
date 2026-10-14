@@ -9,7 +9,7 @@ libraries=none
 ~~~
 # SOURCE
 ~~~sysml
-package Actions { action def Procedure { for item in (1) { action step; } } }
+package Actions { action def Procedure { for 'item' in (1) { action step; } } }
 ~~~
 # EXPECTED SEMANTICS
 ~~~sexpr
@@ -27,7 +27,7 @@ package Actions { action def Procedure { for item in (1) { action step; } } }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a21e4bda79bb6f9b455b8abdbe6badbe74afc641e15d8a577185df7c8ccaf367"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e576895a8ad5f01d9ef2911486cc9f43e1af776a4540ca47f8f448f3e5e8cc83"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_seq_argument.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_seq_argument.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))

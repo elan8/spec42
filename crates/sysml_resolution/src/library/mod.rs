@@ -500,7 +500,7 @@ mod tests {
         .unwrap();
         fs::write(
             lib.join("Consumer.sysml"),
-            "package Demo { import Base::*; part def P { attribute n : Name; } }",
+            "package Demo { private import Base::*; part def P { attribute n : Name; } }",
         )
         .unwrap();
         fs::write(lib.join("Unused.sysml"), "package Unused { part def X; }").unwrap();
@@ -508,7 +508,7 @@ mod tests {
             .resolve(
                 &workspace(&[(
                     "model.sysml",
-                    "package App { import Demo::*; part def AppPart; }",
+                    "package App { private import Demo::*; part def AppPart; }",
                 )]),
                 &library(&lib),
                 &LibraryClosureOptions::default(),
@@ -612,7 +612,7 @@ mod tests {
         fs::create_dir_all(&lib).unwrap();
         fs::write(lib.join("A.sysml"), "standard library package A;").unwrap();
         fs::write(lib.join("B.sysml"), "standard library package B;").unwrap();
-        let ws = workspace(&[("m.sysml", "package M { import sysml::*; }")]);
+        let ws = workspace(&[("m.sysml", "package M { private import sysml::*; }")]);
         let closure = authority()
             .resolve(&ws, &standard(&lib), &LibraryClosureOptions::default())
             .unwrap();
@@ -641,7 +641,7 @@ mod tests {
             ),
             (
                 "Views.sysml",
-                "package Views { import WebShopExample::*; view structure { expose WebShopExample::WorkspaceOnlyPart; } }",
+                "package Views { private import WebShopExample::*; view structure { expose WebShopExample::WorkspaceOnlyPart; } }",
             ),
         ]);
         let closure = authority()
@@ -748,7 +748,7 @@ mod tests {
             "package Plain { attribute plain : Thing; }",
         )
         .unwrap();
-        let ws = workspace(&[("model.sysml", "package App { import Base::*; }")]);
+        let ws = workspace(&[("model.sysml", "package App { private import Base::*; }")]);
         let closure = authority()
             .resolve(&ws, &library(&lib), &LibraryClosureOptions::default())
             .unwrap();
@@ -787,7 +787,7 @@ mod tests {
         fs::create_dir_all(&lib).unwrap();
         fs::write(lib.join("Base.sysml"), "package Base { part def Y; }").unwrap();
         let authority = authority();
-        let ws = workspace(&[("m.sysml", "package App { import Base::*; }")]);
+        let ws = workspace(&[("m.sysml", "package App { private import Base::*; }")]);
         authority
             .resolve(&ws, &library(&lib), &LibraryClosureOptions::default())
             .unwrap();
@@ -856,14 +856,14 @@ mod tests {
         fs::write(&file, "package Base;").unwrap();
         let warm = authority();
         warm.resolve(
-            &workspace(&[("m.sysml", "package App { import Base::*; }")]),
+            &workspace(&[("m.sysml", "package App { private import Base::*; }")]),
             &library(&lib),
             &LibraryClosureOptions::default(),
         )
         .unwrap();
 
         fs::write(&file, "package Changed;").unwrap();
-        let workspace = workspace(&[("m.sysml", "package App { import Changed::*; }")]);
+        let workspace = workspace(&[("m.sysml", "package App { private import Changed::*; }")]);
         let warm_result = warm
             .resolve(
                 &workspace,

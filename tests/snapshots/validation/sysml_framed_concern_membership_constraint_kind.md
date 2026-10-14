@@ -22,7 +22,7 @@ package Roles {
     part def Component;
     concern def Safety;
     requirement def Limited {
-        subject item : Component;
+        subject 'item' : Component;
         frame concern safety : Safety;
     }
 }
@@ -48,7 +48,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c5064fa9bcef65d34d49608b3f93c4002d81bbe027236c1afc636cf5ee7ce0df"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:66f847fb7090dfbbdba2d0d1ae3200a1bb960f2cbdfa0e2cd0d39855fb125dd0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -91,7 +91,7 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (range (start 10 23) (end 10 32)) (probe (position 10 23))
+  (query (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (range (start 10 25) (end 10 34)) (probe (position 10 25))
     (reference (id (source (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Limited::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_framed_concern_membership_constraint_kind.md") (qualified-name "Roles::Component")))))
     )

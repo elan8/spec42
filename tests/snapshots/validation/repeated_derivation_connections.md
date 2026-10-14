@@ -15,7 +15,7 @@ package Model {
   requirement a;
   requirement b;
   requirement c;
-  #derivation connection first {
+  #derivation connection 'first' {
     end #original originalEnd ::> a;
     end #derive derivedEnd ::> b;
   }
@@ -47,7 +47,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3916b7cfceef647a36df50fc9c78d92852137bcf367c96290ff4d9b3f494ee09") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c58bd6547634b69b32e7660c5a4fc5b6a54f6e188688dc031b35f64bbccc81c2") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/repeated_derivation_connections.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/repeated_derivation_connections.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RequirementDerivation") (import (shape namespace) (recursive false))))))

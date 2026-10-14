@@ -13,7 +13,7 @@ type=file
 ~~~kerml
 package Constructors {
     classifier Value;
-    classifier Pair { feature first : Value; feature second : Value; }
+    classifier Pair { feature 'first' : Value; feature second : Value; }
     classifier Triple specializes Pair { feature third : Value; }
     classifier Holder {
         // Each positional argument redefines the public feature at its position.
@@ -51,7 +51,7 @@ package Constructors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2d3e757d090e7a99c69505141c7963f5ce3af8ac8c4f9ce6c084b39d01761b0f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9ae8d94c99c9e5b7a9793e8507990c5723d8f5d87f14890c71626b2b57285f48"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (qualified-name "Constructors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (qualified-name "Constructors::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -414,12 +414,12 @@ package Constructors {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (qualified-name "Constructors::Triple")))))
     )
   )
-  (query (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (range (start 2 38) (end 2 43)) (probe (position 2 38))
+  (query (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (range (start 2 40) (end 2 45)) (probe (position 2 40))
     (reference (id (source (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (qualified-name "Constructors::Pair::first"))) (kind featureTyping) (ordinal 0) (authored-target "Value")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (qualified-name "Constructors::Value")))))
     )
   )
-  (query (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (range (start 2 62) (end 2 67)) (probe (position 2 62))
+  (query (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (range (start 2 64) (end 2 69)) (probe (position 2 64))
     (reference (id (source (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (qualified-name "Constructors::Pair::second"))) (kind featureTyping) (ordinal 0) (authored-target "Value")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition.md") (qualified-name "Constructors::Value")))))
     )

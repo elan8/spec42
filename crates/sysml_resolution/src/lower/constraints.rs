@@ -708,6 +708,14 @@ impl SemanticModelBuilder {
                             member,
                         )?;
                     }
+                    ConstraintDefBodyElement::ReturnExpression(_) => {
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::ConstraintDefinitionMember,
+                            element.span,
+                        );
+                        self.mark_result_expressions_incomplete(declaration)?;
+                    }
                     ConstraintDefBodyElement::Expression(expression) => {
                         let element =
                             self.mint_result_expression(document, declaration, expression)?;
@@ -786,22 +794,8 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
         }
         if let Some(relationship) = &node.value.subsets {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
@@ -837,11 +831,11 @@ impl SemanticModelBuilder {
         // asserted constraint is a `::>` reference-subsetting target, the relationship
         // `validateAssertConstraintUsageReference` reads. A shorthand declares no name.
         let name = match node.value.target {
-            Some(_) => None,
+            Some(_) => super::facts::DeclaredName::Absent,
             None => self.intern_declaration_name(document, node.value.declaration_name)?,
         };
         let short_name = match node.value.target {
-            Some(_) => None,
+            Some(_) => super::facts::DeclaredName::Absent,
             None => self.intern_short_name(document, node.value.short_name)?,
         };
         let declaration = self.push_typed_declaration(
@@ -932,7 +926,7 @@ impl SemanticModelBuilder {
         let name = if node.value.has_constraint_keyword {
             self.intern_declaration_name(document, node.value.name)?
         } else {
-            None
+            super::facts::DeclaredName::Absent
         };
         let declaration = self.push_typed_declaration(
             document,
@@ -957,8 +951,14 @@ impl SemanticModelBuilder {
         )?;
         // `require constraint c : C;` -- `ConstraintUsageDeclaration` is an ordinary
         // `UsageDeclaration` (SysML BNF 2066-2071), so the declared usage may be typed.
-        if let Some(relationship) = &node.value.typing {
-            self.lower_typing_relationship(document, declaration, relationship)?;
+        self.lower_feature_specializations(
+            document,
+            declaration,
+            &node.value.specializations,
+            None,
+        )?;
+        if let Some(value) = &node.value.value {
+            self.record_feature_value(document, declaration, value)?;
         }
         if !node.value.has_constraint_keyword {
             let Some(target) = node.value.target else {
@@ -1100,6 +1100,14 @@ impl SemanticModelBuilder {
                             UnsupportedFamily::CalcDefinitionMember,
                             member,
                         )?;
+                    }
+                    CalcDefBodyElement::ReturnExpression(_) => {
+                        self.push_unsupported(
+                            document,
+                            UnsupportedFamily::CalcDefinitionMember,
+                            element.span,
+                        );
+                        self.mark_result_expressions_incomplete(declaration)?;
                     }
                     CalcDefBodyElement::Expression(expression) => {
                         let element =

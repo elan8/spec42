@@ -290,7 +290,8 @@ impl<D> SemanticModel<D> {
 
     /// The authored name of one declaration, borrowed from the symbol blob.
     pub(crate) fn authored_name(&self, id: DeclarationId) -> Option<&str> {
-        self.storage.symbol(self.storage.declaration(id)?.name?)
+        self.storage
+            .symbol(self.storage.declaration(id)?.name.resolved()?)
     }
 
     pub(crate) fn declaration_kind(&self, id: DeclarationId) -> Option<DeclarationKind> {
@@ -432,7 +433,7 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn declaration_target(&self, id: DeclarationId) -> Option<NavigationTarget> {
         let declaration = self.storage.declaration(id)?;
-        declaration.name?;
+        declaration.name.resolved()?;
         Some(NavigationTarget {
             symbol: self.symbol_id(id)?,
             location: SourceLocation {
@@ -549,6 +550,7 @@ impl<D> SemanticModel<D> {
             // honest location -- the same answer the text search used to fall back to.
             let range = match target_declaration
                 .name
+                .resolved()
                 .and_then(|name| self.documents.reference_identifier(*id, name))
             {
                 Some(range) => range,

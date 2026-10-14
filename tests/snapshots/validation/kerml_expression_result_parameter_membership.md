@@ -28,7 +28,7 @@ package Expressions {
 
     // Invalid: two return parameters.
     expr Two {
-        return feature first : Thing;
+        return feature 'first' : Thing;
         return feature second : Thing;
     }
 }
@@ -66,7 +66,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3e7d79e61745fcf710c41115b1aaed1afdd2b34f0bd6704054c73c8c1a8fdde8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d9d757bad7ee92198f4ef521b78d4ce733f5b921c3094e5538335e89379e59a2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::None"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
@@ -154,7 +154,7 @@ package Expressions {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (range (start 16 31) (end 16 36)) (probe (position 16 31))
+  (query (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (range (start 16 33) (end 16 38)) (probe (position 16 33))
     (reference (id (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::first"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing")))))
     )

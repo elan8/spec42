@@ -21,7 +21,7 @@ package Roles {
 
     // Conforming: the subject membership is owned by a requirement definition.
     requirement def Good {
-        subject item : Component;
+        subject 'item' : Component;
     }
 }
 ~~~
@@ -37,7 +37,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5906226f50f66546c671f4db5f85b2de35fe53d0442a8f74c19a30492da3a30e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1052dc56b78d2471658b004b3f4eeb98a7513e0462e254a41a45368f52be3377"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_subject_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_subject_membership_owning_type.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -74,7 +74,7 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_subject_membership_owning_type.md") (range (start 8 23) (end 8 32)) (probe (position 8 23))
+  (query (document "memory://snapshot/sysml_subject_membership_owning_type.md") (range (start 8 25) (end 8 34)) (probe (position 8 25))
     (reference (id (source (node (document "memory://snapshot/sysml_subject_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_subject_membership_owning_type.md") (qualified-name "Roles::Component")))))
     )

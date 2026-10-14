@@ -15,7 +15,7 @@ package Shared { part def Thing; }
 ## Use.sysml
 ~~~sysml
 package Use {
-    import Shared::*;
+    private import Shared::*;
     part usage : Thing;
 }
 ~~~
@@ -36,7 +36,7 @@ package Use {
         (severity error)
         (code "ambiguous_import_target")
         (source "semantic")
-        (range (start 1 11) (end 1 20))
+        (range (start 1 19) (end 1 28))
         (related-information
           (related
             (uri "memory://snapshot/A.sysml")
@@ -52,7 +52,7 @@ package Use {
         (severity warning)
         (code "missing_library_context")
         (source "semantic")
-        (range (start 1 11) (end 1 20))
+        (range (start 1 19) (end 1 28))
       )
       (diagnostic
         (severity warning)
@@ -67,14 +67,14 @@ package Use {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b138d8841f78611c7ed5e33755a704dd08bb1077026add9abb482462e3cabd99"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:50c5ebf65a80e791c35551755973c0c358888c592b86cbb38f019db1d03f028a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/A.sysml") (qualified-name "Shared"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/A.sysml") (qualified-name "Shared::Thing"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/B.sysml") (qualified-name "Shared"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/B.sysml") (qualified-name "Shared::Thing"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/Use.sysml") (qualified-name "Use"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/Use.sysml") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Shared") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/Use.sysml") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Shared") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/Use.sysml") (qualified-name "Use::usage"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
   )
   (references
@@ -99,7 +99,7 @@ package Use {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/Use.sysml") (range (start 1 11) (end 1 20)) (probe (position 1 11))
+  (query (document "memory://snapshot/Use.sysml") (range (start 1 19) (end 1 28)) (probe (position 1 19))
     (reference (id (source (node (document "memory://snapshot/Use.sysml") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Shared")
       (outcome (status ambiguous) (candidates (node (document "memory://snapshot/A.sysml") (qualified-name "Shared")) (node (document "memory://snapshot/B.sysml") (qualified-name "Shared")))))
     )

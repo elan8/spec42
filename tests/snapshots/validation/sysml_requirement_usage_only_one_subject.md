@@ -17,12 +17,12 @@ package Roles {
 
     // Conforming: one subject membership.
     requirement Good {
-        subject first : Component;
+        subject 'first' : Component;
     }
 
     // Invalid: two subject memberships.
     requirement Bad {
-        subject first : Component;
+        subject 'first' : Component;
         subject second : Component;
     }
 }
@@ -40,7 +40,7 @@ package Roles {
         (related-information
           (related
             (uri "memory://snapshot/sysml_requirement_usage_only_one_subject.md")
-            (range (start 10 8) (end 10 34))
+            (range (start 10 8) (end 10 36))
           )
         )
       )
@@ -61,7 +61,7 @@ package Roles {
         (related-information
           (related
             (uri "memory://snapshot/sysml_requirement_usage_only_one_subject.md")
-            (range (start 10 8) (end 10 34))
+            (range (start 10 8) (end 10 36))
           )
         )
       )
@@ -72,7 +72,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fecda66ee1f3416d338ef8d0d41b6c81b86a50d45342eb2d11ce11d8966249b7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fd097f74f4f3a9aa78c207753b914398958f6d7745ab5eba56df521390cdc668"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (qualified-name "Roles::Bad"))) (kind requirement) (membership (kind feature) (visibility default)))
@@ -136,7 +136,7 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (range (start 10 24) (end 10 33)) (probe (position 10 24))
+  (query (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (range (start 10 26) (end 10 35)) (probe (position 10 26))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (qualified-name "Roles::Bad::first"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (qualified-name "Roles::Component")))))
     )
@@ -146,7 +146,7 @@ package Roles {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (qualified-name "Roles::Component")))))
     )
   )
-  (query (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (range (start 5 24) (end 5 33)) (probe (position 5 24))
+  (query (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (range (start 5 26) (end 5 35)) (probe (position 5 26))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (qualified-name "Roles::Good::first"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_usage_only_one_subject.md") (qualified-name "Roles::Component")))))
     )

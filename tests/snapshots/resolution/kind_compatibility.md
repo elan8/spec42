@@ -17,7 +17,7 @@ package Kinds {
     part def Holder {
         // Accepted. A part usage typed by a part definition, and by an item definition -- a part
         // definition specializes an item definition, so the two families are comparable.
-        part frame : Chassis;
+        part 'frame' : Chassis;
         part load : Cargo;
 
         // Rejected. An action definition is in the behaviour branch and a port definition in
@@ -255,7 +255,7 @@ package Kinds {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5a4302711023916ff53523e0c46191da9d5a5a79ccad8d0c2cf370d527f8ff3e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bb8f9ac009731c6077add47304523f115be3ca555265a7a7966136ff61ff609a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Brake"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Braking")))))
@@ -1031,7 +1031,7 @@ package Kinds {
       (outcome (status resolved) (target (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Chassis")))))
     )
   )
-  (query (document "memory://snapshot/kind_compatibility.md") (range (start 12 21) (end 12 28)) (probe (position 12 21))
+  (query (document "memory://snapshot/kind_compatibility.md") (range (start 12 23) (end 12 30)) (probe (position 12 23))
     (reference (id (source (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Holder::frame"))) (kind featureTyping) (ordinal 0) (authored-target "Chassis")
       (outcome (status resolved) (target (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Chassis")))))
     )

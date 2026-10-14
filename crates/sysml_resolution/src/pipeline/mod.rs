@@ -207,6 +207,9 @@ impl SemanticModelBuildCoordinator {
         let mut parsed_here = true;
         let (tree, errors) = match source.payload {
             crate::SourcePayload::Parsed(parsed) => {
+                if parsed.language() != source.language {
+                    return Err(CoordinatorError::ConstructionFailed);
+                }
                 parsed_here = false;
                 parsed.admission_parts()
             }
@@ -215,11 +218,15 @@ impl SemanticModelBuildCoordinator {
                 None => crate::syntax::ParsedSource::parse_text(
                     document.content().to_owned(),
                     document.digest(),
+                    document.language(),
                 )
                 .admission_parts(),
             },
             crate::SourcePayload::Text(content) => {
-                let result = sysml_v2_parser::parse_for_editor_owned(content);
+                let result = sysml_v2_parser::parse_for_editor_owned_with_name_language(
+                    content,
+                    crate::syntax::parser_name_language(source.language),
+                );
                 (Arc::new(result.document), result.errors)
             }
         };

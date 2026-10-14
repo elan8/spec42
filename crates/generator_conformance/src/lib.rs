@@ -1,3 +1,5 @@
+#![recursion_limit = "512"]
+
 //! Conformance and benchmark harness for the Spec42 generator ABI.
 //!
 //! Three jobs: prove the ABI behaves as specified, catch behavioural change as Spec42

@@ -21,7 +21,7 @@ package Roles {
 
     // Conforming: the stakeholder membership is owned by a requirement definition.
     requirement def Good {
-        subject item : Component;
+        subject 'item' : Component;
         stakeholder owner : Component;
     }
 }
@@ -38,7 +38,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:41d853586f44062e2cc8ca24a179c9ae34828db68bdcebfb081870d349f05c4e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:57c4e84d7e4b0a88713d33944f6d67648dbefe8fdf4f2a58cfb556c7a583f7a6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_stakeholder_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_stakeholder_membership_owning_type.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -88,7 +88,7 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_stakeholder_membership_owning_type.md") (range (start 8 23) (end 8 32)) (probe (position 8 23))
+  (query (document "memory://snapshot/sysml_stakeholder_membership_owning_type.md") (range (start 8 25) (end 8 34)) (probe (position 8 25))
     (reference (id (source (node (document "memory://snapshot/sysml_stakeholder_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_stakeholder_membership_owning_type.md") (qualified-name "Roles::Component")))))
     )

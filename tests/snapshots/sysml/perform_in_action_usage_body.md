@@ -46,7 +46,7 @@ package Functions {
         perform stepA;
         perform action repeated references stepA;
     }
-    part variant :> family {
+    part 'variant' :> family {
         perform action :>> providePower {
             action :>> generate = fourCylinder;
         }
@@ -125,7 +125,7 @@ package Functions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e3f2223d5549734fd08264022044bf21035c2ef4b7004a4ed9784046ca9a2122") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:14ebb72e1b8d5bec5c1405cabe87f02384fca3ea3040e60410f41f3b00469c33") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -1297,7 +1297,7 @@ package Functions {
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::Step")))))
     )
   )
-  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 40 20) (end 40 26)) (probe (position 40 20))
+  (query (document "memory://snapshot/perform_in_action_usage_body.md") (range (start 40 22) (end 40 28)) (probe (position 40 22))
     (reference (id (source (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::variant"))) (kind subsetting) (ordinal 0) (authored-target "family")
       (outcome (status resolved) (target (node (document "memory://snapshot/perform_in_action_usage_body.md") (qualified-name "Functions::family")))))
     )

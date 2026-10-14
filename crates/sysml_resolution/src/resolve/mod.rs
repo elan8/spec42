@@ -839,10 +839,11 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         for (index, declaration) in declarations.iter().enumerate() {
             let long_name_matches = declaration
                 .name
+                .resolved()
                 .is_some_and(|name| relationship_intermediate_names.contains(&name));
             let short_name_matches = declaration_facts
                 .and_then(|facts| facts.get(index))
-                .and_then(|facts| facts.short_name)
+                .and_then(|facts| facts.short_name.resolved())
                 .is_some_and(|name| relationship_intermediate_names.contains(&name));
             if long_name_matches || short_name_matches {
                 relationship_scopes.insert(
@@ -1444,14 +1445,22 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
         }
         let short_name = declaration_facts
             .and_then(|facts| facts.get(index))
-            .and_then(|facts| facts.short_name);
-        if declaration.name.is_some() || short_name.is_some() {
+            .map_or(crate::lower::facts::DeclaredName::Absent, |facts| {
+                facts.short_name
+            });
+        let declared_outcome = |name| match name {
+            crate::lower::facts::DeclaredName::Absent => EffectiveNameOutcome::Absent,
+            crate::lower::facts::DeclaredName::Resolved(name) => {
+                EffectiveNameOutcome::Resolved(name)
+            }
+            crate::lower::facts::DeclaredName::Malformed => EffectiveNameOutcome::Unresolved,
+        };
+        if declaration.name != crate::lower::facts::DeclaredName::Absent
+            || short_name != crate::lower::facts::DeclaredName::Absent
+        {
             facts[index] = EffectiveNameFacts {
-                name: declaration
-                    .name
-                    .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
-                short_name: short_name
-                    .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
+                name: declared_outcome(declaration.name),
+                short_name: declared_outcome(short_name),
                 provenance: EffectiveNameProvenance::Declared,
             };
             settled[index] = true;

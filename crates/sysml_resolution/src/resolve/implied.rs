@@ -1796,7 +1796,11 @@ fn transition_feature_specialization_anchors(
         {
             continue;
         }
-        let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
+        let Some(name) = declaration
+            .name
+            .resolved()
+            .and_then(|name| storage.symbol(name))
+        else {
             continue;
         };
         let slot_and_owners: Option<(usize, &[&str])> = match name {
@@ -2712,7 +2716,7 @@ pub(crate) fn resolve_library_anchor_path(
             .declarations
             .iter()
             .enumerate()
-            .filter(|(_, declaration)| declaration.name == Some(last))
+            .filter(|(_, declaration)| declaration.name.resolved() == Some(last))
             .filter_map(|(index, _)| DeclarationId::from_index(index).ok()),
     )
 }
@@ -2759,7 +2763,7 @@ impl<'a> LibraryAnchorNames<'a> {
         let mut by_name =
             std::collections::HashMap::<crate::model::NameId, Vec<DeclarationId>>::new();
         for (index, declaration) in storage.declarations.iter().enumerate() {
-            let Some(name) = declaration.name else {
+            let Some(name) = declaration.name.resolved() else {
                 continue;
             };
             if let Ok(id) = DeclarationId::from_index(index) {
@@ -2819,6 +2823,7 @@ pub(crate) fn anchor_owner_path_matches(
         };
         if !declaration
             .name
+            .resolved()
             .is_some_and(|id| storage.symbol(id) == Some(*name))
         {
             return false;

@@ -18,7 +18,7 @@ package Roles {
 
     // Conforming: the constraint membership is owned by a requirement definition.
     requirement def Good {
-        subject item : Component;
+        subject 'item' : Component;
         require constraint limit : Bound;
     }
 
@@ -61,7 +61,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:545cb77e0e661c1943f8a17898bb31edbb9de90febbfcc759f4030f99f722d2b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2c03993716b45b238ee220b07af962bba5385cc671cdcfbb386c9a7ccf8703d8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -133,7 +133,7 @@ package Roles {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bound")))))
     )
   )
-  (query (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (range (start 6 23) (end 6 32)) (probe (position 6 23))
+  (query (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (range (start 6 25) (end 6 34)) (probe (position 6 25))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Component")))))
     )

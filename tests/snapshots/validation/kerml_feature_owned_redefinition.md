@@ -16,7 +16,7 @@ type=file
 package Model {
     classifier Vehicle {
         feature base;
-        feature derived redefines base;
+        feature 'derived' redefines base;
     }
 }
 ~~~
@@ -40,7 +40,7 @@ package Model {
         (severity error)
         (code "redefinition_featuring_type_incompatible")
         (source "semantic")
-        (range (start 3 34) (end 3 38))
+        (range (start 3 36) (end 3 40))
         (related-information
           (related
             (uri "memory://snapshot/kerml_feature_owned_redefinition.md")
@@ -55,7 +55,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:825cdf2ff4a459a7bc8a4d829b630003552391e0f3ad1009aa9a1dc3a9e7b5e6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b95f88136d356c46282b0dcff558ad736445589fc611d84440c04a8dc7041229"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_redefinition.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_redefinition.md") (qualified-name "Model::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -92,7 +92,7 @@ package Model {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_feature_owned_redefinition.md") (range (start 3 34) (end 3 38)) (probe (position 3 34))
+  (query (document "memory://snapshot/kerml_feature_owned_redefinition.md") (range (start 3 36) (end 3 40)) (probe (position 3 36))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_redefinition.md") (qualified-name "Model::Vehicle::derived"))) (kind redefinition) (ordinal 0) (authored-target "base")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_redefinition.md") (qualified-name "Model::Vehicle::base")))))
     )

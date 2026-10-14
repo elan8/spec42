@@ -16,7 +16,7 @@ type=file
 package Model {
     classifier Vehicle {
         feature base;
-        feature derived : Vehicle redefines base chains base;
+        feature 'derived' : Vehicle redefines base chains base;
     }
 }
 ~~~
@@ -40,7 +40,7 @@ package Model {
         (severity error)
         (code "redefinition_featuring_type_incompatible")
         (source "semantic")
-        (range (start 3 44) (end 3 48))
+        (range (start 3 46) (end 3 50))
         (related-information
           (related
             (uri "memory://snapshot/kerml_feature_owned_type_featuring.md")
@@ -52,7 +52,7 @@ package Model {
         (severity warning)
         (code "feature_chaining_single_operand")
         (source "semantic")
-        (range (start 3 56) (end 3 60))
+        (range (start 3 58) (end 3 62))
       )
     )
   )
@@ -61,7 +61,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:274adf1086d9cba92cbbe007102e46297fe7381c999e9b3809692c2f6833ba27"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9c91e7804d3b9ac1456579a808a83b843c512965beccd3a5504bf5877b18a817"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -112,17 +112,17 @@ package Model {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (range (start 3 26) (end 3 33)) (probe (position 3 26))
+  (query (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (range (start 3 28) (end 3 35)) (probe (position 3 28))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle::derived"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (range (start 3 56) (end 3 60)) (probe (position 3 56))
+  (query (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (range (start 3 58) (end 3 62)) (probe (position 3 58))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle::derived"))) (kind featureChaining) (ordinal 0) (authored-target "base")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle::base")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (range (start 3 44) (end 3 48)) (probe (position 3 44))
+  (query (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (range (start 3 46) (end 3 50)) (probe (position 3 46))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle::derived"))) (kind redefinition) (ordinal 0) (authored-target "base")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle::base")))))
     )

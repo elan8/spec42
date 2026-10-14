@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Members without authored visibility of a part usage or part definition are public, so `import <usage>::*` and `import <Definition>::*` bring them into scope (spec42 issue #231)
+description=Members without authored visibility of a part usage or part definition are public, so `public import <usage>::*` and `public import <Definition>::*` bring them into scope (spec42 issue #231)
 type=file
 require_no_diagnostics=true
 require_complete_publication=true
@@ -14,11 +14,11 @@ package P {
     part vehicle : Car { part engine : Engine; }
     part def Vehicle { part wheel : Wheel; }
     package FromUsage {
-        import vehicle::*;
+        public import vehicle::*;
         part e : Engine :> engine;
     }
     package FromDefinition {
-        import Vehicle::*;
+        public import Vehicle::*;
         part w : Wheel :> wheel;
     }
 }
@@ -35,16 +35,16 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:555a3a610b47e1629bdc95ba6d10e7bc86605efb4942081189b0e01a7f7e9cbc"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c916e6ecee70f0849becc0cc74374942189d57cfad4473516b90c9beeb0a939a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::Car"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::FromDefinition"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (path (named (kind package) (name "P")) (named (kind package) (name "FromDefinition")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Vehicle") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (path (named (kind package) (name "P")) (named (kind package) (name "FromDefinition")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Vehicle") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::FromDefinition::w"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel")) (subsetting (reference "wheel")))))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::FromUsage"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (path (named (kind package) (name "P")) (named (kind package) (name "FromUsage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "vehicle") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (path (named (kind package) (name "P")) (named (kind package) (name "FromUsage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "vehicle") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::FromUsage::e"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Engine")) (subsetting (reference "engine")))))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::Vehicle::wheel"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel")))))
@@ -148,7 +148,7 @@ package P {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/import_default_visibility_members.md") (range (start 11 15) (end 11 25)) (probe (position 11 15))
+  (query (document "memory://snapshot/import_default_visibility_members.md") (range (start 11 22) (end 11 32)) (probe (position 11 22))
     (reference (id (source (node (document "memory://snapshot/import_default_visibility_members.md") (path (named (kind package) (name "P")) (named (kind package) (name "FromDefinition")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::Vehicle")))))
     )
@@ -163,7 +163,7 @@ package P {
       (outcome (status resolved) (target (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::Vehicle::wheel")))))
     )
   )
-  (query (document "memory://snapshot/import_default_visibility_members.md") (range (start 7 15) (end 7 25)) (probe (position 7 15))
+  (query (document "memory://snapshot/import_default_visibility_members.md") (range (start 7 22) (end 7 32)) (probe (position 7 22))
     (reference (id (source (node (document "memory://snapshot/import_default_visibility_members.md") (path (named (kind package) (name "P")) (named (kind package) (name "FromUsage")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::vehicle")))))
     )

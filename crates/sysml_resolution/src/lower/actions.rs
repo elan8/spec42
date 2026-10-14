@@ -369,7 +369,8 @@ impl SemanticModelBuilder {
             .as_ref()
             .map(|accept| match accept {
                 TransitionAccept::Shorthand(_, via) => (true, via.is_some()),
-                TransitionAccept::TimeTrigger(_, _) => (true, false),
+                TransitionAccept::TimeTrigger(_, _)
+                | TransitionAccept::NamedTimeTrigger(_, _, _) => (true, false),
                 TransitionAccept::Payload(_, via) => (false, via.is_some()),
             })
             .map_or((None, None), |(payload, receiver)| {
@@ -1730,7 +1731,8 @@ impl SemanticModelBuilder {
                     )?;
                 }
             }
-            TransitionAccept::TimeTrigger(kind, expr) => {
+            TransitionAccept::TimeTrigger(kind, expr)
+            | TransitionAccept::NamedTimeTrigger(_, kind, expr) => {
                 self.lower_trigger_invocation(document, owner, family, *kind, expr, span)?;
             }
             TransitionAccept::Payload(clause, via) => {

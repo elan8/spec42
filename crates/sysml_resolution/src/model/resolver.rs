@@ -253,7 +253,11 @@ impl<D> SemanticModel<D> {
             if declaration.owner.is_some() {
                 continue;
             }
-            if let Some(name) = declaration.name.and_then(|name| self.storage.symbol(name)) {
+            if let Some(name) = declaration
+                .name
+                .resolved()
+                .and_then(|name| self.storage.symbol(name))
+            {
                 root_names.insert(name.into());
             }
         }
@@ -908,7 +912,7 @@ mod tests {
         Declaration {
             document,
             owner,
-            name,
+            name: name.into(),
             anonymous_ordinal: name.is_none().then_some(0),
             kind,
             span: Span::dummy(),
@@ -938,6 +942,7 @@ mod tests {
             role: SourceRole::Workspace,
             language: source_identity::SourceLanguage::SysML,
             parsed: std::sync::Arc::new(ParsedDocument {
+                name_language: sysml_v2_parser::ast::NameLanguage::Sysml,
                 source: SourceStorage::default(),
                 qualified_references: QualifiedReferenceArena::default(),
                 root: RootNamespace {
@@ -1847,7 +1852,7 @@ mod tests {
         declarations.push(declaration(
             DocumentIdx(0),
             Some(DeclarationId(1)),
-            Some(declarations[2].name.unwrap()),
+            Some(declarations[2].name.resolved().unwrap()),
             DeclarationKind::AttributeUsage,
         ));
         fixture.declarations = declarations.into_boxed_slice();
@@ -2221,7 +2226,10 @@ mod tests {
         };
 
         let (_, _, _, _, resolution) = resolve_fixture(&fixture);
-        assert_eq!(fixture.declarations[anonymous_length.index()].name, None);
+        assert_eq!(
+            fixture.declarations[anonymous_length.index()].name,
+            crate::lower::facts::DeclaredName::Absent
+        );
         assert_eq!(
             resolution.effective_names[anonymous_length.index()].name,
             EffectiveNameOutcome::Resolved(length_name)

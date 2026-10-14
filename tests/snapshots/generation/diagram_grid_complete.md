@@ -12,7 +12,7 @@ viewQualifiedName=GridExample::selected
 ~~~sysml
 package GridExample {
     private import StandardViewDefinitions::*;
-    part def TableRoot { part first; part second; }
+    part def TableRoot { part 'first'; part second; }
     view selected : GridView { expose TableRoot; }
 }
 ~~~
@@ -28,7 +28,7 @@ package GridExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:12ff79ff00d770d0685b9b56f77fb431247f9cbebd406cf9af9478a9c20ae53a") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e0d71a392b6c663d5739e7ef6aa47d8842dd1030b87fe891ce174f18e42a4d47") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_grid_complete.md") (qualified-name "GridExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_grid_complete.md") (path (named (kind package) (name "GridExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -169,7 +169,7 @@ package GridExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:4c4a07cf47995415e459176d412026fa5d7729fa98437de77016e217db680b70",
+  "modelDigest": "blake3:b6275bc426545ffc4fb0a7f6809a68826a49e8a58f8d55567db956f9025bd3a2",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_grid_complete.md",
@@ -198,18 +198,18 @@ package GridExample {
       "document": 0,
       "range": [
         2,
-        30,
+        31,
         2,
-        35
+        36
       ]
     },
     {
       "document": 0,
       "range": [
         2,
-        42,
+        44,
         2,
-        48
+        50
       ]
     },
     {

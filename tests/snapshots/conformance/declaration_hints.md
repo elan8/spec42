@@ -22,6 +22,18 @@ package Declarations {
   (document "memory://snapshot/declaration_hints.md"
     (diagnostics
       (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 2 4) (end 2 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 23))
+      )
+      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")
@@ -46,7 +58,7 @@ package Declarations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:22ca0f3217afe51a8671935032a7f5441d40b57ffd4e9e80dc13d1b87dc4983d"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:22ca0f3217afe51a8671935032a7f5441d40b57ffd4e9e80dc13d1b87dc4983d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Redefines"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -64,7 +76,6 @@ package Declarations {
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
-    (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::typed"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel")))))
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::untyped"))) (kind part) (membership (kind feature) (visibility default)))
   )
   (references
@@ -77,14 +88,10 @@ package Declarations {
     (reference (id (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::crossedBounds"))) (kind featureTyping) (ordinal 0))
       (authored-target "Wheel")
       (outcome (status resolved) (target (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")))))
-    (reference (id (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::typed"))) (kind featureTyping) (ordinal 0))
-      (authored-target "Wheel")
-      (outcome (status resolved) (target (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::conformingBounds"))) (target (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::conformingBounds"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::crossedBounds"))) (target (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::crossedBounds"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::typed"))) (target (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::typed"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Redefines::value"))) (target (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Redefines"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "conformingBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "conformingBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "conformingBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "conformingBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
@@ -104,7 +111,6 @@ package Declarations {
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")))
       (subtype (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::conformingBounds")) (scopes any))
       (subtype (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::crossedBounds")) (scopes any))
-      (subtype (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::typed")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::conformingBounds")))
       (type (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")) (provenance authored))
@@ -128,11 +134,6 @@ package Declarations {
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
     )
-    (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::typed")))
-      (type (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")) (provenance authored))
-      (effective-type (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")) (source direct))
-      (supertype (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")) (scopes any))
-    )
 )
 ~~~
 # NAVIGATION
@@ -150,11 +151,6 @@ package Declarations {
   )
   (query (document "memory://snapshot/declaration_hints.md") (range (start 4 25) (end 4 30)) (probe (position 4 25))
     (reference (id (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::crossedBounds"))) (kind featureTyping) (ordinal 0) (authored-target "Wheel")
-      (outcome (status resolved) (target (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")))))
-    )
-  )
-  (query (document "memory://snapshot/declaration_hints.md") (range (start 2 17) (end 2 22)) (probe (position 2 17))
-    (reference (id (source (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::typed"))) (kind featureTyping) (ordinal 0) (authored-target "Wheel")
       (outcome (status resolved) (target (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Wheel")))))
     )
   )

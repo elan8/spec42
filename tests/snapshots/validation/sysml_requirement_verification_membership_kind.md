@@ -21,7 +21,7 @@ package Verification {
     part def Component;
     requirement def Limit;
     verification def Check {
-        subject item : Component;
+        subject 'item' : Component;
         objective {
             verify requirement limit : Limit;
         }
@@ -49,7 +49,7 @@ package Verification {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f262cb06fad2651cf5c3c2e6ce005e358d3761c21de4e573e323d9f7294bede8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:551ddd6aa48ae09439e946e67ec5f963e7af071d1fc28243e649936b3fcebe02"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Check"))) (kind verification-def) (membership (kind owning) (visibility default)))
@@ -107,7 +107,7 @@ package Verification {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (range (start 9 23) (end 9 32)) (probe (position 9 23))
+  (query (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (range (start 9 25) (end 9 34)) (probe (position 9 25))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Check::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Component")))))
     )

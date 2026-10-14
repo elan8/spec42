@@ -7,7 +7,7 @@ fn rename_cross_file_updates_definition_and_use() {
     let def_path = "rename/def.sysml";
     let use_path = "rename/use.sysml";
     let def_content = "package P { part def Foo; }";
-    let use_content = "package Q { import P::*; part f : Foo; }";
+    let use_content = "package Q { private import P::*; part f : Foo; }";
     let workspace = multi_doc(&[(def_path, def_content), (use_path, use_content)]);
 
     let pos = position_for_within(def_content, "part def Foo", "Foo");
@@ -37,12 +37,12 @@ fn rename_cross_file_from_usage_with_long_identity_updates_both_files() {
     let def_path = "rename/long_def.sysml";
     let use_path = "rename/long_use.sysml";
     let def_content = "package Spec42MultiFileDefinitions { part def Spec42SmokeWidget; }";
-    let use_content = "package Spec42MultiFileUsages { import Spec42MultiFileDefinitions::*; part item : Spec42SmokeWidget; }";
+    let use_content = "package Spec42MultiFileUsages { private import Spec42MultiFileDefinitions::*; part 'item' : Spec42SmokeWidget; }";
     let workspace = multi_doc(&[(def_path, def_content), (use_path, use_content)]);
 
     let pos = position_for_within(
         use_content,
-        "part item : Spec42SmokeWidget",
+        "part 'item' : Spec42SmokeWidget",
         "Spec42SmokeWidget",
     );
     let edits = apply_rename(&workspace, use_path, pos, "Spec42RenamedSmokeWidget")
@@ -57,7 +57,7 @@ fn rename_target_lists_definition_and_references() {
     let def_path = "rename/def.sysml";
     let use_path = "rename/use.sysml";
     let def_content = "package P { part def Foo; }";
-    let use_content = "package Q { import P::*; part f : Foo; }";
+    let use_content = "package Q { private import P::*; part f : Foo; }";
     let workspace = multi_doc(&[(def_path, def_content), (use_path, use_content)]);
 
     let pos = position_for_within(def_content, "part def Foo", "Foo");

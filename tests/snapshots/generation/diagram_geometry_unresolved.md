@@ -136,7 +136,7 @@ package GeometryNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:556a9d9bc642633b2d17d3bd49a61be4bf7029f951fde6974291009f6c2638ab",
+  "modelDigest": "blake3:21a48bae54501e3036b888374c8f17995acfe5a5b1163ba4e5d405c67ce62caf",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_geometry_unresolved.md",

@@ -20,9 +20,9 @@ package RequirementDefinitionDerivedFacts {
     concern def Safety;
     requirement def Requirement {
         doc /* requirement definition text */
-        subject subject : Component;
-        actor actor : Component;
-        frame concern concern : Safety;
+        subject 'subject' : Component;
+        actor 'actor' : Component;
+        frame concern 'concern' : Safety;
     }
 }
 ~~~
@@ -46,7 +46,7 @@ package RequirementDefinitionDerivedFacts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:26e34b3695bebf0fa5692a30a86ed37c356afe9221a64a2db197cc06d177b4b7") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a2d461df3657d0001237e5e463b2de838b1b5611c6ceebae01c433d11c90b73a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -201,12 +201,12 @@ package RequirementDefinitionDerivedFacts {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (range (start 6 22) (end 6 31)) (probe (position 6 22))
+  (query (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (range (start 6 24) (end 6 33)) (probe (position 6 24))
     (reference (id (source (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Requirement::actor"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Component")))))
     )
   )
-  (query (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (range (start 5 26) (end 5 35)) (probe (position 5 26))
+  (query (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (range (start 5 28) (end 5 37)) (probe (position 5 28))
     (reference (id (source (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Requirement::subject"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Component")))))
     )

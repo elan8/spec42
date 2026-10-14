@@ -62,6 +62,9 @@ impl LoweringMemo {
         generation: MemoGeneration,
         parsed: &Arc<ParsedDocument>,
     ) -> Result<(Arc<LoweredDocument>, bool), ConstructionError> {
+        if parsed.name_language != crate::syntax::parser_name_language(language) {
+            return Err(ConstructionError::InvalidParserReference);
+        }
         if let Some(hit) = self.touch((language, digest), generation) {
             return Ok((hit, true));
         }
@@ -127,12 +130,19 @@ mod tests {
     fn the_language_is_part_of_the_key() {
         let text = "package P { metaclass M; metadata m : M; }";
         let parsed = Arc::new(sysml_v2_parser::parse_for_editor(text).document);
+        let kerml_parsed = Arc::new(
+            sysml_v2_parser::parse_for_editor_with_name_language(
+                text,
+                sysml_v2_parser::ast::NameLanguage::Kerml,
+            )
+            .document,
+        );
         let digest = ContentDigest::of_bytes(text.as_bytes());
         let memo = LoweringMemo::new();
         let generation = memo.begin();
 
         let (kerml, reused) = memo
-            .lower(SourceLanguage::KerML, digest, generation, &parsed)
+            .lower(SourceLanguage::KerML, digest, generation, &kerml_parsed)
             .unwrap();
         assert!(!reused);
         let (sysml, reused) = memo
@@ -147,7 +157,7 @@ mod tests {
         assert_eq!(metadata_kinds(&sysml), [DeclarationKind::MetadataUsage]);
 
         let (again, reused) = memo
-            .lower(SourceLanguage::KerML, digest, generation, &parsed)
+            .lower(SourceLanguage::KerML, digest, generation, &kerml_parsed)
             .unwrap();
         assert!(reused);
         assert!(Arc::ptr_eq(&again, &kerml));

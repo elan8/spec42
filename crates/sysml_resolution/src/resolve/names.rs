@@ -458,7 +458,7 @@ pub(crate) fn build_direct_name_index(
         if excluded.binary_search(&declaration_id).is_ok() {
             continue;
         }
-        if let Some(name) = declaration.name {
+        if let Some(name) = declaration.name.resolved() {
             entries.push((
                 NameKey {
                     owner: declaration.owner,
@@ -469,7 +469,7 @@ pub(crate) fn build_direct_name_index(
         }
         if let Some(short_name) = declaration_facts
             .and_then(|facts| facts.get(index))
-            .and_then(|facts| facts.short_name)
+            .and_then(|facts| facts.short_name.resolved())
         {
             entries.push((
                 NameKey {
@@ -571,7 +571,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                     .get(target.index())
                     .ok_or(ResolutionError::InvalidStorage)?;
                 if memberships.is_public(target) {
-                    if let Some(name) = declaration.name {
+                    if let Some(name) = declaration.name.resolved() {
                         extend_import_entries(
                             &mut entries,
                             &mut exported_entries,
@@ -861,7 +861,8 @@ pub(crate) enum FirstScopePolicy {
 /// or a sibling `perform` of the same action, and the name would then depend on itself.
 pub(crate) fn is_anonymous_perform(declarations: &[Declaration], entry: DeclarationId) -> bool {
     declarations.get(entry.index()).is_some_and(|declaration| {
-        declaration.kind == DeclarationKind::PerformActionUsage && declaration.name.is_none()
+        declaration.kind == DeclarationKind::PerformActionUsage
+            && matches!(declaration.name, crate::lower::facts::DeclaredName::Absent)
     })
 }
 

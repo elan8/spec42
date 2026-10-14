@@ -8,8 +8,8 @@ type=file
 package A { part def Thing; }
 package B { part def Thing; }
 package Use {
-    import A::*;
-    import B::*;
+    private import A::*;
+    private import B::*;
     part usage : Thing;
 }
 ~~~
@@ -45,15 +45,15 @@ probe ambiguous_import_candidates.md 5 18
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:955059dcf39d18b291f28c7765ddb5132abf918b441bd52205496a55738d1fed"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c3db21a27c9a4db53a2f11fad771c514c1fa50306650e1e3c64f9cdf18899e38"))
   (declarations
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A::Thing"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B::Thing"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "Use"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "A") (import (shape namespace) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "B") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "A") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "B") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "Use::usage"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
   )
   (references
@@ -81,12 +81,12 @@ probe ambiguous_import_candidates.md 5 18
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 3 11) (end 3 15)) (probe (position 3 11))
+  (query (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 3 19) (end 3 23)) (probe (position 3 19))
     (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A")))))
     )
   )
-  (query (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 4 11) (end 4 15)) (probe (position 4 11))
+  (query (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 4 19) (end 4 23)) (probe (position 4 19))
     (reference (id (source (node (document "memory://snapshot/ambiguous_import_candidates.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "B")
       (outcome (status resolved) (target (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "B")))))
     )
@@ -145,8 +145,8 @@ probe ambiguous_import_candidates.md 5 18
     (symbol (kind "Package") (name "B") (qualified-name "B") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 1 8) (end 1 9)) (role Declaration)) (declaration (range (start 1 0) (end 1 29))))
     (symbol (kind "PartDefinition") (name "Thing") (qualified-name "B::Thing") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 1 21) (end 1 26)) (role Declaration)) (declaration (range (start 1 12) (end 1 27))))
     (symbol (kind "Package") (name "Use") (qualified-name "Use") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 2 8) (end 2 11)) (role Declaration)) (declaration (range (start 2 0) (end 6 1))))
-    (symbol (kind "Import") (qualified-name "Use::") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 3 4) (end 3 16)) (role Declaration)) (declaration (range (start 3 4) (end 3 16))))
-    (symbol (kind "Import") (qualified-name "Use::") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 4 4) (end 4 16)) (role Declaration)) (declaration (range (start 4 4) (end 4 16))))
+    (symbol (kind "Import") (qualified-name "Use::") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 3 4) (end 3 24)) (role Declaration)) (declaration (range (start 3 4) (end 3 24))))
+    (symbol (kind "Import") (qualified-name "Use::") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 4 4) (end 4 24)) (role Declaration)) (declaration (range (start 4 4) (end 4 24))))
     (symbol (kind "PartUsage") (name "usage") (qualified-name "Use::usage") (location (document "memory://snapshot/ambiguous_import_candidates.md") (range (start 5 9) (end 5 14)) (role Declaration)) (declaration (range (start 5 4) (end 5 23))))
   )
 )

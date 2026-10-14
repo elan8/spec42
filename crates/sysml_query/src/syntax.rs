@@ -40,6 +40,15 @@ impl SyntaxService {
         self.inner.parse_text(text)
     }
 
+    /// Parse a candidate in its declared source language.
+    pub fn parse_text_with_language(
+        &self,
+        text: &str,
+        language: crate::source::SourceLanguage,
+    ) -> ParsedSource {
+        self.inner.parse_text_with_language(text, language)
+    }
+
     /// Keep only the revisions in `keep` plus everything parsed since the last call. Hosts pass
     /// the digest of every handle they still hold.
     pub fn retain(&self, keep: impl IntoIterator<Item = ContentDigest>) {
@@ -50,7 +59,9 @@ impl SyntaxService {
     pub fn reformatting_preserves_meaning(&self, source: &ParsedSource, candidate: &str) -> bool {
         sysml_resolution::syntax::reformatting_preserves_meaning_of(
             source,
-            &self.inner.parse_text(candidate),
+            &self
+                .inner
+                .parse_text_with_language(candidate, source.language()),
         )
     }
 

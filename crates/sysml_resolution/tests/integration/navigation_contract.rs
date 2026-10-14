@@ -408,7 +408,7 @@ fn state_transition_scene_owns_vertices_and_composed_transitions() {
             SourceInput::new(
                 "memory://timer.sysml",
                 concat!(
-                    "package Timer { import StandardViewDefinitions::*; item def StartPressed; ",
+                    "package Timer { private import StandardViewDefinitions::*; item def StartPressed; ",
                     "state def Machine { entry; then idle; state idle; state running; ",
                     "transition start first idle accept StartPressed then running; } ",
                     "view stateView : StateTransitionView { expose Machine; } }",
@@ -475,7 +475,7 @@ fn diagram_projection_keeps_inherited_features_distinct_in_each_usage_context() 
             SourceInput::new(
                 "memory://model.sysml",
                 concat!(
-                    "package Model { import StandardViewDefinitions::*; ",
+                    "package Model { private import StandardViewDefinitions::*; ",
                     "part def Board; part def Module { part pcb : Board; part spare : Board; connection wire connect pcb to spare; } ",
                     "part def Assembly { part left : Module; part right : Module; } ",
                     "part root : Assembly; view structure : GeneralView { expose root; } }",
@@ -554,7 +554,7 @@ fn interconnection_projection_maps_dotted_connectors_onto_distinct_usage_occurre
             SourceInput::new(
                 "memory://model.sysml",
                 concat!(
-                    "package Model { import StandardViewDefinitions::*; ",
+                    "package Model { private import StandardViewDefinitions::*; ",
                     "part def PropulsionUnit { port cmd; port pwr; } ",
                     "part def Vehicle { ",
                     "port motorCmd; port bus; ",
@@ -1234,7 +1234,7 @@ fn namespace_import_derived_elements_preserve_canonical_target_outcomes() {
             ),
             (
                 "memory://model.sysml",
-                "package Model { import Library::*; part def Owned; }",
+                "package Model { private import Library::*; part def Owned; }",
             ),
         ],
         ConstructionSchedule::Sequential,
@@ -1266,7 +1266,7 @@ fn an_ambiguous_relationship_target_keeps_every_candidate_and_chooses_none() {
                 "package P {\n",
                 "  package A { part def Shared; }\n",
                 "  package B { part def Shared; }\n",
-                "  package C { import A::*; import B::*; part unit : Shared; }\n",
+                "  package C { private import A::*; private import B::*; part unit : Shared; }\n",
                 "}\n",
             ),
         )],
@@ -1428,7 +1428,7 @@ fn element_details_resolve_a_cross_document_relationship_to_its_declaring_docume
             ),
             (
                 "memory://usage.sysml",
-                "package Usage { import Defs::*; requirement check : Endurance; }",
+                "package Usage { private import Defs::*; requirement check : Endurance; }",
             ),
         ],
         ConstructionSchedule::Sequential,
@@ -1501,7 +1501,7 @@ fn affected_documents_are_transitive_across_public_imports_and_aliases() {
         ),
         SourceInput::new(
             "memory://c.sysml",
-            "package C { import B::*; part p : AliasT; }".into(),
+            "package C { private import B::*; part p : AliasT; }".into(),
             SourceKind::Workspace,
         ),
     ];
@@ -1595,7 +1595,7 @@ fn interconnection_view_treats_a_dotted_bind_as_a_resolved_connector() {
                 SourceInput::new(
                     "memory://model.sysml",
                     concat!(
-                        "package Model { import StandardViewDefinitions::*; ",
+                        "package Model { private import StandardViewDefinitions::*; ",
                         "part def Machine { ",
                         "port boundary; ",
                         "part inner { port nested; } ",
@@ -1665,7 +1665,7 @@ fn interconnection_view_orders_a_dotted_bind_source_correctly_when_the_source_is
                 SourceInput::new(
                     "memory://model.sysml",
                     concat!(
-                        "package Model { import StandardViewDefinitions::*; ",
+                        "package Model { private import StandardViewDefinitions::*; ",
                         "part def Machine { ",
                         "port boundary; ",
                         "part inner { port nested; } ",

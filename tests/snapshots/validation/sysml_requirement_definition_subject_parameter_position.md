@@ -17,7 +17,7 @@ package Roles {
 
     // Conforming: the subject parameter comes first.
     requirement def Good {
-        subject first : Component;
+        subject 'first' : Component;
         in ref part other : Component;
     }
 
@@ -73,7 +73,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6fdee98a891def7b9a7e1e2674ffe614cd18f6cc3dcf9eba846fe951bd5d90c1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:45f8639604aa11f7d324297141dde8ec41526e3b8f88e56dc7a939be45ffc1c0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad"))) (kind requirement-def) (membership (kind owning) (visibility default)))
@@ -160,7 +160,7 @@ package Roles {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
     )
   )
-  (query (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (range (start 5 24) (end 5 33)) (probe (position 5 24))
+  (query (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (range (start 5 26) (end 5 35)) (probe (position 5 26))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Component")))))
     )

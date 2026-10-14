@@ -178,6 +178,18 @@ impl Relocation {
             .ok_or(ConstructionError::InvalidIdentity)
     }
 
+    fn declared_name(
+        &self,
+        name: super::facts::DeclaredName,
+    ) -> Result<super::facts::DeclaredName, ConstructionError> {
+        use super::facts::DeclaredName;
+        match name {
+            DeclaredName::Absent => Ok(DeclaredName::Absent),
+            DeclaredName::Malformed => Ok(DeclaredName::Malformed),
+            DeclaredName::Resolved(name) => self.symbol(name).map(DeclaredName::Resolved),
+        }
+    }
+
     fn optional_symbol(&self, local: Option<NameId>) -> Result<Option<NameId>, ConstructionError> {
         local.map(|id| self.symbol(id)).transpose()
     }
@@ -267,13 +279,13 @@ impl SemanticModelBuilder {
                     .owner
                     .map(|owner| relocation.declaration(owner))
                     .transpose()?,
-                name: relocation.optional_symbol(declaration.name)?,
+                name: relocation.declared_name(declaration.name)?,
                 anonymous_ordinal: declaration.anonymous_ordinal,
                 kind: declaration.kind,
                 span: declaration.span,
             });
             self.declaration_facts.push(DeclarationFacts {
-                short_name: relocation.optional_symbol(facts.short_name)?,
+                short_name: relocation.declared_name(facts.short_name)?,
                 derived_name: relocation.optional_symbol(facts.derived_name)?,
                 cross_feature_projection: facts
                     .cross_feature_projection

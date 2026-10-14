@@ -438,7 +438,7 @@ mod tests {
                 "package Systems { metaclass PartUsage; } }"
             ),
             concat!(
-                "package W { import StandardViewDefinitions::*; ",
+                "package W { private import StandardViewDefinitions::*; ",
                 "part def Widget; part root : Widget; ",
                 "view selected : GeneralView { expose root; filter @SysML::PartUsage; } }"
             ),

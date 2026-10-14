@@ -307,15 +307,19 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         owner: Option<DeclarationId>,
         kind: DeclarationKind,
-        name: Option<NameId>,
+        name: impl Into<facts::DeclaredName>,
         span: Span,
         facts: DeclarationFacts,
     ) -> Result<DeclarationId, ConstructionError> {
+        let name = name.into();
         if document.index() >= self.documents.len()
             || owner.is_some_and(|id| id.index() >= self.declarations.len())
-            || name.is_some_and(|id| id.index() >= self.symbols.len())
+            || name
+                .resolved()
+                .is_some_and(|id| id.index() >= self.symbols.len())
             || facts
                 .short_name
+                .resolved()
                 .is_some_and(|id| id.index() >= self.symbols.len())
             || facts
                 .derived_name
@@ -325,7 +329,7 @@ impl SemanticModelBuilder {
         }
         let contributes_owned_end = facts.modifiers.end || facts.positional_end.is_some();
         let id = DeclarationId::from_index(self.declarations.len())?;
-        let anonymous_ordinal = if name.is_none() {
+        let anonymous_ordinal = if !matches!(name, facts::DeclaredName::Resolved(_)) {
             let ordinal = self
                 .next_anonymous_ordinals
                 .entry((document, owner, kind))
@@ -425,10 +429,16 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         name: Option<DeclarationName>,
-    ) -> Result<Option<NameId>, ConstructionError> {
+    ) -> Result<facts::DeclaredName, ConstructionError> {
         let Some(name) = name else {
-            return Ok(None);
+            return Ok(facts::DeclaredName::Absent);
         };
+        match name.state() {
+            sysml_v2_parser::ast::DeclarationNameState::ReservedKeyword => {
+                return Ok(facts::DeclaredName::Malformed);
+            }
+            sysml_v2_parser::ast::DeclarationNameState::Parsed => {}
+        }
         let parsed = Arc::clone(
             &self
                 .documents
@@ -440,6 +450,7 @@ impl SemanticModelBuilder {
             .decoded_declaration_name(name)
             .ok_or(ConstructionError::InvalidParserReference)?;
         self.intern_declared_name(decoded.as_ref())
+            .map(facts::DeclaredName::from)
     }
 
     /// Interns the decoded contents of an optional authored string literal through its owning
@@ -495,7 +506,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         short_name: Option<DeclarationName>,
-    ) -> Result<Option<NameId>, ConstructionError> {
+    ) -> Result<facts::DeclaredName, ConstructionError> {
         self.intern_declaration_name(document, short_name)
     }
 
@@ -597,7 +608,7 @@ impl SemanticModelBuilder {
                 self.intern_declaration_name(document, identification.name)?,
                 self.intern_short_name(document, identification.short_name)?,
             ),
-            None => (None, None),
+            None => (facts::DeclaredName::Absent, facts::DeclaredName::Absent),
         };
         let element = self.push_typed_declaration(
             document,
@@ -2261,7 +2272,7 @@ impl SemanticModelBuilder {
             })
             .collect::<Result<Vec<_>, _>>()?;
         for (original, name, span) in originals {
-            let derived_name = match name {
+            let derived_name = match name.resolved() {
                 Some(name) => {
                     let derived = format!("~{}", self.symbols.get(name));
                     self.intern_declared_name(&derived)?
@@ -2460,7 +2471,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         identification: &QualifiedIdentification,
-    ) -> Result<Option<NameId>, ConstructionError> {
+    ) -> Result<facts::DeclaredName, ConstructionError> {
         self.intern_declaration_name(document, identification.simple_name())
     }
 
@@ -3672,6 +3683,7 @@ mod tests {
 
     fn empty_document() -> Arc<ParsedDocument> {
         Arc::new(ParsedDocument {
+            name_language: sysml_v2_parser::ast::NameLanguage::Sysml,
             source: SourceStorage::default(),
             qualified_references: QualifiedReferenceArena::default(),
             root: RootNamespace {

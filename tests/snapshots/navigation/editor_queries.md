@@ -12,7 +12,7 @@ package Types {
     part def Other;
 }
 package Use {
-    import Types::*;
+    private import Types::*;
     part def Child :> Base {
         attribute ownMember;
         part x : Other;
@@ -35,14 +35,14 @@ probe editor_queries.md 10 17 rename=Base
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:732d6b5800755b1fbeb8506fb1db532981bd7cdf52fb703bd18a8927e27c0295"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:33cd369062af127e077eda882baf4e862e4286b445b5218bb0bc6f687f9a7c2d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Base::inheritedMember"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types::Other"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/editor_queries.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Types") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/editor_queries.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Types") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::ownMember"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/editor_queries.md") (qualified-name "Use::Child::x"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Other")))))
@@ -98,7 +98,7 @@ probe editor_queries.md 10 17 rename=Base
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/editor_queries.md") (range (start 7 11) (end 7 19)) (probe (position 7 11))
+  (query (document "memory://snapshot/editor_queries.md") (range (start 7 19) (end 7 27)) (probe (position 7 19))
     (reference (id (source (node (document "memory://snapshot/editor_queries.md") (path (named (kind package) (name "Use")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Types")
       (outcome (status resolved) (target (node (document "memory://snapshot/editor_queries.md") (qualified-name "Types")))))
     )
@@ -160,7 +160,7 @@ probe editor_queries.md 10 17 rename=Base
     (symbol (kind "AttributeUsage") (name "inheritedMember") (qualified-name "Types::Base::inheritedMember") (location (document "memory://snapshot/editor_queries.md") (range (start 2 18) (end 2 33)) (role Declaration)) (declaration (range (start 2 8) (end 2 34))))
     (symbol (kind "PartDefinition") (name "Other") (qualified-name "Types::Other") (location (document "memory://snapshot/editor_queries.md") (range (start 4 13) (end 4 18)) (role Declaration)) (declaration (range (start 4 4) (end 4 19))))
     (symbol (kind "Package") (name "Use") (qualified-name "Use") (location (document "memory://snapshot/editor_queries.md") (range (start 6 8) (end 6 11)) (role Declaration)) (declaration (range (start 6 0) (end 12 1))))
-    (symbol (kind "Import") (qualified-name "Use::") (location (document "memory://snapshot/editor_queries.md") (range (start 7 4) (end 7 20)) (role Declaration)) (declaration (range (start 7 4) (end 7 20))))
+    (symbol (kind "Import") (qualified-name "Use::") (location (document "memory://snapshot/editor_queries.md") (range (start 7 4) (end 7 28)) (role Declaration)) (declaration (range (start 7 4) (end 7 28))))
     (symbol (kind "PartDefinition") (name "Child") (qualified-name "Use::Child") (location (document "memory://snapshot/editor_queries.md") (range (start 8 13) (end 8 18)) (role Declaration)) (declaration (range (start 8 4) (end 11 5))))
     (symbol (kind "AttributeUsage") (name "ownMember") (qualified-name "Use::Child::ownMember") (location (document "memory://snapshot/editor_queries.md") (range (start 9 18) (end 9 27)) (role Declaration)) (declaration (range (start 9 8) (end 9 28))))
     (symbol (kind "PartUsage") (name "x") (qualified-name "Use::Child::x") (location (document "memory://snapshot/editor_queries.md") (range (start 10 13) (end 10 14)) (role Declaration)) (declaration (range (start 10 8) (end 10 23))))

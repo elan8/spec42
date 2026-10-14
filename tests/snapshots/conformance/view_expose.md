@@ -31,7 +31,7 @@ package Exposing {
 
     rendering nestedRendering {
         view columnView {
-            ref rendering;
+            ref 'rendering';
         }
     }
 }
@@ -60,7 +60,7 @@ package Exposing {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9823bd9dec21ab825ffbd21215fed326cdea4fd301afaaa9c5d7bb49f5f03845"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7aa7c925df3525b4cfd4493d0cfca8facc506d7774ecb07d9f2d0340355b8285"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::Concerns"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))

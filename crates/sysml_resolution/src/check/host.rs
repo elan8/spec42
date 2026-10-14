@@ -269,7 +269,7 @@ impl<D> SemanticModel<D> {
     pub(crate) fn display_name(&self, id: DeclarationId) -> &str {
         self.storage
             .declaration(id)
-            .and_then(|declaration| declaration.name)
+            .and_then(|declaration| declaration.name.resolved())
             .and_then(|name| self.storage.symbol(name))
             .unwrap_or("<anonymous>")
     }
@@ -820,7 +820,7 @@ impl<D> SemanticModel<D> {
                 let Some(name) = self
                     .storage
                     .declaration(*child)
-                    .and_then(|declaration| declaration.name)
+                    .and_then(|declaration| declaration.name.resolved())
                     .and_then(|name| self.storage.symbol(name))
                 else {
                     continue;

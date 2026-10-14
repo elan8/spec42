@@ -13,7 +13,7 @@ type=file
 # SOURCE
 ~~~kerml
 package Constructors {
-    classifier Pair { feature first; feature second; }
+    classifier Pair { feature 'first'; feature second; }
     // The third argument has no public feature of Pair to redefine.
     feature tooMany = new Pair(1, 2, 3);
 }
@@ -34,7 +34,7 @@ package Constructors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f58d43a24d5a6ed21a06f80748184f4ec4ef3b60a9c5b7e9c695dbc15899e636"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:aa2cb8730f74c95b8b612ea0c180c74345b92d49ed3ce48a3325bf0486412400"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition_violated.md") (qualified-name "Constructors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition_violated.md") (qualified-name "Constructors::Pair"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

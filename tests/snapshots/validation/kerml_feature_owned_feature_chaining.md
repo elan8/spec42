@@ -16,7 +16,7 @@ type=file
 package Model {
     classifier Vehicle {
         feature base;
-        feature derived chains base;
+        feature 'derived' chains base;
         feature unresolved chains Missing;
     }
 }
@@ -47,7 +47,7 @@ package Model {
         (severity warning)
         (code "feature_chaining_single_operand")
         (source "semantic")
-        (range (start 3 31) (end 3 35))
+        (range (start 3 33) (end 3 37))
       )
       (diagnostic
         (severity warning)
@@ -68,7 +68,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:58eeb78b7b3eeabb25aafb31d42a95bee2e792426c9ff4db201167bd06f46d78"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:42a35573a886238edbeb8840975dd02098d5e14ddc3db47cfa2b728c5dbcc80f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_feature_chaining.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_feature_chaining.md") (qualified-name "Model::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -111,7 +111,7 @@ package Model {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_feature_owned_feature_chaining.md") (range (start 3 31) (end 3 35)) (probe (position 3 31))
+  (query (document "memory://snapshot/kerml_feature_owned_feature_chaining.md") (range (start 3 33) (end 3 37)) (probe (position 3 33))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_feature_chaining.md") (qualified-name "Model::Vehicle::derived"))) (kind featureChaining) (ordinal 0) (authored-target "base")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_feature_chaining.md") (qualified-name "Model::Vehicle::base")))))
     )

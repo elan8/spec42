@@ -19,7 +19,7 @@ package MembershipRoleSpecializations {
     concern def Safety;
 
     requirement def RequirementCase {
-        subject item : Component;
+        subject 'item' : Component;
         frame concern safety : Safety;
         actor requirementActor : Component;
         stakeholder requirementStakeholder : Component;
@@ -50,7 +50,7 @@ package MembershipRoleSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:87df2e3870ed00c0a92342899859f97f22b9221432921fe41d34d3f17b465b0d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:600798deedb43f64b4d5f65e06703778d14da3d919a41b8d6fd3ecf283dcddf4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (qualified-name "MembershipRoleSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (qualified-name "MembershipRoleSpecializations::CaseCase"))) (kind case-def) (membership (kind owning) (visibility default)))
@@ -293,7 +293,7 @@ package MembershipRoleSpecializations {
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (qualified-name "MembershipRoleSpecializations::Component")))))
     )
   )
-  (query (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (range (start 5 23) (end 5 32)) (probe (position 5 23))
+  (query (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (range (start 5 25) (end 5 34)) (probe (position 5 25))
     (reference (id (source (node (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (qualified-name "MembershipRoleSpecializations::RequirementCase::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_membership_role_specializations.md") (qualified-name "MembershipRoleSpecializations::Component")))))
     )

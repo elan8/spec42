@@ -1109,6 +1109,10 @@ fn collect_semantic_ranges_transition_accept(
         TransitionAccept::Shorthand(expr, _via) => {
             out.push((span_to_source_range(&expr.span), SyntaxRole::Property));
         }
+        TransitionAccept::NamedTimeTrigger(name, _kind, expr) => {
+            out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            out.push((span_to_source_range(&expr.span), SyntaxRole::Property));
+        }
         TransitionAccept::TimeTrigger(_kind, expr) => {
             out.push((span_to_source_range(&expr.span), SyntaxRole::Property));
         }
@@ -1217,6 +1221,23 @@ fn collect_semantic_ranges_occurrence_body_element(
 ) {
     use OccurrenceBodyElement as OBE;
     match &node.value {
+        OBE::PortUsage(node) => collect_semantic_ranges_port_usage(node, out),
+        OBE::DefaultReferenceUsage(node) => {
+            if let Some(name) = node.value.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            if let Some(typing) = &node.value.typing {
+                for target in &typing.value.target {
+                    if let Some(reference) = ctx.document.qualified_reference(*target) {
+                        out.push((
+                            span_to_source_range(&reference.metadata.span),
+                            SyntaxRole::Type,
+                        ));
+                    }
+                }
+            }
+        }
+
         OBE::AttributeUsage(attribute) => {
             push_usage_name_type_spans(
                 ctx.source,
@@ -1678,6 +1699,22 @@ fn collect_semantic_ranges_requirement_def_body_element(
 ) {
     use RequirementDefBodyElement as RDBE;
     match &node.value {
+        RDBE::DefaultReferenceUsage(node) => {
+            if let Some(name) = node.value.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            if let Some(typing) = &node.value.typing {
+                for target in &typing.value.target {
+                    if let Some(reference) = ctx.document.qualified_reference(*target) {
+                        out.push((
+                            span_to_source_range(&reference.metadata.span),
+                            SyntaxRole::Type,
+                        ));
+                    }
+                }
+            }
+        }
+
         RDBE::SubjectDecl(subject) => {
             out.push((span_to_source_range(&subject.span), SyntaxRole::Property));
         }

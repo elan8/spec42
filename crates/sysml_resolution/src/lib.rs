@@ -287,7 +287,7 @@ impl SourceInput {
     ) -> Self {
         let identity = identity.into();
         Self {
-            language: SourceLanguage::of_path(&identity),
+            language: parsed.language(),
             identity,
             content_digest: parsed.digest(),
             payload: SourcePayload::Parsed(parsed),
@@ -300,8 +300,12 @@ impl SourceInput {
 
 impl SourceInput {
     /// The same source admitted as `language`, for an identity whose path does not name it.
+    /// A pre-parsed handle must already use that language; a mismatch is rejected during build.
     pub fn with_language(mut self, language: SourceLanguage) -> Self {
         self.language = language;
+        if let SourcePayload::Pending(document) = &mut self.payload {
+            *document = document.with_language(language);
+        }
         self
     }
 }
@@ -1959,6 +1963,43 @@ mod tests {
 mod parsed_admission_tests {
     use super::*;
     use sysml_source::{SourceAuthority, SourceKind};
+
+    #[test]
+    fn parsed_language_is_authoritative_and_mismatched_admission_is_rejected() {
+        let authority = syntax::SyntaxAuthority::new();
+        let text = "package P { feature port; }";
+        let parsed = authority.parse_text_with_language(text, SourceLanguage::KerML);
+        // A handle carries its selected language even when the new URI has another suffix.
+        let source =
+            SourceInput::from_parsed("memory://language.sysml", parsed, SourceKind::Workspace);
+        assert_eq!(source.language, SourceLanguage::KerML);
+        let canonical = SourceInput::new(
+            "memory://language.sysml",
+            text.to_owned(),
+            SourceKind::Workspace,
+        )
+        .with_language(SourceLanguage::KerML);
+        let request = BuildRequest::new(
+            vec![source.clone()],
+            ConstructionSchedule::Sequential,
+            "test",
+        )
+        .unwrap();
+        let from_text =
+            BuildRequest::new(vec![canonical], ConstructionSchedule::Sequential, "test").unwrap();
+        assert_eq!(request.identity(), from_text.identity());
+        assert_eq!(
+            build_measured(request).unwrap().0.identity(),
+            build_measured(from_text).unwrap().0.identity()
+        );
+        let mismatched = source.with_language(SourceLanguage::SysML);
+        let request =
+            BuildRequest::new(vec![mismatched], ConstructionSchedule::Sequential, "test").unwrap();
+        assert!(matches!(
+            build_measured(request),
+            Err(BuildFailure::ConstructionFailed)
+        ));
+    }
 
     /// Admitting a parsed handle and admitting its text are the same publication: same identity,
     /// same manifest, same model digest. The examples corpus is the evidence.

@@ -32,9 +32,9 @@ package Behavior {
     }
 
     action def ConformingSuccession {
-        action first : Step;
+        action 'first' : Step;
         action second : Step;
-        first first then second;
+        first 'first' then second;
     }
 
     action def SuccessionOverSomethingThatIsNotAnAction {
@@ -134,7 +134,7 @@ package Behavior {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:99806163ae1eaf22a8bf5096ba8aa602d1a1e4c375d364a581457e2e59f39876"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2ef123562f77c4ffc2cea699eb748e47cfff5cf12067f2057330c372ecd0c0a0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AbstractStateTemplate"))) (kind state-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
@@ -466,17 +466,17 @@ package Behavior {
       (outcome (status resolved) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::Step")))))
     )
   )
-  (query (document "memory://snapshot/behavior_conformance.md") (range (start 29 14) (end 29 19)) (probe (position 29 14))
+  (query (document "memory://snapshot/behavior_conformance.md") (range (start 29 14) (end 29 21)) (probe (position 29 14))
     (reference (id (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind action-def) (name "ConformingSuccession")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "first")
       (outcome (status resolved) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::ConformingSuccession::first")))))
     )
   )
-  (query (document "memory://snapshot/behavior_conformance.md") (range (start 29 25) (end 29 31)) (probe (position 29 25))
+  (query (document "memory://snapshot/behavior_conformance.md") (range (start 29 27) (end 29 33)) (probe (position 29 27))
     (reference (id (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind action-def) (name "ConformingSuccession")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "second")
       (outcome (status resolved) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::ConformingSuccession::second")))))
     )
   )
-  (query (document "memory://snapshot/behavior_conformance.md") (range (start 27 23) (end 27 27)) (probe (position 27 23))
+  (query (document "memory://snapshot/behavior_conformance.md") (range (start 27 25) (end 27 29)) (probe (position 27 25))
     (reference (id (source (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::ConformingSuccession::first"))) (kind featureTyping) (ordinal 0) (authored-target "Step")
       (outcome (status resolved) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::Step")))))
     )

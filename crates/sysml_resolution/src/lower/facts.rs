@@ -377,7 +377,7 @@ impl DeclarationModifiers {
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct DeclarationFacts {
     /// The `<shortName>` identification prefix, where the owning parser node has the field.
-    pub(crate) short_name: Option<NameId>,
+    pub(crate) short_name: DeclaredName,
     /// The effective name a never-authored element derives from its context, which it does not
     /// declare: a `ConjugatedPortDefinition`'s `~` + its original definition's name (SysML
     /// `ConjugatedPortDefinition::effectiveName`). `None` for every authored declaration.
@@ -1183,11 +1183,38 @@ impl LineIndex {
     }
 }
 
+/// An authored identification component; malformed syntax is distinct from an omitted name.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum DeclaredName {
+    #[default]
+    Absent,
+    Resolved(NameId),
+    Malformed,
+}
+
+impl DeclaredName {
+    pub(crate) fn resolved(self) -> Option<NameId> {
+        match self {
+            Self::Resolved(name) => Some(name),
+            Self::Absent | Self::Malformed => None,
+        }
+    }
+}
+
+impl From<Option<NameId>> for DeclaredName {
+    fn from(name: Option<NameId>) -> Self {
+        match name {
+            Some(name) => Self::Resolved(name),
+            None => Self::Absent,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Declaration {
     pub(crate) document: DocumentIdx,
     pub(crate) owner: Option<DeclarationId>,
-    pub(crate) name: Option<NameId>,
+    pub(crate) name: DeclaredName,
     pub(crate) anonymous_ordinal: Option<u32>,
     pub(crate) kind: DeclarationKind,
     pub(crate) span: Span,

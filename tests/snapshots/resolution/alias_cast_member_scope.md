@@ -17,10 +17,10 @@ package Demo {
     }
     alias FrameAlias for Frame;
     attribute def Holder {
-        attribute frame : FrameAlias;
+        attribute 'frame' : FrameAlias;
     }
     attribute def Derived :> Holder {
-        attribute :>> frame {
+        attribute :>> 'frame' {
             attribute :>> mRefs;
         }
     }
@@ -54,7 +54,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ce972a9c0e7b9876e1845650d6d26241fc6fdfeb9a06343136c4701f3a646369"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:080f794d37efed254f0d50cd509fa149c8e90f5d58a58e83755d28eed5eae198"))
   (declarations
     (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Derived"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Holder")))))
@@ -182,7 +182,7 @@ package Demo {
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Holder")))))
     )
   )
-  (query (document "memory://snapshot/alias_cast_member_scope.md") (range (start 9 22) (end 9 27)) (probe (position 9 22))
+  (query (document "memory://snapshot/alias_cast_member_scope.md") (range (start 9 22) (end 9 29)) (probe (position 9 22))
     (reference (id (source (node (document "memory://snapshot/alias_cast_member_scope.md") (path (named (kind package) (name "Demo")) (named (kind attribute-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "frame")
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Holder::frame")))))
     )
@@ -197,7 +197,7 @@ package Demo {
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Frame")))))
     )
   )
-  (query (document "memory://snapshot/alias_cast_member_scope.md") (range (start 6 26) (end 6 36)) (probe (position 6 26))
+  (query (document "memory://snapshot/alias_cast_member_scope.md") (range (start 6 28) (end 6 38)) (probe (position 6 28))
     (reference (id (source (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Holder::frame"))) (kind featureTyping) (ordinal 0) (authored-target "FrameAlias")
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::FrameAlias")))))
     )

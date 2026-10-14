@@ -275,7 +275,24 @@ fn timer_interconnection_example_retains_its_connectors() {
     assert!(routed.iter().all(|edge| edge["routePoints"]
         .as_array()
         .is_some_and(|points| points.len() >= 2)));
-    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw timer");
+    // Expand the scene explicitly: a collapsed root does not exercise a wide canvas.
+    let expanded_node_ids = input["nodes"]
+        .as_array()
+        .expect("laid-out timer nodes")
+        .iter()
+        .map(|node| node["id"].as_str().expect("node identity").to_owned())
+        .collect();
+    let svg = render_svg_from_payload_with_options(
+        &payload,
+        &diagram_draw::theme::LIGHT,
+        1280.0,
+        900.0,
+        Some(&diagram_draw::DisclosureState {
+            expanded_node_ids,
+            section_states: vec![],
+        }),
+    )
+    .expect("draw expanded timer");
     let background = svg.split_once("class=\"viz-bg\"").unwrap().1;
     let background_width: f64 = background
         .split_once("width=\"")
@@ -286,7 +303,10 @@ fn timer_interconnection_example_retains_its_connectors() {
         .0
         .parse()
         .unwrap();
-    assert!(background_width > 1280.0, "wide diagram needs full canvas");
+    assert!(
+        background_width > 1280.0,
+        "wide diagram needs full canvas: {background_width}"
+    );
 }
 
 fn general_golden_payload() -> serde_json::Value {

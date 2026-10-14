@@ -19,7 +19,7 @@ package Model {
     :>> baseType = baseFeatures meta KerML::Feature;
   }
   metaclass InheritedCommand :> Command;
-  feature first { @Command; }
+  feature 'first' { @Command; }
   feature second { @Command; }
   feature inherited { @InheritedCommand; }
   classifier AnnotatedClassifier { @Command; }
@@ -52,7 +52,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:45e538945a87c98dfad9e7e73d58cae17e6878d9fc4eed287f2f55b9c84b139d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:500f224776410892a5b17563e4a9f876feff4ca9a2b85b3e7fac8c742df81966") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false))))))
@@ -502,12 +502,12 @@ package Model {
       (outcome (status resolved) (target (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (qualified-name "Model::BaseClass")))))
     )
   )
-  (query (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (range (start 9 19) (end 9 26)) (probe (position 9 19))
+  (query (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (range (start 9 21) (end 9 28)) (probe (position 9 21))
     (reference (id (source (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "first")) (anonymous (kind kerml-metadata-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "Command")
       (outcome (status resolved) (target (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (qualified-name "Model::Command")))))
     )
   )
-  (query (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (range (start 9 19) (end 9 26)) (probe (position 9 19))
+  (query (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (range (start 9 21) (end 9 28)) (probe (position 9 21))
     (reference (id (source (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "first")) (anonymous (kind kerml-metadata-feature) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0) (authored-target "Command")
       (outcome (status resolved) (target (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (qualified-name "Model::Command")))))
     )

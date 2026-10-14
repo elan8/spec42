@@ -20,7 +20,7 @@ package Middle {
 ## Client.sysml
 ~~~sysml
 package Client {
-    import Middle::*;
+    private import Middle::*;
     part missing : Thing;
 }
 ~~~
@@ -33,7 +33,7 @@ package Client {
         (severity warning)
         (code "missing_library_context")
         (source "semantic")
-        (range (start 1 11) (end 1 20))
+        (range (start 1 19) (end 1 28))
       )
       (diagnostic
         (severity warning)
@@ -56,10 +56,10 @@ package Client {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ee799b5b0c21bc24fde5f9b2cb7ee6af2bbf5a68eb6ee26416e01c1a7ced9a97"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5b4c796000a2336df647edd87f3491505096219371ce96105616573fb669aed6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/Client.sysml") (qualified-name "Client"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/Client.sysml") (path (named (kind package) (name "Client")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Middle") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/Client.sysml") (path (named (kind package) (name "Client")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Middle") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/Client.sysml") (qualified-name "Client::missing"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/Middle.sysml") (qualified-name "Middle"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/Middle.sysml") (path (named (kind package) (name "Middle")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Source") (import (shape namespace) (recursive false))))))
@@ -104,7 +104,7 @@ package Client {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/Client.sysml") (range (start 1 11) (end 1 20)) (probe (position 1 11))
+  (query (document "memory://snapshot/Client.sysml") (range (start 1 19) (end 1 28)) (probe (position 1 19))
     (reference (id (source (node (document "memory://snapshot/Client.sysml") (path (named (kind package) (name "Client")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Middle")
       (outcome (status resolved) (target (node (document "memory://snapshot/Middle.sysml") (qualified-name "Middle")))))
     )

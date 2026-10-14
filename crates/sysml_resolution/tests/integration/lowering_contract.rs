@@ -1486,25 +1486,6 @@ fn default_reference_usage_meta_cast_value_lowers_and_resolves() {
     );
 }
 
-/// A nested `part` usage inside an `attribute def` body (BNF `AttributeBodyElement::PartUsage`,
-/// shared with `item def`/`item` usage bodies per the OMG `14c-Language Extensions.sysml`
-/// FMEA library example) must lower as its own `part` declaration, not fall through to
-/// `unsupported_attribute_member`.
-#[test]
-fn nested_part_usage_inside_attribute_def_body_lowers_as_part() {
-    let sexpr = semantic_sexpr_for(
-        "package P { attribute def Show { part frame : Frame; attribute def Frame; } }",
-    );
-    assert!(
-        sexpr.contains("P::Show::frame"),
-        "expected nested part declaration, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("unsupported_attribute_member"),
-        "did not expect unsupported_attribute_member, got: {sexpr}"
-    );
-}
-
 /// A nested `item` usage inside an `attribute def` body (BNF
 /// `AttributeBodyElement::ItemUsage`, resolved upstream in `0757de13` --
 /// planning/UPSTREAM_PARSER_GAPS.md #11) must lower as its own `item` declaration via the

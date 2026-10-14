@@ -13,12 +13,12 @@ viewQualifiedName=SequenceCycle::selected
 package SequenceCycle {
     private import StandardViewDefinitions::*;
     occurrence def Interaction {
-        part left { event occurrence send; event occurrence receive; }
-        part right { event occurrence send; event occurrence receive; }
-        message first from left.send to right.receive;
-        message second from right.send to left.receive;
-        succession first first then second;
-        succession first second then first;
+        part left { event occurrence 'send'; event occurrence receive; }
+        part right { event occurrence 'send'; event occurrence receive; }
+        message 'first' from left.'send' to right.receive;
+        message second from right.'send' to left.receive;
+        succession first 'first' then second;
+        succession first second then 'first';
     }
     view selected : SequenceView { expose Interaction; }
 }
@@ -35,7 +35,7 @@ package SequenceCycle {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:177da268bf297d531f316f55d9cb881ba281b057b6d7e845d4ab107be9ce1ac5") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8f391ea942b8a4f525e535f9842cc47bbebd50c71e6af111bb98dd2ea0c3239e") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (path (named (kind package) (name "SequenceCycle")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -432,7 +432,7 @@ package SequenceCycle {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions")))))
     )
   )
-  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 7 25) (end 7 30)) (probe (position 7 25))
+  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 7 25) (end 7 32)) (probe (position 7 25))
     (reference (id (source (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (path (named (kind package) (name "SequenceCycle")) (named (kind occurrence-def) (name "Interaction")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "first")
       (outcome (status resolved) (target (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::first")))))
     )
@@ -442,32 +442,32 @@ package SequenceCycle {
       (outcome (status resolved) (target (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::second")))))
     )
   )
-  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 7 36) (end 7 42)) (probe (position 7 36))
+  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 7 38) (end 7 44)) (probe (position 7 38))
     (reference (id (source (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (path (named (kind package) (name "SequenceCycle")) (named (kind occurrence-def) (name "Interaction")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "second")
       (outcome (status resolved) (target (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::second")))))
     )
   )
-  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 8 37) (end 8 42)) (probe (position 8 37))
+  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 8 37) (end 8 44)) (probe (position 8 37))
     (reference (id (source (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (path (named (kind package) (name "SequenceCycle")) (named (kind occurrence-def) (name "Interaction")) (anonymous (kind succession) (ordinal 1))))) (kind succession) (ordinal 1) (authored-target "first")
       (outcome (status resolved) (target (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::first")))))
     )
   )
-  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 5 27) (end 5 36)) (probe (position 5 27))
+  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 5 29) (end 5 40)) (probe (position 5 29))
     (reference (id (source (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::first"))) (kind flowSource) (ordinal 0) (authored-target "left::send")
       (outcome (status resolved) (target (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::left::send")))))
     )
   )
-  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 5 40) (end 5 53)) (probe (position 5 40))
+  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 5 44) (end 5 57)) (probe (position 5 44))
     (reference (id (source (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::first"))) (kind flowTarget) (ordinal 0) (authored-target "right::receive")
       (outcome (status resolved) (target (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::right::receive")))))
     )
   )
-  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 6 28) (end 6 38)) (probe (position 6 28))
+  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 6 28) (end 6 40)) (probe (position 6 28))
     (reference (id (source (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::second"))) (kind flowSource) (ordinal 0) (authored-target "right::send")
       (outcome (status resolved) (target (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::right::send")))))
     )
   )
-  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 6 42) (end 6 54)) (probe (position 6 42))
+  (query (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (range (start 6 44) (end 6 56)) (probe (position 6 44))
     (reference (id (source (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::second"))) (kind flowTarget) (ordinal 0) (authored-target "left::receive")
       (outcome (status resolved) (target (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle::Interaction::left::receive")))))
     )
@@ -489,7 +489,7 @@ package SequenceCycle {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:f993519d1acd84acf55c666df85f86299dbf3fe49d823962997beae4503650f5",
+  "modelDigest": "blake3:e8bec93ba7ecbd674ecc9303d987952bad5baf9272dda3adcb8f775dc93ec23c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_ordering_cycle.md",
@@ -539,18 +539,18 @@ package SequenceCycle {
       "document": 0,
       "range": [
         3,
-        37,
+        38,
         3,
-        41
+        42
       ]
     },
     {
       "document": 0,
       "range": [
         3,
-        60,
+        62,
         3,
-        67
+        69
       ]
     },
     {
@@ -566,45 +566,45 @@ package SequenceCycle {
       "document": 0,
       "range": [
         4,
-        38,
+        39,
         4,
-        42
+        43
       ]
     },
     {
       "document": 0,
       "range": [
         4,
-        61,
+        63,
         4,
-        68
+        70
       ]
     },
     {
       "document": 0,
       "range": [
         5,
-        16,
+        17,
         5,
-        21
+        22
       ]
     },
     {
       "document": 0,
       "range": [
         5,
-        27,
+        29,
         5,
-        36
+        40
       ]
     },
     {
       "document": 0,
       "range": [
         5,
-        40,
+        44,
         5,
-        53
+        57
       ]
     },
     {
@@ -622,16 +622,16 @@ package SequenceCycle {
         6,
         28,
         6,
-        38
+        40
       ]
     },
     {
       "document": 0,
       "range": [
         6,
-        42,
+        44,
         6,
-        54
+        56
       ]
     },
     {
@@ -640,7 +640,7 @@ package SequenceCycle {
         7,
         8,
         7,
-        43
+        45
       ]
     },
     {
@@ -649,16 +649,16 @@ package SequenceCycle {
         7,
         25,
         7,
-        30
+        32
       ]
     },
     {
       "document": 0,
       "range": [
         7,
-        36,
+        38,
         7,
-        42
+        44
       ]
     },
     {
@@ -667,7 +667,7 @@ package SequenceCycle {
         8,
         8,
         8,
-        43
+        45
       ]
     },
     {
@@ -685,7 +685,7 @@ package SequenceCycle {
         8,
         37,
         8,
-        42
+        44
       ]
     },
     {

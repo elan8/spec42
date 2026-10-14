@@ -15,11 +15,11 @@ type=file
 package Model {
     action def Act {
         action before;
-        action after;
+        action 'after';
         decide choice;
 
         succession incoming first before then choice;
-        succession outgoing first choice then after;
+        succession outgoing first choice then 'after';
     }
 }
 ~~~
@@ -38,7 +38,7 @@ package Model {
         (severity warning)
         (code "duplicate_namespace_member")
         (source "semantic")
-        (range (start 7 8) (end 7 52))
+        (range (start 7 8) (end 7 54))
         (related-information
           (related
             (uri "memory://snapshot/sysml.library/control_performances.md")
@@ -57,7 +57,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d0ff6724093dcbc44179f89e15e8d09c867939f470608cf303c3bdb3f0de7789") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2c21841645804519b3796c7a69d725698bd3356d9b09ce1f3c7d739578890d3a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_decision_node_outgoing_succession_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_decision_node_outgoing_succession_specialization.md") (qualified-name "Model::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -252,7 +252,7 @@ package Model {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_decision_node_outgoing_succession_specialization.md") (qualified-name "Model::Act::choice")))))
     )
   )
-  (query (document "memory://snapshot/sysml_decision_node_outgoing_succession_specialization.md") (range (start 7 46) (end 7 51)) (probe (position 7 46))
+  (query (document "memory://snapshot/sysml_decision_node_outgoing_succession_specialization.md") (range (start 7 46) (end 7 53)) (probe (position 7 46))
     (reference (id (source (node (document "memory://snapshot/sysml_decision_node_outgoing_succession_specialization.md") (qualified-name "Model::Act::outgoing"))) (kind succession) (ordinal 1) (authored-target "after")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_decision_node_outgoing_succession_specialization.md") (qualified-name "Model::Act::after")))))
     )

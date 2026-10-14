@@ -1011,7 +1011,7 @@ impl<D> SemanticModel<D> {
     pub(crate) fn declaration_name(&self, id: DeclarationId) -> Option<Box<str>> {
         self.storage
             .declaration(id)
-            .and_then(|declaration| declaration.name)
+            .and_then(|declaration| declaration.name.resolved())
             .and_then(|name| self.storage.symbol(name))
             .filter(|name| !name.trim().is_empty())
             .map(Into::into)

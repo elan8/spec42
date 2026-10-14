@@ -17,7 +17,7 @@ package Roles {
 
     // Conforming: the subject parameter comes first.
     case Good {
-        subject first : Component;
+        subject 'first' : Component;
         in ref part other : Component;
     }
 
@@ -73,7 +73,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d52e1ffb808443a693ee560585103d9705ab5a77b8f31715a9f9df403f4cb235"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8bf24f5c0af73f7538aca9e35c71a237bfbb24e1a104833b8c579abdbbc5f267"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_subject_parameter_position.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_subject_parameter_position.md") (qualified-name "Roles::Bad"))) (kind case) (membership (kind feature) (visibility default)))
@@ -160,7 +160,7 @@ package Roles {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_case_usage_subject_parameter_position.md") (qualified-name "Roles::Component")))))
     )
   )
-  (query (document "memory://snapshot/sysml_case_usage_subject_parameter_position.md") (range (start 5 24) (end 5 33)) (probe (position 5 24))
+  (query (document "memory://snapshot/sysml_case_usage_subject_parameter_position.md") (range (start 5 26) (end 5 35)) (probe (position 5 26))
     (reference (id (source (node (document "memory://snapshot/sysml_case_usage_subject_parameter_position.md") (qualified-name "Roles::Good::first"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_case_usage_subject_parameter_position.md") (qualified-name "Roles::Component")))))
     )

@@ -21,7 +21,7 @@ package Expressions {
     classifier Thing;
     classifier Holder {
         feature items : Thing;
-        feature first = items#(1);
+        feature 'first' = items#(1);
     }
 }
 ~~~
@@ -46,7 +46,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8c5eca56d2a3bfa5681831ec8be212dc15a69db2e3b4cf49cc86500f94315f44"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b1fe1ccbe33e854081794621f4fd98c7856dabc72f1505b12b7af27d5919ee7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_index_expression_operator.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_index_expression_operator.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -124,7 +124,7 @@ package Expressions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_index_expression_operator.md") (range (start 9 24) (end 9 29)) (probe (position 9 24))
+  (query (document "memory://snapshot/kerml_index_expression_operator.md") (range (start 9 26) (end 9 31)) (probe (position 9 26))
     (reference (id (source (node (document "memory://snapshot/kerml_index_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "first")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "items")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_index_expression_operator.md") (qualified-name "Expressions::Holder::items")))))
     )
