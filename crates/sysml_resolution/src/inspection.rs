@@ -14,6 +14,8 @@ use crate::{
     ElementKind, MembershipId, MembershipRole, SourceLocation, SymbolId, TextId, TextRange,
 };
 
+pub use sysml_contract::{EffectiveIdentification, EffectiveName};
+
 pub use sysml_contract::{
     AnnotationForm, AuthoredValue, ElementDerivedDocumentationCollection, ElementModifier,
     FeatureDirection, MembershipFacts, MembershipKind, MultiplicityBound, MultiplicityFacts,

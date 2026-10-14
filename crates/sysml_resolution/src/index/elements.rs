@@ -966,6 +966,13 @@ impl<D> SemanticModel<D> {
             Err(outcome) => return outcome,
         };
         let mut queue = std::collections::VecDeque::from([declaration]);
+        // Membership exclusion is owned by the canonical Type derivation. In particular,
+        // differently named and anonymous redefinitions replace their targets by identity.
+        let eligible = self
+            .owned_feature_members(declaration)
+            .into_iter()
+            .chain(self.inherited_feature_members(declaration))
+            .collect::<std::collections::BTreeSet<_>>();
         // A usage's effective feature set starts with the definitions it is typed by. Keeping the
         // usage itself first also preserves any direct nested features it authors.
         let mut direct_types = self
@@ -1002,6 +1009,9 @@ impl<D> SemanticModel<D> {
                 }
             });
             for child in children {
+                if !eligible.contains(&child) {
+                    continue;
+                }
                 let Some(entry) = self.symbol_entry(child) else {
                     continue;
                 };
@@ -1030,6 +1040,39 @@ impl<D> SemanticModel<D> {
             queue.extend(bases);
         }
         self.resolved_outcome(result.into_boxed_slice())
+    }
+
+    pub(crate) fn effective_identification(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<crate::EffectiveIdentification<'_>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let Some(facts) = self.resolution.effective_names.get(declaration.index()) else {
+            return self.query_outcome(QueryAnswer::Incomplete);
+        };
+        let component = |value| {
+            use crate::resolve::results::EffectiveNameOutcome;
+            Some(match value {
+                EffectiveNameOutcome::Resolved(name) => {
+                    crate::EffectiveName::Resolved(self.storage.symbol(name)?)
+                }
+                EffectiveNameOutcome::Absent => crate::EffectiveName::Absent,
+                EffectiveNameOutcome::Unresolved => crate::EffectiveName::Unresolved,
+                EffectiveNameOutcome::NonConverged => crate::EffectiveName::NonConverged,
+            })
+        };
+        let (Some(name), Some(short_name)) = (component(facts.name), component(facts.short_name))
+        else {
+            return self.query_outcome(QueryAnswer::Incomplete);
+        };
+        self.resolved_outcome(crate::EffectiveIdentification {
+            name,
+            short_name,
+            provenance: facts.provenance,
+        })
     }
 
     pub(crate) fn symbol_entry(&self, id: DeclarationId) -> Option<SymbolEntry> {

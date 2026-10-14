@@ -458,7 +458,6 @@ probe element_details.md 22 15
           (relationship (kind "featureTyping") (provenance authored) (authored "Rover") (target resolved))
           (typing (outcome resolved) (target "Details::Rover"))
           (effective-typing (outcome resolved) (type (qualified-name "Details::Rover") (origin direct) (provenance authored)))
-          (inherited-feature (qualified-name "Details::Vehicle::wheel") (declared-in "Details::Vehicle") (direct false))
           (inherited-feature (qualified-name "Details::Vehicle::spare") (declared-in "Details::Vehicle") (direct false))
           (incoming (kind "subsetting") (peer "Details::selected") (provenance authored))
           (outgoing (kind "typing") (peer "Details::Rover") (provenance authored))

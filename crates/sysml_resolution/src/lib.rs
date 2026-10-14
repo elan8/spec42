@@ -117,6 +117,7 @@ pub use inspection::{
     RelationshipProvenance, RelationshipTarget, SymbolEntry, ValueKind, Visibility,
     VisibilityProvenance,
 };
+pub use inspection::{EffectiveIdentification, EffectiveName};
 pub use metadata_query::{
     MetadataAnnotationForm, MetadataAnnotationValue, PublishedMetadataAnnotation,
 };
@@ -141,6 +142,7 @@ pub use requirement_query::{
 pub use specialization_query::{
     SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
 };
+pub use sysml_contract::EffectiveNameProvenance;
 pub use traceability::{
     BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
     BindingConnectorValidationPrerequisite, BindingEndpoint, DerivationEndpoint,
@@ -1215,6 +1217,14 @@ impl PublishedResolution {
     /// Effective features, direct first and inherited nearest-first with name shadowing.
     pub fn effective_features(&self, symbol: SymbolId) -> QueryOutcome<Box<[SymbolEntry]>> {
         self.model.effective_features(symbol)
+    }
+
+    /// The publication's effective name, short name, and naming provenance.
+    pub fn effective_identification(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<EffectiveIdentification<'_>> {
+        self.model.effective_identification(symbol)
     }
 
     /// Applies every owned and inherited condition of `view` to one candidate element.

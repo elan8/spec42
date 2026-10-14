@@ -952,6 +952,19 @@ impl<D> SemanticModel<D> {
         symbols.into_boxed_slice()
     }
 
+    /// Preserve the canonical membership sequence for normative ordered collections.
+    pub(crate) fn symbols_in_order(
+        &self,
+        declarations: impl Iterator<Item = DeclarationId>,
+    ) -> Box<[SymbolId]> {
+        let mut seen = std::collections::BTreeSet::new();
+        declarations
+            .filter_map(|id| self.symbol_id(id))
+            .filter(|symbol| seen.insert(*symbol))
+            .collect::<Vec<_>>()
+            .into_boxed_slice()
+    }
+
     pub(crate) fn direct_types(&self, symbol: SymbolId) -> QueryOutcome<Box<[TypeReference]>> {
         let declaration = match self.single_declaration(symbol) {
             Ok(declaration) => declaration,
@@ -1066,17 +1079,9 @@ impl<D> SemanticModel<D> {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
-        let values = self.symbols(
-            self.storage
-                .declarations
-                .iter()
-                .enumerate()
-                .filter_map(|(index, candidate_declaration)| {
-                    let candidate = DeclarationId::from_index(index).ok()?;
-                    (candidate != declaration && candidate_declaration.owner == Some(declaration))
-                        .then_some(candidate)
-                })
-                .filter(|candidate| match collection {
+        let values = self.symbols_in_order(
+            self.child_declarations(declaration).iter().copied().filter(
+                |candidate| match collection {
                     TypeDerivedElementCollection::OwnedFeature => self
                         .memberships
                         .get(*candidate)
@@ -1090,26 +1095,23 @@ impl<D> SemanticModel<D> {
                                 .declaration_facts(*candidate)
                                 .is_some_and(|facts| facts.modifiers.end)
                     }
-                }),
+                },
+            ),
         );
         self.resolved_outcome(values)
     }
 
     /// Every feature membership one Type owns directly, in canonical declaration order.
     pub(crate) fn owned_feature_members(&self, owner: DeclarationId) -> Vec<DeclarationId> {
-        self.storage
-            .declarations
+        self.child_declarations(owner)
             .iter()
-            .enumerate()
-            .filter_map(|(index, candidate_declaration)| {
-                let candidate = DeclarationId::from_index(index).ok()?;
-                (candidate != owner
-                    && candidate_declaration.owner == Some(owner)
+            .copied()
+            .filter(|candidate| {
+                *candidate != owner
                     && self
                         .memberships
-                        .get(candidate)
-                        .is_some_and(|membership| membership.kind == MembershipKind::Feature))
-                .then_some(candidate)
+                        .get(*candidate)
+                        .is_some_and(|membership| membership.kind == MembershipKind::Feature)
             })
             .collect()
     }
@@ -1323,14 +1325,14 @@ impl<D> SemanticModel<D> {
                 | TypeDerivedFactCollection::InheritedMembership
                 | TypeDerivedFactCollection::FeatureMembership
         );
-        // Canonical symbol order, one value per member (as `symbols` orders element results).
-        let mut selected = members
+        // Keep the owner-defined membership order, with one value per member.
+        let mut seen = std::collections::BTreeSet::new();
+        let selected = members
             .into_iter()
             .filter(|member| self.type_derived_fact_selects(collection, *member))
             .filter_map(|member| Some((self.symbol_id(member)?, member)))
+            .filter(|(symbol, _)| seen.insert(*symbol))
             .collect::<Vec<_>>();
-        selected.sort_by_key(|(symbol, _)| *symbol);
-        selected.dedup_by_key(|(symbol, _)| *symbol);
         let values = selected
             .into_iter()
             .filter_map(|(symbol, member)| {
@@ -1389,7 +1391,7 @@ impl<D> SemanticModel<D> {
                     DefinitionUsageDerivedKind::DefinitionDirectedUsage
                         | DefinitionUsageDerivedKind::UsageDirectedUsage
                 );
-                let values = self.symbols(
+                let values = self.symbols_in_order(
                     self.effective_usage_members(declaration)
                         .into_iter()
                         .filter(|member| {
@@ -1404,17 +1406,19 @@ impl<D> SemanticModel<D> {
             }
             DefinitionUsageDerivedKind::DefinitionVariant
             | DefinitionUsageDerivedKind::UsageVariant => {
-                let values =
-                    self.symbols(self.child_declarations(declaration).iter().copied().filter(
-                        |candidate| {
+                let values = self.symbols_in_order(
+                    self.child_declarations(declaration)
+                        .iter()
+                        .copied()
+                        .filter(|candidate| {
                             self.effective_membership_role(*candidate)
                                 == Some(crate::MembershipRole::Variant)
                                 && self
                                     .storage
                                     .declaration(*candidate)
                                     .is_some_and(|member| is_usage_declaration(member.kind))
-                        },
-                    ));
+                        }),
+                );
                 self.resolved_outcome(DefinitionUsageDerivedOutcome::Elements(values))
             }
             DefinitionUsageDerivedKind::DefinitionVariantMembership
@@ -1462,22 +1466,21 @@ impl<D> SemanticModel<D> {
                 // The members of one element, from the settled owner->member index: a query about
                 // one declaration's features costs its features, not the corpus.
                 let values =
-                    self.symbols(self.child_declarations(declaration).iter().copied().filter(
-                        |candidate_id| {
-                            *candidate_id != declaration
-                                && self
-                                    .memberships
-                                    .get(*candidate_id)
-                                    .is_some_and(|membership| {
-                                        membership.kind == MembershipKind::Feature
-                                    })
-                                && self.storage.declaration(*candidate_id).is_some_and(
-                                    |candidate| {
-                                        definition_usage_candidate_matches(kind, candidate.kind)
-                                    },
-                                )
-                        },
-                    ));
+                    self.symbols_in_order(
+                        self.child_declarations(declaration).iter().copied().filter(
+                            |candidate_id| {
+                                *candidate_id != declaration
+                                    && self.memberships.get(*candidate_id).is_some_and(
+                                        |membership| membership.kind == MembershipKind::Feature,
+                                    )
+                                    && self.storage.declaration(*candidate_id).is_some_and(
+                                        |candidate| {
+                                            definition_usage_candidate_matches(kind, candidate.kind)
+                                        },
+                                    )
+                            },
+                        ),
+                    );
                 self.resolved_outcome(DefinitionUsageDerivedOutcome::Elements(values))
             }
         }

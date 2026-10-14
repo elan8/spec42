@@ -746,25 +746,17 @@ impl<D> SemanticModel<D> {
             .copied()
             .collect::<std::collections::BTreeSet<_>>();
         queue.extend(seed);
+        let eligible = self
+            .inherited_feature_members(id)
+            .into_iter()
+            .collect::<std::collections::BTreeSet<_>>();
 
-        // A feature the element declares shadows an inherited one of the same name, and a feature
-        // it redefines is shadowed whatever either is called: KerML makes a redefinition *replace*
-        // the redefined feature, and an anonymous `part :>> wheel[4];` carries no name of its own
-        // to collide with.
+        // Membership eligibility above already excludes redefined targets by identity.
+        // Retain the inspector's nearest-first presentation and same-name shadowing.
         let mut shadowed = std::collections::BTreeSet::new();
-        let mut redefined = std::collections::BTreeSet::new();
         for child in self.child_declarations(id) {
             if let Some(name) = self.declaration_name(*child) {
                 shadowed.insert(name);
-            }
-            for reference_id in self.outgoing_reference_ids(*child) {
-                if self.storage.references[reference_id.index()].kind != ReferenceKind::Redefinition
-                {
-                    continue;
-                }
-                if let ReferenceOutcome::Resolved(target) = self.reference_outcome(*reference_id) {
-                    redefined.insert(target);
-                }
             }
         }
         let mut visited = std::collections::BTreeSet::new();
@@ -777,7 +769,7 @@ impl<D> SemanticModel<D> {
                 continue;
             };
             for child in self.child_declarations(owner) {
-                if self.types.featuring_type(*child) != Some(owner) || redefined.contains(child) {
+                if !eligible.contains(child) || self.types.featuring_type(*child) != Some(owner) {
                     continue;
                 }
                 let Some(name) = self.declaration_name(*child) else {
