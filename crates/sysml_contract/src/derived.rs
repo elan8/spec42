@@ -73,6 +73,10 @@ pub enum FeatureDerivedRelationshipCollection {
     OwnedSubsetting,
     OwnedTyping,
     OwnedTypeFeaturing,
+    /// Targets of owned feature chainings (`chainingFeature = ownedFeatureChaining.chainingFeature`).
+    ChainingFeature,
+    /// Owned `FeatureInverting` relationships whose `featureInverted` is this feature.
+    OwnedFeatureInverting,
 }
 
 /// One element-valued Namespace derivation admitted by the pinned manifest.

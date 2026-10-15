@@ -37,12 +37,6 @@ owner = "omg-specification"
 summary = "Pinned KerML XMI body for checkStepOwnedPerformanceSpecialization is unbalanced (SHA-256 899aa2a17a9527d1b448a84bc4a336a933bc6b067fb99ff9095bd5a866854bd8); OMG must publish an evaluable predicate before a specialization contract can be derived."
 
 [[issue]]
-id = "semantic-connector-binary-object-specialization-contract"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "The owned connectorEnd collection is now canonical (SemanticModelStorage::owned_end_features), but the pinned manifest classifies checkConnectorBinaryObjectSpecialization as a specialization_check: the extractor rejects its compound XMI body (`connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure))`, note the XMI spelling `connectorEnds`), so no conditional contract or Objects::binaryLinkObjects anchor is generated to synthesize from. Needs extractor support for the compound predicate and an XMI-backed manifest refresh."
-
-[[issue]]
 id = "semantic-attribute-feature-composite"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -65,9 +59,3 @@ id = "lowering-gap-binding-connector-accept-receiver-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"
 summary = "checkAcceptActionUsageReceiverBindingConnector binds the AcceptActionUsage's second parameter (`receiver`) to the second parameter of its TriggerInvocationExpression payload argument. `accept when|at|after` now lowers its TriggerInvocationExpression element with its kind, but the accept action still owns no payload or receiver parameter (AcceptParameterPart's PayloadParameterMember / `via` NodeParameterMember), and the expression's second parameter is not owned: the grammar gives a TriggerExpression one ArgumentMember, and the Pilot's addReceiverBinding binds only an owned second parameter (TypeUtil.getOwnedParameterOf(target, 1)), so which Feature the OCL's invocation.parameter->at(2) (an inherited TriggerWhen/At/After::receiver) denotes as a binding end needs a normative decision before it can be lowered."
-
-[[issue]]
-id = "semantic-control-node-owning-type"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "validateControlNodeOwningType (SysML 8.3.17.6) is not implemented. It was recorded as holding by construction while the parser admitted control nodes only in action bodies; since sysml-v2-parser #172 a CalculationBody (constraint and calc bodies) parses every ActionBodyItem, so `constraint def C { fork f; }` is authorable and reports nothing. Tracked with the remaining normative validations in elan8/spec42#193."

@@ -302,7 +302,7 @@ mod tests {
 
     #[test]
     fn generated_feature_relationship_collection_contracts_are_complete_and_closed() {
-        assert_eq!(GENERATED_FEATURE_DERIVED_RELATIONSHIP_RULES.len(), 5);
+        assert_eq!(GENERATED_FEATURE_DERIVED_RELATIONSHIP_RULES.len(), 7);
         assert_eq!(
             GENERATED_FEATURE_DERIVED_RELATIONSHIP_RULES
                 .iter()
@@ -310,9 +310,19 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![
                 (
+                    "kerml-1.0:8.3.3.3.4:deriveFeatureChainingFeature",
+                    "Feature",
+                    FeatureDerivedRelationshipCollection::ChainingFeature,
+                ),
+                (
                     "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedFeatureChaining",
                     "Feature",
                     FeatureDerivedRelationshipCollection::OwnedFeatureChaining,
+                ),
+                (
+                    "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedFeatureInverting",
+                    "Feature",
+                    FeatureDerivedRelationshipCollection::OwnedFeatureInverting,
                 ),
                 (
                     "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedRedefinition",
@@ -395,7 +405,7 @@ mod tests {
         // contains no library declarations. That makes every missing prerequisite explicit, and
         // catches a manifest/generator change that adds a rule without publication coverage.
         let anchors = library_specialization_anchors(&storage_with_one_filter());
-        assert_eq!(anchors.by_rule.len(), 151);
+        assert_eq!(anchors.by_rule.len(), 152);
         let individual_multiplicity_rule = crate::resolve::implied::specialization_check_rule(
             crate::specialization_query::SpecializationCheckKind::OccurrenceDefinitionMultiplicity,
         )

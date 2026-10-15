@@ -96,6 +96,10 @@ pub enum LibraryAnchorCorrectionIssue {
     /// `Views.sysml` library, and the official pilot implementation all use `Views::ViewpointCheck`
     /// / `Views::viewpointChecks`.
     Sysml21_301,
+    /// `checkItemUsageSubitemSpecialization` names `Items::Item::subitem`. The pinned 2026-04
+    /// Systems Library feature is the plural `Items::Item::subitems`, the same singular/plural
+    /// library mismatch as KERML11-207.
+    SysmlLibrarySubitems,
 }
 
 impl ConstraintManifest {
@@ -200,6 +204,11 @@ impl ConstraintManifest {
                     "Views::viewpoints",
                     "Views::viewpointChecks",
                     LibraryAnchorCorrectionIssue::Sysml21_301,
+                ) | (
+                    "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization",
+                    "Items::Item::subitem",
+                    "Items::Item::subitems",
+                    LibraryAnchorCorrectionIssue::SysmlLibrarySubitems,
                 )
             );
             if !source_matches || !exact_correction {
@@ -215,6 +224,7 @@ impl ConstraintManifest {
             "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization",
             "sysml-2.0:8.3.26.8:checkViewpointDefinitionSpecialization",
             "sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization",
+            "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization",
         ] {
             if self.find_rule(rule_id).is_some() && !corrected_rules.contains(rule_id) {
                 return Err(format!(
@@ -363,6 +373,12 @@ impl ConstraintManifest {
                         ) | (
                             "deriveFeatureOwnedTypeFeaturing",
                             FeatureDerivedRelationshipKind::OwnedTypeFeaturing
+                        ) | (
+                            "deriveFeatureChainingFeature",
+                            FeatureDerivedRelationshipKind::ChainingFeature
+                        ) | (
+                            "deriveFeatureOwnedFeatureInverting",
+                            FeatureDerivedRelationshipKind::OwnedFeatureInverting
                         )
                     ) {
                         return Err(format!(
@@ -766,10 +782,6 @@ impl ConstraintManifest {
                             "checkMetadataFeatureSemanticSpecialization",
                             "MetadataFeature",
                             SpecializationCheckKind::MetadataFeatureSemantic
-                        ) | (
-                            "checkConnectorBinaryObjectSpecialization",
-                            "Connector",
-                            SpecializationCheckKind::ConnectorBinaryObject
                         ) | (
                             "checkConnectorObjectSpecialization",
                             "Connector",
@@ -1287,6 +1299,8 @@ pub enum LibrarySpecializationPredicate {
     EndOwnedByAssociationOrConnector,
     /// `association->exists(oclIsKindOf(AssociationStructure))` on a `Connector`.
     ConnectorAssociationStructure,
+    /// `connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure))`.
+    ConnectorBinaryAssociationStructure,
     /// `owningType <> null and (owningType.oclIsKindOf(A) or owningType.oclIsKindOf(B))`.
     OwnedBy,
     /// `isSubactionUsage()`.
@@ -1350,6 +1364,11 @@ pub enum FeatureDerivedRelationshipKind {
     OwnedSubsetting,
     OwnedTyping,
     OwnedTypeFeaturing,
+    /// `chainingFeature = ownedFeatureChaining.chainingFeature`. The publication retains the
+    /// `FeatureChaining` relationship whose target is that feature.
+    ChainingFeature,
+    /// `ownedFeatureInverting = ownedRelationship->selectByKind(FeatureInverting)->select(fi | fi.featureInverted = self)`.
+    OwnedFeatureInverting,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -2253,7 +2272,7 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
             .join("../..")
             .join("specifications/constraint_manifest.toml");
         let mut manifest = ConstraintManifest::load_toml(&manifest_path).unwrap();
-        assert_eq!(manifest.library_anchor_corrections.len(), 5);
+        assert_eq!(manifest.library_anchor_corrections.len(), 6);
         assert_eq!(
             manifest.library_anchor_corrections[0].issue,
             LibraryAnchorCorrectionIssue::Kerml11_207
@@ -2273,6 +2292,17 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
         assert_eq!(
             manifest.library_anchor_corrections[4].issue,
             LibraryAnchorCorrectionIssue::Sysml21_301
+        );
+        assert_eq!(
+            manifest.library_anchor_corrections[5].issue,
+            LibraryAnchorCorrectionIssue::SysmlLibrarySubitems
+        );
+        assert_eq!(
+            manifest.executable_library_anchor(
+                "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization",
+                "Items::Item::subitem",
+            ),
+            "Items::Item::subitems"
         );
         // The two SYSML21-301 corrections fix a plain `specializes_from_library` contract, not the
         // `conditional_*` shape the first three use.

@@ -5387,6 +5387,8 @@ fn feature_relationship_collections_have_sequential_parallel_and_warm_library_pa
             FeatureDerivedRelationshipCollection::OwnedSubsetting,
             FeatureDerivedRelationshipCollection::OwnedTyping,
             FeatureDerivedRelationshipCollection::OwnedTypeFeaturing,
+            FeatureDerivedRelationshipCollection::ChainingFeature,
+            FeatureDerivedRelationshipCollection::OwnedFeatureInverting,
         ]
         .into_iter()
         .map(|collection| settled(published.feature_derived_relationships(derived, collection)))

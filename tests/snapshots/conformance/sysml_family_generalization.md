@@ -4,10 +4,6 @@ description=SysML definition families accept specialization of their normative g
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=Definition and usage family generalizations in clauses 8.4.9 through 8.4.18
-source_expectation=accepted
-rule_family=validate
-expectation=diagnostics
-rule_id=sysml-2.0:8.4:definition-family-generalizations
 type=file
 ~~~
 # SOURCE

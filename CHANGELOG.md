@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Feature chain targets and inverses are derived collections.** `deriveFeatureChainingFeature`
+  projects the owned feature-chaining relationship, and `deriveFeatureOwnedFeatureInverting`
+  projects an owned `inverse of` relationship. The other KerML element, namespace, and feature
+  derivations stay uncovered where the pinned body branches, calls an operation, or needs a
+  relationship identity this publication does not own.
+
+- **A control node outside an action is reported.** `validateControlNodeOwningType` (SysML
+  8.3.17.6) warns with `control_node_invalid_owner` when a decide, merge, fork, or join node is
+  owned by a type that is neither an action definition nor an action usage, such as a constraint
+  definition. Calculation and state definitions still qualify, because they specialize action
+  definitions.
+
+- **Nested usages take their library specializations.** Composite SysML usages now use the
+  effective `isComposite` derivation, so a part inside an item subsets `Items::Item::subparts`,
+  a step inside a behavior subsets `Performances::Performance::enclosedPerformances`, and the
+  other contracted nested-usage checks resolve the same way. `event occurrence` consults the
+  `EventOccurrenceUsage` contracts. A bare `connect` and an interface end count as owned ends,
+  so binary connections and interfaces specialize `binaryConnections`, `BinaryInterface`, and
+  `binaryInterfaces`. The XMI anchor `Items::Item::subitem` resolves to the library feature
+  `Items::Item::subitems`. A two-ended connector typed by an association structure subsets
+  `Objects::binaryLinkObjects`.
+
 - **The Elan8 method libraries are no longer bundled.** `elan8/mbse-methodology` no longer ships a
   SysML library: its decisions, assumptions and risks overlap the standard `ModelingMetadata` and
   `RiskMetadata` libraries, and real models did not use the rest. The `method` managed library,

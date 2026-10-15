@@ -493,6 +493,7 @@ enum SemanticRelationshipKind {
     Differencing,
     Disjoining,
     Annotation,
+    FeatureInverting,
 }
 
 impl SemanticRelationshipKind {
@@ -510,8 +511,9 @@ impl SemanticRelationshipKind {
             "differencing" => Ok(Self::Differencing),
             "disjoining" => Ok(Self::Disjoining),
             "annotation" => Ok(Self::Annotation),
+            "feature_inverting" => Ok(Self::FeatureInverting),
             _ => Err(format!(
-                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, disjoining, or annotation)"
+                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, disjoining, annotation, or feature_inverting)"
             )),
         }
     }
@@ -531,6 +533,7 @@ impl SemanticRelationshipKind {
             Self::Differencing => "differencing",
             Self::Disjoining => "disjoining",
             Self::Annotation => "annotation",
+            Self::FeatureInverting => "featureInverting",
         }
     }
 }
@@ -555,6 +558,12 @@ fn feature_collection(
         }
         FeatureDerivedRelationshipKind::OwnedTypeFeaturing => {
             FeatureDerivedRelationshipCollection::OwnedTypeFeaturing
+        }
+        FeatureDerivedRelationshipKind::ChainingFeature => {
+            FeatureDerivedRelationshipCollection::ChainingFeature
+        }
+        FeatureDerivedRelationshipKind::OwnedFeatureInverting => {
+            FeatureDerivedRelationshipCollection::OwnedFeatureInverting
         }
     }
 }
@@ -2944,7 +2953,20 @@ fn check_fixture_expectation(
             fixture_path,
         );
     }
-    check_untagged_diagnostics(fixture, actual, fallback_name)
+    // A snapshot may pin authored expectations without claiming a manifest rule. Those
+    // expectations still fail the run; they just do not count as normative coverage.
+    let mut checked = check_untagged_diagnostics(fixture, actual, fallback_name)?;
+    if let Some(error) = semantic_mismatch {
+        if checked.failure.is_none() {
+            checked = CheckedExpectation {
+                state: ExpectationState::Failed,
+                failure: Some(error.to_string()),
+            };
+        }
+    } else if has_semantic_expectations && checked.state == ExpectationState::NotApplicable {
+        checked.state = ExpectationState::Passed;
+    }
+    Ok(checked)
 }
 
 fn validate_source_intent(

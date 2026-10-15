@@ -7,7 +7,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.5.3:checkConnectorBinaryObjectSpecialization
-blocked_by=semantic-connector-binary-object-specialization-contract
 type=file
 libraries=standard
 ~~~
@@ -30,7 +29,7 @@ package ConnectorBinaryObjectSpecialization {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "ConnectorBinaryObjectSpecialization::Holder::pair") (target "Objects::binaryLinkObjects") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source "ConnectorBinaryObjectSpecialization::Holder::pair") (target "Objects::binaryLinkObjects") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -92,6 +91,7 @@ package ConnectorBinaryObjectSpecialization {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (provenance implied))
@@ -137,6 +137,7 @@ package ConnectorBinaryObjectSpecialization {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
@@ -147,8 +148,10 @@ package ConnectorBinaryObjectSpecialization {
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))

@@ -17,6 +17,8 @@ fn feature_collection(kind: FeatureDerivedRelationshipKind) -> &'static str {
         FeatureDerivedRelationshipKind::OwnedSubsetting => "OwnedSubsetting",
         FeatureDerivedRelationshipKind::OwnedTyping => "OwnedTyping",
         FeatureDerivedRelationshipKind::OwnedTypeFeaturing => "OwnedTypeFeaturing",
+        FeatureDerivedRelationshipKind::ChainingFeature => "ChainingFeature",
+        FeatureDerivedRelationshipKind::OwnedFeatureInverting => "OwnedFeatureInverting",
     }
 }
 

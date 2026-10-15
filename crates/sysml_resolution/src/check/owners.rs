@@ -125,6 +125,22 @@ impl<D> SemanticModel<D> {
             }
             _ => {}
         }
+        // SysML 8.3.17.6 `validateControlNodeOwningType`: the owning type is an ActionDefinition
+        // or an ActionUsage. A calculation or state definition qualifies because it specializes
+        // ActionDefinition; a constraint definition does not, and a control node parsed in its
+        // body is the violation the grammar now admits.
+        if self.metaclass_conforms(id, ElementKind::ControlNode)
+            && !owner.is_some_and(|owner| {
+                self.metaclass_conforms(owner, ElementKind::ActionDefinition)
+                    || self.metaclass_conforms(owner, ElementKind::ActionUsage)
+            })
+        {
+            diagnostics.push(self.declaration_diagnostic(
+                id,
+                DiagnosticCode::ControlNodeInvalidOwner,
+                DiagnosticSeverity::Warning,
+            )?);
+        }
         // KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`.
         if self.effective_membership_role(id) == Some(MembershipRole::ReturnParameter)
             && !owner.is_some_and(|owner| {

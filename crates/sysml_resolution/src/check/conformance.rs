@@ -38,7 +38,6 @@ use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::conditional_library_specialization_anchor_branch;
 use crate::resolve::implied::conditional_library_specialization_predicate_holds;
-use crate::resolve::implied::library_specialization_metaclasses;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationDiagnosticKey;
 use crate::resolve::results::ResolutionError;
@@ -169,7 +168,11 @@ impl<D> SemanticModel<D> {
             let Some(declaration_record) = self.storage.declaration(declaration) else {
                 return Err(ResolutionError::InvalidStorage);
             };
-            let metaclasses = library_specialization_metaclasses(declaration_record.kind);
+            let metaclasses = crate::resolve::implied::applicable_library_metaclasses(
+                &self.storage,
+                declaration,
+                declaration_record.kind,
+            );
             for rule in metaclasses.iter().flat_map(|metaclass| metaclass.rules()) {
                 let Some(outcome) = self.resolution.library_specialization_anchor(rule.rule_id)
                 else {

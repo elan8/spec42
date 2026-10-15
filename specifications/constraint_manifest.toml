@@ -30,6 +30,12 @@ source_anchor = "Views::viewpoints"
 corrected_anchor = "Views::viewpointChecks"
 issue = "sysml21_301"
 
+[[library_anchor_corrections]]
+rule_id = "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization"
+source_anchor = "Items::Item::subitem"
+corrected_anchor = "Items::Item::subitems"
+issue = "sysml_library_subitems"
+
 [[specifications]]
 name = "KerML"
 version = "1.0"
@@ -924,6 +930,9 @@ family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureChainingFeature"
 
+[specifications.constraints.feature_derived_relationship]
+kind = "chaining_feature"
+
 [[specifications.constraints]]
 package = "Core::Features"
 metaclass = "Feature"
@@ -974,6 +983,9 @@ constraint = "deriveFeatureOwnedFeatureInverting"
 family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedFeatureInverting"
+
+[specifications.constraints.feature_derived_relationship]
+kind = "owned_feature_inverting"
 
 [[specifications.constraints]]
 package = "Core::Features"
@@ -1541,9 +1553,10 @@ family = "check"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:checkConnectorBinaryObjectSpecialization"
 
-[specifications.constraints.specialization_check]
-kind = "connector_binary_object"
-body_sha256 = "ef980ca3cf7281d3144fadfdfd58f140ad6e820bd1018d454600c432c58d4482"
+[specifications.constraints.conditional_specializes_from_library]
+predicate = "connector_binary_association_structure"
+owner_metaclasses = []
+anchor = "Objects::binaryLinkObjects"
 
 [[specifications.constraints]]
 package = "Kernel::Connectors"

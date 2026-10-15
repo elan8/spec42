@@ -6,6 +6,7 @@ specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
+coverage_role=secondary
 rule_id=sysml-2.0:8.3.17.8:checkForkNodeSpecialization
 rule_id=sysml-2.0:8.3.17.13:checkMergeNodeSpecialization
 type=file

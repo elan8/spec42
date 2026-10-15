@@ -175,6 +175,14 @@ fn official_library_anchor_corrections(
                         LibraryAnchorCorrectionIssue::Sysml21_348,
                     )
                 }
+                "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization"
+                    if contract.anchor == "Items::Item::subitem" =>
+                {
+                    (
+                        "Items::Item::subitems",
+                        LibraryAnchorCorrectionIssue::SysmlLibrarySubitems,
+                    )
+                }
                 _ => return None,
             };
             Some(LibraryAnchorCorrection {
@@ -466,6 +474,12 @@ fn exact_feature_derived_relationship(body: &str) -> Option<FeatureDerivedRelati
         }
         "ownedTypeFeaturing = ownedRelationship->selectByKind(TypeFeaturing)-> select(tf | tf.featureOfType = self)" => {
             Some(FeatureDerivedRelationshipKind::OwnedTypeFeaturing)
+        }
+        "chainingFeature = ownedFeatureChaining.chainingFeature" => {
+            Some(FeatureDerivedRelationshipKind::ChainingFeature)
+        }
+        "ownedFeatureInverting = ownedRelationship->selectByKind(FeatureInverting)-> select(fi | fi.featureInverted = self)" => {
+            Some(FeatureDerivedRelationshipKind::OwnedFeatureInverting)
         }
         _ => None,
     }
@@ -818,10 +832,6 @@ fn exact_specialization_check(constraint: &str, body: &str) -> Option<Specializa
             "936940ed125c2c95d5d880dc54f0116978ccd57d6bc97d53b10559ed7633d6d2",
         ) => Some(SpecializationCheckKind::MetadataFeatureSemantic),
         (
-            "checkConnectorBinaryObjectSpecialization",
-            "ef980ca3cf7281d3144fadfdfd58f140ad6e820bd1018d454600c432c58d4482",
-        ) => Some(SpecializationCheckKind::ConnectorBinaryObject),
-        (
             "checkConnectorObjectSpecialization",
             "9ae2298b97dbbf830e4340a5775ed25be9a04cf483dbbeb8418570eba4ec9092",
         ) => Some(SpecializationCheckKind::ConnectorObject),
@@ -1026,6 +1036,9 @@ fn exact_conditional_library_specialization(
     if let Some(contract) = exact_feature_category_specialization(body) {
         return Some(contract);
     }
+    if let Some(contract) = exact_connector_binary_object_specialization(body) {
+        return Some(contract);
+    }
     if let Some(contract) = exact_connector_association_specialization(body) {
         return Some(contract);
     }
@@ -1127,6 +1140,22 @@ fn exact_conditional_library_specialization(
         predicate,
         owner_metaclasses,
         anchor,
+        true_anchor: None,
+    })
+}
+
+/// `connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure))`.
+fn exact_connector_binary_object_specialization(
+    body: &str,
+) -> Option<ConditionalLibrarySpecializationContract> {
+    const BODY: &str = "connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure)) implies specializesFromLibrary('Objects::binaryLinkObjects')";
+    if body != BODY {
+        return None;
+    }
+    Some(ConditionalLibrarySpecializationContract {
+        predicate: LibrarySpecializationPredicate::ConnectorBinaryAssociationStructure,
+        owner_metaclasses: Vec::new(),
+        anchor: "Objects::binaryLinkObjects".to_string(),
         true_anchor: None,
     })
 }
@@ -2058,6 +2087,18 @@ mod tests {
                 "ownedTypeFeaturing = ownedRelationship->selectByKind(TypeFeaturing)-> select(tf | tf.featureOfType = self)"
             ),
             Some(FeatureDerivedRelationshipKind::OwnedTypeFeaturing)
+        );
+        assert_eq!(
+            exact_feature_derived_relationship(
+                "chainingFeature = ownedFeatureChaining.chainingFeature"
+            ),
+            Some(FeatureDerivedRelationshipKind::ChainingFeature)
+        );
+        assert_eq!(
+            exact_feature_derived_relationship(
+                "ownedFeatureInverting = ownedRelationship->selectByKind(FeatureInverting)-> select(fi | fi.featureInverted = self)"
+            ),
+            Some(FeatureDerivedRelationshipKind::OwnedFeatureInverting)
         );
         assert!(exact_feature_derived_relationship(
             "ownedTyping = ownedGeneralization->selectByKind(FeatureTyping)->asOrderedSet()"

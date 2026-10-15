@@ -5,7 +5,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.9.3:checkOccurrenceDefinitionMultiplicitySpecialization
-rule_id=sysml-2.0:8.3.9.3:checkOccurrenceDefinitionIndividualSpecialization
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 type=file
