@@ -271,7 +271,11 @@ impl DocumentIndex {
                     spans[declaration.document.index()].push((range, id));
                 }
             }
-            let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
+            let Some(name) = declaration
+                .name
+                .resolved()
+                .and_then(|name| storage.symbol(name))
+            else {
                 continue;
             };
             if let Ok(range) = declaration_identifier_range(

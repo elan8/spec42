@@ -16,7 +16,7 @@ libraries=standard
 package Redefinition {
     classifier A;
     classifier B;
-    assoc Pair { end feature first : A; end feature second : B; }
+    assoc Pair { end feature 'first' : A; end feature second : B; }
 }
 ~~~
 # EXPECTED SEMANTICS
@@ -34,13 +34,13 @@ package Redefinition {
         (severity warning)
         (code "association_end_type_not_one")
         (source "semantic")
-        (range (start 3 17) (end 3 39))
+        (range (start 3 17) (end 3 41))
       )
       (diagnostic
         (severity warning)
         (code "association_end_type_not_one")
         (source "semantic")
-        (range (start 3 40) (end 3 63))
+        (range (start 3 42) (end 3 65))
       )
     )
   )
@@ -49,7 +49,7 @@ package Redefinition {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:193181bd49f653caa5a7f8b8c23cbc8e3d6c327061411f947edf0b2a2b7acddc") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:21bb1ea79d8642d2a31a1e9565d5bf15598bb0c45c694d3d2166b49b0431d208") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (qualified-name "Redefinition::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -133,12 +133,12 @@ package Redefinition {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (range (start 3 37) (end 3 38)) (probe (position 3 37))
+  (query (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (range (start 3 39) (end 3 40)) (probe (position 3 39))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (qualified-name "Redefinition::Pair::first"))) (kind featureTyping) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (qualified-name "Redefinition::A")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (range (start 3 61) (end 3 62)) (probe (position 3 61))
+  (query (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (range (start 3 63) (end 3 64)) (probe (position 3 63))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (qualified-name "Redefinition::Pair::second"))) (kind featureTyping) (ordinal 0) (authored-target "B")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md") (qualified-name "Redefinition::B")))))
     )

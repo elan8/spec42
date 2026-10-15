@@ -36,6 +36,30 @@ package Demo {
           )
         )
       )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 10 8) (end 10 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/enum_name_not_semantic.md")
+            (range (start 6 8) (end 6 42))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 10 8) (end 10 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/enum_name_not_semantic.md")
+            (range (start 6 8) (end 6 42))
+          )
+        )
+      )
     )
   )
 )

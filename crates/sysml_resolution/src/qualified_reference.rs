@@ -141,7 +141,7 @@ impl PublishedResolution {
             let Some(declaration) = self.model.storage.declaration(*child) else {
                 continue;
             };
-            if declaration.name.is_some()
+            if !matches!(declaration.name, crate::lower::facts::DeclaredName::Absent)
                 || declaration.anonymous_ordinal != Some(reference.ordinal)
                 || crate::model::element_kind::element_kind(declaration.kind) != reference.kind
             {

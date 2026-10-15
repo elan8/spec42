@@ -52,7 +52,7 @@ package Connectors {
       )
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 8 2) (end 14 2))
       )

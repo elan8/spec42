@@ -180,8 +180,11 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) symbols: SymbolTableBuilder,
     pub(crate) paths: SymbolPathArenaBuilder,
     pub(crate) path_scratch: Vec<NameId>,
+    /// Next ordinal per owner and kind, counted separately for absent names and for malformed
+    /// (reserved-keyword) names: their identity segments differ (`a` and `m`), and sharing one
+    /// counter would renumber a declaration's anonymous siblings when its name is fixed or broken.
     pub(crate) next_anonymous_ordinals:
-        BTreeMap<(DocumentIdx, Option<DeclarationId>, DeclarationKind), u32>,
+        BTreeMap<(DocumentIdx, Option<DeclarationId>, DeclarationKind, bool), u32>,
     pub(crate) next_reference_ordinals: BTreeMap<(DeclarationId, ReferenceKind), u32>,
     /// A role supplied by an enclosing membership production and consumed by the very next
     /// membership construction. This preserves roles such as `variant` while reusing the ordinary
@@ -307,15 +310,19 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         owner: Option<DeclarationId>,
         kind: DeclarationKind,
-        name: Option<NameId>,
+        name: impl Into<facts::DeclaredName>,
         span: Span,
         facts: DeclarationFacts,
     ) -> Result<DeclarationId, ConstructionError> {
+        let name = name.into();
         if document.index() >= self.documents.len()
             || owner.is_some_and(|id| id.index() >= self.declarations.len())
-            || name.is_some_and(|id| id.index() >= self.symbols.len())
+            || name
+                .resolved()
+                .is_some_and(|id| id.index() >= self.symbols.len())
             || facts
                 .short_name
+                .resolved()
                 .is_some_and(|id| id.index() >= self.symbols.len())
             || facts
                 .derived_name
@@ -325,10 +332,11 @@ impl SemanticModelBuilder {
         }
         let contributes_owned_end = facts.modifiers.end || facts.positional_end.is_some();
         let id = DeclarationId::from_index(self.declarations.len())?;
-        let anonymous_ordinal = if name.is_none() {
+        let anonymous_ordinal = if !matches!(name, facts::DeclaredName::Resolved(_)) {
+            let malformed = matches!(name, facts::DeclaredName::Malformed);
             let ordinal = self
                 .next_anonymous_ordinals
-                .entry((document, owner, kind))
+                .entry((document, owner, kind, malformed))
                 .or_insert(0);
             let value = *ordinal;
             *ordinal = ordinal.checked_add(1).ok_or(ConstructionError::Capacity)?;
@@ -425,10 +433,16 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         name: Option<DeclarationName>,
-    ) -> Result<Option<NameId>, ConstructionError> {
+    ) -> Result<facts::DeclaredName, ConstructionError> {
         let Some(name) = name else {
-            return Ok(None);
+            return Ok(facts::DeclaredName::Absent);
         };
+        match name.state() {
+            sysml_v2_parser::ast::DeclarationNameState::ReservedKeyword => {
+                return Ok(facts::DeclaredName::Malformed);
+            }
+            sysml_v2_parser::ast::DeclarationNameState::Parsed => {}
+        }
         let parsed = Arc::clone(
             &self
                 .documents
@@ -440,6 +454,7 @@ impl SemanticModelBuilder {
             .decoded_declaration_name(name)
             .ok_or(ConstructionError::InvalidParserReference)?;
         self.intern_declared_name(decoded.as_ref())
+            .map(facts::DeclaredName::from)
     }
 
     /// Interns the decoded contents of an optional authored string literal through its owning
@@ -495,7 +510,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         short_name: Option<DeclarationName>,
-    ) -> Result<Option<NameId>, ConstructionError> {
+    ) -> Result<facts::DeclaredName, ConstructionError> {
         self.intern_declaration_name(document, short_name)
     }
 
@@ -597,7 +612,7 @@ impl SemanticModelBuilder {
                 self.intern_declaration_name(document, identification.name)?,
                 self.intern_short_name(document, identification.short_name)?,
             ),
-            None => (None, None),
+            None => (facts::DeclaredName::Absent, facts::DeclaredName::Absent),
         };
         let element = self.push_typed_declaration(
             document,
@@ -775,15 +790,22 @@ impl SemanticModelBuilder {
         };
         let (expression, result) =
             self.mint_value_expression(document, declaration, None, &value.value.expression)?;
+        if declaration.index() >= self.declarations.len() {
+            return Err(ConstructionError::InvalidIdentity);
+        }
         let endpoints = FeatureValueEndpoints { expression, result };
-        self.push_feature_value(
+        // The record preserves both canonical endpoints and which of the five authored spellings
+        // (`=`, `:=`, `default =`, `default :=`, bare `default`) was written.
+        self.feature_values.push(FeatureValueRecord {
             declaration,
-            endpoints,
+            value: endpoints.expression,
+            result: endpoints.result,
             kind,
-            value.value.is_default,
-            value.value.has_operator,
-            value.value.span,
-        )?;
+            is_default: value.value.is_default,
+            has_operator: value.value.has_operator,
+            is_expression_body: matches!(value.value.expression.value, Expression::BodyExpr(_)),
+            span: value.value.span,
+        });
         Ok(endpoints)
     }
 
@@ -1032,34 +1054,6 @@ impl SemanticModelBuilder {
                 span,
             )?;
         }
-        Ok(())
-    }
-
-    /// Records the authored feature value spelling of one declaration.
-    ///
-    /// The record preserves both canonical endpoints and which of the five authored spellings
-    /// (`=`, `:=`, `default =`, `default :=`, bare `default`) was written.
-    pub(crate) fn push_feature_value(
-        &mut self,
-        declaration: DeclarationId,
-        endpoints: FeatureValueEndpoints,
-        kind: FeatureValueKind,
-        is_default: bool,
-        has_operator: bool,
-        span: Span,
-    ) -> Result<(), ConstructionError> {
-        if declaration.index() >= self.declarations.len() {
-            return Err(ConstructionError::InvalidIdentity);
-        }
-        self.feature_values.push(FeatureValueRecord {
-            declaration,
-            value: endpoints.expression,
-            result: endpoints.result,
-            kind,
-            is_default,
-            has_operator,
-            span,
-        });
         Ok(())
     }
 
@@ -2261,7 +2255,7 @@ impl SemanticModelBuilder {
             })
             .collect::<Result<Vec<_>, _>>()?;
         for (original, name, span) in originals {
-            let derived_name = match name {
+            let derived_name = match name.resolved() {
                 Some(name) => {
                     let derived = format!("~{}", self.symbols.get(name));
                     self.intern_declared_name(&derived)?
@@ -2460,7 +2454,7 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         identification: &QualifiedIdentification,
-    ) -> Result<Option<NameId>, ConstructionError> {
+    ) -> Result<facts::DeclaredName, ConstructionError> {
         self.intern_declaration_name(document, identification.simple_name())
     }
 
@@ -3672,6 +3666,7 @@ mod tests {
 
     fn empty_document() -> Arc<ParsedDocument> {
         Arc::new(ParsedDocument {
+            name_language: sysml_v2_parser::ast::NameLanguage::Sysml,
             source: SourceStorage::default(),
             qualified_references: QualifiedReferenceArena::default(),
             root: RootNamespace {
@@ -3817,5 +3812,54 @@ mod tests {
             builder.declarations[second.index()].anonymous_ordinal,
             Some(1)
         );
+    }
+
+    /// Fixing or breaking one name must not renumber its anonymous siblings: `part port;` (a
+    /// malformed name) between two anonymous parts leaves them 0 and 1, as `part 'port';` does.
+    #[test]
+    fn malformed_names_do_not_take_anonymous_ordinals() {
+        let parsed = empty_document();
+        let mut builder = SemanticModelBuilder::default();
+        let document = builder
+            .admit_document(
+                "model",
+                SourceRole::Workspace,
+                SourceLanguage::SysML,
+                ContentDigest::of_bytes(&[]),
+                parsed,
+                Vec::new(),
+            )
+            .unwrap();
+        let owner_name = builder.intern_name("Owner").unwrap();
+        let owner = builder
+            .push_typed_declaration(
+                document,
+                None,
+                DeclarationKind::PartDefinition,
+                Some(owner_name),
+                Span::dummy(),
+                DeclarationFacts::none(),
+            )
+            .unwrap();
+        let mut push = |name: facts::DeclaredName| {
+            builder
+                .push_typed_declaration(
+                    document,
+                    Some(owner),
+                    DeclarationKind::PartUsage,
+                    name,
+                    Span::dummy(),
+                    DeclarationFacts::none(),
+                )
+                .unwrap()
+        };
+        let malformed = push(facts::DeclaredName::Malformed);
+        let first = push(facts::DeclaredName::Absent);
+        let second = push(facts::DeclaredName::Absent);
+
+        let ordinal = |id: DeclarationId| builder.declarations[id.index()].anonymous_ordinal;
+        assert_eq!(ordinal(malformed), Some(0));
+        assert_eq!(ordinal(first), Some(0));
+        assert_eq!(ordinal(second), Some(1));
     }
 }

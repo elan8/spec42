@@ -16,7 +16,7 @@ package Model {
     part def Base;
     part external : Base;
     variation part def Choice {
-        variant part first : Base;
+        variant part 'first' : Base;
         variant external;
     }
     variation part choice : Base {
@@ -44,7 +44,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:47d501b81cfac359729787bd364139073b2593d30422277aa2e72bf0dfc31dd4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f7d15a0d134f46acc8dac06468a21689ffe7f090f74b4981bf87184a838e90f7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -128,7 +128,7 @@ package Model {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::external")))))
     )
   )
-  (query (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (range (start 4 29) (end 4 33)) (probe (position 4 29))
+  (query (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (range (start 4 31) (end 4 35)) (probe (position 4 31))
     (reference (id (source (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::Choice::first"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::Base")))))
     )

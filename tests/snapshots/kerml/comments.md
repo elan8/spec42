@@ -57,12 +57,6 @@ package Comments {
 (fixture-diagnostics
   (document "memory://snapshot/comments.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_calc_body_element")
-        (source "parser")
-        (range (start 42 2) (end 44 1))
-      )
     )
   )
 )
@@ -70,7 +64,7 @@ package Comments {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2b87e4efdd8f09cb82d81036e6f6d1988c6e6e93e4619de476a7c5a071b43960"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2b87e4efdd8f09cb82d81036e6f6d1988c6e6e93e4619de476a7c5a071b43960"))
   (declarations
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text "AAA\nBBB"))))
@@ -81,6 +75,8 @@ package Comments {
     (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (anonymous (kind comment) (ordinal 5))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text "comment inside a package "))))
     (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (anonymous (kind comment) (ordinal 6))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text "abc "))))
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::A"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (facts (short-name "a")) (documentation (doc (text "Documentation comment on A"))))
+    (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (locale "en_US") (text "Comment about documenation with ID 'a' "))) (authored (membership (kind owning) (visibility default)) (relationships (annotation (reference "a")))))
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "C")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (locale "en_US") (text "Documentation on Class C "))))
     (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "C")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text "Comment in Class C "))))
@@ -89,6 +85,9 @@ package Comments {
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt_cmt"))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text "Other Comment about Comment "))) (authored (membership (kind owning) (visibility default)) (relationships (annotation (reference "cmt")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind comment) (ordinal 0))))) (kind annotation) (ordinal 0))
+      (authored-target "a")
+      (outcome (status resolved) (target (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind documentation) (ordinal 0)))))))
     (reference (id (source (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "C")) (anonymous (kind comment) (ordinal 1))))) (kind annotation) (ordinal 0))
       (authored-target "Comments")
       (outcome (status resolved) (target (node (document "memory://snapshot/comments.md") (qualified-name "Comments")))))
@@ -97,6 +96,7 @@ package Comments {
       (outcome (status resolved) (target (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt")))))
   )
   (relationships
+    (relationship (kind annotation) (source (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind comment) (ordinal 0))))) (target (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind documentation) (ordinal 0))))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind comment) (ordinal 0))))) (kind annotation) (ordinal 0)))
     (relationship (kind annotation) (source (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "C")) (anonymous (kind comment) (ordinal 1))))) (target (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "C")) (anonymous (kind comment) (ordinal 1))))) (kind annotation) (ordinal 0)))
     (relationship (kind annotation) (source (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt_cmt"))) (target (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt_cmt"))) (kind annotation) (ordinal 0)))
   )
@@ -112,6 +112,11 @@ package Comments {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/comments.md") (range (start 43 16) (end 43 17)) (probe (position 43 16))
+    (reference (id (source (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind comment) (ordinal 0))))) (kind annotation) (ordinal 0) (authored-target "a")
+      (outcome (status resolved) (target (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "A")) (anonymous (kind documentation) (ordinal 0)))))))
+    )
+  )
   (query (document "memory://snapshot/comments.md") (range (start 37 16) (end 37 24)) (probe (position 37 16))
     (reference (id (source (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (named (kind class-def) (name "C")) (anonymous (kind comment) (ordinal 1))))) (kind annotation) (ordinal 0) (authored-target "Comments")
       (outcome (status resolved) (target (node (document "memory://snapshot/comments.md") (qualified-name "Comments")))))

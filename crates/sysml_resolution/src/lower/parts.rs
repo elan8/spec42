@@ -442,6 +442,16 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
+        for relationship in [
+            &node.value.references,
+            &node.value.crosses,
+            &node.value.intersects,
+        ]
+        .into_iter()
+        .flatten()
+        {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         if let PartUsageBody::Brace { elements, .. } = &node.value.body {
             for element in elements {
                 self.lower_part_usage_body_element(
@@ -1921,6 +1931,16 @@ impl SemanticModelBuilder {
         element: &Node<OccurrenceBodyElement>,
     ) -> Result<(), ConstructionError> {
         match &element.value {
+            OccurrenceBodyElement::DefaultReferenceUsage(node) => self
+                .lower_default_reference_usage(
+                    document,
+                    Some(owner),
+                    UnsupportedFamily::OccurrenceDefinitionMember,
+                    node,
+                )?,
+            OccurrenceBodyElement::PortUsage(node) => {
+                self.lower_port_usage(document, Some(owner), node)?
+            }
             OccurrenceBodyElement::Error(error) => {
                 self.push_recovery(document, error.span);
             }

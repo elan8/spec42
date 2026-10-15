@@ -16,8 +16,8 @@ libraries=standard
 package PolaritySpecializations {
     inv PositiveInvariant { true }
     inv not NegativeInvariant { true }
-    assert constraint PositiveAssert { true; }
-    assert not constraint NegativeAssert { true; }
+    assert constraint PositiveAssert { true }
+    assert not constraint NegativeAssert { true }
 }
 ~~~
 # EXPECTED SEMANTICS
@@ -40,7 +40,7 @@ package PolaritySpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:05815b93991ca25c01e4616c077b1262682d371f5fc7c9ad246dd008293531d4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:de65a93ec1d3cda33797070d3c70ddf65f69337d1a7b122d35caf120fb9c7f85") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_polarity_specializations.md") (qualified-name "PolaritySpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_polarity_specializations.md") (qualified-name "PolaritySpecializations::NegativeAssert"))) (kind assert-constraint) (membership (kind feature) (visibility default)))

@@ -631,7 +631,7 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
     let content_core = "package Core { attribute def Name; }";
     let content_domain = "package Domain { public import Core::*; }";
     let content_use =
-        "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }";
+        "package Demo { private import Domain::*; part def Consumer { attribute groupName : Name; } }";
 
     let init_id = next_id();
     let init_req = serde_json::json!({
@@ -681,7 +681,7 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
         "method": "textDocument/hover",
         "params": {
             "textDocument": { "uri": uri_use },
-            "position": { "line": 0, "character": 75 }
+            "position": { "line": 0, "character": 83 }
         }
     });
     send_message(&mut stdin, &hover_req.to_string());

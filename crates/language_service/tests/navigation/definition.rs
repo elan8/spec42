@@ -32,7 +32,7 @@ fn goto_definition_resolves_same_file_usage_to_definition() {
 #[test]
 fn goto_definition_cross_file_resolves_to_definition() {
     let content_def = "package P { part def Engine; }";
-    let content_use = "package Q { import P::*; part e : Engine; }";
+    let content_use = "package Q { private import P::*; part e : Engine; }";
     let ws = multi_doc(&[("def.sysml", content_def), ("use.sysml", content_use)]);
     let pos = position_for(content_use, "Engine");
     let result = goto_definition(&ws, "use.sysml", pos);
@@ -51,13 +51,13 @@ fn goto_definition_resolves_public_reexported_type() {
     let content_core = "package Core { attribute def Name; }";
     let content_domain = "package Domain { public import Core::*; }";
     let content_use =
-        "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }";
+        "package Demo { private import Domain::*; part def Consumer { attribute groupName : Name; } }";
     let ws = multi_doc(&[
         ("core.sysml", content_core),
         ("domain.sysml", content_domain),
         ("use.sysml", content_use),
     ]);
-    let pos = position_at(0, 75);
+    let pos = position_at(0, 83);
     let result = goto_definition(&ws, "use.sysml", pos);
     let result_paths = paths(&result.locations);
     assert!(

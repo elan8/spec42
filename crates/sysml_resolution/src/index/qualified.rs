@@ -58,6 +58,7 @@ impl QualifiedNameIndex {
             }
             let name = declaration
                 .name
+                .resolved()
                 .and_then(|name| storage.symbol(name))
                 .unwrap_or_default();
             blob.extend_from_slice(name.as_bytes());

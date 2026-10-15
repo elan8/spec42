@@ -67,11 +67,12 @@ fn numerical_callees(
                         return None;
                     }
                     let owner = storage.declaration(declaration.owner?)?;
-                    if owner.owner.is_some() || storage.symbol(owner.name?)? != "NumericalFunctions"
+                    if owner.owner.is_some()
+                        || storage.symbol(owner.name.resolved()?)? != "NumericalFunctions"
                     {
                         return None;
                     }
-                    match storage.symbol(declaration.name?)? {
+                    match storage.symbol(declaration.name.resolved()?)? {
                         "sum" => Some(NumericalFunction::Sum),
                         "max" => Some(NumericalFunction::Max),
                         "min" => Some(NumericalFunction::Min),

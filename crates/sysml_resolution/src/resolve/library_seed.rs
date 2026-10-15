@@ -27,7 +27,12 @@ pub(crate) fn shadowed_library_roots(storage: &SemanticModelStorage) -> Vec<Decl
                 .document(declaration.document)
                 .is_some_and(|document| document.role == SourceRole::Workspace)
         })
-        .filter_map(|declaration| declaration.name.and_then(|name| storage.symbol(name)))
+        .filter_map(|declaration| {
+            declaration
+                .name
+                .resolved()
+                .and_then(|name| storage.symbol(name))
+        })
         .collect();
     workspace_root_names.sort_unstable();
     workspace_root_names.dedup();
@@ -48,6 +53,7 @@ pub(crate) fn shadowed_library_roots(storage: &SemanticModelStorage) -> Vec<Decl
         .filter(|(_, declaration)| {
             declaration
                 .name
+                .resolved()
                 .and_then(|name| storage.symbol(name))
                 .is_some_and(|name| workspace_root_names.binary_search(&name).is_ok())
         })
@@ -113,7 +119,11 @@ impl SettledLibrary {
             if document.role != SourceRole::Workspace {
                 continue;
             }
-            let Some(name) = declaration.name.and_then(|name| storage.symbol(name)) else {
+            let Some(name) = declaration
+                .name
+                .resolved()
+                .and_then(|name| storage.symbol(name))
+            else {
                 continue;
             };
             if self.root_names.contains(name) || self.unsettled_roots.contains(name) {

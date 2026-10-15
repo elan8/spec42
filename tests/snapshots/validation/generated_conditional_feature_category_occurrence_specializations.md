@@ -20,7 +20,7 @@ package FeatureCategoryLoweringGaps {
 
     class Owner {
         feature occurrence : OccurrenceType;
-        portion feature portion : OccurrenceType;
+        portion feature 'portion' : OccurrenceType;
         composite feature suboccurrence : OccurrenceType;
     }
 
@@ -48,7 +48,7 @@ package FeatureCategoryLoweringGaps {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0b24048af87c230dd14f29d9107f69080368526f81f28ce1a0350571ca271107") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:42cd308fa5a21b6da6ed0baa1610bc27ad34fb5700bfdbef5be217c08a929564") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (qualified-name "FeatureCategoryLoweringGaps"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (qualified-name "FeatureCategoryLoweringGaps::ObjectType"))) (kind kerml-structure) (membership (kind owning) (visibility default)))
@@ -204,7 +204,7 @@ package FeatureCategoryLoweringGaps {
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (qualified-name "FeatureCategoryLoweringGaps::OccurrenceType")))))
     )
   )
-  (query (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (range (start 6 34) (end 6 48)) (probe (position 6 34))
+  (query (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (range (start 6 36) (end 6 50)) (probe (position 6 36))
     (reference (id (source (node (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (qualified-name "FeatureCategoryLoweringGaps::Owner::portion"))) (kind featureTyping) (ordinal 0) (authored-target "OccurrenceType")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (qualified-name "FeatureCategoryLoweringGaps::OccurrenceType")))))
     )

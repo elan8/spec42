@@ -15,7 +15,7 @@ fn lsp_workspace_scan_goto_definition() {
     std::fs::write(root.join("def.sysml"), "package P { part def Engine; }").expect("write def");
     std::fs::write(
         root.join("use.sysml"),
-        "package Q { import P::*; part e : Engine; }",
+        "package Q { private import P::*; part e : Engine; }",
     )
     .expect("write use");
 
@@ -57,7 +57,7 @@ fn lsp_workspace_scan_goto_definition() {
                 "uri": uri_use.as_str(),
                 "languageId": "sysml",
                 "version": 1,
-                "text": "package Q { import P::*; part e : Engine; }"
+                "text": "package Q { private import P::*; part e : Engine; }"
             }
         }
     });
@@ -71,7 +71,7 @@ fn lsp_workspace_scan_goto_definition() {
         "method": "textDocument/definition",
         "params": {
             "textDocument": { "uri": uri_use.as_str() },
-            "position": { "line": 0, "character": 35 }
+            "position": { "line": 0, "character": 43 }
         }
     });
     send_message(&mut stdin, &def_req.to_string());
@@ -303,7 +303,7 @@ fn lsp_workspace_scan_clears_unresolved_for_wildcard_imported_workspace_types() 
         root.join("RobotAutonomy.sysml"),
         r#"
         package RobotAutonomy {
-            import RoboticsCore::*;
+            private import RoboticsCore::*;
 
             part def BehaviorModule {
                 attribute behaviorName : Name;

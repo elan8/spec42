@@ -15,14 +15,14 @@ type=file
 package References {
     classifier Thing;
     classifier Holder {
-        feature first : Thing;
+        feature 'first' : Thing;
         feature second : Thing;
 
         // Conforming: a single references clause.
-        feature one references first;
+        feature one references 'first';
 
         // Invalid: two references clauses on one feature.
-        feature two references first references second;
+        feature two references 'first' references second;
     }
 }
 ~~~
@@ -35,7 +35,7 @@ package References {
         (severity warning)
         (code "feature_multiple_reference_subsettings")
         (source "semantic")
-        (range (start 10 48) (end 10 54))
+        (range (start 10 50) (end 10 56))
       )
     )
   )
@@ -50,7 +50,7 @@ package References {
         (severity warning)
         (code "feature_multiple_reference_subsettings")
         (source "semantic")
-        (range (start 10 48) (end 10 54))
+        (range (start 10 50) (end 10 56))
       )
     )
   )
@@ -59,7 +59,7 @@ package References {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:479fd8d66c3eb366cffcf30e01994d831711ced48229c94016bc74e1962a1ffd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a3e4c8cdc7b944d10a1804a2595f6fe401d74a29dfa0a0bd8ea266787bc7c6b0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -142,12 +142,12 @@ package References {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 3 24) (end 3 29)) (probe (position 3 24))
+  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 3 26) (end 3 31)) (probe (position 3 26))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::first"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 7 31) (end 7 36)) (probe (position 7 31))
+  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 7 31) (end 7 38)) (probe (position 7 31))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::one"))) (kind referenceSubsetting) (ordinal 0) (authored-target "first")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::first")))))
     )
@@ -157,12 +157,12 @@ package References {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 10 31) (end 10 36)) (probe (position 10 31))
+  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 10 31) (end 10 38)) (probe (position 10 31))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::two"))) (kind referenceSubsetting) (ordinal 0) (authored-target "first")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::first")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 10 48) (end 10 54)) (probe (position 10 48))
+  (query (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (range (start 10 50) (end 10 56)) (probe (position 10 50))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::two"))) (kind referenceSubsetting) (ordinal 1) (authored-target "second")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder::second")))))
     )

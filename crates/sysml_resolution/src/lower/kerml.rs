@@ -318,10 +318,10 @@ impl SemanticModelBuilder {
     /// formerly `KermlEndMember`), whose cross feature the grammar owns from the `EndFeaturePrefix`
     /// alternative -- so it is lowered here as an owned child through
     /// `lower_kerml_owned_cross_feature` rather than as this feature's owner.
-    /// Lowers a KerML `FeatureDeclaration`'s ordered `FeatureSpecialization` alternatives
+    /// Lowers a declaration's ordered `FeatureSpecialization` alternatives
     /// (typing, subsetting, reference subsetting, cross subsetting, redefinition) in authored
-    /// order. Shared by every KerML feature-declaration form (features and connectors).
-    fn lower_kerml_feature_specializations(
+    /// order. Shared by KerML feature declarations and SysML requirement constraints.
+    pub(crate) fn lower_feature_specializations(
         &mut self,
         document: DocumentIdx,
         declaration: DeclarationId,
@@ -401,7 +401,7 @@ impl SemanticModelBuilder {
         {
             self.lower_kerml_owned_cross_feature(document, declaration, cross)?;
         }
-        self.lower_kerml_feature_specializations(
+        self.lower_feature_specializations(
             document,
             declaration,
             &node.value.specializations,
@@ -462,7 +462,7 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        self.lower_kerml_feature_specializations(
+        self.lower_feature_specializations(
             document,
             declaration,
             &node.value.specializations,

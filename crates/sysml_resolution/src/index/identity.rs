@@ -125,7 +125,7 @@ impl IdentityIndex {
                 .is_some_and(|owner| name_paths.get(owner.index()).copied().flatten().is_none())
             {
                 None
-            } else if let Some(name) = declaration.name {
+            } else if let Some(name) = declaration.name.resolved() {
                 let parent = declaration
                     .owner
                     .and_then(|owner| name_paths[owner.index()]);
@@ -391,7 +391,7 @@ pub(crate) fn name_occurrences(
         BTreeMap::new();
     let mut occurrences = Vec::with_capacity(storage.declarations.len());
     for declaration in storage.declarations.iter() {
-        let occurrence = match declaration.name {
+        let occurrence = match declaration.name.resolved() {
             Some(name) => {
                 let slot = seen
                     .entry((
@@ -423,7 +423,7 @@ pub(crate) fn push_identity_segment(
         .ok_or(ResolutionError::InvalidStorage)?;
     push_identity_field(output, writer::declaration_kind(segment.kind));
     match segment.name {
-        Some(name) => {
+        crate::lower::facts::DeclaredName::Resolved(name) => {
             output.push('n');
             push_identity_field(
                 output,
@@ -438,8 +438,15 @@ pub(crate) fn push_identity_segment(
                     .ok_or(ResolutionError::InvalidStorage)?,
             );
         }
-        None => {
-            output.push('a');
+        crate::lower::facts::DeclaredName::Absent
+        | crate::lower::facts::DeclaredName::Malformed => {
+            output.push(
+                if segment.name == crate::lower::facts::DeclaredName::Malformed {
+                    'm'
+                } else {
+                    'a'
+                },
+            );
             push_identity_number(
                 output,
                 segment

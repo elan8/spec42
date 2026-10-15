@@ -18,6 +18,7 @@ mod keywords;
 mod parsed;
 
 pub use keywords::{is_reserved_keyword, reserved_keywords, RESERVED_KEYWORDS};
+pub(crate) use parsed::parser_name_language;
 pub use parsed::{ParsedSource, SyntaxAuthority};
 
 fn top_level_package_names(document: &ParsedDocument) -> Vec<String> {
@@ -118,13 +119,13 @@ mod tests {
 
     #[test]
     fn file_imports_publish_the_literal_and_its_exact_range() {
-        let parsed = parse("import 'file:///tmp/model.sysml';\n");
+        let parsed = parse("private import 'file:///tmp/model.sysml';\n");
         let imports = parsed.imports();
         let target = imports[0].file_target.expect("file target");
         assert_eq!(target.value, "file:///tmp/model.sysml");
         assert_eq!(target.range.start_line, 0);
-        assert_eq!(target.range.start_character, 8);
-        assert_eq!(target.range.end_character, 31);
+        assert_eq!(target.range.start_character, 16);
+        assert_eq!(target.range.end_character, 39);
     }
 }
 

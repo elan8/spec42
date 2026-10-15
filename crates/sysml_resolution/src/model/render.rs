@@ -1125,7 +1125,7 @@ pub(crate) fn write_declaration_facts(
         .kind;
     let implied_abstract = facts.modifiers.implied_abstract(kind);
     let implied_variation = facts.modifiers.implied_variation(kind);
-    if facts.short_name.is_none()
+    if matches!(facts.short_name, crate::lower::facts::DeclaredName::Absent)
         && modifiers.is_empty()
         && !implied_abstract
         && !implied_variation
@@ -1142,9 +1142,15 @@ pub(crate) fn write_declaration_facts(
         return Ok(());
     }
     output.write_str(" (facts")?;
-    if let Some(short_name) = facts.short_name {
-        let text = model.storage.symbol(short_name).ok_or(fmt::Error)?;
-        write!(output, " (short-name {text:?})")?;
+    match facts.short_name {
+        crate::lower::facts::DeclaredName::Absent => {}
+        crate::lower::facts::DeclaredName::Malformed => {
+            output.write_str(" (short-name malformed)")?
+        }
+        crate::lower::facts::DeclaredName::Resolved(short_name) => {
+            let text = model.storage.symbol(short_name).ok_or(fmt::Error)?;
+            write!(output, " (short-name {text:?})")?;
+        }
     }
     if !modifiers.is_empty() {
         output.write_str(" (modifiers")?;
@@ -1911,7 +1917,7 @@ pub(crate) fn write_declaration_path(
     for current in chain.iter().rev() {
         let declaration = model.storage.declaration(*current).ok_or(fmt::Error)?;
         match declaration.name {
-            Some(name) => {
+            crate::lower::facts::DeclaredName::Resolved(name) => {
                 write!(
                     output,
                     " (named (kind {}) (name ",
@@ -1930,11 +1936,17 @@ pub(crate) fn write_declaration_path(
                 }
                 output.write_char(')')?;
             }
-            None => write!(
+            crate::lower::facts::DeclaredName::Absent => write!(
                 output,
                 " (anonymous (kind {}) (ordinal {}))",
                 declaration_kind(declaration.kind),
                 declaration.anonymous_ordinal.ok_or(fmt::Error)?,
+            )?,
+            crate::lower::facts::DeclaredName::Malformed => write!(
+                output,
+                " (malformed-name (kind {}) (ordinal {}))",
+                declaration_kind(declaration.kind),
+                declaration.anonymous_ordinal.ok_or(fmt::Error)?
             )?,
         }
     }
@@ -1951,7 +1963,7 @@ pub(crate) fn write_declaration_name_body(
         write_declaration_name_body(model, owner, output)?;
         output.write_str("::")?;
     }
-    if let Some(name) = declaration.name {
+    if let Some(name) = declaration.name.resolved() {
         write_escaped(output, model.storage.symbol(name).ok_or(fmt::Error)?)?;
     }
     Ok(())

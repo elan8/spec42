@@ -258,7 +258,7 @@ fn lsp_feature_inspector_resolves_cross_file_typing() {
     let defs = "package Defs {\n  requirement def EnduranceReq;\n}\n";
     let usage_uri = "file:///c:/spec42-lsp-tests/feature_inspector_usage.sysml";
     let usage =
-        "package Usage {\n  import Defs::*;\n  requirement enduranceCheck : EnduranceReq;\n}\n";
+        "package Usage {\n  private import Defs::*;\n  requirement enduranceCheck : EnduranceReq;\n}\n";
     session.initialize_default("feature_inspector_cross_file");
     session.did_open(defs_uri, defs, 1);
     session.did_open(usage_uri, usage, 2);
@@ -768,8 +768,8 @@ fn lsp_feature_inspector_reports_an_ambiguous_typing_without_choosing_a_candidat
         "  package A { part def Shared; }\n",
         "  package B { part def Shared; }\n",
         "  package C {\n",
-        "    import A::*;\n",
-        "    import B::*;\n",
+        "    private import A::*;\n",
+        "    private import B::*;\n",
         "    part unit : Shared;\n",
         "  }\n",
         "}\n",

@@ -15,7 +15,7 @@ package Definitions {
 ## Usage.sysml
 ~~~sysml
 package Usage {
-    import Definitions::*;
+    private import Definitions::*;
     part v : Vehicle;
 }
 ~~~
@@ -41,13 +41,13 @@ package Usage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:69e3ac1d417270ef50b72bf580b5bd60974879131ad07fb0a27adcc62effb23c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:74ec0e8dcf41f714bfc6de321f80267ffa8f9b54670a2d5c1363d5e470ef20ba"))
   (declarations
     (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real")))))
     (declaration (id (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/Usage.sysml") (path (named (kind package) (name "Usage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/Usage.sysml") (path (named (kind package) (name "Usage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/Usage.sysml") (qualified-name "Usage::v"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Vehicle")))))
   )
   (references
@@ -93,7 +93,7 @@ package Usage {
       (outcome (status unresolved)))
     )
   )
-  (query (document "memory://snapshot/Usage.sysml") (range (start 1 11) (end 1 25)) (probe (position 1 11))
+  (query (document "memory://snapshot/Usage.sysml") (range (start 1 19) (end 1 33)) (probe (position 1 19))
     (reference (id (source (node (document "memory://snapshot/Usage.sysml") (path (named (kind package) (name "Usage")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Definitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/Definitions.sysml") (qualified-name "Definitions")))))
     )

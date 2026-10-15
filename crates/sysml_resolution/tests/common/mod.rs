@@ -571,7 +571,7 @@ pub fn part_definition_workspace() -> SourceInput {
     SourceInput::new(
         "memory://model.sysml",
         concat!(
-            "package Model { import Parts::*; ",
+            "package Model { private import Parts::*; ",
             "part def Component; ",
             "part def Equivalent specializes Part; ",
             "part def Specific specializes Vehicle; ",

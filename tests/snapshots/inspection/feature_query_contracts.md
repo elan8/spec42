@@ -376,7 +376,7 @@ probe feature_query_contracts.md 23 10 features
       (referenced (status none))
     )
     (feature-queries
-       (effective-identification (status resolved) (name absent) (short-name absent) (provenance Declared))
+       (effective-identification (status resolved) (name (resolved "Base")) (short-name absent) (provenance Declared))
       (effective-features (status resolved)
         (feature (qualified-name "P::Base::intro") (authored-name "intro") (effective-identification (status resolved) (name (resolved "intro")) (short-name absent) (provenance Declared)))
         (feature (qualified-name "P::Base::reqs") (authored-name "reqs") (effective-identification (status resolved) (name (resolved "reqs")) (short-name absent) (provenance Declared)))
@@ -489,7 +489,7 @@ probe feature_query_contracts.md 23 10 features
       (referenced (status none))
     )
     (feature-queries
-       (effective-identification (status resolved) (name absent) (short-name absent) (provenance Declared))
+       (effective-identification (status resolved) (name (resolved "Further")) (short-name absent) (provenance Declared))
       (effective-features (status resolved)
         (feature (qualified-name "P::Further::renamed") (authored-name "renamed") (effective-identification (status resolved) (name (resolved "renamed")) (short-name absent) (provenance Declared)))
         (feature (qualified-name "P::Base::intro") (authored-name "intro") (effective-identification (status resolved) (name (resolved "intro")) (short-name absent) (provenance Declared)))
@@ -565,7 +565,7 @@ probe feature_query_contracts.md 23 10 features
       (referenced (status none))
     )
     (feature-queries
-       (effective-identification (status resolved) (name absent) (short-name absent) (provenance Declared))
+       (effective-identification (status resolved) (name (resolved "Report")) (short-name absent) (provenance Declared))
       (effective-features (status resolved)
         (feature (qualified-name "P::Report::intro") (authored-name "intro") (effective-identification (status resolved) (name (resolved "intro")) (short-name absent) (provenance Declared)))
         (feature (qualified-name "P::Report::reqs") (authored-name "reqs") (effective-identification (status resolved) (name (resolved "reqs")) (short-name absent) (provenance Declared)))

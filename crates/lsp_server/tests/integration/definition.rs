@@ -92,7 +92,7 @@ fn lsp_cross_file_goto_definition() {
     let uri_def = "file:///c:/spec42-lsp-tests/workspace/def.sysml";
     let uri_use = "file:///c:/spec42-lsp-tests/workspace/use.sysml";
     let content_def = "package P { part def Engine; }";
-    let content_use = "package Q { import P::*; part e : Engine; }";
+    let content_use = "package Q { private import P::*; part e : Engine; }";
 
     let init_id = next_id();
     let init_req = serde_json::json!({
@@ -143,7 +143,7 @@ fn lsp_cross_file_goto_definition() {
         "method": "textDocument/definition",
         "params": {
             "textDocument": { "uri": uri_use },
-            "position": { "line": 0, "character": 35 }
+            "position": { "line": 0, "character": 43 }
         }
     });
     send_message(&mut stdin, &def_req.to_string());
@@ -185,7 +185,7 @@ fn lsp_goto_definition_resolves_public_reexported_type() {
     let content_core = "package Core { attribute def Name; }";
     let content_domain = "package Domain { public import Core::*; }";
     let content_use =
-        "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }";
+        "package Demo { private import Domain::*; part def Consumer { attribute groupName : Name; } }";
 
     let init_id = next_id();
     let init_req = serde_json::json!({
@@ -234,7 +234,7 @@ fn lsp_goto_definition_resolves_public_reexported_type() {
         "method": "textDocument/definition",
         "params": {
             "textDocument": { "uri": uri_use },
-            "position": { "line": 0, "character": 75 }
+            "position": { "line": 0, "character": 83 }
         }
     });
     send_message(&mut stdin, &def_req.to_string());

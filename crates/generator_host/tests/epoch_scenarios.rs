@@ -1,3 +1,5 @@
+#![recursion_limit = "512"]
+
 //! Deterministic epoch scenarios.
 //!
 //! Every test here drives time itself: a [`ManualClock`] supplies "now", the tick interval is

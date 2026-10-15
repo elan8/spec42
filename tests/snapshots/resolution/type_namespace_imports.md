@@ -26,12 +26,12 @@ package Model {
         public import Model::Other::*;
     }
     classifier Keeper {
-        import Other::*;
+        private import Other::*;
     }
     // Conforming: both public imports re-export Other's default-visibility member.
     feature viaSimple : Thing subsets Exporter::shared;
     feature viaQualified : Thing subsets QualifiedExporter::shared;
-    // Violating: a private member is not imported, and a default (private) import is not
+    // Violating: a private member is not imported, and an explicit private import is not
     // re-exported.
     feature viaPrivate : Thing subsets Exporter::hidden;
     feature viaKeeper : Thing subsets Keeper::shared;
@@ -99,13 +99,13 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d1c4592c62feda7c163d0c9c06d024cb2c866ebe50398aece33439279b9469c2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:245b1c0b0d276381847bff7dd78794f26f489c47e47d8c216de75c539c005f18"))
   (declarations
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model::Exporter"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Exporter")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Other") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model::Keeper"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Keeper")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Other") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Keeper")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Other") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model::Other"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model::Other::hidden"))) (kind kerml-feature) (membership (kind feature) (visibility private)) (authored (membership (kind feature) (visibility private)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model::Other::shared"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
@@ -233,7 +233,7 @@ package Model {
       (outcome (status resolved) (target (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model::Other")))))
     )
   )
-  (query (document "memory://snapshot/type_namespace_imports.md") (range (start 13 15) (end 13 23)) (probe (position 13 15))
+  (query (document "memory://snapshot/type_namespace_imports.md") (range (start 13 23) (end 13 31)) (probe (position 13 23))
     (reference (id (source (node (document "memory://snapshot/type_namespace_imports.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Keeper")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Other")
       (outcome (status resolved) (target (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model::Other")))))
     )

@@ -559,7 +559,7 @@ fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
             SourceInput::new(
                 "memory://model.sysml",
                 concat!(
-                    "package Model { import StandardViewDefinitions::*; ",
+                    "package Model { private import StandardViewDefinitions::*; ",
                     "part def Board; part def Assembly { part pcb : Board; } part root : Assembly; ",
                     "state def Machine { state idle; state running; transition start first idle then running; } ",
                     "view structure : GeneralView { expose root; filter @SysML::PartUsage; } ",
@@ -1235,7 +1235,7 @@ fn feature_relationship_collection_keeps_an_unresolved_canonical_edge_visible() 
     let published = detail_publication(
         &[(
             "memory://model.sysml",
-            "package Model { classifier Vehicle { feature derived chains Missing; } }",
+            "package Model { classifier Vehicle { feature 'derived' chains Missing; } }",
         )],
         ConstructionSchedule::Sequential,
     );
@@ -1612,7 +1612,7 @@ fn an_unresolved_import_makes_dependency_selection_explicitly_recovered() {
         BuildRequest::new(
             vec![SourceInput::new(
                 "memory://a.sysml",
-                "package A { import Missing::*; }".into(),
+                "package A { private import Missing::*; }".into(),
                 SourceKind::Workspace,
             )],
             ConstructionSchedule::Sequential,

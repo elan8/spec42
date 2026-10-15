@@ -22,13 +22,13 @@ package RequirementsAndCases {
     }
 
     requirement def TwoSubjects {
-        subject first : Vehicle;
+        subject 'first' : Vehicle;
         subject second : Vehicle;
     }
 
     requirement def SubjectAfterActor {
         actor operator : Vehicle;
-        subject item : Vehicle;
+        subject 'item' : Vehicle;
     }
 
     use case def ConformingInclude {
@@ -77,7 +77,7 @@ package RequirementsAndCases {
         (related-information
           (related
             (uri "memory://snapshot/requirement_case_conformance.md")
-            (range (start 17 8) (end 17 32))
+            (range (start 17 8) (end 17 34))
           )
         )
       )
@@ -85,7 +85,7 @@ package RequirementsAndCases {
         (severity warning)
         (code "subject_member_not_first")
         (source "semantic")
-        (range (start 23 8) (end 23 31))
+        (range (start 23 8) (end 23 33))
         (related-information
           (related
             (uri "memory://snapshot/requirement_case_conformance.md")
@@ -124,7 +124,7 @@ package RequirementsAndCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b721fef133f55a67b3063ce6e0dcfaa48b1b8cfa119f2b972ca7adefc74fe94b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4fb492baf48f1a7cd1b077daaae2f8b3d6481b8467575eb1feb20f09f485e24c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases::ConformingInclude"))) (kind use-case-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (includeUseCase (reference "drive")))))
@@ -320,7 +320,7 @@ package RequirementsAndCases {
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases::vehicle")))))
     )
   )
-  (query (document "memory://snapshot/requirement_case_conformance.md") (range (start 23 23) (end 23 30)) (probe (position 23 23))
+  (query (document "memory://snapshot/requirement_case_conformance.md") (range (start 23 25) (end 23 32)) (probe (position 23 25))
     (reference (id (source (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases::SubjectAfterActor::item"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases::Vehicle")))))
     )
@@ -330,7 +330,7 @@ package RequirementsAndCases {
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases::Vehicle")))))
     )
   )
-  (query (document "memory://snapshot/requirement_case_conformance.md") (range (start 17 24) (end 17 31)) (probe (position 17 24))
+  (query (document "memory://snapshot/requirement_case_conformance.md") (range (start 17 26) (end 17 33)) (probe (position 17 26))
     (reference (id (source (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases::TwoSubjects::first"))) (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_case_conformance.md") (qualified-name "RequirementsAndCases::Vehicle")))))
     )

@@ -12,7 +12,7 @@ package Actions {
         action step;
         action next;
         first step then next;
-        then action after;
+        then action 'after';
     }
     part def Vehicle {
         action drive : Procedure;
@@ -26,6 +26,18 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/action_def_with_and_without_body.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 12 8) (end 12 22))
+        (related-information
+          (related
+            (uri "memory://snapshot/action_def_with_and_without_body.md")
+            (range (start 10 8) (end 10 33))
+          )
+        )
+      )
     )
   )
 )
@@ -33,7 +45,7 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7540d354323f0664031ac1fdd1401058748cfa2229f587f8dd3b70dd2da1d464"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:21e51648e0014a4f0fab6c7c1241e7eee082fd3e5a26f560f105f79b8bab5f7c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/action_def_with_and_without_body.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_def_with_and_without_body.md") (qualified-name "Actions::Bare"))) (kind action-def) (membership (kind owning) (visibility default)))

@@ -1,3 +1,5 @@
+#![recursion_limit = "512"]
+
 //! The server host's integration tests, one binary. Each module was a separate test binary
 //! that linked the whole host; one binary links it once.
 

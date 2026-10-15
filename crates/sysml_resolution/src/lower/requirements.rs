@@ -301,6 +301,7 @@ impl SemanticModelBuilder {
         node: &Node<ActorUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -308,6 +309,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -337,6 +339,12 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(value) = &node.value.value {
+            self.record_feature_value(document, declaration, value)?;
         }
         Ok(())
     }
@@ -489,7 +497,11 @@ impl SemanticModelBuilder {
         node: &Node<SatisfyRequirementUsage>,
     ) -> Result<(), ConstructionError> {
         let (name, short_name, reference) = match &node.value.requirement {
-            SatisfiedRequirement::Reference { reference } => (None, None, Some(*reference)),
+            SatisfiedRequirement::Reference { reference } => (
+                super::facts::DeclaredName::Absent,
+                super::facts::DeclaredName::Absent,
+                Some(*reference),
+            ),
             SatisfiedRequirement::Declaration(inline) => (
                 self.intern_declaration_name(document, inline.value.identification.name)?,
                 self.intern_short_name(document, inline.value.identification.short_name)?,
@@ -853,7 +865,8 @@ impl SemanticModelBuilder {
             Some(name) => self.intern_declaration_name(document, Some(name))?,
             None => implicit_name
                 .map(|name| self.intern_name(name))
-                .transpose()?,
+                .transpose()?
+                .into(),
         };
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
@@ -973,6 +986,9 @@ impl SemanticModelBuilder {
         element: &Node<RequirementDefBodyElement>,
     ) -> Result<(), ConstructionError> {
         match &element.value {
+            RequirementDefBodyElement::DefaultReferenceUsage(node) => {
+                self.lower_default_reference_usage(document, Some(owner), unsupported, node)?
+            }
             RequirementDefBodyElement::Error(error) => {
                 self.push_recovery(document, error.span);
             }
@@ -1804,6 +1820,9 @@ impl SemanticModelBuilder {
         };
         for element in elements {
             match &element.value {
+                UseCaseDefBodyElement::Import(node) => {
+                    self.lower_import(document, Some(owner), node)?
+                }
                 UseCaseDefBodyElement::Error(error) => {
                     self.push_recovery(document, error.span);
                     self.mark_result_expressions_incomplete(owner)?;
@@ -1933,7 +1952,6 @@ impl SemanticModelBuilder {
                     self.lower_default_reference_usage(document, Some(owner), unsupported, node)?;
                 }
                 UseCaseDefBodyElement::MetadataKeywordUsage(_)
-                | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
                 | UseCaseDefBodyElement::RefRedefinition(_) => {
                     self.push_unsupported(document, unsupported, element.span)
                 }

@@ -18,7 +18,7 @@ package Model {
     // An ordinary, undirected value with no authored specialization subsets the result of its
     // owned value Expression. Each following feature covers one condition that suppresses it.
     feature inferred = source;
-    feature typed : Thing = source;
+    feature 'typed' : Thing = source;
     out feature directed = source;
     feature defaulted default = source;
 }
@@ -39,7 +39,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:673243b47cf45b85cf367ab0fa7bd7cbfcd0daf2f847c3ab5410aacf4acd5b76"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f1c90c5e7e4756d48124bb89bb679d25d53b0662f6618779a5cbbe1a5378b459"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -188,12 +188,12 @@ package Model {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_valuation_specialization.md") (range (start 7 20) (end 7 25)) (probe (position 7 20))
+  (query (document "memory://snapshot/kerml_feature_valuation_specialization.md") (range (start 7 22) (end 7 27)) (probe (position 7 22))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::typed"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_valuation_specialization.md") (range (start 7 28) (end 7 34)) (probe (position 7 28))
+  (query (document "memory://snapshot/kerml_feature_valuation_specialization.md") (range (start 7 30) (end 7 36)) (probe (position 7 30))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "typed")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "source")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::source")))))
     )

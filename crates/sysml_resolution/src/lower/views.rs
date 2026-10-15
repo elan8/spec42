@@ -381,7 +381,7 @@ impl SemanticModelBuilder {
         node: &Node<ViewRenderingUsage>,
     ) -> Result<(), ConstructionError> {
         let name = match node.value.form {
-            ViewRenderingForm::Reference(_) => None,
+            ViewRenderingForm::Reference(_) => super::facts::DeclaredName::Absent,
             ViewRenderingForm::Inline(name) => {
                 self.intern_declaration_name(document, Some(name))?
             }

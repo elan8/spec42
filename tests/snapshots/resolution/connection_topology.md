@@ -22,8 +22,8 @@ package ConnectionTopology {
     // A `connection def` whose ends are declared but not wired: each is published as an
     // `unconnected` end carrying its own identity.
     connection def Feed {
-        end from : PowerPort;
-        end to : PowerPort;
+        end 'from' : PowerPort;
+        end 'to' : PowerPort;
     }
 
     // A `connection def` with a `:>` supertype (no `:` type, so `declared_type` stays absent).
@@ -51,7 +51,7 @@ package ConnectionTopology {
         interface pumpLink : PowerInterface connect pumpA.outlet to pumpB.inlet;
 
         // An end whose target does not resolve.
-        connect pumpA.outlet to missing.port;
+        connect pumpA.outlet to missing.'port';
     }
 }
 ~~~
@@ -70,7 +70,7 @@ package ConnectionTopology {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 46 32) (end 46 44))
+        (range (start 46 32) (end 46 46))
       )
     )
   )
@@ -79,7 +79,7 @@ package ConnectionTopology {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:50598b1fb7e5fee2b4a76f40d1d89ba51485ec515913d47c22e9e79620396a9c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:718883e46a3a9c057c217adbb16f4b22961f1fb8badcb0755dbd6870c4bb4613"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology::Feed"))) (kind connection-def) (membership (kind owning) (visibility default)))
@@ -365,12 +365,12 @@ package ConnectionTopology {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/connection_topology.md") (range (start 17 19) (end 17 28)) (probe (position 17 19))
+  (query (document "memory://snapshot/connection_topology.md") (range (start 17 21) (end 17 30)) (probe (position 17 21))
     (reference (id (source (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology::Feed::from"))) (kind featureTyping) (ordinal 0) (authored-target "PowerPort")
       (outcome (status resolved) (target (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology::PowerPort")))))
     )
   )
-  (query (document "memory://snapshot/connection_topology.md") (range (start 18 17) (end 18 26)) (probe (position 18 17))
+  (query (document "memory://snapshot/connection_topology.md") (range (start 18 19) (end 18 28)) (probe (position 18 19))
     (reference (id (source (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology::Feed::to"))) (kind featureTyping) (ordinal 0) (authored-target "PowerPort")
       (outcome (status resolved) (target (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology::PowerPort")))))
     )
@@ -430,7 +430,7 @@ package ConnectionTopology {
       (outcome (status resolved) (target (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology::Pump::inlet")))))
     )
   )
-  (query (document "memory://snapshot/connection_topology.md") (range (start 46 32) (end 46 44)) (probe (position 46 32))
+  (query (document "memory://snapshot/connection_topology.md") (range (start 46 32) (end 46 46)) (probe (position 46 32))
     (reference (id (source (node (document "memory://snapshot/connection_topology.md") (path (named (kind package) (name "ConnectionTopology")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 3))))) (kind memberAccessOperand) (ordinal 1) (authored-target "missing::port")
       (outcome (status unresolved)))
     )

@@ -36,7 +36,7 @@ package Redefinition {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 13 5) (end 16 1))
       )

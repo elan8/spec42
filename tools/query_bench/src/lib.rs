@@ -1,3 +1,10 @@
+// `Fixture` owns `Services`, whose lowering memo retains parser AST fragments (an authored
+// expression is kept as a `sysml_v2_parser` `Expression`). Proving that `Send`/`Sync` -- and,
+// under rustdoc, the other auto traits -- walks the parser's AST type graph, which is deeper than
+// the default limit of 128. The bench target and every other crate that names these types raise
+// it for the same reason.
+#![recursion_limit = "512"]
+
 //! Fixture and case definitions shared by the divan bench target and the allocation counter.
 //!
 //! Everything here goes through `sysml_query`: `Services`, the source service's admission, the

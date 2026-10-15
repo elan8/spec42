@@ -41,12 +41,6 @@ package RequirementTest {
   (document "memory://snapshot/requirement_test.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "recovered_requirement_body_element")
-        (source "parser")
-        (range (start 15 2) (end 15 30))
-      )
-      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "semantic")
@@ -65,7 +59,7 @@ package RequirementTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3a64a8abede2d0f0e35bbc58d37fc3e26e0fbca4cf8fcae4582219f46a240730"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3a64a8abede2d0f0e35bbc58d37fc3e26e0fbca4cf8fcae4582219f46a240730"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "q") (import (shape membership) (recursive true))))))
@@ -74,6 +68,7 @@ package RequirementTest {
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C"))) (kind constraint-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1::c1"))) (kind require-constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "c")))))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "c")))))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text ""))))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind requirement) (ordinal 0))))) (kind requirement) (membership (kind feature) (visibility default)))
@@ -105,6 +100,9 @@ package RequirementTest {
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfyTarget) (ordinal 0))
       (authored-target "q")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q")))))
+    (reference (id (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1::c1"))) (kind redefinition) (ordinal 0))
+      (authored-target "c")
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c")))))
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind require-constraint) (ordinal 0))))) (kind subsetting) (ordinal 0))
       (authored-target "c")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c")))))
@@ -138,6 +136,7 @@ package RequirementTest {
     (relationship (kind satisfySource) (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::r1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfySource) (ordinal 0)))
     (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::p"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfyTarget) (ordinal 0)))
     (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfyTarget) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1::c1"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1::c1"))) (kind redefinition) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind require-constraint) (ordinal 0))))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R::c1"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R::c1"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))) (kind featureTyping) (ordinal 0)))
@@ -147,6 +146,7 @@ package RequirementTest {
     (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind part) (name "q")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind part) (name "q")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfyTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q::r"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q::r"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::r1"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::r1"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1::c1"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind require-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind requirement) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R::A::s"))) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R::A"))) (provenance implied))
@@ -172,6 +172,12 @@ package RequirementTest {
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1")))
       (subtype (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::r1")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1::c1")))
+      (featured-by (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1")))
+      (effective-type (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")) (source inherited) (from (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))))
+      (supertype (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")) (scopes any))
+      (supertype (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c")) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R")))
       (effective-type (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")) (source inherited) (from (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c"))))
@@ -194,6 +200,7 @@ package RequirementTest {
       (type (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")) (provenance authored))
       (effective-type (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")) (source direct))
       (supertype (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::C")) (scopes any))
+      (subtype (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1::c1")) (scopes any feature))
       (subtype (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind requirement-def) (name "R")) (anonymous (kind require-constraint) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (named (kind part) (name "q")) (anonymous (kind satisfy) (ordinal 0)))))
@@ -241,6 +248,11 @@ package RequirementTest {
   (query (document "memory://snapshot/requirement_test.md") (range (start 26 26) (end 26 27)) (probe (position 26 26))
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfyTarget) (ordinal 0) (authored-target "q")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q")))))
+    )
+  )
+  (query (document "memory://snapshot/requirement_test.md") (range (start 15 28) (end 15 29)) (probe (position 15 28))
+    (reference (id (source (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::R1::c1"))) (kind redefinition) (ordinal 0) (authored-target "c")
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::c")))))
     )
   )
   (query (document "memory://snapshot/requirement_test.md") (range (start 6 10) (end 6 11)) (probe (position 6 10))

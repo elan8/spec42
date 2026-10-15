@@ -285,6 +285,18 @@ package '5-State-based Behavior-1' {
       )
       (diagnostic
         (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 76 4) (end 76 32))
+        (related-information
+          (related
+            (uri "memory://snapshot/5_state_based_behavior_1.md")
+            (range (start 69 4) (end 74 5))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
         (range (start 80 4) (end 95 6))

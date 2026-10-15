@@ -383,10 +383,21 @@ impl SemanticModelBuilder {
                     DeclarationKind::PerformActionUsage,
                     self.intern_declaration_name(document, *name)?,
                 ),
-                TransitionEffect::Accept { .. } => (DeclarationKind::AcceptActionUsage, None),
-                TransitionEffect::Send { .. } => (DeclarationKind::SendActionUsage, None),
-                TransitionEffect::Assign { .. } => (DeclarationKind::Assign, None),
-                TransitionEffect::Expression(_) => (DeclarationKind::ActionUsage, None),
+                TransitionEffect::Accept { .. } => (
+                    DeclarationKind::AcceptActionUsage,
+                    super::facts::DeclaredName::Absent,
+                ),
+                TransitionEffect::Send { .. } => (
+                    DeclarationKind::SendActionUsage,
+                    super::facts::DeclaredName::Absent,
+                ),
+                TransitionEffect::Assign { .. } => {
+                    (DeclarationKind::Assign, super::facts::DeclaredName::Absent)
+                }
+                TransitionEffect::Expression(_) => (
+                    DeclarationKind::ActionUsage,
+                    super::facts::DeclaredName::Absent,
+                ),
             };
             let action = self.push_typed_declaration(
                 document,
@@ -712,7 +723,8 @@ impl SemanticModelBuilder {
                     expression,
                 )?;
             }
-            Some(TransitionAccept::TimeTrigger(kind, expression)) => {
+            Some(TransitionAccept::TimeTrigger(kind, expression))
+            | Some(TransitionAccept::NamedTimeTrigger(_, kind, expression)) => {
                 // Mirrors `lower_then_accept`'s `TimeTrigger` arm: the `at`/`when`/`after`
                 // trigger (e.g. `accept at vehicle.maintenanceTime`) is its own
                 // TriggerInvocationExpression, owned by the transition's trigger action.
@@ -908,13 +920,23 @@ impl SemanticModelBuilder {
         let (has_payload, has_receiver) = match accept {
             TransitionAccept::Payload(_, via) => (true, via.is_some()),
             TransitionAccept::Shorthand(_, via) => (false, via.is_some()),
-            TransitionAccept::TimeTrigger(_, _) => (false, false),
+            TransitionAccept::TimeTrigger(_, _) | TransitionAccept::NamedTimeTrigger(_, _, _) => {
+                (false, false)
+            }
+        };
+        let name = match accept {
+            TransitionAccept::NamedTimeTrigger(name, _, _) => {
+                self.intern_declaration_name(document, Some(*name))?
+            }
+            TransitionAccept::TimeTrigger(_, _)
+            | TransitionAccept::Shorthand(_, _)
+            | TransitionAccept::Payload(_, _) => super::facts::DeclaredName::Absent,
         };
         let declaration = self.push_typed_declaration(
             document,
             Some(transition),
             DeclarationKind::AcceptActionUsage,
-            None,
+            name,
             span,
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
@@ -953,10 +975,21 @@ impl SemanticModelBuilder {
                 DeclarationKind::PerformActionUsage,
                 self.intern_declaration_name(document, *name)?,
             ),
-            TransitionEffect::Accept { .. } => (DeclarationKind::AcceptActionUsage, None),
-            TransitionEffect::Send { .. } => (DeclarationKind::SendActionUsage, None),
-            TransitionEffect::Assign { .. } => (DeclarationKind::Assign, None),
-            TransitionEffect::Expression(_) => (DeclarationKind::ActionUsage, None),
+            TransitionEffect::Accept { .. } => (
+                DeclarationKind::AcceptActionUsage,
+                super::facts::DeclaredName::Absent,
+            ),
+            TransitionEffect::Send { .. } => (
+                DeclarationKind::SendActionUsage,
+                super::facts::DeclaredName::Absent,
+            ),
+            TransitionEffect::Assign { .. } => {
+                (DeclarationKind::Assign, super::facts::DeclaredName::Absent)
+            }
+            TransitionEffect::Expression(_) => (
+                DeclarationKind::ActionUsage,
+                super::facts::DeclaredName::Absent,
+            ),
         };
         let action = self.push_typed_declaration(
             document,

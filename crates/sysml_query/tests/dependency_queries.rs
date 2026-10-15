@@ -33,7 +33,7 @@ fn follows_nested_public_imports_transitively() {
     let model = model(&[
         (a, "package A { part def T; }"),
         (b, "package B { package Nested { public import A::*; } }"),
-        (c, "package C { import B::Nested::*; part p : T; }"),
+        (c, "package C { private import B::Nested::*; part p : T; }"),
     ]);
     let affected = model
         .dependencies()
@@ -64,7 +64,7 @@ fn recovery_is_explicit_and_overinvalidates() {
     let c = "file:///workspace/c.sysml";
     let model = model(&[
         (a, "package A {}"),
-        (b, "package B { import Missing::*;"),
+        (b, "package B { private import Missing::*;"),
         (c, "package C {}"),
     ]);
     let affected = model

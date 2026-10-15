@@ -40,7 +40,7 @@ package NestedViewCoverage {
         view referencing ::> document;
         view crossing => document;
         derived view derivedView;
-        variation view variant;
+        variation view 'variant';
         in view directed;
         view : Appendix;
         view valued = document;
@@ -83,7 +83,7 @@ package NestedViewCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fd0828a346a4d8f763825a03ef87962f4fda9c405e7acbf24fdd915ef4819252"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3f65539107e38ccc8168e1f2217fd6bc4c42a3c3c88fa90ce5075fddb015f6d4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_nested_view_usages.md") (qualified-name "NestedViewCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_nested_view_usages.md") (qualified-name "NestedViewCoverage::Appendix"))) (kind view-def) (membership (kind owning) (visibility default)))

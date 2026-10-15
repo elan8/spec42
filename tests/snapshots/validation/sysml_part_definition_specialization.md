@@ -13,7 +13,7 @@ libraries=standard
 # SOURCE
 ~~~sysml
 package Model {
-    import Parts::*;
+    public import Parts::*;
 
     // The semantic rule supplies an implied specialization to Parts::Part.
     part def Component;
@@ -70,10 +70,10 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:de8f474973811a028b5991c88ff93bfd664d5a549da30f014b12550e1a527eb6") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2ab480810031c97e43561c5f3f1cf70ae8ea9e748f1a491541042c867dd8ac83") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_part_definition_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_part_definition_specialization.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Parts") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/sysml_part_definition_specialization.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Parts") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/sysml_part_definition_specialization.md") (qualified-name "Model::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_part_definition_specialization.md") (qualified-name "Model::Equivalent"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Part")))))
     (declaration (id (node (document "memory://snapshot/sysml_part_definition_specialization.md") (qualified-name "Model::Specific"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle")))))
@@ -141,7 +141,7 @@ package Model {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_part_definition_specialization.md") (range (start 1 11) (end 1 19)) (probe (position 1 11))
+  (query (document "memory://snapshot/sysml_part_definition_specialization.md") (range (start 1 18) (end 1 26)) (probe (position 1 18))
     (reference (id (source (node (document "memory://snapshot/sysml_part_definition_specialization.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Parts")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts")))))
     )

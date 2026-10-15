@@ -106,9 +106,10 @@ impl<D> SemanticModel<D> {
     /// and what the receiving feature is typed by -- so they differ only in where the receiving
     /// feature comes from and where the diagnostic is reported.
     ///
-    /// A quantity-valued feature is deliberately excluded: its values are checked by dimension,
-    /// which is what a measurement reference means, and comparing a mass against the datatype of
-    /// its magnitude would report every unit-bearing value in the model.
+    /// Unit-bearing values have no scalar datatype and are checked by dimension instead. Bare
+    /// scalar values still have to satisfy the receiving feature's types, including quantity types.
+    /// A value written as an expression body (`default {true}`) is an Expression, not a scalar, and
+    /// is not compared.
     pub(crate) fn collect_value_conformance(
         &self,
         document: DocumentIdx,
@@ -119,7 +120,9 @@ impl<D> SemanticModel<D> {
                 .storage
                 .declaration(value.declaration)
                 .ok_or(ResolutionError::InvalidStorage)?;
-            if declaration.document != document {
+            // An expression body binds the feature to the Expression, whose type is not the
+            // scalar type of the result it evaluates to.
+            if declaration.document != document || value.is_expression_body {
                 continue;
             }
             if !self.value_type_conflicts(value.declaration, value.declaration) {
@@ -242,7 +245,7 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// Whether `expression`'s settled value has a type unrelated to every type `receiver` has.
+    /// Whether `expression`'s settled value is incompatible with one of `receiver`'s effective types.
     ///
     /// Answers `false` for every state that is not a settled value, for a value whose datatype the
     /// admitted libraries do not declare, and for a receiver with no effective type: each of those
@@ -253,12 +256,6 @@ impl<D> SemanticModel<D> {
         expression: DeclarationId,
         receiver: DeclarationId,
     ) -> bool {
-        if !matches!(
-            self.expressions.required_measurement(receiver),
-            RequiredMeasurement::NotApplicable
-        ) {
-            return false;
-        }
         let Some(value) = self.evaluated_value(expression) else {
             return false;
         };
@@ -274,7 +271,9 @@ impl<D> SemanticModel<D> {
         if declared.peek().is_none() {
             return false;
         }
-        !declared.any(|target| comparable(&self.types, target, value_type))
+        // Effective typings are simultaneous constraints. A broad inherited type such as
+        // Anything must not make an incompatible, more specific typing disappear.
+        !declared.all(|target| comparable(&self.types, target, value_type))
     }
 
     /// Reports unit tokens that name no unit, name several, or name one of the wrong dimension.

@@ -68,6 +68,7 @@ impl ReflectiveMetaclassAnchors {
             }
             let Some(kind) = declaration
                 .name
+                .resolved()
                 .and_then(|name| storage.symbol(name))
                 .and_then(ElementKind::parse)
             else {

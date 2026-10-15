@@ -18,7 +18,7 @@ package Verification {
 
     // Conforming: the verification membership sits inside the objective of a verification case.
     verification def Good {
-        subject item : Component;
+        subject 'item' : Component;
         objective {
             verify requirement limit : Limit;
         }
@@ -63,7 +63,7 @@ package Verification {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:117712e846bc242f843b33511c354b97e040c395455f54e8aa4b408c779cd968"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:31860e00f0b19d3d5ee74480822f92d501c9128a843720cd24dc99bd8769caed"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -140,7 +140,7 @@ package Verification {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Limit")))))
     )
   )
-  (query (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (range (start 6 23) (end 6 32)) (probe (position 6 23))
+  (query (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (range (start 6 25) (end 6 34)) (probe (position 6 25))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Good::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md") (qualified-name "Verification::Component")))))
     )

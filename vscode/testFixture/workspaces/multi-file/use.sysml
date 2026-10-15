@@ -1,4 +1,4 @@
 package Spec42MultiFileUsages {
-    import Spec42MultiFileDefinitions::*;
+    private import Spec42MultiFileDefinitions::*;
     part item : Spec42SmokeWidget;
 }

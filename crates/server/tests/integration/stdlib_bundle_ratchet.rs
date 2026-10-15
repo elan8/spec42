@@ -162,8 +162,18 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
             .map(|(code, count)| ((*code).to_owned(), *count))
             .collect::<std::collections::BTreeMap<_, _>>();
 
-        assert_eq!(report.summary.error_count, 2);
-        assert_eq!(report.summary.warning_count, 0);
+        assert_eq!(
+            report.summary.error_count,
+            2,
+            "bundled standard-library errors changed:\n  {}",
+            offenders.join("\n  ")
+        );
+        assert_eq!(
+            report.summary.warning_count,
+            0,
+            "bundled standard-library warnings changed:\n  {}",
+            offenders.join("\n  ")
+        );
         assert_eq!(report.summary.information_count, 0);
         assert_eq!(
             actual,

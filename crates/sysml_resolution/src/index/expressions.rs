@@ -159,6 +159,7 @@ pub(crate) fn find_anchor(storage: &SemanticModelStorage, path: &[&str]) -> Anch
         }
         if !declaration
             .name
+            .resolved()
             .is_some_and(|name| storage.symbol(name) == Some(*last))
         {
             continue;
@@ -194,6 +195,7 @@ pub(crate) fn owner_path_matches(
         };
         if !declaration
             .name
+            .resolved()
             .is_some_and(|id| storage.symbol(id) == Some(*name))
         {
             return false;
@@ -657,10 +659,10 @@ impl UnitCatalog {
             // Both spellings a unit answers to. KerML makes a short name an alternative name of the
             // element, and `10 [kg]` and `10 [kilogram]` name the same declaration.
             for symbol in [
-                declaration.name,
+                declaration.name.resolved(),
                 storage
                     .declaration_facts(id)
-                    .and_then(|facts| facts.short_name),
+                    .and_then(|facts| facts.short_name.resolved()),
             ]
             .into_iter()
             .flatten()
@@ -746,6 +748,7 @@ pub(crate) fn owner_path_matches_suffix(
         };
         if !declaration
             .name
+            .resolved()
             .is_some_and(|id| storage.symbol(id) == Some(*name))
         {
             return false;

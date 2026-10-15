@@ -16,7 +16,7 @@ type=file
 package Model {
     classifier Vehicle {
         feature base;
-        feature derived redefines base;
+        feature 'derived' redefines base;
     }
 }
 ~~~
@@ -40,7 +40,7 @@ package Model {
         (severity error)
         (code "redefinition_featuring_type_incompatible")
         (source "semantic")
-        (range (start 3 34) (end 3 38))
+        (range (start 3 36) (end 3 40))
         (related-information
           (related
             (uri "memory://snapshot/kerml_feature_owned_subsetting.md")
@@ -55,7 +55,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7ff34b96fb80feacd08e259eb2df35430928b1b5cf772808a5da33a89d3d22ee"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:96ffa8a507fec1e3ef5b838f49f05713cec3a61908a18ffb493f573ab64b4f04"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_subsetting.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_subsetting.md") (qualified-name "Model::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -92,7 +92,7 @@ package Model {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_feature_owned_subsetting.md") (range (start 3 34) (end 3 38)) (probe (position 3 34))
+  (query (document "memory://snapshot/kerml_feature_owned_subsetting.md") (range (start 3 36) (end 3 40)) (probe (position 3 36))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_owned_subsetting.md") (qualified-name "Model::Vehicle::derived"))) (kind redefinition) (ordinal 0) (authored-target "base")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_owned_subsetting.md") (qualified-name "Model::Vehicle::base")))))
     )

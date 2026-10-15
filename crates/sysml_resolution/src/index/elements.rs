@@ -334,7 +334,7 @@ impl<D> SemanticModel<D> {
         // this used to re-read. A named declaration whose identifier the barrier could not settle
         // has no location, exactly as the failed search had none; only an unnamed one falls back to
         // its whole span.
-        let range = match declaration.name {
+        let range = match declaration.name.resolved() {
             Some(_) => self.documents.declaration_identifier(id)?,
             None => document_range(&self.storage, declaration.document, &declaration.span).ok()?,
         };
@@ -718,10 +718,12 @@ impl<D> SemanticModel<D> {
             role: self.effective_membership_role(id),
             name: declaration
                 .name
+                .resolved()
                 .and_then(|name| self.storage.symbol(name))
                 .map(Into::into),
             short_name: facts
                 .short_name
+                .resolved()
                 .and_then(|name| self.storage.symbol(name))
                 .map(Into::into),
             location: self.source_location(id)?,
@@ -859,6 +861,7 @@ impl<D> SemanticModel<D> {
                     kind: element_kind::element_kind(declaration.kind),
                     name: declaration
                         .name
+                        .resolved()
                         .and_then(|name| self.storage.symbol(name))
                         .map(Into::into),
                     owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
@@ -899,6 +902,7 @@ impl<D> SemanticModel<D> {
                     kind: search.kind,
                     name: declaration
                         .name
+                        .resolved()
                         .and_then(|name| self.storage.symbol(name))
                         .map(Into::into),
                     owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),
@@ -924,6 +928,7 @@ impl<D> SemanticModel<D> {
             element_kind::element_kind(declaration.kind) == kind
                 && declaration
                     .name
+                    .resolved()
                     .and_then(|symbol| self.storage.symbol(symbol))
                     == Some(name)
         });
@@ -1083,6 +1088,7 @@ impl<D> SemanticModel<D> {
             kind: element_kind::element_kind(declaration.kind),
             name: declaration
                 .name
+                .resolved()
                 .and_then(|name| self.storage.symbol(name))
                 .map(Into::into),
             owner: declaration.owner.and_then(|owner| self.symbol_id(owner)),

@@ -15,7 +15,7 @@ type=file
 package Redefinition {
     classifier A;
     classifier B;
-    assoc Pair { end feature first : A; end feature second : B; }
+    assoc Pair { end feature 'first' : A; end feature second : B; }
     classifier Holder {
         feature a : A;
         feature b : B;
@@ -39,7 +39,7 @@ package Redefinition {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:90fc3a1a5bc1803181a5f495c4ff0e556ee8279ab5c3cb3c24a65eced8621ffa"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bcbbeb8f82ffbd53a5462fecf1b629eca6362f79f920e046db9c26efe836914d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (qualified-name "Redefinition::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -173,12 +173,12 @@ package Redefinition {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (qualified-name "Redefinition::Holder::b")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (range (start 3 37) (end 3 38)) (probe (position 3 37))
+  (query (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (range (start 3 39) (end 3 40)) (probe (position 3 39))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (qualified-name "Redefinition::Pair::first"))) (kind featureTyping) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (qualified-name "Redefinition::A")))))
     )
   )
-  (query (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (range (start 3 61) (end 3 62)) (probe (position 3 61))
+  (query (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (range (start 3 63) (end 3 64)) (probe (position 3 63))
     (reference (id (source (node (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (qualified-name "Redefinition::Pair::second"))) (kind featureTyping) (ordinal 0) (authored-target "B")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_feature_end_redefinition_bare_end.md") (qualified-name "Redefinition::B")))))
     )

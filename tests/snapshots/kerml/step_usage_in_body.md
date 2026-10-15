@@ -17,13 +17,13 @@ state def SD {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 1 4) (end 2 4))
       )
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
         (range (start 2 4) (end 3 0))
       )

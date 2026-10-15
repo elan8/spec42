@@ -410,6 +410,13 @@ impl SemanticModelBuilder {
         if let ConnectionDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    ConnectionDefBodyElement::DefaultReferenceUsage(node) => self
+                        .lower_default_reference_usage(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::ConnectionDefinitionMember,
+                            node,
+                        )?,
                     ConnectionDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
                         self.declaration_facts
@@ -495,9 +502,9 @@ impl SemanticModelBuilder {
             EndIdentity::Declaration(label) => {
                 self.intern_declaration_name(document, Some(*label))?
             }
-            EndIdentity::Anonymous => {
-                self.redefinition_simple_name(document, node.value.redefines.as_ref())?
-            }
+            EndIdentity::Anonymous => self
+                .redefinition_simple_name(document, node.value.redefines.as_ref())?
+                .into(),
         };
         let positional_end = self.next_positional_end_ordinal(owner)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
@@ -764,7 +771,7 @@ impl SemanticModelBuilder {
     /// Body walker for `interface def` bodies (`InterfaceDefBody`/`InterfaceDefBodyElement`),
     /// mirroring `lower_connection_body`. `end` declarations and `connect` statements carry the
     /// connector-end structure through the same `lower_end_decl`/`lower_connect_stmt` helpers
-    /// `connection def` uses; everything else beyond attribute/item/port members falls through to
+    /// `connection def` uses; everything else beyond attribute/item/port/part members falls through to
     /// `unsupported_interface_definition_member`.
     pub(crate) fn lower_interface_body(
         &mut self,
@@ -775,6 +782,9 @@ impl SemanticModelBuilder {
         if let InterfaceDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    InterfaceDefBodyElement::InterfaceUsage(node) => {
+                        self.lower_interface_usage(document, Some(declaration), node)?
+                    }
                     InterfaceDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
                     }
@@ -822,6 +832,11 @@ impl SemanticModelBuilder {
                     }
                     InterfaceDefBodyElement::PortUsage(port_usage) => {
                         self.lower_port_usage(document, Some(declaration), port_usage)?;
+                    }
+                    // `StructureUsageElement` admits `PartUsage`, including `end part`, exactly
+                    // as in an interface usage body.
+                    InterfaceDefBodyElement::PartUsage(node) => {
+                        self.lower_part_usage(document, Some(declaration), node)?;
                     }
                     InterfaceDefBodyElement::RefDecl(node) => {
                         self.lower_ref_decl(document, Some(declaration), node)?;
@@ -959,6 +974,21 @@ impl SemanticModelBuilder {
         }
         for element in body.members() {
             match &element.value {
+                InterfaceUsageBodyElement::PartUsage(node) => {
+                    self.lower_part_usage(document, Some(declaration), node)?;
+                }
+                InterfaceUsageBodyElement::InterfaceUsage(node) => {
+                    self.lower_interface_usage(document, Some(declaration), node)?
+                }
+                InterfaceUsageBodyElement::AttributeUsage(node) => {
+                    self.lower_attribute_usage(document, Some(declaration), node)?
+                }
+                InterfaceUsageBodyElement::SuccessionUsage(node) => self.lower_succession_usage(
+                    document,
+                    declaration,
+                    UnsupportedFamily::InterfaceDefinitionMember,
+                    node,
+                )?,
                 InterfaceUsageBodyElement::Annotating(member) => {
                     self.lower_annotating_member(
                         document,

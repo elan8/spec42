@@ -17,7 +17,7 @@ package Nested {
     calc def Inner { in x : ScalarValues::Integer; return : ScalarValues::Integer; }
     calc def Outer { in y : ScalarValues::Integer; return : ScalarValues::Integer; }
     part def Box { attribute size : ScalarValues::Integer; }
-    part def Pair { part first : Box; }
+    part def Pair { part 'first' : Box; }
     requirement def Fits { subject box : Box; }
     part def Holder {
         part b : Box;
@@ -63,7 +63,7 @@ package Nested {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c7965be710db0dfad553585df6549439e981b8f6aa7d790b4453a55d7170aa6d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2ae4b7fd08cd4bec9f2127766fc75c5dad70076c25ee1aecdbc21d6ee51c4c31") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/nested_instantiation_expressions.md") (qualified-name "Nested"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/nested_instantiation_expressions.md") (qualified-name "Nested::Box"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -1097,7 +1097,7 @@ package Nested {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer")))))
     )
   )
-  (query (document "memory://snapshot/nested_instantiation_expressions.md") (range (start 4 33) (end 4 36)) (probe (position 4 33))
+  (query (document "memory://snapshot/nested_instantiation_expressions.md") (range (start 4 35) (end 4 38)) (probe (position 4 35))
     (reference (id (source (node (document "memory://snapshot/nested_instantiation_expressions.md") (qualified-name "Nested::Pair::first"))) (kind featureTyping) (ordinal 0) (authored-target "Box")
       (outcome (status resolved) (target (node (document "memory://snapshot/nested_instantiation_expressions.md") (qualified-name "Nested::Box")))))
     )

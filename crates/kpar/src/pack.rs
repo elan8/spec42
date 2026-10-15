@@ -424,7 +424,8 @@ fn package_name_from_strict_ast(
     // parsing here would be a second parse of the same text against an AST this crate would then
     // have to keep in step with the pinned revision. Any diagnostic is a rejection: an archive
     // entry's identity is decided, never recovered.
-    let parsed = syntax.parse_text(source);
+    let parsed =
+        syntax.parse_text_with_language(source, sysml_query::source::SourceLanguage::of_path(path));
     if let Some(error) = parsed.first_error() {
         return Err(KparError::InvalidArchive(format!(
             "source '{path}' failed strict parsing: {}",

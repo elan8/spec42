@@ -19,7 +19,7 @@ package Expressions {
     classifier Thing;
     classifier Holder {
         // Conforming: the metadata access expression names the element it reads.
-        feature meta = Thing.metadata;
+        feature 'meta' = Thing.metadata;
     }
 }
 ~~~
@@ -44,7 +44,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ad41c930181eca64bffc484080a945c6862fb9ca904f48f5774d822a490b410"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ce0e665409d1037baef2c5cdad1db23cd0dc4f42b2fe3536f719309e066915f9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -95,7 +95,7 @@ package Expressions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (range (start 7 23) (end 7 28)) (probe (position 7 23))
+  (query (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (range (start 7 25) (end 7 30)) (probe (position 7 25))
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (kind metadataAccessTarget) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Thing")))))
     )

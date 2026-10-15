@@ -20,7 +20,7 @@ fn multi_file_workspace_validates_with_explicit_workspace_root() {
     fs::write(
         root.join("usage.sysml"),
         r#"package Consumer {
-  import Domain::**;
+  private import Domain::**;
   part def Orbit {
     ref primary : CelestialBody;
   }
@@ -87,7 +87,7 @@ fn multi_file_workspace_validates_when_checking_single_file_with_root() {
     fs::write(
         &usage_path,
         r#"package Usage {
-  import Domain::*;
+  private import Domain::*;
   part def Imported {
     ref branch : Tree;
   }

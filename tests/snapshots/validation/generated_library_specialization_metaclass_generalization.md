@@ -44,6 +44,18 @@ package MetaclassGeneralization {
 (fixture-diagnostics
   (document "memory://snapshot/generated_library_specialization_metaclass_generalization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 11 8) (end 11 21))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml.library/actions.md")
+            (range (start 42 2) (end 47 3))
+          )
+        )
+      )
     )
   )
 )

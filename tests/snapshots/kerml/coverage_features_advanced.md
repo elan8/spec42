@@ -33,7 +33,7 @@ package FeatureAdvancedCoverage {
     namespace NS;
 
     all import C::*;
-    import C::**;
+    private import C::**;
 }
 ~~~
 # DIAGNOSTICS
@@ -129,7 +129,7 @@ package FeatureAdvancedCoverage {
         (severity warning)
         (code "missing_library_context")
         (source "semantic")
-        (range (start 28 11) (end 28 16))
+        (range (start 28 19) (end 28 24))
       )
     )
   )
@@ -138,10 +138,10 @@ package FeatureAdvancedCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:b397749a169c9a19b2b2f8d26c8a2f137902eeb7a88b99686f808badd5e9530d"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:c89577562c5df325451946c57d79c3cf257d7bdb7e6bd6fcf056833d62edbd90"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (membershipImport (reference "C") (import (shape membership) (recursive true))))))
+    (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "C") (import (shape membership) (recursive true))))))
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C::m"))) (kind kerml-feature) (membership (kind owning) (visibility default)) (facts (modifiers member)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "T")))))
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C::port1"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "T")))))
@@ -242,7 +242,7 @@ package FeatureAdvancedCoverage {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/coverage_features_advanced.md") (range (start 28 11) (end 28 16)) (probe (position 28 11))
+  (query (document "memory://snapshot/coverage_features_advanced.md") (range (start 28 19) (end 28 24)) (probe (position 28 19))
     (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "C")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C")))))
     )

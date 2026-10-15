@@ -129,7 +129,7 @@ package StateNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:6e52f8592fa2bd793e86f343f5040d4268c87b9a1d050f38174379070d319706",
+  "modelDigest": "blake3:32a2dd8a42cd7769718b2f6006b0014f154173315b6e9d198431d1b7c0984ed4",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_unresolved.md",

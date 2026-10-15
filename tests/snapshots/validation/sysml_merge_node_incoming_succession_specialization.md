@@ -15,11 +15,11 @@ type=file
 package Model {
     action def Act {
         action before;
-        action after;
-        merge join;
+        action 'after';
+        merge 'join';
 
-        succession incoming first before then join;
-        succession outgoing first join then after;
+        succession incoming first before then 'join';
+        succession outgoing first 'join' then 'after';
     }
 }
 ~~~
@@ -41,7 +41,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:48b592a80199026206aaabceb53753ef077a7970b5f7bc515b0614ea0399e08f") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ada4d0b551e178523f6252ee177c3795a3588b082a75f50f8beaac58480eb2dd") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -226,17 +226,17 @@ package Model {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model::Act::before")))))
     )
   )
-  (query (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (range (start 6 46) (end 6 50)) (probe (position 6 46))
+  (query (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (range (start 6 46) (end 6 52)) (probe (position 6 46))
     (reference (id (source (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model::Act::incoming"))) (kind succession) (ordinal 1) (authored-target "join")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model::Act::join")))))
     )
   )
-  (query (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (range (start 7 34) (end 7 38)) (probe (position 7 34))
+  (query (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (range (start 7 34) (end 7 40)) (probe (position 7 34))
     (reference (id (source (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model::Act::outgoing"))) (kind succession) (ordinal 0) (authored-target "join")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model::Act::join")))))
     )
   )
-  (query (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (range (start 7 44) (end 7 49)) (probe (position 7 44))
+  (query (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (range (start 7 46) (end 7 53)) (probe (position 7 46))
     (reference (id (source (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model::Act::outgoing"))) (kind succession) (ordinal 1) (authored-target "after")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_merge_node_incoming_succession_specialization.md") (qualified-name "Model::Act::after")))))
     )

@@ -22,7 +22,7 @@ package Roles {
     part def Component;
     constraint def Bound;
     requirement def Limited {
-        subject item : Component;
+        subject 'item' : Component;
         require constraint limit : Bound;
     }
 }
@@ -48,7 +48,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6434de41d95d5c695f26756daf5657ed67e3420740d8a701de76ef050ace241a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d6b94576c013e0d3c4284c92913bfc14f12630a8be4bcc12f1491e4bde562bc7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_is_composite.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_is_composite.md") (qualified-name "Roles::Bound"))) (kind constraint-def) (membership (kind owning) (visibility default)))
@@ -101,7 +101,7 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_requirement_constraint_membership_is_composite.md") (range (start 10 23) (end 10 32)) (probe (position 10 23))
+  (query (document "memory://snapshot/sysml_requirement_constraint_membership_is_composite.md") (range (start 10 25) (end 10 34)) (probe (position 10 25))
     (reference (id (source (node (document "memory://snapshot/sysml_requirement_constraint_membership_is_composite.md") (qualified-name "Roles::Limited::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_requirement_constraint_membership_is_composite.md") (qualified-name "Roles::Component")))))
     )

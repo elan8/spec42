@@ -18,13 +18,13 @@ package Roles {
     // Conforming: one objective membership.
     case Good {
         subject s : Component;
-        objective first;
+        objective 'first';
     }
 
     // Invalid: two objective memberships.
     case Bad {
         subject s : Component;
-        objective first;
+        objective 'first';
         objective second;
     }
 }
@@ -42,7 +42,7 @@ package Roles {
         (related-information
           (related
             (uri "memory://snapshot/sysml_case_usage_only_one_objective.md")
-            (range (start 12 8) (end 12 24))
+            (range (start 12 8) (end 12 26))
           )
         )
       )
@@ -63,7 +63,7 @@ package Roles {
         (related-information
           (related
             (uri "memory://snapshot/sysml_case_usage_only_one_objective.md")
-            (range (start 12 8) (end 12 24))
+            (range (start 12 8) (end 12 26))
           )
         )
       )
@@ -74,7 +74,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:daaa821aadc9ac9388a1b2d2ffe6793a993dce1b49b9ffa906ecee95bab17eda"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a4febf66a4db2a98a3b56fd023276b2387490658f00b0b3ba7c76019702bfc91"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Bad"))) (kind case) (membership (kind feature) (visibility default)))

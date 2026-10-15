@@ -26,7 +26,7 @@ package GeneratedAbstractSpecializationMetaclasses {
     feature ratio = 1.5;
     feature label = "text";
     feature nothing = null;
-    feature meta = Thing.metadata;
+    feature 'meta' = Thing.metadata;
     // Literals nested in an operator expression are owned elements of the evaluation site, here
     // Sum's result expression.
     expr Sum { 1 + 2 }
@@ -56,7 +56,7 @@ package GeneratedAbstractSpecializationMetaclasses {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0a4c2dcd34530809b65c9ccc205ee9530ef53041929c0ea25af59c51f7f4e427") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1f4e1448a0e3a3b43c30a17aa2dcf128bb4bf1ac83bc29fe71296b9561c00695") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (qualified-name "GeneratedAbstractSpecializationMetaclasses"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (qualified-name "GeneratedAbstractSpecializationMetaclasses::Sum"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
@@ -553,7 +553,7 @@ package GeneratedAbstractSpecializationMetaclasses {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (range (start 8 19) (end 8 24)) (probe (position 8 19))
+  (query (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (range (start 8 21) (end 8 26)) (probe (position 8 21))
     (reference (id (source (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (path (named (kind package) (name "GeneratedAbstractSpecializationMetaclasses")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (kind metadataAccessTarget) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (qualified-name "GeneratedAbstractSpecializationMetaclasses::Thing")))))
     )

@@ -289,53 +289,6 @@ fn every_multiplicity_carrying_declaration_publishes_it() {
     }
 }
 
-/// The header-level specialization clauses four lowerings used to drop.
-///
-/// `ItemUsage.subsets`, `KermlFeature.references`/`crosses`, `ViewpointUsage.subsets`/
-/// `redefines` and `SubjectDecl.redefines` are all ordinary `SubsettingRelationship`s that the
-/// shared `lower_subsetting_relationship` already maps; only the call was missing. `references`
-/// and `crosses` publish as `unsupported` outcomes, which is the pre-existing treatment of
-/// those two reference kinds -- the point here is that the authored clause reaches the model
-/// at all instead of being silently discarded.
-#[test]
-fn header_specialization_clauses_reach_the_model() {
-    let item = build_semantic_sexpr(
-        "package Demo {\n\titem def Item;\n\titem objects : Item;\n\titem things : Item :> objects;\n}\n",
-    );
-    assert!(
-        item.contains(
-            "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::things\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::objects\")))"
-        ),
-        "expected item usage `:>` to resolve to objects, got:\n{item}"
-    );
-
-    let feature = build_semantic_sexpr(
-        "package Demo {\n\tclassifier C {\n\t\tfeature base;\n\t\tfeature alias references base;\n\t}\n}\n",
-    );
-    assert!(
-        feature.contains("(referenceSubsetting (reference \"base\"))"),
-        "expected the KerML feature `references` clause to publish a reference, got:\n{feature}"
-    );
-
-    let viewpoint = build_semantic_sexpr(
-        "package Demo {\n\tviewpoint base;\n\tviewpoint derived :> base;\n}\n",
-    );
-    assert!(
-        viewpoint.contains(
-            "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::derived\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::base\")))"
-        ),
-        "expected viewpoint usage `:>` to resolve to base, got:\n{viewpoint}"
-    );
-
-    let subject = build_semantic_sexpr(
-        "package Demo {\n\tpart def Vehicle;\n\trequirement def R {\n\t\tsubject vehicle : Vehicle;\n\t}\n\trequirement def S :> R {\n\t\tsubject subVehicle :>> vehicle;\n\t}\n}\n",
-    );
-    assert!(
-        subject.contains("(redefinition (reference \"vehicle\"))"),
-        "expected the subject `:>>` clause to publish a redefinition, got:\n{subject}"
-    );
-}
-
 /// Every declaration kind whose parser node carries a `short_name` publishes it.
 ///
 /// Nine lowerings dropped the `<short>` spelling even though their nodes had the field. The
@@ -1921,7 +1874,7 @@ fn metadata_usage_typed_by_a_metadata_def_resolves() {
     );
 }
 
-/// `import P::**` re-exports the members of `P` and, transitively, the members of every
+/// `private import P::**` re-exports the members of `P` and, transitively, the members of every
 /// publicly-visible namespace nested under it. Before, the recursive suffix parsed and lowered
 /// but name resolution left the reference `Unsupported`, reporting `unsupported_filtered_import`
 /// and cascading every dependent name to `unresolved_*` (#102).
@@ -1946,7 +1899,7 @@ fn recursive_membership_import_brings_nested_namespace_members_into_scope() {
     );
     assert!(
         output.contains("(authored-target \"Rover\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Lib::Inner::Rover\"))))"),
-        "expected `Rover` (nested one namespace deep) to resolve through `import Lib::**`, got:\n{output}"
+        "expected `Rover` (nested one namespace deep) to resolve through `private import Lib::**`, got:\n{output}"
     );
     assert!(
         !build_diagnostics_sexpr(
@@ -1979,7 +1932,7 @@ fn recursive_wildcard_import_resolves_deeply_nested_members() {
     );
     assert!(
         output.contains("(authored-target \"Deep\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Lib::A::B::C::Deep\"))))"),
-        "expected `Deep`, nested four namespaces deep, to resolve through `import Lib::*::**`, got:\n{output}"
+        "expected `Deep`, nested four namespaces deep, to resolve through `private import Lib::*::**`, got:\n{output}"
     );
 }
 
@@ -2006,33 +1959,11 @@ fn recursive_import_does_not_leak_a_private_nested_package() {
     );
     assert!(
         output.contains("(authored-target \"Hidden\")\n      (outcome (status unresolved)"),
-        "a private nested package's member must not enter scope through `import Lib::**`, got:\n{output}"
+        "a private nested package's member must not enter scope through `private import Lib::**`, got:\n{output}"
     );
 }
 
-/// A recursive import spanning documents brings the nested library members into the workspace
-/// scope, the same as a same-document one.
-#[test]
-fn recursive_import_resolves_across_documents() {
-    let published = publication_for(&[
-        (
-            "memory://lib.sysml",
-            "package Lib { package Nested { part def CelestialBody; } }",
-        ),
-        (
-            "memory://model.sysml",
-            "package Model { import Lib::**; part def Orbit { ref primary : CelestialBody; } }",
-        ),
-    ]);
-    let mut output = String::new();
-    published.debug().write_semantic_sexpr(&mut output).unwrap();
-    assert!(
-        output.contains("(authored-target \"CelestialBody\")\n      (outcome (status resolved) (target (node (document \"memory://lib.sysml\") (qualified-name \"Lib::Nested::CelestialBody\"))))"),
-        "expected the cross-document recursive import to resolve `CelestialBody`, got:\n{output}"
-    );
-}
-
-/// A genuinely filtered recursive import (`import P::** [ ... ]`) is still parsed but not
+/// A genuinely filtered recursive import (`private import P::** [ ... ]`) is still parsed but not
 /// semantically supported -- issue #102 keeps that boundary.
 #[test]
 fn filtered_recursive_import_remains_unsupported() {
@@ -2495,7 +2426,7 @@ fn a_view_typed_by_a_non_standard_library_definition_is_reported() {
                 ),
                 SourceInput::new(
                     "memory://test.sysml",
-                    format!("package P {{ import Views::*; view v : {library}; }}"),
+                    format!("package P {{ private import Views::*; view v : {library}; }}"),
                     SourceKind::Workspace,
                 ),
             ],
@@ -2541,7 +2472,7 @@ fn a_view_typed_by_a_workspace_definition_is_never_reported_as_non_standard() {
 /// The library-context hint consumes the host-owned standard-library availability fact.
 #[test]
 fn the_library_context_hint_reads_standard_library_availability() {
-    let workspace = "package P { import Lib::*; part def D :> Missing; }";
+    let workspace = "package P { private import Lib::*; part def D :> Missing; }";
     let codes = |published: PublishedResolution| {
         published
             .document_diagnostics("memory://workspace.sysml")
@@ -3750,7 +3681,7 @@ fn owned_cross_features_are_implied_typed_by_their_owners_effective_types() {
 fn feature_valuations_publish_value_result_endpoints_and_implied_subsetting() {
     let sources = [(
         "memory://feature-valuations.kerml",
-        "package Model { classifier Thing; feature source : Thing; feature inferred = source; feature typed : Thing = source; out feature directed = source; feature defaulted default = source; }",
+        "package Model { classifier Thing; feature source : Thing; feature inferred = source; feature 'typed' : Thing = source; out feature directed = source; feature defaulted default = source; }",
     )];
     let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
     let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
@@ -4451,7 +4382,7 @@ fn namespace_derived_elements_project_canonical_membership_and_import_facts() {
             ),
             (
                 "memory://model.sysml",
-                "package Model { import Library::*; part def Owned; }",
+                "package Model { private import Library::*; part def Owned; }",
             ),
         ],
         ConstructionSchedule::Sequential,
@@ -4495,7 +4426,7 @@ fn namespace_derived_elements_have_cold_warm_and_schedule_parity() {
         ),
         (
             "memory://model.sysml",
-            "package Model { import Library::*; part def Owned; }",
+            "package Model { private import Library::*; part def Owned; }",
         ),
     ];
     let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
@@ -4524,7 +4455,7 @@ fn namespace_import_derived_elements_have_cold_warm_and_schedule_parity() {
         ),
         (
             "memory://model.sysml",
-            "package Model { import Library::*; part def Owned; }",
+            "package Model { private import Library::*; part def Owned; }",
         ),
     ];
     let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
@@ -4588,7 +4519,7 @@ fn effective_typing_preserves_partial_and_inherited_ambiguous_candidates() {
                 "  part def A; part def B;\n",
                 "  package Left { part shared : A; }\n",
                 "  package Right { part shared : B; }\n",
-                "  package Use { import Left::*; import Right::*;\n",
+                "  package Use { private import Left::*; private import Right::*;\n",
                 "    part partial : A, Missing;\n",
                 "    part inherited subsets shared;\n",
                 "  }\n",
@@ -5269,7 +5200,7 @@ fn feature_membership_type_featuring_check_uses_the_manifest_scoped_canonical_ou
     let published = detail_publication(
         &[(
             "memory://model.sysml",
-            "package Model { classifier Vehicle { feature mass; var feature snapshot; } }",
+            "package Model { classifier Vehicle { feature mass; var feature 'snapshot'; } }",
         )],
         ConstructionSchedule::Sequential,
     );
@@ -5311,7 +5242,7 @@ fn type_featuring_derives_through_authored_feature_chaining() {
     let published = detail_publication(
         &[(
             "memory://model.sysml",
-            "package Model { classifier Vehicle { feature base featured by Vehicle; feature derived chains base; } }",
+            "package Model { classifier Vehicle { feature base featured by Vehicle; feature 'derived' chains base; } }",
         )],
         ConstructionSchedule::Sequential,
     );
@@ -5340,7 +5271,7 @@ fn exact_feature_relationship_collections_project_canonical_authored_and_implied
     let published = detail_publication(
         &[ (
             "memory://model.sysml",
-            "package Model { classifier Vehicle { feature base; feature derived : Vehicle redefines base chains base; } }",
+            "package Model { classifier Vehicle { feature base; feature 'derived' : Vehicle redefines base chains base; } }",
         ) ],
         ConstructionSchedule::Sequential,
     );
@@ -5421,7 +5352,7 @@ fn feature_relationship_collections_have_sequential_parallel_and_warm_library_pa
     );
     let workspace = SourceInput::new(
         "memory://model.sysml",
-        "package Model { import Lib::*; classifier Vehicle { feature base; feature derived : Type redefines base chains base; } }".to_string(),
+        "package Model { private import Lib::*; classifier Vehicle { feature base; feature 'derived' : Type redefines base chains base; } }".to_string(),
         SourceKind::Workspace,
     );
     let full = |schedule| {
@@ -5474,7 +5405,7 @@ fn type_relationship_collections_have_sequential_parallel_and_warm_library_parit
     );
     let workspace = SourceInput::new(
         "memory://model.sysml",
-        "package Model { import Lib::*; classifier Derived specializes Base unions Base intersects Base differences Base disjoint from Base; }".to_string(),
+        "package Model { private import Lib::*; classifier Derived specializes Base unions Base intersects Base differences Base disjoint from Base; }".to_string(),
         SourceKind::Workspace,
     );
     let full = |schedule| {
@@ -5629,7 +5560,7 @@ fn type_owned_end_feature_has_sequential_parallel_and_warm_parity() {
 fn definition_usage_derivations_use_canonical_members_and_membership_identities() {
     let sources = [(
         "memory://definition-usage.sysml",
-        "package Model { part def Vehicle { part wheel; action service; } part vehicle; part def Base; part external : Base; variation part def Choice { variant part first : Base; variant external; } variation part choice : Base { variant part second : Base; } }",
+        "package Model { part def Vehicle { part wheel; action service; } part vehicle; part def Base; part external : Base; variation part def Choice { variant part 'first' : Base; variant external; } variation part choice : Base { variant part second : Base; } }",
     )];
     let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
     let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
@@ -6569,7 +6500,7 @@ fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
                     "requirement def Check { ",
                     "subject s : Subject; ",
                     "ref t : Trigger; ",
-                    "require constraint { s.enabled; t.ready; } ",
+                    "require constraint { s.enabled and t.ready } ",
                     "} ",
                     "}",
                 )
@@ -6592,8 +6523,7 @@ fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
             )
         })
         .expect("require constraint");
-    // Each chain is its own result expression; the constraint's body is the first one, which
-    // resolves on its own rather than collapsing the declaration.
+    // Both dotted operands belong to one legal result expression and resolve independently.
     let expression = settled(published.resolved_expression(constraint.identity));
     assert_eq!(
         expression.outcome,
@@ -6602,10 +6532,13 @@ fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
     );
     let root = expression.root.expect("body root");
     match &expression.nodes[root as usize].kind {
-        ExpressionNodeKind::FeatureReference {
-            symbol: Some(_), ..
-        } => {}
-        other => panic!("expected a resolved dotted-chain body, got {other:?}"),
+        ExpressionNodeKind::Operator {
+            operator: ExpressionOperator::And,
+            operands,
+        } => {
+            assert_eq!(operands.len(), 2);
+        }
+        other => panic!("expected a resolved binary body, got {other:?}"),
     }
 }
 
@@ -6725,5 +6658,74 @@ fn redefined_derivation_ends_name_the_standard_features_and_prefix_metadata_inve
         }),
         "redefined derived end target: {:?}",
         placed_derived.redefinition.targets
+    );
+}
+
+/// A recursive import spanning documents brings the nested library members into the workspace
+/// scope, the same as a same-document one.
+#[test]
+fn recursive_import_resolves_across_documents() {
+    let published = publication_for(&[
+        (
+            "memory://lib.sysml",
+            "package Lib { package Nested { part def CelestialBody; } }",
+        ),
+        (
+            "memory://model.sysml",
+            "package Model { private import Lib::**; part def Orbit { ref primary : CelestialBody; } }",
+        ),
+    ]);
+    let mut output = String::new();
+    published.debug().write_semantic_sexpr(&mut output).unwrap();
+    assert!(
+        output.contains("(authored-target \"CelestialBody\")\n      (outcome (status resolved) (target (node (document \"memory://lib.sysml\") (qualified-name \"Lib::Nested::CelestialBody\"))))"),
+        "expected the cross-document recursive import to resolve `CelestialBody`, got:\n{output}"
+    );
+}
+
+/// The header-level specialization clauses four lowerings used to drop.
+///
+/// `ItemUsage.subsets`, `KermlFeature.references`/`crosses`, `ViewpointUsage.subsets`/
+/// `redefines` and `SubjectDecl.redefines` are all ordinary `SubsettingRelationship`s that the
+/// shared `lower_subsetting_relationship` already maps; only the call was missing. `references`
+/// and `crosses` publish as `unsupported` outcomes, which is the pre-existing treatment of
+/// those two reference kinds -- the point here is that the authored clause reaches the model
+/// at all instead of being silently discarded.
+#[test]
+fn header_specialization_clauses_reach_the_model() {
+    let item = build_semantic_sexpr(
+        "package Demo {\n\titem def Item;\n\titem objects : Item;\n\titem things : Item :> objects;\n}\n",
+    );
+    assert!(
+        item.contains(
+            "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::things\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::objects\")))"
+        ),
+        "expected item usage `:>` to resolve to objects, got:\n{item}"
+    );
+
+    let feature = build_semantic_sexpr(
+        "package Demo {\n\tclassifier C {\n\t\tfeature base;\n\t\tfeature aliased references base;\n\t}\n}\n",
+    );
+    assert!(
+        feature.contains("(referenceSubsetting (reference \"base\"))"),
+        "expected the KerML feature `references` clause to publish a reference, got:\n{feature}"
+    );
+
+    let viewpoint = build_semantic_sexpr(
+        "package Demo {\n\tviewpoint base;\n\tviewpoint refined :> base;\n}\n",
+    );
+    assert!(
+        viewpoint.contains(
+            "(kind subsetting) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::refined\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::base\")))"
+        ),
+        "expected viewpoint usage `:>` to resolve to base, got:\n{viewpoint}"
+    );
+
+    let subject = build_semantic_sexpr(
+        "package Demo {\n\tpart def Vehicle;\n\trequirement def R {\n\t\tsubject vehicle : Vehicle;\n\t}\n\trequirement def S :> R {\n\t\tsubject subVehicle :>> vehicle;\n\t}\n}\n",
+    );
+    assert!(
+        subject.contains("(redefinition (reference \"vehicle\"))"),
+        "expected the subject `:>>` clause to publish a redefinition, got:\n{subject}"
     );
 }

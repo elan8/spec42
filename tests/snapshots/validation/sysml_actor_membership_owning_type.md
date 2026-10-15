@@ -21,7 +21,7 @@ package Roles {
 
     // Conforming: the actor membership is owned by a requirement definition.
     requirement def Good {
-        subject item : Component;
+        subject 'item' : Component;
         actor operator : Component;
     }
 }
@@ -38,7 +38,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:493dc6376287ad1e1acd34b8c601b86a28a6dc6a27b7a7e6fa61505908647f3f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e4daa7965ff0c08589164b5f8743be7a9983ce3b681c21b67efb0a5881cefa14"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -88,7 +88,7 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_actor_membership_owning_type.md") (range (start 8 23) (end 8 32)) (probe (position 8 23))
+  (query (document "memory://snapshot/sysml_actor_membership_owning_type.md") (range (start 8 25) (end 8 34)) (probe (position 8 25))
     (reference (id (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Component")))))
     )

@@ -16,20 +16,20 @@ package MetadataAnnotationBody {
     }
 
     metadata def EngineeringConcern {
-        attribute concern : ConcernKind;
+        attribute 'concern' : ConcernKind;
         attribute score : Score;
     }
 
     // Conforming: `concern` binds to `EngineeringConcern::concern` (redefinition) and
     // `purpose` resolves against its type `ConcernKind`.
     part def Annotated {
-        @EngineeringConcern { concern = purpose; }
+        @EngineeringConcern { 'concern' = purpose; }
     }
 
     // Conforming: a nested metadata body redefines a feature of the redefined feature's type.
     part def NestedAnnotated {
         @EngineeringConcern {
-            concern = structure;
+            'concern' = structure;
             score { weight = purpose; }
         }
     }
@@ -86,7 +86,7 @@ package MetadataAnnotationBody {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6ee408111c13dded85b25c9ba8e4c0c535702a1a10de5d1651d9411275d85a89"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c861e767f6277c27cdff66ed1c129616bd3c5ca6cad00992dd4833f836054822"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::Annotated"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -367,12 +367,12 @@ package MetadataAnnotationBody {
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::EngineeringConcern")))))
     )
   )
-  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 18 30) (end 18 37)) (probe (position 18 30))
+  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 18 30) (end 18 39)) (probe (position 18 30))
     (reference (id (source (node (document "memory://snapshot/metadata_annotation_body_references.md") (path (named (kind package) (name "MetadataAnnotationBody")) (named (kind part-def) (name "Annotated")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "concern"))))) (kind redefinition) (ordinal 0) (authored-target "concern")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::EngineeringConcern::concern")))))
     )
   )
-  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 18 40) (end 18 47)) (probe (position 18 40))
+  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 18 42) (end 18 49)) (probe (position 18 42))
     (reference (id (source (node (document "memory://snapshot/metadata_annotation_body_references.md") (path (named (kind package) (name "MetadataAnnotationBody")) (named (kind part-def) (name "Annotated")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "concern")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "purpose")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::ConcernKind::purpose")))))
     )
@@ -397,7 +397,7 @@ package MetadataAnnotationBody {
       (outcome (status unresolved)))
     )
   )
-  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 11 28) (end 11 39)) (probe (position 11 28))
+  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 11 30) (end 11 41)) (probe (position 11 30))
     (reference (id (source (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::EngineeringConcern::concern"))) (kind featureTyping) (ordinal 0) (authored-target "ConcernKind")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::ConcernKind")))))
     )
@@ -417,12 +417,12 @@ package MetadataAnnotationBody {
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::EngineeringConcern")))))
     )
   )
-  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 24 12) (end 24 19)) (probe (position 24 12))
+  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 24 12) (end 24 21)) (probe (position 24 12))
     (reference (id (source (node (document "memory://snapshot/metadata_annotation_body_references.md") (path (named (kind package) (name "MetadataAnnotationBody")) (named (kind part-def) (name "NestedAnnotated")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "concern"))))) (kind redefinition) (ordinal 0) (authored-target "concern")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::EngineeringConcern::concern")))))
     )
   )
-  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 24 22) (end 24 31)) (probe (position 24 22))
+  (query (document "memory://snapshot/metadata_annotation_body_references.md") (range (start 24 24) (end 24 33)) (probe (position 24 24))
     (reference (id (source (node (document "memory://snapshot/metadata_annotation_body_references.md") (path (named (kind package) (name "MetadataAnnotationBody")) (named (kind part-def) (name "NestedAnnotated")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "concern")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "structure")
       (outcome (status resolved) (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::ConcernKind::structure")))))
     )
