@@ -10,7 +10,6 @@ import { KPAR_LIBRARIES_DEFAULTS, kparLibraryDefaults } from "../../generated/kp
 import { STANDARD_LIBRARY_DEFAULTS } from "../../generated/standardLibraryDefaults";
 
 const DOMAIN_LIBRARIES_DEFAULTS = kparLibraryDefaults("domain")!;
-const METHOD_LIBRARIES_DEFAULTS = kparLibraryDefaults("method")!;
 
 describe("libraryStatusViewModel", () => {
   it("summarizes standard, domain, and custom library packages", () => {
@@ -98,7 +97,7 @@ describe("libraryStatusViewModel", () => {
     assert.strictEqual(rows[0].importStatement, "public import Domain::Vehicle;");
   });
 
-  it("builds dashboard status with domain and method KPAR sections", () => {
+  it("builds dashboard status with a domain KPAR section", () => {
     const status = buildLibraryDashboardStatus({
       pinnedVersion: STANDARD_LIBRARY_DEFAULTS.version,
       format: STANDARD_LIBRARY_DEFAULTS.format,
@@ -116,16 +115,6 @@ describe("libraryStatusViewModel", () => {
           sourceKind: "bundled",
           pinnedVersion: DOMAIN_LIBRARIES_DEFAULTS.version,
           installedVersion: DOMAIN_LIBRARIES_DEFAULTS.version,
-          isInstalled: true,
-          versionMatches: true,
-        },
-        {
-          id: "method",
-          displayName: METHOD_LIBRARIES_DEFAULTS.displayName,
-          resolvedPath: "C:/data/kpar-libraries/method/versions/0.1.1",
-          sourceKind: "bundled",
-          pinnedVersion: METHOD_LIBRARIES_DEFAULTS.version,
-          installedVersion: METHOD_LIBRARIES_DEFAULTS.version,
           isInstalled: true,
           versionMatches: true,
         },
@@ -154,14 +143,11 @@ describe("libraryStatusViewModel", () => {
     assert.strictEqual(status.stdlib.format, STANDARD_LIBRARY_DEFAULTS.format);
     assert.strictEqual(status.stdlib.packageCount, 1);
     assert.strictEqual(status.stdlib.symbolCount, 10);
-    assert.strictEqual(status.kparLibraries.length, 2);
+    assert.strictEqual(status.kparLibraries.length, 1);
     assert.strictEqual(status.kparLibraries[0].id, "domain");
     assert.strictEqual(status.kparLibraries[0].pinnedVersion, DOMAIN_LIBRARIES_DEFAULTS.version);
     assert.strictEqual(status.kparLibraries[0].available, true);
     assert.strictEqual(status.kparLibraries[0].packageCount, 3);
-    assert.strictEqual(status.kparLibraries[1].id, "method");
-    assert.strictEqual(status.kparLibraries[1].pinnedVersion, METHOD_LIBRARIES_DEFAULTS.version);
-    assert.strictEqual(status.kparLibraries[1].available, true);
     assert.strictEqual(status.domain.pinnedVersion, DOMAIN_LIBRARIES_DEFAULTS.version);
     assert.strictEqual(status.custom.packageCount, 2);
     assert.deepStrictEqual(status.custom.missingPaths, ["C:/libs/missing"]);
@@ -261,7 +247,7 @@ describe("libraryStatusViewModel", () => {
     assert.strictEqual(mylib!.sourceKind, "custom");
     assert.strictEqual(mylib!.available, true);
     assert.strictEqual(mylib!.resolvedPath, "C:/libs/mylib");
-    // domain/method headings are still present alongside the ad-hoc entry.
+    // The pinned library headings are still present alongside the ad-hoc entry.
     assert.strictEqual(status.kparLibraries.length, KPAR_LIBRARIES_DEFAULTS.length + 1);
   });
 });

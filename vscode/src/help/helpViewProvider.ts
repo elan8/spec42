@@ -56,9 +56,9 @@ export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
         "link"
       ),
       new HelpItem(
-        "Domain & method libraries",
+        "Domain libraries",
         "link-external",
-        { command: "vscode.open", title: "Open Domain & Method Libraries", arguments: [vscode.Uri.parse("https://github.com/elan8/spec42/blob/HEAD/docs/user/LIBRARIES.md")] },
+        { command: "vscode.open", title: "Open Domain Libraries", arguments: [vscode.Uri.parse("https://github.com/elan8/spec42/blob/HEAD/docs/user/LIBRARIES.md")] },
         "link"
       ),
       new HelpItem(

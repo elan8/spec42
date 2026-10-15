@@ -67,13 +67,9 @@ runs:
       shell: bash
       run: |
         DOMAIN_VERSION=$(node -p "require('./config/libraries/domain.json').version")
-        METHOD_VERSION=$(node -p "require('./config/libraries/method.json').version")
         echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${DOMAIN_VERSION}" >> "$GITHUB_ENV"
-        echo "SPEC42_METHOD_LIBRARIES_VERSION=${METHOD_VERSION}" >> "$GITHUB_ENV"
         echo "SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN=${{ github.workspace }}/.cache/elan8-domain-libraries-${DOMAIN_VERSION}.kpar" >> "$GITHUB_ENV"
-        echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> "$GITHUB_ENV"
         echo "domain=${DOMAIN_VERSION}" >> "$GITHUB_OUTPUT"
-        echo "method=${METHOD_VERSION}" >> "$GITHUB_OUTPUT"
 
     - name: Restore KPAR library bundles cache
       uses: actions/cache/restore@v5
@@ -81,8 +77,7 @@ runs:
       with:
         path: |
           .cache/elan8-domain-libraries-${{ steps.kpar.outputs.domain }}.kpar
-          .cache/elan8-method-libraries-${{ steps.kpar.outputs.method }}.kpar
-        key: kpar-libraries-domain-${{ steps.kpar.outputs.domain }}-method-${{ steps.kpar.outputs.method }}
+        key: kpar-libraries-domain-${{ steps.kpar.outputs.domain }}
 
     - name: Fetch KPAR library bundles
       if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
@@ -95,5 +90,4 @@ runs:
       with:
         path: |
           .cache/elan8-domain-libraries-${{ steps.kpar.outputs.domain }}.kpar
-          .cache/elan8-method-libraries-${{ steps.kpar.outputs.method }}.kpar
-        key: kpar-libraries-domain-${{ steps.kpar.outputs.domain }}-method-${{ steps.kpar.outputs.method }}
+        key: kpar-libraries-domain-${{ steps.kpar.outputs.domain }}

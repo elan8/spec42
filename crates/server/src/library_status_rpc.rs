@@ -233,28 +233,28 @@ mod tests {
     #[test]
     fn kpar_dto_marks_bundled_path_available() {
         let config = KparLibraryConfig {
-            id: "method".to_string(),
-            display_name: "Method libraries".to_string(),
+            id: "domain".to_string(),
+            display_name: "Domain libraries".to_string(),
             version: "0.2.0".to_string(),
             repo: EMBEDDED_KPAR_LIBRARY_REPO.to_string(),
             content_path: String::new(),
             format: "kpar".to_string(),
-            artifact: Some("elan8-method-libraries-0.2.0.kpar".to_string()),
+            artifact: Some("elan8-domain-libraries-0.2.0.kpar".to_string()),
             resource: None,
         };
-        let paths = kpar_library_paths_from_data_dir(std::path::Path::new("/tmp/data"), "method");
+        let paths = kpar_library_paths_from_data_dir(std::path::Path::new("/tmp/data"), "domain");
         let component = KparLibraryComponent {
-            id: "method".to_string(),
-            display_name: "Method libraries".to_string(),
+            id: "domain".to_string(),
+            display_name: "Domain libraries".to_string(),
             path: Some(std::path::PathBuf::from(
-                "/tmp/data/kpar-libraries/method/versions/0.2.0",
+                "/tmp/data/kpar-libraries/domain/versions/0.2.0",
             )),
             source: Some("bundled".to_string()),
             config,
             paths,
         };
         let dto = build_kpar_dto(&component).expect("dto");
-        assert_eq!(dto.id, "method");
+        assert_eq!(dto.id, "domain");
         assert_eq!(dto.pinned_version, "0.2.0");
         assert_eq!(dto.source_kind, "bundled");
         assert!(dto.available);
