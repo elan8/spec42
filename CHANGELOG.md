@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The editor opens an interconnection view one part at a time (#262).** It drew every level
+  of parts. It now starts with the exposed parts and their direct parts closed; a part with parts
+  of its own carries the `+` / `-` control the general view has, and a connector ending inside a
+  closed part ends on a proxy at its boundary. `spec42 diagram` output is unchanged.
+- **Interconnection views follow the notation (#262).** A port shows the direction of its
+  directed features and those of its definitions, reversed by a conjugated typing; the derived
+  direction is a lowering fact kept apart from the authored one. A flow between features of two
+  ports is drawn between those ports, with its item. Names and port labels are written in full,
+  and a conjugated port is labelled `name : ~Type`.
+- **General views follow the notation (#262).** Compartment labels are centred, italic and lower
+  case, with `…` for members left out; a long member list continues in columns; typing,
+  subsetting and specialization lines go around boxes instead of through them.
+- **Diagram product and generator ABI (#262).** A diagram node carries `featureDirection`;
+  `DiagramElement` gains `feature_direction`, which changes the compatibility token again.
+
 - **Action flow views show the whole flow (#262).** Only `first a then b;` between two named
   actions was drawn. Now drawn as well:
   - the `then` shorthand. Its succession starts at the nearest occurrence usage written before it
