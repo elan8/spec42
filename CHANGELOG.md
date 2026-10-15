@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Action flow views show the whole flow (#262).** Only `first a then b;` between two named
+  actions was drawn. Now drawn as well:
+  - the `then` shorthand. Its succession starts at the nearest occurrence usage written before it
+    (SysML 7.17.4), settled where the body is lowered and published to the diagram projection;
+  - start and done nodes; decision, merge, fork and join nodes; accept, send, perform,
+    assignment, if and loop actions. Kinds the generator vocabulary has no name for take their
+    notation role from the metamodel instead of `unsupported`;
+  - parameters on the boundary of their action, inherited ones included, and flows between the
+    actions that own two parameters. Accept and send actions carry their flags; a send action
+    was drawn as a final node;
+  - conditional successions with their guard in brackets, and `[else]`.
+- **Two lowering corrections (#262).** `if g then x; else y;` without braces is a guarded and a
+  default target succession of the body it is written in (8.2.2.17.8), not an `IfActionUsage`;
+  `if g { … } else { … }` is unchanged. `then accept …;` is the anonymous `AcceptActionUsage` it
+  declares, not a trigger on the enclosing action. No diagnostics change.
+- **State transition views show state actions and nested states (#262).** Entry, do and exit
+  actions are listed in a `state actions` compartment; a state that owns states shows them,
+  their transitions and its initial node inside it. Three or more transitions with one trigger
+  into one state share a line and one label. Both behaviour views are drawn in a frame carrying
+  the view's name, and action flows and sequences are spaced by the labels they hold.
+- **Diagram product and generator ABI (#262).** A diagram node carries `stateSubaction` and
+  `successionGuard`, and `direction` is set for every directed feature; `schemaVersion` stays 5.
+  `DiagramElement` gains `state_subaction` and `succession_guard`, which changes the
+  compatibility token: **a generator plugin built against 0.55.0 must be rebuilt.**
+
 - **Malformed textual notation is diagnosed precisely.** Unquoted reserved declaration names,
   bare imports, and semicolons terminating result expressions produce parser diagnostics.
   Quoted names remain valid, malformed names remain unresolved, and parsing and cache identity
