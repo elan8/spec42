@@ -1530,6 +1530,7 @@ fn prepare_interconnection_scene(scene: &Value, visualization: &Value) -> Value 
                     "sourceExpression": field(edge, "sourceExpression"),
                     "targetExpression": field(edge, "targetExpression"),
                     "relationType": field(edge, "kind"),
+                    "itemType": field(edge, "itemType"),
                     "canonicalScene": true,
                 },
             })
@@ -1730,6 +1731,7 @@ fn is_interconnection_edge_kind(kind: &str) -> bool {
 
 type NavigationFn<'a> = Box<dyn Fn(&Value) -> Value + 'a>;
 
+#[allow(clippy::too_many_arguments)]
 fn prepare_interconnection_from_typed_projection(
     name: &str,
     nodes: &[Value],
@@ -1737,6 +1739,7 @@ fn prepare_interconnection_from_typed_projection(
     exposed_roots: &Value,
     metadata: &Value,
     references: &[Value],
+    relationships: &[Value],
     navigation: &NavigationFn<'_>,
 ) -> Value {
     let scene = interconnection_scene_from_typed_projection(
@@ -1746,6 +1749,7 @@ fn prepare_interconnection_from_typed_projection(
         exposed_roots,
         metadata,
         references,
+        relationships,
         navigation,
     );
     let mut prepared = prepare_interconnection_scene(&scene, &json!({ "selectedViewName": name }));
@@ -1792,6 +1796,7 @@ fn prepare_interconnection_from_typed_projection(
     prepared
 }
 
+#[allow(clippy::too_many_arguments)]
 fn interconnection_scene_from_typed_projection(
     name: &str,
     raw_nodes: &[Value],
@@ -1799,6 +1804,7 @@ fn interconnection_scene_from_typed_projection(
     exposed_roots: &Value,
     metadata: &Value,
     references: &[Value],
+    relationships: &[Value],
     navigation: &NavigationFn<'_>,
 ) -> Value {
     let index_set = |value: &Value| -> HashSet<usize> {
@@ -1933,7 +1939,12 @@ fn interconnection_scene_from_typed_projection(
                 "ownerNodeId": id_for(owner),
                 "name": as_string(field(element, "name"), &id_for(index)),
                 "typeName": type_name(element),
-                "direction": field(element, "direction").as_str().map(str::to_string),
+                // The arrow in a port's square shows the direction written on the port, or
+                // else the one its directed features give it (SysML 8.2.3.12).
+                "direction": field(element, "direction")
+                    .as_str()
+                    .or_else(|| field(element, "featureDirection").as_str())
+                    .map(str::to_string),
                 "conjugated": field(element, "conjugated") == &json!(true),
                 "sideHint": "",
                 "uri": uri,
@@ -1988,12 +1999,52 @@ fn interconnection_scene_from_typed_projection(
                             .map(str::to_owned)
                             .or_else(|| type_name(origin).map(|types| format!(": {types}")))
                     })
+            } else if normalize_edge_kind(&kind) == "flow" {
+                // SysML 8.2.3.13: a flow is shown with the item that flows, after the name of
+                // the flow when it has one.
+                let origin = field(edge, "origin").as_u64();
+                let name = origin
+                    .and_then(|origin| raw_nodes.get(origin as usize))
+                    .and_then(|origin| field(origin, "name").as_str())
+                    .filter(|name| !name.trim().is_empty());
+                let item = relationships
+                    .iter()
+                    .find(|relationship| {
+                        field(relationship, "source").as_u64() == origin
+                            && field(relationship, "kind") == "flowPayloadType"
+                    })
+                    .and_then(|relationship| {
+                        let target = field(relationship, "target");
+                        field(target, "node")
+                            .as_u64()
+                            .and_then(|node| raw_nodes.get(node as usize))
+                            .and_then(|node| field(node, "name").as_str())
+                            .map(str::to_owned)
+                            .or_else(|| {
+                                field(target, "reference")
+                                    .as_u64()
+                                    .and_then(|index| references.get(index as usize))
+                                    .map(|reference| {
+                                        as_string(field(reference, "qualifiedName"), "")
+                                    })
+                                    .and_then(|name| name.rsplit("::").next().map(str::to_owned))
+                            })
+                    })
+                    .filter(|item| !item.is_empty());
+                match (name, item) {
+                    (Some(name), Some(item)) => Some(format!("{name} : {item}")),
+                    (Some(name), None) => Some(name.to_owned()),
+                    (None, Some(item)) => Some(item),
+                    (None, None) => None,
+                }
             } else {
                 None
             };
             Some(json!({
                 "id": format!("e:{index}"),
                 "kind": kind,
+                // What a flow shows is its item, which the drawing reads apart from a name.
+                "itemType": if normalize_edge_kind(&kind) == "flow" { label.clone() } else { None },
                 "label": label,
                 "sourcePortId": source.1,
                 "targetPortId": target.1,
@@ -3039,6 +3090,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
             field(projection, "exposedRoots"),
             field(projection, "metadata"),
             &references,
+            as_array(field(projection, "relationships")),
             &navigation,
         )));
     }

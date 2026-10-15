@@ -1,5 +1,6 @@
-//! The JSON dispatcher must accept every dumped fixture shape and produce the same SVG the
-//! per-view parity tests already check against the real TS/D3 output.
+//! The JSON dispatcher must accept every dumped fixture shape and produce the SVG checked in
+//! beside it. The rendered fixtures began as the output of the former TS/D3 renderer and are
+//! now maintained from this one.
 
 use std::path::Path;
 
@@ -14,9 +15,19 @@ fn fixture(name: &str) -> String {
 
 fn assert_dispatcher_matches_rendered(input_name: &str, rendered_name: &str) {
     let input = fixture(input_name);
-    let rendered = fixture(rendered_name);
     let actual = render_svg_from_str(&input, 1280.0, 900.0)
         .unwrap_or_else(|err| panic!("dispatcher failed on {input_name}: {err}"));
+    // After an intended change to the drawing, `DIAGRAM_DRAW_UPDATE_FIXTURES=1 cargo test -p
+    // diagram_draw --test draw_input` rewrites the rendered fixtures; review the diff.
+    if std::env::var_os("DIAGRAM_DRAW_UPDATE_FIXTURES").is_some() {
+        let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+        std::fs::write(
+            manifest_dir.join(format!("tests/fixtures/{rendered_name}")),
+            &actual,
+        )
+        .unwrap_or_else(|err| panic!("failed to write {rendered_name}: {err}"));
+    }
+    let rendered = fixture(rendered_name);
     assert_eq!(
         xml::parse(&actual),
         xml::parse(&rendered),

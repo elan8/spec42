@@ -8,7 +8,7 @@ use serde_json::{json, Map, Value};
 use crate::graph_normalization::{
     is_connector_usage_element_type, is_overview_visual_element_type, normalize_edge_kind,
 };
-use crate::ibd_ports::{ibd_port_label_text, ibd_port_label_width};
+use crate::ibd_ports::{ibd_port_detail_label, ibd_port_label_width};
 use crate::ibd_route::{lca_offset_for_nodes, resolve_ibd_route_points};
 use crate::json_util::{as_array, as_object, as_string, field};
 use crate::sysml_node::{
@@ -649,6 +649,17 @@ fn hierarchy_general_layout(
                 let (Some(from), Some(to)) = (rect(&source), rect(&target)) else {
                     return edge.clone();
                 };
+                // A line that is not part of the tree goes around the boxes between its ends.
+                let others: Vec<crate::ortho_route::Rect> = order
+                    .iter()
+                    .filter(|id| **id != source && **id != target)
+                    .filter_map(|id| rect(id))
+                    .collect();
+                if let Some(route) = crate::ortho_route::route(from, to, &others, 8.0) {
+                    let mut out = edge.clone();
+                    out["layout"] = json!({ "sections": [section(&route)] });
+                    return out;
+                }
                 let from_x = from.0 + from.2 / 2.0;
                 let to_x = to.0 + to.2 / 2.0;
                 if (from.1 - to.1).abs() < 1.0 {
@@ -1135,6 +1146,68 @@ fn layout_nested_behavior(
         header: 0.0,
     };
     place(top, 80.0 - min_x, 80.0 - min_y, &mut levels, &mut out);
+    // An edge between two levels, such as a transition from a nested state to a state outside
+    // its owner, was not routed at either level. It goes around the boxes on its way, crossing
+    // only the boundaries of the containers its ends are in.
+    let rect_of = |id: &str| -> Option<crate::ortho_route::Rect> {
+        let rect = out.positions.get(id)?;
+        Some((
+            num(field(rect, "x")),
+            num(field(rect, "y")),
+            num(field(rect, "width")),
+            num(field(rect, "height")),
+        ))
+    };
+    let container_of = |id: &str| -> Option<String> {
+        nodes
+            .iter()
+            .find(|node| as_string(field(node, "id"), "") == id)
+            .map(|node| as_string(field(field(node, "attributes"), "containerId"), ""))
+            .filter(|container| ids.contains(container))
+    };
+    let ancestors = |id: &str| -> HashSet<String> {
+        let mut found = HashSet::new();
+        let mut current = id.to_owned();
+        while let Some(container) = container_of(&current) {
+            if !found.insert(container.clone()) {
+                break;
+            }
+            current = container;
+        }
+        found
+    };
+    let mut crossing = Vec::new();
+    for edge in as_array(field(prepared, "edges")) {
+        let id = as_string(field(edge, "id"), "");
+        let source = as_string(field(edge, "source"), "");
+        let target = as_string(field(edge, "target"), "");
+        if out.sections.contains_key(&id) || source == target {
+            continue;
+        }
+        let (Some(from), Some(to)) = (rect_of(&source), rect_of(&target)) else {
+            continue;
+        };
+        let mut around = ancestors(&source);
+        around.extend(ancestors(&target));
+        around.extend([source.clone(), target.clone()]);
+        let boxes: Vec<crate::ortho_route::Rect> = ids
+            .iter()
+            .filter(|other| !around.contains(*other))
+            .filter_map(|other| rect_of(other))
+            .collect();
+        if let Some(route) = crate::ortho_route::route(from, to, &boxes, 10.0) {
+            let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
+            crossing.push((
+                id,
+                json!([{
+                    "startPoint": point(&route[0]),
+                    "bendPoints": route[1..route.len() - 1].iter().map(point).collect::<Vec<_>>(),
+                    "endPoint": point(&route[route.len() - 1]),
+                }]),
+            ));
+        }
+    }
+    out.sections.extend(crossing);
     Ok(Some(json!({
         "positions": out.positions,
         "edgeSectionsById": out.sections,
@@ -1705,7 +1778,11 @@ struct PortUsage {
 /// a part never moves in front of a sibling that feeds it.
 ///
 /// The pinned `elkrs` reads `elk.partitioning.activate` on the top-level graph only, so today
-/// this spreads the roots of a view and not yet the parts inside one container.
+/// this spreads the roots of a view and not yet the parts inside one container. Reading it for
+/// nested graphs as well is not enough: with that change `elkrs` refuses a container whose
+/// parts connect to its boundary ("layer constraint set to FIRST, but has at least one
+/// incoming edge"), which is the case this is for, and a container it does accept came out
+/// wider. The partitions need to take the boundary connectors into account first.
 fn spread_crowded_layers(graph: &mut Value) {
     let edges: Vec<(String, String)> = as_array(field(graph, "edges"))
         .iter()
@@ -2081,7 +2158,8 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
 
     // Two parts that face each other are far enough apart for a visible run of connector, the
     // labels of their facing ports, and the longest connector name set beside its line with
-    // clear space to both parts. Unnamed connectors need only the first two.
+    // clear space to both parts. Unnamed connectors need only the first two: the layout adds
+    // the width of the port labels to this gap, and they sit beside the line, not on it.
     let layer_gap = {
         const GENERIC: [&str; 7] = [
             "",
@@ -2100,7 +2178,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             .max();
         match longest_name {
             Some(characters) => (characters as f64 * 6.5 + 10.0 + 44.0).max(88.0),
-            None => 88.0,
+            None => 48.0,
         }
     };
     let root_header_height = 28.0;
@@ -2149,14 +2227,21 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let is_synthetic_package = field(attrs, "isSyntheticPackage") == &json!(true);
         let is_container =
             field(attrs, "isSyntheticContainer") == &json!(true) || !children.is_empty();
-        // A part is as wide as its name and its type need. The drawing truncates a name and a
-        // type at 32 characters.
-        let characters = |text: &str| text.encode_utf16().count().min(32) as f64;
+        // A part is as wide as its name and its type need; both are written in full.
+        let characters = |text: &str| text.encode_utf16().count() as f64;
         let label_width = characters(&as_string(field(node, "label"), "")) * 6.8;
         let type_width = (characters(&as_string(field(attrs, "partType"), "")) + 2.0) * 5.4;
         let base_width: f64 = if is_container { 220.0 } else { 132.0 };
+        // The expand control sits left of the centred name, which keeps clear of it on both sides.
+        let control_reserve = if field(attrs, "disclosure").is_string() {
+            2.0 * crate::sysml_node::DISCLOSURE_TARGET_SIZE
+        } else {
+            0.0
+        };
         // Port labels sit outside the part, so they do not make it wider.
-        let width = base_width.max(label_width.max(type_width) + 28.0).ceil();
+        let width = base_width
+            .max(label_width.max(type_width) + 28.0 + control_reserve)
+            .ceil();
         let mut height = if is_container {
             root_header_height + 72.0
         } else {
@@ -2181,7 +2266,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         };
         let build_elk_port = |port: &PreparedPort, side: &str, index: usize| {
             let id = port_id_for(&as_string(field(node, "id"), ""), &port.name);
-            let label_text = ibd_port_label_text(&port.name);
+            let label_text = ibd_port_detail_label(&port.raw);
             json!({
                 "id": id,
                 "width": 10,

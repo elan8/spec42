@@ -12,6 +12,7 @@ use crate::node_notation::{
     NodeBodyOptions,
 };
 use crate::svg::Element;
+use crate::sysml_node::{Region, DISCLOSURE_TARGET_SIZE};
 use crate::theme::Theme;
 use crate::types::{
     attr_bool, attr_text, InterconnectionLayoutNodeDto, LaidOutNode, IBD_NODE_HEIGHT,
@@ -134,6 +135,26 @@ pub fn render_ibd_node(
             .style("fill", theme.panel_background),
     ];
 
+    // A part with parts of its own that the reader can open or close (see `nesting`).
+    let disclosure = match attr_text(&node.attributes, "disclosure").as_str() {
+        "expanded" => Some(true),
+        "collapsed" => Some(false),
+        _ => None,
+    };
+    let disclosure_control = disclosure.map(|expanded| {
+        crate::sysml_node::disclosure_control(
+            &Region {
+                x: 2.0,
+                y: 2.0,
+                width: DISCLOSURE_TARGET_SIZE,
+                height: DISCLOSURE_TARGET_SIZE,
+            },
+            expanded,
+            &node.label,
+            theme,
+        )
+    });
+
     if is_container {
         children.push(
             Element::new("text")
@@ -145,6 +166,7 @@ pub fn render_ibd_node(
                 .style("font-weight", "bold")
                 .style("fill", theme.text_primary),
         );
+        children.extend(disclosure_control);
         let ports = draw_ibd_ports(node, width, header_height, theme, layout_node);
         return IbdNodeRender { children, ports };
     }
@@ -169,7 +191,7 @@ pub fn render_ibd_node(
             .attr_f("x", width / 2.0)
             .attr_f("y", 31.0)
             .attr("text-anchor", "middle")
-            .text(truncate(&node.label, 32))
+            .text(node.label.clone())
             .style("font-size", "11px")
             .style("font-weight", "bold")
             .style("fill", theme.text_primary),
@@ -182,7 +204,7 @@ pub fn render_ibd_node(
                 .attr_f("x", width / 2.0)
                 .attr_f("y", 43.0)
                 .attr("text-anchor", "middle")
-                .text(format!(": {}", truncate(&typed_by, 32)))
+                .text(format!(": {typed_by}"))
                 .style("font-size", "10px")
                 .style("font-style", "italic")
                 .style("fill", theme.text_primary),
@@ -246,6 +268,7 @@ pub fn render_ibd_node(
         );
     }
 
+    children.extend(disclosure_control);
     let ports = draw_ibd_ports(node, width, content_start_y + 20.0, theme, layout_node);
     IbdNodeRender { children, ports }
 }

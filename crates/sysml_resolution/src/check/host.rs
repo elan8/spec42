@@ -896,6 +896,40 @@ impl<D> SemanticModel<D> {
             .any(|(_, reference)| reference.flags.conjugated)
     }
 
+    /// The direction the directed features of a port give it as a whole: `in` when they all
+    /// flow in, `out` when they all flow out, `inout` when both occur. The features are those
+    /// the port usage declares itself and those its definitions declare; a conjugated typing
+    /// reverses the directions of the definition's features. `None` when no directed feature
+    /// is found, which says nothing either way: features a definition inherits are not
+    /// followed.
+    pub(crate) fn port_feature_direction(&self, port: DeclarationId) -> Option<ParameterDirection> {
+        let directions = |owner: DeclarationId| {
+            self.child_declarations(owner)
+                .iter()
+                .filter_map(|child| self.storage.declaration_facts(*child)?.direction)
+                .collect::<Vec<_>>()
+        };
+        let conjugated = self.port_is_conjugated(port);
+        let mut found = directions(port);
+        for (definition, _) in self.types.effective_types(port) {
+            found.extend(directions(*definition).into_iter().map(|direction| {
+                match (conjugated, direction) {
+                    (true, ParameterDirection::In) => ParameterDirection::Out,
+                    (true, ParameterDirection::Out) => ParameterDirection::In,
+                    (_, direction) => direction,
+                }
+            }));
+        }
+        let flows_in = found.iter().any(|d| !matches!(d, ParameterDirection::Out));
+        let flows_out = found.iter().any(|d| !matches!(d, ParameterDirection::In));
+        match (flows_in, flows_out) {
+            (true, true) => Some(ParameterDirection::InOut),
+            (true, false) => Some(ParameterDirection::In),
+            (false, true) => Some(ParameterDirection::Out),
+            (false, false) => None,
+        }
+    }
+
     /// Whether a type declares at least one member with an authored direction.
     pub(crate) fn declares_a_directed_feature(&self, type_id: DeclarationId) -> bool {
         self.child_declarations(type_id).iter().any(|child| {

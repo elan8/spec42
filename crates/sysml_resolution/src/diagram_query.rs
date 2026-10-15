@@ -121,6 +121,10 @@ pub struct DiagramElement {
     pub state_subaction: Option<StateSubactionKind>,
     /// On a conditional succession: when it is taken. `None` for every other element.
     pub succession_guard: Option<DiagramSuccessionGuard>,
+    /// On a port: the direction its directed features give it as a whole, with a conjugated
+    /// typing applied. Derived from the port's own features and those of its definitions, and
+    /// kept apart from the authored `direction`. `None` when it has no directed feature.
+    pub feature_direction: Option<FeatureDirection>,
 }
 
 /// When a conditional succession is taken (SysML 7.17.5).
@@ -689,6 +693,11 @@ impl PublishedResolution {
                     conjugated,
                     state_subaction: self.model.state_subaction_kind(entry.identity),
                     succession_guard: self.model.succession_guard(entry.identity),
+                    feature_direction: if is_port_kind(entry.kind) {
+                        self.model.port_feature_direction_of(entry.identity)
+                    } else {
+                        None
+                    },
                 }
             })
             .collect::<Vec<_>>();
@@ -748,6 +757,13 @@ impl PublishedResolution {
                 .into_boxed_slice();
         }
         let mut relationships = Vec::new();
+        // For a flow end that names a feature the view does not draw: the drawn element on the
+        // authored path to it (`chain_carrier`).
+        let mut flow_carriers: Vec<(
+            DiagramOccurrenceIdentity,
+            DiagramRelationshipKind,
+            DiagramOccurrenceIdentity,
+        )> = Vec::new();
         for element in &elements {
             if let Some(inspection) = usable_value(self.inspect(element.semantic_id)) {
                 for (index, relationship) in inspection.relationships.iter().enumerate() {
@@ -758,13 +774,39 @@ impl PublishedResolution {
                     );
                     let target = match &relationship.target {
                         RelationshipTarget::Resolved(target) => {
-                            DiagramRelationshipTarget::Resolved(contextual_endpoint(
+                            let endpoint = contextual_endpoint(
                                 &element.occurrence_id,
                                 *target,
                                 &elements,
                                 relationship.authored.as_deref(),
                                 |identity| self.symbol_name(identity),
-                            ))
+                            );
+                            // SysML 8.2.3.13: a flow between features of two ports is shown
+                            // on the line between those ports. Its end is a feature the view
+                            // does not draw, so remember the element of its path that it does.
+                            if view_entry.kind == DiagramViewKind::Interconnection
+                                && matches!(
+                                    kind,
+                                    DiagramRelationshipKind::FlowSource
+                                        | DiagramRelationshipKind::FlowTarget
+                                )
+                                && endpoint.occurrence
+                                    == DiagramEndpointOccurrence::OutsideProjection
+                            {
+                                if let Some(carrier) = chain_carrier(
+                                    &element.occurrence_id,
+                                    relationship.authored.as_deref(),
+                                    &elements,
+                                    |identity| self.symbol_name(identity),
+                                ) {
+                                    flow_carriers.push((
+                                        element.occurrence_id.clone(),
+                                        kind,
+                                        carrier,
+                                    ));
+                                }
+                            }
+                            DiagramRelationshipTarget::Resolved(endpoint)
                         }
                         RelationshipTarget::Ambiguous(candidates) => {
                             if relationship_is_required(view_entry.kind, kind) {
@@ -862,6 +904,41 @@ impl PublishedResolution {
                 edges.push(edge);
                 continue;
             }
+            // An end of a transition written as a feature chain (`first on.ready`) is published
+            // as a `memberAccessOperand`, not as `transitionSource` / `transitionTarget`. The
+            // operands are the ends that are missing, in the order they are written.
+            if element.kind == ElementKind::TransitionUsage {
+                let named = |wanted: DiagramRelationshipKind| {
+                    outgoing
+                        .iter()
+                        .find(|relationship| relationship.kind == wanted)
+                        .and_then(|relationship| resolved_target(&relationship.target))
+                };
+                let mut operands = outgoing
+                    .iter()
+                    .filter(|relationship| {
+                        relationship.kind == DiagramRelationshipKind::MemberAccessOperand
+                    })
+                    .filter_map(|relationship| resolved_target(&relationship.target));
+                let source = named(DiagramRelationshipKind::TransitionSource);
+                let target = named(DiagramRelationshipKind::TransitionTarget);
+                let (source, target) = match (source, target) {
+                    (None, Some(target)) => (operands.next(), Some(target)),
+                    (Some(source), None) => (Some(source), operands.next()),
+                    (None, None) => (operands.next(), operands.next()),
+                    both => both,
+                };
+                if let (Some(source), Some(target), None) = (source, target, operands.next()) {
+                    edges.push(edge_from_relationships(
+                        origin as u32,
+                        source,
+                        target,
+                        DiagramEdgeKind::Transition,
+                        &outgoing,
+                    ));
+                    continue;
+                }
+            }
             if let Some(edge) = composed_edge(
                 origin as u32,
                 &outgoing,
@@ -871,6 +948,38 @@ impl PublishedResolution {
             ) {
                 edges.push(edge);
                 continue;
+            }
+            // A flow whose ends are features of ports runs between those ports.
+            if view_entry.kind == DiagramViewKind::Interconnection {
+                let end = |wanted: DiagramRelationshipKind| {
+                    outgoing
+                        .iter()
+                        .find(|relationship| relationship.kind == wanted)
+                        .and_then(|relationship| resolved_target(&relationship.target))
+                        .or_else(|| {
+                            flow_carriers
+                                .iter()
+                                .find(|(source, kind, _)| {
+                                    *source == element.occurrence_id && *kind == wanted
+                                })
+                                .map(|(_, _, carrier)| carrier)
+                        })
+                };
+                if let (Some(source), Some(target)) = (
+                    end(DiagramRelationshipKind::FlowSource),
+                    end(DiagramRelationshipKind::FlowTarget),
+                ) {
+                    if source != target {
+                        edges.push(edge_from_relationships(
+                            origin as u32,
+                            source,
+                            target,
+                            DiagramEdgeKind::Flow,
+                            &outgoing,
+                        ));
+                        continue;
+                    }
+                }
             }
             // A `bind a = b.c` usage publishes `bindSource` plus one `memberAccessOperand` for the
             // dotted side. Those are the binding's two ends. Counting only the member-access
@@ -1288,6 +1397,54 @@ fn semantic_reference(
             range: entry.declaration_range,
         }
     }
+}
+
+/// The projected element that carries the feature an authored feature chain ends at, when that
+/// feature is not projected itself: for `tank::outlet::fuel` the occurrence of `outlet` below
+/// `tank`. It is the element whose path of names ends with the longest proper prefix of the
+/// chain; among several, the one that shares most of its path with `source`. `None` when no
+/// prefix names a projected element, or when the choice is not unique.
+fn chain_carrier<'a>(
+    source: &DiagramOccurrenceIdentity,
+    authored: Option<&str>,
+    elements: &[DiagramElement],
+    symbol_name: impl Fn(SymbolId) -> Option<&'a str>,
+) -> Option<DiagramOccurrenceIdentity> {
+    let segments: Vec<&str> = authored?
+        .split("::")
+        .filter(|segment| !segment.is_empty() && *segment != "$")
+        .collect();
+    for length in (1..segments.len()).rev() {
+        let prefix = &segments[..length];
+        let mut candidates = elements
+            .iter()
+            .filter_map(|element| {
+                let names = element
+                    .occurrence_id
+                    .semantic_path
+                    .iter()
+                    .filter_map(|identity| symbol_name(*identity))
+                    .collect::<Vec<_>>();
+                if !names.ends_with(prefix) {
+                    return None;
+                }
+                let shared = source
+                    .semantic_path
+                    .iter()
+                    .zip(element.occurrence_id.semantic_path.iter())
+                    .take_while(|(left, right)| left == right)
+                    .count();
+                Some((shared, &element.occurrence_id))
+            })
+            .collect::<Vec<_>>();
+        candidates.sort();
+        match candidates.as_slice() {
+            [] => continue,
+            [.., (runner_up, _), (best, _)] if runner_up == best => return None,
+            [.., (_, carrier)] => return Some((*carrier).clone()),
+        }
+    }
+    None
 }
 
 /// How much of an authored feature-chain (`propulsion::propulsionUnit1::cmd`) appears, in

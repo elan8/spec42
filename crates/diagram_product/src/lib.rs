@@ -438,6 +438,7 @@ impl NormalizedProduct {
             "conjugated": value.conjugated,
             "stateSubaction": value.state_subaction,
             "successionGuard": value.succession_guard,
+            "featureDirection": value.feature_direction,
         }))
     }
 
@@ -1145,6 +1146,7 @@ mod tests {
             conjugated: false,
             state_subaction: None,
             succession_guard: None,
+            feature_direction: None,
         }]);
         let normalized = NormalizedProduct::new(&product).expect("normalized product");
         assert_eq!(normalized.documents.len(), 1);
@@ -1174,6 +1176,7 @@ mod tests {
             conjugated: false,
             state_subaction: None,
             succession_guard: None,
+            feature_direction: None,
         };
         let forward =
             NormalizedProduct::new(&projection(vec![element("P::a", 1), element("P::b", 2)]))
@@ -1253,6 +1256,7 @@ mod tests {
                 conjugated: false,
                 state_subaction: None,
                 succession_guard: None,
+                feature_direction: None,
             })
             .collect::<Vec<_>>();
         let mut product = projection(elements);

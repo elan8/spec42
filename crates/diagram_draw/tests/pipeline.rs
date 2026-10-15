@@ -699,6 +699,84 @@ fn an_action_flow_written_with_then_draws_its_whole_flow() {
 }
 
 #[test]
+fn a_port_takes_its_direction_from_the_features_of_its_definition() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_interconnection_feature_direction.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("interconnection lays out");
+    let direction = |part: &str, port: &str| {
+        input["nodes"]
+            .as_array()
+            .expect("nodes")
+            .iter()
+            .find(|node| node["label"] == part)
+            .unwrap_or_else(|| panic!("no part `{part}`"))["attributes"]["portDetails"]
+            .as_array()
+            .expect("port details")
+            .iter()
+            .find(|detail| detail["name"] == port)
+            .unwrap_or_else(|| panic!("no port `{port}` on `{part}`"))["direction"]
+            .clone()
+    };
+    // `Supply` has one `out` feature: the port sends, and its conjugate receives.
+    assert_eq!(direction("source", "feed"), "out");
+    assert_eq!(direction("load", "feed"), "in");
+    // Features both ways make the port bidirectional; none leave it without a direction.
+    assert_eq!(direction("source", "link"), "inout");
+    assert!(direction("source", "tag").is_null());
+    // A direction written on the port itself is what is drawn.
+    assert_eq!(direction("load", "forced"), "in");
+}
+
+#[test]
+fn a_flow_between_port_features_runs_between_the_ports() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_interconnection_flows.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("interconnection lays out");
+    let part = |id: &serde_json::Value| {
+        input["nodes"]
+            .as_array()
+            .expect("nodes")
+            .iter()
+            .find(|node| &node["id"] == id)
+            .map(|node| node["label"].as_str().unwrap().to_owned())
+            .unwrap()
+    };
+    let flows: Vec<(String, String, String)> = input["edges"]
+        .as_array()
+        .expect("edges")
+        .iter()
+        .filter(|edge| edge["edgeKind"] == "flow")
+        .map(|edge| {
+            (
+                part(&edge["source"]),
+                part(&edge["target"]),
+                edge["attributes"]["itemType"]
+                    .as_str()
+                    .unwrap_or("")
+                    .to_owned(),
+            )
+        })
+        .collect();
+    // `tank.outlet.fuel` is a feature of the port, which the view does not draw: the flow
+    // attaches to the port. It is labelled with its item, after its name when it has one.
+    assert!(
+        flows.contains(&("tank".into(), "engine".into(), "Fuel".into())),
+        "{flows:?}"
+    );
+    assert!(
+        flows.contains(&("spare".into(), "engine".into(), "topUp".into())),
+        "{flows:?}"
+    );
+    assert_eq!(flows.len(), 2);
+    let routed = input["interconnectionLayout"]["edges"]
+        .as_array()
+        .expect("routes");
+    assert_eq!(routed.len(), 2);
+}
+
+#[test]
 fn conditional_successions_carry_their_guards() {
     let payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_action_flow_conditional_successions.md"
@@ -824,11 +902,65 @@ fn a_state_that_owns_states_shows_them_inside_it() {
             "`{nested}` {inner:?} is not inside `on` {outer:?}"
         );
     }
+    // `first on.ready ... then fault` leaves the nested state for one outside its owner. It is
+    // routed, around the states in its way, and not left to a straight fallback line.
+    let fault = node("fault")["id"].as_str().unwrap();
+    let ready = node("ready")["id"].as_str().unwrap();
+    let crossing = input["prepared"]["edges"]
+        .as_array()
+        .expect("edges")
+        .iter()
+        .find(|edge| edge["source"] == ready && edge["target"] == fault)
+        .expect("the transition out of the nested state");
+    let sections = &input["behaviorLayout"]["edgeSectionsById"][crossing["id"].as_str().unwrap()];
+    assert!(sections[0]["startPoint"].is_object(), "{sections}");
     // The containing state is drawn below the transitions, the others above them.
     let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw state machine");
     let layer = |class: &str| svg.find(&format!("class=\"{class}\"")).unwrap();
     assert!(layer("state-containers") < layer("state-transitions"));
     assert!(layer("state-transitions") < layer("state-nodes"));
+}
+
+#[test]
+fn interconnection_view_opens_a_part_when_its_control_is_toggled() {
+    use diagram_draw::theme::LIGHT;
+    use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
+
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_timer_interconnection.md"
+    ));
+    let draw = |expanded: &[&str]| {
+        render_svg_from_payload_with_options(
+            &payload,
+            &LIGHT,
+            1280.0,
+            900.0,
+            Some(&DisclosureState {
+                expanded_node_ids: expanded.iter().map(|id| (*id).to_owned()).collect(),
+                section_states: vec![],
+            }),
+        )
+        .expect("draw timer")
+    };
+    let parts = |svg: &str| svg.matches("class=\"ibd-part").count();
+
+    // As the editor first draws it: the exposed part with its direct parts, closed.
+    let closed = draw(&[]);
+    assert!(closed.contains("aria-label=\"Expand pcb\""), "{closed}");
+    assert!(!closed.contains("aria-label=\"Collapse"), "{closed}");
+    // The exposed part is always open, so it has no control.
+    assert!(!closed.contains("aria-label=\"Expand timerInstance\""));
+
+    // `n:6` is `pcb`, the id its control toggles.
+    assert!(closed.contains("data-node-id=\"n:6\" data-element-name=\"pcb\""));
+    let opened = draw(&["n:6"]);
+    assert!(opened.contains("aria-label=\"Collapse pcb\""), "{opened}");
+    assert!(parts(&opened) > parts(&closed));
+
+    // A file export has no reader, so it has no controls.
+    let exported = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw timer");
+    assert!(!exported.contains("general-node-toggle"));
+    assert!(parts(&exported) >= parts(&opened));
 }
 
 #[test]

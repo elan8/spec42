@@ -18,7 +18,8 @@ transitions and the view frame were checked in rendered diagrams against the not
 The rows on the action flow and state transition views were checked on models written to use
 each element (`tests/snapshots/generation/diagram_action_flow_then_successions.md`,
 `diagram_action_flow_conditional_successions.md`, `diagram_state_actions.md`,
-`diagram_composite_state.md`), since the example models use few of
+`diagram_composite_state.md`, `diagram_interconnection_flows.md`,
+`diagram_interconnection_feature_direction.md`), since the example models use few of
 them.
 
 ## General view (8.2.3.6, 8.2.3.11)
@@ -45,14 +46,14 @@ them.
 | Part that shows its parts | The same solid part symbol with the nested view inside | Solid since this change; it was dashed, the notation of a reference | Conforms |
 | Port | Small square on the boundary | Small square on the boundary | Conforms |
 | Port label | Beside the port, outside the part | Outside the part, below the connector, since this change; it was inside | Conforms |
-| Port direction | Arrow inside the port square for `in`, `out`, `inout` | Drawn for a port usage with an authored direction. A port whose direction follows only from the features of its definition gets none | Conforms for authored directions |
+| Port direction | Arrow inside the port square for `in`, `out`, `inout` | Drawn from the direction written on the port usage, or else from the directed features of the port and of its definitions, reversed by a conjugated typing. Features a definition inherits are not followed | Conforms |
 | Conjugated port | `~` before the type in the port's declaration | The port is labelled `name : ~Type`; other ports by name only | Conforms |
 | Connection | Solid line between ports or parts, optional name | Solid line, name or `: Type` where there is room | Conforms |
 | Connection colour | Not defined | One colour for each port type | Extension, harmless |
 | Left-out nested parts | `...` in the lower left corner | `...` in the lower left corner | Conforms |
 | Connector end on a nested feature of a closed part | Proxy: filled dot on the boundary, labelled with the feature | Filled dot on the boundary, labelled with the feature's path | Conforms |
 | Names | Written in full | Written in full; the part and the gap beside it are sized for them | Conforms |
-| Flow on a connection | Flow node (arrow) on the line with the item | Not drawn on the connection | Missing |
+| Flow | A line with a filled arrowhead and the item, or a flow node on a connection | A line with a filled arrowhead between the two ports, labelled with the item (after the name of the flow when it has one). A flow between features of two ports attaches to those ports. A flow is drawn as a line of its own, not as a node on a connection between the same ports | Conforms for flows; flow nodes on connections are missing |
 
 ## State transition view (8.2.3.18)
 
@@ -66,7 +67,7 @@ them.
 | Terminate node | Circle with a cross | Circle with a cross | Conforms |
 | Transition | Solid line, open arrowhead | Solid line, open arrowhead since this change; it was filled | Conforms |
 | Transition label | Plain text: trigger, guard, `/` effect | Plain text. Trigger, guard and effect are joined as published. Three or more transitions with one label into one state share a line and one label at that state | Conforms; the shared line is an extension |
-| Composite state | The state symbol with its state transition view inside | The state with its states, their transitions and its initial node inside it. A transition between a nested state and a state outside is drawn straight, without a route | Conforms |
+| Composite state | The state symbol with its state transition view inside | The state with its states, their transitions and its initial node inside it. A transition between a nested state and a state outside is routed around the states in its way | Conforms |
 | View frame | Frame with the view's name compartment | A frame with the name in a compartment in its upper left corner, also for the action flow view. The sequence view still has a title | Conforms |
 
 ## Action flow view (8.2.3.17)
@@ -88,8 +89,6 @@ them.
 
 ## What to change next, by effect on a reader
 
-1. The direction a port takes from the features of its definition.
-2. Flows on connections in an interconnection view.
-3. Routes for transitions that cross the boundary of a containing state.
-4. Swimlanes in an action flow.
+1. Flow nodes on a connection, where a flow and a connection join the same two ports.
+2. Swimlanes in an action flow.
 

@@ -13,23 +13,28 @@ use crate::tooltip::{port_tooltip_descriptor, tooltip_fallback_text};
 use crate::types::{InterconnectionLayoutNodeDto, InterconnectionLayoutPortAnchor, LaidOutNode};
 
 const IBD_PORT_LABEL_FONT_SIZE: f64 = 8.0;
-// A label is cut only when it is longer than any reasonable name or feature path; the part
-// is drawn wide enough for the labels it has.
-const IBD_PORT_LABEL_MAX_LENGTH: usize = 40;
 const IBD_PORT_LABEL_CHARACTER_WIDTH: f64 = 5.0;
 
-/// Port of `formatIbdPortLabel` + `ibdPortLabelText` (the `detail` parameter is explicitly unused
-/// upstream too).
+/// The label of a port or proxy: its name or feature path, written in full (SysML 8.2.3.12).
+/// The layout reserves the width `ibd_port_label_width` gives it.
 pub(crate) fn ibd_port_label_text(name: &str) -> String {
-    let trimmed = name.trim();
-    let units: Vec<u16> = trimmed.encode_utf16().collect();
-    if units.len() > IBD_PORT_LABEL_MAX_LENGTH {
-        format!(
-            "{}…",
-            String::from_utf16_lossy(&units[..IBD_PORT_LABEL_MAX_LENGTH - 1])
-        )
+    name.trim().to_string()
+}
+
+/// The label of the port a `portDetails` entry describes. A port that conjugates its
+/// definition says so with its typing, `name : ~Type`, since nothing else in the drawing
+/// tells the two ends of a connection apart.
+pub(crate) fn ibd_port_detail_label(detail: &Value) -> String {
+    let name = ibd_port_label_text(detail.get("name").and_then(Value::as_str).unwrap_or(""));
+    let port_type = detail
+        .get("portType")
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .trim();
+    if detail.get("conjugated") == Some(&Value::Bool(true)) && !port_type.is_empty() {
+        format!("{name} : ~{port_type}")
     } else {
-        trimmed.to_string()
+        name
     }
 }
 
@@ -147,7 +152,11 @@ pub fn draw_ibd_ports(
         let label_text = label_layout
             .map(|l| l.text.clone())
             .filter(|t| !t.is_empty())
-            .unwrap_or_else(|| ibd_port_label_text(name));
+            .unwrap_or_else(|| {
+                detail
+                    .map(ibd_port_detail_label)
+                    .unwrap_or_else(|| ibd_port_label_text(name))
+            });
 
         // SysML 8.2.3.12: a proxy for a feature nested in a part that is drawn closed is a
         // filled dot on the boundary; a port is a small square.
@@ -351,4 +360,22 @@ pub fn draw_ibd_ports(
         draw_port(name, index, side, &mut elements);
     }
     elements
+}
+
+#[cfg(test)]
+mod label_tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn a_conjugated_port_is_labelled_with_its_conjugated_type() {
+        let port = |conjugated: bool| json!({ "name": "rx", "portType": "Uart", "conjugated": conjugated });
+        assert_eq!(ibd_port_detail_label(&port(false)), "rx");
+        assert_eq!(ibd_port_detail_label(&port(true)), "rx : ~Uart");
+        // Without a type there is nothing to conjugate.
+        assert_eq!(
+            ibd_port_detail_label(&json!({ "name": "rx", "conjugated": true })),
+            "rx"
+        );
+    }
 }

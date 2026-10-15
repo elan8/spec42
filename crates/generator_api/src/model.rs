@@ -945,6 +945,11 @@ impl GeneratorModelView {
                     sysml_query::resolved_slice::DiagramSuccessionGuard::Condition(text) => text.to_string(),
                     sysml_query::resolved_slice::DiagramSuccessionGuard::Else => "else".to_owned(),
                 }),
+                feature_direction: element.feature_direction.map(|direction| match direction {
+                    sysml_query::resolved_slice::FeatureDirection::In => "in",
+                    sysml_query::resolved_slice::FeatureDirection::Out => "out",
+                    sysml_query::resolved_slice::FeatureDirection::InOut => "inout",
+                }.to_owned()),
             }))
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
         let relationships = projection
