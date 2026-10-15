@@ -698,6 +698,39 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> ActionDerivedFactColle
         ActionDerivedFactKind::IfThenAction => ActionDerivedFactCollection::IfThenAction,
         ActionDerivedFactKind::IfElseAction => ActionDerivedFactCollection::IfElseAction,
         ActionDerivedFactKind::IfArgument => ActionDerivedFactCollection::IfArgument,
+        ActionDerivedFactKind::StateDefinitionEntryAction => {
+            ActionDerivedFactCollection::StateDefinitionEntryAction
+        }
+        ActionDerivedFactKind::StateDefinitionDoAction => {
+            ActionDerivedFactCollection::StateDefinitionDoAction
+        }
+        ActionDerivedFactKind::StateDefinitionExitAction => {
+            ActionDerivedFactCollection::StateDefinitionExitAction
+        }
+        ActionDerivedFactKind::StateUsageEntryAction => {
+            ActionDerivedFactCollection::StateUsageEntryAction
+        }
+        ActionDerivedFactKind::StateUsageDoAction => {
+            ActionDerivedFactCollection::StateUsageDoAction
+        }
+        ActionDerivedFactKind::StateUsageExitAction => {
+            ActionDerivedFactCollection::StateUsageExitAction
+        }
+        ActionDerivedFactKind::StateDefinitionState => {
+            ActionDerivedFactCollection::StateDefinitionState
+        }
+        ActionDerivedFactKind::CalculationDefinitionCalculation => {
+            ActionDerivedFactCollection::CalculationDefinitionCalculation
+        }
+        ActionDerivedFactKind::AllocationDefinitionAllocation => {
+            ActionDerivedFactCollection::AllocationDefinitionAllocation
+        }
+        ActionDerivedFactKind::RenderingDefinitionRendering => {
+            ActionDerivedFactCollection::RenderingDefinitionRendering
+        }
+        ActionDerivedFactKind::ViewDefinitionView => {
+            ActionDerivedFactCollection::ViewDefinitionView
+        }
     }
 }
 
@@ -820,6 +853,10 @@ fn requirement_derived_fact_collection_for_rule(
             RequirementDerivedFactKind::UsageRequiredConstraint => RequirementDerivedFactCollection::UsageRequiredConstraint,
             RequirementDerivedFactKind::UsageAssumedConstraint => RequirementDerivedFactCollection::UsageAssumedConstraint,
             RequirementDerivedFactKind::UsageFramedConcern => RequirementDerivedFactCollection::UsageFramedConcern,
+            RequirementDerivedFactKind::CaseDefinitionActorParameter => RequirementDerivedFactCollection::CaseDefinitionActorParameter,
+            RequirementDerivedFactKind::CaseDefinitionSubjectParameter => RequirementDerivedFactCollection::CaseDefinitionSubjectParameter,
+            RequirementDerivedFactKind::CaseUsageActorParameter => RequirementDerivedFactCollection::CaseUsageActorParameter,
+            RequirementDerivedFactKind::CaseUsageSubjectParameter => RequirementDerivedFactCollection::CaseUsageSubjectParameter,
         }),
         _ => Err(format!(
             "{fixture}: semantic Requirements derivation rule_id {rule_id:?} does not own an exact Requirements query"

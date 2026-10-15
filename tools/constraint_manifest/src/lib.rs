@@ -572,6 +572,50 @@ impl ConstraintManifest {
                             "deriveIfActionUsageIfArgument",
                             "IfActionUsage",
                             ActionDerivedFactKind::IfArgument
+                        ) | (
+                            "deriveStateDefinitionEntryAction",
+                            "StateDefinition",
+                            ActionDerivedFactKind::StateDefinitionEntryAction
+                        ) | (
+                            "deriveStateDefinitionDoAction",
+                            "StateDefinition",
+                            ActionDerivedFactKind::StateDefinitionDoAction
+                        ) | (
+                            "deriveStateDefinitionExitAction",
+                            "StateDefinition",
+                            ActionDerivedFactKind::StateDefinitionExitAction
+                        ) | (
+                            "deriveStateUsageEntryAction",
+                            "StateUsage",
+                            ActionDerivedFactKind::StateUsageEntryAction
+                        ) | (
+                            "deriveStateUsageDoAction",
+                            "StateUsage",
+                            ActionDerivedFactKind::StateUsageDoAction
+                        ) | (
+                            "deriveStateUsageExitAction",
+                            "StateUsage",
+                            ActionDerivedFactKind::StateUsageExitAction
+                        ) | (
+                            "deriveStateDefinitionState",
+                            "StateDefinition",
+                            ActionDerivedFactKind::StateDefinitionState
+                        ) | (
+                            "deriveCalculationUsageCalculation",
+                            "CalculationDefinition",
+                            ActionDerivedFactKind::CalculationDefinitionCalculation
+                        ) | (
+                            "deriveAllocationDefinitionAllocation",
+                            "AllocationDefinition",
+                            ActionDerivedFactKind::AllocationDefinitionAllocation
+                        ) | (
+                            "deriveRenderingDefinitionRendering",
+                            "RenderingDefinition",
+                            ActionDerivedFactKind::RenderingDefinitionRendering
+                        ) | (
+                            "deriveViewDefinitionView",
+                            "ViewDefinition",
+                            ActionDerivedFactKind::ViewDefinitionView
                         )
                     );
                     if entry.family != ConstraintFamily::Derive
@@ -639,6 +683,22 @@ impl ConstraintManifest {
                             "deriveRequirementUsageFramedConcern",
                             "RequirementUsage",
                             RequirementDerivedFactKind::UsageFramedConcern
+                        ) | (
+                            "deriveCaseDefinitionActorParameter",
+                            "CaseDefinition",
+                            RequirementDerivedFactKind::CaseDefinitionActorParameter
+                        ) | (
+                            "deriveCaseDefinitionSubjectParameter",
+                            "CaseDefinition",
+                            RequirementDerivedFactKind::CaseDefinitionSubjectParameter
+                        ) | (
+                            "deriveCaseUsageActorParameter",
+                            "CaseUsage",
+                            RequirementDerivedFactKind::CaseUsageActorParameter
+                        ) | (
+                            "deriveCaseUsageSubjectParameter",
+                            "CaseUsage",
+                            RequirementDerivedFactKind::CaseUsageSubjectParameter
                         )
                     );
                     if entry.family != ConstraintFamily::Derive
@@ -1999,6 +2059,17 @@ pub enum ActionDerivedFactKind {
     IfThenAction,
     IfElseAction,
     IfArgument,
+    StateDefinitionEntryAction,
+    StateDefinitionDoAction,
+    StateDefinitionExitAction,
+    StateUsageEntryAction,
+    StateUsageDoAction,
+    StateUsageExitAction,
+    StateDefinitionState,
+    CalculationDefinitionCalculation,
+    AllocationDefinitionAllocation,
+    RenderingDefinitionRendering,
+    ViewDefinitionView,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -2025,6 +2096,10 @@ pub enum RequirementDerivedFactKind {
     UsageRequiredConstraint,
     UsageAssumedConstraint,
     UsageFramedConcern,
+    CaseDefinitionActorParameter,
+    CaseDefinitionSubjectParameter,
+    CaseUsageActorParameter,
+    CaseUsageSubjectParameter,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

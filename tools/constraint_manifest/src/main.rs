@@ -650,6 +650,50 @@ fn exact_action_derived_fact(constraint: &str, body: &str) -> Option<ActionDeriv
             "deriveIfActionUsageIfArgument",
             "7dc57a8093de6438288f6693d9bde3fbfa1648a41713512361efce3fe7cfa942",
         ) => Some(ActionDerivedFactKind::IfArgument),
+        (
+            "deriveStateDefinitionEntryAction",
+            "de66da27adbac23a4512a4b67de81b43baee9909131e88109a00ce7c2579d7c7",
+        ) => Some(ActionDerivedFactKind::StateDefinitionEntryAction),
+        (
+            "deriveStateDefinitionDoAction",
+            "7504cbb610de030b568ccb86c456d53fb76c9e285b9ee2d224494461d3569ecd",
+        ) => Some(ActionDerivedFactKind::StateDefinitionDoAction),
+        (
+            "deriveStateDefinitionExitAction",
+            "11748e51537922c815f42ba588ddc89fa0f431c5940e8ddd89ca948d829342d1",
+        ) => Some(ActionDerivedFactKind::StateDefinitionExitAction),
+        (
+            "deriveStateUsageEntryAction",
+            "de66da27adbac23a4512a4b67de81b43baee9909131e88109a00ce7c2579d7c7",
+        ) => Some(ActionDerivedFactKind::StateUsageEntryAction),
+        (
+            "deriveStateUsageDoAction",
+            "7504cbb610de030b568ccb86c456d53fb76c9e285b9ee2d224494461d3569ecd",
+        ) => Some(ActionDerivedFactKind::StateUsageDoAction),
+        (
+            "deriveStateUsageExitAction",
+            "539d4ff4461d9382d6554691e5534fee7919c15da57763be0ceb98e8680dbfba",
+        ) => Some(ActionDerivedFactKind::StateUsageExitAction),
+        (
+            "deriveStateDefinitionState",
+            "b58b47767f5165bdda410c70849654fd36f8c4787aea44d3f6b932ad2bd3e4bd",
+        ) => Some(ActionDerivedFactKind::StateDefinitionState),
+        (
+            "deriveCalculationUsageCalculation",
+            "b4baa079e5a5c64ebb50b4b74cb7fd2ffbb691ad8e8bc50a292d27a45868bd37",
+        ) => Some(ActionDerivedFactKind::CalculationDefinitionCalculation),
+        (
+            "deriveAllocationDefinitionAllocation",
+            "2768a8d8ea56a460f43880ad6391cf212b65e2f991ee61cdabf0b0b693e49cf8",
+        ) => Some(ActionDerivedFactKind::AllocationDefinitionAllocation),
+        (
+            "deriveRenderingDefinitionRendering",
+            "d946ef4e13c22ae0e21efd39124c8fc8832afa3335429a5e24c526d98f1f6949",
+        ) => Some(ActionDerivedFactKind::RenderingDefinitionRendering),
+        (
+            "deriveViewDefinitionView",
+            "87fbc56d9b161c66525a13c8ba44e224be24eaaf3947caecb17bf7cc2b9b82ca",
+        ) => Some(ActionDerivedFactKind::ViewDefinitionView),
         _ => None,
     }
 }
@@ -724,6 +768,22 @@ fn exact_requirement_derived_fact(
             "deriveRequirementUsageFramedConcern",
             "c915c2298f5bfebaa9a0e06d06f3d83d3f4c2c2601cc17f332926bf72ea94e3e",
         ) => Some(RequirementDerivedFactKind::UsageFramedConcern),
+        (
+            "deriveCaseDefinitionActorParameter",
+            "4491cc267914513216e0de41b0fab6f99422326393c937b7499fc16c9fde61a9",
+        ) => Some(RequirementDerivedFactKind::CaseDefinitionActorParameter),
+        (
+            "deriveCaseDefinitionSubjectParameter",
+            "1a98d33c65896c4f582d9e7f8d4636d5533e81cd539cf7133780fdafb5de5f33",
+        ) => Some(RequirementDerivedFactKind::CaseDefinitionSubjectParameter),
+        (
+            "deriveCaseUsageActorParameter",
+            "4491cc267914513216e0de41b0fab6f99422326393c937b7499fc16c9fde61a9",
+        ) => Some(RequirementDerivedFactKind::CaseUsageActorParameter),
+        (
+            "deriveCaseUsageSubjectParameter",
+            "a974bff5d79e5ed8c5fbb92464594e2dcbc25c9780cc5b414d65204077d098cd",
+        ) => Some(RequirementDerivedFactKind::CaseUsageSubjectParameter),
         _ => None,
     }
 }
@@ -2206,6 +2266,27 @@ mod tests {
                 "payloadArgument = argument(1)",
             ),
             Some(ActionDerivedFactKind::SendPayloadArgument)
+        );
+        assert_eq!(
+            exact_action_derived_fact(
+                "deriveStateDefinitionEntryAction",
+                "entryAction =     let entryMemberships : Sequence(StateSubactionMembership) =         ownedMembership->             selectByKind(StateSubactionMembership)->             select(kind = StateSubactionKind::entry) in     if entryMemberships->isEmpty() then null     else entryMemberships->at(1)     endif",
+            ),
+            Some(ActionDerivedFactKind::StateDefinitionEntryAction)
+        );
+        assert_eq!(
+            exact_action_derived_fact(
+                "deriveStateDefinitionState",
+                "state = action->selectByKind(StateUsage)",
+            ),
+            Some(ActionDerivedFactKind::StateDefinitionState)
+        );
+        assert_eq!(
+            exact_action_derived_fact(
+                "deriveRenderingDefinitionRendering",
+                "rendering = usages->selectByKind(RenderingUsage)",
+            ),
+            Some(ActionDerivedFactKind::RenderingDefinitionRendering)
         );
         assert!(exact_action_derived_fact(
             "deriveSendActionUsagePayloadArgument",

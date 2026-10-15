@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **State entry, do, and exit actions are derived collections.** `deriveStateDefinitionEntryAction`,
+  `deriveStateDefinitionDoAction`, `deriveStateDefinitionExitAction`, and the matching state-usage
+  rules project the first owned state subaction of that kind. `deriveStateDefinitionState` projects
+  the nested state usages. Calculation, allocation, rendering, and view definitions project their
+  matching owned usages. Case definitions and usages project their actor and subject parameters.
+
 - **Feature chain targets and inverses are derived collections.** `deriveFeatureChainingFeature`
   projects the owned feature-chaining relationship, and `deriveFeatureOwnedFeatureInverting`
   projects an owned `inverse of` relationship. The other KerML element, namespace, and feature

@@ -79,6 +79,19 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> &'static str {
         ActionDerivedFactKind::IfThenAction => "IfThenAction",
         ActionDerivedFactKind::IfElseAction => "IfElseAction",
         ActionDerivedFactKind::IfArgument => "IfArgument",
+        ActionDerivedFactKind::StateDefinitionEntryAction => "StateDefinitionEntryAction",
+        ActionDerivedFactKind::StateDefinitionDoAction => "StateDefinitionDoAction",
+        ActionDerivedFactKind::StateDefinitionExitAction => "StateDefinitionExitAction",
+        ActionDerivedFactKind::StateUsageEntryAction => "StateUsageEntryAction",
+        ActionDerivedFactKind::StateUsageDoAction => "StateUsageDoAction",
+        ActionDerivedFactKind::StateUsageExitAction => "StateUsageExitAction",
+        ActionDerivedFactKind::StateDefinitionState => "StateDefinitionState",
+        ActionDerivedFactKind::CalculationDefinitionCalculation => {
+            "CalculationDefinitionCalculation"
+        }
+        ActionDerivedFactKind::AllocationDefinitionAllocation => "AllocationDefinitionAllocation",
+        ActionDerivedFactKind::RenderingDefinitionRendering => "RenderingDefinitionRendering",
+        ActionDerivedFactKind::ViewDefinitionView => "ViewDefinitionView",
     }
 }
 
@@ -96,6 +109,12 @@ fn requirement_fact_collection(kind: RequirementDerivedFactKind) -> &'static str
         RequirementDerivedFactKind::UsageRequiredConstraint => "UsageRequiredConstraint",
         RequirementDerivedFactKind::UsageAssumedConstraint => "UsageAssumedConstraint",
         RequirementDerivedFactKind::UsageFramedConcern => "UsageFramedConcern",
+        RequirementDerivedFactKind::CaseDefinitionActorParameter => "CaseDefinitionActorParameter",
+        RequirementDerivedFactKind::CaseDefinitionSubjectParameter => {
+            "CaseDefinitionSubjectParameter"
+        }
+        RequirementDerivedFactKind::CaseUsageActorParameter => "CaseUsageActorParameter",
+        RequirementDerivedFactKind::CaseUsageSubjectParameter => "CaseUsageSubjectParameter",
     }
 }
 

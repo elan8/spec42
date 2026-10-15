@@ -47,5 +47,15 @@ pub const fn requirement_collection_from_kind(
         RequirementDerivedFactKind::UsageRequiredConstraint => Collection::UsageRequiredConstraint,
         RequirementDerivedFactKind::UsageAssumedConstraint => Collection::UsageAssumedConstraint,
         RequirementDerivedFactKind::UsageFramedConcern => Collection::UsageFramedConcern,
+        RequirementDerivedFactKind::CaseDefinitionActorParameter => {
+            Collection::CaseDefinitionActorParameter
+        }
+        RequirementDerivedFactKind::CaseDefinitionSubjectParameter => {
+            Collection::CaseDefinitionSubjectParameter
+        }
+        RequirementDerivedFactKind::CaseUsageActorParameter => Collection::CaseUsageActorParameter,
+        RequirementDerivedFactKind::CaseUsageSubjectParameter => {
+            Collection::CaseUsageSubjectParameter
+        }
     }
 }

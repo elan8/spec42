@@ -120,6 +120,17 @@ pub enum ActionDerivedFactCollection {
     IfThenAction,
     IfElseAction,
     IfArgument,
+    StateDefinitionEntryAction,
+    StateDefinitionDoAction,
+    StateDefinitionExitAction,
+    StateUsageEntryAction,
+    StateUsageDoAction,
+    StateUsageExitAction,
+    StateDefinitionState,
+    CalculationDefinitionCalculation,
+    AllocationDefinitionAllocation,
+    RenderingDefinitionRendering,
+    ViewDefinitionView,
 }
 
 /// The first canonical fact owner an exact `Systems::Actions` derivation needs.
@@ -143,6 +154,10 @@ pub enum RequirementDerivedFactCollection {
     UsageRequiredConstraint,
     UsageAssumedConstraint,
     UsageFramedConcern,
+    CaseDefinitionActorParameter,
+    CaseDefinitionSubjectParameter,
+    CaseUsageActorParameter,
+    CaseUsageSubjectParameter,
 }
 
 impl RequirementDerivedFactCollection {

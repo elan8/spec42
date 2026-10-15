@@ -1871,7 +1871,132 @@ impl<D> SemanticModel<D> {
             ));
             return self.resolved_outcome(ActionDerivedFactOutcome::Values(values));
         }
+        let state_subaction = |kind: DeclarationKind| {
+            self.symbols_in_order(
+                self.child_declarations(declaration)
+                    .iter()
+                    .copied()
+                    .filter(|member| {
+                        self.storage
+                            .declaration(*member)
+                            .is_some_and(|member| member.kind == kind)
+                    })
+                    .take(1),
+            )
+        };
+        let usage_projection = |kinds: &[DeclarationKind]| {
+            self.symbols(
+                self.effective_usage_members(declaration)
+                    .into_iter()
+                    .filter(|member| {
+                        self.storage
+                            .declaration(*member)
+                            .is_some_and(|member| kinds.contains(&member.kind))
+                    }),
+            )
+        };
         match collection {
+            ActionDerivedFactCollection::StateDefinitionEntryAction
+                if source_kind == Some(DeclarationKind::StateDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::EntryActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateDefinitionDoAction
+                if source_kind == Some(DeclarationKind::StateDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::DoActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateDefinitionExitAction
+                if source_kind == Some(DeclarationKind::StateDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::ExitActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateUsageEntryAction
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::EntryActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateUsageDoAction
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::DoActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateUsageExitAction
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::ExitActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateDefinitionState
+                if source_kind == Some(DeclarationKind::StateDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::StateUsage,
+                    DeclarationKind::ExhibitStateUsage,
+                    DeclarationKind::FinalState,
+                ])))
+            }
+            ActionDerivedFactCollection::CalculationDefinitionCalculation
+                if source_kind == Some(DeclarationKind::CalcDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::CalcUsage,
+                ])))
+            }
+            ActionDerivedFactCollection::AllocationDefinitionAllocation
+                if source_kind == Some(DeclarationKind::AllocationDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::Allocate,
+                ])))
+            }
+            ActionDerivedFactCollection::RenderingDefinitionRendering
+                if source_kind == Some(DeclarationKind::RenderingDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::RenderingUsage,
+                ])))
+            }
+            ActionDerivedFactCollection::ViewDefinitionView
+                if source_kind == Some(DeclarationKind::ViewDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::ViewUsage,
+                ])))
+            }
+            ActionDerivedFactCollection::StateDefinitionEntryAction
+            | ActionDerivedFactCollection::StateDefinitionDoAction
+            | ActionDerivedFactCollection::StateDefinitionExitAction
+            | ActionDerivedFactCollection::StateUsageEntryAction
+            | ActionDerivedFactCollection::StateUsageDoAction
+            | ActionDerivedFactCollection::StateUsageExitAction
+            | ActionDerivedFactCollection::StateDefinitionState
+            | ActionDerivedFactCollection::CalculationDefinitionCalculation
+            | ActionDerivedFactCollection::AllocationDefinitionAllocation
+            | ActionDerivedFactCollection::RenderingDefinitionRendering
+            | ActionDerivedFactCollection::ViewDefinitionView => {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
+            }
             ActionDerivedFactCollection::TerminateOccurrenceArgument
             | ActionDerivedFactCollection::SendSenderArgument
             | ActionDerivedFactCollection::SendReceiverArgument
