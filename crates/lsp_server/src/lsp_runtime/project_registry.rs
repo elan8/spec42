@@ -637,6 +637,101 @@ mod tests {
         );
     }
 
+    /// A watcher event whose drive letter differs in case from the workspace folder stays in that
+    /// project. VS Code opens `file:///c:/…` while an agent write is often reported as
+    /// `file:///C:/…`. Windows path prefixes compare the drive letter case-insensitively, so the
+    /// two URIs must not become two projects.
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn opposite_drive_letter_stays_in_the_workspace_project() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path();
+        let models = root.join("models");
+        fs::create_dir_all(&models).unwrap();
+        fs::write(
+            root.join(".project.json"),
+            r#"{"name":"model","version":"1.0.0"}"#,
+        )
+        .unwrap();
+        let source = models.join("Model.sysml");
+        fs::write(&source, "package Model;").unwrap();
+
+        let workspace = with_drive_letter_case(&Url::from_directory_path(root).unwrap(), false);
+        let lowercase_document =
+            with_drive_letter_case(&Url::from_file_path(&source).unwrap(), false);
+        let uppercase_document =
+            with_drive_letter_case(&Url::from_file_path(&source).unwrap(), true);
+        assert!(
+            workspace.as_str().contains("file:///c:"),
+            "workspace URI kept an uppercase drive letter: {workspace}"
+        );
+        assert!(
+            uppercase_document.as_str().contains("file:///C:"),
+            "watcher URI lost its uppercase drive letter: {uppercase_document}"
+        );
+
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(vec![workspace], Vec::new(), Vec::new())
+            .await;
+        assert_eq!(registry.handles().len(), 1);
+
+        let from_editor = registry.handle_for_uri(&lowercase_document).await.unwrap();
+        let from_watcher = registry.handle_for_uri(&uppercase_document).await.unwrap();
+        assert!(
+            from_editor.same_session(&from_watcher),
+            "uppercase watcher URI was admitted as a second project"
+        );
+        assert_eq!(registry.handles().len(), 1);
+    }
+
+    /// A watcher event whose directory casing differs from the workspace folder stays in that
+    /// project. An agent write is often reported with a different spelling of a path component
+    /// (`Workspace` versus `workspace`). The file must not be admitted again as a loose project.
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn different_directory_case_stays_in_the_workspace_project() {
+        let temp = tempfile::tempdir().unwrap();
+        let folder = temp.path().join("Workspace");
+        let models = folder.join("models");
+        fs::create_dir_all(&models).unwrap();
+        fs::write(
+            folder.join(".project.json"),
+            r#"{"name":"model","version":"1.0.0"}"#,
+        )
+        .unwrap();
+        let source = models.join("Model.sysml");
+        fs::write(&source, "package Model;").unwrap();
+
+        let workspace = Url::from_directory_path(&folder).unwrap();
+        let document = Url::from_file_path(&source).unwrap();
+        let flipped = Url::parse(&document.as_str().replacen("/Workspace/", "/workspace/", 1))
+            .expect("flipped directory case");
+        assert_ne!(document.as_str(), flipped.as_str());
+
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(vec![workspace], Vec::new(), Vec::new())
+            .await;
+        assert_eq!(registry.handles().len(), 1);
+
+        let from_scan = registry.handle_for_uri(&document).await.unwrap();
+        let from_watcher = registry.handle_for_uri(&flipped).await.unwrap();
+        assert!(
+            from_scan.same_session(&from_watcher),
+            "differently cased watcher URI was admitted as a second project"
+        );
+        assert_eq!(registry.handles().len(), 1);
+    }
+
     /// A manifest-admitted library root must classify its own files as library files. Before the
     /// fix, `library_root_url` was a bare `Url::from_directory_path` whose drive-letter casing
     /// (`file:///C:/…`) disagreed with the lowercased casing of scanned document URIs
@@ -659,5 +754,21 @@ mod tests {
             sysml_query::source::uri_under_any(&file_url, std::slice::from_ref(&root_url)),
             "normalized document URI {file_url} must be recognised under library root {root_url}",
         );
+    }
+
+    /// Rebuild a file URL with an explicit Windows drive-letter case.
+    ///
+    /// `Url::from_file_path` asks the path parser for the drive letter, and that parser reports
+    /// it in uppercase, so rewriting the `Path` and converting again cannot produce `file:///c:/`.
+    /// The letter has to be edited in the URL text.
+    #[cfg(windows)]
+    fn with_drive_letter_case(url: &Url, uppercase: bool) -> Url {
+        let text = url.as_str().replacen("file:///C:", "file:///c:", 1);
+        let text = if uppercase {
+            text.replacen("file:///c:", "file:///C:", 1)
+        } else {
+            text
+        };
+        Url::parse(&text).expect("rewritten file URL")
     }
 }
