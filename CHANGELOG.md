@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Semantic metadata keywords supply inherited members (#279).** Keyword-implied
+  specialization participates in name resolution, including chained semantic metadata and
+  bare `#keyword def` declarations. SysML definitions using KerML-only `disjoint from` headers
+  now report syntax errors; KerML classifier disjoining remains valid.
+
 - **The Elan8 method libraries are no longer bundled.** `elan8/mbse-methodology` no longer ships a
   SysML library: its decisions, assumptions and risks overlap the standard `ModelingMetadata` and
   `RiskMetadata` libraries, and real models did not use the rest. The `method` managed library,

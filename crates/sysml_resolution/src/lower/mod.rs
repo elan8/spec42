@@ -3329,8 +3329,8 @@ impl SemanticModelBuilder {
     /// PackageBody` shares with an ordinary `package { ... }`. `ExtendedDefinition` has no
     /// `Membership` node of its own (unlike `Package`, which also lowers with a synthesized
     /// `Owning`/`Default` membership for the same reason -- see `lower_package`), so membership is
-    /// synthesized identically. The `#`-prefix keyword tags and `abstract`/`variation` prefix are
-    /// out of scope; see `DeclarationKind::ExtendedDefinition`'s doc comment.
+    /// synthesized identically. Prefix keywords annotate this declaration just as they do a
+    /// language-keyword-led definition (SysML 7.27.4).
     pub(crate) fn lower_extended_definition(
         &mut self,
         document: DocumentIdx,
@@ -3363,6 +3363,10 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
+        for keyword in &node.value.prefix_keywords {
+            self.buffer_prefix_metadata_keyword(owner, UnsupportedFamily::PackageMember, keyword);
+        }
+        self.bind_pending_prefix_metadata(document, declaration)?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
