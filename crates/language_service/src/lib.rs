@@ -1,5 +1,3 @@
-#![recursion_limit = "256"]
-
 //! Protocol-neutral SysML editor language services.
 //!
 //! Hosts (LSP, embedding services, CLI) call these APIs instead of depending on `tower-lsp`.

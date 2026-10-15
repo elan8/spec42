@@ -1,5 +1,3 @@
-#![recursion_limit = "256"]
-
 //! Spec42 CLI and MCP shared implementation.
 
 pub mod ai_tools;

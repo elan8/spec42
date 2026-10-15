@@ -9,7 +9,6 @@
 //! The library sources are then admitted as `StandardLibrary`-role documents, so the fixture's
 //! references resolve against them while the owned projections keep reporting only the fixture's
 //! own authored documents.
-#![recursion_limit = "256"]
 
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::fmt::Write as _;
