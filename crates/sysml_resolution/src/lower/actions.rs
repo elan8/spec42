@@ -1745,7 +1745,9 @@ impl SemanticModelBuilder {
         // name after `accept` is that of its payload parameter, not of the action.
         let (has_payload_argument, has_receiver_argument) = match &accept.value {
             TransitionAccept::Shorthand(_, via) => (true, via.is_some()),
-            TransitionAccept::TimeTrigger(_, _) => (true, false),
+            TransitionAccept::TimeTrigger(_, _) | TransitionAccept::NamedTimeTrigger(_, _, _) => {
+                (true, false)
+            }
             TransitionAccept::Payload(_, via) => (false, via.is_some()),
         };
         let declaration = self.push_typed_declaration(
