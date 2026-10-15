@@ -32,6 +32,18 @@ package Constraints {
 (fixture-diagnostics
   (document "memory://snapshot/constraint_body_action_members.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "control_node_invalid_owner")
+        (source "semantic")
+        (range (start 2 8) (end 2 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "control_node_invalid_owner")
+        (source "semantic")
+        (range (start 3 8) (end 3 21))
+      )
     )
   )
 )

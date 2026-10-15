@@ -1885,10 +1885,17 @@ mod tests {
                 true_anchor: None,
             })
         );
-        assert!(exact_conditional_library_specialization(
-            "connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure)) implies specializesFromLibrary('Objects::binaryLinkObjects')"
-        )
-        .is_none());
+        assert_eq!(
+            exact_conditional_library_specialization(
+                "connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure)) implies specializesFromLibrary('Objects::binaryLinkObjects')"
+            ),
+            Some(ConditionalLibrarySpecializationContract {
+                predicate: LibrarySpecializationPredicate::ConnectorBinaryAssociationStructure,
+                owner_metaclasses: Vec::new(),
+                anchor: "Objects::binaryLinkObjects".to_string(),
+                true_anchor: None,
+            })
+        );
         assert_eq!(
             exact_conditional_library_specialization(
                 "owningType <> null and (owningType.oclIsKindOf(Behavior) or owningType.oclIsKindOf(Step)) and self.isComposite implies specializesFromLibrary('Performances::Performance::subperformance')"

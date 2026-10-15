@@ -3133,13 +3133,12 @@ fn conditional_library_specialization_predicate_holds_with_variants(
                 storage,
                 variant_members,
                 source,
-            )
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        rule.owner_metaclasses
-                            .contains(&library_rule_metaclass(owner.kind))
-                    })
+            ) && declaration.owner.is_some_and(|owner| {
+                storage.declaration(owner).is_some_and(|owner| {
+                    rule.owner_metaclasses
+                        .contains(&library_rule_metaclass(owner.kind))
                 })
+            })
         }
         LibrarySpecializationPredicate::OwnedBy => declaration.owner.is_some_and(|owner| {
             storage.declaration(owner).is_some_and(|owner| {
@@ -3152,19 +3151,18 @@ fn conditional_library_specialization_predicate_holds_with_variants(
                 storage,
                 variant_members,
                 source,
-            )
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        matches!(
-                            owner.kind,
-                            DeclarationKind::ActionDefinition
-                                | DeclarationKind::ActionUsage
-                                | DeclarationKind::AcceptActionUsage
-                                | DeclarationKind::SendActionUsage
-                                | DeclarationKind::TerminateActionUsage
-                        )
-                    })
+            ) && declaration.owner.is_some_and(|owner| {
+                storage.declaration(owner).is_some_and(|owner| {
+                    matches!(
+                        owner.kind,
+                        DeclarationKind::ActionDefinition
+                            | DeclarationKind::ActionUsage
+                            | DeclarationKind::AcceptActionUsage
+                            | DeclarationKind::SendActionUsage
+                            | DeclarationKind::TerminateActionUsage
+                    )
                 })
+            })
         }
         LibrarySpecializationPredicate::IsNotTriggerAction => {
             declaration.kind == DeclarationKind::AcceptActionUsage
