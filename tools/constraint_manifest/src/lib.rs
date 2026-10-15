@@ -379,6 +379,12 @@ impl ConstraintManifest {
                         ) | (
                             "deriveFeatureOwnedFeatureInverting",
                             FeatureDerivedRelationshipKind::OwnedFeatureInverting
+                        ) | (
+                            "deriveFeatureOwnedReferenceSubsetting",
+                            FeatureDerivedRelationshipKind::OwnedReferenceSubsetting
+                        ) | (
+                            "deriveFeatureOwnedCrossSubsetting",
+                            FeatureDerivedRelationshipKind::OwnedCrossSubsetting
                         )
                     ) {
                         return Err(format!(
@@ -388,40 +394,48 @@ impl ConstraintManifest {
                     }
                 }
                 if let Some(contract) = &entry.type_derived_relationship {
-                    if entry.family != ConstraintFamily::Derive || entry.metaclass != "Type" {
+                    let classifier_subclassification = entry.family == ConstraintFamily::Derive
+                        && entry.constraint == "deriveClassifierOwnedSubclassification"
+                        && entry.metaclass == "Classifier"
+                        && contract.kind == TypeDerivedRelationshipKind::OwnedSubclassification;
+                    if !classifier_subclassification
+                        && (entry.family != ConstraintFamily::Derive || entry.metaclass != "Type")
+                    {
                         return Err(format!(
                             "constraint manifest rule {:?} has a Type relationship derivation outside the exact Type derive family",
                             entry.rule_id
                         ));
                     }
-                    if !matches!(
-                        (entry.constraint.as_str(), contract.kind),
-                        (
-                            "deriveTypeOwnedSpecialization",
-                            TypeDerivedRelationshipKind::OwnedSpecialization
-                        ) | (
-                            "deriveTypeOwnedUnioning",
-                            TypeDerivedRelationshipKind::OwnedUnioning
-                        ) | (
-                            "deriveTypeOwnedIntersecting",
-                            TypeDerivedRelationshipKind::OwnedIntersecting
-                        ) | (
-                            "deriveTypeOwnedDifferencing",
-                            TypeDerivedRelationshipKind::OwnedDifferencing
-                        ) | (
-                            "deriveTypeOwnedDisjoining",
-                            TypeDerivedRelationshipKind::OwnedDisjoining
-                        ) | (
-                            "deriveTypeUnioningType",
-                            TypeDerivedRelationshipKind::UnioningType
-                        ) | (
-                            "deriveTypeIntersectingType",
-                            TypeDerivedRelationshipKind::IntersectingType
-                        ) | (
-                            "deriveTypeDifferencingType",
-                            TypeDerivedRelationshipKind::DifferencingType
+                    if !classifier_subclassification
+                        && !matches!(
+                            (entry.constraint.as_str(), contract.kind),
+                            (
+                                "deriveTypeOwnedSpecialization",
+                                TypeDerivedRelationshipKind::OwnedSpecialization
+                            ) | (
+                                "deriveTypeOwnedUnioning",
+                                TypeDerivedRelationshipKind::OwnedUnioning
+                            ) | (
+                                "deriveTypeOwnedIntersecting",
+                                TypeDerivedRelationshipKind::OwnedIntersecting
+                            ) | (
+                                "deriveTypeOwnedDifferencing",
+                                TypeDerivedRelationshipKind::OwnedDifferencing
+                            ) | (
+                                "deriveTypeOwnedDisjoining",
+                                TypeDerivedRelationshipKind::OwnedDisjoining
+                            ) | (
+                                "deriveTypeUnioningType",
+                                TypeDerivedRelationshipKind::UnioningType
+                            ) | (
+                                "deriveTypeIntersectingType",
+                                TypeDerivedRelationshipKind::IntersectingType
+                            ) | (
+                                "deriveTypeDifferencingType",
+                                TypeDerivedRelationshipKind::DifferencingType
+                            )
                         )
-                    ) {
+                    {
                         return Err(format!(
                             "constraint manifest rule {:?} has an incompatible exact Type relationship derivation",
                             entry.rule_id
@@ -616,6 +630,46 @@ impl ConstraintManifest {
                             "deriveViewDefinitionView",
                             "ViewDefinition",
                             ActionDerivedFactKind::ViewDefinitionView
+                        ) | (
+                            "deriveViewDefinitionViewRendering",
+                            "ViewDefinition",
+                            ActionDerivedFactKind::ViewDefinitionViewRendering
+                        ) | (
+                            "deriveViewUsageViewRendering",
+                            "ViewUsage",
+                            ActionDerivedFactKind::ViewUsageViewRendering
+                        ) | (
+                            "deriveViewDefinitionSatisfiedViewpoint",
+                            "ViewDefinition",
+                            ActionDerivedFactKind::ViewDefinitionSatisfiedViewpoint
+                        ) | (
+                            "deriveViewUsageSatisfiedViewpoint",
+                            "ViewUsage",
+                            ActionDerivedFactKind::ViewUsageSatisfiedViewpoint
+                        ) | (
+                            "derivePortDefinitionConjugatedPortDefinition",
+                            "PortDefinition",
+                            ActionDerivedFactKind::PortDefinitionConjugatedPortDefinition
+                        ) | (
+                            "deriveFeatureCrossFeature",
+                            "Feature",
+                            ActionDerivedFactKind::FeatureCrossFeature
+                        ) | (
+                            "deriveFeatureFeatureTarget",
+                            "Feature",
+                            ActionDerivedFactKind::FeatureFeatureTarget
+                        ) | (
+                            "deriveFunctionResult",
+                            "Function",
+                            ActionDerivedFactKind::FunctionResult
+                        ) | (
+                            "deriveExpressionResult",
+                            "Expression",
+                            ActionDerivedFactKind::ExpressionResult
+                        ) | (
+                            "deriveBehaviorStep",
+                            "Behavior",
+                            ActionDerivedFactKind::BehaviorStep
                         )
                     );
                     if entry.family != ConstraintFamily::Derive
@@ -699,6 +753,14 @@ impl ConstraintManifest {
                             "deriveCaseUsageSubjectParameter",
                             "CaseUsage",
                             RequirementDerivedFactKind::CaseUsageSubjectParameter
+                        ) | (
+                            "deriveCaseDefinitionObjectiveRequirement",
+                            "CaseDefinition",
+                            RequirementDerivedFactKind::CaseDefinitionObjectiveRequirement
+                        ) | (
+                            "deriveCaseUsageObjectiveRequirement",
+                            "CaseUsage",
+                            RequirementDerivedFactKind::CaseUsageObjectiveRequirement
                         )
                     );
                     if entry.family != ConstraintFamily::Derive
@@ -1429,6 +1491,8 @@ pub enum FeatureDerivedRelationshipKind {
     ChainingFeature,
     /// `ownedFeatureInverting = ownedRelationship->selectByKind(FeatureInverting)->select(fi | fi.featureInverted = self)`.
     OwnedFeatureInverting,
+    OwnedReferenceSubsetting,
+    OwnedCrossSubsetting,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -1451,6 +1515,7 @@ pub enum TypeDerivedRelationshipKind {
     UnioningType,
     IntersectingType,
     DifferencingType,
+    OwnedSubclassification,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -2070,6 +2135,16 @@ pub enum ActionDerivedFactKind {
     AllocationDefinitionAllocation,
     RenderingDefinitionRendering,
     ViewDefinitionView,
+    ViewDefinitionViewRendering,
+    ViewUsageViewRendering,
+    ViewDefinitionSatisfiedViewpoint,
+    ViewUsageSatisfiedViewpoint,
+    PortDefinitionConjugatedPortDefinition,
+    FeatureCrossFeature,
+    FeatureFeatureTarget,
+    FunctionResult,
+    ExpressionResult,
+    BehaviorStep,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -2100,6 +2175,8 @@ pub enum RequirementDerivedFactKind {
     CaseDefinitionSubjectParameter,
     CaseUsageActorParameter,
     CaseUsageSubjectParameter,
+    CaseDefinitionObjectiveRequirement,
+    CaseUsageObjectiveRequirement,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

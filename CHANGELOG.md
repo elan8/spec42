@@ -11,7 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `deriveStateDefinitionDoAction`, `deriveStateDefinitionExitAction`, and the matching state-usage
   rules project the first owned state subaction of that kind. `deriveStateDefinitionState` projects
   the nested state usages. Calculation, allocation, rendering, and view definitions project their
-  matching owned usages. Case definitions and usages project their actor and subject parameters.
+  matching owned usages. Case definitions and usages project their actor and subject parameters
+  and their first objective requirement. A view projects its first rendering and its composite
+  satisfied viewpoints. A port definition projects its conjugated port definition. A classifier
+  projects its owned subclassifications, and a feature projects its first reference subsetting
+  and cross subsetting, its cross feature, and its feature target. A function or expression
+  projects its first owned return parameter. A behavior projects its steps.
 
 - **Feature chain targets and inverses are derived collections.** `deriveFeatureChainingFeature`
   projects the owned feature-chaining relationship, and `deriveFeatureOwnedFeatureInverting`

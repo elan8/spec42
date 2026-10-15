@@ -369,6 +369,10 @@ pub(crate) fn feature_derived_relationship_kinds(
         FeatureDerivedRelationshipCollection::OwnedFeatureInverting => {
             &[ReferenceKind::FeatureInverting]
         }
+        FeatureDerivedRelationshipCollection::OwnedReferenceSubsetting => {
+            &[ReferenceKind::References]
+        }
+        FeatureDerivedRelationshipCollection::OwnedCrossSubsetting => &[ReferenceKind::Crosses],
     }
 }
 
@@ -473,6 +477,9 @@ pub(crate) fn type_derived_relationship_kinds(
         TypeDerivedRelationshipCollection::OwnedDifferencing
         | TypeDerivedRelationshipCollection::DifferencingType => &[ReferenceKind::Differencing],
         TypeDerivedRelationshipCollection::OwnedDisjoining => &[ReferenceKind::Disjoining],
+        TypeDerivedRelationshipCollection::OwnedSubclassification => {
+            &[ReferenceKind::Subclassification]
+        }
     }
 }
 

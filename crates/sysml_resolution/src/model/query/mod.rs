@@ -1019,12 +1019,17 @@ impl<D> SemanticModel<D> {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
-        self.resolved_outcome(
-            self.relationships_of_kinds(
-                declaration,
-                feature_derived_relationship_kinds(collection),
-            ),
-        )
+        let mut relationships = self
+            .relationships_of_kinds(declaration, feature_derived_relationship_kinds(collection))
+            .into_vec();
+        if matches!(
+            collection,
+            FeatureDerivedRelationshipCollection::OwnedReferenceSubsetting
+                | FeatureDerivedRelationshipCollection::OwnedCrossSubsetting
+        ) {
+            relationships.truncate(1);
+        }
+        self.resolved_outcome(relationships.into_boxed_slice())
     }
 
     /// Projects one exact KerML Type relationship collection or operand projection from the
@@ -1042,6 +1047,19 @@ impl<D> SemanticModel<D> {
         let Some(rule) = type_derived_relationship_rule(collection) else {
             return self.query_outcome(QueryAnswer::Unsupported);
         };
+        if collection == TypeDerivedRelationshipCollection::OwnedSubclassification {
+            let is_classifier = self.storage.declaration(declaration).is_some_and(|source| {
+                crate::model::element_kind::element_kind(source.kind)
+                    .conforms_to(sysml_contract::ElementKind::Classifier)
+            });
+            if rule.metaclass != "Classifier" || !is_classifier {
+                return self.query_outcome(QueryAnswer::Unsupported);
+            }
+            let _rule_id = rule.rule_id;
+            return self.resolved_outcome(
+                self.relationships_of_kinds(declaration, &[ReferenceKind::Subclassification]),
+            );
+        }
         if rule.metaclass != "Type"
             || self
                 .storage
@@ -1585,8 +1603,17 @@ impl<D> SemanticModel<D> {
             });
         };
         // Owner-scoped from the settled index rather than a corpus scan.
-        let values = self.symbols(self.child_declarations(declaration).iter().copied().filter(
-            |candidate_id| {
+        // Objective is singular: the pinned body keeps only the first ObjectiveMembership.
+        let first_only = matches!(
+            collection,
+            RequirementDerivedFactCollection::CaseDefinitionObjectiveRequirement
+                | RequirementDerivedFactCollection::CaseUsageObjectiveRequirement
+        );
+        let matched = self
+            .child_declarations(declaration)
+            .iter()
+            .copied()
+            .filter(|candidate_id| {
                 self.memberships
                     .get(*candidate_id)
                     .is_some_and(|membership| membership.kind == MembershipKind::Feature)
@@ -1596,9 +1623,44 @@ impl<D> SemanticModel<D> {
                         .is_some_and(|candidate| {
                             element_kind::membership_role(candidate.kind) == Some(role)
                         })
-            },
-        ));
+            });
+        let values = if first_only {
+            self.symbols_in_order(matched.take(1))
+        } else {
+            self.symbols(matched)
+        };
         self.resolved_outcome(RequirementDerivedFactOutcome::Elements(values))
+    }
+
+    fn composite_viewpoint_usages(&self, owner: DeclarationId) -> Box<[SymbolId]> {
+        self.symbols(
+            self.child_declarations(owner)
+                .iter()
+                .copied()
+                .filter(|member| {
+                    self.storage
+                        .declaration(*member)
+                        .is_some_and(|candidate| candidate.kind == DeclarationKind::ViewpointUsage)
+                        && self.types.usage_is_reference(&self.storage, *member) == Some(false)
+                }),
+        )
+    }
+
+    /// First owned `ReturnParameterMembership` parameter, in membership order.
+    ///
+    /// KerML `Function::result` and `Expression::result` both take that first parameter and are
+    /// null when the owner has none. Inherited results are not owned memberships.
+    fn first_return_parameter(&self, owner: DeclarationId) -> Box<[SymbolId]> {
+        let mut values =
+            self.symbols_in_order(self.child_declarations(owner).iter().copied().filter(
+                |member| {
+                    self.effective_membership_role(*member)
+                        == Some(crate::MembershipRole::ReturnParameter)
+                },
+            ))
+            .into_vec();
+        values.truncate(1);
+        values.into_boxed_slice()
     }
 
     /// The exact Actions derivation boundary. Canonical effective usages and the ordered argument
@@ -1984,6 +2046,129 @@ impl<D> SemanticModel<D> {
                     DeclarationKind::ViewUsage,
                 ])))
             }
+            ActionDerivedFactCollection::ViewDefinitionViewRendering
+                if source_kind == Some(DeclarationKind::ViewDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::RenderingUsage,
+                )))
+            }
+            ActionDerivedFactCollection::ViewUsageViewRendering
+                if source_kind == Some(DeclarationKind::ViewUsage) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::RenderingUsage,
+                )))
+            }
+            ActionDerivedFactCollection::ViewDefinitionSatisfiedViewpoint
+                if source_kind == Some(DeclarationKind::ViewDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.composite_viewpoint_usages(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::ViewUsageSatisfiedViewpoint
+                if source_kind == Some(DeclarationKind::ViewUsage) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.composite_viewpoint_usages(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::PortDefinitionConjugatedPortDefinition
+                if source_kind == Some(DeclarationKind::PortDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::ConjugatedPortDefinition,
+                )))
+            }
+            ActionDerivedFactCollection::FeatureCrossFeature
+                if self
+                    .memberships
+                    .get(declaration)
+                    .is_some_and(|membership| membership.kind == MembershipKind::Feature) =>
+            {
+                match crate::resolve::end_features::cross_feature_of(
+                    &self.storage,
+                    &self.resolution.member_access_paths,
+                    declaration,
+                ) {
+                    Ok(crate::resolve::end_features::CrossFeature::Resolved(target)) => {
+                        let values = self.symbol_id(target).into_iter().collect::<Vec<_>>();
+                        self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                            values.into_boxed_slice(),
+                        ))
+                    }
+                    Ok(crate::resolve::end_features::CrossFeature::Absent) => {
+                        self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
+                    }
+                    Ok(crate::resolve::end_features::CrossFeature::Unpublished) | Err(_) => {
+                        self.query_outcome(QueryAnswer::Unresolved)
+                    }
+                }
+            }
+            ActionDerivedFactCollection::FeatureFeatureTarget
+                if self
+                    .memberships
+                    .get(declaration)
+                    .is_some_and(|membership| membership.kind == MembershipKind::Feature) =>
+            {
+                let chaining =
+                    self.relationships_of_kinds(declaration, &[ReferenceKind::FeatureChaining]);
+                match chaining.last().map(|relationship| &relationship.target) {
+                    None => {
+                        let values = self.symbol_id(declaration).into_iter().collect::<Vec<_>>();
+                        self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                            values.into_boxed_slice(),
+                        ))
+                    }
+                    Some(RelationshipTarget::Resolved(target)) => {
+                        self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([*target])))
+                    }
+                    Some(
+                        RelationshipTarget::Unresolved
+                        | RelationshipTarget::Ambiguous(_)
+                        | RelationshipTarget::Unsupported,
+                    ) => self.query_outcome(QueryAnswer::Unresolved),
+                }
+            }
+            ActionDerivedFactCollection::FunctionResult
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::Function)
+                }) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.first_return_parameter(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::ExpressionResult
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::Expression)
+                }) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.first_return_parameter(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::BehaviorStep
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::Behavior)
+                }) =>
+            {
+                let members = self
+                    .owned_feature_members(declaration)
+                    .into_iter()
+                    .chain(self.inherited_feature_members(declaration))
+                    .filter(|member| {
+                        self.storage.declaration(*member).is_some_and(|candidate| {
+                            element_kind::element_kind(candidate.kind)
+                                .conforms_to(sysml_contract::ElementKind::Step)
+                        })
+                    });
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(members)))
+            }
             ActionDerivedFactCollection::StateDefinitionEntryAction
             | ActionDerivedFactCollection::StateDefinitionDoAction
             | ActionDerivedFactCollection::StateDefinitionExitAction
@@ -1994,7 +2179,17 @@ impl<D> SemanticModel<D> {
             | ActionDerivedFactCollection::CalculationDefinitionCalculation
             | ActionDerivedFactCollection::AllocationDefinitionAllocation
             | ActionDerivedFactCollection::RenderingDefinitionRendering
-            | ActionDerivedFactCollection::ViewDefinitionView => {
+            | ActionDerivedFactCollection::ViewDefinitionView
+            | ActionDerivedFactCollection::ViewDefinitionViewRendering
+            | ActionDerivedFactCollection::ViewUsageViewRendering
+            | ActionDerivedFactCollection::ViewDefinitionSatisfiedViewpoint
+            | ActionDerivedFactCollection::ViewUsageSatisfiedViewpoint
+            | ActionDerivedFactCollection::PortDefinitionConjugatedPortDefinition
+            | ActionDerivedFactCollection::FeatureCrossFeature
+            | ActionDerivedFactCollection::FeatureFeatureTarget
+            | ActionDerivedFactCollection::FunctionResult
+            | ActionDerivedFactCollection::ExpressionResult
+            | ActionDerivedFactCollection::BehaviorStep => {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
             }
             ActionDerivedFactCollection::TerminateOccurrenceArgument

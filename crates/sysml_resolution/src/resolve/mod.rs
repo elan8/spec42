@@ -1924,6 +1924,8 @@ pub(crate) fn requirement_derived_membership_role(
         | Collection::UsageSubjectParameter
         | Collection::CaseDefinitionSubjectParameter
         | Collection::CaseUsageSubjectParameter => Some(MembershipRole::Subject),
+        Collection::CaseDefinitionObjectiveRequirement
+        | Collection::CaseUsageObjectiveRequirement => Some(MembershipRole::Objective),
         Collection::DefinitionRequiredConstraint | Collection::UsageRequiredConstraint => Some(
             MembershipRole::RequirementConstraint(RequirementConstraintKind::Requirement),
         ),

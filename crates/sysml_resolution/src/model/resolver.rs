@@ -302,7 +302,7 @@ mod tests {
 
     #[test]
     fn generated_feature_relationship_collection_contracts_are_complete_and_closed() {
-        assert_eq!(GENERATED_FEATURE_DERIVED_RELATIONSHIP_RULES.len(), 7);
+        assert_eq!(GENERATED_FEATURE_DERIVED_RELATIONSHIP_RULES.len(), 9);
         assert_eq!(
             GENERATED_FEATURE_DERIVED_RELATIONSHIP_RULES
                 .iter()
@@ -313,6 +313,11 @@ mod tests {
                     "kerml-1.0:8.3.3.3.4:deriveFeatureChainingFeature",
                     "Feature",
                     FeatureDerivedRelationshipCollection::ChainingFeature,
+                ),
+                (
+                    "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedCrossSubsetting",
+                    "Feature",
+                    FeatureDerivedRelationshipCollection::OwnedCrossSubsetting,
                 ),
                 (
                     "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedFeatureChaining",
@@ -328,6 +333,11 @@ mod tests {
                     "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedRedefinition",
                     "Feature",
                     FeatureDerivedRelationshipCollection::OwnedRedefinition,
+                ),
+                (
+                    "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedReferenceSubsetting",
+                    "Feature",
+                    FeatureDerivedRelationshipCollection::OwnedReferenceSubsetting,
                 ),
                 (
                     "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedSubsetting",

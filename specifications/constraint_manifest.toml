@@ -651,6 +651,9 @@ family = "derive"
 clause = "8.3.3.2.2"
 rule_id = "kerml-1.0:8.3.3.2.2:deriveClassifierOwnedSubclassification"
 
+[specifications.constraints.type_derived_relationship]
+kind = "owned_subclassification"
+
 [[specifications.constraints]]
 package = "Core::Classifiers"
 metaclass = "Classifier"
@@ -941,6 +944,10 @@ family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureCrossFeature"
 
+[specifications.constraints.action_derived_fact]
+kind = "feature_cross_feature"
+body_sha256 = "123e59671db3d0715fa649164ad6630531be8a6f2583819c80ba66ced95668d5"
+
 [[specifications.constraints]]
 package = "Core::Features"
 metaclass = "Feature"
@@ -948,6 +955,10 @@ constraint = "deriveFeatureFeatureTarget"
 family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureFeatureTarget"
+
+[specifications.constraints.action_derived_fact]
+kind = "feature_feature_target"
+body_sha256 = "ea6f90216766a8fa0b6408b7cdc1107a3a05fc99d3812dcffbe6f3013b8f1495"
 
 [[specifications.constraints]]
 package = "Core::Features"
@@ -964,6 +975,9 @@ constraint = "deriveFeatureOwnedCrossSubsetting"
 family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedCrossSubsetting"
+
+[specifications.constraints.feature_derived_relationship]
+kind = "owned_cross_subsetting"
 
 [[specifications.constraints]]
 package = "Core::Features"
@@ -1005,6 +1019,9 @@ constraint = "deriveFeatureOwnedReferenceSubsetting"
 family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedReferenceSubsetting"
+
+[specifications.constraints.feature_derived_relationship]
+kind = "owned_reference_subsetting"
 
 [[specifications.constraints]]
 package = "Core::Features"
@@ -1685,6 +1702,10 @@ family = "derive"
 clause = "8.3.4.6.2"
 rule_id = "kerml-1.0:8.3.4.6.2:deriveBehaviorStep"
 
+[specifications.constraints.action_derived_fact]
+kind = "behavior_step"
+body_sha256 = "313eb7db063437ed4a982db6b69bf7d97cf3f3b8a182d3d3a1dc0219f53b6731"
+
 [[specifications.constraints]]
 package = "Kernel::Behaviors"
 metaclass = "Behavior"
@@ -1834,6 +1855,10 @@ family = "derive"
 clause = "8.3.4.7.3"
 rule_id = "kerml-1.0:8.3.4.7.3:deriveExpressionResult"
 
+[specifications.constraints.action_derived_fact]
+kind = "expression_result"
+body_sha256 = "b8fc48fd43050c62bd529fbda2cda0f6e6b1e6a2da8d1817717e95383024e9af"
+
 [[specifications.constraints]]
 package = "Kernel::Functions"
 metaclass = "Expression"
@@ -1880,6 +1905,10 @@ constraint = "deriveFunctionResult"
 family = "derive"
 clause = "8.3.4.7.4"
 rule_id = "kerml-1.0:8.3.4.7.4:deriveFunctionResult"
+
+[specifications.constraints.action_derived_fact]
+kind = "function_result"
+body_sha256 = "2511f6b349b77ff3f133397ce2d9e1153c7d26f3439c68a6a89b9b4b6f265142"
 
 [[specifications.constraints]]
 package = "Kernel::Functions"
@@ -2685,6 +2714,10 @@ constraint = "derivePortDefinitionConjugatedPortDefinition"
 family = "derive"
 clause = "8.3.12.5"
 rule_id = "sysml-2.0:8.3.12.5:derivePortDefinitionConjugatedPortDefinition"
+
+[specifications.constraints.action_derived_fact]
+kind = "port_definition_conjugated_port_definition"
+body_sha256 = "43daa4ecdbb903d0b247f650243e1e7c0d8401c579516503a932c10db54ad6b5"
 
 [[specifications.constraints]]
 package = "Systems::Ports"
@@ -4734,6 +4767,10 @@ family = "derive"
 clause = "8.3.22.2"
 rule_id = "sysml-2.0:8.3.22.2:deriveCaseDefinitionObjectiveRequirement"
 
+[specifications.constraints.requirement_derived_fact]
+kind = "case_definition_objective_requirement"
+body_sha256 = "8d1e71edf2933dcc5e4cd8ffff54892eb28edbc71ed6cf60cd2f7679bcb19f71"
+
 [[specifications.constraints]]
 package = "Systems::Cases"
 metaclass = "CaseDefinition"
@@ -4816,6 +4853,10 @@ constraint = "deriveCaseUsageObjectiveRequirement"
 family = "derive"
 clause = "8.3.22.3"
 rule_id = "sysml-2.0:8.3.22.3:deriveCaseUsageObjectiveRequirement"
+
+[specifications.constraints.requirement_derived_fact]
+kind = "case_usage_objective_requirement"
+body_sha256 = "8d1e71edf2933dcc5e4cd8ffff54892eb28edbc71ed6cf60cd2f7679bcb19f71"
 
 [[specifications.constraints]]
 package = "Systems::Cases"
@@ -5126,6 +5167,10 @@ family = "derive"
 clause = "8.3.26.11"
 rule_id = "sysml-2.0:8.3.26.11:deriveViewUsageSatisfiedViewpoint"
 
+[specifications.constraints.action_derived_fact]
+kind = "view_usage_satisfied_viewpoint"
+body_sha256 = "32c18de6997d4fa844c15a847dc04b0df6a9b75cd98a3c7ea7e99f0e3ca597b4"
+
 [[specifications.constraints]]
 package = "Systems::Views"
 metaclass = "ViewUsage"
@@ -5141,6 +5186,10 @@ constraint = "deriveViewUsageViewRendering"
 family = "derive"
 clause = "8.3.26.11"
 rule_id = "sysml-2.0:8.3.26.11:deriveViewUsageViewRendering"
+
+[specifications.constraints.action_derived_fact]
+kind = "view_usage_view_rendering"
+body_sha256 = "9864358916d3351ba82bff9b11ac489e34af1bdbf7c86a4d5986d81195d2b355"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -5255,6 +5304,10 @@ family = "derive"
 clause = "8.3.26.7"
 rule_id = "sysml-2.0:8.3.26.7:deriveViewDefinitionSatisfiedViewpoint"
 
+[specifications.constraints.action_derived_fact]
+kind = "view_definition_satisfied_viewpoint"
+body_sha256 = "32c18de6997d4fa844c15a847dc04b0df6a9b75cd98a3c7ea7e99f0e3ca597b4"
+
 [[specifications.constraints]]
 package = "Systems::Views"
 metaclass = "ViewDefinition"
@@ -5282,6 +5335,10 @@ constraint = "deriveViewDefinitionViewRendering"
 family = "derive"
 clause = "8.3.26.7"
 rule_id = "sysml-2.0:8.3.26.7:deriveViewDefinitionViewRendering"
+
+[specifications.constraints.action_derived_fact]
+kind = "view_definition_view_rendering"
+body_sha256 = "9864358916d3351ba82bff9b11ac489e34af1bdbf7c86a4d5986d81195d2b355"
 
 [[specifications.constraints]]
 package = "Systems::Views"

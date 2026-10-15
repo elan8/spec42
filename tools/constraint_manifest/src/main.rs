@@ -481,6 +481,12 @@ fn exact_feature_derived_relationship(body: &str) -> Option<FeatureDerivedRelati
         "ownedFeatureInverting = ownedRelationship->selectByKind(FeatureInverting)-> select(fi | fi.featureInverted = self)" => {
             Some(FeatureDerivedRelationshipKind::OwnedFeatureInverting)
         }
+        "ownedReferenceSubsetting =     let referenceSubsettings : OrderedSet(ReferenceSubsetting) =         ownedSubsetting->selectByKind(ReferenceSubsetting) in     if referenceSubsettings->isEmpty() then null     else referenceSubsettings->first() endif" => {
+            Some(FeatureDerivedRelationshipKind::OwnedReferenceSubsetting)
+        }
+        "ownedCrossSubsetting =     let crossSubsettings: Sequence(CrossSubsetting) =          ownedSubsetting->selectByKind(CrossSubsetting) in     if crossSubsettings->isEmpty() then null     else crossSubsettings->first()     endif" => {
+            Some(FeatureDerivedRelationshipKind::OwnedCrossSubsetting)
+        }
         _ => None,
     }
 }
@@ -513,6 +519,9 @@ fn exact_type_derived_relationship(body: &str) -> Option<TypeDerivedRelationship
         }
         "differencingType = ownedDifferencing.differencingType" => {
             Some(TypeDerivedRelationshipKind::DifferencingType)
+        }
+        "ownedSubclassification = ownedSpecialization->selectByKind(Subclassification)" => {
+            Some(TypeDerivedRelationshipKind::OwnedSubclassification)
         }
         _ => None,
     }
@@ -694,6 +703,46 @@ fn exact_action_derived_fact(constraint: &str, body: &str) -> Option<ActionDeriv
             "deriveViewDefinitionView",
             "87fbc56d9b161c66525a13c8ba44e224be24eaaf3947caecb17bf7cc2b9b82ca",
         ) => Some(ActionDerivedFactKind::ViewDefinitionView),
+        (
+            "deriveViewDefinitionViewRendering",
+            "9864358916d3351ba82bff9b11ac489e34af1bdbf7c86a4d5986d81195d2b355",
+        ) => Some(ActionDerivedFactKind::ViewDefinitionViewRendering),
+        (
+            "deriveViewUsageViewRendering",
+            "9864358916d3351ba82bff9b11ac489e34af1bdbf7c86a4d5986d81195d2b355",
+        ) => Some(ActionDerivedFactKind::ViewUsageViewRendering),
+        (
+            "deriveViewDefinitionSatisfiedViewpoint",
+            "32c18de6997d4fa844c15a847dc04b0df6a9b75cd98a3c7ea7e99f0e3ca597b4",
+        ) => Some(ActionDerivedFactKind::ViewDefinitionSatisfiedViewpoint),
+        (
+            "deriveViewUsageSatisfiedViewpoint",
+            "32c18de6997d4fa844c15a847dc04b0df6a9b75cd98a3c7ea7e99f0e3ca597b4",
+        ) => Some(ActionDerivedFactKind::ViewUsageSatisfiedViewpoint),
+        (
+            "derivePortDefinitionConjugatedPortDefinition",
+            "43daa4ecdbb903d0b247f650243e1e7c0d8401c579516503a932c10db54ad6b5",
+        ) => Some(ActionDerivedFactKind::PortDefinitionConjugatedPortDefinition),
+        (
+            "deriveFeatureCrossFeature",
+            "123e59671db3d0715fa649164ad6630531be8a6f2583819c80ba66ced95668d5",
+        ) => Some(ActionDerivedFactKind::FeatureCrossFeature),
+        (
+            "deriveFeatureFeatureTarget",
+            "ea6f90216766a8fa0b6408b7cdc1107a3a05fc99d3812dcffbe6f3013b8f1495",
+        ) => Some(ActionDerivedFactKind::FeatureFeatureTarget),
+        (
+            "deriveFunctionResult",
+            "2511f6b349b77ff3f133397ce2d9e1153c7d26f3439c68a6a89b9b4b6f265142",
+        ) => Some(ActionDerivedFactKind::FunctionResult),
+        (
+            "deriveExpressionResult",
+            "b8fc48fd43050c62bd529fbda2cda0f6e6b1e6a2da8d1817717e95383024e9af",
+        ) => Some(ActionDerivedFactKind::ExpressionResult),
+        (
+            "deriveBehaviorStep",
+            "313eb7db063437ed4a982db6b69bf7d97cf3f3b8a182d3d3a1dc0219f53b6731",
+        ) => Some(ActionDerivedFactKind::BehaviorStep),
         _ => None,
     }
 }
@@ -784,6 +833,14 @@ fn exact_requirement_derived_fact(
             "deriveCaseUsageSubjectParameter",
             "a974bff5d79e5ed8c5fbb92464594e2dcbc25c9780cc5b414d65204077d098cd",
         ) => Some(RequirementDerivedFactKind::CaseUsageSubjectParameter),
+        (
+            "deriveCaseDefinitionObjectiveRequirement",
+            "8d1e71edf2933dcc5e4cd8ffff54892eb28edbc71ed6cf60cd2f7679bcb19f71",
+        ) => Some(RequirementDerivedFactKind::CaseDefinitionObjectiveRequirement),
+        (
+            "deriveCaseUsageObjectiveRequirement",
+            "8d1e71edf2933dcc5e4cd8ffff54892eb28edbc71ed6cf60cd2f7679bcb19f71",
+        ) => Some(RequirementDerivedFactKind::CaseUsageObjectiveRequirement),
         _ => None,
     }
 }

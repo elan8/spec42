@@ -19,6 +19,8 @@ fn feature_collection(kind: FeatureDerivedRelationshipKind) -> &'static str {
         FeatureDerivedRelationshipKind::OwnedTypeFeaturing => "OwnedTypeFeaturing",
         FeatureDerivedRelationshipKind::ChainingFeature => "ChainingFeature",
         FeatureDerivedRelationshipKind::OwnedFeatureInverting => "OwnedFeatureInverting",
+        FeatureDerivedRelationshipKind::OwnedReferenceSubsetting => "OwnedReferenceSubsetting",
+        FeatureDerivedRelationshipKind::OwnedCrossSubsetting => "OwnedCrossSubsetting",
     }
 }
 
@@ -32,6 +34,7 @@ fn type_collection(kind: TypeDerivedRelationshipKind) -> &'static str {
         TypeDerivedRelationshipKind::UnioningType => "UnioningType",
         TypeDerivedRelationshipKind::IntersectingType => "IntersectingType",
         TypeDerivedRelationshipKind::DifferencingType => "DifferencingType",
+        TypeDerivedRelationshipKind::OwnedSubclassification => "OwnedSubclassification",
     }
 }
 
@@ -92,6 +95,20 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> &'static str {
         ActionDerivedFactKind::AllocationDefinitionAllocation => "AllocationDefinitionAllocation",
         ActionDerivedFactKind::RenderingDefinitionRendering => "RenderingDefinitionRendering",
         ActionDerivedFactKind::ViewDefinitionView => "ViewDefinitionView",
+        ActionDerivedFactKind::ViewDefinitionViewRendering => "ViewDefinitionViewRendering",
+        ActionDerivedFactKind::ViewUsageViewRendering => "ViewUsageViewRendering",
+        ActionDerivedFactKind::ViewDefinitionSatisfiedViewpoint => {
+            "ViewDefinitionSatisfiedViewpoint"
+        }
+        ActionDerivedFactKind::ViewUsageSatisfiedViewpoint => "ViewUsageSatisfiedViewpoint",
+        ActionDerivedFactKind::PortDefinitionConjugatedPortDefinition => {
+            "PortDefinitionConjugatedPortDefinition"
+        }
+        ActionDerivedFactKind::FeatureCrossFeature => "FeatureCrossFeature",
+        ActionDerivedFactKind::FeatureFeatureTarget => "FeatureFeatureTarget",
+        ActionDerivedFactKind::FunctionResult => "FunctionResult",
+        ActionDerivedFactKind::ExpressionResult => "ExpressionResult",
+        ActionDerivedFactKind::BehaviorStep => "BehaviorStep",
     }
 }
 
@@ -115,6 +132,12 @@ fn requirement_fact_collection(kind: RequirementDerivedFactKind) -> &'static str
         }
         RequirementDerivedFactKind::CaseUsageActorParameter => "CaseUsageActorParameter",
         RequirementDerivedFactKind::CaseUsageSubjectParameter => "CaseUsageSubjectParameter",
+        RequirementDerivedFactKind::CaseDefinitionObjectiveRequirement => {
+            "CaseDefinitionObjectiveRequirement"
+        }
+        RequirementDerivedFactKind::CaseUsageObjectiveRequirement => {
+            "CaseUsageObjectiveRequirement"
+        }
     }
 }
 

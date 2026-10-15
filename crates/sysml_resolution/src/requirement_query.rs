@@ -57,5 +57,11 @@ pub const fn requirement_collection_from_kind(
         RequirementDerivedFactKind::CaseUsageSubjectParameter => {
             Collection::CaseUsageSubjectParameter
         }
+        RequirementDerivedFactKind::CaseDefinitionObjectiveRequirement => {
+            Collection::CaseDefinitionObjectiveRequirement
+        }
+        RequirementDerivedFactKind::CaseUsageObjectiveRequirement => {
+            Collection::CaseUsageObjectiveRequirement
+        }
     }
 }

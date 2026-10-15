@@ -24,6 +24,7 @@ pub enum TypeDerivedRelationshipCollection {
     UnioningType,
     IntersectingType,
     DifferencingType,
+    OwnedSubclassification,
 }
 
 /// One exact element-valued derivation defined on KerML `Type`.
@@ -77,6 +78,10 @@ pub enum FeatureDerivedRelationshipCollection {
     ChainingFeature,
     /// Owned `FeatureInverting` relationships whose `featureInverted` is this feature.
     OwnedFeatureInverting,
+    /// The first owned `ReferenceSubsetting` (`ownedSubsetting->selectByKind(ReferenceSubsetting)->first()`).
+    OwnedReferenceSubsetting,
+    /// The first owned `CrossSubsetting` (`ownedSubsetting->selectByKind(CrossSubsetting)->first()`).
+    OwnedCrossSubsetting,
 }
 
 /// One element-valued Namespace derivation admitted by the pinned manifest.
@@ -131,6 +136,16 @@ pub enum ActionDerivedFactCollection {
     AllocationDefinitionAllocation,
     RenderingDefinitionRendering,
     ViewDefinitionView,
+    ViewDefinitionViewRendering,
+    ViewUsageViewRendering,
+    ViewDefinitionSatisfiedViewpoint,
+    ViewUsageSatisfiedViewpoint,
+    PortDefinitionConjugatedPortDefinition,
+    FeatureCrossFeature,
+    FeatureFeatureTarget,
+    FunctionResult,
+    ExpressionResult,
+    BehaviorStep,
 }
 
 /// The first canonical fact owner an exact `Systems::Actions` derivation needs.
@@ -158,6 +173,8 @@ pub enum RequirementDerivedFactCollection {
     CaseDefinitionSubjectParameter,
     CaseUsageActorParameter,
     CaseUsageSubjectParameter,
+    CaseDefinitionObjectiveRequirement,
+    CaseUsageObjectiveRequirement,
 }
 
 impl RequirementDerivedFactCollection {

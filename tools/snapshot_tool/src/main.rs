@@ -494,6 +494,8 @@ enum SemanticRelationshipKind {
     Disjoining,
     Annotation,
     FeatureInverting,
+    ReferenceSubsetting,
+    CrossSubsetting,
 }
 
 impl SemanticRelationshipKind {
@@ -512,8 +514,10 @@ impl SemanticRelationshipKind {
             "disjoining" => Ok(Self::Disjoining),
             "annotation" => Ok(Self::Annotation),
             "feature_inverting" => Ok(Self::FeatureInverting),
+            "reference_subsetting" => Ok(Self::ReferenceSubsetting),
+            "cross_subsetting" => Ok(Self::CrossSubsetting),
             _ => Err(format!(
-                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, disjoining, annotation, or feature_inverting)"
+                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, disjoining, annotation, feature_inverting, reference_subsetting, or cross_subsetting)"
             )),
         }
     }
@@ -534,6 +538,8 @@ impl SemanticRelationshipKind {
             Self::Disjoining => "disjoining",
             Self::Annotation => "annotation",
             Self::FeatureInverting => "featureInverting",
+            Self::ReferenceSubsetting => "referenceSubsetting",
+            Self::CrossSubsetting => "crossSubsetting",
         }
     }
 }
@@ -564,6 +570,12 @@ fn feature_collection(
         }
         FeatureDerivedRelationshipKind::OwnedFeatureInverting => {
             FeatureDerivedRelationshipCollection::OwnedFeatureInverting
+        }
+        FeatureDerivedRelationshipKind::OwnedReferenceSubsetting => {
+            FeatureDerivedRelationshipCollection::OwnedReferenceSubsetting
+        }
+        FeatureDerivedRelationshipKind::OwnedCrossSubsetting => {
+            FeatureDerivedRelationshipCollection::OwnedCrossSubsetting
         }
     }
 }
@@ -624,6 +636,9 @@ fn type_collection(kind: TypeDerivedRelationshipKind) -> TypeDerivedRelationship
         }
         TypeDerivedRelationshipKind::DifferencingType => {
             TypeDerivedRelationshipCollection::DifferencingType
+        }
+        TypeDerivedRelationshipKind::OwnedSubclassification => {
+            TypeDerivedRelationshipCollection::OwnedSubclassification
         }
     }
 }
@@ -731,6 +746,30 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> ActionDerivedFactColle
         ActionDerivedFactKind::ViewDefinitionView => {
             ActionDerivedFactCollection::ViewDefinitionView
         }
+        ActionDerivedFactKind::ViewDefinitionViewRendering => {
+            ActionDerivedFactCollection::ViewDefinitionViewRendering
+        }
+        ActionDerivedFactKind::ViewUsageViewRendering => {
+            ActionDerivedFactCollection::ViewUsageViewRendering
+        }
+        ActionDerivedFactKind::ViewDefinitionSatisfiedViewpoint => {
+            ActionDerivedFactCollection::ViewDefinitionSatisfiedViewpoint
+        }
+        ActionDerivedFactKind::ViewUsageSatisfiedViewpoint => {
+            ActionDerivedFactCollection::ViewUsageSatisfiedViewpoint
+        }
+        ActionDerivedFactKind::PortDefinitionConjugatedPortDefinition => {
+            ActionDerivedFactCollection::PortDefinitionConjugatedPortDefinition
+        }
+        ActionDerivedFactKind::FeatureCrossFeature => {
+            ActionDerivedFactCollection::FeatureCrossFeature
+        }
+        ActionDerivedFactKind::FeatureFeatureTarget => {
+            ActionDerivedFactCollection::FeatureFeatureTarget
+        }
+        ActionDerivedFactKind::FunctionResult => ActionDerivedFactCollection::FunctionResult,
+        ActionDerivedFactKind::ExpressionResult => ActionDerivedFactCollection::ExpressionResult,
+        ActionDerivedFactKind::BehaviorStep => ActionDerivedFactCollection::BehaviorStep,
     }
 }
 
@@ -857,6 +896,8 @@ fn requirement_derived_fact_collection_for_rule(
             RequirementDerivedFactKind::CaseDefinitionSubjectParameter => RequirementDerivedFactCollection::CaseDefinitionSubjectParameter,
             RequirementDerivedFactKind::CaseUsageActorParameter => RequirementDerivedFactCollection::CaseUsageActorParameter,
             RequirementDerivedFactKind::CaseUsageSubjectParameter => RequirementDerivedFactCollection::CaseUsageSubjectParameter,
+            RequirementDerivedFactKind::CaseDefinitionObjectiveRequirement => RequirementDerivedFactCollection::CaseDefinitionObjectiveRequirement,
+            RequirementDerivedFactKind::CaseUsageObjectiveRequirement => RequirementDerivedFactCollection::CaseUsageObjectiveRequirement,
         }),
         _ => Err(format!(
             "{fixture}: semantic Requirements derivation rule_id {rule_id:?} does not own an exact Requirements query"
