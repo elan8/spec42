@@ -351,6 +351,13 @@ pub fn collect_compartments(
     Compartments {
         stereotype: if kind.is_empty() {
             "element".to_string()
+        } else if attributes
+            .get("referenceMembership")
+            .and_then(Value::as_bool)
+            == Some(true)
+            && kind != "ReferenceUsage"
+        {
+            format!("ref {kind}")
         } else {
             kind.to_string()
         },
@@ -1014,6 +1021,9 @@ const NOTATION_KEYWORDS: &[(&str, &str)] = &[
 ];
 
 pub fn format_stereotype(kind: &str) -> String {
+    let (reference, kind) = kind
+        .strip_prefix("ref ")
+        .map_or((false, kind), |kind| (true, kind));
     let keyword = NOTATION_KEYWORDS
         .iter()
         .find(|(k, _)| *k == kind)
@@ -1021,7 +1031,11 @@ pub fn format_stereotype(kind: &str) -> String {
     let text = keyword
         .map(str::to_string)
         .unwrap_or_else(|| kind.replace('_', " "));
-    format!("«{text}»")
+    if reference {
+        format!("«ref {text}»")
+    } else {
+        format!("«{text}»")
+    }
 }
 
 pub struct RenderNodeOptions<'a> {

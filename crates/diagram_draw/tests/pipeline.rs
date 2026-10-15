@@ -324,6 +324,103 @@ fn general_golden_payload() -> serde_json::Value {
     })
 }
 
+#[test]
+fn explicit_expansion_keeps_usage_and_definition_independent_of_depth_default() {
+    let payload = json!({
+        "version": 1, "view": "general-view", "selectedViewName": "Power",
+        "graph": {
+            "nodes": [
+                {"id": "usage", "name": "power", "type": "part", "attributes": {}},
+                {"id": "definition", "name": "Power", "type": "part def", "attributes": {}},
+                {"id": "usage-member", "name": "battery", "type": "part", "attributes": {"owner": "usage"}},
+                {"id": "definition-member", "name": "battery", "type": "part", "attributes": {"owner": "definition"}}
+            ],
+            "edges": [
+                {"id": "usage-owns", "source": "usage", "target": "usage-member", "type": "hierarchy"},
+                {"id": "definition-owns", "source": "definition", "target": "definition-member", "type": "hierarchy"},
+                {"id": "typing", "source": "usage", "target": "definition", "type": "typing"}
+            ]
+        }
+    });
+    for (expanded, visible_member, hidden_member) in [
+        ("usage", "usage-member", "definition-member"),
+        ("definition", "definition-member", "usage-member"),
+    ] {
+        let state = diagram_draw::DisclosureState {
+            expanded_node_ids: vec![expanded.into()],
+            section_states: vec![],
+        };
+        // Neither a fully closed nor a fully open depth default may replace a
+        // reader's per-occurrence choices. The input publication stays intact.
+        for depth in [diagram_draw::Nesting::Levels(0), diagram_draw::Nesting::All] {
+            let input = diagram_draw::pipeline::draw_input_from_payload_with_presentation(
+                &payload,
+                Some(&state),
+                depth,
+            )
+            .expect("independent expansion");
+            let ids: Vec<&str> = input["nodes"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|node| node["id"].as_str().unwrap())
+                .collect();
+            assert_eq!(ids.len(), 3);
+            assert!(ids.contains(&visible_member));
+            assert!(!ids.contains(&hidden_member));
+            assert!(ids.contains(&"usage") && ids.contains(&"definition"));
+            assert_eq!(input["edges"].as_array().unwrap().len(), 1);
+        }
+    }
+    assert_eq!(payload["graph"]["nodes"].as_array().unwrap().len(), 4);
+}
+
+#[test]
+fn multiple_exposed_modules_use_the_view_title_for_the_frame() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_interconnection_incident_connection.md"
+    ));
+    let input = diagram_draw::pipeline::draw_input_from_payload_with_presentation(
+        &payload,
+        None,
+        diagram_draw::Nesting::Levels(0),
+    )
+    .expect("closed modules");
+    let svg = diagram_draw::render_svg_from_json(&input, 1280.0, 900.0).expect("module frame");
+    let title = input["title"].as_str().expect("view title");
+    assert!(svg.contains(&format!("data-view-name=\"{title}\"")));
+    let xml = diagram_draw::xml::parse(&svg);
+    fn frame(node: &diagram_draw::xml::XmlNode) -> Option<&diagram_draw::xml::XmlNode> {
+        if node.attrs.get("class").map(String::as_str) == Some("ibd-view-frame") {
+            node.children.iter().find(|child| child.tag == "rect")
+        } else {
+            node.children.iter().find_map(frame)
+        }
+    }
+    let rect = frame(&xml).expect("view frame rectangle");
+    let view_box: Vec<f64> = xml.attrs["viewBox"]
+        .split_whitespace()
+        .map(|n| n.parse().unwrap())
+        .collect();
+    let number = |name: &str| rect.attrs[name].parse::<f64>().unwrap();
+    assert!(number("x") >= view_box[0] && number("y") >= view_box[1]);
+    assert!(number("x") + number("width") <= view_box[0] + view_box[2]);
+    assert!(number("y") + number("height") <= view_box[1] + view_box[3]);
+}
+
+#[test]
+fn native_general_edges_keep_their_presentation_contract_through_layout() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_general_incident_allocation.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("native allocation layout");
+    let edges = input["edges"].as_array().unwrap();
+    assert!(!edges.is_empty());
+    assert!(edges
+        .iter()
+        .all(|edge| edge["attributes"]["typedProjection"] == true));
+}
+
 fn interconnection_golden_payload() -> serde_json::Value {
     json!({
         "version": 1,
@@ -951,9 +1048,19 @@ fn interconnection_view_opens_a_part_when_its_control_is_toggled() {
     // The exposed part is always open, so it has no control.
     assert!(!closed.contains("aria-label=\"Expand timerInstance\""));
 
-    // `n:6` is `pcb`, the id its control toggles.
-    assert!(closed.contains("data-node-id=\"n:6\" data-element-name=\"pcb\""));
-    let opened = draw(&["n:6"]);
+    // Toggle the id the rendered control actually carries; projection indexes can
+    // change when another inherited member becomes visible.
+    fn pcb_id(node: &diagram_draw::xml::XmlNode) -> Option<&str> {
+        if node.attrs.get("data-element-name").map(String::as_str) == Some("pcb") {
+            if let Some(id) = node.attrs.get("data-node-id") {
+                return Some(id);
+            }
+        }
+        node.children.iter().find_map(pcb_id)
+    }
+    let rendered = diagram_draw::xml::parse(&closed);
+    let pcb = pcb_id(&rendered).expect("rendered pcb control");
+    let opened = draw(&[pcb]);
     assert!(opened.contains("aria-label=\"Collapse pcb\""), "{opened}");
     assert!(parts(&opened) > parts(&closed));
 

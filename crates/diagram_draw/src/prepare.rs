@@ -1754,6 +1754,15 @@ fn prepare_interconnection_from_typed_projection(
     );
     let mut prepared = prepare_interconnection_scene(&scene, &json!({ "selectedViewName": name }));
     prepared["meta"]["typedProjection"] = json!(true);
+    let connector_owners: HashMap<String, String> = edges
+        .iter()
+        .enumerate()
+        .filter_map(|(index, edge)| {
+            let origin = field(edge, "origin").as_u64()? as usize;
+            let owner = field(nodes.get(origin)?, "owner").as_u64()?;
+            Some((format!("e:{index}"), format!("n:{owner}")))
+        })
+        .collect();
     let port_type_keys: HashMap<String, String> = nodes
         .iter()
         .enumerate()
@@ -1779,6 +1788,12 @@ fn prepare_interconnection_from_typed_projection(
     if let Some(edges) = prepared.get_mut("edges").and_then(Value::as_array_mut) {
         for edge in edges {
             edge["attributes"]["typedProjection"] = json!(true);
+            if let Some(owner) = field(edge, "id")
+                .as_str()
+                .and_then(|id| connector_owners.get(id))
+            {
+                edge["attributes"]["connectorOwner"] = json!(owner);
+            }
             let attributes = &edge["attributes"];
             let source_type = field(attributes, "sourcePortId")
                 .as_str()
@@ -3136,6 +3151,9 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "owner": field(element, "owner"),
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
+                    "referenceMembership": projection_edges.iter().any(|edge|
+                        field(edge, "kind").as_str() == Some("noncomposite-membership")
+                        && field(edge, "target").as_u64() == Some(index as u64)),
                 },
             })
         })
@@ -3182,6 +3200,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 "label": "",
                 "edgeKind": normalize_edge_kind(&as_string(field(edge, "kind"), "relationship")),
                 "attributes": {
+                    "typedProjection": true,
                     "originNodeId": origin,
                     "semanticReference": field(edge, "reference")
                         .as_u64()

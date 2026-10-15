@@ -58,7 +58,7 @@ pub fn draw_nodes(nodes: &[LaidOutNode], theme: &Theme) -> Element {
         let width = if node.width > 0.0 { node.width } else { 200.0 };
         let height = if node.height > 0.0 { node.height } else { 70.0 };
 
-        let outer = Element::new("g")
+        let mut outer = Element::new("g")
             .attr("class", outer_class.trim().to_string())
             .attr(
                 "transform",
@@ -69,24 +69,55 @@ pub fn draw_nodes(nodes: &[LaidOutNode], theme: &Theme) -> Element {
             .attr(
                 "data-bounds",
                 format!("{},{},{},{}", n(node.x), n(node.y), n(width), n(height)),
-            )
-            .child(render_node(
-                &compartments,
-                RenderNodeOptions {
-                    x: 0.0,
-                    y: 0.0,
-                    width,
-                    height,
-                    node_class: String::new(),
-                    data_element_name: &node.label,
-                    stroke_color: stroke_color_for_node(theme),
-                    selected: false,
-                    chrome,
-                    theme,
-                    state,
-                },
-            ));
+            );
+        let header_height = node
+            .attributes
+            .get("generalContainerHeaderHeight")
+            .and_then(|value| value.as_f64());
+        outer = outer.child(render_node(
+            &compartments,
+            RenderNodeOptions {
+                x: 0.0,
+                y: 0.0,
+                width,
+                height: header_height.unwrap_or(height),
+                node_class: String::new(),
+                data_element_name: &node.label,
+                stroke_color: stroke_color_for_node(theme),
+                selected: false,
+                chrome,
+                theme,
+                state,
+            },
+        ));
         layer = layer.child(outer);
+    }
+    layer
+}
+
+/// Container bodies go below edges; headers and member boxes go above them. Otherwise
+/// an opaque parent painted after its cross-boundary relationships erases those lines.
+pub fn draw_general_containers(nodes: &[LaidOutNode], theme: &Theme) -> Element {
+    let mut layer = Element::new("g").attr("class", "general-containers");
+    for node in nodes {
+        if !node.attributes.contains_key("generalContainerHeaderHeight") {
+            continue;
+        }
+        let definition = node
+            .attributes
+            .get("notationRole")
+            .and_then(|value| value.as_str())
+            == Some("definition");
+        layer = layer.child(
+            Element::new("rect")
+                .attr("x", n(node.x))
+                .attr("y", n(node.y))
+                .attr("width", n(node.width))
+                .attr("height", n(node.height))
+                .attr("rx", if definition { "0" } else { "8" })
+                .style("fill", theme.node_fill)
+                .style("stroke", stroke_color_for_node(theme)),
+        );
     }
     layer
 }
