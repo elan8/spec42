@@ -792,6 +792,8 @@ package PortDirectionExample {
         "owner": null,
         "reference": 0,
         "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -806,6 +808,8 @@ package PortDirectionExample {
         "owner": 0,
         "reference": 1,
         "source": 6,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -826,6 +830,8 @@ package PortDirectionExample {
         "owner": 0,
         "reference": 5,
         "source": 8,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -846,6 +852,8 @@ package PortDirectionExample {
         "owner": 0,
         "reference": 2,
         "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -866,6 +874,8 @@ package PortDirectionExample {
         "owner": 0,
         "reference": 3,
         "source": 10,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -886,6 +896,8 @@ package PortDirectionExample {
         "owner": 0,
         "reference": 4,
         "source": 4,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [

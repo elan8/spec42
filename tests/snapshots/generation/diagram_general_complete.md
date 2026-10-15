@@ -301,6 +301,8 @@ package GeneralExample {
         "owner": null,
         "reference": 0,
         "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -315,6 +317,8 @@ package GeneralExample {
         "owner": 0,
         "reference": 1,
         "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

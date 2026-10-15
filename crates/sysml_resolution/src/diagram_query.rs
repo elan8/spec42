@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use crate::{
     ElementDetails, ElementKind, ElementSearch, ElementSource, FeatureDirection,
     PublishedResolution, QueryAnswer, QueryOutcome, RelationshipOutcome, RelationshipProvenance,
-    RelationshipTarget, SourceLocation, SymbolEntry, SymbolId, ViewExposureObstacle,
-    ViewSelectionObstacle, ViewSelectionOutcome,
+    RelationshipTarget, SourceLocation, StateSubactionKind, SymbolEntry, SymbolId,
+    ViewExposureObstacle, ViewSelectionObstacle, ViewSelectionOutcome,
 };
 
 pub use sysml_contract::{
@@ -107,13 +107,29 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceLocation,
     pub compartments: Box<[DiagramCompartment]>,
-    /// A port's authored direction (`in` / `out` / `inout`). `None` for a port with no authored
-    /// direction and for every non-port element; a renderer must not derive a side from this
-    /// element's name or its owner's when it is `None`.
+    /// The authored direction (`in` / `out` / `inout`) of a port or of a directed feature such
+    /// as a parameter of an action. `None` for an element with no authored direction; a
+    /// renderer must not derive a side from this element's name or its owner's when it is
+    /// `None`.
     pub direction: Option<FeatureDirection>,
     /// Whether a port's authored typing conjugates the definition it names (`port p : ~PD;`).
     /// `false` for a port with no conjugated typing and for every non-port element.
     pub conjugated: bool,
+    /// Whether this is the entry, do or exit action of the state that owns it. The three are
+    /// action usages that only their membership tells apart, so it is carried here; `None` for
+    /// every other element.
+    pub state_subaction: Option<StateSubactionKind>,
+    /// On a conditional succession: when it is taken. `None` for every other element.
+    pub succession_guard: Option<DiagramSuccessionGuard>,
+}
+
+/// When a conditional succession is taken (SysML 7.17.5).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DiagramSuccessionGuard {
+    /// The guard expression as it is written, with its white space collapsed.
+    Condition(Box<str>),
+    /// `else`: taken when the guards of the conditional successions before it are all false.
+    Else,
 }
 
 /// A stable, contextual identity for one occurrence in a diagram projection.
@@ -599,8 +615,16 @@ impl PublishedResolution {
             );
             children.sort_by_key(|left| left.identity);
             children.dedup_by(|left, right| left.identity == right.identity);
+            // An action flow names nodes its action inherits from the library, the `start`
+            // and `done` of `Actions::Action`, as the ends of its successions. Such a feature
+            // is a node of the flow where a succession of this owner begins or ends at it.
+            let library_ends = if view_entry.kind == DiagramViewKind::ActionFlow {
+                self.library_succession_ends(&children, &workspace)
+            } else {
+                BTreeSet::new()
+            };
             for child in children {
-                if !workspace.contains(&child.identity) {
+                if !workspace.contains(&child.identity) && !library_ends.contains(&child.identity) {
                     continue;
                 }
                 if !self.diagram_candidate_selected(view, child.identity, &mut reasons) {
@@ -633,16 +657,18 @@ impl PublishedResolution {
                 all.get(identity).map(|entry| (occurrence_id, owner, entry))
             })
             .map(|(occurrence_id, owner, entry)| {
-                // Direction and conjugation are settled facts about a port's own declaration, not
-                // derived from its name or its owner's: `None` / `false` for every other kind, and
-                // for a port whose declaration carries no such fact, rather than a guess.
-                let (direction, conjugated) = if is_port_kind(entry.kind) {
-                    self.model
-                        .port_direction_and_conjugation(entry.identity)
-                        .unwrap_or_default()
-                } else {
-                    (None, false)
-                };
+                // Direction and conjugation are settled facts about an element's own
+                // declaration, not derived from its name or its owner's: `None` / `false` for a
+                // declaration that carries no such fact, rather than a guess. A port and a
+                // parameter of an action both have an authored direction; only a port's typing
+                // can conjugate.
+                let (direction, conjugated) = self
+                    .model
+                    .port_direction_and_conjugation(entry.identity)
+                    .map(|(direction, conjugated)| {
+                        (direction, conjugated && is_port_kind(entry.kind))
+                    })
+                    .unwrap_or_default();
                 DiagramElement {
                     occurrence_id: occurrence_id.clone(),
                     semantic_id: entry.identity,
@@ -661,6 +687,8 @@ impl PublishedResolution {
                     compartments: Box::default(),
                     direction,
                     conjugated,
+                    state_subaction: self.model.state_subaction_kind(entry.identity),
+                    succession_guard: self.model.succession_guard(entry.identity),
                 }
             })
             .collect::<Vec<_>>();
@@ -986,6 +1014,45 @@ impl PublishedResolution {
                     ));
                 }
             }
+            // A `then` shorthand declares a succession from the source the lowering settled
+            // for it (SysML 7.17.4) to the feature it names, or to the node written after it.
+            if view_entry.kind == DiagramViewKind::ActionFlow {
+                let source = self
+                    .model
+                    .then_source(element.semantic_id)
+                    .map(|source| {
+                        contextual_endpoint(&element.occurrence_id, source, &elements, None, |id| {
+                            self.symbol_name(id)
+                        })
+                    })
+                    .and_then(|endpoint| match endpoint.occurrence {
+                        DiagramEndpointOccurrence::Resolved(source) => Some(source),
+                        _ => None,
+                    });
+                let target = if element.kind == ElementKind::SuccessionAsUsage {
+                    outgoing
+                        .iter()
+                        .find(|relationship| {
+                            relationship.kind == DiagramRelationshipKind::ThenTarget
+                        })
+                        .and_then(|relationship| resolved_target(&relationship.target))
+                        .cloned()
+                } else {
+                    Some(element.occurrence_id.clone())
+                };
+                if let (Some(source), Some(target)) = (source, target) {
+                    edges.push(DiagramEdge {
+                        origin: origin as u32,
+                        source_semantic_id: source.semantic_id(),
+                        source,
+                        target_semantic_id: target.semantic_id(),
+                        target,
+                        kind: DiagramEdgeKind::Succession,
+                        provenance: RelationshipProvenance::Authored,
+                        source_location: Some(element.source),
+                    });
+                }
+            }
             // SysML 8.2.3.6: the General View draws authored subclassification, subsetting,
             // redefinition, and feature typing between two elements it projects. Implied library
             // subsetting (`Parts::parts`, `Items::items`, the kernel chain) stays off the canvas --
@@ -1117,6 +1184,41 @@ impl PublishedResolution {
             entries.extend(self.diagram_entries_for(source));
         }
         entries
+    }
+
+    /// The features outside the workspace that successions among `members` begin or end at:
+    /// the resolved ends of each succession, the feature a `then` names, and the source the
+    /// lowering settled for a `then`.
+    fn library_succession_ends(
+        &self,
+        members: &[SymbolEntry],
+        workspace: &BTreeSet<SymbolId>,
+    ) -> BTreeSet<SymbolId> {
+        let mut ends = BTreeSet::new();
+        for member in members
+            .iter()
+            .filter(|member| workspace.contains(&member.identity))
+        {
+            ends.extend(self.model.then_source(member.identity));
+            if member.kind != ElementKind::SuccessionAsUsage {
+                continue;
+            }
+            let Some(inspection) = usable_value(self.inspect(member.identity)) else {
+                continue;
+            };
+            for relationship in inspection.relationships.iter() {
+                let is_end = matches!(
+                    relationship_kind_from_name(relationship.kind),
+                    Some(DiagramRelationshipKind::Succession | DiagramRelationshipKind::ThenTarget)
+                );
+                if let (true, RelationshipTarget::Resolved(target)) = (is_end, &relationship.target)
+                {
+                    ends.insert(*target);
+                }
+            }
+        }
+        ends.retain(|end| !workspace.contains(end));
+        ends
     }
 
     fn diagram_entries_for(&self, source: ElementSource) -> BTreeMap<SymbolId, SymbolEntry> {

@@ -500,6 +500,36 @@ pub(crate) struct DeclarationFacts {
     pub(crate) multiplicity_bound_form: Option<MultiplicityBoundForm>,
     /// This declaration is the implicit Multiplicity required by individual syntax.
     pub(crate) is_individual_multiplicity: bool,
+    /// On a `first <node>;` written without a `then`: the declaration marks `<node>` as an
+    /// initial node of its body (BNF `InitialNodeMember`) and is no succession between two.
+    pub(crate) is_initial_node_marker: bool,
+    /// On the continuation or the node a `then` declares: where its succession starts.
+    pub(crate) then_source: Option<ThenSource>,
+    /// On a conditional succession: when it is taken.
+    pub(crate) succession_guard: Option<SuccessionGuard>,
+}
+
+/// When a conditional succession is taken (SysML 7.17.5): `first a if g then b;`, and in the
+/// `then` shorthand `if g then b;` and `else b;`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum SuccessionGuard {
+    /// The guard expression as it is written, with its white space collapsed.
+    Condition(Box<str>),
+    /// `else`: taken when the guards of the conditional successions before it are all false.
+    Else,
+}
+
+/// The source of the succession a `then` shorthand declares (SysML 7.17.4): the nearest
+/// occurrence usage lexically previous to the `then` in its body, skipping successions and
+/// non-occurrence usages, so that several `then`s after one node all start at that node.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ThenSource {
+    /// An occurrence usage declared earlier in the same body, or the control node whose own
+    /// body holds the `then`.
+    Declaration(DeclarationId),
+    /// The node a `first <node>;` marker names. The marker's `Succession` reference resolves
+    /// it.
+    InitialNode(DeclarationId),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

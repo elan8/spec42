@@ -1880,6 +1880,8 @@ package Office {
         "owner": null,
         "reference": 10,
         "source": 12,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1894,6 +1896,8 @@ package Office {
         "owner": 0,
         "reference": 26,
         "source": 21,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1908,6 +1912,8 @@ package Office {
         "owner": 0,
         "reference": 27,
         "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1922,6 +1928,8 @@ package Office {
         "owner": 0,
         "reference": 28,
         "source": 27,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -1945,6 +1953,8 @@ package Office {
         "owner": 0,
         "reference": 12,
         "source": 13,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1965,6 +1975,8 @@ package Office {
         "owner": 4,
         "reference": 1,
         "source": 4,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1985,6 +1997,8 @@ package Office {
         "owner": 4,
         "reference": 2,
         "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2013,6 +2027,8 @@ package Office {
         "owner": 0,
         "reference": 15,
         "source": 19,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2033,6 +2049,8 @@ package Office {
         "owner": 7,
         "reference": 8,
         "source": 10,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2062,6 +2080,8 @@ package Office {
         "owner": 0,
         "reference": 13,
         "source": 15,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2082,6 +2102,8 @@ package Office {
         "owner": 9,
         "reference": 4,
         "source": 8,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2102,6 +2124,8 @@ package Office {
         "owner": 9,
         "reference": 5,
         "source": 6,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2131,6 +2155,8 @@ package Office {
         "owner": 0,
         "reference": 14,
         "source": 17,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2151,6 +2177,8 @@ package Office {
         "owner": 12,
         "reference": 4,
         "source": 8,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2171,6 +2199,8 @@ package Office {
         "owner": 12,
         "reference": 5,
         "source": 6,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [

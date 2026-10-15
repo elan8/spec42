@@ -820,6 +820,8 @@ package Shop {
         "owner": null,
         "reference": 0,
         "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -834,6 +836,8 @@ package Shop {
         "owner": 0,
         "reference": 12,
         "source": 8,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -848,6 +852,8 @@ package Shop {
         "owner": 0,
         "reference": 6,
         "source": 7,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -871,6 +877,8 @@ package Shop {
         "owner": 0,
         "reference": 2,
         "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -885,6 +893,8 @@ package Shop {
         "owner": 3,
         "reference": 13,
         "source": 4,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -899,6 +909,8 @@ package Shop {
         "owner": 3,
         "reference": 4,
         "source": 3,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -913,6 +925,8 @@ package Shop {
         "owner": 3,
         "reference": 5,
         "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }

@@ -13,6 +13,8 @@ use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::SuccessionEndMultiplicities;
+use crate::lower::facts::SuccessionGuard;
+use crate::lower::facts::ThenSource;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::kerml::kerml_bare_end_multiplicity;
 use crate::lower::SemanticModelBuilder;
@@ -804,6 +806,7 @@ impl SemanticModelBuilder {
                     multiplicity_facts(node.value.first_multiplicity.as_ref()),
                     multiplicity_facts(node.value.then_multiplicity.as_ref()),
                 ),
+                is_initial_node_marker: node.value.then.is_none(),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -882,6 +885,9 @@ impl SemanticModelBuilder {
                     None,
                     kerml_bare_end_multiplicity(&node.value.target),
                 ),
+                succession_guard: Some(SuccessionGuard::Condition(
+                    self.guard_text(document, &node.value.guard),
+                )),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1165,6 +1171,135 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<ThenAction>,
     ) -> Result<(), ConstructionError> {
+        self.lower_then_action_declared(document, owner, family, node)
+            .map(|_| ())
+    }
+
+    /// Lowers a `then` and returns what it declared: the first member it added to its body,
+    /// which is the continuation to a named feature or the node written after the keyword.
+    fn lower_then_action_declared(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<ThenAction>,
+    ) -> Result<Option<usize>, ConstructionError> {
+        let first_new = self.declarations.len();
+        let source = self.then_source(owner, first_new);
+        self.lower_then_target(document, owner, family, node)?;
+        let declared = (first_new..self.declarations.len())
+            .find(|index| self.declarations[*index].owner == Some(owner));
+        if let (Some(source), Some(declared)) = (source, declared) {
+            self.declaration_facts[declared].then_source = Some(source);
+        }
+        Ok(declared)
+    }
+
+    /// The guard of a conditional succession as it is written, with its white space collapsed.
+    fn guard_text(&self, document: DocumentIdx, guard: &Node<Expression>) -> Box<str> {
+        let source = self.documents[document.index()].parsed.source.as_str();
+        source
+            .get(guard.span.offset..guard.span.offset + guard.span.len)
+            .unwrap_or("")
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .into()
+    }
+
+    /// The target of a brace-less `then <feature>;` branch of an `if`, when the branch is one.
+    fn conditional_succession_branch(body: &ActionBranchBody) -> Option<&Node<ThenAction>> {
+        match body {
+            ActionBranchBody::Shorthand(element) => match &element.value {
+                ActionDefBodyElement::ThenAction(then)
+                    if matches!(then.value.target, ThenTarget::Feature(_)) =>
+                {
+                    Some(then)
+                }
+                _ => None,
+            },
+            ActionBranchBody::Braced(_) => None,
+        }
+    }
+
+    /// Lowers `if <guard> then <feature>; (else <feature>;)?` written without braces. An
+    /// `IfNode` has a braced body (SysML 8.2.2.17.3), so this text is a `GuardedTargetSuccession`
+    /// and a `DefaultTargetSuccession` (8.2.2.17.8): conditional successions in the `then`
+    /// shorthand, from the same source as a plain `then` at this place. Returns `false` when
+    /// `node` is not of that form.
+    fn lower_conditional_target_successions(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &IfStmt,
+    ) -> Result<bool, ConstructionError> {
+        let Some(then) = Self::conditional_succession_branch(&node.then_body) else {
+            return Ok(false);
+        };
+        let otherwise = match &node.else_body {
+            None => None,
+            Some(body) => match Self::conditional_succession_branch(body) {
+                Some(otherwise) => Some(otherwise),
+                None => return Ok(false),
+            },
+        };
+        let guard = self.guard_text(document, &node.condition);
+        if let Some(declared) = self.lower_then_action_declared(document, owner, family, then)? {
+            self.declaration_facts[declared].succession_guard =
+                Some(SuccessionGuard::Condition(guard));
+        }
+        self.lower_constraint_expression(document, owner, family, &node.condition)?;
+        if let Some(otherwise) = otherwise {
+            if let Some(declared) =
+                self.lower_then_action_declared(document, owner, family, otherwise)?
+            {
+                self.declaration_facts[declared].succession_guard = Some(SuccessionGuard::Else);
+            }
+        }
+        Ok(true)
+    }
+
+    /// The source of a `then` about to be lowered into the body of `owner`, whose members so
+    /// far are the declarations before `end`. See [`ThenSource`].
+    fn then_source(&self, owner: DeclarationId, end: usize) -> Option<ThenSource> {
+        use crate::model::element_kind::element_kind;
+        use crate::ElementKind;
+        for index in (owner.index() + 1..end).rev() {
+            let declaration = &self.declarations[index];
+            if declaration.owner != Some(owner) {
+                continue;
+            }
+            let id = DeclarationId::from_index(index).ok()?;
+            if self.declaration_facts[index].is_initial_node_marker {
+                return Some(ThenSource::InitialNode(id));
+            }
+            // A conditional succession is a transition usage, which is an action usage; the
+            // rule skips it like any other succession.
+            if declaration.kind != DeclarationKind::Transition
+                && element_kind(declaration.kind).conforms_to(ElementKind::OccurrenceUsage)
+            {
+                return Some(ThenSource::Declaration(id));
+            }
+        }
+        // A `then` in the body of a control node continues from that node.
+        matches!(
+            self.declarations[owner.index()].kind,
+            DeclarationKind::Decide
+                | DeclarationKind::Merge
+                | DeclarationKind::Fork
+                | DeclarationKind::Join
+        )
+        .then_some(ThenSource::Declaration(owner))
+    }
+
+    fn lower_then_target(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        node: &Node<ThenAction>,
+    ) -> Result<(), ConstructionError> {
         match &node.value.target {
             // `then action ...;` and `then send ... to ...;` are the same `ActionUsage` shape
             // upstream -- the send form is the one carrying `send`/`via`/`to` clauses, which
@@ -1438,6 +1573,9 @@ impl SemanticModelBuilder {
         span: Span,
         node: &IfStmt,
     ) -> Result<(), ConstructionError> {
+        if self.lower_conditional_target_successions(document, owner, family, node)? {
+            return Ok(());
+        }
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -1591,19 +1729,10 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a `then accept ...;` shorthand trigger (BNF `ThenTarget::Accept`, `ast::
-    /// TransitionAccept`) -- the inline accept-trigger form reused unchanged from `Transition`'s
-    /// own `accept` clause, deliberately deferred by `39bd06fc`. Sourced directly at `owner` (the
-    /// enclosing action def/usage declaration), not an anonymous nested declaration: an accept
-    /// trigger's operand is looked up in the action's own enclosing scope (e.g. `accept sig after
-    /// ...;`'s `sig`, `accept when b.f;`'s `b`), not among the action's own children the way a
-    /// `Succession`/`Decide`/`Merge` end is. Dispatches on the three `TransitionAccept` shapes:
-    /// `Shorthand`'s expression and `TimeTrigger`'s (`at`/`when`/`after`) expression both reuse
-    /// `lower_constraint_expression` directly (picking up its `FeatureRef`/`MemberAccess`/
-    /// `Invocation`/`Constructor` dispatch, e.g. `accept at new Time::Iso8601DateTime(...)`'s
-    /// constructor callee/argument); `Payload`'s typed `: Type` suffix reuses
-    /// `lower_payload_clause_type`. Either shape's optional trailing `via <port>` clause resolves
-    /// as an `AcceptVia` reference through `lower_satisfy_operand`.
+    /// Lowers a `then accept ...;` (BNF `ThenTarget::Accept`, `ast::TransitionAccept`) as the
+    /// anonymous accept action it declares, with the trigger lowered at that action exactly as
+    /// for a named `action a accept ...;` (see `lower_accept_trigger`). Names in the trigger are
+    /// still found in the enclosing action's scope, which a member's lookup reaches.
     pub(crate) fn lower_then_accept(
         &mut self,
         document: DocumentIdx,
@@ -1611,7 +1740,40 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         accept: &Node<TransitionAccept>,
     ) -> Result<(), ConstructionError> {
-        self.lower_accept_trigger(document, owner, family, &accept.value, accept.span)
+        // `then accept ...;` is the `then` shorthand before an accept action node (BNF
+        // `AcceptNode`), like `then action a;` before an action. The node is anonymous: the
+        // name after `accept` is that of its payload parameter, not of the action.
+        let (has_payload_argument, has_receiver_argument) = match &accept.value {
+            TransitionAccept::Shorthand(_, via) => (true, via.is_some()),
+            TransitionAccept::TimeTrigger(_, _) | TransitionAccept::NamedTimeTrigger(_, _, _) => {
+                (true, false)
+            }
+            TransitionAccept::Payload(_, via) => (false, via.is_some()),
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::AcceptActionUsage,
+            None,
+            accept.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    composite: true,
+                    ..DeclarationModifiers::default()
+                },
+                is_trigger_action: Some(false),
+                accept_has_payload_argument: Some(has_payload_argument),
+                accept_has_receiver_argument: Some(has_receiver_argument),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            accept.span,
+        )?;
+        self.lower_accept_trigger(document, declaration, family, &accept.value, accept.span)
     }
 
     /// Lowers an `accept when|at|after <argument>` trigger as its own SysML

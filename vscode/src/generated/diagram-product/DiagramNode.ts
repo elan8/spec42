@@ -3,4 +3,12 @@ import type { Compartment } from "./Compartment";
 import type { NodeTyping } from "./NodeTyping";
 import type { NotationRole } from "./NotationRole";
 
-export type DiagramNode = { reference: number, metaclass: string, notationRole: NotationRole, name: string | null, typing: NodeTyping, owner: number | null, source: number, compartments: Array<Compartment>, direction: string | null, conjugated: boolean, };
+export type DiagramNode = { reference: number, metaclass: string, notationRole: NotationRole, name: string | null, typing: NodeTyping, owner: number | null, source: number, compartments: Array<Compartment>, direction: string | null, conjugated: boolean, 
+/**
+ * `"entry"`, `"do"` or `"exit"` for the action a state owns in that role.
+ */
+stateSubaction: string | null, 
+/**
+ * On a conditional succession: its guard expression as written, or `"else"`.
+ */
+successionGuard: string | null, };

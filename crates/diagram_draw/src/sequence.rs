@@ -16,8 +16,11 @@ const HEADER_Y: f64 = 64.0;
 const LIFELINE_TOP: f64 = 118.0;
 // Two lifelines are far enough apart for a message name of 28 characters, the longest that is
 // drawn, above the arrow between them. Messages are a line of text and its arrow apart.
+/// The distance between two lifelines when nothing they hold needs more or allows less.
 const LIFELINE_GAP: f64 = 176.0;
-const MESSAGE_GAP: f64 = 52.0;
+const MESSAGE_GAP: f64 = 44.0;
+/// Width of a character of a 10 px message label.
+const MESSAGE_LABEL_CHARACTER: f64 = 5.8;
 const LIFELINE_BOX_WIDTH: f64 = 132.0;
 const LIFELINE_BOX_HEIGHT: f64 = 38.0;
 const TITLE_FONT_SIZE: f64 = 14.0;
@@ -109,6 +112,35 @@ fn last_position_for<'a>(
         .map(|(_, position)| position)
 }
 
+/// The distance between neighbouring lifelines: enough for two lifeline boxes side by side and
+/// for the longest message label over the lifelines its message spans. It follows what is
+/// drawn, so a sequence of short messages is not spread over a fixed pitch.
+fn lifeline_gap(lifelines: &[Value], messages: &[Value]) -> f64 {
+    let id = |lifeline: &Value| as_str(get(lifeline, "id").or_else(|| get(lifeline, "name")), "");
+    let index_of = |wanted: &str| lifelines.iter().position(|lifeline| id(lifeline) == wanted);
+    let end = |message: &Value, keys: [&str; 3]| {
+        keys.iter()
+            .find_map(|key| get(message, key))
+            .map(|value| as_str(Some(value), ""))
+            .and_then(|id| index_of(&id))
+    };
+    let mut gap: f64 = LIFELINE_BOX_WIDTH + 16.0;
+    for message in messages {
+        let label = as_str(get(message, "name").or_else(|| get(message, "label")), "");
+        let characters = label.encode_utf16().count().min(28) as f64;
+        let (Some(source), Some(target)) = (
+            end(message, ["source", "from", "sourceId"]),
+            end(message, ["target", "to", "targetId"]),
+        ) else {
+            return LIFELINE_GAP;
+        };
+        let span = source.abs_diff(target).max(1) as f64;
+        // Room for the label and the arrowhead clear of both lifelines.
+        gap = gap.max((characters * MESSAGE_LABEL_CHARACTER + 28.0) / span);
+    }
+    gap.ceil()
+}
+
 /// Port of `renderSequenceView`. Returns the drawn content plus its `{minX,minY,maxX,maxY}`
 /// extents (`contentBoundsFromExtents` turns these into the `viewBox`-feeding bounds elsewhere).
 pub fn render_sequence_view(
@@ -126,6 +158,7 @@ pub fn render_sequence_view(
     let lifelines = as_array(get(&diagram, "lifelines")).to_vec();
     let mut messages = as_array(get(&diagram, "messages")).to_vec();
     messages.sort_by(|a, b| as_f64(get(a, "order"), 0.0).total_cmp(&as_f64(get(b, "order"), 0.0)));
+    let lifeline_gap = lifeline_gap(&lifelines, &messages);
     let activations = as_array(get(&diagram, "activations")).to_vec();
     let fragments = as_array(get(&diagram, "fragments")).to_vec();
     let title = if prepared.title.is_empty() {
@@ -134,7 +167,7 @@ pub fn render_sequence_view(
         &prepared.title
     };
     let title_x = (80.0_f64).max(
-        (width - ((lifelines.len() as f64 - 1.0).max(0.0) * LIFELINE_GAP + LIFELINE_BOX_WIDTH))
+        (width - ((lifelines.len() as f64 - 1.0).max(0.0) * lifeline_gap + LIFELINE_BOX_WIDTH))
             / 2.0,
     ) - LIFELINE_BOX_WIDTH / 2.0;
 
@@ -164,7 +197,7 @@ pub fn render_sequence_view(
     }
 
     let x_offset = (80.0_f64).max(
-        (width - (((lifelines.len() as f64 - 1.0).max(0.0)) * LIFELINE_GAP + LIFELINE_BOX_WIDTH))
+        (width - (((lifelines.len() as f64 - 1.0).max(0.0)) * lifeline_gap + LIFELINE_BOX_WIDTH))
             / 2.0,
     );
     let lifeline_id =
@@ -175,7 +208,7 @@ pub fn render_sequence_view(
         .map(|(index, lifeline)| {
             (
                 lifeline_id(lifeline),
-                x_offset + index as f64 * LIFELINE_GAP,
+                x_offset + index as f64 * lifeline_gap,
             )
         })
         .collect();
@@ -190,7 +223,8 @@ pub fn render_sequence_view(
         .last()
         .map(|m| message_row(as_f64(get(m, "order"), messages.len() as f64)))
         .unwrap_or(LIFELINE_TOP + 100.0);
-    let lifeline_bottom = last_message_y + 140.0;
+    // Lifelines end a little below the last message, not a fixed stretch further down.
+    let lifeline_bottom = last_message_y + 2.0 * MESSAGE_GAP;
 
     let mut lifeline_layer = Element::new("g").attr("class", "sequence-lifelines");
     for lifeline in &lifelines {
@@ -548,7 +582,7 @@ pub fn render_sequence_view(
             .min(0.0)
             .max(x_offset - half_box - 16.0),
         0.0,
-        (x_offset + (lifelines.len() as f64 - 1.0).max(0.0) * LIFELINE_GAP + half_box + 16.0)
+        (x_offset + (lifelines.len() as f64 - 1.0).max(0.0) * lifeline_gap + half_box + 16.0)
             .max(title_right),
         lifeline_bottom + 24.0,
     );

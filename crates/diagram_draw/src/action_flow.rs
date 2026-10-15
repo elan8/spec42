@@ -18,7 +18,10 @@ fn is_initial(kind: &str) -> bool {
     kind.contains("initial") || kind.contains("start")
 }
 fn is_final(kind: &str) -> bool {
-    kind.contains("final") || kind.contains("done") || kind.contains("end")
+    // `send` contains `end`, and a send action is not a final node.
+    kind.contains("final")
+        || kind.contains("done")
+        || (kind.contains("end") && !kind.contains("send"))
 }
 fn is_flow_final(kind: &str) -> bool {
     kind.contains("flow-final") || kind.contains("flow final") || kind.contains("terminate")
@@ -77,6 +80,9 @@ fn parameter_name(item: &Value) -> String {
     }
 }
 
+/// Side of the square a parameter is drawn as.
+const PARAMETER_SIZE: f64 = 10.0;
+
 fn draw_parameters(
     mut g: Element,
     items: &[Value],
@@ -84,23 +90,27 @@ fn draw_parameters(
     layout: &crate::behavior_common::LaidOutRect,
     theme: &Theme,
 ) -> Element {
-    for (index, item) in items.iter().take(4).enumerate() {
+    for (index, item) in items.iter().enumerate() {
         let name = parameter_name(item);
         let y = 20.0 + index as f64 * 14.0;
+        let boundary = if side == "input" { 0.0 } else { layout.width };
         let x = if side == "input" {
-            -9.0
+            -PARAMETER_SIZE / 2.0
         } else {
-            layout.width + 9.0
+            layout.width + PARAMETER_SIZE / 2.0
         };
+        // SysML 8.2.3.17: a parameter is a small square on the boundary of its action.
         g = g.child(
-            Element::new("circle")
+            Element::new("rect")
                 .attr(
                     "class",
                     format!("action-parameter-badge action-parameter-{side}"),
                 )
-                .attr_f("cx", x)
-                .attr_f("cy", y)
-                .attr_f("r", 5.0)
+                .attr_f("x", boundary - PARAMETER_SIZE / 2.0)
+                .attr_f("y", y - PARAMETER_SIZE / 2.0)
+                .attr_f("width", PARAMETER_SIZE)
+                .attr_f("height", PARAMETER_SIZE)
+                .attr("rx", "2")
                 .style("fill", theme.canvas_background)
                 .style("stroke", theme.node_border)
                 .style("stroke-width", "1.5px"),
@@ -111,12 +121,12 @@ fn draw_parameters(
                     "class",
                     format!("action-parameter-label action-parameter-{side}-label"),
                 )
-                .attr_f("x", if side == "input" { x - 8.0 } else { x + 8.0 })
+                .attr_f("x", if side == "input" { x - 4.0 } else { x + 4.0 })
                 .attr_f("y", y + 3.0)
                 .attr("text-anchor", if side == "input" { "end" } else { "start" })
                 .style("font-size", "8px")
                 .style("fill", theme.text_secondary)
-                .text(truncate_label(&name, 14)),
+                .text(name),
         );
     }
     g
@@ -265,6 +275,24 @@ fn draw_action_node(
                 .style("stroke-width", "2px")
                 .style("stroke-dasharray", if is_perform { "5,3" } else { "none" }),
         );
+        // SysML 8.2.3.17: an accept action carries a notched flag in its upper left corner, a
+        // send action a pointed one.
+        let signal_icon = if kind.contains("accept") {
+            Some(("accept-action-icon", "M8,8 H22 V18 H8 L12,13 Z"))
+        } else if kind.contains("send") {
+            Some(("send-action-icon", "M8,8 H18 L22,13 L18,18 H8 Z"))
+        } else {
+            None
+        };
+        if let Some((class, path)) = signal_icon {
+            g = g.child(
+                Element::new("path")
+                    .attr("class", class)
+                    .attr("d", path)
+                    .style("fill", theme.node_border)
+                    .style("stroke", "none"),
+            );
+        }
         if typed_action {
             g = g.child(
                 Element::new("text")
@@ -416,8 +444,8 @@ pub fn render_action_flow_view(
     prepared: &PreparedView,
     layout: &BehaviorLayoutResult,
     theme: &Theme,
-    width: f64,
-    height: f64,
+    _width: f64,
+    _height: f64,
 ) -> (Element, (f64, f64, f64, f64)) {
     let nodes_by_id: HashMap<&str, &PreparedNode> = prepared
         .nodes
@@ -433,19 +461,19 @@ pub fn render_action_flow_view(
         == "horizontal";
     let typed_projection = prepared.meta.get("typedProjection") == Some(&Value::Bool(true));
 
-    let mut root = Element::new("g").attr("class", "viz-root").child(
-        Element::new("text")
-            .attr_f("x", 24.0)
-            .attr_f("y", 28.0)
-            .style("font-size", "14px")
-            .style("font-weight", "700")
-            .style("fill", theme.text_primary)
-            .text(if prepared.title.is_empty() {
-                "Action Flow".to_string()
-            } else {
-                prepared.title.clone()
-            }),
+    // SysML 8.2.3.5: the view is drawn in a frame that carries its name. A fork's name is
+    // written below its bar, so the content reaches one line further down.
+    let content = crate::behavior_common::content_extent(layout);
+    let (frame, extent) = crate::behavior_common::view_frame(
+        if prepared.title.is_empty() {
+            "Action Flow"
+        } else {
+            &prepared.title
+        },
+        (content.0, content.1, content.2, content.3 + 20.0),
+        theme,
     );
+    let mut root = Element::new("g").attr("class", "viz-root").child(frame);
 
     let mut lane_extents: Vec<(String, LaneExtent)> = Vec::new();
     for node in &prepared.nodes {
@@ -584,7 +612,7 @@ pub fn render_action_flow_view(
         ));
         flow_layer = flow_layer.child(path_edge_hit_target(&path, &edge.id, Some(&tooltip_text)));
 
-        let label = truncate_label(&edge.label, 20);
+        let label = edge.label.clone();
         if !label.is_empty() && !["flow", "first", "bind"].contains(&label.to_lowercase().as_str())
         {
             let elk_label = layout
@@ -609,9 +637,10 @@ pub fn render_action_flow_view(
                         .attr_f("width", elk.width)
                         .attr_f("height", elk.height)
                         .attr("rx", "3")
+                        // Plain text beside the line; the unframed backing only keeps it
+                        // legible where another line passes behind it.
                         .style("fill", theme.canvas_background)
-                        .style("stroke", theme.edge_default)
-                        .style("stroke-width", "1px"),
+                        .style("stroke", "none"),
                 );
             }
             flow_layer = flow_layer.child(
@@ -682,22 +711,7 @@ pub fn render_action_flow_view(
     root = root.insert_before_child("activity-flows", lane_layer);
     root = root.child(node_layer);
 
-    let mut min_x = 0.0_f64;
-    let mut min_y = 0.0_f64;
-    let mut max_x = if typed_projection { 200.0 } else { width };
-    let mut max_y = if typed_projection { 50.0 } else { height };
-    for rect in layout.positions.values() {
-        min_x = min_x.min(rect.x);
-        min_y = min_y.min(rect.y);
-        max_x = max_x.max(rect.x + rect.width);
-        max_y = max_y.max(rect.y + rect.height + 20.0);
-    }
-    let extents = if typed_projection {
-        (40.0, 40.0, max_x + 40.0, max_y + 40.0)
-    } else {
-        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0)
-    };
-    (root, extents)
+    (root, extent)
 }
 
 /// Port of `addActionFlowMarkers`.
@@ -735,4 +749,35 @@ pub fn typed_action_flow_markers(theme: &Theme) -> Element {
                     .style("stroke-width", "1.5"),
             ),
     )
+}
+
+#[cfg(test)]
+mod signal_action_tests {
+    use super::*;
+    use crate::behavior_common::LaidOutRect;
+    use crate::theme::LIGHT;
+
+    fn drawn(kind: &str) -> String {
+        let node = PreparedNode {
+            id: "a".into(),
+            label: "a".into(),
+            kind: kind.into(),
+            attributes: Default::default(),
+        };
+        let rect = LaidOutRect {
+            x: 0.0,
+            y: 0.0,
+            width: 160.0,
+            height: 60.0,
+        };
+        draw_action_node(&node, &rect, &LIGHT).to_string()
+    }
+
+    #[test]
+    fn accept_and_send_actions_carry_their_icons() {
+        assert!(drawn("accept").contains("accept-action-icon"));
+        assert!(drawn("send").contains("send-action-icon"));
+        let plain = drawn("action");
+        assert!(!plain.contains("accept-action-icon") && !plain.contains("send-action-icon"));
+    }
 }

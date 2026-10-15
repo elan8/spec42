@@ -620,6 +620,218 @@ fn schema5_state_transition_non_numeric_endpoint_is_an_error() {
 }
 
 #[test]
+fn an_action_flow_written_with_then_draws_its_whole_flow() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_action_flow_then_successions.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("action flow lays out");
+    let nodes = input["prepared"]["nodes"].as_array().expect("nodes");
+    let id_of = |label: &str, kind: &str| {
+        nodes
+            .iter()
+            .find(|node| node["label"] == label && node["kind"] == kind)
+            .unwrap_or_else(|| panic!("no {kind} node labelled `{label}`"))["id"]
+            .as_str()
+            .unwrap()
+            .to_owned()
+    };
+    // The library's `start` and `done` are the initial and final nodes; they carry no name.
+    let (start, done) = (id_of("", "initial"), id_of("", "final"));
+    let (prepare, left, right, finish) = (
+        id_of("prepare", "ActionUsage"),
+        id_of("left", "ActionUsage"),
+        id_of("right", "ActionUsage"),
+        id_of("finish", "ActionUsage"),
+    );
+    let (split, joined, choice) = (
+        id_of("split", "ForkNode"),
+        id_of("joined", "JoinNode"),
+        id_of("choice", "DecisionNode"),
+    );
+    let accept = id_of("waitForPayment", "AcceptActionUsage");
+    // `then accept ...;` declares an accept action without a name of its own.
+    let then_accept = id_of("accept", "AcceptActionUsage");
+    let edges = input["prepared"]["edges"].as_array().expect("edges");
+    let has = |source: &str, target: &str, flow: bool| {
+        edges.iter().any(|edge| {
+            edge["source"] == source
+                && edge["target"] == target
+                && edge["attributes"]["streamingFlow"] == flow
+        })
+    };
+    // SysML 7.17.4: a `then` continues from the nearest occurrence written before it, so
+    // `then prepare;` and `then fork split;` both start at `start`, and both `then`s after
+    // the fork start at the fork.
+    for (source, target) in [
+        (&start, &prepare),
+        (&start, &split),
+        (&split, &left),
+        (&split, &right),
+        (&left, &joined),
+        (&right, &joined),
+        (&joined, &choice),
+        (&choice, &accept),
+        (&accept, &then_accept),
+        (&then_accept, &finish),
+        (&finish, &done),
+    ] {
+        assert!(
+            has(source, target, false),
+            "no succession {source} -> {target}"
+        );
+    }
+    assert_eq!(
+        edges
+            .iter()
+            .filter(|edge| edge["attributes"]["succession"] == true)
+            .count(),
+        11
+    );
+    // The flow between two parameters is drawn between the actions that own them.
+    assert!(has(&prepare, &left, true));
+    let node = |id: &str| nodes.iter().find(|node| node["id"] == id).unwrap();
+    assert_eq!(node(&prepare)["attributes"]["outputs"][0]["name"], "order");
+    assert_eq!(node(&left)["attributes"]["inputs"][0]["name"], "order");
+
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw action flow");
+    assert!(svg.contains("accept-action-icon"), "{svg}");
+    assert_eq!(svg.matches("action-parameter-badge").count(), 2);
+}
+
+#[test]
+fn conditional_successions_carry_their_guards() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_action_flow_conditional_successions.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("action flow lays out");
+    let nodes = input["prepared"]["nodes"].as_array().expect("nodes");
+    let id_of = |label: &str, kind: &str| {
+        nodes
+            .iter()
+            .find(|node| node["label"] == label && node["kind"] == kind)
+            .unwrap_or_else(|| panic!("no {kind} node labelled `{label}`"))["id"]
+            .as_str()
+            .unwrap()
+            .to_owned()
+    };
+    let label = |source: &str, target: &str| {
+        input["prepared"]["edges"]
+            .as_array()
+            .expect("edges")
+            .iter()
+            .find(|edge| edge["source"] == source && edge["target"] == target)
+            .unwrap_or_else(|| panic!("no succession {source} -> {target}"))["label"]
+            .as_str()
+            .unwrap()
+            .to_owned()
+    };
+    let outcome = id_of("outcome", "DecisionNode");
+    let (ship, repair, expedite, check) = (
+        id_of("ship", "ActionUsage"),
+        id_of("repair", "ActionUsage"),
+        id_of("expedite", "ActionUsage"),
+        id_of("check", "ActionUsage"),
+    );
+    let done = id_of("", "final");
+    // A brace-less `if g then x; else y;` after a `decide` is two conditional successions
+    // from the decision, not an if action.
+    assert_eq!(label(&outcome, &ship), "[ready]");
+    assert_eq!(label(&outcome, &repair), "[else]");
+    assert!(nodes.iter().all(|node| node["kind"] != "IfActionUsage"));
+    // Written in full, the guard is kept as it is authored.
+    assert_eq!(label(&ship, &expedite), "[urgent]");
+    assert_eq!(label(&ship, &done), "[not urgent]");
+    assert_eq!(label(&repair, &check), "");
+
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw action flow");
+    for guard in ["[ready]", "[else]", "[urgent]", "[not urgent]"] {
+        assert!(svg.contains(guard), "`{guard}` is not drawn");
+    }
+}
+
+#[test]
+fn a_state_lists_its_entry_do_and_exit_actions() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_state_actions.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("state machine lays out");
+    let state = |label: &str| {
+        input["prepared"]["nodes"]
+            .as_array()
+            .expect("nodes")
+            .iter()
+            .find(|node| node["label"] == label)
+            .unwrap_or_else(|| panic!("no state `{label}`"))["attributes"]
+            .clone()
+    };
+    let idle = state("idle");
+    assert_eq!(idle["entry"], "warmUp");
+    assert_eq!(idle["do"], "hold");
+    assert_eq!(idle["exit"], "coolDown");
+    let baking = state("baking");
+    assert_eq!(baking["do"], "bake");
+    assert!(baking["entry"].is_null() && baking["exit"].is_null());
+
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw state machine");
+    for line in ["entry warmUp", "do hold", "exit coolDown", "do bake"] {
+        assert!(svg.contains(line), "`{line}` is not drawn: {svg}");
+    }
+    assert_eq!(svg.matches("state actions").count(), 2);
+}
+
+#[test]
+fn a_state_that_owns_states_shows_them_inside_it() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_composite_state.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("state machine lays out");
+    let nodes = input["prepared"]["nodes"].as_array().expect("nodes");
+    let node = |label: &str| {
+        nodes
+            .iter()
+            .find(|node| node["label"] == label && node["kind"] == "state")
+            .unwrap_or_else(|| panic!("no state `{label}`"))
+    };
+    let on = node("on")["id"].as_str().unwrap();
+    assert!(node("off")["attributes"]["containerId"].is_null());
+    for nested in ["warming", "ready"] {
+        assert_eq!(node(nested)["attributes"]["containerId"], on);
+    }
+    // The initial node of the nested machine is inside it as well.
+    assert_eq!(
+        nodes
+            .iter()
+            .filter(|node| node["kind"] == "initial" && node["attributes"]["containerId"] == on)
+            .count(),
+        1
+    );
+    // Each nested state lies within the box of the state that owns it.
+    let rect = |id: &str| {
+        let position = &input["behaviorLayout"]["positions"][id];
+        let value = |key: &str| position[key].as_f64().unwrap();
+        (
+            value("x"),
+            value("y"),
+            value("x") + value("width"),
+            value("y") + value("height"),
+        )
+    };
+    let outer = rect(on);
+    for nested in ["warming", "ready"] {
+        let inner = rect(node(nested)["id"].as_str().unwrap());
+        assert!(
+            outer.0 < inner.0 && outer.1 < inner.1 && inner.2 < outer.2 && inner.3 < outer.3,
+            "`{nested}` {inner:?} is not inside `on` {outer:?}"
+        );
+    }
+    // The containing state is drawn below the transitions, the others above them.
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw state machine");
+    let layer = |class: &str| svg.find(&format!("class=\"{class}\"")).unwrap();
+    assert!(layer("state-containers") < layer("state-transitions"));
+    assert!(layer("state-transitions") < layer("state-nodes"));
+}
+
+#[test]
 fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::theme::LIGHT;
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};

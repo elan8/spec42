@@ -936,6 +936,15 @@ impl GeneratorModelView {
                     sysml_query::resolved_slice::FeatureDirection::InOut => "inout",
                 }.to_owned()),
                 conjugated: element.conjugated,
+                state_subaction: element.state_subaction.map(|kind| match kind {
+                    sysml_query::resolved_slice::StateSubactionKind::Entry => "entry",
+                    sysml_query::resolved_slice::StateSubactionKind::Do => "do",
+                    sysml_query::resolved_slice::StateSubactionKind::Exit => "exit",
+                }.to_owned()),
+                succession_guard: element.succession_guard.as_ref().map(|guard| match guard {
+                    sysml_query::resolved_slice::DiagramSuccessionGuard::Condition(text) => text.to_string(),
+                    sysml_query::resolved_slice::DiagramSuccessionGuard::Else => "else".to_owned(),
+                }),
             }))
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
         let relationships = projection
@@ -2002,15 +2011,43 @@ fn diagram_metadata(
                 Metaclass::BindingConnectorUsage,
             ]),
         },
-        DiagramViewKind::ActionFlowView => DiagramViewMetadata::ActionFlow {
-            actions: ids(&[Metaclass::ActionDefinition, Metaclass::ActionUsage]),
-            control_nodes: ids(&[
-                Metaclass::DecisionNodeUsage,
-                Metaclass::MergeNodeUsage,
-                Metaclass::ForkNodeUsage,
-                Metaclass::JoinNodeUsage,
-            ]),
-        },
+        DiagramViewKind::ActionFlowView => {
+            // The semantic vocabulary names these kinds as SysML does (`ForkNode`,
+            // `AcceptActionUsage`); the generator vocabulary has no variant for some of them
+            // and carries their names as they are. Both spellings are members here.
+            let named = |names: &[&str]| {
+                elements
+                    .iter()
+                    .filter(|element| names.contains(&element.metaclass.as_str()))
+                    .map(|element| element.occurrence.clone())
+                    .collect::<Vec<_>>()
+            };
+            DiagramViewMetadata::ActionFlow {
+                actions: named(&[
+                    "ActionDefinition",
+                    "ActionUsage",
+                    "PerformActionUsage",
+                    "PerformUsage",
+                    "AcceptActionUsage",
+                    "SendActionUsage",
+                    "AssignmentActionUsage",
+                    "IfActionUsage",
+                    "WhileLoopActionUsage",
+                    "ForLoopActionUsage",
+                    "TerminateActionUsage",
+                ]),
+                control_nodes: named(&[
+                    "DecisionNode",
+                    "MergeNode",
+                    "ForkNode",
+                    "JoinNode",
+                    "DecisionNodeUsage",
+                    "MergeNodeUsage",
+                    "ForkNodeUsage",
+                    "JoinNodeUsage",
+                ]),
+            }
+        }
         DiagramViewKind::StateTransitionView => DiagramViewMetadata::StateTransition {
             states: ids(&[Metaclass::StateDefinition, Metaclass::StateUsage]),
             initial_nodes: relationships
@@ -2149,6 +2186,19 @@ fn api_metaclass(kind: ElementKind) -> Metaclass {
 
 fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
     let metaclass = api_metaclass(kind);
+    // A kind the generator vocabulary has no variant for takes its role from the metamodel:
+    // `ForkNode`, `AcceptActionUsage` and `PerformActionUsage` are usages like any other. A
+    // succession or a binding written as a usage is a relationship between nodes, not a node.
+    if metaclass.is_unrecognized() {
+        return match kind {
+            ElementKind::SuccessionAsUsage | ElementKind::BindingConnectorAsUsage => {
+                DiagramNotationRole::Unsupported
+            }
+            kind if kind.conforms_to(ElementKind::Usage) => DiagramNotationRole::Usage,
+            kind if kind.conforms_to(ElementKind::Definition) => DiagramNotationRole::Definition,
+            _ => DiagramNotationRole::Unsupported,
+        };
+    }
     match metaclass {
         Metaclass::ActionDefinition
         | Metaclass::AllocationDefinition

@@ -52,7 +52,15 @@ fn drawn_regions(node: &PreparedNode) -> Vec<String> {
     }
 }
 
-fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> Element {
+/// Baseline area of the state actions compartment: its label ends here and its lines follow.
+pub(crate) const STATE_ACTIONS_TOP: f64 = 52.0;
+
+fn draw_state_node(
+    node: &PreparedNode,
+    layout: &LaidOutRect,
+    theme: &Theme,
+    contains_states: bool,
+) -> Element {
     let kind = node_kind(node);
     let entry = first_non_empty(node, &["entry", "entryAction"]);
     let do_action = first_non_empty(node, &["do", "doAction"]);
@@ -168,16 +176,18 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
                 .text(truncate_label(&node.label, 28)),
         );
         let mut action_lines = Vec::new();
+        // SysML 8.2.3.18: the state actions compartment lists the entry, do and exit actions
+        // as they are declared.
         if let Some(entry) = &entry {
-            action_lines.push(format!("entry / {entry}"));
+            action_lines.push(format!("entry {entry}"));
         }
         if let Some(do_action) = &do_action {
-            action_lines.push(format!("do / {do_action}"));
+            action_lines.push(format!("do {do_action}"));
         }
         if let Some(exit) = &exit {
-            action_lines.push(format!("exit / {exit}"));
+            action_lines.push(format!("exit {exit}"));
         }
-        if !action_lines.is_empty() || is_composite {
+        if !action_lines.is_empty() || is_composite || contains_states {
             g = g.child(
                 Element::new("line")
                     .attr("class", "state-compartment-divider")
@@ -189,12 +199,25 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
                     .style("stroke-width", "1px"),
             );
         }
+        if !action_lines.is_empty() {
+            g = g.child(
+                Element::new("text")
+                    .attr("class", "state-compartment-label")
+                    .attr_f("x", layout.width / 2.0)
+                    .attr_f("y", STATE_ACTIONS_TOP - 2.0)
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "9px")
+                    .style("font-style", "italic")
+                    .style("fill", theme.text_secondary)
+                    .text("state actions"),
+            );
+        }
         for (index, line) in action_lines.iter().enumerate() {
             g = g.child(
                 Element::new("text")
                     .attr("class", "state-action-compartment")
                     .attr_f("x", 12.0)
-                    .attr_f("y", 56.0 + index as f64 * 16.0)
+                    .attr_f("y", STATE_ACTIONS_TOP + 14.0 + index as f64 * 16.0)
                     .style("font-size", "10px")
                     .style("fill", theme.text_secondary)
                     .text(truncate_label(line, 34)),
@@ -202,7 +225,8 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
         }
         if is_composite {
             let action_count = action_lines.len() as f64;
-            let region_top = (52.0 + action_count * 16.0).max(80.0);
+            let label_height = if action_lines.is_empty() { 0.0 } else { 14.0 };
+            let region_top = (52.0 + label_height + action_count * 16.0).max(80.0);
             let region_count = if regions.is_empty() {
                 1.0
             } else {
@@ -263,19 +287,17 @@ pub fn render_state_transition_view(
         .map(|node| (node.id.as_str(), node))
         .collect();
 
-    let mut root = Element::new("g").attr("class", "viz-root").child(
-        Element::new("text")
-            .attr_f("x", 24.0)
-            .attr_f("y", 28.0)
-            .style("font-size", "14px")
-            .style("font-weight", "700")
-            .style("fill", theme.text_primary)
-            .text(if prepared.title.is_empty() {
-                "State Transition".to_string()
-            } else {
-                prepared.title.clone()
-            }),
+    // SysML 8.2.3.5: the view is drawn in a frame that carries its name.
+    let (frame, extent) = crate::behavior_common::view_frame(
+        if prepared.title.is_empty() {
+            "State Transition"
+        } else {
+            &prepared.title
+        },
+        crate::behavior_common::content_extent(layout),
+        theme,
     );
+    let mut root = Element::new("g").attr("class", "viz-root").child(frame);
 
     let horizontal = {
         let mode = prepared
@@ -337,7 +359,8 @@ pub fn render_state_transition_view(
         edge_layer = edge_layer.child(path_edge_hit_target(&path, &edge.id, Some(&tooltip_text)));
 
         let label = transition_display_label(&edge.label);
-        if !label.is_empty() {
+        // A transition that joins a shared line leaves the label to the one that carries it.
+        if !label.is_empty() && !layout.shared_label_edge_ids.contains(&edge.id) {
             let elk_label = layout
                 .edge_labels_by_id
                 .get(&edge.id)
@@ -364,7 +387,18 @@ pub fn render_state_transition_view(
                     .attr_f("y", rect_y)
                     .attr_f("width", label_width)
                     .attr_f("height", label_height)
-                    .style("fill", theme.canvas_background)
+                    .style(
+                        "fill",
+                        // Inside a state that shows its states, the label lies on that
+                        // state's fill, not on the canvas.
+                        if nodes_by_id.get(edge.source.as_str()).is_some_and(|source| {
+                            !crate::types::attr_text(&source.attributes, "containerId").is_empty()
+                        }) {
+                            theme.node_fill
+                        } else {
+                            theme.canvas_background
+                        },
+                    )
                     .style("stroke", "none"),
             );
             edge_layer = edge_layer.child(
@@ -382,21 +416,56 @@ pub fn render_state_transition_view(
     root = root.child(edge_layer);
 
     let mut node_layer = Element::new("g").attr("class", "state-nodes");
-    for node in &prepared.nodes {
+    // A state is drawn before the states it contains, so that they lie on top of it.
+    let container_of =
+        |node: &PreparedNode| crate::types::attr_text(&node.attributes, "containerId");
+    let depth = |node: &PreparedNode| {
+        let mut depth = 0;
+        let mut container = container_of(node);
+        while let Some(above) = nodes_by_id.get(container.as_str()) {
+            depth += 1;
+            if depth > prepared.nodes.len() {
+                break;
+            }
+            container = container_of(above);
+        }
+        depth
+    };
+    let containers: std::collections::HashSet<String> = prepared
+        .nodes
+        .iter()
+        .map(container_of)
+        .filter(|container| nodes_by_id.contains_key(container.as_str()))
+        .collect();
+    let mut ordered: Vec<&PreparedNode> = prepared.nodes.iter().collect();
+    ordered.sort_by_key(|node| depth(node));
+    // SysML 8.2.3.18: a state that owns states shows its own state transition view inside
+    // it. It lies below the transitions, which would otherwise be hidden by its fill.
+    let mut container_layer = Element::new("g").attr("class", "state-containers");
+    for node in ordered {
         let Some(position) = layout.positions.get(&node.id) else {
             continue;
         };
+        let contains_states = containers.contains(&node.id);
         // `attachBehaviorNodeClick` runs unconditionally for every node here (unlike
         // sequence-view's lifelines); in headless export it always resolves to
         // `.style("cursor", "")`, which `VirtualStyle` keeps as a literal empty declaration.
-        let node_group = draw_state_node(node, position, theme).style("cursor", "");
-        node_layer = node_layer.child(node_group);
+        let node_group =
+            draw_state_node(node, position, theme, contains_states).style("cursor", "");
+        if contains_states {
+            container_layer = container_layer.child(node_group);
+        } else {
+            node_layer = node_layer.child(node_group);
+        }
+    }
+    if !containers.is_empty() {
+        root = root.insert_before_child("state-transitions", container_layer);
     }
     root = root.child(node_layer);
 
     // The figure is as large as what is drawn. The viewer's canvas does not enter into it: a
     // diagram smaller than a screen must not be padded out to one.
-    (root, crate::behavior_common::layout_extent(layout))
+    (root, extent)
 }
 
 /// Port of `addStateTransitionMarkers`.

@@ -13,7 +13,7 @@ viewQualifiedName=TimerGrid::selected
 ~~~sysml
 package TimerGrid {
     private import StandardViewDefinitions::*;
-    private import KitchenTimer::*;
+    import KitchenTimer::*;
     view selected : GridView { expose KitchenTimer::timerInstance; }
 }
 ~~~
@@ -22,6 +22,12 @@ package TimerGrid {
 (fixture-diagnostics
   (document "memory://snapshot/diagram_timer_grid.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_import_visibility")
+        (source "parser")
+        (range (start 2 4) (end 2 10))
+      )
     )
   )
   (document "memory://snapshot/examples/timer/KitchenTimer.sysml"
@@ -49,11 +55,10 @@ package TimerGrid {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1ddfe8575c6cd8bfe83bf2361a3668b19132b6cf7478f8d58d5139f6c56459c5") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:91756891c2833a3fa69422a2cfb0f467c0c2adfdfa496137986b4f41fa957af4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_timer_grid.md") (qualified-name "TimerGrid"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_timer_grid.md") (path (named (kind package) (name "TimerGrid")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/diagram_timer_grid.md") (path (named (kind package) (name "TimerGrid")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "KitchenTimer") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/diagram_timer_grid.md") (qualified-name "TimerGrid::selected"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GridView")))))
     (declaration (id (node (document "memory://snapshot/diagram_timer_grid.md") (path (named (kind package) (name "TimerGrid")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "KitchenTimer::timerInstance")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer"))) (kind package) (membership (kind owning) (visibility default)))
@@ -367,9 +372,6 @@ package TimerGrid {
     (reference (id (source (node (document "memory://snapshot/diagram_timer_grid.md") (path (named (kind package) (name "TimerGrid")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "StandardViewDefinitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions")))))
-    (reference (id (source (node (document "memory://snapshot/diagram_timer_grid.md") (path (named (kind package) (name "TimerGrid")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
-      (authored-target "KitchenTimer")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer")))))
     (reference (id (source (node (document "memory://snapshot/diagram_timer_grid.md") (qualified-name "TimerGrid::selected"))) (kind featureTyping) (ordinal 0))
       (authored-target "GridView")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GridView")))))
@@ -5889,11 +5891,6 @@ package TimerGrid {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions")))))
     )
   )
-  (query (document "memory://snapshot/diagram_timer_grid.md") (range (start 2 19) (end 2 34)) (probe (position 2 19))
-    (reference (id (source (node (document "memory://snapshot/diagram_timer_grid.md") (path (named (kind package) (name "TimerGrid")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "KitchenTimer")
-      (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer")))))
-    )
-  )
   (query (document "memory://snapshot/diagram_timer_grid.md") (range (start 3 20) (end 3 28)) (probe (position 3 20))
     (reference (id (source (node (document "memory://snapshot/diagram_timer_grid.md") (qualified-name "TimerGrid::selected"))) (kind featureTyping) (ordinal 0) (authored-target "GridView")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GridView")))))
@@ -6781,7 +6778,7 @@ package TimerGrid {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:a708d6068038110302db25192aa3db891390f89a32ef3893988effb8c3831993",
+  "modelDigest": "blake3:c607d9ca5d4b8446ae1dd4a17c0a6374ef5c821ad34f31d9a4387c00e8d55e62",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_grid.md",
@@ -16507,6 +16504,8 @@ package TimerGrid {
         "owner": null,
         "reference": 1,
         "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -16527,6 +16526,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 215,
         "source": 183,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16541,6 +16542,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 216,
         "source": 186,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16555,6 +16558,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 217,
         "source": 189,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16569,6 +16574,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 218,
         "source": 192,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16583,6 +16590,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 219,
         "source": 195,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16618,6 +16627,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 103,
         "source": 175,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -16638,6 +16649,8 @@ package TimerGrid {
         "owner": 6,
         "reference": 224,
         "source": 151,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16652,6 +16665,8 @@ package TimerGrid {
         "owner": 6,
         "reference": 225,
         "source": 154,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16666,6 +16681,8 @@ package TimerGrid {
         "owner": 6,
         "reference": 226,
         "source": 157,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16680,6 +16697,8 @@ package TimerGrid {
         "owner": 6,
         "reference": 227,
         "source": 160,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16704,6 +16723,8 @@ package TimerGrid {
         "owner": 6,
         "reference": 120,
         "source": 149,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -16734,6 +16755,8 @@ package TimerGrid {
         "owner": 11,
         "reference": 80,
         "source": 113,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -16754,6 +16777,8 @@ package TimerGrid {
         "owner": 12,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16768,6 +16793,8 @@ package TimerGrid {
         "owner": 13,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16775,13 +16802,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 14,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16796,6 +16825,8 @@ package TimerGrid {
         "owner": 14,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16810,6 +16841,8 @@ package TimerGrid {
         "owner": 12,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16824,6 +16857,8 @@ package TimerGrid {
         "owner": 17,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16831,13 +16866,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 18,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16852,6 +16889,8 @@ package TimerGrid {
         "owner": 18,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16859,13 +16898,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 12,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16896,6 +16937,8 @@ package TimerGrid {
         "owner": 11,
         "reference": 82,
         "source": 107,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -16916,6 +16959,8 @@ package TimerGrid {
         "owner": 22,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16930,6 +16975,8 @@ package TimerGrid {
         "owner": 23,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16937,13 +16984,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 24,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16958,6 +17007,8 @@ package TimerGrid {
         "owner": 24,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16965,13 +17016,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 22,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -16986,6 +17039,8 @@ package TimerGrid {
         "owner": 22,
         "reference": 207,
         "source": 109,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17000,6 +17055,8 @@ package TimerGrid {
         "owner": 28,
         "reference": 208,
         "source": 112,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17007,13 +17064,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 29,
         "reference": 209,
         "source": 112,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17028,6 +17087,8 @@ package TimerGrid {
         "owner": 29,
         "reference": 210,
         "source": 111,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17050,6 +17111,8 @@ package TimerGrid {
         "owner": 11,
         "reference": 81,
         "source": 105,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17063,13 +17126,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
         "owner": 32,
         "reference": 57,
         "source": 81,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17118,6 +17183,8 @@ package TimerGrid {
         "owner": 6,
         "reference": 122,
         "source": 143,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17152,10 +17219,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "ExhibitStateUsage",
         "name": "timerMode",
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 34,
         "reference": 116,
         "source": 103,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17193,6 +17262,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 24,
         "source": 35,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17207,6 +17278,8 @@ package TimerGrid {
         "owner": 36,
         "reference": 166,
         "source": 34,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17225,10 +17298,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 36,
         "reference": 164,
         "source": 34,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17236,13 +17311,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 38,
         "reference": 167,
         "source": 34,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17257,6 +17334,8 @@ package TimerGrid {
         "owner": 36,
         "reference": 165,
         "source": 34,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17264,13 +17343,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 36,
         "reference": 165,
         "source": 34,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17278,13 +17359,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 36,
         "reference": 165,
         "source": 34,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17316,6 +17399,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 36,
         "source": 15,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17330,6 +17415,8 @@ package TimerGrid {
         "owner": 43,
         "reference": 182,
         "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17348,10 +17435,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 43,
         "reference": 180,
         "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17359,13 +17448,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 45,
         "reference": 183,
         "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17380,6 +17471,8 @@ package TimerGrid {
         "owner": 43,
         "reference": 181,
         "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17387,13 +17480,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 43,
         "reference": 181,
         "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17401,13 +17496,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 43,
         "reference": 181,
         "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17439,6 +17536,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 14,
         "source": 25,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17453,6 +17552,8 @@ package TimerGrid {
         "owner": 50,
         "reference": 158,
         "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17471,10 +17572,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 50,
         "reference": 156,
         "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17482,13 +17585,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 52,
         "reference": 159,
         "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17503,6 +17608,8 @@ package TimerGrid {
         "owner": 50,
         "reference": 157,
         "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17510,13 +17617,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 50,
         "reference": 157,
         "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17524,13 +17633,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 50,
         "reference": 157,
         "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17562,6 +17673,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 19,
         "source": 20,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17576,6 +17689,8 @@ package TimerGrid {
         "owner": 57,
         "reference": 162,
         "source": 19,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17594,10 +17709,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 57,
         "reference": 160,
         "source": 19,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17605,13 +17722,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 59,
         "reference": 163,
         "source": 19,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17626,6 +17745,8 @@ package TimerGrid {
         "owner": 57,
         "reference": 161,
         "source": 19,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17633,13 +17754,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 57,
         "reference": 161,
         "source": 19,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17647,13 +17770,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 57,
         "reference": 161,
         "source": 19,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17685,6 +17810,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 39,
         "source": 40,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17699,6 +17826,8 @@ package TimerGrid {
         "owner": 64,
         "reference": 186,
         "source": 39,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17717,10 +17846,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 64,
         "reference": 184,
         "source": 39,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17728,13 +17859,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 66,
         "reference": 187,
         "source": 39,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17749,6 +17882,8 @@ package TimerGrid {
         "owner": 64,
         "reference": 185,
         "source": 39,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17756,13 +17891,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 64,
         "reference": 185,
         "source": 39,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17770,13 +17907,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 64,
         "reference": 185,
         "source": 39,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17808,6 +17947,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 30,
         "source": 45,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17822,6 +17963,8 @@ package TimerGrid {
         "owner": 71,
         "reference": 174,
         "source": 44,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17840,10 +17983,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 71,
         "reference": 172,
         "source": 44,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17851,13 +17996,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 73,
         "reference": 175,
         "source": 44,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17872,6 +18019,8 @@ package TimerGrid {
         "owner": 71,
         "reference": 173,
         "source": 44,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17879,13 +18028,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 71,
         "reference": 173,
         "source": 44,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17893,13 +18044,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 71,
         "reference": 173,
         "source": 44,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17931,6 +18084,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 27,
         "source": 50,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17945,6 +18100,8 @@ package TimerGrid {
         "owner": 78,
         "reference": 170,
         "source": 49,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17963,10 +18120,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 78,
         "reference": 168,
         "source": 49,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17974,13 +18133,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 80,
         "reference": 171,
         "source": 49,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -17995,6 +18156,8 @@ package TimerGrid {
         "owner": 78,
         "reference": 169,
         "source": 49,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18002,13 +18165,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 78,
         "reference": 169,
         "source": 49,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18016,13 +18181,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 78,
         "reference": 169,
         "source": 49,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18054,6 +18221,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 33,
         "source": 30,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18068,6 +18237,8 @@ package TimerGrid {
         "owner": 85,
         "reference": 178,
         "source": 29,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18086,10 +18257,12 @@ package TimerGrid {
         "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "usage",
         "owner": 85,
         "reference": 176,
         "source": 29,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18097,13 +18270,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "inout",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 87,
         "reference": 179,
         "source": 29,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18118,6 +18293,8 @@ package TimerGrid {
         "owner": 85,
         "reference": 177,
         "source": 29,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18125,13 +18302,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 85,
         "reference": 177,
         "source": 29,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18139,13 +18318,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
         "owner": 85,
         "reference": 177,
         "source": 29,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18160,6 +18341,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 155,
         "source": 4,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18174,6 +18357,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 154,
         "source": 3,
+        "stateSubaction": "entry",
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18188,6 +18373,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 18,
         "source": 6,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18208,6 +18395,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 22,
         "source": 10,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18228,6 +18417,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 17,
         "source": 12,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18248,6 +18439,8 @@ package TimerGrid {
         "owner": 35,
         "reference": 23,
         "source": 8,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18276,6 +18469,8 @@ package TimerGrid {
         "owner": 34,
         "reference": 108,
         "source": 91,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18289,13 +18484,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
         "owner": 98,
         "reference": 59,
         "source": 75,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18332,6 +18529,8 @@ package TimerGrid {
         "owner": 34,
         "reference": 111,
         "source": 97,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18352,6 +18551,8 @@ package TimerGrid {
         "owner": 100,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18366,6 +18567,8 @@ package TimerGrid {
         "owner": 101,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18373,13 +18576,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 102,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18394,6 +18599,8 @@ package TimerGrid {
         "owner": 102,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18401,13 +18608,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 100,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18422,6 +18631,8 @@ package TimerGrid {
         "owner": 100,
         "reference": 220,
         "source": 99,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18436,6 +18647,8 @@ package TimerGrid {
         "owner": 106,
         "reference": 221,
         "source": 102,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18443,13 +18656,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 107,
         "reference": 222,
         "source": 102,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18464,6 +18679,8 @@ package TimerGrid {
         "owner": 107,
         "reference": 223,
         "source": 101,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18490,6 +18707,8 @@ package TimerGrid {
         "owner": 34,
         "reference": 105,
         "source": 89,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18503,13 +18722,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
         "owner": 110,
         "reference": 55,
         "source": 66,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18523,13 +18744,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
         "owner": 110,
         "reference": 53,
         "source": 68,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18543,13 +18766,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
         "owner": 110,
         "reference": 54,
         "source": 64,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18563,13 +18788,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
         "owner": 110,
         "reference": 51,
         "source": 72,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18583,13 +18810,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
         "owner": 110,
         "reference": 52,
         "source": 70,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18618,6 +18847,8 @@ package TimerGrid {
         "owner": 34,
         "reference": 110,
         "source": 93,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18631,13 +18862,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
         "owner": 116,
         "reference": 61,
         "source": 78,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18666,6 +18899,8 @@ package TimerGrid {
         "owner": 34,
         "reference": 106,
         "source": 95,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18679,13 +18914,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
         "owner": 118,
         "reference": 57,
         "source": 81,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18706,6 +18943,8 @@ package TimerGrid {
         "owner": 34,
         "reference": 107,
         "source": 83,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18726,6 +18965,8 @@ package TimerGrid {
         "owner": 34,
         "reference": 115,
         "source": 87,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18746,6 +18987,8 @@ package TimerGrid {
         "owner": 34,
         "reference": 109,
         "source": 85,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18775,6 +19018,8 @@ package TimerGrid {
         "owner": 6,
         "reference": 119,
         "source": 147,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18811,6 +19056,8 @@ package TimerGrid {
         "owner": 123,
         "reference": 69,
         "source": 129,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18831,6 +19078,8 @@ package TimerGrid {
         "owner": 124,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18845,6 +19094,8 @@ package TimerGrid {
         "owner": 125,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18852,13 +19103,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 126,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18873,6 +19126,8 @@ package TimerGrid {
         "owner": 126,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18880,13 +19135,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 124,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18901,6 +19158,8 @@ package TimerGrid {
         "owner": 124,
         "reference": 199,
         "source": 131,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18915,6 +19174,8 @@ package TimerGrid {
         "owner": 130,
         "reference": 200,
         "source": 134,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18922,13 +19183,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 131,
         "reference": 201,
         "source": 134,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18943,6 +19206,8 @@ package TimerGrid {
         "owner": 131,
         "reference": 202,
         "source": 133,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -18969,6 +19234,8 @@ package TimerGrid {
         "owner": 123,
         "reference": 68,
         "source": 127,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -18982,13 +19249,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
         "owner": 134,
         "reference": 55,
         "source": 66,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19002,13 +19271,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
         "owner": 134,
         "reference": 53,
         "source": 68,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19022,13 +19293,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
         "owner": 134,
         "reference": 54,
         "source": 64,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19042,13 +19315,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
         "owner": 134,
         "reference": 51,
         "source": 72,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19062,13 +19337,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "in",
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
         "owner": 134,
         "reference": 52,
         "source": 70,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19106,6 +19383,8 @@ package TimerGrid {
         "owner": 6,
         "reference": 121,
         "source": 145,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19134,6 +19413,8 @@ package TimerGrid {
         "owner": 140,
         "reference": 88,
         "source": 117,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19147,13 +19428,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
         "owner": 141,
         "reference": 59,
         "source": 75,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19190,6 +19473,8 @@ package TimerGrid {
         "owner": 140,
         "reference": 91,
         "source": 121,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19210,6 +19495,8 @@ package TimerGrid {
         "owner": 143,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19224,6 +19511,8 @@ package TimerGrid {
         "owner": 144,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19231,13 +19520,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 145,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19252,6 +19543,8 @@ package TimerGrid {
         "owner": 145,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19259,13 +19552,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 143,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19280,6 +19575,8 @@ package TimerGrid {
         "owner": 143,
         "reference": 211,
         "source": 123,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19294,6 +19591,8 @@ package TimerGrid {
         "owner": 149,
         "reference": 212,
         "source": 126,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19301,13 +19600,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 150,
         "reference": 213,
         "source": 126,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19322,6 +19623,8 @@ package TimerGrid {
         "owner": 150,
         "reference": 214,
         "source": 125,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19344,6 +19647,8 @@ package TimerGrid {
         "owner": 140,
         "reference": 90,
         "source": 119,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19357,13 +19662,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
         "owner": 153,
         "reference": 61,
         "source": 78,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19384,6 +19691,8 @@ package TimerGrid {
         "owner": 140,
         "reference": 89,
         "source": 115,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19419,6 +19728,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 101,
         "source": 179,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19455,6 +19766,8 @@ package TimerGrid {
         "owner": 156,
         "reference": 75,
         "source": 137,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19475,6 +19788,8 @@ package TimerGrid {
         "owner": 157,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19489,6 +19804,8 @@ package TimerGrid {
         "owner": 158,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19496,13 +19813,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 159,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19517,6 +19836,8 @@ package TimerGrid {
         "owner": 159,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19524,13 +19845,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 157,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19545,6 +19868,8 @@ package TimerGrid {
         "owner": 157,
         "reference": 203,
         "source": 139,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19559,6 +19884,8 @@ package TimerGrid {
         "owner": 163,
         "reference": 204,
         "source": 142,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19566,13 +19893,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 164,
         "reference": 205,
         "source": 142,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19587,6 +19916,8 @@ package TimerGrid {
         "owner": 164,
         "reference": 206,
         "source": 141,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19601,6 +19932,8 @@ package TimerGrid {
         "owner": 156,
         "reference": 74,
         "source": 135,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19638,6 +19971,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 100,
         "source": 177,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19668,6 +20003,8 @@ package TimerGrid {
         "owner": 168,
         "reference": 65,
         "source": 169,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19688,6 +20025,8 @@ package TimerGrid {
         "owner": 169,
         "reference": 43,
         "source": 60,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19702,6 +20041,8 @@ package TimerGrid {
         "owner": 170,
         "reference": 189,
         "source": 62,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19709,13 +20050,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 171,
         "reference": 190,
         "source": 62,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19730,6 +20073,8 @@ package TimerGrid {
         "owner": 171,
         "reference": 191,
         "source": 61,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19744,6 +20089,8 @@ package TimerGrid {
         "owner": 169,
         "reference": 47,
         "source": 57,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19758,6 +20105,8 @@ package TimerGrid {
         "owner": 174,
         "reference": 192,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19765,13 +20114,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 175,
         "reference": 193,
         "source": 59,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19786,6 +20137,8 @@ package TimerGrid {
         "owner": 175,
         "reference": 194,
         "source": 58,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19793,13 +20146,15 @@ package TimerGrid {
       {
         "compartments": [],
         "conjugated": false,
-        "direction": null,
+        "direction": "out",
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 169,
         "reference": 46,
         "source": 55,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "absent"
         }
@@ -19814,6 +20169,8 @@ package TimerGrid {
         "owner": 168,
         "reference": 64,
         "source": 165,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19834,6 +20191,8 @@ package TimerGrid {
         "owner": 168,
         "reference": 66,
         "source": 167,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19854,6 +20213,8 @@ package TimerGrid {
         "owner": 168,
         "reference": 63,
         "source": 163,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19883,6 +20244,8 @@ package TimerGrid {
         "owner": 0,
         "reference": 102,
         "source": 181,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19903,6 +20266,8 @@ package TimerGrid {
         "owner": 182,
         "reference": 97,
         "source": 171,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
@@ -19923,6 +20288,8 @@ package TimerGrid {
         "owner": 182,
         "reference": 96,
         "source": 173,
+        "stateSubaction": null,
+        "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
