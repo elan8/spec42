@@ -13,8 +13,6 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 | Packages / files | 38 packages · 38 source files |
 | Source | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
 
-Method / process packages live in the [Method libraries](./METHOD-LIBRARIES.md).
-
 ## Package tree
 
 Tree of source files inside the KPAR. Package names are scanned from each `.sysml` file.

@@ -72,18 +72,14 @@ fi
 
 stdlib_version="$(node -p "require('./config/standard-library.json').version")"
 domain_version="$(node -p "require('./config/libraries/domain.json').version")"
-method_version="$(node -p "require('./config/libraries/method.json').version")"
 
 export SPEC42_STDLIB_VERSION="$stdlib_version"
 export SPEC42_STDLIB_KPAR_DIR="${SPEC42_STDLIB_KPAR_DIR:-$root/.cache/sysml-stdlib-kpar-$stdlib_version}"
 export SPEC42_DOMAIN_LIBRARIES_VERSION="$domain_version"
-export SPEC42_METHOD_LIBRARIES_VERSION="$method_version"
 export SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN="${SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN:-$root/.cache/elan8-domain-libraries-$domain_version.kpar}"
-export SPEC42_KPAR_LIBRARY_BUNDLE_METHOD="${SPEC42_KPAR_LIBRARY_BUNDLE_METHOD:-$root/.cache/elan8-method-libraries-$method_version.kpar}"
 
 require_path "$SPEC42_STDLIB_KPAR_DIR" "bash scripts/fetch-stdlib-bundle.sh"
 require_path "$SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN" "bash scripts/fetch-kpar-libraries-bundle.sh"
-require_path "$SPEC42_KPAR_LIBRARY_BUNDLE_METHOD" "bash scripts/fetch-kpar-libraries-bundle.sh"
 
 build_repository_plugins() {
   step "Repository generator guests"

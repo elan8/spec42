@@ -16,7 +16,7 @@ SysML v2 is powerful, but textual models only help when the tooling keeps pace: 
 
 Spec42 is built for that continuity. One immutable analysis publication backs the VS Code extension, CLI validation, GitHub Actions, generators, and assistant integrations. What you see while modeling is what CI will check.
 
-It stays local-first: the language server, standard library, and Elan8 domain/method libraries ship with Spec42. You can work offline, keep models in your own repositories, and adopt automation without a proprietary runtime.
+It stays local-first: the language server, standard library, and Elan8 domain libraries ship with Spec42. You can work offline, keep models in your own repositories, and adopt automation without a proprietary runtime.
 
 ## What you get
 
@@ -24,7 +24,7 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 - **Ways to understand the model, not just the text** — navigation and Feature Inspector consume typed semantic queries for resolved typing, inheritance, relationships, and values.
 - **Validation you can trust in automation** — the same engine in `spec42 check`, with text/JSON/SARIF/JUnit output for local scripts and CI quality gates.
 - **Extensible model products** — generators consume the immutable publication; the VS Code diagram experience is backed by a repository-owned generator plugin and a versioned render product rather than a built-in semantic subsystem.
-- **Libraries ready to use** — bundled OMG SysML libraries plus searchable Elan8 domain and method libraries, with room for your own library roots.
+- **Libraries ready to use** — bundled OMG SysML libraries plus searchable Elan8 domain libraries, with room for your own library roots.
 - **Room for assistants** — Copilot Language Model Tools in VS Code, plus CLI helpers for other AI hosts.
 
 ## Where Spec42 fits

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The Elan8 method libraries are no longer bundled.** `elan8/mbse-methodology` no longer ships a
+  SysML library: its decisions, assumptions and risks overlap the standard `ModelingMetadata` and
+  `RiskMetadata` libraries, and real models did not use the rest. The `method` managed library,
+  its pin (`config/libraries/method.json`), its reference page and its CI bundle are removed; the
+  domain libraries remain. `--disable-kpar-library method` and a `method` entry in
+  `spec42.disabledLibraries` are still accepted and have no effect.
+
 - **The editor opens an interconnection view one part at a time (#262).** It drew every level
   of parts. It now starts with the exposed parts and their direct parts closed; a part with parts
   of its own carries the `+` / `-` control the general view has, and a connector ending inside a

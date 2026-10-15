@@ -1044,13 +1044,5 @@ mod tests {
             .expect("domain doctor entry");
         assert_eq!(domain_doctor.source_kind, "bundled");
         assert!(domain_doctor.status.is_installed);
-
-        let method = doctor
-            .kpar_libraries
-            .iter()
-            .find(|library| library.id == "method")
-            .expect("method doctor entry");
-        assert_eq!(method.source_kind, "bundled");
-        assert!(method.status.is_installed);
     }
 }

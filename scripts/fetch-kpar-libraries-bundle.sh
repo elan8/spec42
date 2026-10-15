@@ -4,7 +4,7 @@
 # Usage:
 #   bash scripts/fetch-kpar-libraries-bundle.sh            # all libraries
 #   bash scripts/fetch-kpar-libraries-bundle.sh domain     # one id
-#   bash scripts/fetch-kpar-libraries-bundle.sh domain method
+#   bash scripts/fetch-kpar-libraries-bundle.sh domain other   # several ids
 #
 # Resolution order per library:
 #   1. Existing usable .kpar at SPEC42_KPAR_LIBRARY_BUNDLE_<ID> or .cache/<artifact>

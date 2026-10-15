@@ -6,7 +6,7 @@
 
 Spec42 is open, local-first tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML: edit textual models with live feedback, understand structure and behavior beyond the source, and keep the same analysis engine in the editor, CI, and assistant workflows.
 
-This extension is the primary modeling surface. Marketplace builds include the matching language server, standard library, and Elan8 domain/method libraries — install, open a `.sysml` or `.kerml` file, and start modeling.
+This extension is the primary modeling surface. Marketplace builds include the matching language server, standard library, and Elan8 domain libraries — install, open a `.sysml` or `.kerml` file, and start modeling.
 
 ## Why Spec42 in the editor
 
@@ -24,7 +24,7 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 - Definitions, references, rename, document symbols, and hierarchy navigation.
 - Workspace-aware indexing for multi-file models and configured libraries.
 - **Feature Inspector** for resolved typing, inheritance, relationships, values, and keyword help.
-- Bundled SysML standard library plus searchable Elan8 domain and method libraries.
+- Bundled SysML standard library plus searchable Elan8 domain libraries.
 - A persistent **Diagram** view in the secondary side bar, backed by the packaged Rust WASM
   generator and the bundled renderer. It lists every authored diagram view in the model, renders
   the selected one, regenerates on its own whenever the model changes, and offers `Home` /

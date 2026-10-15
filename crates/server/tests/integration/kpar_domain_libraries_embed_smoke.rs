@@ -18,13 +18,6 @@ const DOMAIN_SMOKE_MODEL: &str = r#"package KparDomainLibrariesSmoke {
 }
 "#;
 
-const METHOD_SMOKE_MODEL: &str = r#"package KparMethodLibrariesSmoke {
-  private import Elan8::Method::Requirements::*;
-
-  attribute id : Identifier;
-}
-"#;
-
 fn diagnostic_codes(report: &workspace::HostValidationReport) -> Vec<String> {
     report
         .documents
@@ -113,74 +106,6 @@ fn embedded_kpar_domain_libraries_resolve_elan8_money_types() {
         assert_eq!(
             report.summary.error_count, 0,
             "expected no errors in domain libraries smoke model: {:?}",
-            report.documents
-        );
-    });
-}
-
-#[cfg(feature = "embed-kpar-libraries")]
-#[test]
-fn embedded_kpar_method_libraries_resolve_elan8_method_requirements() {
-    let archive = embedded_archive("method").unwrap_or(&[]);
-    if archive.is_empty() {
-        eprintln!(
-            "Skipping embedded_kpar_method_libraries_resolve_elan8_method_requirements: \
-             rebuild after packing method KPAR with embed-kpar-libraries enabled"
-        );
-        return;
-    }
-    assert!(
-        embedded_entry("method").is_some(),
-        "method must be present in generated KPAR registry"
-    );
-
-    with_isolated_data_dir(|| {
-        let temp = TempDir::new().expect("temp workspace");
-        let model_path = temp.path().join("kpar-method-smoke.sysml");
-        std::fs::write(&model_path, METHOD_SMOKE_MODEL).expect("write smoke model");
-
-        let cli = empty_cli();
-        let doctor = perform_doctor(&cli).expect("doctor");
-        let method = doctor_library(&doctor, "method").expect("method in doctor.kpar_libraries");
-        assert_eq!(
-            method.source_kind, "bundled",
-            "expected bundled method libraries, got {:?}",
-            method.source_kind
-        );
-        assert!(
-            method.status.is_installed,
-            "expected installed method libraries status: {:?}",
-            method.status
-        );
-        let install = method.path.as_ref().expect("method install path");
-        assert!(
-            std::path::Path::new(install)
-                .join("method")
-                .join("Method.sysml")
-                .is_file(),
-            "expected method/Method.sysml under {install}"
-        );
-
-        let args = CheckArgs {
-            path: model_path,
-            workspace_root: None,
-            format: OutputFormat::Json,
-            warnings_as_errors: false,
-            baseline: None,
-            strict_diagnostics: false,
-        };
-
-        let report = perform_check(&cli, &args).expect("check");
-        let codes = diagnostic_codes(&report);
-        assert!(
-            !codes
-                .iter()
-                .any(|actual| actual == "unresolved_import_target"),
-            "Elan8::Method::Requirements should resolve via embedded method KPAR: {codes:?}"
-        );
-        assert_eq!(
-            report.summary.error_count, 0,
-            "expected no errors in method libraries smoke model: {:?}",
             report.documents
         );
     });

@@ -18,10 +18,8 @@ This page is generated from Spec42 product configuration so the docs stay aligne
 | --- | --- | --- | --- |
 | SysML v2 standard library | `2026-04` | `kpar` | [Systems-Modeling/SysML-v2-Release](https://github.com/Systems-Modeling/SysML-v2-Release) |
 | Domain libraries | `0.3.0` | `kpar` | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
-| Method libraries | `0.2.0` | `kpar` | [elan8/mbse-methodology](https://github.com/elan8/mbse-methodology) |
 
 ## Learn more
 
 - [Domain libraries](./DOMAIN-LIBRARIES.md) — KPAR package/file tree
-- [Method libraries](./METHOD-LIBRARIES.md) — Elan8 Method packages
 - [Library & Dependencies](../user/LIBRARIES.md) — Library view, custom paths, and Sysand

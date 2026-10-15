@@ -126,7 +126,7 @@ impl PackOptions {
         }
     }
 
-    /// Pack `path` under `archive_prefix/` in the KPAR (e.g. method libraries as `method/`).
+    /// Pack `path` under `archive_prefix/` in the KPAR (e.g. a library rooted at `extras/`).
     pub fn with_named_source_root(
         mut self,
         archive_prefix: impl Into<String>,

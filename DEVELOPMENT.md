@@ -113,7 +113,6 @@ For normal embedded builds, fetch or place KPAR archives under the unified local
 .cache/
   sysml-stdlib-kpar-<version>/     # OMG .kpar files (one per library)
   elan8-domain-libraries-<version>.kpar
-  elan8-method-libraries-<version>.kpar
 ```
 
 Refresh the OMG stdlib and managed library archives with:
@@ -406,7 +405,7 @@ Example workspaces are versioned as a Git submodule at the **repository root**:
 
 - `examples/` → [elan8/sysml-examples](https://github.com/elan8/sysml-examples)
 
-Elan8 domain and method libraries are **bundled inside the Spec42 server binary** as separate **KPAR** archives. Pins live in [`config/libraries/`](config/libraries) (`domain.json`, `method.json`). CI fetches or packs them with `scripts/fetch-kpar-libraries-bundle.sh` before building.
+Elan8 domain libraries are **bundled inside the Spec42 server binary** as a **KPAR** archive. Pins live in [`config/libraries/`](config/libraries) (`domain.json`). CI fetches or packs them with `scripts/fetch-kpar-libraries-bundle.sh` before building.
 
 The OMG standard library is bundled from `sysml.library.kpar` at the pinned SysML v2 Release tag (see `config/standard-library.json`). CI fetches only that directory via sparse git checkout in `scripts/fetch-stdlib-bundle.sh` before building.
 
