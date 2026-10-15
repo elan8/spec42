@@ -51,6 +51,9 @@ pub(crate) fn evaluation_state(
             EvaluationState::Failed(EvaluationFailure::DivisionByZero)
         }
         EvaluatedValue::TypeMismatch => EvaluationState::Failed(EvaluationFailure::TypeMismatch),
+        EvaluatedValue::UnsupportedUnitOperation => {
+            EvaluationState::Failed(EvaluationFailure::UnsupportedUnitOperation)
+        }
     }
 }
 
@@ -71,6 +74,7 @@ pub(crate) fn evaluated_scalar(outcome: &EvaluatedValue) -> Option<EvaluatedScal
         | EvaluatedValue::NonConverged
         | EvaluatedValue::DivisionByZero
         | EvaluatedValue::TypeMismatch => None,
+        EvaluatedValue::UnsupportedUnitOperation => None,
     }
 }
 

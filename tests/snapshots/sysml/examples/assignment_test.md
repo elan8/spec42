@@ -347,8 +347,8 @@ package AssignmentTest {
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "decr")) (anonymous (kind assign) (ordinal 0))))) (state evaluated) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "incr")) (anonymous (kind assign) (ordinal 0))))) (state evaluated) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind calc-def) (name "Increment")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 1))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 1))))) (state unresolved-operand))
   )
 )
 ~~~

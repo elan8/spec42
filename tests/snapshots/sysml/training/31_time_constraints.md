@@ -116,9 +116,21 @@ package 'Time Constraints' {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 27 3) (end 27 70))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 27 23) (end 27 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 28 3) (end 28 74))
       )
       (diagnostic
         (severity warning)
@@ -339,8 +351,8 @@ package 'Time Constraints' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (unit (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "s") (start 28 70) (end 28 71) (outcome (status catalog-unavailable)))
   )
 )

@@ -210,8 +210,8 @@ package MassRollup {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "filteredMassThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "filteredMassThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )

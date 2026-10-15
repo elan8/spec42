@@ -328,6 +328,7 @@ fn evaluation(evaluation: &ElementEvaluation) -> SysmlFeatureInspectorEvaluation
                 EvaluationFailure::DivisionByZero => "divisionByZero",
                 EvaluationFailure::TypeMismatch => "typeMismatch",
                 EvaluationFailure::UnresolvedOperand => "unresolvedOperand",
+                EvaluationFailure::UnsupportedUnitOperation => "unsupportedUnitOperation",
             }
             .to_string(),
         },

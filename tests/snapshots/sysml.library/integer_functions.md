@@ -1320,8 +1320,8 @@ standard library package IntegerFunctions {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (named (kind kerml-feature) (name "collection")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (named (kind kerml-feature) (name "collection")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~

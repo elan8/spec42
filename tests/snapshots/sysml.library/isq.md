@@ -403,7 +403,7 @@ standard library package ISQ {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind default-reference) (ordinal 1)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )

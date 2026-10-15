@@ -259,7 +259,8 @@ package '12b-Allocation-1' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::torqueGenAlloc::physical"))) (target (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::torqueGenAlloc"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (unit (declaration (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "N*m") (start 10 44) (end 10 47) (outcome (status catalog-unavailable)))
   )
 )
 ~~~
@@ -394,7 +395,7 @@ package '12b-Allocation-1' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator ">" (feature-reference "generator::generateTorque::torque" (target (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque::torque")))) (literal (value (kind quantity) (magnitude (value (kind real) (real 0))) (unit "N*m")))))
 )
 ~~~
 # NAVIGATION

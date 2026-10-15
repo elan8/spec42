@@ -142,8 +142,8 @@ package RationalFunctionsInvocation {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (path (named (kind package) (name "RationalFunctionsInvocation")) (named (kind attribute) (name "conversionFactor")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (path (named (kind package) (name "RationalFunctionsInvocation")) (named (kind attribute) (name "missingMember")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (path (named (kind package) (name "RationalFunctionsInvocation")) (named (kind attribute) (name "missingPackage")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (path (named (kind package) (name "RationalFunctionsInvocation")) (named (kind attribute) (name "missingMember")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (path (named (kind package) (name "RationalFunctionsInvocation")) (named (kind attribute) (name "missingPackage")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (invocation (declaration (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (path (named (kind package) (name "RationalFunctionsInvocation")) (named (kind attribute) (name "conversionFactor")) (anonymous (kind kerml-expression) (ordinal 0))))) (callee (node (document "memory://snapshot/sysml.library/rational_functions.md") (qualified-name "RationalFunctions::rat"))) (supplied 2) (required 0) (start 1 33) (end 1 63))
   )
 )

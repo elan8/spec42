@@ -181,6 +181,12 @@ package ConstraintTest {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 69 1) (end 74 2))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 70 17) (end 70 26))
@@ -765,9 +771,9 @@ package ConstraintTest {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind constraint-def) (name "MassAnalysis2")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind constraint-def) (name "MassAnalysis")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind constraint) (name "massAnalysis3")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind constraint-def) (name "MassAnalysis2")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind constraint-def) (name "MassAnalysis")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind constraint) (name "massAnalysis3")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind constraint) (name "massLimitation")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle1b")) (named (kind assert-constraint) (name "massAnalysis")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle1b")) (named (kind assert-constraint) (name "massAnalysis")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))

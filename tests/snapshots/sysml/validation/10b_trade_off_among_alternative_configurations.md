@@ -170,6 +170,12 @@ package '10b-Trade-off Among Alternative Configurations' {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 53 4) (end 56 5))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 55 15) (end 55 61))
@@ -677,7 +683,7 @@ package '10b-Trade-off Among Alternative Configurations' {
     (evaluated (declaration (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (path (named (kind package) (name "10b-Trade-off Among Alternative Configurations")) (named (kind package) (name "Analysis")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind calc) (name "efficiencyRollup")) (named (kind parameter) (name "engine")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (path (named (kind package) (name "10b-Trade-off Among Alternative Configurations")) (named (kind package) (name "Analysis")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind calc) (name "massRollup")) (named (kind parameter) (name "engine")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (path (named (kind package) (name "10b-Trade-off Among Alternative Configurations")) (named (kind package) (name "Analysis")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind calc) (name "powerRollup")) (named (kind parameter) (name "engine")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (path (named (kind package) (name "10b-Trade-off Among Alternative Configurations")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle")) (named (kind part) (name "engine")) (named (kind assert-constraint) (name "engineSelectionRational")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (path (named (kind package) (name "10b-Trade-off Among Alternative Configurations")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle")) (named (kind part) (name "engine")) (named (kind assert-constraint) (name "engineSelectionRational")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (invocation (declaration (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (path (named (kind package) (name "10b-Trade-off Among Alternative Configurations")) (named (kind package) (name "Analysis")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (callee (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation"))) (supplied 4) (required 4) (start 86 31) (end 88 5))
   )
 )

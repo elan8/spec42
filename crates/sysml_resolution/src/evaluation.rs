@@ -97,6 +97,9 @@ impl EvaluationState {
             Self::Failed(EvaluationFailure::DivisionByZero) => "division-by-zero",
             Self::Failed(EvaluationFailure::TypeMismatch) => "type-mismatch",
             Self::Failed(EvaluationFailure::UnresolvedOperand) => "unresolved-operand",
+            Self::Failed(EvaluationFailure::UnsupportedUnitOperation) => {
+                "unsupported-unit-operation"
+            }
         }
     }
 }

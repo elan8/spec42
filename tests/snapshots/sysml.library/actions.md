@@ -2434,7 +2434,7 @@ standard library package Actions {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind assign) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0))))) (state unresolved-operand))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 1))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "TerminateAction")) (named (kind action) (name "terminateOccurrence")) (named (kind parameter) (name "occ")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))

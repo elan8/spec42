@@ -1464,9 +1464,12 @@ pub(crate) enum EvaluatedValue {
     /// fabricating a richer "physical quantity" concept the semantic model does not
     /// anticipates. `fold_literal_comparison`/`fold_arithmetic`/`fold_unary` do not special-case
     /// this variant: their generic numeric-widening fallback (`as_f64`) does not match it, so any
-    /// operation involving a `Quantity` conservatively folds to `NonConstant` rather than silently
-    /// comparing/arithmetic-ing across mismatched or unmodeled units.
+    /// Same-unit addition/subtraction and numeric scaling preserve the unit spelling. Operations
+    /// needing conversion or dimensional algebra fail explicitly instead of reporting a
+    /// constant operand as nonconstant.
     Quantity(Box<EvaluatedValue>, String),
+    /// A constant quantity operation needs unsupported conversion or dimensional algebra.
+    UnsupportedUnitOperation,
     /// Evaluation did not run for this expression. Reserved for a future evaluation-policy gate;
     /// the current pass attempts evaluation for every slice-1-supported expression whenever
     /// resolution itself converges (see `SemanticModelStorage::resolve`), so no fact currently
