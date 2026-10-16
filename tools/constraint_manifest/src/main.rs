@@ -743,6 +743,18 @@ fn exact_action_derived_fact(constraint: &str, body: &str) -> Option<ActionDeriv
             "deriveBehaviorStep",
             "313eb7db063437ed4a982db6b69bf7d97cf3f3b8a182d3d3a1dc0219f53b6731",
         ) => Some(ActionDerivedFactKind::BehaviorStep),
+        (
+            "deriveMultiplicityRangeLowerBound",
+            "a525836d943746a4025ece78f7b3a9717f99fa312a749136b1a2446489e6c98d",
+        ) => Some(ActionDerivedFactKind::MultiplicityRangeLowerBound),
+        (
+            "deriveMultiplicityRangeUpperBound",
+            "c27116679d4a56f10160e01a9f992069aca67ea6f5d57956fca1f62c117982c3",
+        ) => Some(ActionDerivedFactKind::MultiplicityRangeUpperBound),
+        (
+            "deriveMultiplicityRangeBound",
+            "a5f4cf32616c9e35fdb3d082b0b4784293acdef987ebe6db63845c340ce7fcbe",
+        ) => Some(ActionDerivedFactKind::MultiplicityRangeBound),
         _ => None,
     }
 }

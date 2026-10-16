@@ -1663,6 +1663,24 @@ impl<D> SemanticModel<D> {
         values.into_boxed_slice()
     }
 
+    /// Owned members that conform to `Expression`, in membership order.
+    ///
+    /// `MultiplicityRange` bounds are these expressions: a single authored bound is only the
+    /// upper expression, and `[m..n]` owns the lower expression first.
+    fn owned_expression_members(&self, owner: DeclarationId) -> Box<[SymbolId]> {
+        self.symbols_in_order(
+            self.child_declarations(owner)
+                .iter()
+                .copied()
+                .filter(|member| {
+                    self.storage.declaration(*member).is_some_and(|candidate| {
+                        element_kind::element_kind(candidate.kind)
+                            .conforms_to(sysml_contract::ElementKind::Expression)
+                    })
+                }),
+        )
+    }
+
     /// The exact Actions derivation boundary. Canonical effective usages and the ordered argument
     /// sites guaranteed by assignment/for-loop lowering resolve here; other collections return
     /// their first unavailable canonical prerequisite rather than guessing.
@@ -2169,6 +2187,47 @@ impl<D> SemanticModel<D> {
                     });
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(members)))
             }
+            ActionDerivedFactCollection::MultiplicityRangeLowerBound
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::MultiplicityRange)
+                }) =>
+            {
+                let expressions = self.owned_expression_members(declaration);
+                let values = if expressions.len() < 2 {
+                    Vec::new()
+                } else {
+                    vec![expressions[0]]
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::MultiplicityRangeUpperBound
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::MultiplicityRange)
+                }) =>
+            {
+                let expressions = self.owned_expression_members(declaration);
+                let values = match expressions.as_ref() {
+                    [] => Vec::new(),
+                    [only] | [_, only, ..] => vec![*only],
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::MultiplicityRangeBound
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::MultiplicityRange)
+                }) =>
+            {
+                let expressions = self.owned_expression_members(declaration);
+                let values = match expressions.as_ref() {
+                    [] => Vec::new(),
+                    [upper] => vec![*upper],
+                    [lower, upper, ..] => vec![*lower, *upper],
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
             ActionDerivedFactCollection::StateDefinitionEntryAction
             | ActionDerivedFactCollection::StateDefinitionDoAction
             | ActionDerivedFactCollection::StateDefinitionExitAction
@@ -2189,7 +2248,10 @@ impl<D> SemanticModel<D> {
             | ActionDerivedFactCollection::FeatureFeatureTarget
             | ActionDerivedFactCollection::FunctionResult
             | ActionDerivedFactCollection::ExpressionResult
-            | ActionDerivedFactCollection::BehaviorStep => {
+            | ActionDerivedFactCollection::BehaviorStep
+            | ActionDerivedFactCollection::MultiplicityRangeLowerBound
+            | ActionDerivedFactCollection::MultiplicityRangeUpperBound
+            | ActionDerivedFactCollection::MultiplicityRangeBound => {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
             }
             ActionDerivedFactCollection::TerminateOccurrenceArgument

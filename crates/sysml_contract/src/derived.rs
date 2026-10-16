@@ -146,6 +146,9 @@ pub enum ActionDerivedFactCollection {
     FunctionResult,
     ExpressionResult,
     BehaviorStep,
+    MultiplicityRangeLowerBound,
+    MultiplicityRangeUpperBound,
+    MultiplicityRangeBound,
 }
 
 /// The first canonical fact owner an exact `Systems::Actions` derivation needs.

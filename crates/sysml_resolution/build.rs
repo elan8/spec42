@@ -109,6 +109,9 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> &'static str {
         ActionDerivedFactKind::FunctionResult => "FunctionResult",
         ActionDerivedFactKind::ExpressionResult => "ExpressionResult",
         ActionDerivedFactKind::BehaviorStep => "BehaviorStep",
+        ActionDerivedFactKind::MultiplicityRangeLowerBound => "MultiplicityRangeLowerBound",
+        ActionDerivedFactKind::MultiplicityRangeUpperBound => "MultiplicityRangeUpperBound",
+        ActionDerivedFactKind::MultiplicityRangeBound => "MultiplicityRangeBound",
     }
 }
 

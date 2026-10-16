@@ -770,6 +770,15 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> ActionDerivedFactColle
         ActionDerivedFactKind::FunctionResult => ActionDerivedFactCollection::FunctionResult,
         ActionDerivedFactKind::ExpressionResult => ActionDerivedFactCollection::ExpressionResult,
         ActionDerivedFactKind::BehaviorStep => ActionDerivedFactCollection::BehaviorStep,
+        ActionDerivedFactKind::MultiplicityRangeLowerBound => {
+            ActionDerivedFactCollection::MultiplicityRangeLowerBound
+        }
+        ActionDerivedFactKind::MultiplicityRangeUpperBound => {
+            ActionDerivedFactCollection::MultiplicityRangeUpperBound
+        }
+        ActionDerivedFactKind::MultiplicityRangeBound => {
+            ActionDerivedFactCollection::MultiplicityRangeBound
+        }
     }
 }
 
@@ -1088,8 +1097,8 @@ struct TypeDerivedFactExpectation {
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct ActionDerivedFactExpectation {
     collection: ActionDerivedFactCollection,
-    source: String,
-    target: Option<String>,
+    source: ElementReferenceExpectation,
+    target: Option<ElementReferenceExpectation>,
     position: Option<u32>,
     outcome: TypeDerivedElementOutcome,
 }
@@ -3960,9 +3969,13 @@ fn parse_action_derived_fact_expectation(
             "{fallback_name}: Action fact expectation must be a list"
         ));
     };
+    let (source, rest) = take_element_reference_field(&items[1..], "source", fallback_name)?;
+    let source =
+        source.ok_or_else(|| format!("{fallback_name}: semantic Action fact requires source"))?;
+    let (target, rest) = take_element_reference_field(&rest, "target", fallback_name)?;
     let fields = parse_semantic_assertion_fields(
-        &items[1..],
-        &["rule_id", "source", "target", "position", "outcome"],
+        &rest,
+        &["rule_id", "position", "outcome"],
         "semantic Action fact",
         fallback_name,
     )?;
@@ -3973,18 +3986,12 @@ fn parse_action_derived_fact_expectation(
             .ok_or_else(|| format!("{fallback_name}: semantic Action fact requires rule_id"))?,
         fallback_name,
     )?;
-    let source = fields
-        .get("source")
-        .filter(|value| !value.is_empty())
-        .cloned()
-        .ok_or_else(|| format!("{fallback_name}: semantic Action fact requires source"))?;
     let outcome = TypeDerivedElementOutcome::parse(
         fields
             .get("outcome")
             .ok_or_else(|| format!("{fallback_name}: semantic Action fact requires outcome"))?,
         fallback_name,
     )?;
-    let target = fields.get("target").cloned();
     let position = fields
         .get("position")
         .map(|value| {
@@ -5215,7 +5222,7 @@ fn observe_action_derived_fact(
     model: &PublishedModel,
     expectation: &ActionDerivedFactExpectation,
 ) -> Result<ActionDerivedFactObservation, String> {
-    let source = match resolve_semantic_identity(model, &expectation.source) {
+    let source = match resolve_element_reference(model, &expectation.source) {
         Ok(source) => source,
         Err(SemanticIdentityStatus::Incomplete) => {
             return Ok(ActionDerivedFactObservation::Incomplete)
@@ -5236,9 +5243,9 @@ fn observe_action_derived_fact(
     };
     let expected = expectation
         .target
-        .as_deref()
+        .as_ref()
         .map(|target| {
-            resolve_semantic_identity(model, target)
+            resolve_element_reference(model, target)
                 .map_err(|status| format!("target reference is {}", status.description()))
         })
         .transpose()?;
@@ -8887,14 +8894,20 @@ mod tests {
             vec![
                 ActionDerivedFactExpectation {
                     collection: ActionDerivedFactCollection::ActionDefinitionAction,
-                    source: "Actions::Procedure".to_string(),
-                    target: Some("Actions::Procedure::step".to_string()),
+                    source: ElementReferenceExpectation::Qualified(
+                        "Actions::Procedure".to_string()
+                    ),
+                    target: Some(ElementReferenceExpectation::Qualified(
+                        "Actions::Procedure::step".to_string(),
+                    )),
                     position: None,
                     outcome: TypeDerivedElementOutcome::Resolved,
                 },
                 ActionDerivedFactExpectation {
                     collection: ActionDerivedFactCollection::AssignmentValueExpression,
-                    source: "Actions::Procedure".to_string(),
+                    source: ElementReferenceExpectation::Qualified(
+                        "Actions::Procedure".to_string()
+                    ),
                     target: None,
                     position: Some(2),
                     outcome: TypeDerivedElementOutcome::Resolved,

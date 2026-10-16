@@ -1271,6 +1271,10 @@ family = "derive"
 clause = "8.3.4.11.2"
 rule_id = "kerml-1.0:8.3.4.11.2:deriveMultiplicityRangeBound"
 
+[specifications.constraints.action_derived_fact]
+kind = "multiplicity_range_bound"
+body_sha256 = "a5f4cf32616c9e35fdb3d082b0b4784293acdef987ebe6db63845c340ce7fcbe"
+
 [[specifications.constraints]]
 package = "Kernel::Multiplicities"
 metaclass = "MultiplicityRange"
@@ -1279,6 +1283,10 @@ family = "derive"
 clause = "8.3.4.11.2"
 rule_id = "kerml-1.0:8.3.4.11.2:deriveMultiplicityRangeLowerBound"
 
+[specifications.constraints.action_derived_fact]
+kind = "multiplicity_range_lower_bound"
+body_sha256 = "a525836d943746a4025ece78f7b3a9717f99fa312a749136b1a2446489e6c98d"
+
 [[specifications.constraints]]
 package = "Kernel::Multiplicities"
 metaclass = "MultiplicityRange"
@@ -1286,6 +1294,10 @@ constraint = "deriveMultiplicityRangeUpperBound"
 family = "derive"
 clause = "8.3.4.11.2"
 rule_id = "kerml-1.0:8.3.4.11.2:deriveMultiplicityRangeUpperBound"
+
+[specifications.constraints.action_derived_fact]
+kind = "multiplicity_range_upper_bound"
+body_sha256 = "c27116679d4a56f10160e01a9f992069aca67ea6f5d57956fca1f62c117982c3"
 
 [[specifications.constraints]]
 package = "Kernel::Multiplicities"

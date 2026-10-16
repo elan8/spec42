@@ -670,6 +670,18 @@ impl ConstraintManifest {
                             "deriveBehaviorStep",
                             "Behavior",
                             ActionDerivedFactKind::BehaviorStep
+                        ) | (
+                            "deriveMultiplicityRangeLowerBound",
+                            "MultiplicityRange",
+                            ActionDerivedFactKind::MultiplicityRangeLowerBound
+                        ) | (
+                            "deriveMultiplicityRangeUpperBound",
+                            "MultiplicityRange",
+                            ActionDerivedFactKind::MultiplicityRangeUpperBound
+                        ) | (
+                            "deriveMultiplicityRangeBound",
+                            "MultiplicityRange",
+                            ActionDerivedFactKind::MultiplicityRangeBound
                         )
                     );
                     if entry.family != ConstraintFamily::Derive
@@ -2145,6 +2157,9 @@ pub enum ActionDerivedFactKind {
     FunctionResult,
     ExpressionResult,
     BehaviorStep,
+    MultiplicityRangeLowerBound,
+    MultiplicityRangeUpperBound,
+    MultiplicityRangeBound,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

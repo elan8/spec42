@@ -16,7 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   satisfied viewpoints. A port definition projects its conjugated port definition. A classifier
   projects its owned subclassifications, and a feature projects its first reference subsetting
   and cross subsetting, its cross feature, and its feature target. A function or expression
-  projects its first owned return parameter. A behavior projects its steps.
+  projects its first owned return parameter. A behavior projects its steps. A multiplicity
+  range projects its lower bound, upper bound, and bound sequence from the expressions it owns.
 
 - **Feature chain targets and inverses are derived collections.** `deriveFeatureChainingFeature`
   projects the owned feature-chaining relationship, and `deriveFeatureOwnedFeatureInverting`
