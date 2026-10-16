@@ -330,7 +330,7 @@ impl SemanticModelBuilder {
     ///
     /// - the declaration form (`entry action entryAction :>> 'entry';`) introduces a named action
     ///   ([`Self::lower_state_declared_action`]);
-    /// - the reference form (`entry action <path>;`) binds an existing action through an
+    /// - the reference form (`entry <path>;`) binds an existing action through an
     ///   anonymous binding declaration whose reference resolves in the state's own scope, the same
     ///   shared lexical lookup as `AliasBinding`/`Succession`;
     /// - the effect forms (`entry assign ...;`, `do send ...;`, `do accept ...;`) publish the

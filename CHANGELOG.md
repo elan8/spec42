@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Views and behavior follow declared model facts (#284–#287).** General, Browser and Grid
+  views retain port-definition conjugation without panicking. Action bodies admit typed view
+  usages, and semicolon entry/do/exit action declarations no longer produce false unresolved
+  references. Sequence messages follow event successions and transfer causality rather than
+  message names; cyclic ordering remains explicit. Adds the diagram `Conjugation` relationship
+  kind and advances the semantic vocabulary to v48; pins parser AST 282.
+
 - **The Elan8 method libraries are no longer bundled.** `elan8/mbse-methodology` no longer ships a
   SysML library: its decisions, assumptions and risks overlap the standard `ModelingMetadata` and
   `RiskMetadata` libraries, and real models did not use the rest. The `method` managed library,

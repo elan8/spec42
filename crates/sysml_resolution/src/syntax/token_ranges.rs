@@ -1910,6 +1910,7 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
+        ADBE::ViewUsage(view) => collect_semantic_ranges_view_usage(ctx, view, out),
         ADBE::PartUsage(pu_node) => {
             if let Some(name) = pu_node.value.name {
                 out.push((span_to_source_range(name.span()), SyntaxRole::Property));
@@ -2012,6 +2013,7 @@ fn collect_semantic_ranges_action_usage_body_element(
         AUBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
+        AUBE::ViewUsage(view) => collect_semantic_ranges_view_usage(ctx, view, out),
         AUBE::PartUsage(pu_node) => {
             if let Some(name) = pu_node.value.name {
                 out.push((span_to_source_range(name.span()), SyntaxRole::Property));
