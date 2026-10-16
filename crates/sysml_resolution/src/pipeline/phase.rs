@@ -146,11 +146,11 @@ impl Lowered {
         // stable; no intermediate resolution is published (SysML 7.27.3–7.27.4).
         let mut provisional_relationships = provisional_library_specializations.to_vec();
         let mut previous_metadata_relationships = Vec::new();
-        let mut metadata_passes_remaining = storage
-            .metadata_annotations
-            .len()
-            .saturating_mul(storage.declarations.len())
-            .saturating_add(1);
+        // Each pass can only expose the baseType of an annotation whose metadata definition gained
+        // a supertype in the previous pass, so a dependency chain is at most one link per
+        // annotation long. Two passes beyond that confirm the fixed point; a model still changing
+        // after them does not converge and is reported as such.
+        let mut metadata_passes_remaining = storage.metadata_annotations.len().saturating_add(2);
         let (direct_names, effective_imports, exported_imports, memberships, resolution) = loop {
             let (direct_names, effective_imports, exported_imports, memberships, resolution) =
                 resolve_dense(
@@ -196,6 +196,10 @@ impl Lowered {
             // to rediscover `Parts::Part` from text or a display path.
             let base_implied =
                 synthesize_implied_relationships(&storage, &resolution, &library_anchors)?;
+            // Edges derived without semantic metadata. The previous pass's metadata edges are
+            // only prerequisites for the derivations below and are replaced, not kept, once this
+            // pass's synthesis is known.
+            let mut independent = base_implied.to_vec();
             let mut implied = base_implied.to_vec();
             implied.extend(previous_metadata_relationships.iter().copied());
             implied.sort_by_key(|relationship| {
@@ -218,14 +222,20 @@ impl Lowered {
             {
                 let prerequisite_types = derive_effective_types(&storage, &resolution)?;
                 let mut implied = resolution.implied_relationships.to_vec();
-                implied.extend(
+                let cross_feature =
                     synthesize_owned_cross_feature_typings(&storage, &prerequisite_types)?
-                        .into_vec(),
-                );
-                implied.extend(
-                    synthesize_owned_cross_feature_type_featurings(&storage, &prerequisite_types)?
-                        .into_vec(),
-                );
+                        .into_vec()
+                        .into_iter()
+                        .chain(
+                            synthesize_owned_cross_feature_type_featurings(
+                                &storage,
+                                &prerequisite_types,
+                            )?
+                            .into_vec(),
+                        )
+                        .collect::<Vec<_>>();
+                independent.extend(cross_feature.iter().copied());
+                implied.extend(cross_feature);
                 implied.sort_by_key(|relationship| {
                     (
                         relationship.kind,
@@ -250,14 +260,11 @@ impl Lowered {
                     &prerequisite_types,
                 )?;
                 metadata_relationships = synthesis.implied_relationships.to_vec();
-                let mut implied = resolution.implied_relationships.to_vec();
-                // Prior metadata edges are prerequisites, not an accumulating truth store.
-                // Replace them with this pass's canonical synthesis; retain independently
-                // derived implicit edges even when their endpoints happen to coincide.
-                implied.retain(|relationship| {
-                    !previous_metadata_relationships.contains(relationship)
-                        || base_implied.contains(relationship)
-                });
+                // Prior metadata edges are prerequisites, not an accumulating truth store: the
+                // settled set is the independently derived edges plus this pass's canonical
+                // synthesis, so an edge also derived another way survives and the result does
+                // not depend on pass history.
+                let mut implied = independent;
                 implied.extend(synthesis.implied_relationships);
                 implied.sort_by_key(|relationship| {
                     (
