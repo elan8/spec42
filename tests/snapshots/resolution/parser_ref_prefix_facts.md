@@ -43,29 +43,24 @@ package RefPrefixFacts {
     abstract view def AbstractViewDef;
     abstract rendering def AbstractRenderingDef;
 
-    case def ReturnCase {
+    case def ReturnBase {
         attribute result : A;
+    }
+    case def ReturnCase :> ReturnBase {
         return returnValue : A :>> result;
     }
 }
+~~~
+# EXPECTED SEMANTICS
+~~~sexpr
+(fixture-semantics
+  (relationship (kind redefinition) (source "RefPrefixFacts::ReturnCase::returnValue") (target "RefPrefixFacts::ReturnBase::result") (provenance authored) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/parser_ref_prefix_facts.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "redefinition_featuring_type_incompatible")
-        (source "semantic")
-        (range (start 40 35) (end 40 41))
-        (related-information
-          (related
-            (uri "memory://snapshot/parser_ref_prefix_facts.md")
-            (range (start 39 8) (end 39 29))
-          )
-        )
-      )
     )
   )
 )
@@ -73,7 +68,7 @@ package RefPrefixFacts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ed4f129e9cc0b7348635a7904214eb78042233c80fa3d4c8e1c1954e73c0e2f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e460b7c66283e0b1bbda001506eafea71b8f5885b286df27dcb7236d072e2443"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))
@@ -96,8 +91,9 @@ package RefPrefixFacts {
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::abstractRef"))) (kind item) (membership (kind feature) (visibility default)) (facts (modifiers abstract reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "I")))))
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::constantRef"))) (kind item) (membership (kind feature) (visibility default)) (facts (modifiers reference constant)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "I")))))
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::derivedRef"))) (kind item) (membership (kind feature) (visibility default)) (facts (modifiers derived reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "I")))))
-    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase"))) (kind case-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")))))
+    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase"))) (kind case-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")))))
+    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase"))) (kind case-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ReturnBase")))))
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "A")) (redefinition (reference "result")))))
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::UCBase"))) (kind use-case-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::VCBase"))) (kind verification-def) (membership (kind owning) (visibility default)))
@@ -149,15 +145,18 @@ package RefPrefixFacts {
     (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::derivedRef"))) (kind featureTyping) (ordinal 0))
       (authored-target "I")
       (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::I")))))
-    (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result"))) (kind featureTyping) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")))))
+    (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase"))) (kind specialization) (ordinal 0))
+      (authored-target "ReturnBase")
+      (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase")))))
     (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")))))
     (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (kind redefinition) (ordinal 0))
       (authored-target "result")
-      (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result")))))
+      (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result")))))
     (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::abstractItem"))) (kind featureTyping) (ordinal 0))
       (authored-target "I")
       (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::I")))))
@@ -198,9 +197,10 @@ package RefPrefixFacts {
     (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::abstractRef"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::I"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::abstractRef"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::constantRef"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::I"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::constantRef"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::derivedRef"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::I"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::derivedRef"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind redefinition) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::abstractItem"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::I"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::abstractItem"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::baseUseCase"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::UCBase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::baseUseCase"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::baseVerification"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::VCBase"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::baseVerification"))) (kind featureTyping) (ordinal 0)))
@@ -222,7 +222,7 @@ package RefPrefixFacts {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::abstractRef"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::constantRef"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost::derivedRef"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::RefHost"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind case) (name "boundedCase")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind case) (name "boundedCase")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind case) (name "boundedCase")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind case) (name "boundedCase")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
@@ -243,7 +243,7 @@ package RefPrefixFacts {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")))
-      (subtype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result")) (scopes any))
+      (subtype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result")) (scopes any))
       (subtype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::CalcBase")))
@@ -302,20 +302,26 @@ package RefPrefixFacts {
       (effective-type (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::I")) (source direct))
       (supertype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::I")) (scopes any))
     )
-    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result")))
-      (featured-by (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase")))
+    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase")))
+      (subtype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result")))
+      (featured-by (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase")))
       (type (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")) (provenance authored))
       (effective-type (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")) (source direct))
       (supertype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")) (scopes any))
       (subtype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase")))
+      (supertype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue")))
       (featured-by (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase")))
       (type (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")) (provenance authored))
       (effective-type (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")) (source direct))
-      (effective-type (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")) (source inherited) (from (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result"))))
+      (effective-type (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")) (source inherited) (from (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result"))))
       (supertype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")) (scopes any))
-      (supertype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::UCBase")))
       (subtype (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::baseUseCase")) (scopes any))
@@ -438,18 +444,23 @@ package RefPrefixFacts {
     )
   )
   (query (document "memory://snapshot/parser_ref_prefix_facts.md") (range (start 39 27) (end 39 28)) (probe (position 39 27))
-    (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result"))) (kind featureTyping) (ordinal 0) (authored-target "A")
+    (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result"))) (kind featureTyping) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")))))
     )
   )
-  (query (document "memory://snapshot/parser_ref_prefix_facts.md") (range (start 40 29) (end 40 30)) (probe (position 40 29))
+  (query (document "memory://snapshot/parser_ref_prefix_facts.md") (range (start 41 27) (end 41 37)) (probe (position 41 27))
+    (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase"))) (kind specialization) (ordinal 0) (authored-target "ReturnBase")
+      (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase")))))
+    )
+  )
+  (query (document "memory://snapshot/parser_ref_prefix_facts.md") (range (start 42 29) (end 42 30)) (probe (position 42 29))
     (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (kind featureTyping) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::A")))))
     )
   )
-  (query (document "memory://snapshot/parser_ref_prefix_facts.md") (range (start 40 35) (end 40 41)) (probe (position 40 35))
+  (query (document "memory://snapshot/parser_ref_prefix_facts.md") (range (start 42 35) (end 42 41)) (probe (position 42 35))
     (reference (id (source (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::returnValue"))) (kind redefinition) (ordinal 0) (authored-target "result")
-      (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnCase::result")))))
+      (outcome (status resolved) (target (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::ReturnBase::result")))))
     )
   )
   (query (document "memory://snapshot/parser_ref_prefix_facts.md") (range (start 10 33) (end 10 34)) (probe (position 10 33))

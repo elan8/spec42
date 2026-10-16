@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Repeated redefinitions resolve inherited targets consistently (#255).** Sibling features no
+  longer shadow a redefinition target as their effective names settle. Repeated anonymous ends
+  retain namespace collision warnings without spurious target ambiguity; genuinely ambiguous
+  inherited targets remain ambiguous.
+
 - **The Elan8 method libraries are no longer bundled.** `elan8/mbse-methodology` no longer ships a
   SysML library: its decisions, assumptions and risks overlap the standard `ModelingMetadata` and
   `RiskMetadata` libraries, and real models did not use the rest. The `method` managed library,
