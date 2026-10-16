@@ -1126,3 +1126,52 @@ fn general_view_disclosure_hides_nested_nodes_until_expanded() {
         "expanded owner must reveal the nested child: {expanded}"
     );
 }
+
+/// A line in a nested general view that the router cannot place is still drawn, so the view is
+/// not lost: here because one end contains the other (a recursive structure), and because the
+/// diagram has more boxes than the router takes on.
+#[test]
+fn general_view_lines_are_drawn_when_they_cannot_be_routed() {
+    let recursive = json!({
+        "version": 1, "view": "general-view", "selectedViewName": "Recursive",
+        "graph": {
+            "nodes": [
+                {"id": "Node", "name": "Node", "type": "part def"},
+                {"id": "children", "name": "children", "type": "part", "attributes": {"partType": "Node"}}
+            ],
+            "edges": [
+                {"id": "owns", "source": "Node", "target": "children", "type": "hierarchy"},
+                {"id": "typed", "source": "children", "target": "Node", "type": "typing"}
+            ]
+        }
+    });
+    let mut nodes = vec![json!({"id": "system", "name": "system", "type": "part"})];
+    let mut edges = Vec::new();
+    for index in 0..90 {
+        nodes.push(json!({"id": format!("p{index}"), "name": format!("p{index}"), "type": "part"}));
+        nodes.push(
+            json!({"id": format!("D{index}"), "name": format!("D{index}"), "type": "part def"}),
+        );
+        edges.push(json!({"id": format!("owns{index}"), "source": "system", "target": format!("p{index}"), "type": "hierarchy"}));
+        edges.push(json!({"id": format!("typed{index}"), "source": format!("p{index}"), "target": format!("D{index}"), "type": "typing"}));
+    }
+    let large = json!({
+        "version": 1, "view": "general-view", "selectedViewName": "Large",
+        "graph": { "nodes": nodes, "edges": edges }
+    });
+    for (name, payload, lines) in [("recursive", recursive, 1), ("large", large, 90)] {
+        let input = diagram_draw::pipeline::draw_input_from_payload_with_presentation(
+            &payload,
+            None,
+            diagram_draw::Nesting::All,
+        )
+        .unwrap_or_else(|error| panic!("{name} general view lays out: {error:?}"));
+        let drawn = input["edges"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|edge| edge["layout"]["sections"][0]["endPoint"].is_object())
+            .count();
+        assert_eq!(drawn, lines, "{name}: every typing line is drawn");
+    }
+}

@@ -715,6 +715,25 @@ fn layout_nested_general(
         let (Some(from), Some(to)) = (rect(&source), rect(&target)) else {
             continue;
         };
+        // An end that contains the other end (a recursive structure, `part children : Node[*]`
+        // inside `Node`) is reached at its header: the rest of its box is where the other end is.
+        let header = |id: &str, rect: crate::ortho_route::Rect| {
+            drawn
+                .iter()
+                .find(|node| node["id"] == id)
+                .and_then(|node| node["attributes"]["generalContainerHeaderHeight"].as_f64())
+                .map_or(rect, |height| (rect.0, rect.1, rect.2, height))
+        };
+        let from = if ancestor(&source, &target) {
+            header(&source, from)
+        } else {
+            from
+        };
+        let to = if ancestor(&target, &source) {
+            header(&target, to)
+        } else {
+            to
+        };
         let obstacles: Vec<_> = drawn
             .iter()
             .filter_map(|node| {
@@ -733,12 +752,10 @@ fn layout_nested_general(
                 rect(id)
             })
             .collect();
-        let route = crate::ortho_route::route(from, to, &obstacles, 6.0).ok_or_else(|| {
-            diagram_layout::LayoutError::Engine(format!(
-                "cannot route general-view edge {}",
-                edge["id"]
-            ))
-        })?;
+        // A diagram too large to route, or one with no gap between the ends, still draws the
+        // line: straight between the facing sides, as before routing existed.
+        let route = crate::ortho_route::route(from, to, &obstacles, 6.0)
+            .unwrap_or_else(|| crate::ortho_route::direct(from, to));
         let point = |p: &(f64, f64)| json!({"x":p.0,"y":p.1});
         let mut routed_edge = edge.clone();
         routed_edge["layout"] = json!({"sections":[{"startPoint":point(&route[0]),"bendPoints":route[1..route.len()-1].iter().map(point).collect::<Vec<_>>(),"endPoint":point(route.last().unwrap())}]});
