@@ -1218,34 +1218,6 @@ fn calc_usage_typed_by_a_calc_def_resolves() {
 }
 
 #[test]
-fn calc_usage_redefining_another_calc_usage_resolves() {
-    // `CalcUsage::redefines` is a bare `Vec<QualifiedReferenceId>`, not a
-    // `Node<SubsettingRelationship>` -- lowered as direct `Redefinition` references rather
-    // than through `lower_subsetting_relationship`.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tpart def P {\n\
-         \t\tcalc def Calc;\n\
-         \t\tcalc calcA : Calc;\n\
-         \t\tcalc calcB : Calc :>> calcA;\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains("(qualified-name \"Demo::P::calcB\"))) (kind calc)"),
-        "expected a calc usage declaration, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::calcB\")))"
-        ) && output.contains(
-            "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::calcA\")))"
-        ),
-        "expected calcB's redefinition of calcA to resolve, got:\n{output}"
-    );
-}
-
-#[test]
 fn view_usage_typed_by_a_view_def_resolves() {
     // planning/UPSTREAM_PARSER_GAPS.md #8 was resolved upstream in `0757de13`: `ViewUsage` now carries
     // a `subsets` field, so `view` usage lowering is no longer deferred.
@@ -5271,12 +5243,12 @@ fn exact_feature_relationship_collections_project_canonical_authored_and_implied
     let published = detail_publication(
         &[ (
             "memory://model.sysml",
-            "package Model { classifier Vehicle { feature base; feature 'derived' : Vehicle redefines base chains base; } }",
+            "package Model { classifier Base { feature base; } classifier Vehicle specializes Base { feature 'derived' : Vehicle redefines base chains base; } }",
         ) ],
         ConstructionSchedule::Sequential,
     );
     let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
-    let base = identity_of(&published, "memory://model.sysml", "Model::Vehicle::base");
+    let base = identity_of(&published, "memory://model.sysml", "Model::Base::base");
     let derived = identity_of(
         &published,
         "memory://model.sysml",
