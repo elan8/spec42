@@ -370,7 +370,7 @@ mod tests {
         assert_eq!(generated_library_specialization_rule_count(), 85);
         assert_eq!(
             generated_conditional_library_specialization_rule_count(),
-            58
+            59
         );
         let unique_rules = GENERATED_LIBRARY_SPECIALIZATION_RULES
             .iter()
