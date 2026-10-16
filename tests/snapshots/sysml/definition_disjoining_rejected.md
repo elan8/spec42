@@ -14,6 +14,13 @@ package DisjointTest {
     action def Good :> A;
 }
 ~~~
+## occurrence.sysml
+~~~sysml
+package OccurrenceDisjointTest {
+    occurrence def A;
+    occurrence def B disjoint from A;
+}
+~~~
 ## valid.kerml
 ~~~kerml
 package Legal {
@@ -31,6 +38,16 @@ package Legal {
         (code "recovered_package_body_element")
         (source "parser")
         (range (start 2 4) (end 2 42))
+      )
+    )
+  )
+  (document "memory://snapshot/occurrence.sysml"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "parser")
+        (range (start 2 4) (end 2 37))
       )
     )
   )
@@ -59,6 +76,16 @@ package Legal {
       )
     )
   )
+  (document "memory://snapshot/occurrence.sysml"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "parser")
+        (range (start 2 4) (end 2 37))
+      )
+    )
+  )
   (document "memory://snapshot/valid.kerml"
     (diagnostics
     )
@@ -68,11 +95,13 @@ package Legal {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:fe4945cf3d68717d3817ccae6114f8aed74f4a571db9653487f483ae76463144"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:fe379f1f870c638d4ff852697a9e959ca2be193bc3666c0a9ffd2dd219c2e235"))
   (declarations
     (declaration (id (node (document "memory://snapshot/invalid.sysml") (qualified-name "DisjointTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/invalid.sysml") (qualified-name "DisjointTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/invalid.sysml") (qualified-name "DisjointTest::Good"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "A")))))
+    (declaration (id (node (document "memory://snapshot/occurrence.sysml") (qualified-name "OccurrenceDisjointTest"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/occurrence.sysml") (qualified-name "OccurrenceDisjointTest::A"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/valid.kerml") (qualified-name "Legal"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/valid.kerml") (qualified-name "Legal::A"))) (kind kerml-behavior) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/valid.kerml") (qualified-name "Legal::B"))) (kind kerml-behavior) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (disjoining (reference "A")))))
