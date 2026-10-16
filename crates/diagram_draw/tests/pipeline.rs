@@ -1175,3 +1175,23 @@ fn general_view_lines_are_drawn_when_they_cannot_be_routed() {
         assert_eq!(drawn, lines, "{name}: every typing line is drawn");
     }
 }
+
+/// `«ref»` and the dashed outline mark a usage declared `ref`, not every referential usage: a
+/// port is referential by its kind and is drawn as a plain port (SysML 8.2.3).
+#[test]
+fn only_a_usage_declared_ref_is_drawn_as_a_reference() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_general_reference_membership.md"
+    ));
+    let svg = render_svg_from_payload_with_options(
+        &payload,
+        &diagram_draw::theme::LIGHT,
+        1280.0,
+        900.0,
+        None,
+    )
+    .expect("reference membership view");
+    assert_eq!(svg.matches("«ref part»").count(), 2, "{svg}");
+    assert!(!svg.contains("«ref port»"), "{svg}");
+    assert!(svg.contains("«port»"), "{svg}");
+}

@@ -351,12 +351,7 @@ pub fn collect_compartments(
     Compartments {
         stereotype: if kind.is_empty() {
             "element".to_string()
-        } else if attributes
-            .get("referenceMembership")
-            .and_then(Value::as_bool)
-            == Some(true)
-            && kind != "ReferenceUsage"
-        {
+        } else if attributes.get("authoredReference").and_then(Value::as_bool) == Some(true) {
             format!("ref {kind}")
         } else {
             kind.to_string()

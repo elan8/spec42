@@ -103,21 +103,21 @@ pub fn draw_general_containers(nodes: &[LaidOutNode], theme: &Theme) -> Element 
         if !node.attributes.contains_key("generalContainerHeaderHeight") {
             continue;
         }
-        let definition = node
-            .attributes
-            .get("notationRole")
-            .and_then(|value| value.as_str())
-            == Some("definition");
-        layer = layer.child(
-            Element::new("rect")
-                .attr("x", n(node.x))
-                .attr("y", n(node.y))
-                .attr("width", n(node.width))
-                .attr("height", n(node.height))
-                .attr("rx", if definition { "0" } else { "8" })
-                .style("fill", theme.node_fill)
-                .style("stroke", stroke_color_for_node(theme)),
-        );
+        let role = notation_role_from_attributes(&node.attributes);
+        let definition = role == crate::node_notation::NotationRole::Definition;
+        let mut body = Element::new("rect")
+            .attr("x", n(node.x))
+            .attr("y", n(node.y))
+            .attr("width", n(node.width))
+            .attr("height", n(node.height))
+            .attr("rx", if definition { "0" } else { "8" })
+            .style("fill", theme.node_fill)
+            .style("stroke", stroke_color_for_node(theme));
+        // A reference that shows its members keeps the dashed outline of a reference.
+        if role == crate::node_notation::NotationRole::ReferenceUsage {
+            body = body.style("stroke-dasharray", "2,4");
+        }
+        layer = layer.child(body);
     }
     layer
 }

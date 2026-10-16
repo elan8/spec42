@@ -3135,6 +3135,17 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 .as_u64()
                 .and_then(|i| references.get(i as usize))
                 .cloned();
+            // A usage drawn as a reference: effectively referential (its membership is not
+            // composite) and of a kind that is composite unless declared `ref`. Ports,
+            // attributes, directed features and `perform`/`exhibit`/`include` usages are
+            // referential by their kind, so they carry no `ref` keyword (SysML 8.2.3).
+            let reference_membership = projection_edges.iter().any(|edge| {
+                field(edge, "kind").as_str() == Some("noncomposite-membership")
+                    && field(edge, "target").as_u64() == Some(index as u64)
+            });
+            let authored_reference = reference_membership
+                && field(element, "direction").is_null()
+                && composite_unless_ref(&as_string(field(element, "metaclass"), ""));
             json!({
                 "id": format!("n:{index}"),
                 "label": if field(element, "name").is_string() {
@@ -3151,9 +3162,8 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "owner": field(element, "owner"),
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
-                    "referenceMembership": projection_edges.iter().any(|edge|
-                        field(edge, "kind").as_str() == Some("noncomposite-membership")
-                        && field(edge, "target").as_u64() == Some(index as u64)),
+                    "referenceMembership": reference_membership,
+                    "authoredReference": authored_reference,
                 },
             })
         })
@@ -3341,4 +3351,30 @@ mod tests {
             json!(["Dependency", "Satisfy"])
         );
     }
+}
+
+/// Usage metaclasses whose usages are composite unless declared `ref` (SysML 8.2.2: occurrence
+/// usages other than those that perform, exhibit, include or reference an occurrence).
+fn composite_unless_ref(metaclass: &str) -> bool {
+    matches!(
+        metaclass,
+        "PartUsage"
+            | "ItemUsage"
+            | "OccurrenceUsage"
+            | "ActionUsage"
+            | "StateUsage"
+            | "CalculationUsage"
+            | "CaseUsage"
+            | "AnalysisCaseUsage"
+            | "VerificationCaseUsage"
+            | "UseCaseUsage"
+            | "RequirementUsage"
+            | "ConcernUsage"
+            | "ConnectionUsage"
+            | "InterfaceUsage"
+            | "AllocationUsage"
+            | "FlowUsage"
+            | "ViewUsage"
+            | "RenderingUsage"
+    )
 }
