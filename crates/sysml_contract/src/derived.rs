@@ -149,6 +149,21 @@ pub enum ActionDerivedFactCollection {
     MultiplicityRangeLowerBound,
     MultiplicityRangeUpperBound,
     MultiplicityRangeBound,
+    ItemUsageItemDefinition,
+    PartUsagePartDefinition,
+    OccurrenceUsageIndividualDefinition,
+    ConjugatedPortTypingPortDefinition,
+    TransitionUsageSuccession,
+    TransitionUsageTarget,
+    TransitionUsageTriggerAction,
+    AssertConstraintUsageAssertedConstraint,
+    EventOccurrenceUsageEventOccurrence,
+    VerificationCaseDefinitionVerifiedRequirement,
+    VerificationCaseUsageVerifiedRequirement,
+    UseCaseDefinitionIncludedUseCase,
+    UseCaseUsageIncludedUseCase,
+    ViewDefinitionViewCondition,
+    ViewUsageViewCondition,
 }
 
 /// The first canonical fact owner an exact `Systems::Actions` derivation needs.

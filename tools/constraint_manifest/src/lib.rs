@@ -682,6 +682,66 @@ impl ConstraintManifest {
                             "deriveMultiplicityRangeBound",
                             "MultiplicityRange",
                             ActionDerivedFactKind::MultiplicityRangeBound
+                        ) | (
+                            "deriveItemUsageItemDefinition",
+                            "ItemUsage",
+                            ActionDerivedFactKind::ItemUsageItemDefinition
+                        ) | (
+                            "derivePartUsagePartDefinition",
+                            "PartUsage",
+                            ActionDerivedFactKind::PartUsagePartDefinition
+                        ) | (
+                            "deriveOccurrenceUsageIndividualDefinition",
+                            "OccurrenceUsage",
+                            ActionDerivedFactKind::OccurrenceUsageIndividualDefinition
+                        ) | (
+                            "deriveConjugatedPortTypingPortDefinition",
+                            "ConjugatedPortTyping",
+                            ActionDerivedFactKind::ConjugatedPortTypingPortDefinition
+                        ) | (
+                            "deriveTransitionUsageSuccession",
+                            "TransitionUsage",
+                            ActionDerivedFactKind::TransitionUsageSuccession
+                        ) | (
+                            "deriveTransitionUsageTarget",
+                            "TransitionUsage",
+                            ActionDerivedFactKind::TransitionUsageTarget
+                        ) | (
+                            "deriveTransitionUsageTriggerAction",
+                            "TransitionUsage",
+                            ActionDerivedFactKind::TransitionUsageTriggerAction
+                        ) | (
+                            "deriveAssertConstraintUsageAssertedConstraint",
+                            "AssertConstraintUsage",
+                            ActionDerivedFactKind::AssertConstraintUsageAssertedConstraint
+                        ) | (
+                            "deriveEventOccurrenceUsageEventOccurrence",
+                            "EventOccurrenceUsage",
+                            ActionDerivedFactKind::EventOccurrenceUsageEventOccurrence
+                        ) | (
+                            "deriveVerificationCaseDefinitionVerifiedRequirement",
+                            "VerificationCaseDefinition",
+                            ActionDerivedFactKind::VerificationCaseDefinitionVerifiedRequirement
+                        ) | (
+                            "deriveVerificationCaseUsageVerifiedRequirement",
+                            "VerificationCaseUsage",
+                            ActionDerivedFactKind::VerificationCaseUsageVerifiedRequirement
+                        ) | (
+                            "deriveUseCaseDefinitionIncludedUseCase",
+                            "UseCaseDefinition",
+                            ActionDerivedFactKind::UseCaseDefinitionIncludedUseCase
+                        ) | (
+                            "deriveUseCaseUsageIncludedUseCase",
+                            "UseCaseUsage",
+                            ActionDerivedFactKind::UseCaseUsageIncludedUseCase
+                        ) | (
+                            "deriveViewDefinitionViewCondition",
+                            "ViewDefinition",
+                            ActionDerivedFactKind::ViewDefinitionViewCondition
+                        ) | (
+                            "deriveViewUsageViewCondition",
+                            "ViewUsage",
+                            ActionDerivedFactKind::ViewUsageViewCondition
                         )
                     );
                     if entry.family != ConstraintFamily::Derive
@@ -2159,6 +2219,21 @@ pub enum ActionDerivedFactKind {
     MultiplicityRangeLowerBound,
     MultiplicityRangeUpperBound,
     MultiplicityRangeBound,
+    ItemUsageItemDefinition,
+    PartUsagePartDefinition,
+    OccurrenceUsageIndividualDefinition,
+    ConjugatedPortTypingPortDefinition,
+    TransitionUsageSuccession,
+    TransitionUsageTarget,
+    TransitionUsageTriggerAction,
+    AssertConstraintUsageAssertedConstraint,
+    EventOccurrenceUsageEventOccurrence,
+    VerificationCaseDefinitionVerifiedRequirement,
+    VerificationCaseUsageVerifiedRequirement,
+    UseCaseDefinitionIncludedUseCase,
+    UseCaseUsageIncludedUseCase,
+    ViewDefinitionViewCondition,
+    ViewUsageViewCondition,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -755,6 +755,66 @@ fn exact_action_derived_fact(constraint: &str, body: &str) -> Option<ActionDeriv
             "deriveMultiplicityRangeBound",
             "a5f4cf32616c9e35fdb3d082b0b4784293acdef987ebe6db63845c340ce7fcbe",
         ) => Some(ActionDerivedFactKind::MultiplicityRangeBound),
+        (
+            "deriveItemUsageItemDefinition",
+            "0a48c18c389bf2fc0df29c141495d4679224be7710b842b8aa911490c6725638",
+        ) => Some(ActionDerivedFactKind::ItemUsageItemDefinition),
+        (
+            "derivePartUsagePartDefinition",
+            "c8361d6f6ee1d6fcaffcaeca02febe15cf1aa8c96d28575635fb9282219c8b72",
+        ) => Some(ActionDerivedFactKind::PartUsagePartDefinition),
+        (
+            "deriveOccurrenceUsageIndividualDefinition",
+            "ef160aea6c88982d4ef24da30b5261ede6e51e036093b635432c7ea427660b17",
+        ) => Some(ActionDerivedFactKind::OccurrenceUsageIndividualDefinition),
+        (
+            "deriveConjugatedPortTypingPortDefinition",
+            "23fb89fc02bccfd719659553534ae178ceb54ee59fdd3f897406bb586ddb8425",
+        ) => Some(ActionDerivedFactKind::ConjugatedPortTypingPortDefinition),
+        (
+            "deriveTransitionUsageSuccession",
+            "0ee10b6835cf424d0f7d9e943f0af27b24a56975fdcb4eefbdb6339e2f3b6eae",
+        ) => Some(ActionDerivedFactKind::TransitionUsageSuccession),
+        (
+            "deriveTransitionUsageTarget",
+            "0f0a60f1a0e8a98417a60bd541d8675b44c63db074251412784fbf75632dc926",
+        ) => Some(ActionDerivedFactKind::TransitionUsageTarget),
+        (
+            "deriveTransitionUsageTriggerAction",
+            "4bf5fe30abd61249957450670e668fa7755b66d600494b8d0f0f6372667adbdf",
+        ) => Some(ActionDerivedFactKind::TransitionUsageTriggerAction),
+        (
+            "deriveAssertConstraintUsageAssertedConstraint",
+            "14eac91af07e8c732b6ea9cb18fb2440502206c18bde9f4acfa75912e410d7a9",
+        ) => Some(ActionDerivedFactKind::AssertConstraintUsageAssertedConstraint),
+        (
+            "deriveEventOccurrenceUsageEventOccurrence",
+            "2443d8c1abd676ffd235fe8075193e01f1de21f6865ab63c1654635aa485ca33",
+        ) => Some(ActionDerivedFactKind::EventOccurrenceUsageEventOccurrence),
+        (
+            "deriveVerificationCaseDefinitionVerifiedRequirement",
+            "bdd913b873aec07d10ff2bc0da1d8c688e8a687753d403c48065e12a00208e55",
+        ) => Some(ActionDerivedFactKind::VerificationCaseDefinitionVerifiedRequirement),
+        (
+            "deriveVerificationCaseUsageVerifiedRequirement",
+            "bdd913b873aec07d10ff2bc0da1d8c688e8a687753d403c48065e12a00208e55",
+        ) => Some(ActionDerivedFactKind::VerificationCaseUsageVerifiedRequirement),
+        (
+            "deriveUseCaseDefinitionIncludedUseCase",
+            "9204a8b51a8bd507032ea57c7dd5346975f0538bd11878ad358695203a8fd8c9",
+        ) => Some(ActionDerivedFactKind::UseCaseDefinitionIncludedUseCase),
+        (
+            "deriveUseCaseUsageIncludedUseCase",
+            "9204a8b51a8bd507032ea57c7dd5346975f0538bd11878ad358695203a8fd8c9",
+        ) => Some(ActionDerivedFactKind::UseCaseUsageIncludedUseCase),
+        (
+            "deriveViewDefinitionViewCondition",
+            "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e",
+        ) => Some(ActionDerivedFactKind::ViewDefinitionViewCondition),
+        (
+            "deriveViewUsageViewCondition",
+            "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e",
+        ) => Some(ActionDerivedFactKind::ViewUsageViewCondition),
         _ => None,
     }
 }

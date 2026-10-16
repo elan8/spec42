@@ -112,6 +112,35 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> &'static str {
         ActionDerivedFactKind::MultiplicityRangeLowerBound => "MultiplicityRangeLowerBound",
         ActionDerivedFactKind::MultiplicityRangeUpperBound => "MultiplicityRangeUpperBound",
         ActionDerivedFactKind::MultiplicityRangeBound => "MultiplicityRangeBound",
+        ActionDerivedFactKind::ItemUsageItemDefinition => "ItemUsageItemDefinition",
+        ActionDerivedFactKind::PartUsagePartDefinition => "PartUsagePartDefinition",
+        ActionDerivedFactKind::OccurrenceUsageIndividualDefinition => {
+            "OccurrenceUsageIndividualDefinition"
+        }
+        ActionDerivedFactKind::ConjugatedPortTypingPortDefinition => {
+            "ConjugatedPortTypingPortDefinition"
+        }
+        ActionDerivedFactKind::TransitionUsageSuccession => "TransitionUsageSuccession",
+        ActionDerivedFactKind::TransitionUsageTarget => "TransitionUsageTarget",
+        ActionDerivedFactKind::TransitionUsageTriggerAction => "TransitionUsageTriggerAction",
+        ActionDerivedFactKind::AssertConstraintUsageAssertedConstraint => {
+            "AssertConstraintUsageAssertedConstraint"
+        }
+        ActionDerivedFactKind::EventOccurrenceUsageEventOccurrence => {
+            "EventOccurrenceUsageEventOccurrence"
+        }
+        ActionDerivedFactKind::VerificationCaseDefinitionVerifiedRequirement => {
+            "VerificationCaseDefinitionVerifiedRequirement"
+        }
+        ActionDerivedFactKind::VerificationCaseUsageVerifiedRequirement => {
+            "VerificationCaseUsageVerifiedRequirement"
+        }
+        ActionDerivedFactKind::UseCaseDefinitionIncludedUseCase => {
+            "UseCaseDefinitionIncludedUseCase"
+        }
+        ActionDerivedFactKind::UseCaseUsageIncludedUseCase => "UseCaseUsageIncludedUseCase",
+        ActionDerivedFactKind::ViewDefinitionViewCondition => "ViewDefinitionViewCondition",
+        ActionDerivedFactKind::ViewUsageViewCondition => "ViewUsageViewCondition",
     }
 }
 

@@ -2603,6 +2603,10 @@ family = "derive"
 clause = "8.3.10.3"
 rule_id = "sysml-2.0:8.3.10.3:deriveItemUsageItemDefinition"
 
+[specifications.constraints.action_derived_fact]
+kind = "item_usage_item_definition"
+body_sha256 = "0a48c18c389bf2fc0df29c141495d4679224be7710b842b8aa911490c6725638"
+
 [[specifications.constraints]]
 package = "Systems::Parts"
 metaclass = "PartDefinition"
@@ -2676,6 +2680,10 @@ family = "derive"
 clause = "8.3.11.3"
 rule_id = "sysml-2.0:8.3.11.3:derivePartUsagePartDefinition"
 
+[specifications.constraints.action_derived_fact]
+kind = "part_usage_part_definition"
+body_sha256 = "c8361d6f6ee1d6fcaffcaeca02febe15cf1aa8c96d28575635fb9282219c8b72"
+
 [[specifications.constraints]]
 package = "Systems::Parts"
 metaclass = "PartUsage"
@@ -2707,6 +2715,10 @@ constraint = "deriveConjugatedPortTypingPortDefinition"
 family = "derive"
 clause = "8.3.12.3"
 rule_id = "sysml-2.0:8.3.12.3:deriveConjugatedPortTypingPortDefinition"
+
+[specifications.constraints.action_derived_fact]
+kind = "conjugated_port_typing_port_definition"
+body_sha256 = "23fb89fc02bccfd719659553534ae178ceb54ee59fdd3f897406bb586ddb8425"
 
 [[specifications.constraints]]
 package = "Systems::Ports"
@@ -4188,6 +4200,10 @@ family = "derive"
 clause = "8.3.18.9"
 rule_id = "sysml-2.0:8.3.18.9:deriveTransitionUsageSuccession"
 
+[specifications.constraints.action_derived_fact]
+kind = "transition_usage_succession"
+body_sha256 = "0ee10b6835cf424d0f7d9e943f0af27b24a56975fdcb4eefbdb6339e2f3b6eae"
+
 [[specifications.constraints]]
 package = "Systems::States"
 metaclass = "TransitionUsage"
@@ -4196,6 +4212,10 @@ family = "derive"
 clause = "8.3.18.9"
 rule_id = "sysml-2.0:8.3.18.9:deriveTransitionUsageTarget"
 
+[specifications.constraints.action_derived_fact]
+kind = "transition_usage_target"
+body_sha256 = "0f0a60f1a0e8a98417a60bd541d8675b44c63db074251412784fbf75632dc926"
+
 [[specifications.constraints]]
 package = "Systems::States"
 metaclass = "TransitionUsage"
@@ -4203,6 +4223,10 @@ constraint = "deriveTransitionUsageTriggerAction"
 family = "derive"
 clause = "8.3.18.9"
 rule_id = "sysml-2.0:8.3.18.9:deriveTransitionUsageTriggerAction"
+
+[specifications.constraints.action_derived_fact]
+kind = "transition_usage_trigger_action"
+body_sha256 = "4bf5fe30abd61249957450670e668fa7755b66d600494b8d0f0f6372667adbdf"
 
 [[specifications.constraints]]
 package = "Systems::States"
@@ -4299,6 +4323,10 @@ constraint = "deriveAssertConstraintUsageAssertedConstraint"
 family = "derive"
 clause = "8.3.20.2"
 rule_id = "sysml-2.0:8.3.20.2:deriveAssertConstraintUsageAssertedConstraint"
+
+[specifications.constraints.action_derived_fact]
+kind = "assert_constraint_usage_asserted_constraint"
+body_sha256 = "14eac91af07e8c732b6ea9cb18fb2440502206c18bde9f4acfa75912e410d7a9"
 
 [[specifications.constraints]]
 package = "Systems::Constraints"
@@ -5011,6 +5039,10 @@ family = "derive"
 clause = "8.3.24.3"
 rule_id = "sysml-2.0:8.3.24.3:deriveVerificationCaseDefinitionVerifiedRequirement"
 
+[specifications.constraints.action_derived_fact]
+kind = "verification_case_definition_verified_requirement"
+body_sha256 = "bdd913b873aec07d10ff2bc0da1d8c688e8a687753d403c48065e12a00208e55"
+
 [[specifications.constraints]]
 package = "Systems::VerificationCases"
 metaclass = "VerificationCaseUsage"
@@ -5045,6 +5077,10 @@ constraint = "deriveVerificationCaseUsageVerifiedRequirement"
 family = "derive"
 clause = "8.3.24.4"
 rule_id = "sysml-2.0:8.3.24.4:deriveVerificationCaseUsageVerifiedRequirement"
+
+[specifications.constraints.action_derived_fact]
+kind = "verification_case_usage_verified_requirement"
+body_sha256 = "bdd913b873aec07d10ff2bc0da1d8c688e8a687753d403c48065e12a00208e55"
 
 [[specifications.constraints]]
 package = "Systems::UseCases"
@@ -5085,6 +5121,10 @@ family = "derive"
 clause = "8.3.25.3"
 rule_id = "sysml-2.0:8.3.25.3:deriveUseCaseDefinitionIncludedUseCase"
 
+[specifications.constraints.action_derived_fact]
+kind = "use_case_definition_included_use_case"
+body_sha256 = "9204a8b51a8bd507032ea57c7dd5346975f0538bd11878ad358695203a8fd8c9"
+
 [[specifications.constraints]]
 package = "Systems::UseCases"
 metaclass = "UseCaseUsage"
@@ -5119,6 +5159,10 @@ constraint = "deriveUseCaseUsageIncludedUseCase"
 family = "derive"
 clause = "8.3.25.4"
 rule_id = "sysml-2.0:8.3.25.4:deriveUseCaseUsageIncludedUseCase"
+
+[specifications.constraints.action_derived_fact]
+kind = "use_case_usage_included_use_case"
+body_sha256 = "9204a8b51a8bd507032ea57c7dd5346975f0538bd11878ad358695203a8fd8c9"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -5190,6 +5234,10 @@ constraint = "deriveViewUsageViewCondition"
 family = "derive"
 clause = "8.3.26.11"
 rule_id = "sysml-2.0:8.3.26.11:deriveViewUsageViewCondition"
+
+[specifications.constraints.action_derived_fact]
+kind = "view_usage_view_condition"
+body_sha256 = "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -5339,6 +5387,10 @@ constraint = "deriveViewDefinitionViewCondition"
 family = "derive"
 clause = "8.3.26.7"
 rule_id = "sysml-2.0:8.3.26.7:deriveViewDefinitionViewCondition"
+
+[specifications.constraints.action_derived_fact]
+kind = "view_definition_view_condition"
+body_sha256 = "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -6375,6 +6427,10 @@ family = "derive"
 clause = "8.3.9.2"
 rule_id = "sysml-2.0:8.3.9.2:deriveEventOccurrenceUsageEventOccurrence"
 
+[specifications.constraints.action_derived_fact]
+kind = "event_occurrence_usage_event_occurrence"
+body_sha256 = "2443d8c1abd676ffd235fe8075193e01f1de21f6865ab63c1654635aa485ca33"
+
 [[specifications.constraints]]
 package = "Systems::Occurrences"
 metaclass = "EventOccurrenceUsage"
@@ -6472,6 +6528,10 @@ constraint = "deriveOccurrenceUsageIndividualDefinition"
 family = "derive"
 clause = "8.3.9.4"
 rule_id = "sysml-2.0:8.3.9.4:deriveOccurrenceUsageIndividualDefinition"
+
+[specifications.constraints.action_derived_fact]
+kind = "occurrence_usage_individual_definition"
+body_sha256 = "ef160aea6c88982d4ef24da30b5261ede6e51e036093b635432c7ea427660b17"
 
 [[specifications.constraints]]
 package = "Systems::Occurrences"

@@ -779,6 +779,51 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> ActionDerivedFactColle
         ActionDerivedFactKind::MultiplicityRangeBound => {
             ActionDerivedFactCollection::MultiplicityRangeBound
         }
+        ActionDerivedFactKind::ItemUsageItemDefinition => {
+            ActionDerivedFactCollection::ItemUsageItemDefinition
+        }
+        ActionDerivedFactKind::PartUsagePartDefinition => {
+            ActionDerivedFactCollection::PartUsagePartDefinition
+        }
+        ActionDerivedFactKind::OccurrenceUsageIndividualDefinition => {
+            ActionDerivedFactCollection::OccurrenceUsageIndividualDefinition
+        }
+        ActionDerivedFactKind::ConjugatedPortTypingPortDefinition => {
+            ActionDerivedFactCollection::ConjugatedPortTypingPortDefinition
+        }
+        ActionDerivedFactKind::TransitionUsageSuccession => {
+            ActionDerivedFactCollection::TransitionUsageSuccession
+        }
+        ActionDerivedFactKind::TransitionUsageTarget => {
+            ActionDerivedFactCollection::TransitionUsageTarget
+        }
+        ActionDerivedFactKind::TransitionUsageTriggerAction => {
+            ActionDerivedFactCollection::TransitionUsageTriggerAction
+        }
+        ActionDerivedFactKind::AssertConstraintUsageAssertedConstraint => {
+            ActionDerivedFactCollection::AssertConstraintUsageAssertedConstraint
+        }
+        ActionDerivedFactKind::EventOccurrenceUsageEventOccurrence => {
+            ActionDerivedFactCollection::EventOccurrenceUsageEventOccurrence
+        }
+        ActionDerivedFactKind::VerificationCaseDefinitionVerifiedRequirement => {
+            ActionDerivedFactCollection::VerificationCaseDefinitionVerifiedRequirement
+        }
+        ActionDerivedFactKind::VerificationCaseUsageVerifiedRequirement => {
+            ActionDerivedFactCollection::VerificationCaseUsageVerifiedRequirement
+        }
+        ActionDerivedFactKind::UseCaseDefinitionIncludedUseCase => {
+            ActionDerivedFactCollection::UseCaseDefinitionIncludedUseCase
+        }
+        ActionDerivedFactKind::UseCaseUsageIncludedUseCase => {
+            ActionDerivedFactCollection::UseCaseUsageIncludedUseCase
+        }
+        ActionDerivedFactKind::ViewDefinitionViewCondition => {
+            ActionDerivedFactCollection::ViewDefinitionViewCondition
+        }
+        ActionDerivedFactKind::ViewUsageViewCondition => {
+            ActionDerivedFactCollection::ViewUsageViewCondition
+        }
     }
 }
 
@@ -6190,6 +6235,25 @@ fn compare_action_derived_fact_observation(
                 ..
             },
         ) if values.is_empty() => Ok(()),
+        (
+            TypeDerivedElementOutcome::Absent,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::FilterConditions(values),
+                ..
+            },
+        ) if values.is_empty() => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::FilterConditions(values),
+                expected: None,
+            },
+        ) if expectation
+            .position
+            .is_some_and(|position| values.iter().any(|actual| actual.position == position)) =>
+        {
+            Ok(())
+        }
         (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {

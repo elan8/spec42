@@ -441,6 +441,9 @@ pub(crate) struct DeclarationFacts {
     pub(crate) is_trigger_payload_parameter: bool,
     /// This Succession is the one owned member synthesized by a TransitionUsage's `then` clause.
     pub(crate) is_transition_succession: bool,
+    /// This UseCaseUsage is declared inline by `include use case`, so it is an
+    /// IncludeUseCaseUsage that includes itself.
+    pub(crate) is_included_use_case: bool,
     /// The authored multiplicities of a Succession's two connector ends (`first [m] a then [n]
     /// b`), present only on a `DeclarationKind::Succession` that authors at least one of them.
     ///
