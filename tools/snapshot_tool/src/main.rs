@@ -36,8 +36,8 @@ use spec42_constraint_manifest::{
     TypeDerivedRelationshipKind,
 };
 use sysml_query::resolved_slice::{
-    ActionDerivedFactCollection, ActionDerivedFactOutcome, AnnotationForm,
-    AnonymousElementReference, BindingConnectorValidationOutcome,
+    ActionDerivedFactCollection, ActionDerivedFactOutcome, ActionDerivedFactPrerequisite,
+    AnnotationForm, AnonymousElementReference, BindingConnectorValidationOutcome,
     BindingConnectorValidationPrerequisite, DefinitionUsageDerivedOutcome,
     DefinitionUsageDerivedPrerequisite, DerivedElementOwner, Documentation, EditorProbe,
     ElementDerivedDocumentationCollection, ElementKind, FeatureDerivedRelationshipCollection,
@@ -843,14 +843,17 @@ fn action_fact_collection_for_rule(
     manifest: Option<&ConstraintManifest>,
     rule_id: &str,
     fixture: &str,
-) -> Result<ActionDerivedFactCollection, String> {
+) -> Result<Option<ActionDerivedFactCollection>, String> {
     let manifest = manifest
         .ok_or_else(|| format!("{fixture}: semantic Action fact requires a loaded manifest"))?;
     let entry = manifest.find_rule(rule_id).ok_or_else(|| {
         format!("{fixture}: semantic Action fact rule_id {rule_id:?} is absent from the manifest")
     })?;
     match entry.query_family() {
-        Some(ConstraintQueryFamily::ActionDerivedFact(kind)) => Ok(action_fact_collection(kind)),
+        Some(ConstraintQueryFamily::ActionDerivedFact(kind)) => {
+            Ok(Some(action_fact_collection(kind)))
+        }
+        None if entry.family == ConstraintFamily::Derive => Ok(None),
         _ => Err(format!(
             "{fixture}: semantic Action fact rule_id {rule_id:?} does not own an exact Action fact query"
         )),
@@ -1096,7 +1099,10 @@ struct TypeDerivedFactExpectation {
 /// asserted without inventing a declaration identity.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct ActionDerivedFactExpectation {
-    collection: ActionDerivedFactCollection,
+    /// `None` for a manifest derive rule that owns no exact contract because its pinned body is
+    /// not evaluable. Such an expectation is always observed as unpublished, so it can only be
+    /// carried by a fixture blocked on the normative gap.
+    collection: Option<ActionDerivedFactCollection>,
     source: ElementReferenceExpectation,
     target: Option<ElementReferenceExpectation>,
     position: Option<u32>,
@@ -3992,6 +3998,11 @@ fn parse_action_derived_fact_expectation(
             .ok_or_else(|| format!("{fallback_name}: semantic Action fact requires outcome"))?,
         fallback_name,
     )?;
+    if collection.is_none() && outcome == TypeDerivedElementOutcome::Unsupported {
+        return Err(format!(
+            "{fallback_name}: a semantic Action fact for a rule without an exact contract states the specified outcome, not unsupported"
+        ));
+    }
     let position = fields
         .get("position")
         .map(|value| {
@@ -5229,11 +5240,15 @@ fn observe_action_derived_fact(
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let value = match snapshot_answer(
-        model
-            .inspection()
-            .action_derived_fact(source, expectation.collection),
-    ) {
+    let Some(collection) = expectation.collection else {
+        return Ok(ActionDerivedFactObservation::Outcome {
+            value: ActionDerivedFactOutcome::Unsupported {
+                prerequisite: ActionDerivedFactPrerequisite::RuleNotPublished,
+            },
+            expected: None,
+        });
+    };
+    let value = match snapshot_answer(model.inspection().action_derived_fact(source, collection)) {
         QueryAnswer::Resolved(value) => value,
         QueryAnswer::Incomplete => return Ok(ActionDerivedFactObservation::Incomplete),
         QueryAnswer::Unresolved => return Err("Action fact query is unresolved".to_string()),
@@ -8893,7 +8908,7 @@ mod tests {
             expectations.action_derived_facts,
             vec![
                 ActionDerivedFactExpectation {
-                    collection: ActionDerivedFactCollection::ActionDefinitionAction,
+                    collection: Some(ActionDerivedFactCollection::ActionDefinitionAction),
                     source: ElementReferenceExpectation::Qualified(
                         "Actions::Procedure".to_string()
                     ),
@@ -8904,7 +8919,7 @@ mod tests {
                     outcome: TypeDerivedElementOutcome::Resolved,
                 },
                 ActionDerivedFactExpectation {
-                    collection: ActionDerivedFactCollection::AssignmentValueExpression,
+                    collection: Some(ActionDerivedFactCollection::AssignmentValueExpression),
                     source: ElementReferenceExpectation::Qualified(
                         "Actions::Procedure".to_string()
                     ),
@@ -8926,6 +8941,10 @@ mod tests {
             (
                 "(fixture-semantics (action-derived-fact (rule_id sysml-2.0:8.3.17.5:deriveAssignmentActionUsageValueExpression) (source Actions::Procedure) (position 0) (outcome resolved)))",
                 "position must be a positive integer",
+            ),
+            (
+                "(fixture-semantics (action-derived-fact (rule_id kerml-1.0:8.3.3.3.4:deriveFeatureType) (source Model::feature) (outcome unsupported)))",
+                "states the specified outcome",
             ),
         ] {
             let fixture = format!("# EXPECTED SEMANTICS\n~~~sexpr\n{body}\n~~~\n");
