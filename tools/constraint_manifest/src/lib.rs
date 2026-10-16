@@ -1679,7 +1679,6 @@ pub enum SpecializationCheckKind {
     FeatureSuboccurrence,
     FeatureValuation,
     MetadataFeatureSemantic,
-    ConnectorBinaryObject,
     ConnectorObject,
     StepOwnedPerformance,
     StepSubperformance,

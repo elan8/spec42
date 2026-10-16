@@ -483,23 +483,6 @@ pub(crate) fn type_derived_relationship_kinds(
     }
 }
 
-/// Metaclasses whose generated `specializesFromLibrary` rules apply to `kind`.
-///
-/// A `specializesFromLibrary` constraint holds for every instance of its metaclass, including
-/// instances of its metaclass specializations. As the Pilot's `ImplicitGeneralizationMap` does
-/// (its lookup walks from the element's metaclass up to the nearest one carrying a default
-/// supertype), the rules applied are those of the nearest metaclass along each generalization
-/// path ([`sysml_contract::ElementKind::direct_generals`]) that declares any generated rule: a
-/// metaclass with its own rule shadows its generals, whose anchors its own anchor already
-/// specializes in the library (`Actions::Action::forks :> controls`). So a `SuccessionAsUsage`,
-/// which declares none, takes `checkSuccessionSpecialization` from `Succession`, and a
-/// `BindingConnectorAsUsage` takes `checkBindingConnectorSpecialization`.
-///
-/// The walk does not enter the KerML root metaclasses `Type`, `Classifier` and `Feature`:
-/// applying `checkFeatureSpecialization` (`Base::things`) to every Feature is deferred, since it
-/// currently adds `Anything` to effective types and fails subsetting conformance. The one
-/// exception is `SatisfyRequirementUsage`, which inherits `things::that` for `satisfy … by that`.
-/// `Flow` keeps its extra generated alias.
 /// Metaclasses whose library rules apply to one lowered declaration.
 ///
 /// An `event occurrence` is an `OccurrenceUsage` plus the event modifier. Its
@@ -523,6 +506,23 @@ pub(crate) fn applicable_library_metaclasses(
     metaclasses
 }
 
+/// Metaclasses whose generated `specializesFromLibrary` rules apply to `kind`.
+///
+/// A `specializesFromLibrary` constraint holds for every instance of its metaclass, including
+/// instances of its metaclass specializations. As the Pilot's `ImplicitGeneralizationMap` does
+/// (its lookup walks from the element's metaclass up to the nearest one carrying a default
+/// supertype), the rules applied are those of the nearest metaclass along each generalization
+/// path ([`sysml_contract::ElementKind::direct_generals`]) that declares any generated rule: a
+/// metaclass with its own rule shadows its generals, whose anchors its own anchor already
+/// specializes in the library (`Actions::Action::forks :> controls`). So a `SuccessionAsUsage`,
+/// which declares none, takes `checkSuccessionSpecialization` from `Succession`, and a
+/// `BindingConnectorAsUsage` takes `checkBindingConnectorSpecialization`.
+///
+/// The walk does not enter the KerML root metaclasses `Type`, `Classifier` and `Feature`:
+/// applying `checkFeatureSpecialization` (`Base::things`) to every Feature is deferred, since it
+/// currently adds `Anything` to effective types and fails subsetting conformance. The one
+/// exception is `SatisfyRequirementUsage`, which inherits `things::that` for `satisfy … by that`.
+/// `Flow` keeps its extra generated alias.
 pub(crate) fn library_specialization_metaclasses(
     kind: crate::model::DeclarationKind,
 ) -> Vec<ApplicableRuleMetaclass> {
@@ -3090,9 +3090,30 @@ fn implied_library_specialization_kind(
     }
 }
 
+/// The ownership half of SysML `ActionUsage::isSubactionUsage()`: the owning type is an
+/// ActionDefinition or ActionUsage (`oclIsKindOf`, so state, calculation and case definitions and
+/// `if`, `while` and `for` actions count), and the usage is not the entry or exit action of a state
+/// (a `do` action is a subaction). The composite half is checked by the caller.
+fn owned_as_subaction(storage: &SemanticModelStorage, declaration: &Declaration) -> bool {
+    if matches!(
+        declaration.kind,
+        DeclarationKind::EntryActionBinding | DeclarationKind::ExitActionBinding
+    ) {
+        return false;
+    }
+    declaration.owner.is_some_and(|owner| {
+        storage.declaration(owner).is_some_and(|owner| {
+            let kind = crate::model::element_kind::element_kind(owner.kind);
+            kind.conforms_to(sysml_contract::ElementKind::ActionDefinition)
+                || kind.conforms_to(sysml_contract::ElementKind::ActionUsage)
+        })
+    })
+}
+
 /// Evaluates only the exact predicate vocabulary emitted by the pinned-manifest extractor.
 /// The predicate is the manifest's closed enum, so adding a contract requires an exhaustive
 /// resolver decision rather than falling through a similarly spelled string label.
+#[cfg(test)]
 pub(crate) fn conditional_library_specialization_predicate_holds(
     storage: &SemanticModelStorage,
     source: DeclarationId,
@@ -3110,7 +3131,7 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
     )
 }
 
-fn conditional_library_specialization_predicate_holds_with_variants(
+pub(crate) fn conditional_library_specialization_predicate_holds_with_variants(
     storage: &SemanticModelStorage,
     variant_members: &[bool],
     source: DeclarationId,
@@ -3158,18 +3179,7 @@ fn conditional_library_specialization_predicate_holds_with_variants(
                 storage,
                 variant_members,
                 source,
-            ) && declaration.owner.is_some_and(|owner| {
-                storage.declaration(owner).is_some_and(|owner| {
-                    matches!(
-                        owner.kind,
-                        DeclarationKind::ActionDefinition
-                            | DeclarationKind::ActionUsage
-                            | DeclarationKind::AcceptActionUsage
-                            | DeclarationKind::SendActionUsage
-                            | DeclarationKind::TerminateActionUsage
-                    )
-                })
-            })
+            ) && owned_as_subaction(storage, declaration)
         }
         LibrarySpecializationPredicate::IsNotTriggerAction => {
             declaration.kind == DeclarationKind::AcceptActionUsage
@@ -3183,18 +3193,7 @@ fn conditional_library_specialization_predicate_holds_with_variants(
                     variant_members,
                     source,
                 )
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        matches!(
-                            owner.kind,
-                            DeclarationKind::ActionDefinition
-                                | DeclarationKind::ActionUsage
-                                | DeclarationKind::AcceptActionUsage
-                                | DeclarationKind::SendActionUsage
-                                | DeclarationKind::TerminateActionUsage
-                        )
-                    })
-                })
+                && owned_as_subaction(storage, declaration)
         }
         LibrarySpecializationPredicate::IsTriggerAction => {
             declaration.kind == DeclarationKind::AcceptActionUsage

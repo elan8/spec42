@@ -1136,6 +1136,14 @@ impl<D> SemanticModel<D> {
             .collect()
     }
 
+    /// KerML `Type::featureMembership`: the owned feature memberships in order, then the
+    /// inherited ones (`inheritedMembership`, with redefinition reduction applied).
+    pub(crate) fn feature_members(&self, owner: DeclarationId) -> Vec<DeclarationId> {
+        let mut members = self.owned_feature_members(owner);
+        members.extend(self.inherited_feature_members(owner));
+        members
+    }
+
     /// Every strict redefinition ancestor, from the canonical specialization closure.
     fn collect_all_redefined_members(
         &self,
@@ -1602,27 +1610,27 @@ impl<D> SemanticModel<D> {
                 prerequisite: RequirementDerivedFactPrerequisite::CanonicalMembershipRole,
             });
         };
-        // Owner-scoped from the settled index rather than a corpus scan.
-        // Objective is singular: the pinned body keeps only the first ObjectiveMembership.
+        // The derivations select from `featureMembership`, which includes inherited memberships
+        // (SysML 8.3.20, 8.3.21). A subject parameter and an objective requirement are singular:
+        // the pinned bodies keep only the first SubjectMembership or ObjectiveMembership.
         let first_only = matches!(
             collection,
             RequirementDerivedFactCollection::CaseDefinitionObjectiveRequirement
                 | RequirementDerivedFactCollection::CaseUsageObjectiveRequirement
+                | RequirementDerivedFactCollection::DefinitionSubjectParameter
+                | RequirementDerivedFactCollection::UsageSubjectParameter
+                | RequirementDerivedFactCollection::CaseDefinitionSubjectParameter
+                | RequirementDerivedFactCollection::CaseUsageSubjectParameter
         );
         let matched = self
-            .child_declarations(declaration)
-            .iter()
-            .copied()
+            .feature_members(declaration)
+            .into_iter()
             .filter(|candidate_id| {
-                self.memberships
-                    .get(*candidate_id)
-                    .is_some_and(|membership| membership.kind == MembershipKind::Feature)
-                    && self
-                        .storage
-                        .declaration(*candidate_id)
-                        .is_some_and(|candidate| {
-                            element_kind::membership_role(candidate.kind) == Some(role)
-                        })
+                self.storage
+                    .declaration(*candidate_id)
+                    .is_some_and(|candidate| {
+                        element_kind::membership_role(candidate.kind) == Some(role)
+                    })
             });
         let values = if first_only {
             self.symbols_in_order(matched.take(1))
@@ -1646,21 +1654,41 @@ impl<D> SemanticModel<D> {
         )
     }
 
-    /// First owned `ReturnParameterMembership` parameter, in membership order.
+    /// First `ReturnParameterMembership` parameter of `featureMemberships`, in membership order.
     ///
-    /// KerML `Function::result` and `Expression::result` both take that first parameter and are
-    /// null when the owner has none. Inherited results are not owned memberships.
+    /// KerML `Function::result` and `Expression::result` take "its parameter owned (possibly in a
+    /// supertype) via a ReturnParameterMembership" (deriveFunctionResult, deriveExpressionResult),
+    /// so an inherited result counts, and the owner's own result comes first.
     fn first_return_parameter(&self, owner: DeclarationId) -> Box<[SymbolId]> {
-        let mut values =
-            self.symbols_in_order(self.child_declarations(owner).iter().copied().filter(
-                |member| {
-                    self.effective_membership_role(*member)
-                        == Some(crate::MembershipRole::ReturnParameter)
-                },
-            ))
+        let mut values = self
+            .symbols_in_order(self.feature_members(owner).into_iter().filter(|member| {
+                self.effective_membership_role(*member)
+                    == Some(crate::MembershipRole::ReturnParameter)
+            }))
             .into_vec();
         values.truncate(1);
         values.into_boxed_slice()
+    }
+
+    /// `viewRendering` as a derived-fact value: the `referencedRendering` of the view's
+    /// ViewRenderingMembership (deriveViewDefinitionViewRendering, deriveViewUsageViewRendering),
+    /// from the `view_rendering` query, which settles both the inline and the `render target;`
+    /// forms. Unresolved and ambiguous renderings stay unresolved and ambiguous.
+    fn view_rendering_fact(&self, view: SymbolId) -> QueryOutcome<ActionDerivedFactOutcome> {
+        match self.view_rendering(view).answer {
+            QueryAnswer::Resolved(rendering) => {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    rendering
+                        .map(|rendering| Box::from([rendering.referenced_rendering]))
+                        .unwrap_or_default(),
+                ))
+            }
+            QueryAnswer::Ambiguous(_) => self.query_outcome(QueryAnswer::Ambiguous(Box::new([]))),
+            QueryAnswer::Unsupported => self.query_outcome(QueryAnswer::Unsupported),
+            QueryAnswer::Unresolved => self.query_outcome(QueryAnswer::Unresolved),
+            QueryAnswer::Recovery => self.query_outcome(QueryAnswer::Recovery),
+            QueryAnswer::Incomplete => self.query_outcome(QueryAnswer::Incomplete),
+        }
     }
 
     /// Owned members that conform to `Expression`, in membership order.
@@ -2039,9 +2067,20 @@ impl<D> SemanticModel<D> {
             ActionDerivedFactCollection::CalculationDefinitionCalculation
                 if source_kind == Some(DeclarationKind::CalcDefinition) =>
             {
-                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
-                    DeclarationKind::CalcUsage,
-                ])))
+                // `calculation = action->selectByKind(CalculationUsage)`: case, analysis,
+                // verification and use-case usages are CalculationUsages too.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(
+                        self.effective_usage_members(declaration)
+                            .into_iter()
+                            .filter(|member| {
+                                self.storage.declaration(*member).is_some_and(|member| {
+                                    element_kind::element_kind(member.kind)
+                                        .conforms_to(sysml_contract::ElementKind::CalculationUsage)
+                                })
+                            }),
+                    ),
+                ))
             }
             ActionDerivedFactCollection::AllocationDefinitionAllocation
                 if source_kind == Some(DeclarationKind::AllocationDefinition) =>
@@ -2067,16 +2106,12 @@ impl<D> SemanticModel<D> {
             ActionDerivedFactCollection::ViewDefinitionViewRendering
                 if source_kind == Some(DeclarationKind::ViewDefinition) =>
             {
-                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
-                    DeclarationKind::RenderingUsage,
-                )))
+                self.view_rendering_fact(symbol)
             }
             ActionDerivedFactCollection::ViewUsageViewRendering
                 if source_kind == Some(DeclarationKind::ViewUsage) =>
             {
-                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
-                    DeclarationKind::RenderingUsage,
-                )))
+                self.view_rendering_fact(symbol)
             }
             ActionDerivedFactCollection::ViewDefinitionSatisfiedViewpoint
                 if source_kind == Some(DeclarationKind::ViewDefinition) =>
@@ -3051,8 +3086,7 @@ impl<D> SemanticModel<D> {
             | SpecializationCheckKind::FeatureSuboccurrence => unreachable!("handled above"),
             SpecializationCheckKind::FeatureValuation => unreachable!("handled above"),
             SpecializationCheckKind::MetadataFeatureSemantic => unreachable!("handled above"),
-            SpecializationCheckKind::ConnectorBinaryObject
-            | SpecializationCheckKind::ConnectorObject => {
+            SpecializationCheckKind::ConnectorObject => {
                 SpecializationCheckPrerequisite::ConnectorAssociationProjectionAndLibraryAnchor
             }
             SpecializationCheckKind::StepOwnedPerformance

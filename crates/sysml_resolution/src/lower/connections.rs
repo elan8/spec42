@@ -1545,8 +1545,13 @@ impl SemanticModelBuilder {
             DeclarationKind::BareConnect,
             None,
             node.span,
-            // A synthesized scope giving the bare `connect a to b;` ends a lexical owner.
-            DeclarationFacts::none(),
+            // A synthesized scope giving the bare `connect a to b;` ends a lexical owner. Its end
+            // count starts at zero, as a connection usage's does, so a named (`references`) end,
+            // which is its own end declaration, is counted alongside a bare one.
+            DeclarationFacts {
+                owned_end_feature_count: Some(0),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,

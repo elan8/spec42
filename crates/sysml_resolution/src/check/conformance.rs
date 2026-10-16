@@ -37,7 +37,7 @@ use crate::model::DeclarationId;
 use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::conditional_library_specialization_anchor_branch;
-use crate::resolve::implied::conditional_library_specialization_predicate_holds;
+use crate::resolve::implied::conditional_library_specialization_predicate_holds_with_variants;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationDiagnosticKey;
 use crate::resolve::results::ResolutionError;
@@ -164,6 +164,10 @@ impl<D> SemanticModel<D> {
             return Ok(());
         }
         let mut affected = std::collections::BTreeMap::new();
+        // One scan of the memberships for every conditional predicate below, rather than one per
+        // predicate call; a storage error is reported instead of reading as "does not hold".
+        let variant_members =
+            crate::resolve::usage_composition::variant_member_flags(&self.storage)?;
         for declaration in declared.iter().copied() {
             let Some(declaration_record) = self.storage.declaration(declaration) else {
                 return Err(ResolutionError::InvalidStorage);
@@ -196,8 +200,9 @@ impl<D> SemanticModel<D> {
                 .iter()
                 .flat_map(|metaclass| metaclass.conditional_rules())
             {
-                if !conditional_library_specialization_predicate_holds(
+                if !conditional_library_specialization_predicate_holds_with_variants(
                     &self.storage,
+                    &variant_members,
                     declaration,
                     rule,
                 ) {

@@ -233,7 +233,6 @@ fn specialization_check_kind(kind: SpecializationCheckKind) -> &'static str {
         SpecializationCheckKind::FeatureSuboccurrence => "FeatureSuboccurrence",
         SpecializationCheckKind::FeatureValuation => "FeatureValuation",
         SpecializationCheckKind::MetadataFeatureSemantic => "MetadataFeatureSemantic",
-        SpecializationCheckKind::ConnectorBinaryObject => "ConnectorBinaryObject",
         SpecializationCheckKind::ConnectorObject => "ConnectorObject",
         SpecializationCheckKind::StepOwnedPerformance => "StepOwnedPerformance",
         SpecializationCheckKind::StepSubperformance => "StepSubperformance",
