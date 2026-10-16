@@ -3257,6 +3257,32 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
     Some(Ok(prepared))
 }
 
+/// Usage metaclasses whose usages are composite unless declared `ref` (SysML 8.2.2: occurrence
+/// usages other than those that perform, exhibit, include or reference an occurrence).
+fn composite_unless_ref(metaclass: &str) -> bool {
+    matches!(
+        metaclass,
+        "PartUsage"
+            | "ItemUsage"
+            | "OccurrenceUsage"
+            | "ActionUsage"
+            | "StateUsage"
+            | "CalculationUsage"
+            | "CaseUsage"
+            | "AnalysisCaseUsage"
+            | "VerificationCaseUsage"
+            | "UseCaseUsage"
+            | "RequirementUsage"
+            | "ConcernUsage"
+            | "ConnectionUsage"
+            | "InterfaceUsage"
+            | "AllocationUsage"
+            | "FlowUsage"
+            | "ViewUsage"
+            | "RenderingUsage"
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -3351,30 +3377,4 @@ mod tests {
             json!(["Dependency", "Satisfy"])
         );
     }
-}
-
-/// Usage metaclasses whose usages are composite unless declared `ref` (SysML 8.2.2: occurrence
-/// usages other than those that perform, exhibit, include or reference an occurrence).
-fn composite_unless_ref(metaclass: &str) -> bool {
-    matches!(
-        metaclass,
-        "PartUsage"
-            | "ItemUsage"
-            | "OccurrenceUsage"
-            | "ActionUsage"
-            | "StateUsage"
-            | "CalculationUsage"
-            | "CaseUsage"
-            | "AnalysisCaseUsage"
-            | "VerificationCaseUsage"
-            | "UseCaseUsage"
-            | "RequirementUsage"
-            | "ConcernUsage"
-            | "ConnectionUsage"
-            | "InterfaceUsage"
-            | "AllocationUsage"
-            | "FlowUsage"
-            | "ViewUsage"
-            | "RenderingUsage"
-    )
 }

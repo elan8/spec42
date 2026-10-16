@@ -463,8 +463,7 @@ fn reshape_general_layout_result(
     }
     collect_edges(laid_out, &mut edges_by_id);
 
-    let parents = compute_containment_parent(diagram_edges);
-    let containers: HashSet<&String> = parents.values().collect();
+    // Only a view without containment gets here; `layout_nested_general` lays out the rest.
     let nodes: Vec<Value> = diagram_nodes
         .iter()
         .map(|node| {
@@ -474,9 +473,6 @@ fn reshape_general_layout_result(
                 .cloned()
                 .unwrap_or(json!({}));
             let mut out = node.clone();
-            if containers.contains(&as_string(field(node, "id"), "")) {
-                out["attributes"]["generalContainerHeaderHeight"] = json!(height);
-            }
             out["compartments"] = compartments_to_value(&compartments);
             out["x"] = field(&layout, "x").clone();
             out["y"] = field(&layout, "y").clone();
@@ -495,14 +491,6 @@ fn reshape_general_layout_result(
         .collect();
     let edges: Vec<Value> = diagram_edges
         .iter()
-        // The ownership relation is drawn as nesting, rather than a second line through
-        // the member's enclosing box (SysML 8.2.3.5/6).
-        .filter(|edge| {
-            !matches!(
-                normalize_edge_kind(&as_string(field(edge, "edgeKind"), "")).as_str(),
-                "hierarchy" | "noncomposite-membership"
-            )
-        })
         .map(|edge| {
             let mut out = edge.clone();
             out["layout"] = edges_by_id
@@ -682,8 +670,12 @@ fn layout_nested_general(
             drawn.push(node);
         }
     }
+    let by_id: HashMap<&str, &Value> = drawn
+        .iter()
+        .filter_map(|node| Some((node["id"].as_str()?, node)))
+        .collect();
     let rect = |id: &str| {
-        drawn.iter().find(|node| node["id"] == id).map(|node| {
+        by_id.get(id).map(|node| {
             (
                 num(&node["x"]),
                 num(&node["y"]),
@@ -718,9 +710,8 @@ fn layout_nested_general(
         // An end that contains the other end (a recursive structure, `part children : Node[*]`
         // inside `Node`) is reached at its header: the rest of its box is where the other end is.
         let header = |id: &str, rect: crate::ortho_route::Rect| {
-            drawn
-                .iter()
-                .find(|node| node["id"] == id)
+            by_id
+                .get(id)
                 .and_then(|node| node["attributes"]["generalContainerHeaderHeight"].as_f64())
                 .map_or(rect, |height| (rect.0, rect.1, rect.2, height))
         };
