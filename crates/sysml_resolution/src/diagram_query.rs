@@ -593,7 +593,8 @@ impl PublishedResolution {
             DiagramOccurrenceIdentity,
             (SymbolId, Option<DiagramOccurrenceIdentity>),
         >::new();
-        let mut connected_ports = BTreeSet::new();
+        // Each connector with the resolved feature path of each of its ends.
+        let mut connected_ports: Vec<(SymbolId, Vec<SymbolId>)> = Vec::new();
         if view_entry.kind == DiagramViewKind::Interconnection {
             // Reuse the canonical connector paths, including intermediate port hops.
             // Do not expand generic library collections such as Port::subports as if
@@ -603,13 +604,19 @@ impl PublishedResolution {
                     use crate::connection_query::ConnectorEndpoint;
                     match &end.endpoint {
                         ConnectorEndpoint::Feature(RelationshipTarget::Resolved(target)) => {
-                            connected_ports.insert(*target);
+                            connected_ports.push((connector.identity, vec![*target]));
                         }
                         ConnectorEndpoint::FeatureChain { path, .. } => {
-                            connected_ports.extend(path.iter().filter_map(|target| match target {
-                                RelationshipTarget::Resolved(target) => Some(*target),
-                                _ => None,
-                            }));
+                            let resolved = path
+                                .iter()
+                                .map_while(|target| match target {
+                                    RelationshipTarget::Resolved(target) => Some(*target),
+                                    _ => None,
+                                })
+                                .collect::<Vec<_>>();
+                            if !resolved.is_empty() {
+                                connected_ports.push((connector.identity, resolved));
+                            }
                         }
                         _ => {}
                     }
@@ -650,12 +657,33 @@ impl PublishedResolution {
             } else {
                 BTreeSet::new()
             };
-            for child in children {
+            let owned_connectors = children
+                .iter()
+                .map(|child| child.identity)
+                .collect::<BTreeSet<_>>();
+            for child in &children {
                 // An inherited library port is still a port of this contextual part. Omitting
-                // it removes resolved connector endpoints (e.g. a purchased sensor's data).
+                // it removes resolved connector endpoints (e.g. a purchased sensor's data). It
+                // is connected in this occurrence only: an end path that ends at this occurrence
+                // (`sensor.data`), or a bare end of a connector this occurrence owns. The same
+                // port inherited by another part stays hidden there.
                 let inherited_port = view_entry.kind == DiagramViewKind::Interconnection
                     && child.kind == ElementKind::PortUsage
-                    && connected_ports.contains(&child.identity);
+                    && {
+                        let mut path = owner_occurrence.semantic_path.to_vec();
+                        path.push(child.identity);
+                        connected_ports.iter().any(|(connector, end)| {
+                            (1..=end.len()).any(|length| {
+                                let hops = &end[..length];
+                                hops.last() == Some(&child.identity)
+                                    && if length == 1 {
+                                        owned_connectors.contains(connector)
+                                    } else {
+                                        path.ends_with(hops)
+                                    }
+                            })
+                        })
+                    };
                 if !workspace.contains(&child.identity)
                     && !library_ends.contains(&child.identity)
                     && !inherited_port
