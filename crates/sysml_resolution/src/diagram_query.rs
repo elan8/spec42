@@ -1072,14 +1072,28 @@ impl PublishedResolution {
                 if let Some((source_kind, target_kind, kind)) =
                     general_binary_relationship(element.kind)
                 {
-                    if let Some(edge) = composed_edge(
-                        origin as u32,
-                        &outgoing,
-                        source_kind,
-                        target_kind,
-                        DiagramEdgeKind::Relationship(kind.into()),
-                    ) {
-                        edges.push(edge);
+                    // A dependency may have several clients and suppliers
+                    // (`dependency from a, b to c`): one line for each pair whose ends are
+                    // drawn.
+                    let ends = |wanted: DiagramRelationshipKind| {
+                        outgoing
+                            .iter()
+                            .filter(move |relationship| relationship.kind == wanted)
+                            .filter_map(|relationship| resolved_target(&relationship.target))
+                    };
+                    let before = edges.len();
+                    for source in ends(source_kind) {
+                        for target in ends(target_kind) {
+                            edges.push(edge_from_relationships(
+                                origin as u32,
+                                source,
+                                target,
+                                DiagramEdgeKind::Relationship(kind.into()),
+                                &outgoing,
+                            ));
+                        }
+                    }
+                    if edges.len() > before {
                         continue;
                     }
                 }
