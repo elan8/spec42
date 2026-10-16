@@ -141,6 +141,33 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> &'static str {
         ActionDerivedFactKind::UseCaseUsageIncludedUseCase => "UseCaseUsageIncludedUseCase",
         ActionDerivedFactKind::ViewDefinitionViewCondition => "ViewDefinitionViewCondition",
         ActionDerivedFactKind::ViewUsageViewCondition => "ViewUsageViewCondition",
+        ActionDerivedFactKind::ElementIsLibraryElement => "ElementIsLibraryElement",
+        ActionDerivedFactKind::ElementName => "ElementName",
+        ActionDerivedFactKind::ElementShortName => "ElementShortName",
+        ActionDerivedFactKind::ElementQualifiedName => "ElementQualifiedName",
+        ActionDerivedFactKind::ElementOwnedElement => "ElementOwnedElement",
+        ActionDerivedFactKind::ElementOwnedAnnotation => "ElementOwnedAnnotation",
+        ActionDerivedFactKind::ElementOwningNamespace => "ElementOwningNamespace",
+        ActionDerivedFactKind::RelationshipRelatedElement => "RelationshipRelatedElement",
+        ActionDerivedFactKind::AnnotatingElementAnnotatedElement => {
+            "AnnotatingElementAnnotatedElement"
+        }
+        ActionDerivedFactKind::AnnotatingElementAnnotation => "AnnotatingElementAnnotation",
+        ActionDerivedFactKind::AnnotatingElementOwnedAnnotatingRelationship => {
+            "AnnotatingElementOwnedAnnotatingRelationship"
+        }
+        ActionDerivedFactKind::AnnotationOwnedAnnotatingElement => {
+            "AnnotationOwnedAnnotatingElement"
+        }
+        ActionDerivedFactKind::MembershipImportImportedElement => "MembershipImportImportedElement",
+        ActionDerivedFactKind::NamespaceImportedMembership => "NamespaceImportedMembership",
+        ActionDerivedFactKind::NamespaceMember => "NamespaceMember",
+        ActionDerivedFactKind::NamespaceOwnedMembership => "NamespaceOwnedMembership",
+        ActionDerivedFactKind::OwningMembershipOwnedMemberName => "OwningMembershipOwnedMemberName",
+        ActionDerivedFactKind::OwningMembershipOwnedMemberShortName => {
+            "OwningMembershipOwnedMemberShortName"
+        }
+        ActionDerivedFactKind::PackageFilterCondition => "PackageFilterCondition",
     }
 }
 

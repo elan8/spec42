@@ -1846,6 +1846,180 @@ impl<D> SemanticModel<D> {
             .collect()
     }
 
+    /// A KerML AnnotatingElement declaration: a comment, documentation or textual
+    /// representation.
+    fn is_annotating_kind(kind: Option<DeclarationKind>) -> bool {
+        matches!(
+            kind,
+            Some(
+                DeclarationKind::Comment
+                    | DeclarationKind::Documentation
+                    | DeclarationKind::TextualRepresentation
+            )
+        )
+    }
+
+    fn is_owned_annotation(&self, declaration: DeclarationId) -> bool {
+        self.storage
+            .declaration_facts(declaration)
+            .is_some_and(|facts| facts.is_owned_annotation)
+    }
+
+    /// Whether the element is owned through an OwningMembership of its owner.
+    fn is_owned_member(&self, declaration: DeclarationId) -> bool {
+        !self.is_owned_annotation(declaration)
+            && self.memberships.get(declaration).is_some_and(|membership| {
+                matches!(
+                    membership.kind,
+                    MembershipKind::Owning | MembershipKind::Feature
+                )
+            })
+    }
+
+    /// The annotating elements an element owns through Annotations.
+    fn owned_annotating_elements(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
+        self.child_declarations(declaration)
+            .iter()
+            .copied()
+            .filter(|member| self.is_owned_annotation(*member))
+            .collect()
+    }
+
+    /// The elements an annotating element's owned Annotations (`about`) annotate.
+    fn annotation_targets(&self, declaration: DeclarationId) -> Vec<SymbolId> {
+        self.relationships_of_kinds(declaration, &[ReferenceKind::Annotation])
+            .iter()
+            .filter_map(|relationship| match relationship.target {
+                RelationshipTarget::Resolved(target) => Some(target),
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// The member elements of a namespace's owned Memberships: its owned members, and the
+    /// element each owned alias names.
+    fn owned_membership_elements(&self, namespace: DeclarationId) -> Vec<DeclarationId> {
+        let mut members = Vec::new();
+        for member in self.child_declarations(namespace).iter().copied() {
+            let Some(candidate) = self.storage.declaration(member) else {
+                continue;
+            };
+            if candidate.kind == DeclarationKind::Alias {
+                members.extend(
+                    self.relationships_of_kinds(member, &[ReferenceKind::AliasBinding])
+                        .iter()
+                        .filter_map(|relationship| match relationship.target {
+                            RelationshipTarget::Resolved(target) => self.declaration_of(target),
+                            _ => None,
+                        }),
+                );
+            } else if self.is_owned_member(member) {
+                members.push(member);
+            }
+        }
+        members
+    }
+
+    /// The member elements of a namespace's imported Memberships.
+    fn imported_members(&self, namespace: DeclarationId) -> Vec<DeclarationId> {
+        self.effective_imports
+            .entries_for_owner(Some(namespace))
+            .flat_map(|(_, candidates)| candidates.iter().copied())
+            .collect()
+    }
+
+    /// KerML `effectiveName()`.
+    fn effective_name(&self, declaration: DeclarationId) -> Option<&str> {
+        match self
+            .resolution
+            .effective_names
+            .get(declaration.index())?
+            .name
+        {
+            crate::resolve::results::EffectiveNameOutcome::Resolved(name) => {
+                self.storage.symbol(name)
+            }
+            _ => None,
+        }
+    }
+
+    /// KerML `effectiveShortName()`.
+    fn effective_short_name(&self, declaration: DeclarationId) -> Option<&str> {
+        match self
+            .resolution
+            .effective_names
+            .get(declaration.index())?
+            .short_name
+        {
+            crate::resolve::results::EffectiveNameOutcome::Resolved(name) => {
+                self.storage.symbol(name)
+            }
+            _ => None,
+        }
+    }
+
+    /// KerML `escapedName()`: the effective name, or the short name when there is none, quoted
+    /// unless it is a basic name.
+    fn escaped_name(&self, declaration: DeclarationId) -> Option<String> {
+        let name = self
+            .effective_name(declaration)
+            .or_else(|| self.effective_short_name(declaration))?;
+        if valid_identifier(name) {
+            return Some(name.to_owned());
+        }
+        let mut quoted = String::with_capacity(name.len() + 2);
+        quoted.push('\'');
+        for character in name.chars() {
+            if matches!(character, '\'' | '\\') {
+                quoted.push('\\');
+            }
+            quoted.push(character);
+        }
+        quoted.push('\'');
+        Some(quoted)
+    }
+
+    /// KerML `deriveElementQualifiedName`. A top-level element is a member of its document's
+    /// root namespace, which has no owner.
+    fn normative_qualified_name(&self, declaration: DeclarationId, depth: usize) -> Option<String> {
+        if depth > self.storage.declarations.len() || !self.is_owned_member(declaration) {
+            return None;
+        }
+        let candidate = self.storage.declaration(declaration)?;
+        // A name that an earlier owned member of the same namespace also has is not unique.
+        if let Some(name) = self.effective_name(declaration) {
+            let siblings = match candidate.owner {
+                Some(owner) => self.child_declarations(owner).to_vec(),
+                None => self
+                    .documents
+                    .document_declarations(candidate.document)
+                    .iter()
+                    .copied()
+                    .filter(|other| {
+                        self.storage
+                            .declaration(*other)
+                            .is_some_and(|other| other.owner.is_none())
+                    })
+                    .collect(),
+            };
+            let first = siblings
+                .into_iter()
+                .filter(|other| self.is_owned_member(*other))
+                .find(|other| self.effective_name(*other) == Some(name));
+            if first != Some(declaration) {
+                return None;
+            }
+        }
+        let escaped = self.escaped_name(declaration)?;
+        match candidate.owner {
+            None => Some(escaped),
+            Some(owner) => {
+                let qualified = self.normative_qualified_name(owner, depth + 1)?;
+                Some(format!("{qualified}::{escaped}"))
+            }
+        }
+    }
+
     /// The exact Actions derivation boundary. Canonical effective usages and the ordered argument
     /// sites guaranteed by assignment/for-loop lowering resolve here; other collections return
     /// their first unavailable canonical prerequisite rather than guessing.
@@ -2610,6 +2784,189 @@ impl<D> SemanticModel<D> {
                     self.filter_conditions(symbol, declaration),
                 ))
             }
+            ActionDerivedFactCollection::ElementIsLibraryElement => {
+                // `libraryNamespace() <> null`: the element is, or is owned within, a library
+                // package.
+                let mut current = Some(declaration);
+                let mut is_library = false;
+                while let Some(id) = current {
+                    let Some(candidate) = self.storage.declaration(id) else {
+                        break;
+                    };
+                    if candidate.kind == DeclarationKind::LibraryPackage {
+                        is_library = true;
+                        break;
+                    }
+                    current = candidate.owner;
+                }
+                self.resolved_outcome(ActionDerivedFactOutcome::Flag(is_library))
+            }
+            ActionDerivedFactCollection::ElementName
+            | ActionDerivedFactCollection::OwningMembershipOwnedMemberName
+                if collection == ActionDerivedFactCollection::ElementName
+                    || self.is_owned_member(declaration) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Text(
+                    self.effective_name(declaration).map(Into::into),
+                ))
+            }
+            ActionDerivedFactCollection::ElementShortName
+            | ActionDerivedFactCollection::OwningMembershipOwnedMemberShortName
+                if collection == ActionDerivedFactCollection::ElementShortName
+                    || self.is_owned_member(declaration) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Text(
+                    self.effective_short_name(declaration).map(Into::into),
+                ))
+            }
+            ActionDerivedFactCollection::ElementQualifiedName => {
+                self.resolved_outcome(ActionDerivedFactOutcome::Text(
+                    self.normative_qualified_name(declaration, 0)
+                        .map(String::into_boxed_str),
+                ))
+            }
+            ActionDerivedFactCollection::ElementOwnedElement => {
+                // `ownedRelationship.ownedRelatedElement`, in ownership order.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(self.child_declarations(declaration).iter().copied()),
+                ))
+            }
+            ActionDerivedFactCollection::ElementOwnedAnnotation => {
+                // The Annotations the element owns that annotate it, each identified by the
+                // annotating element it owns: only a relationship body owns such Annotations.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(self.owned_annotating_elements(declaration).into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::ElementOwningNamespace => {
+                let owner = self
+                    .storage
+                    .declaration(declaration)
+                    .and_then(|candidate| candidate.owner)
+                    .filter(|_| self.is_owned_member(declaration));
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(owner.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::RelationshipRelatedElement
+                if source_kind == Some(DeclarationKind::Dependency) =>
+            {
+                // `source->union(target)`: a Dependency's clients, then its suppliers.
+                let values = self
+                    .relationships_of_kinds(
+                        declaration,
+                        &[
+                            ReferenceKind::DependencyClient,
+                            ReferenceKind::DependencySupplier,
+                        ],
+                    )
+                    .iter()
+                    .filter_map(|relationship| match relationship.target {
+                        RelationshipTarget::Resolved(target) => Some(target),
+                        _ => None,
+                    })
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::AnnotatingElementAnnotatedElement
+                if Self::is_annotating_kind(source_kind) =>
+            {
+                // The annotated elements of its Annotations, else its owning namespace.
+                let mut values = self.annotation_targets(declaration);
+                if values.is_empty() {
+                    values.extend(
+                        self.storage
+                            .declaration(declaration)
+                            .and_then(|candidate| candidate.owner)
+                            .and_then(|owner| self.symbol_id(owner)),
+                    );
+                }
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::AnnotatingElementAnnotation
+                if Self::is_annotating_kind(source_kind) =>
+            {
+                // Its owning Annotation, then the Annotations it owns, each identified by the
+                // element it annotates.
+                let mut values = Vec::new();
+                if self.is_owned_annotation(declaration) {
+                    values.extend(
+                        self.storage
+                            .declaration(declaration)
+                            .and_then(|candidate| candidate.owner)
+                            .and_then(|owner| self.symbol_id(owner)),
+                    );
+                }
+                values.extend(self.annotation_targets(declaration));
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::AnnotatingElementOwnedAnnotatingRelationship
+                if Self::is_annotating_kind(source_kind) =>
+            {
+                // The Annotations it owns (`about`), each identified by the element it annotates.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.annotation_targets(declaration).into_boxed_slice(),
+                ))
+            }
+            ActionDerivedFactCollection::AnnotationOwnedAnnotatingElement
+                if Self::is_annotating_kind(source_kind) =>
+            {
+                // The source identifies the Annotation that owns it, if any: that Annotation's
+                // owned annotating element is the source itself.
+                let values = self
+                    .is_owned_annotation(declaration)
+                    .then_some(declaration)
+                    .into_iter();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(values)))
+            }
+            ActionDerivedFactCollection::MembershipImportImportedElement
+                if source_kind == Some(DeclarationKind::Import) =>
+            {
+                let values = self
+                    .relationships_of_kinds(declaration, &[ReferenceKind::MembershipImport])
+                    .iter()
+                    .filter_map(|relationship| match relationship.target {
+                        RelationshipTarget::Resolved(target) => Some(target),
+                        _ => None,
+                    })
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::NamespaceImportedMembership
+                if source_kind.is_some_and(|kind| DeclarationDomain::Namespace.accepts(kind)) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(self.imported_members(declaration).into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::NamespaceOwnedMembership
+                if source_kind.is_some_and(|kind| DeclarationDomain::Namespace.accepts(kind)) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(self.owned_membership_elements(declaration).into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::NamespaceMember
+                if source_kind.is_some_and(|kind| DeclarationDomain::Namespace.accepts(kind)) =>
+            {
+                // `membership.memberElement`: owned, imported and, for a Type, inherited members.
+                let mut members = self.owned_membership_elements(declaration);
+                members.extend(self.imported_members(declaration));
+                members.extend(self.inherited_feature_members(declaration));
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(members.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::PackageFilterCondition
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::Package | DeclarationKind::LibraryPackage)
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::FilterConditions(
+                    self.filter_conditions(symbol, declaration),
+                ))
+            }
             ActionDerivedFactCollection::StateDefinitionEntryAction
             | ActionDerivedFactCollection::StateDefinitionDoAction
             | ActionDerivedFactCollection::StateDefinitionExitAction
@@ -2648,7 +3005,21 @@ impl<D> SemanticModel<D> {
             | ActionDerivedFactCollection::UseCaseDefinitionIncludedUseCase
             | ActionDerivedFactCollection::UseCaseUsageIncludedUseCase
             | ActionDerivedFactCollection::ViewDefinitionViewCondition
-            | ActionDerivedFactCollection::ViewUsageViewCondition => {
+            | ActionDerivedFactCollection::ViewUsageViewCondition
+            | ActionDerivedFactCollection::ElementName
+            | ActionDerivedFactCollection::ElementShortName
+            | ActionDerivedFactCollection::RelationshipRelatedElement
+            | ActionDerivedFactCollection::AnnotatingElementAnnotatedElement
+            | ActionDerivedFactCollection::AnnotatingElementAnnotation
+            | ActionDerivedFactCollection::AnnotatingElementOwnedAnnotatingRelationship
+            | ActionDerivedFactCollection::AnnotationOwnedAnnotatingElement
+            | ActionDerivedFactCollection::MembershipImportImportedElement
+            | ActionDerivedFactCollection::NamespaceImportedMembership
+            | ActionDerivedFactCollection::NamespaceMember
+            | ActionDerivedFactCollection::NamespaceOwnedMembership
+            | ActionDerivedFactCollection::OwningMembershipOwnedMemberName
+            | ActionDerivedFactCollection::OwningMembershipOwnedMemberShortName
+            | ActionDerivedFactCollection::PackageFilterCondition => {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
             }
             ActionDerivedFactCollection::TerminateOccurrenceArgument

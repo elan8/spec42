@@ -742,6 +742,82 @@ impl ConstraintManifest {
                             "deriveViewUsageViewCondition",
                             "ViewUsage",
                             ActionDerivedFactKind::ViewUsageViewCondition
+                        ) | (
+                            "deriveElementIsLibraryElement",
+                            "Element",
+                            ActionDerivedFactKind::ElementIsLibraryElement
+                        ) | (
+                            "deriveElementName",
+                            "Element",
+                            ActionDerivedFactKind::ElementName
+                        ) | (
+                            "deriveElementShortName",
+                            "Element",
+                            ActionDerivedFactKind::ElementShortName
+                        ) | (
+                            "deriveElementQualifiedName",
+                            "Element",
+                            ActionDerivedFactKind::ElementQualifiedName
+                        ) | (
+                            "deriveElementOwnedElement",
+                            "Element",
+                            ActionDerivedFactKind::ElementOwnedElement
+                        ) | (
+                            "deriveElementOwnedAnnotation",
+                            "Element",
+                            ActionDerivedFactKind::ElementOwnedAnnotation
+                        ) | (
+                            "deriveOwningNamespace",
+                            "Element",
+                            ActionDerivedFactKind::ElementOwningNamespace
+                        ) | (
+                            "deriveRelationshipRelatedElement",
+                            "Relationship",
+                            ActionDerivedFactKind::RelationshipRelatedElement
+                        ) | (
+                            "deriveAnnotatingElementAnnotatedElement",
+                            "AnnotatingElement",
+                            ActionDerivedFactKind::AnnotatingElementAnnotatedElement
+                        ) | (
+                            "deriveAnnotatingElementAnnotation",
+                            "AnnotatingElement",
+                            ActionDerivedFactKind::AnnotatingElementAnnotation
+                        ) | (
+                            "deriveAnnotatingElementOwnedAnnotatingRelationship",
+                            "AnnotatingElement",
+                            ActionDerivedFactKind::AnnotatingElementOwnedAnnotatingRelationship
+                        ) | (
+                            "deriveAnnotationOwnedAnnotatingElement",
+                            "Annotation",
+                            ActionDerivedFactKind::AnnotationOwnedAnnotatingElement
+                        ) | (
+                            "deriveMembershipImportImportedElement",
+                            "MembershipImport",
+                            ActionDerivedFactKind::MembershipImportImportedElement
+                        ) | (
+                            "deriveNamespaceImportedMembership",
+                            "Namespace",
+                            ActionDerivedFactKind::NamespaceImportedMembership
+                        ) | (
+                            "deriveNamespaceMembers",
+                            "Namespace",
+                            ActionDerivedFactKind::NamespaceMember
+                        ) | (
+                            "deriveNamespaceOwnedMembership",
+                            "Namespace",
+                            ActionDerivedFactKind::NamespaceOwnedMembership
+                        ) | (
+                            "deriveOwningMembershipOwnedMemberName",
+                            "OwningMembership",
+                            ActionDerivedFactKind::OwningMembershipOwnedMemberName
+                        ) | (
+                            "deriveOwningMembershipOwnedMemberShortName",
+                            "OwningMembership",
+                            ActionDerivedFactKind::OwningMembershipOwnedMemberShortName
+                        ) | (
+                            "derivePackageFilterCondition",
+                            "Package",
+                            ActionDerivedFactKind::PackageFilterCondition
                         )
                     );
                     if entry.family != ConstraintFamily::Derive
@@ -2234,6 +2310,25 @@ pub enum ActionDerivedFactKind {
     UseCaseUsageIncludedUseCase,
     ViewDefinitionViewCondition,
     ViewUsageViewCondition,
+    ElementIsLibraryElement,
+    ElementName,
+    ElementShortName,
+    ElementQualifiedName,
+    ElementOwnedElement,
+    ElementOwnedAnnotation,
+    ElementOwningNamespace,
+    RelationshipRelatedElement,
+    AnnotatingElementAnnotatedElement,
+    AnnotatingElementAnnotation,
+    AnnotatingElementOwnedAnnotatingRelationship,
+    AnnotationOwnedAnnotatingElement,
+    MembershipImportImportedElement,
+    NamespaceImportedMembership,
+    NamespaceMember,
+    NamespaceOwnedMembership,
+    OwningMembershipOwnedMemberName,
+    OwningMembershipOwnedMemberShortName,
+    PackageFilterCondition,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

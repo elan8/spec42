@@ -815,6 +815,82 @@ fn exact_action_derived_fact(constraint: &str, body: &str) -> Option<ActionDeriv
             "deriveViewUsageViewCondition",
             "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e",
         ) => Some(ActionDerivedFactKind::ViewUsageViewCondition),
+        (
+            "deriveElementIsLibraryElement",
+            "0021f0214f54ff108b7d37ef5ef65978ee4d47f3e46b2668bd1848cfd06c1609",
+        ) => Some(ActionDerivedFactKind::ElementIsLibraryElement),
+        (
+            "deriveElementName",
+            "3a1c1371a6c25d49fe66728863410ef5576928b9da436ab232fe99e418468ea0",
+        ) => Some(ActionDerivedFactKind::ElementName),
+        (
+            "deriveElementShortName",
+            "69bedea5d5a0a8054299a657c325fee6d83d2f61653858ac4b75988b562296e8",
+        ) => Some(ActionDerivedFactKind::ElementShortName),
+        (
+            "deriveElementQualifiedName",
+            "b59ce915e7a53da44a86e902e4837636d30f358b616b7b21808b6c16c845404a",
+        ) => Some(ActionDerivedFactKind::ElementQualifiedName),
+        (
+            "deriveElementOwnedElement",
+            "cd17f8b72bf2082fba2ab59a28ede06c374310fa53d218070f03e3fb64dee897",
+        ) => Some(ActionDerivedFactKind::ElementOwnedElement),
+        (
+            "deriveElementOwnedAnnotation",
+            "d21c8f97a2996ae70cea69132e835affd9e07ef330971a0900d6197607db76a1",
+        ) => Some(ActionDerivedFactKind::ElementOwnedAnnotation),
+        (
+            "deriveOwningNamespace",
+            "d015eab423252a85bb739a3b525283a80fb550a323374d0794f014939da5291b",
+        ) => Some(ActionDerivedFactKind::ElementOwningNamespace),
+        (
+            "deriveRelationshipRelatedElement",
+            "f6dcbb23155f405dac933adf9ff1e6ca34d461f58231782c1155a5f656738739",
+        ) => Some(ActionDerivedFactKind::RelationshipRelatedElement),
+        (
+            "deriveAnnotatingElementAnnotatedElement",
+            "324693f3275c2d5a8eaec18a97d6e9277152d4e7d64e05ec1ea7725c978700e5",
+        ) => Some(ActionDerivedFactKind::AnnotatingElementAnnotatedElement),
+        (
+            "deriveAnnotatingElementAnnotation",
+            "9c9b7f5324b32a5ed69fb91c821565801ca550e122da8f8121dc6e2ad58b884d",
+        ) => Some(ActionDerivedFactKind::AnnotatingElementAnnotation),
+        (
+            "deriveAnnotatingElementOwnedAnnotatingRelationship",
+            "7ceb540818e23f9b1b2c8486296b35234fb7e9ad346c38fbaaf5d9ef4a3ed6f8",
+        ) => Some(ActionDerivedFactKind::AnnotatingElementOwnedAnnotatingRelationship),
+        (
+            "deriveAnnotationOwnedAnnotatingElement",
+            "97cf5a48e7d26e587af87988afa408b5d581bb0b710219091b6ce70a14da17ba",
+        ) => Some(ActionDerivedFactKind::AnnotationOwnedAnnotatingElement),
+        (
+            "deriveMembershipImportImportedElement",
+            "b51bedf08ca4dae51099291762ae54cc6de6952ef949b25154ec7fe6a4949dd3",
+        ) => Some(ActionDerivedFactKind::MembershipImportImportedElement),
+        (
+            "deriveNamespaceImportedMembership",
+            "5d7577c19c88ef9f374546a2e9dfc28f6425a3fb88d41706f8b98db9bf31160b",
+        ) => Some(ActionDerivedFactKind::NamespaceImportedMembership),
+        (
+            "deriveNamespaceMembers",
+            "80369e614bd4f1d5d3db1be4f2c846dccbc08603a53409476d15e1dc805a0281",
+        ) => Some(ActionDerivedFactKind::NamespaceMember),
+        (
+            "deriveNamespaceOwnedMembership",
+            "e227af4eb60b3f4167624d81b0384f4ebc5a77b740a9c687a0423cce514821ef",
+        ) => Some(ActionDerivedFactKind::NamespaceOwnedMembership),
+        (
+            "deriveOwningMembershipOwnedMemberName",
+            "8c94796659e407f86d44a269769b8bc44e584c501e0304f42d78b99694fb7a55",
+        ) => Some(ActionDerivedFactKind::OwningMembershipOwnedMemberName),
+        (
+            "deriveOwningMembershipOwnedMemberShortName",
+            "a4b49f1b0064c097ffe31a9da1bbc60c93a0d9603285c767bbc30452c8b8135a",
+        ) => Some(ActionDerivedFactKind::OwningMembershipOwnedMemberShortName),
+        (
+            "derivePackageFilterCondition",
+            "ed0ee5f522c31d0421dcadb9402317d7afb5c8a459254b1ffc6e25ef761a9814",
+        ) => Some(ActionDerivedFactKind::PackageFilterCondition),
         _ => None,
     }
 }

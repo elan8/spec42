@@ -66,6 +66,10 @@ pub enum ActionDerivedFactOutcome {
     Parameters(Box<[ActionInputParameterId]>),
     OwnedMembershipMembers(Box<[ActionOwnedMembershipMember]>),
     FilterConditions(Box<[FilterConditionId]>),
+    /// A String-valued property; `None` when it is null.
+    Text(Option<Box<str>>),
+    /// A Boolean-valued property.
+    Flag(bool),
     Unsupported {
         prerequisite: ActionDerivedFactPrerequisite,
     },

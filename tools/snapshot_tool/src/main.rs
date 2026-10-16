@@ -824,6 +824,57 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> ActionDerivedFactColle
         ActionDerivedFactKind::ViewUsageViewCondition => {
             ActionDerivedFactCollection::ViewUsageViewCondition
         }
+        ActionDerivedFactKind::ElementIsLibraryElement => {
+            ActionDerivedFactCollection::ElementIsLibraryElement
+        }
+        ActionDerivedFactKind::ElementName => ActionDerivedFactCollection::ElementName,
+        ActionDerivedFactKind::ElementShortName => ActionDerivedFactCollection::ElementShortName,
+        ActionDerivedFactKind::ElementQualifiedName => {
+            ActionDerivedFactCollection::ElementQualifiedName
+        }
+        ActionDerivedFactKind::ElementOwnedElement => {
+            ActionDerivedFactCollection::ElementOwnedElement
+        }
+        ActionDerivedFactKind::ElementOwnedAnnotation => {
+            ActionDerivedFactCollection::ElementOwnedAnnotation
+        }
+        ActionDerivedFactKind::ElementOwningNamespace => {
+            ActionDerivedFactCollection::ElementOwningNamespace
+        }
+        ActionDerivedFactKind::RelationshipRelatedElement => {
+            ActionDerivedFactCollection::RelationshipRelatedElement
+        }
+        ActionDerivedFactKind::AnnotatingElementAnnotatedElement => {
+            ActionDerivedFactCollection::AnnotatingElementAnnotatedElement
+        }
+        ActionDerivedFactKind::AnnotatingElementAnnotation => {
+            ActionDerivedFactCollection::AnnotatingElementAnnotation
+        }
+        ActionDerivedFactKind::AnnotatingElementOwnedAnnotatingRelationship => {
+            ActionDerivedFactCollection::AnnotatingElementOwnedAnnotatingRelationship
+        }
+        ActionDerivedFactKind::AnnotationOwnedAnnotatingElement => {
+            ActionDerivedFactCollection::AnnotationOwnedAnnotatingElement
+        }
+        ActionDerivedFactKind::MembershipImportImportedElement => {
+            ActionDerivedFactCollection::MembershipImportImportedElement
+        }
+        ActionDerivedFactKind::NamespaceImportedMembership => {
+            ActionDerivedFactCollection::NamespaceImportedMembership
+        }
+        ActionDerivedFactKind::NamespaceMember => ActionDerivedFactCollection::NamespaceMember,
+        ActionDerivedFactKind::NamespaceOwnedMembership => {
+            ActionDerivedFactCollection::NamespaceOwnedMembership
+        }
+        ActionDerivedFactKind::OwningMembershipOwnedMemberName => {
+            ActionDerivedFactCollection::OwningMembershipOwnedMemberName
+        }
+        ActionDerivedFactKind::OwningMembershipOwnedMemberShortName => {
+            ActionDerivedFactCollection::OwningMembershipOwnedMemberShortName
+        }
+        ActionDerivedFactKind::PackageFilterCondition => {
+            ActionDerivedFactCollection::PackageFilterCondition
+        }
     }
 }
 
@@ -1151,6 +1202,8 @@ struct ActionDerivedFactExpectation {
     source: ElementReferenceExpectation,
     target: Option<ElementReferenceExpectation>,
     position: Option<u32>,
+    /// The expected value of a String- or Boolean-valued property.
+    value: Option<String>,
     outcome: TypeDerivedElementOutcome,
 }
 
@@ -4026,7 +4079,7 @@ fn parse_action_derived_fact_expectation(
     let (target, rest) = take_element_reference_field(&rest, "target", fallback_name)?;
     let fields = parse_semantic_assertion_fields(
         &rest,
-        &["rule_id", "position", "outcome"],
+        &["rule_id", "position", "value", "outcome"],
         "semantic Action fact",
         fallback_name,
     )?;
@@ -4078,11 +4131,23 @@ fn parse_action_derived_fact_expectation(
             "{fallback_name}: semantic Action fact must not declare both target and position"
         ));
     }
+    let value = fields.get("value").cloned();
+    if value.is_some() && (target.is_some() || position.is_some()) {
+        return Err(format!(
+            "{fallback_name}: semantic Action fact value excludes target and position"
+        ));
+    }
+    if value.is_some() && outcome != TypeDerivedElementOutcome::Resolved {
+        return Err(format!(
+            "{fallback_name}: semantic Action fact value requires outcome resolved"
+        ));
+    }
     Ok(ActionDerivedFactExpectation {
         collection,
         source,
         target,
         position,
+        value,
         outcome,
     })
 }
@@ -6242,6 +6307,27 @@ fn compare_action_derived_fact_observation(
                 ..
             },
         ) if values.is_empty() => Ok(()),
+        (
+            TypeDerivedElementOutcome::Absent,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Text(None),
+                ..
+            },
+        ) => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Text(Some(actual)),
+                ..
+            },
+        ) if expectation.value.as_deref() == Some(actual.as_ref()) => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Flag(actual),
+                ..
+            },
+        ) if expectation.value.as_deref() == Some(if *actual { "true" } else { "false" }) => Ok(()),
         (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {
@@ -8980,6 +9066,7 @@ mod tests {
                         "Actions::Procedure::step".to_string(),
                     )),
                     position: None,
+                    value: None,
                     outcome: TypeDerivedElementOutcome::Resolved,
                 },
                 ActionDerivedFactExpectation {
@@ -8989,6 +9076,7 @@ mod tests {
                     ),
                     target: None,
                     position: Some(2),
+                    value: None,
                     outcome: TypeDerivedElementOutcome::Resolved,
                 },
             ]

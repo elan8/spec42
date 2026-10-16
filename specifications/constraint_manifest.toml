@@ -63,6 +63,10 @@ family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementIsLibraryElement"
 
+[specifications.constraints.action_derived_fact]
+kind = "element_is_library_element"
+body_sha256 = "0021f0214f54ff108b7d37ef5ef65978ee4d47f3e46b2668bd1848cfd06c1609"
+
 [[specifications.constraints]]
 package = "Root::Elements"
 metaclass = "Element"
@@ -70,6 +74,10 @@ constraint = "deriveElementName"
 family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementName"
+
+[specifications.constraints.action_derived_fact]
+kind = "element_name"
+body_sha256 = "3a1c1371a6c25d49fe66728863410ef5576928b9da436ab232fe99e418468ea0"
 
 [[specifications.constraints]]
 package = "Root::Elements"
@@ -79,6 +87,10 @@ family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementOwnedAnnotation"
 
+[specifications.constraints.action_derived_fact]
+kind = "element_owned_annotation"
+body_sha256 = "d21c8f97a2996ae70cea69132e835affd9e07ef330971a0900d6197607db76a1"
+
 [[specifications.constraints]]
 package = "Root::Elements"
 metaclass = "Element"
@@ -86,6 +98,10 @@ constraint = "deriveElementOwnedElement"
 family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementOwnedElement"
+
+[specifications.constraints.action_derived_fact]
+kind = "element_owned_element"
+body_sha256 = "cd17f8b72bf2082fba2ab59a28ede06c374310fa53d218070f03e3fb64dee897"
 
 [[specifications.constraints]]
 package = "Root::Elements"
@@ -106,6 +122,10 @@ family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementQualifiedName"
 
+[specifications.constraints.action_derived_fact]
+kind = "element_qualified_name"
+body_sha256 = "b59ce915e7a53da44a86e902e4837636d30f358b616b7b21808b6c16c845404a"
+
 [[specifications.constraints]]
 package = "Root::Elements"
 metaclass = "Element"
@@ -113,6 +133,10 @@ constraint = "deriveElementShortName"
 family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementShortName"
+
+[specifications.constraints.action_derived_fact]
+kind = "element_short_name"
+body_sha256 = "69bedea5d5a0a8054299a657c325fee6d83d2f61653858ac4b75988b562296e8"
 
 [[specifications.constraints]]
 package = "Root::Elements"
@@ -133,6 +157,10 @@ family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveOwningNamespace"
 
+[specifications.constraints.action_derived_fact]
+kind = "element_owning_namespace"
+body_sha256 = "d015eab423252a85bb739a3b525283a80fb550a323374d0794f014939da5291b"
+
 [[specifications.constraints]]
 package = "Root::Elements"
 metaclass = "Element"
@@ -149,6 +177,10 @@ family = "derive"
 clause = "8.3.2.1.3"
 rule_id = "kerml-1.0:8.3.2.1.3:deriveRelationshipRelatedElement"
 
+[specifications.constraints.action_derived_fact]
+kind = "relationship_related_element"
+body_sha256 = "f6dcbb23155f405dac933adf9ff1e6ca34d461f58231782c1155a5f656738739"
+
 [[specifications.constraints]]
 package = "Root::Annotations"
 metaclass = "AnnotatingElement"
@@ -156,6 +188,10 @@ constraint = "deriveAnnotatingElementAnnotatedElement"
 family = "derive"
 clause = "8.3.2.3.2"
 rule_id = "kerml-1.0:8.3.2.3.2:deriveAnnotatingElementAnnotatedElement"
+
+[specifications.constraints.action_derived_fact]
+kind = "annotating_element_annotated_element"
+body_sha256 = "324693f3275c2d5a8eaec18a97d6e9277152d4e7d64e05ec1ea7725c978700e5"
 
 [[specifications.constraints]]
 package = "Root::Annotations"
@@ -165,6 +201,10 @@ family = "derive"
 clause = "8.3.2.3.2"
 rule_id = "kerml-1.0:8.3.2.3.2:deriveAnnotatingElementAnnotation"
 
+[specifications.constraints.action_derived_fact]
+kind = "annotating_element_annotation"
+body_sha256 = "9c9b7f5324b32a5ed69fb91c821565801ca550e122da8f8121dc6e2ad58b884d"
+
 [[specifications.constraints]]
 package = "Root::Annotations"
 metaclass = "AnnotatingElement"
@@ -172,6 +212,10 @@ constraint = "deriveAnnotatingElementOwnedAnnotatingRelationship"
 family = "derive"
 clause = "8.3.2.3.2"
 rule_id = "kerml-1.0:8.3.2.3.2:deriveAnnotatingElementOwnedAnnotatingRelationship"
+
+[specifications.constraints.action_derived_fact]
+kind = "annotating_element_owned_annotating_relationship"
+body_sha256 = "7ceb540818e23f9b1b2c8486296b35234fb7e9ad346c38fbaaf5d9ef4a3ed6f8"
 
 [[specifications.constraints]]
 package = "Root::Annotations"
@@ -188,6 +232,10 @@ constraint = "deriveAnnotationOwnedAnnotatingElement"
 family = "derive"
 clause = "8.3.2.3.3"
 rule_id = "kerml-1.0:8.3.2.3.3:deriveAnnotationOwnedAnnotatingElement"
+
+[specifications.constraints.action_derived_fact]
+kind = "annotation_owned_annotating_element"
+body_sha256 = "97cf5a48e7d26e587af87988afa408b5d581bb0b710219091b6ce70a14da17ba"
 
 [[specifications.constraints]]
 package = "Root::Annotations"
@@ -229,6 +277,10 @@ family = "derive"
 clause = "8.3.2.4.4"
 rule_id = "kerml-1.0:8.3.2.4.4:deriveMembershipImportImportedElement"
 
+[specifications.constraints.action_derived_fact]
+kind = "membership_import_imported_element"
+body_sha256 = "b51bedf08ca4dae51099291762ae54cc6de6952ef949b25154ec7fe6a4949dd3"
+
 [[specifications.constraints]]
 package = "Root::Namespaces"
 metaclass = "Namespace"
@@ -237,6 +289,10 @@ family = "derive"
 clause = "8.3.2.4.5"
 rule_id = "kerml-1.0:8.3.2.4.5:deriveNamespaceImportedMembership"
 
+[specifications.constraints.action_derived_fact]
+kind = "namespace_imported_membership"
+body_sha256 = "5d7577c19c88ef9f374546a2e9dfc28f6425a3fb88d41706f8b98db9bf31160b"
+
 [[specifications.constraints]]
 package = "Root::Namespaces"
 metaclass = "Namespace"
@@ -244,6 +300,10 @@ constraint = "deriveNamespaceMembers"
 family = "derive"
 clause = "8.3.2.4.5"
 rule_id = "kerml-1.0:8.3.2.4.5:deriveNamespaceMembers"
+
+[specifications.constraints.action_derived_fact]
+kind = "namespace_member"
+body_sha256 = "80369e614bd4f1d5d3db1be4f2c846dccbc08603a53409476d15e1dc805a0281"
 
 [[specifications.constraints]]
 package = "Root::Namespaces"
@@ -275,6 +335,10 @@ family = "derive"
 clause = "8.3.2.4.5"
 rule_id = "kerml-1.0:8.3.2.4.5:deriveNamespaceOwnedMembership"
 
+[specifications.constraints.action_derived_fact]
+kind = "namespace_owned_membership"
+body_sha256 = "e227af4eb60b3f4167624d81b0384f4ebc5a77b740a9c687a0423cce514821ef"
+
 [[specifications.constraints]]
 package = "Root::Namespaces"
 metaclass = "Namespace"
@@ -302,6 +366,10 @@ family = "derive"
 clause = "8.3.2.4.8"
 rule_id = "kerml-1.0:8.3.2.4.8:deriveOwningMembershipOwnedMemberName"
 
+[specifications.constraints.action_derived_fact]
+kind = "owning_membership_owned_member_name"
+body_sha256 = "8c94796659e407f86d44a269769b8bc44e584c501e0304f42d78b99694fb7a55"
+
 [[specifications.constraints]]
 package = "Root::Namespaces"
 metaclass = "OwningMembership"
@@ -309,6 +377,10 @@ constraint = "deriveOwningMembershipOwnedMemberShortName"
 family = "derive"
 clause = "8.3.2.4.8"
 rule_id = "kerml-1.0:8.3.2.4.8:deriveOwningMembershipOwnedMemberShortName"
+
+[specifications.constraints.action_derived_fact]
+kind = "owning_membership_owned_member_short_name"
+body_sha256 = "a4b49f1b0064c097ffe31a9da1bbc60c93a0d9603285c767bbc30452c8b8135a"
 
 [[specifications.constraints]]
 package = "Core::Types"
@@ -1412,6 +1484,10 @@ constraint = "derivePackageFilterCondition"
 family = "derive"
 clause = "8.3.4.13.4"
 rule_id = "kerml-1.0:8.3.4.13.4:derivePackageFilterCondition"
+
+[specifications.constraints.action_derived_fact]
+kind = "package_filter_condition"
+body_sha256 = "ed0ee5f522c31d0421dcadb9402317d7afb5c8a459254b1ffc6e25ef761a9814"
 
 [[specifications.constraints]]
 package = "Kernel::Classes"
