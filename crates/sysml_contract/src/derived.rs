@@ -183,12 +183,31 @@ pub enum ActionDerivedFactCollection {
     OwningMembershipOwnedMemberName,
     OwningMembershipOwnedMemberShortName,
     PackageFilterCondition,
+    FeatureFeaturingType,
+    AssociationRelatedType,
+    AssociationSourceType,
+    AssociationTargetType,
+    ConnectorRelatedFeature,
+    ConnectorSourceFeature,
+    ConnectorTargetFeature,
+    ConnectorDefaultFeaturingType,
+    StepBehavior,
+    LiteralExpressionIsModelLevelEvaluable,
+    MetadataAccessExpressionReferencedElement,
+    FeatureChainExpressionTargetFeature,
+    FeatureReferenceExpressionReferent,
+    InstantiationExpressionInstantiatedType,
+    FlowFlowEnd,
+    FlowSourceOutputFeature,
+    FlowTargetInputFeature,
 }
 
 /// The first canonical fact owner an exact `Systems::Actions` derivation needs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ActionDerivedFactPrerequisite {
     RuleNotPublished,
+    /// A dotted connector end subsets a feature chain, which is not lowered as its own Feature.
+    UnloweredFeatureChain,
 }
 
 /// One closed exact `Systems::Requirements` derived property.

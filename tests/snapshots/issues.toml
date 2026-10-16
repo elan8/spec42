@@ -101,3 +101,21 @@ id = "normative-specification-gap-analysis-case-result-expression-bodies"
 kind = "normative_specification_gap"
 owner = "omg-specification"
 summary = "Pinned SysML XMI bodies for deriveAnalysisCaseDefinitionResultExpression and deriveAnalysisCaseUsageResultExpression (both SHA-256 6dea4bccd48ee1ae4afa5b0790f848924ab0701f2b76d330e43af9df2708c0e2) navigate `featureMembersip`, which is not a property; OMG must publish evaluable bodies before exact contracts can be pinned."
+
+[[issue]]
+id = "lowering-gap-flow-payload-feature"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "A flow's `of` payload is lowered as a FlowPayloadType reference on the flow, not as the PayloadFeature the flow owns (KerML 8.3.4.9), so Flow::payloadFeature, Flow::payloadType (derived from the payload feature's type) and checkPayloadFeatureRedefinition (the payload feature redefines Transfers::Transfer::payload) have no element to read until the payload feature is minted."
+
+[[issue]]
+id = "lowering-gap-expression-model-level-evaluable"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "deriveExpressionIsModelLevelEvaluable reads modelLevelEvaluable over every owned sub-expression, but only a top-level value or result expression and the operands of index and select operators are lowered as Expression elements; arithmetic, comparison and invocation operands are not, so model-level evaluability is decided only for filter conditions (from their classified expression trees) and cannot be published per Expression."
+
+[[issue]]
+id = "lowering-gap-instantiation-argument-values"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "An invocation or constructor mints one argument Feature per authored argument, redefining the instantiated type's parameter, but the argument's value Expression is not lowered as that feature's FeatureValue, so deriveInvocationExpressionArgument and deriveConstructorExpressionArgument (the values of the features redefining the instantiated type's inputs or features) have no value to read."

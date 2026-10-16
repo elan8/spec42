@@ -30,18 +30,6 @@ package Redefinition {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_end_redefinition_library_ends.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "association_end_type_not_one")
-        (source "semantic")
-        (range (start 3 17) (end 3 41))
-      )
-      (diagnostic
-        (severity warning)
-        (code "association_end_type_not_one")
-        (source "semantic")
-        (range (start 3 42) (end 3 65))
-      )
     )
   )
 )

@@ -891,6 +891,74 @@ fn exact_action_derived_fact(constraint: &str, body: &str) -> Option<ActionDeriv
             "derivePackageFilterCondition",
             "ed0ee5f522c31d0421dcadb9402317d7afb5c8a459254b1ffc6e25ef761a9814",
         ) => Some(ActionDerivedFactKind::PackageFilterCondition),
+        (
+            "deriveFeatureFeaturingType",
+            "b24c019641828ef3c1aafeeb5b95aac9b49115c3c2716b63332f583828e0a27f",
+        ) => Some(ActionDerivedFactKind::FeatureFeaturingType),
+        (
+            "deriveAssociationRelatedType",
+            "74ddaeb5af7af8c99ff47cdcbf84efe08662b688d9ad136ffb064fe542cf3184",
+        ) => Some(ActionDerivedFactKind::AssociationRelatedType),
+        (
+            "deriveAssociationSourceType",
+            "df94b29521235f4b17eb65aa8573bef14868518b47705efc019a741875c665b9",
+        ) => Some(ActionDerivedFactKind::AssociationSourceType),
+        (
+            "deriveAssociationTargetType",
+            "683de593de141fdfb91ab890bf8e83d8d7ed010eb558c0c284033e90d2956cbe",
+        ) => Some(ActionDerivedFactKind::AssociationTargetType),
+        (
+            "deriveConnectorRelatedFeature",
+            "c077b622060b040c6bdc2b128aa6afe094e5ff279b769db5b9cb40f02430f309",
+        ) => Some(ActionDerivedFactKind::ConnectorRelatedFeature),
+        (
+            "deriveConnectorSourceFeature",
+            "d0f296805a4e12557c119da4d53e401e7bf68e9ad7350c5401b72354ea15d958",
+        ) => Some(ActionDerivedFactKind::ConnectorSourceFeature),
+        (
+            "deriveConnectorTargetFeature",
+            "8ae57036a190b491d32ca2c61344fee2e51f1c20249cf9d644ec0576b421ae8e",
+        ) => Some(ActionDerivedFactKind::ConnectorTargetFeature),
+        (
+            "deriveConnectorDefaultFeaturingType",
+            "1bf4e14a79f7697ccc8e70e8a5a2592e9b3077eaa8373c22dd1d9b6e5a22f035",
+        ) => Some(ActionDerivedFactKind::ConnectorDefaultFeaturingType),
+        (
+            "deriveStepBehavior",
+            "b778fec045c33fa91d2288a1feeae9d67587ceeb2db0c2b0716aa4b871974af0",
+        ) => Some(ActionDerivedFactKind::StepBehavior),
+        (
+            "deriveLiteralExpressionIsModelLevelEvaluable",
+            "8b72451905a13a1bd524a45f96b0fc411a296b745ebffe9d2f4d489f7f318d31",
+        ) => Some(ActionDerivedFactKind::LiteralExpressionIsModelLevelEvaluable),
+        (
+            "deriveMetadataAccessExpressionReferencdElement",
+            "30f2eb753ad483cb31b86838485d35a01da06b6899894232306a357054b5e8b1",
+        ) => Some(ActionDerivedFactKind::MetadataAccessExpressionReferencedElement),
+        (
+            "deriveFeatureChainExpressionTargetFeature",
+            "383c7aeafc1dfde3cd3112f5c6a7969f639c2e65849c790ab294483dec8c4e9b",
+        ) => Some(ActionDerivedFactKind::FeatureChainExpressionTargetFeature),
+        (
+            "deriveFeatureReferenceExpressionReferent",
+            "72f1113b57186d033b665541f8c8e26c42c5bc080079d31265c2444a83bf1723",
+        ) => Some(ActionDerivedFactKind::FeatureReferenceExpressionReferent),
+        (
+            "deriveInstantiationExpressionInstantiatedType",
+            "6e11708fe1bdc2a21092c0d22fc19188bb4c61bc622512b37233df8c6355a2fb",
+        ) => Some(ActionDerivedFactKind::InstantiationExpressionInstantiatedType),
+        (
+            "deriveFlowFlowEnd",
+            "ad5c9208e1ee4da829f26a70875d28dea2d9e75f7ba3fe67d9e1a0569657e7f0",
+        ) => Some(ActionDerivedFactKind::FlowFlowEnd),
+        (
+            "deriveFlowSourceOutputFeature",
+            "b3148a1f91bac656c98a51831c8f073c208b66cac48e656464917f67cf25e409",
+        ) => Some(ActionDerivedFactKind::FlowSourceOutputFeature),
+        (
+            "deriveFlowTargetInputFeature",
+            "bc01f1e7cb0b2963bf6123d0780a619417762866d52b0ca880f7ecf503e59606",
+        ) => Some(ActionDerivedFactKind::FlowTargetInputFeature),
         _ => None,
     }
 }

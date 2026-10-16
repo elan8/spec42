@@ -168,6 +168,33 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> &'static str {
             "OwningMembershipOwnedMemberShortName"
         }
         ActionDerivedFactKind::PackageFilterCondition => "PackageFilterCondition",
+        ActionDerivedFactKind::FeatureFeaturingType => "FeatureFeaturingType",
+        ActionDerivedFactKind::AssociationRelatedType => "AssociationRelatedType",
+        ActionDerivedFactKind::AssociationSourceType => "AssociationSourceType",
+        ActionDerivedFactKind::AssociationTargetType => "AssociationTargetType",
+        ActionDerivedFactKind::ConnectorRelatedFeature => "ConnectorRelatedFeature",
+        ActionDerivedFactKind::ConnectorSourceFeature => "ConnectorSourceFeature",
+        ActionDerivedFactKind::ConnectorTargetFeature => "ConnectorTargetFeature",
+        ActionDerivedFactKind::ConnectorDefaultFeaturingType => "ConnectorDefaultFeaturingType",
+        ActionDerivedFactKind::StepBehavior => "StepBehavior",
+        ActionDerivedFactKind::LiteralExpressionIsModelLevelEvaluable => {
+            "LiteralExpressionIsModelLevelEvaluable"
+        }
+        ActionDerivedFactKind::MetadataAccessExpressionReferencedElement => {
+            "MetadataAccessExpressionReferencedElement"
+        }
+        ActionDerivedFactKind::FeatureChainExpressionTargetFeature => {
+            "FeatureChainExpressionTargetFeature"
+        }
+        ActionDerivedFactKind::FeatureReferenceExpressionReferent => {
+            "FeatureReferenceExpressionReferent"
+        }
+        ActionDerivedFactKind::InstantiationExpressionInstantiatedType => {
+            "InstantiationExpressionInstantiatedType"
+        }
+        ActionDerivedFactKind::FlowFlowEnd => "FlowFlowEnd",
+        ActionDerivedFactKind::FlowSourceOutputFeature => "FlowSourceOutputFeature",
+        ActionDerivedFactKind::FlowTargetInputFeature => "FlowTargetInputFeature",
     }
 }
 

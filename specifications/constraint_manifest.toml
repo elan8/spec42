@@ -1040,6 +1040,10 @@ family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureFeaturingType"
 
+[specifications.constraints.action_derived_fact]
+kind = "feature_featuring_type"
+body_sha256 = "b24c019641828ef3c1aafeeb5b95aac9b49115c3c2716b63332f583828e0a27f"
+
 [[specifications.constraints]]
 package = "Core::Features"
 metaclass = "Feature"
@@ -1559,6 +1563,10 @@ family = "derive"
 clause = "8.3.4.4.2"
 rule_id = "kerml-1.0:8.3.4.4.2:deriveAssociationRelatedType"
 
+[specifications.constraints.action_derived_fact]
+kind = "association_related_type"
+body_sha256 = "74ddaeb5af7af8c99ff47cdcbf84efe08662b688d9ad136ffb064fe542cf3184"
+
 [[specifications.constraints]]
 package = "Kernel::Associations"
 metaclass = "Association"
@@ -1567,6 +1575,10 @@ family = "derive"
 clause = "8.3.4.4.2"
 rule_id = "kerml-1.0:8.3.4.4.2:deriveAssociationSourceType"
 
+[specifications.constraints.action_derived_fact]
+kind = "association_source_type"
+body_sha256 = "df94b29521235f4b17eb65aa8573bef14868518b47705efc019a741875c665b9"
+
 [[specifications.constraints]]
 package = "Kernel::Associations"
 metaclass = "Association"
@@ -1574,6 +1586,10 @@ constraint = "deriveAssociationTargetType"
 family = "derive"
 clause = "8.3.4.4.2"
 rule_id = "kerml-1.0:8.3.4.4.2:deriveAssociationTargetType"
+
+[specifications.constraints.action_derived_fact]
+kind = "association_target_type"
+body_sha256 = "683de593de141fdfb91ab890bf8e83d8d7ed010eb558c0c284033e90d2956cbe"
 
 [[specifications.constraints]]
 package = "Kernel::Associations"
@@ -1720,6 +1736,10 @@ family = "derive"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:deriveConnectorDefaultFeaturingType"
 
+[specifications.constraints.action_derived_fact]
+kind = "connector_default_featuring_type"
+body_sha256 = "1bf4e14a79f7697ccc8e70e8a5a2592e9b3077eaa8373c22dd1d9b6e5a22f035"
+
 [[specifications.constraints]]
 package = "Kernel::Connectors"
 metaclass = "Connector"
@@ -1727,6 +1747,10 @@ constraint = "deriveConnectorRelatedFeature"
 family = "derive"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:deriveConnectorRelatedFeature"
+
+[specifications.constraints.action_derived_fact]
+kind = "connector_related_feature"
+body_sha256 = "c077b622060b040c6bdc2b128aa6afe094e5ff279b769db5b9cb40f02430f309"
 
 [[specifications.constraints]]
 package = "Kernel::Connectors"
@@ -1736,6 +1760,10 @@ family = "derive"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:deriveConnectorSourceFeature"
 
+[specifications.constraints.action_derived_fact]
+kind = "connector_source_feature"
+body_sha256 = "d0f296805a4e12557c119da4d53e401e7bf68e9ad7350c5401b72354ea15d958"
+
 [[specifications.constraints]]
 package = "Kernel::Connectors"
 metaclass = "Connector"
@@ -1743,6 +1771,10 @@ constraint = "deriveConnectorTargetFeature"
 family = "derive"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:deriveConnectorTargetFeature"
+
+[specifications.constraints.action_derived_fact]
+kind = "connector_target_feature"
+body_sha256 = "8ae57036a190b491d32ca2c61344fee2e51f1c20249cf9d644ec0576b421ae8e"
 
 [[specifications.constraints]]
 package = "Kernel::Connectors"
@@ -1868,6 +1900,10 @@ constraint = "deriveStepBehavior"
 family = "derive"
 clause = "8.3.4.6.3"
 rule_id = "kerml-1.0:8.3.4.6.3:deriveStepBehavior"
+
+[specifications.constraints.action_derived_fact]
+kind = "step_behavior"
+body_sha256 = "b778fec045c33fa91d2288a1feeae9d67587ceeb2db0c2b0716aa4b871974af0"
 
 [[specifications.constraints]]
 package = "Kernel::Behaviors"
@@ -2074,6 +2110,10 @@ family = "derive"
 clause = "8.3.4.8.10"
 rule_id = "kerml-1.0:8.3.4.8.10:deriveLiteralExpressionIsModelLevelEvaluable"
 
+[specifications.constraints.action_derived_fact]
+kind = "literal_expression_is_model_level_evaluable"
+body_sha256 = "8b72451905a13a1bd524a45f96b0fc411a296b745ebffe9d2f4d489f7f318d31"
+
 [[specifications.constraints]]
 package = "Kernel::Expressions"
 metaclass = "LiteralInfinity"
@@ -2136,6 +2176,10 @@ constraint = "deriveMetadataAccessExpressionReferencdElement"
 family = "derive"
 clause = "8.3.4.8.15"
 rule_id = "kerml-1.0:8.3.4.8.15:deriveMetadataAccessExpressionReferencdElement"
+
+[specifications.constraints.action_derived_fact]
+kind = "metadata_access_expression_referenced_element"
+body_sha256 = "30f2eb753ad483cb31b86838485d35a01da06b6899894232306a357054b5e8b1"
 
 [[specifications.constraints]]
 package = "Kernel::Expressions"
@@ -2300,6 +2344,10 @@ family = "derive"
 clause = "8.3.4.8.4"
 rule_id = "kerml-1.0:8.3.4.8.4:deriveFeatureChainExpressionTargetFeature"
 
+[specifications.constraints.action_derived_fact]
+kind = "feature_chain_expression_target_feature"
+body_sha256 = "383c7aeafc1dfde3cd3112f5c6a7969f639c2e65849c790ab294483dec8c4e9b"
+
 [[specifications.constraints]]
 package = "Kernel::Expressions"
 metaclass = "FeatureChainExpression"
@@ -2348,6 +2396,10 @@ family = "derive"
 clause = "8.3.4.8.5"
 rule_id = "kerml-1.0:8.3.4.8.5:deriveFeatureReferenceExpressionReferent"
 
+[specifications.constraints.action_derived_fact]
+kind = "feature_reference_expression_referent"
+body_sha256 = "72f1113b57186d033b665541f8c8e26c42c5bc080079d31265c2444a83bf1723"
+
 [[specifications.constraints]]
 package = "Kernel::Expressions"
 metaclass = "FeatureReferenceExpression"
@@ -2391,6 +2443,10 @@ constraint = "deriveInstantiationExpressionInstantiatedType"
 family = "derive"
 clause = "8.3.4.8.7"
 rule_id = "kerml-1.0:8.3.4.8.7:deriveInstantiationExpressionInstantiatedType"
+
+[specifications.constraints.action_derived_fact]
+kind = "instantiation_expression_instantiated_type"
+body_sha256 = "6e11708fe1bdc2a21092c0d22fc19188bb4c61bc622512b37233df8c6355a2fb"
 
 [[specifications.constraints]]
 package = "Kernel::Expressions"
@@ -2539,6 +2595,10 @@ family = "derive"
 clause = "8.3.4.9.2"
 rule_id = "kerml-1.0:8.3.4.9.2:deriveFlowFlowEnd"
 
+[specifications.constraints.action_derived_fact]
+kind = "flow_flow_end"
+body_sha256 = "ad5c9208e1ee4da829f26a70875d28dea2d9e75f7ba3fe67d9e1a0569657e7f0"
+
 [[specifications.constraints]]
 package = "Kernel::Interactions"
 metaclass = "Flow"
@@ -2563,6 +2623,10 @@ family = "derive"
 clause = "8.3.4.9.2"
 rule_id = "kerml-1.0:8.3.4.9.2:deriveFlowSourceOutputFeature"
 
+[specifications.constraints.action_derived_fact]
+kind = "flow_source_output_feature"
+body_sha256 = "b3148a1f91bac656c98a51831c8f073c208b66cac48e656464917f67cf25e409"
+
 [[specifications.constraints]]
 package = "Kernel::Interactions"
 metaclass = "Flow"
@@ -2570,6 +2634,10 @@ constraint = "deriveFlowTargetInputFeature"
 family = "derive"
 clause = "8.3.4.9.2"
 rule_id = "kerml-1.0:8.3.4.9.2:deriveFlowTargetInputFeature"
+
+[specifications.constraints.action_derived_fact]
+kind = "flow_target_input_feature"
+body_sha256 = "bc01f1e7cb0b2963bf6123d0780a619417762866d52b0ca880f7ecf503e59606"
 
 [[specifications.constraints]]
 package = "Kernel::Interactions"

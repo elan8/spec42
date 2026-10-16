@@ -1727,25 +1727,9 @@ impl<D> SemanticModel<D> {
         declaration: DeclarationId,
         kind: sysml_contract::ElementKind,
     ) -> Vec<DeclarationId> {
-        let types = self
-            .types
-            .effective_types(declaration)
-            .iter()
-            .map(|(target, _)| *target)
-            .collect::<Vec<_>>();
-        types
-            .iter()
-            .copied()
-            .filter(|general| {
-                !types.iter().any(|specific| {
-                    specific != general
-                        && self.types.specialization().reaches(
-                            *specific,
-                            *general,
-                            types::ScopeBits::AnySpecialization,
-                        )
-                })
-            })
+        self.types
+            .feature_types(declaration)
+            .into_iter()
             .filter(|definition| self.declaration_conforms(*definition, kind))
             .collect()
     }
@@ -2018,6 +2002,67 @@ impl<D> SemanticModel<D> {
                 Some(format!("{qualified}::{escaped}"))
             }
         }
+    }
+
+    /// `connectorEnd.ownedReferenceSubsetting->select(s | s <> null).subsettedFeature`, in end
+    /// order. A dotted end subsets a feature chain that is not lowered as its own Feature.
+    fn connector_related_features(
+        &self,
+        connector: DeclarationId,
+    ) -> Result<Vec<DeclarationId>, ActionDerivedFactPrerequisite> {
+        let mut related = Vec::new();
+        for end in self.connector_ends(connector).iter() {
+            match &end.endpoint {
+                ConnectorEndpoint::Feature(RelationshipTarget::Resolved(target)) => {
+                    related.extend(self.declaration_of(*target));
+                }
+                ConnectorEndpoint::FeatureChain { .. } => {
+                    return Err(ActionDerivedFactPrerequisite::UnloweredFeatureChain);
+                }
+                ConnectorEndpoint::Feature(_) | ConnectorEndpoint::Unconnected => {}
+            }
+        }
+        Ok(related)
+    }
+
+    /// `deriveConnectorDefaultFeaturingType`: of the featuring types (transitively) of the
+    /// related features within which every related feature is featured, the first that no other
+    /// such type is featured within.
+    fn nearest_common_featuring_type(&self, related: &[DeclarationId]) -> Option<DeclarationId> {
+        let closure = |feature: DeclarationId| {
+            let mut seen = Vec::new();
+            let mut pending = vec![feature];
+            while let Some(current) = pending.pop() {
+                for (featuring, _) in self.types.featuring_types(current).iter() {
+                    if !seen.contains(featuring) {
+                        seen.push(*featuring);
+                        pending.push(*featuring);
+                    }
+                }
+            }
+            seen
+        };
+        let featured_within = |feature: DeclarationId, featuring: DeclarationId| {
+            let types = closure(feature);
+            types.is_empty() || types.contains(&featuring)
+        };
+        let mut common = Vec::new();
+        for feature in related {
+            for featuring in closure(*feature) {
+                if !common.contains(&featuring)
+                    && related
+                        .iter()
+                        .all(|other| featured_within(*other, featuring))
+                {
+                    common.push(featuring);
+                }
+            }
+        }
+        common.iter().copied().find(|candidate| {
+            !common
+                .iter()
+                .any(|other| other != candidate && closure(*other).contains(candidate))
+        })
     }
 
     /// The exact Actions derivation boundary. Canonical effective usages and the ordered argument
@@ -2967,6 +3012,190 @@ impl<D> SemanticModel<D> {
                     self.filter_conditions(symbol, declaration),
                 ))
             }
+            ActionDerivedFactCollection::FeatureFeaturingType
+                if self.declaration_conforms(declaration, sysml_contract::ElementKind::Feature) =>
+            {
+                // `featuring.type`, with the featuring types of a chain's first chaining
+                // feature, as the canonical TypeFeaturing/FeatureChaining facts settle them.
+                if self.types.featuring_requires_snapshots(declaration) {
+                    return self.query_outcome(QueryAnswer::Unsupported);
+                }
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(
+                        self.types
+                            .featuring_types(declaration)
+                            .iter()
+                            .map(|(featuring, _)| *featuring),
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::AssociationRelatedType
+            | ActionDerivedFactCollection::AssociationSourceType
+            | ActionDerivedFactCollection::AssociationTargetType
+                if self.declaration_conforms(
+                    declaration,
+                    sysml_contract::ElementKind::Association,
+                ) =>
+            {
+                // `associationEnd.type`: the most specific types of each end, in end order.
+                let related = self
+                    .feature_members(declaration)
+                    .into_iter()
+                    .filter(|member| self.is_end_feature(*member))
+                    .flat_map(|end| self.usage_definitions(end, sysml_contract::ElementKind::Type))
+                    .collect::<Vec<_>>();
+                let values = match collection {
+                    ActionDerivedFactCollection::AssociationSourceType => {
+                        related.into_iter().take(1).collect()
+                    }
+                    ActionDerivedFactCollection::AssociationTargetType => {
+                        related.into_iter().skip(1).collect()
+                    }
+                    _ => related,
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(values.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::ConnectorRelatedFeature
+            | ActionDerivedFactCollection::ConnectorSourceFeature
+            | ActionDerivedFactCollection::ConnectorTargetFeature
+            | ActionDerivedFactCollection::ConnectorDefaultFeaturingType
+                if self
+                    .declaration_conforms(declaration, sysml_contract::ElementKind::Connector) =>
+            {
+                let related = match self.connector_related_features(declaration) {
+                    Ok(related) => related,
+                    Err(prerequisite) => {
+                        return self.resolved_outcome(ActionDerivedFactOutcome::Unsupported {
+                            prerequisite,
+                        })
+                    }
+                };
+                let values = match collection {
+                    ActionDerivedFactCollection::ConnectorSourceFeature => {
+                        related.into_iter().take(1).collect()
+                    }
+                    ActionDerivedFactCollection::ConnectorTargetFeature => {
+                        related.into_iter().skip(1).collect()
+                    }
+                    ActionDerivedFactCollection::ConnectorDefaultFeaturingType => self
+                        .nearest_common_featuring_type(&related)
+                        .into_iter()
+                        .collect(),
+                    _ => related,
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(values.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::StepBehavior
+                if self.declaration_conforms(declaration, sysml_contract::ElementKind::Step) =>
+            {
+                // `type->selectByKind(Behavior)`.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(
+                        self.usage_definitions(declaration, sysml_contract::ElementKind::Behavior)
+                            .into_iter(),
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::LiteralExpressionIsModelLevelEvaluable
+                if self.declaration_conforms(
+                    declaration,
+                    sysml_contract::ElementKind::LiteralExpression,
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Flag(true))
+            }
+            ActionDerivedFactCollection::MetadataAccessExpressionReferencedElement
+                if source_kind == Some(DeclarationKind::KermlMetadataAccessExpression) =>
+            {
+                // The member element of its first non-FeatureMembership membership: the element
+                // its ElementReferenceMember names.
+                let values = self
+                    .relationships_of_kinds(declaration, &[ReferenceKind::MetadataAccessTarget])
+                    .iter()
+                    .filter_map(|relationship| match relationship.target {
+                        RelationshipTarget::Resolved(target) => Some(target),
+                        _ => None,
+                    })
+                    .take(1)
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::FeatureChainExpressionTargetFeature => {
+                let values = self
+                    .resolution
+                    .feature_chain_expression_projections
+                    .iter()
+                    .filter(|projection| projection.expression == declaration)
+                    .map(|projection| projection.target_feature);
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(values)))
+            }
+            ActionDerivedFactCollection::FeatureReferenceExpressionReferent => {
+                let values = self
+                    .resolution
+                    .feature_reference_expression_projections
+                    .iter()
+                    .filter(|projection| projection.expression == declaration)
+                    .map(|projection| projection.referent);
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(values)))
+            }
+            ActionDerivedFactCollection::InstantiationExpressionInstantiatedType => {
+                // `instantiatedType()`: the Type a constructor or invocation instantiates.
+                let constructed = self
+                    .resolution
+                    .constructor_expression_projections
+                    .iter()
+                    .filter(|projection| projection.expression == declaration)
+                    .map(|projection| projection.instantiated_type);
+                let invoked = self
+                    .resolution
+                    .invocation_expression_projections
+                    .iter()
+                    .filter(|projection| projection.expression == declaration)
+                    .map(|projection| projection.instantiated_type);
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(constructed.chain(invoked)),
+                ))
+            }
+            ActionDerivedFactCollection::FlowFlowEnd
+            | ActionDerivedFactCollection::FlowSourceOutputFeature
+            | ActionDerivedFactCollection::FlowTargetInputFeature
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::Flow | DeclarationKind::SuccessionFlow)
+                ) =>
+            {
+                let ends = self
+                    .child_declarations(declaration)
+                    .iter()
+                    .copied()
+                    .filter(|member| {
+                        self.storage
+                            .declaration(*member)
+                            .is_some_and(|member| member.kind == DeclarationKind::FlowEnd)
+                    })
+                    .collect::<Vec<_>>();
+                // The first owned feature of the first or the second connector end.
+                let end_feature = |position: usize| {
+                    ends.get(position)
+                        .and_then(|end| self.child_declarations(*end).first().copied())
+                };
+                let values = match collection {
+                    ActionDerivedFactCollection::FlowSourceOutputFeature => {
+                        end_feature(0).into_iter().collect()
+                    }
+                    ActionDerivedFactCollection::FlowTargetInputFeature => {
+                        end_feature(1).into_iter().collect()
+                    }
+                    _ => ends,
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(values.into_iter()),
+                ))
+            }
             ActionDerivedFactCollection::StateDefinitionEntryAction
             | ActionDerivedFactCollection::StateDefinitionDoAction
             | ActionDerivedFactCollection::StateDefinitionExitAction
@@ -3019,7 +3248,21 @@ impl<D> SemanticModel<D> {
             | ActionDerivedFactCollection::NamespaceOwnedMembership
             | ActionDerivedFactCollection::OwningMembershipOwnedMemberName
             | ActionDerivedFactCollection::OwningMembershipOwnedMemberShortName
-            | ActionDerivedFactCollection::PackageFilterCondition => {
+            | ActionDerivedFactCollection::PackageFilterCondition
+            | ActionDerivedFactCollection::FeatureFeaturingType
+            | ActionDerivedFactCollection::AssociationRelatedType
+            | ActionDerivedFactCollection::AssociationSourceType
+            | ActionDerivedFactCollection::AssociationTargetType
+            | ActionDerivedFactCollection::ConnectorRelatedFeature
+            | ActionDerivedFactCollection::ConnectorSourceFeature
+            | ActionDerivedFactCollection::ConnectorTargetFeature
+            | ActionDerivedFactCollection::ConnectorDefaultFeaturingType
+            | ActionDerivedFactCollection::StepBehavior
+            | ActionDerivedFactCollection::LiteralExpressionIsModelLevelEvaluable
+            | ActionDerivedFactCollection::MetadataAccessExpressionReferencedElement
+            | ActionDerivedFactCollection::FlowFlowEnd
+            | ActionDerivedFactCollection::FlowSourceOutputFeature
+            | ActionDerivedFactCollection::FlowTargetInputFeature => {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
             }
             ActionDerivedFactCollection::TerminateOccurrenceArgument

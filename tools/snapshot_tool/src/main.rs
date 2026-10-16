@@ -875,6 +875,53 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> ActionDerivedFactColle
         ActionDerivedFactKind::PackageFilterCondition => {
             ActionDerivedFactCollection::PackageFilterCondition
         }
+        ActionDerivedFactKind::FeatureFeaturingType => {
+            ActionDerivedFactCollection::FeatureFeaturingType
+        }
+        ActionDerivedFactKind::AssociationRelatedType => {
+            ActionDerivedFactCollection::AssociationRelatedType
+        }
+        ActionDerivedFactKind::AssociationSourceType => {
+            ActionDerivedFactCollection::AssociationSourceType
+        }
+        ActionDerivedFactKind::AssociationTargetType => {
+            ActionDerivedFactCollection::AssociationTargetType
+        }
+        ActionDerivedFactKind::ConnectorRelatedFeature => {
+            ActionDerivedFactCollection::ConnectorRelatedFeature
+        }
+        ActionDerivedFactKind::ConnectorSourceFeature => {
+            ActionDerivedFactCollection::ConnectorSourceFeature
+        }
+        ActionDerivedFactKind::ConnectorTargetFeature => {
+            ActionDerivedFactCollection::ConnectorTargetFeature
+        }
+        ActionDerivedFactKind::ConnectorDefaultFeaturingType => {
+            ActionDerivedFactCollection::ConnectorDefaultFeaturingType
+        }
+        ActionDerivedFactKind::StepBehavior => ActionDerivedFactCollection::StepBehavior,
+        ActionDerivedFactKind::LiteralExpressionIsModelLevelEvaluable => {
+            ActionDerivedFactCollection::LiteralExpressionIsModelLevelEvaluable
+        }
+        ActionDerivedFactKind::MetadataAccessExpressionReferencedElement => {
+            ActionDerivedFactCollection::MetadataAccessExpressionReferencedElement
+        }
+        ActionDerivedFactKind::FeatureChainExpressionTargetFeature => {
+            ActionDerivedFactCollection::FeatureChainExpressionTargetFeature
+        }
+        ActionDerivedFactKind::FeatureReferenceExpressionReferent => {
+            ActionDerivedFactCollection::FeatureReferenceExpressionReferent
+        }
+        ActionDerivedFactKind::InstantiationExpressionInstantiatedType => {
+            ActionDerivedFactCollection::InstantiationExpressionInstantiatedType
+        }
+        ActionDerivedFactKind::FlowFlowEnd => ActionDerivedFactCollection::FlowFlowEnd,
+        ActionDerivedFactKind::FlowSourceOutputFeature => {
+            ActionDerivedFactCollection::FlowSourceOutputFeature
+        }
+        ActionDerivedFactKind::FlowTargetInputFeature => {
+            ActionDerivedFactCollection::FlowTargetInputFeature
+        }
     }
 }
 

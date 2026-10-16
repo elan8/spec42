@@ -818,6 +818,74 @@ impl ConstraintManifest {
                             "derivePackageFilterCondition",
                             "Package",
                             ActionDerivedFactKind::PackageFilterCondition
+                        ) | (
+                            "deriveFeatureFeaturingType",
+                            "Feature",
+                            ActionDerivedFactKind::FeatureFeaturingType
+                        ) | (
+                            "deriveAssociationRelatedType",
+                            "Association",
+                            ActionDerivedFactKind::AssociationRelatedType
+                        ) | (
+                            "deriveAssociationSourceType",
+                            "Association",
+                            ActionDerivedFactKind::AssociationSourceType
+                        ) | (
+                            "deriveAssociationTargetType",
+                            "Association",
+                            ActionDerivedFactKind::AssociationTargetType
+                        ) | (
+                            "deriveConnectorRelatedFeature",
+                            "Connector",
+                            ActionDerivedFactKind::ConnectorRelatedFeature
+                        ) | (
+                            "deriveConnectorSourceFeature",
+                            "Connector",
+                            ActionDerivedFactKind::ConnectorSourceFeature
+                        ) | (
+                            "deriveConnectorTargetFeature",
+                            "Connector",
+                            ActionDerivedFactKind::ConnectorTargetFeature
+                        ) | (
+                            "deriveConnectorDefaultFeaturingType",
+                            "Connector",
+                            ActionDerivedFactKind::ConnectorDefaultFeaturingType
+                        ) | (
+                            "deriveStepBehavior",
+                            "Step",
+                            ActionDerivedFactKind::StepBehavior
+                        ) | (
+                            "deriveLiteralExpressionIsModelLevelEvaluable",
+                            "LiteralExpression",
+                            ActionDerivedFactKind::LiteralExpressionIsModelLevelEvaluable
+                        ) | (
+                            "deriveMetadataAccessExpressionReferencdElement",
+                            "MetadataAccessExpression",
+                            ActionDerivedFactKind::MetadataAccessExpressionReferencedElement
+                        ) | (
+                            "deriveFeatureChainExpressionTargetFeature",
+                            "FeatureChainExpression",
+                            ActionDerivedFactKind::FeatureChainExpressionTargetFeature
+                        ) | (
+                            "deriveFeatureReferenceExpressionReferent",
+                            "FeatureReferenceExpression",
+                            ActionDerivedFactKind::FeatureReferenceExpressionReferent
+                        ) | (
+                            "deriveInstantiationExpressionInstantiatedType",
+                            "InstantiationExpression",
+                            ActionDerivedFactKind::InstantiationExpressionInstantiatedType
+                        ) | (
+                            "deriveFlowFlowEnd",
+                            "Flow",
+                            ActionDerivedFactKind::FlowFlowEnd
+                        ) | (
+                            "deriveFlowSourceOutputFeature",
+                            "Flow",
+                            ActionDerivedFactKind::FlowSourceOutputFeature
+                        ) | (
+                            "deriveFlowTargetInputFeature",
+                            "Flow",
+                            ActionDerivedFactKind::FlowTargetInputFeature
                         )
                     );
                     if entry.family != ConstraintFamily::Derive
@@ -2329,6 +2397,23 @@ pub enum ActionDerivedFactKind {
     OwningMembershipOwnedMemberName,
     OwningMembershipOwnedMemberShortName,
     PackageFilterCondition,
+    FeatureFeaturingType,
+    AssociationRelatedType,
+    AssociationSourceType,
+    AssociationTargetType,
+    ConnectorRelatedFeature,
+    ConnectorSourceFeature,
+    ConnectorTargetFeature,
+    ConnectorDefaultFeaturingType,
+    StepBehavior,
+    LiteralExpressionIsModelLevelEvaluable,
+    MetadataAccessExpressionReferencedElement,
+    FeatureChainExpressionTargetFeature,
+    FeatureReferenceExpressionReferent,
+    InstantiationExpressionInstantiatedType,
+    FlowFlowEnd,
+    FlowSourceOutputFeature,
+    FlowTargetInputFeature,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
