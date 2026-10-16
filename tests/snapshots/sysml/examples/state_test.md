@@ -90,12 +90,6 @@ package StateTest {
         (range (start 6 1) (end 6 8))
       )
       (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 10 1) (end 45 2))
-      )
-      (diagnostic
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")

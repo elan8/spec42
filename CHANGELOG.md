@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **State behavior may remain active.** Stop emitting the non-normative
+  `missing_final_state` advisory; SysML 2.0 does not require a transition to `done`.
+
 - **Views and behavior follow declared model facts (#284–#287).** General, Browser and Grid
   views retain port-definition conjugation without panicking. Action bodies admit typed view
   usages, and semicolon entry/do/exit action declarations no longer produce false unresolved
   references. Sequence messages follow event successions and transfer causality rather than
   message names; cyclic ordering remains explicit. Adds the diagram `Conjugation` relationship
-  kind and advances the semantic vocabulary to v48; pins parser AST 282.
+  kind and advances the semantic vocabulary to v49; pins parser AST 282.
 
 - **The Elan8 method libraries are no longer bundled.** `elan8/mbse-methodology` no longer ships a
   SysML library: its decisions, assumptions and risks overlap the standard `ModelingMetadata` and

@@ -117,12 +117,6 @@ package Behavior {
       )
       (diagnostic
         (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 42 4) (end 46 5))
-      )
-      (diagnostic
-        (severity information)
         (code "missing_initial_state")
         (source "semantic")
         (range (start 42 4) (end 46 5))

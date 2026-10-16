@@ -3,6 +3,7 @@
 description=Issue 287: state entry/do/exit action names declare usages; bare existing-action references still resolve
 libraries=standard
 require_complete_publication=true
+require_no_diagnostics=true
 ~~~
 # SOURCE
 ~~~sysml
@@ -28,12 +29,6 @@ package E {
 (fixture-diagnostics
   (document "memory://snapshot/state_action_semicolon_declarations.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 2 4) (end 14 5))
-      )
     )
   )
 )
@@ -50,12 +45,6 @@ package E {
 (fixture-diagnostics
   (document "memory://snapshot/state_action_semicolon_declarations.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 2 4) (end 14 5))
-      )
     )
   )
 )
