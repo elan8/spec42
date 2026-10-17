@@ -90,12 +90,6 @@ package Features {
         (range (start 15 1) (end 15 23))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
-        (source "parser")
-        (range (start 35 5) (end 36 1))
-      )
-      (diagnostic
         (severity warning)
         (code "unsupported_relationship_body_member")
         (source "semantic")
@@ -126,7 +120,7 @@ package Features {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:706adfccc32b9883acaa0df4f25d768bbcb74fa79dbd71c14b96311e3f77b769"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:706adfccc32b9883acaa0df4f25d768bbcb74fa79dbd71c14b96311e3f77b769"))
   (declarations
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "y")) (explicitRelationshipEndpoint (reference "C")) (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "B")) (explicitRelationshipEndpoint (reference "g")) (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "parent")) (explicitRelationshipEndpoint (reference "person")) (explicitRelationshipEndpoint (reference "mother")) (explicitRelationshipEndpoint (reference "parent")) (explicitRelationshipEndpoint (reference "LegalRecord::guardian")) (explicitRelationshipEndpoint (reference "parent")) (explicitRelationshipEndpoint (reference "Vehicle::vin")) (explicitRelationshipEndpoint (reference "RegisteredAsset::identifier")) (explicitRelationshipEndpoint (reference "Vehicle::vin")) (explicitRelationshipEndpoint (reference "legalIdentification")))))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -149,6 +143,7 @@ package Features {
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Fuel") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelOutPort"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (conjugation (reference "fuelInPort")))))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "RegisteredAsset")))))
     (declaration (id (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "vin")) (bindTarget (reference "v::vin")))))
     (declaration (id (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (anonymous (kind kerml-binding) (ordinal 1))))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "x")) (bindTarget (reference "vin")))))
@@ -243,6 +238,9 @@ package Features {
     (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (kind featureTyping) (ordinal 0))
       (authored-target "Fuel")
       (outcome (status resolved) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Fuel")))))
+    (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelOutPort"))) (kind conjugation) (ordinal 0))
+      (authored-target "fuelInPort")
+      (outcome (status resolved) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort")))))
     (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (kind specialization) (ordinal 0))
       (authored-target "RegisteredAsset")
       (outcome (status resolved) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset")))))
@@ -351,6 +349,7 @@ package Features {
   )
   (relationships
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Fuel"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelOutPort"))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelOutPort"))) (kind conjugation) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (kind specialization) (ordinal 0)))
     (relationship (kind bindSource) (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (anonymous (kind kerml-binding) (ordinal 0))))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind bindSource) (ordinal 0)))
     (relationship (kind bindSource) (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (anonymous (kind kerml-binding) (ordinal 1))))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::x"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (anonymous (kind kerml-binding) (ordinal 1))))) (kind bindSource) (ordinal 0)))
@@ -402,6 +401,7 @@ package Features {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind class-def) (name "RegisteredAsset")) (named (kind kerml-feature) (name "identifier")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind class-def) (name "RegisteredAsset")) (named (kind kerml-feature) (name "identifier")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort"))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelOutPort"))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (anonymous (kind kerml-binding) (ordinal 0))))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (anonymous (kind kerml-binding) (ordinal 1))))) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin"))) (target (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "vin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
@@ -486,6 +486,9 @@ package Features {
       (type (node (document "memory://snapshot/features.md") (qualified-name "Features::Fuel")) (provenance authored))
       (effective-type (node (document "memory://snapshot/features.md") (qualified-name "Features::Fuel")) (source direct))
       (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::Fuel")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelOutPort")))
+      (featured-by (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks")))
     )
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle")))
       (supertype (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset")) (scopes any subclassification))
@@ -751,6 +754,11 @@ package Features {
   (query (document "memory://snapshot/features.md") (range (start 33 31) (end 33 35)) (probe (position 33 31))
     (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort::fuelFlow"))) (kind featureTyping) (ordinal 0) (authored-target "Fuel")
       (outcome (status resolved) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Fuel")))))
+    )
+  )
+  (query (document "memory://snapshot/features.md") (range (start 35 27) (end 35 37)) (probe (position 35 27))
+    (reference (id (source (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelOutPort"))) (kind conjugation) (ordinal 0) (authored-target "fuelInPort")
+      (outcome (status resolved) (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Tanks::fuelInPort")))))
     )
   )
   (query (document "memory://snapshot/features.md") (range (start 55 26) (end 55 41)) (probe (position 55 26))

@@ -59,18 +59,6 @@ package BehaviorCoverage {
         (range (start 15 25) (end 15 32))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 20 4) (end 20 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 20 4) (end 20 28))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -83,7 +71,7 @@ package BehaviorCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:60cd5c4b8d55644780e57b4bd6c4152baa3899dd7c7951cce015495cc1a54628"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:60cd5c4b8d55644780e57b4bd6c4152baa3899dd7c7951cce015495cc1a54628"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Action1"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
@@ -112,6 +100,9 @@ package BehaviorCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter"))) (kind kerml-interaction) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter::x"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter::y"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::NegI"))) (kind kerml-invariant) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (kind kerml-literal-boolean) (membership (kind feature) (visibility default) (role result-expression)) (facts (expression-result (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P"))) (kind kerml-predicate) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind feature) (visibility default) (role result-expression)) (facts (expression-result (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default) (role result-expression)) (relationships (expressionOperand (reference "x")))))
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
@@ -185,6 +176,8 @@ package BehaviorCoverage {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-literal-boolean) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter::x"))) (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter::y"))) (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::NegI"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P::x"))) (provenance implied))
@@ -195,6 +188,7 @@ package BehaviorCoverage {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-expression) (name "E")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
+    (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (state literal) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-boolean-expression) (name "b")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
   )
@@ -272,6 +266,12 @@ package BehaviorCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter::y")))
       (featured-by (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::Inter")))
     )
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::NegI")))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0)))))
+    )
     (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P")))
     )
@@ -301,6 +301,7 @@ package BehaviorCoverage {
 (expressions
   (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-expression) (name "E")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (literal (value (kind integer) (integer 1))) (feature-reference "x" (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::E::x"))))))
   (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-invariant) (name "NegI")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
   (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-predicate) (name "P")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "x" (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P::x")))))
   (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (path (named (kind package) (name "BehaviorCoverage")) (named (kind kerml-boolean-expression) (name "b")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
 )

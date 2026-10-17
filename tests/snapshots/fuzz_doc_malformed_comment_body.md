@@ -16,7 +16,7 @@ alias Foo for Bar {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "expected_keyword")
+        (code "expected_alt")
         (source "parser")
         (range (start 0 0) (end 0 19))
       )

@@ -294,15 +294,15 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            matches!(
+            (matches!(
                 reference.kind(),
                 ReferenceKind::Conjugation
                     | ReferenceKind::Unioning
                     | ReferenceKind::Intersecting
                     | ReferenceKind::Differencing
                     | ReferenceKind::Disjoining
-            )
-            .then_some(index)
+            ) && !reference.flags().dotted)
+                .then_some(index)
         })
         .collect();
     let typing_slots: Vec<usize> = references
@@ -524,6 +524,12 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                             | ReferenceKind::FeatureChaining
                             | ReferenceKind::SatisfySource
                             | ReferenceKind::SatisfyTarget
+                            // A feature's type relationship operand may be an
+                            // `OwnedFeatureChain` (`differences b.f`, KerML 8.2.4.3.1).
+                            | ReferenceKind::Unioning
+                            | ReferenceKind::Intersecting
+                            | ReferenceKind::Differencing
+                            | ReferenceKind::Disjoining
                     )))
             .then_some(index)
         })

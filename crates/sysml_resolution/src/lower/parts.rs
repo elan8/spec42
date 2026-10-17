@@ -1354,6 +1354,10 @@ impl SemanticModelBuilder {
                 import: None,
             })?;
         }
+        // `Usage`'s `ValuePart` (`enum size : SizeChoice = SizeChoice::small;`).
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(document, declaration, feature_value)?;
+        }
         Ok(())
     }
 

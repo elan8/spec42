@@ -20,18 +20,6 @@ package FeatureDeclCoverage {
 (fixture-diagnostics
   (document "memory://snapshot/coverage_feature_decl_helpers.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 6 1) (end 6 12))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 6 1) (end 6 12))
-      )
     )
   )
 )
@@ -39,13 +27,14 @@ package FeatureDeclCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:f1b65d073cb2d6e70409c11bcd4731a38dbfe80251c5804229b4f34cdc971e95"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f1b65d073cb2d6e70409c11bcd4731a38dbfe80251c5804229b4f34cdc971e95"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b"))) (kind kerml-boolean-expression) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "f")))))
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e"))) (kind kerml-expression) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "f")))))
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::i"))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "f")))))
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (kind kerml-step) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "f")))))
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s2"))) (kind kerml-step) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper 1))) (feature-value (kind bind) (value (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (path (named (kind package) (name "FeatureDeclCoverage")) (named (kind kerml-step) (name "s2")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (result (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (path (named (kind package) (name "FeatureDeclCoverage")) (named (kind kerml-step) (name "s2")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (path (named (kind package) (name "FeatureDeclCoverage")) (named (kind kerml-step) (name "s2")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (path (named (kind package) (name "FeatureDeclCoverage")) (named (kind kerml-step) (name "s2")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
@@ -63,6 +52,9 @@ package FeatureDeclCoverage {
     (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e"))) (kind subsetting) (ordinal 0))
       (authored-target "f")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")))))
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::i"))) (kind subsetting) (ordinal 0))
+      (authored-target "f")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")))))
     (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (kind subsetting) (ordinal 0))
       (authored-target "f")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")))))
@@ -70,6 +62,7 @@ package FeatureDeclCoverage {
   (relationships
     (relationship (kind subsetting) (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b"))) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b"))) (kind subsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e"))) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::i"))) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::i"))) (kind subsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s"))) (kind subsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s2"))) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (path (named (kind package) (name "FeatureDeclCoverage")) (named (kind kerml-step) (name "s2")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (path (named (kind package) (name "FeatureDeclCoverage")) (named (kind kerml-step) (name "s2")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (path (named (kind package) (name "FeatureDeclCoverage")) (named (kind kerml-step) (name "s2")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
@@ -93,7 +86,11 @@ package FeatureDeclCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")))
       (subtype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::b")) (scopes any feature))
       (subtype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::i")) (scopes any feature))
       (subtype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::i")))
+      (supertype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::s")))
       (supertype (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")) (scopes any feature))
@@ -129,6 +126,11 @@ package FeatureDeclCoverage {
   )
   (query (document "memory://snapshot/coverage_feature_decl_helpers.md") (range (start 4 11) (end 4 12)) (probe (position 4 11))
     (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::e"))) (kind subsetting) (ordinal 0) (authored-target "f")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")))))
+    )
+  )
+  (query (document "memory://snapshot/coverage_feature_decl_helpers.md") (range (start 6 10) (end 6 11)) (probe (position 6 10))
+    (reference (id (source (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::i"))) (kind subsetting) (ordinal 0) (authored-target "f")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::f")))))
     )
   )

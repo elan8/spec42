@@ -1163,6 +1163,7 @@ impl SemanticModelBuilder {
                 short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
+                    variation: node.value.is_variation,
                     individual: node.value.is_individual,
                     derived: node.value.is_derived,
                     reference: node.value.is_reference,
