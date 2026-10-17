@@ -170,6 +170,9 @@ impl SemanticModelBuilder {
             ActionDefBodyElement::OccurrenceUsage(occurrence_usage) => {
                 self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
             }
+            ActionDefBodyElement::ViewUsage(view) => {
+                self.lower_view_usage(document, Some(owner), view)?;
+            }
             ActionDefBodyElement::PartUsage(part_usage) => {
                 self.lower_part_usage(document, Some(owner), part_usage)?;
             }
@@ -343,9 +346,6 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::ActionDefinitionMember,
                 element.span,
             ),
-            ActionDefBodyElement::ViewUsage(node) => {
-                self.lower_view_usage(document, Some(owner), node.as_ref())?;
-            }
         }
         Ok(())
     }
@@ -597,6 +597,9 @@ impl SemanticModelBuilder {
             ActionUsageBodyElement::OccurrenceUsage(occurrence_usage) => {
                 self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
             }
+            ActionUsageBodyElement::ViewUsage(view) => {
+                self.lower_view_usage(document, Some(owner), view)?;
+            }
             ActionUsageBodyElement::PartUsage(part_usage) => {
                 self.lower_part_usage(document, Some(owner), part_usage)?;
             }
@@ -767,9 +770,6 @@ impl SemanticModelBuilder {
             }
             ActionUsageBodyElement::MetadataKeywordUsage(_) => {
                 self.push_unsupported(document, UnsupportedFamily::ActionUsageMember, element.span)
-            }
-            ActionUsageBodyElement::ViewUsage(node) => {
-                self.lower_view_usage(document, Some(owner), node.as_ref())?;
             }
         }
         Ok(())
@@ -982,7 +982,13 @@ impl SemanticModelBuilder {
                 })?)
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                let reference = self.push_member_access_expression(owner, document, node)?;
+                // A dotted succession end is still a succession endpoint. Keep its role so
+                // event precedence consumes the same resolved feature path as a simple end.
+                let reference = if kind == ReferenceKind::Succession {
+                    self.push_member_access_expression_with_kind(owner, document, kind, node)?
+                } else {
+                    self.push_member_access_expression(owner, document, node)?
+                };
                 if reference.is_none() {
                     self.push_unsupported(document, family, node.span);
                 }
@@ -1268,7 +1274,7 @@ impl SemanticModelBuilder {
 
     /// The source of a `then` about to be lowered into the body of `owner`, whose members so
     /// far are the declarations before `end`. See [`ThenSource`].
-    fn then_source(&self, owner: DeclarationId, end: usize) -> Option<ThenSource> {
+    pub(crate) fn then_source(&self, owner: DeclarationId, end: usize) -> Option<ThenSource> {
         use crate::model::element_kind::element_kind;
         use crate::ElementKind;
         for index in (owner.index() + 1..end).rev() {

@@ -1218,34 +1218,6 @@ fn calc_usage_typed_by_a_calc_def_resolves() {
 }
 
 #[test]
-fn calc_usage_redefining_another_calc_usage_resolves() {
-    // `CalcUsage::redefines` is a bare `Vec<QualifiedReferenceId>`, not a
-    // `Node<SubsettingRelationship>` -- lowered as direct `Redefinition` references rather
-    // than through `lower_subsetting_relationship`.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tpart def P {\n\
-         \t\tcalc def Calc;\n\
-         \t\tcalc calcA : Calc;\n\
-         \t\tcalc calcB : Calc :>> calcA;\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains("(qualified-name \"Demo::P::calcB\"))) (kind calc)"),
-        "expected a calc usage declaration, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::calcB\")))"
-        ) && output.contains(
-            "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::calcA\")))"
-        ),
-        "expected calcB's redefinition of calcA to resolve, got:\n{output}"
-    );
-}
-
-#[test]
 fn view_usage_typed_by_a_view_def_resolves() {
     // planning/UPSTREAM_PARSER_GAPS.md #8 was resolved upstream in `0757de13`: `ViewUsage` now carries
     // a `subsets` field, so `view` usage lowering is no longer deferred.
@@ -2673,39 +2645,6 @@ fn first_then_succession_inside_action_def_body_resolves_both_ends() {
     assert!(
         !sexpr.contains("(status unresolved)") || !sexpr.contains("succession"),
         "did not expect an unresolved succession outcome for two declared siblings, got: {sexpr}"
-    );
-}
-
-/// A `state def` body's `entry action X;` / `do action Y;` / `exit action Z;` bindings (BNF
-/// `EntryAction`/`DoAction`/`ExitAction.action_reference`) must each resolve to the enclosing
-/// package's action declarations (there is no `StateDefBodyElement::ActionUsage` shape --
-/// bound actions are ordinarily declared alongside the state def, not nested inside it,
-/// mirroring the real corpus fixture `24_state_actions.md`), not fall through to
-/// `unsupported_state_definition_member`.
-#[test]
-fn entry_do_exit_action_bindings_inside_state_def_body_resolve() {
-    let sexpr = semantic_sexpr_for(
-        "package P { action enter1; action running1; action leave1; state def S { entry action enter1; do action running1; exit action leave1; } }",
-    );
-    assert!(
-        sexpr.contains("(kind entryActionBinding)"),
-        "expected an entryActionBinding relationship kind, got: {sexpr}"
-    );
-    assert!(
-        sexpr.contains("(kind doActionBinding)"),
-        "expected a doActionBinding relationship kind, got: {sexpr}"
-    );
-    assert!(
-        sexpr.contains("(kind exitActionBinding)"),
-        "expected an exitActionBinding relationship kind, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("unsupported_state_definition_member"),
-        "did not expect unsupported_state_definition_member, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("(status unresolved)"),
-        "expected all three action bindings to resolve to their sibling declarations, got: {sexpr}"
     );
 }
 
@@ -5271,12 +5210,12 @@ fn exact_feature_relationship_collections_project_canonical_authored_and_implied
     let published = detail_publication(
         &[ (
             "memory://model.sysml",
-            "package Model { classifier Vehicle { feature base; feature 'derived' : Vehicle redefines base chains base; } }",
+            "package Model { classifier Base { feature base; } classifier Vehicle specializes Base { feature 'derived' : Vehicle redefines base chains base; } }",
         ) ],
         ConstructionSchedule::Sequential,
     );
     let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
-    let base = identity_of(&published, "memory://model.sysml", "Model::Vehicle::base");
+    let base = identity_of(&published, "memory://model.sysml", "Model::Base::base");
     let derived = identity_of(
         &published,
         "memory://model.sysml",

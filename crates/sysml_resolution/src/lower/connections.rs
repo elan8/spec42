@@ -1505,6 +1505,20 @@ impl SemanticModelBuilder {
                 target,
             )?;
         }
+        // The n-ary `allocate ( e1, e2, ... )` form: as for any Connector, the first end is the
+        // source feature and the rest are target features (KerML 8.3.4.5.3).
+        for (position, end) in node.value.nary_ends.iter().enumerate() {
+            self.lower_kerml_connector_end(
+                document,
+                declaration,
+                if position == 0 {
+                    ReferenceKind::AllocateSource
+                } else {
+                    ReferenceKind::AllocateTarget
+                },
+                end,
+            )?;
+        }
         let DefinitionBody::Brace { elements, .. } = &node.value.body else {
             return Ok(());
         };

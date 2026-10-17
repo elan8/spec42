@@ -53,7 +53,7 @@ package Lamp {
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "off")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fail"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionTarget (reference "fault")) (transitionTrigger (reference "Fault")) (memberAccessOperand (reference "on::ready")))))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "fault")) (memberAccessOperand (reference "on::ready")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "on::ready")) (succession (reference "fault")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
@@ -105,11 +105,11 @@ package Lamp {
       (authored-target "on::ready")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
-      (authored-target "fault")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fault")))))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "on::ready")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready")))))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1))
+      (authored-target "fault")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fault")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind state) (name "on")) (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0))
       (authored-target "warming")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::warming")))))
@@ -167,8 +167,8 @@ package Lamp {
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fail"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fault"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fail"))) (kind transitionTarget) (ordinal 0)))
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fail"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Fault"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fail"))) (kind transitionTrigger) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fail"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fail"))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fault"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fault"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
     (relationship (kind initialState) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind state) (name "on")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::warming"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind state) (name "on")) (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
     (relationship (kind transitionSource) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind state) (name "on")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::warming"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind state) (name "on")) (anonymous (kind transition) (ordinal 0))))) (kind transitionSource) (ordinal 0)))
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind state) (name "on")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind state) (name "on")) (anonymous (kind transition) (ordinal 0))))) (kind transitionTarget) (ordinal 0)))
@@ -1057,14 +1057,14 @@ package Lamp {
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready")))))
     )
   )
-  (query (document "memory://snapshot/model.sysml") (range (start 16 57) (end 16 62)) (probe (position 16 57))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "fault")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fault")))))
+  (query (document "memory://snapshot/model.sysml") (range (start 16 30) (end 16 38)) (probe (position 16 30))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "on::ready")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready")))))
     )
   )
-  (query (document "memory://snapshot/model.sysml") (range (start 16 30) (end 16 38)) (probe (position 16 30))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "on::ready")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::on::ready")))))
+  (query (document "memory://snapshot/model.sysml") (range (start 16 57) (end 16 62)) (probe (position 16 57))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Lamp")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "fail")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "fault")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Lamp::Machine::fault")))))
     )
   )
   (query (document "memory://snapshot/model.sysml") (range (start 8 24) (end 8 31)) (probe (position 8 24))
@@ -1159,7 +1159,7 @@ package Lamp {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:0449bcbb9c56e1c5f52ca0c0a021fa855fa0d6c01c2caea0332111ba2651fd26",
+  "modelDigest": "blake3:ecd33e59644a87cf56e53df707897b54243fa8118a241e5e28ddb42e98fcf99e",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1811,19 +1811,19 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 25,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
+      "ordinal": 34,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 42,
+      "ordinal": 43,
       "relationshipKind": "containment",
       "source": 1
     },
@@ -1907,7 +1907,7 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "ordinal": 23,
       "relationshipKind": "containment",
       "source": 3
     },
@@ -1949,14 +1949,8 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 24,
       "relationshipKind": "containment",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "memberAccessOperand",
       "source": 4
     },
     {
@@ -1973,7 +1967,7 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 55,
       "relationshipKind": "subsetting",
       "source": 4
     },
@@ -1981,6 +1975,12 @@ package Lamp {
       "kind": "relationship",
       "ordinal": 58,
       "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "succession",
       "source": 4
     },
     {
@@ -2069,13 +2069,13 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "ordinal": 31,
       "relationshipKind": "succession",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 26,
       "relationshipKind": "transition",
       "source": 7
     },
@@ -2135,13 +2135,13 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
+      "ordinal": 40,
       "relationshipKind": "succession",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 34,
+      "ordinal": 35,
       "relationshipKind": "transition",
       "source": 8
     },
@@ -2315,6 +2315,12 @@ package Lamp {
     },
     {
       "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "succession",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
       "ordinal": 17,
       "relationshipKind": "transition",
       "source": 11
@@ -2363,12 +2369,6 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "containment",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
       "ordinal": 36,
       "relationshipKind": "containment",
       "source": 13
@@ -2387,7 +2387,13 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
+      "ordinal": 39,
+      "relationshipKind": "containment",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
       "relationshipKind": "containment",
       "source": 13
     },
@@ -2435,7 +2441,7 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 42,
       "relationshipKind": "containment",
       "source": 14
     },
@@ -2525,12 +2531,6 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "containment",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
       "ordinal": 27,
       "relationshipKind": "containment",
       "source": 16
@@ -2549,7 +2549,13 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "ordinal": 30,
+      "relationshipKind": "containment",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
       "relationshipKind": "containment",
       "source": 16
     },
@@ -2597,7 +2603,7 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
+      "ordinal": 33,
       "relationshipKind": "containment",
       "source": 17
     },
@@ -2721,7 +2727,7 @@ package Lamp {
         "navigation": 12,
         "origin": 25,
         "provenance": "implied",
-        "reference": 149,
+        "reference": 150,
         "source": 32,
         "target": 31
       },
@@ -2757,7 +2763,7 @@ package Lamp {
         "navigation": 12,
         "origin": 26,
         "provenance": "implied",
-        "reference": 148,
+        "reference": 149,
         "source": 32,
         "target": 31
       },
@@ -2856,7 +2862,7 @@ package Lamp {
         "navigation": 27,
         "origin": 1,
         "provenance": "implied",
-        "reference": 143,
+        "reference": 144,
         "source": 31,
         "target": 34
       },
@@ -2895,6 +2901,15 @@ package Lamp {
         "reference": 74,
         "source": 1,
         "target": 2
+      },
+      {
+        "kind": "succession",
+        "navigation": 27,
+        "origin": 2,
+        "provenance": "implied",
+        "reference": 143,
+        "source": 31,
+        "target": 34
       },
       {
         "kind": "containment",
@@ -2937,15 +2952,6 @@ package Lamp {
         "navigation": 14,
         "origin": 14,
         "provenance": "authored",
-        "reference": 178,
-        "source": 8,
-        "target": 14
-      },
-      {
-        "kind": "containment",
-        "navigation": 14,
-        "origin": 14,
-        "provenance": "authored",
         "reference": 179,
         "source": 8,
         "target": 14
@@ -2962,9 +2968,18 @@ package Lamp {
       {
         "kind": "containment",
         "navigation": 14,
-        "origin": 9,
+        "origin": 14,
         "provenance": "authored",
         "reference": 181,
+        "source": 8,
+        "target": 14
+      },
+      {
+        "kind": "containment",
+        "navigation": 14,
+        "origin": 9,
+        "provenance": "authored",
+        "reference": 182,
         "source": 8,
         "target": 9
       },
@@ -2982,7 +2997,7 @@ package Lamp {
         "navigation": 14,
         "origin": 10,
         "provenance": "authored",
-        "reference": 182,
+        "reference": 183,
         "source": 8,
         "target": 10
       },
@@ -2991,7 +3006,7 @@ package Lamp {
         "navigation": 14,
         "origin": 11,
         "provenance": "authored",
-        "reference": 190,
+        "reference": 191,
         "source": 10,
         "target": 11
       },
@@ -3018,15 +3033,6 @@ package Lamp {
         "navigation": 19,
         "origin": 21,
         "provenance": "authored",
-        "reference": 151,
-        "source": 15,
-        "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "origin": 21,
-        "provenance": "authored",
         "reference": 152,
         "source": 15,
         "target": 21
@@ -3043,9 +3049,18 @@ package Lamp {
       {
         "kind": "containment",
         "navigation": 19,
-        "origin": 16,
+        "origin": 21,
         "provenance": "authored",
         "reference": 154,
+        "source": 15,
+        "target": 21
+      },
+      {
+        "kind": "containment",
+        "navigation": 19,
+        "origin": 16,
+        "provenance": "authored",
+        "reference": 155,
         "source": 15,
         "target": 16
       },
@@ -3063,7 +3078,7 @@ package Lamp {
         "navigation": 19,
         "origin": 17,
         "provenance": "authored",
-        "reference": 155,
+        "reference": 156,
         "source": 15,
         "target": 17
       },
@@ -3072,7 +3087,7 @@ package Lamp {
         "navigation": 19,
         "origin": 18,
         "provenance": "authored",
-        "reference": 163,
+        "reference": 164,
         "source": 17,
         "target": 18
       },
@@ -4055,7 +4070,7 @@ package Lamp {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 144,
+        "reference": 145,
         "source": 31,
         "target": {
           "node": 24,
@@ -4099,7 +4114,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 145,
+        "reference": 146,
         "source": 32,
         "target": {
           "reference": 25,
@@ -4110,7 +4125,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 146,
+        "reference": 147,
         "source": 32,
         "target": {
           "reference": 29,
@@ -4121,7 +4136,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 147,
+        "reference": 148,
         "source": 32,
         "target": {
           "reference": 33,
@@ -4132,7 +4147,7 @@ package Lamp {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 150,
+        "reference": 151,
         "source": 32,
         "target": {
           "node": 24,
@@ -4385,7 +4400,7 @@ package Lamp {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 84,
+        "reference": 83,
         "source": 7,
         "target": {
           "reference": 22,
@@ -4407,7 +4422,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 85,
+        "reference": 84,
         "source": 7,
         "target": {
           "node": 4,
@@ -4426,24 +4441,24 @@ package Lamp {
         }
       },
       {
-        "kind": "memberAccessOperand",
-        "navigation": 27,
-        "provenance": "authored",
-        "reference": 83,
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 85,
         "source": 2,
         "target": {
-          "node": 31,
+          "reference": 26,
           "status": "resolved"
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 86,
+        "kind": "succession",
+        "navigation": 27,
+        "provenance": "authored",
+        "reference": 87,
         "source": 2,
         "target": {
-          "reference": 26,
+          "node": 31,
           "status": "resolved"
         }
       },
@@ -4462,7 +4477,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 87,
+        "reference": 86,
         "source": 3,
         "target": {
           "reference": 21,
@@ -4506,7 +4521,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 183,
+        "reference": 184,
         "source": 8,
         "target": {
           "reference": 24,
@@ -4517,7 +4532,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 184,
+        "reference": 185,
         "source": 8,
         "target": {
           "reference": 25,
@@ -4528,7 +4543,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 185,
+        "reference": 186,
         "source": 8,
         "target": {
           "reference": 30,
@@ -4539,7 +4554,7 @@ package Lamp {
         "kind": "transitionSource",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 186,
+        "reference": 187,
         "source": 8,
         "target": {
           "node": 33,
@@ -4550,7 +4565,7 @@ package Lamp {
         "kind": "transitionTarget",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 187,
+        "reference": 188,
         "source": 8,
         "target": {
           "node": 24,
@@ -4561,7 +4576,7 @@ package Lamp {
         "kind": "transitionTrigger",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 188,
+        "reference": 189,
         "source": 8,
         "target": {
           "reference": 19,
@@ -4572,43 +4587,10 @@ package Lamp {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 189,
+        "reference": 190,
         "source": 8,
         "target": {
           "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 199,
-        "source": 14,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 191,
-        "source": 14,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 192,
-        "source": 14,
-        "target": {
-          "reference": 32,
           "status": "resolved"
         }
       },
@@ -4627,21 +4609,21 @@ package Lamp {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 193,
+        "reference": 192,
         "source": 14,
         "target": {
-          "reference": 31,
+          "reference": 22,
           "status": "resolved"
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 194,
+        "reference": 193,
         "source": 14,
         "target": {
-          "node": 11,
+          "reference": 32,
           "status": "resolved"
         }
       },
@@ -4657,10 +4639,43 @@ package Lamp {
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 194,
+        "source": 14,
+        "target": {
+          "reference": 31,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 195,
+        "source": 14,
+        "target": {
+          "node": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 202,
+        "source": 14,
+        "target": {
+          "node": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 196,
         "source": 9,
         "target": {
           "reference": 26,
@@ -4671,7 +4686,7 @@ package Lamp {
         "kind": "succession",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 197,
+        "reference": 198,
         "source": 9,
         "target": {
           "node": 33,
@@ -4682,7 +4697,7 @@ package Lamp {
         "kind": "succession",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 198,
+        "reference": 199,
         "source": 9,
         "target": {
           "node": 24,
@@ -4693,7 +4708,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 196,
+        "reference": 197,
         "source": 10,
         "target": {
           "reference": 21,
@@ -4704,7 +4719,7 @@ package Lamp {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 202,
+        "reference": 203,
         "source": 10,
         "target": {
           "node": 8,
@@ -4715,7 +4730,7 @@ package Lamp {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 203,
+        "reference": 204,
         "source": 11,
         "target": {
           "reference": 53,
@@ -4726,7 +4741,7 @@ package Lamp {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 204,
+        "reference": 205,
         "source": 11,
         "target": {
           "node": 10,
@@ -4737,7 +4752,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 156,
+        "reference": 157,
         "source": 15,
         "target": {
           "reference": 24,
@@ -4748,7 +4763,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 157,
+        "reference": 158,
         "source": 15,
         "target": {
           "reference": 25,
@@ -4759,7 +4774,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 158,
+        "reference": 159,
         "source": 15,
         "target": {
           "reference": 30,
@@ -4770,7 +4785,7 @@ package Lamp {
         "kind": "transitionSource",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 159,
+        "reference": 160,
         "source": 15,
         "target": {
           "node": 24,
@@ -4781,7 +4796,7 @@ package Lamp {
         "kind": "transitionTarget",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 160,
+        "reference": 161,
         "source": 15,
         "target": {
           "node": 33,
@@ -4792,7 +4807,7 @@ package Lamp {
         "kind": "transitionTrigger",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 161,
+        "reference": 162,
         "source": 15,
         "target": {
           "reference": 19,
@@ -4803,43 +4818,10 @@ package Lamp {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 162,
+        "reference": 163,
         "source": 15,
         "target": {
           "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 172,
-        "source": 21,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 164,
-        "source": 21,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 165,
-        "source": 21,
-        "target": {
-          "reference": 32,
           "status": "resolved"
         }
       },
@@ -4858,21 +4840,21 @@ package Lamp {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 166,
+        "reference": 165,
         "source": 21,
         "target": {
-          "reference": 31,
+          "reference": 22,
           "status": "resolved"
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 167,
+        "reference": 166,
         "source": 21,
         "target": {
-          "node": 18,
+          "reference": 32,
           "status": "resolved"
         }
       },
@@ -4888,10 +4870,43 @@ package Lamp {
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 167,
+        "source": 21,
+        "target": {
+          "reference": 31,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 168,
+        "source": 21,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 175,
+        "source": 21,
+        "target": {
+          "node": 15,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 169,
         "source": 16,
         "target": {
           "reference": 26,
@@ -4902,7 +4917,7 @@ package Lamp {
         "kind": "succession",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 170,
+        "reference": 171,
         "source": 16,
         "target": {
           "node": 24,
@@ -4913,7 +4928,7 @@ package Lamp {
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 171,
+        "reference": 172,
         "source": 16,
         "target": {
           "node": 33,
@@ -4924,7 +4939,7 @@ package Lamp {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 169,
+        "reference": 170,
         "source": 17,
         "target": {
           "reference": 21,
@@ -4935,7 +4950,7 @@ package Lamp {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 175,
+        "reference": 176,
         "source": 17,
         "target": {
           "node": 15,
@@ -4946,7 +4961,7 @@ package Lamp {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 176,
+        "reference": 177,
         "source": 18,
         "target": {
           "reference": 53,
@@ -4957,7 +4972,7 @@ package Lamp {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 177,
+        "reference": 178,
         "source": 18,
         "target": {
           "node": 17,

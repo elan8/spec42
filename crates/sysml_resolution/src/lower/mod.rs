@@ -2666,17 +2666,18 @@ impl SemanticModelBuilder {
             PackageBodyElement::KermlInvariant(node) => {
                 self.lower_kerml_invariant_member(document, owner, node)?
             }
-            PackageBodyElement::KermlSuccession(node) => match owner {
-                Some(owner) => self.lower_kerml_succession_member(document, owner, node)?,
-                None => {
-                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-                }
-            },
             PackageBodyElement::KermlConnector(node) => match owner {
                 Some(owner) => self.lower_kerml_connector_member(document, owner, node)?,
                 // A connector at the root of a document has no type to be featured by, so there
                 // is no owner to source its ends at; the `connect` statement arm above defers the
                 // same shape for the same reason.
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
+            },
+            PackageBodyElement::KermlSuccession(node) => match owner {
+                Some(owner) => self.lower_kerml_succession_member(document, owner, node)?,
+                // As for a root connector: no type to source its ends at.
                 None => {
                     self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
                 }

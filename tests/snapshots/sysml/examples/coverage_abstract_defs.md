@@ -32,15 +32,9 @@ abstract part def Container {
   (document "memory://snapshot/coverage_abstract_defs.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "expected_alt")
         (source "parser")
-        (range (start 4 0) (end 4 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 4 0) (end 4 35))
       )
       (diagnostic
@@ -68,7 +62,7 @@ abstract part def Container {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:2d9646cebd39163276252ce264a393e4b6a9cb9a63ba140699260bae461bbbe2"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2d9646cebd39163276252ce264a393e4b6a9cb9a63ba140699260bae461bbbe2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractEvent"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPerson"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract individual) (individual-multiplicity (node (document "memory://snapshot/coverage_abstract_defs.md") (path (named (kind occurrence-def) (name "AbstractPerson")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))))

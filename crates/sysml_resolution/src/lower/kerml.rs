@@ -358,6 +358,7 @@ impl SemanticModelBuilder {
         node: &Node<KermlFeature>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -365,6 +366,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     all: node.value.is_all,
                     member: node.value.is_member,
@@ -407,8 +409,8 @@ impl SemanticModelBuilder {
             &node.value.specializations,
             direction_node_fact(node.value.prefix.direction()),
         )?;
-        // `FeatureDeclaration` takes `ConjugationPart` instead of `FeatureSpecializationPart`
-        // (KerML 8.2.4.3.1): `feature g ~ B::f`. The declared feature is the conjugated type.
+        // `FeatureDeclaration`'s `ConjugationPart`, the alternative to its
+        // `FeatureSpecializationPart` (KerML 8.2.4.3.1), lowers as a classifier's does.
         if let Some(conjugation) = &node.value.conjugates {
             let span = self.documents[document.index()]
                 .parsed
@@ -778,6 +780,7 @@ impl SemanticModelBuilder {
             node.span,
             DeclarationFacts {
                 negated: Some(node.value.is_negated),
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -787,6 +790,16 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
+        // `Invariant`'s `FeatureDeclaration` and `ValuePart` (`inv i :> f;`, KerML 8.2.5.8.1).
+        self.lower_feature_specializations(
+            document,
+            declaration,
+            &node.value.specializations,
+            None,
+        )?;
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(document, declaration, feature_value)?;
+        }
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 

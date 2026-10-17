@@ -29,6 +29,8 @@ fn marker_url(id: &'static str) -> &'static str {
         "general-d3-arrow" => "url(#general-d3-arrow)",
         "general-d3-defined-by" => "url(#general-d3-defined-by)",
         "general-d3-subsets" => "url(#general-d3-subsets)",
+        "general-d3-reference-subsets" => "url(#general-d3-reference-subsets)",
+        "general-d3-redefines" => "url(#general-d3-redefines)",
         other => other,
     }
 }
@@ -51,6 +53,10 @@ fn apply_edge_marker(edge_kind: &str) -> MarkerStyle {
             false,
             vec![("marker-end", marker_url("general-d3-subsets"))],
         ),
+        "reference-subsetting" => ms(
+            false,
+            vec![("marker-end", marker_url("general-d3-reference-subsets"))],
+        ),
         // A typing line is thinner than a membership line: a view that shows usages beside
         // their definitions has one for every usage, and the tree is what a reader follows.
         "typing" => ms(
@@ -67,16 +73,10 @@ fn apply_edge_marker(edge_kind: &str) -> MarkerStyle {
                 ("marker-end", "none"),
             ],
         ),
-        "bind" => ms(
-            false,
-            vec![("stroke-dasharray", "2,2"), ("marker-end", "none")],
-        ),
+        "bind" => ms(false, vec![("marker-end", "none")]),
         "allocate" => ms(
             false,
-            vec![
-                ("marker-end", marker_url("general-d3-arrow")),
-                ("stroke-dasharray", "8,4"),
-            ],
+            vec![("marker-end", marker_url("general-d3-arrow-open"))],
         ),
         "dependency" | "usage" => ms(
             false,
@@ -87,10 +87,7 @@ fn apply_edge_marker(edge_kind: &str) -> MarkerStyle {
         ),
         "redefinition" => ms(
             false,
-            vec![
-                ("marker-end", marker_url("general-d3-specializes")),
-                ("stroke-dasharray", "5,3"),
-            ],
+            vec![("marker-end", marker_url("general-d3-redefines"))],
         ),
         "composition" => ms(
             false,
@@ -163,6 +160,12 @@ fn path_from_simple_section(section: Option<&EdgeSection>) -> Option<String> {
 
 /// Port of `generalEdgeDisplayLabel` in `render/drawing.ts`.
 fn general_edge_display_label(edge: &LaidOutEdge, edge_kind: &str) -> String {
+    if edge_kind == "bind" && edge.label.trim().is_empty() {
+        return "=".to_owned();
+    }
+    if edge_kind == "allocate" && edge.label.trim().is_empty() {
+        return "«allocate»".to_owned();
+    }
     const GENERIC: &[&str] = &[
         "",
         "relationship",
@@ -227,6 +230,26 @@ fn edge_label_anchor(
 ) -> LabelAnchor {
     if let Some(section) = edge.layout.as_ref().and_then(|l| l.sections.first()) {
         let points = section_points(section);
+        if edge
+            .attributes
+            .get("typedProjection")
+            .and_then(serde_json::Value::as_bool)
+            == Some(true)
+        {
+            // A two-point route's middle vertex is its source, which puts a label
+            // underneath the source node. Use the middle of a real route segment.
+            if let Some(segment) = points.windows(2).max_by(|a, b| {
+                let length = |pair: &[Point]| (pair[1].x - pair[0].x).hypot(pair[1].y - pair[0].y);
+                length(a).total_cmp(&length(b))
+            }) {
+                return LabelAnchor {
+                    x: (segment[0].x + segment[1].x) / 2.0,
+                    y: (segment[0].y + segment[1].y) / 2.0,
+                    text_anchor: "middle",
+                    dy: "-0.35em",
+                };
+            }
+        }
         if !points.is_empty() {
             let index = (points.len() - 1) / 2;
             let point = points[index];
@@ -394,4 +417,54 @@ pub fn draw_edges(
     }
 
     vec![edge_layer, label_layer]
+}
+
+#[cfg(test)]
+mod notation_tests {
+    use super::*;
+
+    #[test]
+    fn a_native_straight_edge_label_is_between_the_nodes_not_under_its_source() {
+        let edge: LaidOutEdge = serde_json::from_value(serde_json::json!({
+            "id": "allocation", "source": "function", "target": "controller",
+            "label": "", "edgeKind": "allocate", "attributes": { "typedProjection": true },
+            "layout": { "sections": [{
+                "startPoint": { "x": 50, "y": 100 },
+                "endPoint": { "x": 50, "y": 200 }
+            }] }
+        }))
+        .unwrap();
+        let anchor = edge_label_anchor(&edge, None, None);
+        assert_eq!((anchor.x, anchor.y), (50.0, 150.0));
+    }
+
+    #[test]
+    fn specialization_family_and_allocation_use_normative_markers() {
+        // SysML 2.0, formal/2026-03-02, 8.2.3.6 and 8.2.3.15.
+        for (kind, marker) in [
+            ("typing", "general-d3-defined-by"),
+            ("subsetting", "general-d3-subsets"),
+            ("reference-subsetting", "general-d3-reference-subsets"),
+            ("redefinition", "general-d3-redefines"),
+            ("allocate", "general-d3-arrow-open"),
+        ] {
+            let style = apply_edge_marker(kind);
+            assert!(!style.unsupported);
+            assert_eq!(
+                style
+                    .styles
+                    .iter()
+                    .find(|(key, _)| *key == "marker-end")
+                    .map(|(_, value)| *value),
+                Some(marker_url(marker))
+            );
+            assert!(
+                !style
+                    .styles
+                    .iter()
+                    .any(|(key, _)| *key == "stroke-dasharray"),
+                "{kind} is a solid line"
+            );
+        }
+    }
 }

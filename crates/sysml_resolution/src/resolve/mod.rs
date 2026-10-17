@@ -305,15 +305,15 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            matches!(
+            (matches!(
                 reference.kind(),
                 ReferenceKind::Conjugation
                     | ReferenceKind::Unioning
                     | ReferenceKind::Intersecting
                     | ReferenceKind::Differencing
                     | ReferenceKind::Disjoining
-            )
-            .then_some(index)
+            ) && !reference.flags().dotted)
+                .then_some(index)
         })
         .collect();
     let typing_slots: Vec<usize> = references
@@ -535,6 +535,12 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                             | ReferenceKind::FeatureChaining
                             | ReferenceKind::SatisfySource
                             | ReferenceKind::SatisfyTarget
+                            // A feature's type relationship operand may be an
+                            // `OwnedFeatureChain` (`differences b.f`, KerML 8.2.4.3.1).
+                            | ReferenceKind::Unioning
+                            | ReferenceKind::Intersecting
+                            | ReferenceKind::Differencing
+                            | ReferenceKind::Disjoining
                     )))
             .then_some(index)
         })
@@ -1617,8 +1623,8 @@ fn build_ancestor_closures_with_implied<R: ResolutionReferenceFact>(
 ///
 /// Conjugation is not a specialization. It is included because this closure feeds inherited-member
 /// lookup, and KerML 8.3.3.1 also draws `inheritedMemberships` from the owned conjugator's
-/// `originalType`. The published specialization relation is unchanged. Inherited feature directions
-/// are reversed for direction facts; name lookup uses the original member.
+/// `originalType`. The published specialization relation is unchanged, and name lookup uses the
+/// original member; direction facts do not yet reverse for a member inherited this way.
 fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     references: &[R],
@@ -2381,6 +2387,13 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
     // is a lowering defect -- an unnamed member must not acquire a declared name -- and it is
     // recorded in planning/UPSTREAM_PARSER_GAPS.md rather than compensated for here.
     let excluded = (reference.kind() == ReferenceKind::Redefinition).then(|| reference.source());
+    let inherited_redefinition_scope = reference.kind() == ReferenceKind::Redefinition
+        && source.owner.is_some_and(|owner| {
+            declarations.get(owner.index()).is_some_and(|declaration| {
+                crate::model::element_kind::element_kind(declaration.kind)
+                    .conforms_to(sysml_contract::ElementKind::Type)
+            })
+        });
     // The reference that names a perform usage's performed action does not see anonymous perform
     // usages, which are named by what they perform (see `is_anonymous_perform`).
     let excludes_anonymous_performs = reference.kind() == ReferenceKind::References
@@ -2485,7 +2498,13 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
                 domain: first_segment_domain,
                 excluded,
                 excludes_anonymous_performs,
-                first_scope: if qualified_redefinition_owner.is_some() {
+                // KerML 8.2.3.5.1 starts a redefinedFeature lookup from the owning Type's
+                // general Types. Excluding just the source Feature still admits its siblings:
+                // same-named redefinitions would shadow that target, including anonymous
+                // redefinitions named after their targets.
+                first_scope: if inherited_redefinition_scope
+                    || qualified_redefinition_owner.is_some()
+                {
                     FirstScopePolicy::InheritedOnly
                 } else {
                     FirstScopePolicy::OwnedThenInherited

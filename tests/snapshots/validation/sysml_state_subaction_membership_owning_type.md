@@ -28,12 +28,6 @@ package States {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 6 21) (end 6 28))
-      )
     )
   )
 )
@@ -45,15 +39,12 @@ package States {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good"))) (kind state-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (entryActionBinding (reference "started")))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good::started"))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0))
-      (authored-target "started")
-      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good::started"))) (target (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good"))) (provenance implied))
   )
   (evaluation
   )
@@ -62,7 +53,7 @@ package States {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good::started")))
       (featured-by (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good")))
     )
 )
@@ -70,10 +61,5 @@ package States {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (range (start 6 21) (end 6 28)) (probe (position 6 21))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0) (authored-target "started")
-      (outcome (status unresolved)))
-    )
-  )
 )
 ~~~

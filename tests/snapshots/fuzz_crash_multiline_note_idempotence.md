@@ -44,15 +44,9 @@ er E specializes C intersects A, B;
         (range (start 6 1) (end 6 30))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 7 1) (end 7 65))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 7 1) (end 7 65))
       )
       (diagnostic
@@ -80,7 +74,7 @@ er E specializes C intersects A, B;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:668d0b65885cb2b0ea395c641912956031d700fb30e8f5cb6e0ce9f07d6e8d82"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:668d0b65885cb2b0ea395c641912956031d700fb30e8f5cb6e0ce9f07d6e8d82"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_multiline_note_idempotence.md") (qualified-name "ers"))) (kind package) (membership (kind owning) (visibility default)))
   )

@@ -4,6 +4,9 @@ pub fn normalize_edge_kind(relationship_type: &str) -> String {
     if kind.is_empty() {
         return "relationship".to_string();
     }
+    if kind == "reference-subsetting" || kind == "noncomposite-membership" {
+        return kind;
+    }
     if kind.contains("item_flow")
         || kind.contains("item flow")
         || kind == "flow"

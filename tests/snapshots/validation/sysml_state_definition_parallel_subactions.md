@@ -34,21 +34,9 @@ package States {
     (diagnostics
       (diagnostic
         (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 2 4) (end 5 5))
-      )
-      (diagnostic
-        (severity information)
         (code "missing_initial_state")
         (source "semantic")
         (range (start 2 4) (end 5 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 8 4) (end 12 5))
       )
       (diagnostic
         (severity information)
@@ -73,21 +61,9 @@ package States {
     (diagnostics
       (diagnostic
         (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 2 4) (end 5 5))
-      )
-      (diagnostic
-        (severity information)
         (code "missing_initial_state")
         (source "semantic")
         (range (start 2 4) (end 5 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 8 4) (end 12 5))
       )
       (diagnostic
         (severity information)

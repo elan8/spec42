@@ -1354,6 +1354,10 @@ impl SemanticModelBuilder {
                 import: None,
             })?;
         }
+        // `Usage`'s `ValuePart` (`enum size : SizeChoice = SizeChoice::small;`).
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(document, declaration, feature_value)?;
+        }
         Ok(())
     }
 
@@ -2041,6 +2045,10 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserOccurrenceUsage>,
     ) -> Result<(), ConstructionError> {
+        let then_source = node
+            .value
+            .then_span
+            .and_then(|_| owner.and_then(|owner| self.then_source(owner, self.declarations.len())));
         let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
@@ -2050,6 +2058,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                then_source,
                 short_name,
                 modifiers: DeclarationModifiers {
                     event: node.value.is_event,

@@ -757,7 +757,7 @@ semantic_diagnostic_codes! {
     /// A state definition owns states but declares no initial transition.
     MissingInitialState => "missing_initial_state",
         "This state definition owns states but declares no initial transition.";
-    /// A state definition owns states but declares no finality indicator.
+    /// Retired advisory code, retained for compatibility; finality is optional in SysML.
     MissingFinalState => "missing_final_state",
         "This state definition owns states but declares no finality indicator.";
     }

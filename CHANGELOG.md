@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **State behavior may remain active.** Stop emitting the non-normative
+  `missing_final_state` advisory; SysML 2.0 does not require a transition to `done`.
+
+- **Views and behavior follow declared model facts (#284–#287).** General, Browser and Grid
+  views retain port-definition conjugation without panicking. Action bodies admit typed view
+  usages, and semicolon entry/do/exit action declarations no longer produce false unresolved
+  references. Sequence messages follow event successions and transfer causality rather than
+  message names; cyclic ordering remains explicit. Adds the diagram `Conjugation` relationship
+  kind and advances the semantic vocabulary to v49; pins parser AST 282.
+
+- **Repeated redefinitions resolve inherited targets consistently (#255).** Sibling features no
+  longer shadow a redefinition target as their effective names settle. Repeated anonymous ends
+  retain namespace collision warnings without spurious target ambiguity; genuinely ambiguous
+  inherited targets remain ambiguous.
+
 - **State entry, do, and exit actions are derived collections.** `deriveStateDefinitionEntryAction`,
   `deriveStateDefinitionDoAction`, `deriveStateDefinitionExitAction`, and the matching state-usage
   rules project the first owned state subaction of that kind. `deriveStateDefinitionState` projects
@@ -47,6 +62,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   its pin (`config/libraries/method.json`), its reference page and its CI bundle are removed; the
   domain libraries remain. `--disable-kpar-library method` and a `method` entry in
   `spec42.disabledLibraries` are still accepted and have no effect.
+
+- **General views retain hierarchy and cross-links.** Ownership is drawn with nested boxes;
+  filtered allocations between exposed endpoints are included even when their owner is outside
+  the view. Reference membership stays distinct from composition, and allocation, redefinition
+  and reference-subsetting symbols follow SysML 2.0 graphical notation.
+  Explicit per-node expansion choices take precedence over the export depth default.
+  Interconnection views retain connections owned outside separately exposed modules;
+  closing a module also hides its internally owned boundary-to-boundary connections.
+  Edge labels stay on routed segments, and interconnection exports include their full view frames.
 
 - **The editor opens an interconnection view one part at a time (#262).** It drew every level
   of parts. It now starts with the exposed parts and their direct parts closed; a part with parts

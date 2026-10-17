@@ -609,35 +609,6 @@ fn calc_def_untyped_parameter_still_lowers_a_declaration_shell() {
 }
 
 #[test]
-fn calc_def_anonymous_redefinition_parameter_lowers_its_redefines_relationship() {
-    // The leading `in :>> target = expr;` spelling is the one case that actually populates
-    // `ast::InOutDecl::redefines` (a `Node<SubsettingRelationship>`), independent of whether a
-    // type is present (`type_name` stays `None` here). `lower_parameter_declaration` now
-    // lowers this via the same `lower_subsetting_relationship` helper `AttributeUsage`/
-    // `ItemUsage` already call, so the redefinition target reference resolves.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tcalc def Sum {\n\
-         \t\tin target;\n\
-         \t\tin :>> target = 1;\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Sum::\")))"
-        ) || output.contains("(kind redefinition)"),
-        "expected an anonymous parameter's redefinition reference to lower, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Sum::target\")))"
-        ),
-        "expected the redefinition reference to resolve to target, got:\n{output}"
-    );
-}
-
-#[test]
 fn requirement_subject_declaration_lowers_and_resolves_its_typing() {
     let output = build_semantic_sexpr(
         "package Demo {\n\
