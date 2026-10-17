@@ -4,10 +4,6 @@ description=A type relationship may name an inherited feature operand
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=Local name resolution includes inherited memberships
-source_expectation=accepted
-rule_family=derive
-expectation=semantics
-rule_id=kerml-1.0:8.2.3.5.3:resolveLocalName
 type=file
 libraries=none
 ~~~

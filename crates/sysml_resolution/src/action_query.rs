@@ -34,6 +34,16 @@ pub struct ActionOwnedMembershipId {
     pub position: u32,
 }
 
+/// Stable identity of one `filter` condition owned by a view or package.
+///
+/// A condition expression is not a declaration, so, like [`ActionArgumentId`], its identity is
+/// its owner plus its one-based position among the owner's ElementFilterMemberships.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct FilterConditionId {
+    pub owner: SymbolId,
+    pub position: u32,
+}
+
 /// Exact metaclass of an action-owned Membership fact.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ActionOwnedMembershipKind {
@@ -55,6 +65,11 @@ pub enum ActionDerivedFactOutcome {
     Arguments(Box<[ActionArgumentId]>),
     Parameters(Box<[ActionInputParameterId]>),
     OwnedMembershipMembers(Box<[ActionOwnedMembershipMember]>),
+    FilterConditions(Box<[FilterConditionId]>),
+    /// A String-valued property; `None` when it is null.
+    Text(Option<Box<str>>),
+    /// A Boolean-valued property.
+    Flag(bool),
     Unsupported {
         prerequisite: ActionDerivedFactPrerequisite,
     },

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.6:validateControlNodeOwningType
-blocked_by=semantic-control-node-owning-type
 type=file
 ~~~
 # SOURCE
@@ -35,7 +34,7 @@ package Actions {
         (severity warning)
         (code "control_node_invalid_owner")
         (source "semantic")
-        (range (start 10 8) (end 10 15))
+        (range (start 9 8) (end 9 15))
       )
     )
   )
@@ -46,6 +45,12 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_control_node_owning_type.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "control_node_invalid_owner")
+        (source "semantic")
+        (range (start 9 8) (end 9 15))
+      )
     )
   )
 )

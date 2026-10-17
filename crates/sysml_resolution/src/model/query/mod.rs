@@ -1019,12 +1019,17 @@ impl<D> SemanticModel<D> {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
-        self.resolved_outcome(
-            self.relationships_of_kinds(
-                declaration,
-                feature_derived_relationship_kinds(collection),
-            ),
-        )
+        let mut relationships = self
+            .relationships_of_kinds(declaration, feature_derived_relationship_kinds(collection))
+            .into_vec();
+        if matches!(
+            collection,
+            FeatureDerivedRelationshipCollection::OwnedReferenceSubsetting
+                | FeatureDerivedRelationshipCollection::OwnedCrossSubsetting
+        ) {
+            relationships.truncate(1);
+        }
+        self.resolved_outcome(relationships.into_boxed_slice())
     }
 
     /// Projects one exact KerML Type relationship collection or operand projection from the
@@ -1042,6 +1047,19 @@ impl<D> SemanticModel<D> {
         let Some(rule) = type_derived_relationship_rule(collection) else {
             return self.query_outcome(QueryAnswer::Unsupported);
         };
+        if collection == TypeDerivedRelationshipCollection::OwnedSubclassification {
+            let is_classifier = self.storage.declaration(declaration).is_some_and(|source| {
+                crate::model::element_kind::element_kind(source.kind)
+                    .conforms_to(sysml_contract::ElementKind::Classifier)
+            });
+            if rule.metaclass != "Classifier" || !is_classifier {
+                return self.query_outcome(QueryAnswer::Unsupported);
+            }
+            let _rule_id = rule.rule_id;
+            return self.resolved_outcome(
+                self.relationships_of_kinds(declaration, &[ReferenceKind::Subclassification]),
+            );
+        }
         if rule.metaclass != "Type"
             || self
                 .storage
@@ -1116,6 +1134,14 @@ impl<D> SemanticModel<D> {
                         .is_some_and(|membership| membership.kind == MembershipKind::Feature)
             })
             .collect()
+    }
+
+    /// KerML `Type::featureMembership`: the owned feature memberships in order, then the
+    /// inherited ones (`inheritedMembership`, with redefinition reduction applied).
+    pub(crate) fn feature_members(&self, owner: DeclarationId) -> Vec<DeclarationId> {
+        let mut members = self.owned_feature_members(owner);
+        members.extend(self.inherited_feature_members(owner));
+        members
     }
 
     /// Every strict redefinition ancestor, from the canonical specialization closure.
@@ -1584,21 +1610,459 @@ impl<D> SemanticModel<D> {
                 prerequisite: RequirementDerivedFactPrerequisite::CanonicalMembershipRole,
             });
         };
-        // Owner-scoped from the settled index rather than a corpus scan.
-        let values = self.symbols(self.child_declarations(declaration).iter().copied().filter(
-            |candidate_id| {
-                self.memberships
-                    .get(*candidate_id)
-                    .is_some_and(|membership| membership.kind == MembershipKind::Feature)
-                    && self
-                        .storage
-                        .declaration(*candidate_id)
-                        .is_some_and(|candidate| {
-                            element_kind::membership_role(candidate.kind) == Some(role)
-                        })
-            },
-        ));
+        // The derivations select from `featureMembership`, which includes inherited memberships
+        // (SysML 8.3.20, 8.3.21). A subject parameter and an objective requirement are singular:
+        // the pinned bodies keep only the first SubjectMembership or ObjectiveMembership.
+        let first_only = matches!(
+            collection,
+            RequirementDerivedFactCollection::CaseDefinitionObjectiveRequirement
+                | RequirementDerivedFactCollection::CaseUsageObjectiveRequirement
+                | RequirementDerivedFactCollection::DefinitionSubjectParameter
+                | RequirementDerivedFactCollection::UsageSubjectParameter
+                | RequirementDerivedFactCollection::CaseDefinitionSubjectParameter
+                | RequirementDerivedFactCollection::CaseUsageSubjectParameter
+        );
+        let matched = self
+            .feature_members(declaration)
+            .into_iter()
+            .filter(|candidate_id| {
+                self.storage
+                    .declaration(*candidate_id)
+                    .is_some_and(|candidate| {
+                        element_kind::membership_role(candidate.kind) == Some(role)
+                    })
+            });
+        let values = if first_only {
+            self.symbols_in_order(matched.take(1))
+        } else {
+            self.symbols(matched)
+        };
         self.resolved_outcome(RequirementDerivedFactOutcome::Elements(values))
+    }
+
+    fn composite_viewpoint_usages(&self, owner: DeclarationId) -> Box<[SymbolId]> {
+        self.symbols(
+            self.child_declarations(owner)
+                .iter()
+                .copied()
+                .filter(|member| {
+                    self.storage
+                        .declaration(*member)
+                        .is_some_and(|candidate| candidate.kind == DeclarationKind::ViewpointUsage)
+                        && self.types.usage_is_reference(&self.storage, *member) == Some(false)
+                }),
+        )
+    }
+
+    /// First `ReturnParameterMembership` parameter of `featureMemberships`, in membership order.
+    ///
+    /// KerML `Function::result` and `Expression::result` take "its parameter owned (possibly in a
+    /// supertype) via a ReturnParameterMembership" (deriveFunctionResult, deriveExpressionResult),
+    /// so an inherited result counts, and the owner's own result comes first.
+    fn first_return_parameter(&self, owner: DeclarationId) -> Box<[SymbolId]> {
+        let mut values = self
+            .symbols_in_order(self.feature_members(owner).into_iter().filter(|member| {
+                self.effective_membership_role(*member)
+                    == Some(crate::MembershipRole::ReturnParameter)
+            }))
+            .into_vec();
+        values.truncate(1);
+        values.into_boxed_slice()
+    }
+
+    /// `viewRendering` as a derived-fact value: the `referencedRendering` of the view's
+    /// ViewRenderingMembership (deriveViewDefinitionViewRendering, deriveViewUsageViewRendering),
+    /// from the `view_rendering` query, which settles both the inline and the `render target;`
+    /// forms. Unresolved and ambiguous renderings stay unresolved and ambiguous.
+    fn view_rendering_fact(&self, view: SymbolId) -> QueryOutcome<ActionDerivedFactOutcome> {
+        match self.view_rendering(view).answer {
+            QueryAnswer::Resolved(rendering) => {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    rendering
+                        .map(|rendering| Box::from([rendering.referenced_rendering]))
+                        .unwrap_or_default(),
+                ))
+            }
+            QueryAnswer::Ambiguous(_) => self.query_outcome(QueryAnswer::Ambiguous(Box::new([]))),
+            QueryAnswer::Unsupported => self.query_outcome(QueryAnswer::Unsupported),
+            QueryAnswer::Unresolved => self.query_outcome(QueryAnswer::Unresolved),
+            QueryAnswer::Recovery => self.query_outcome(QueryAnswer::Recovery),
+            QueryAnswer::Incomplete => self.query_outcome(QueryAnswer::Incomplete),
+        }
+    }
+
+    /// Owned members that conform to `Expression`, in membership order.
+    ///
+    /// `MultiplicityRange` bounds are these expressions: a single authored bound is only the
+    /// upper expression, and `[m..n]` owns the lower expression first.
+    fn owned_expression_members(&self, owner: DeclarationId) -> Box<[SymbolId]> {
+        self.symbols_in_order(
+            self.child_declarations(owner)
+                .iter()
+                .copied()
+                .filter(|member| {
+                    self.storage.declaration(*member).is_some_and(|candidate| {
+                        element_kind::element_kind(candidate.kind)
+                            .conforms_to(sysml_contract::ElementKind::Expression)
+                    })
+                }),
+        )
+    }
+
+    /// Whether the declaration's metaclass conforms to `kind`.
+    fn declaration_conforms(
+        &self,
+        declaration: DeclarationId,
+        kind: sysml_contract::ElementKind,
+    ) -> bool {
+        self.storage
+            .declaration(declaration)
+            .is_some_and(|candidate| element_kind::element_kind(candidate.kind).conforms_to(kind))
+    }
+
+    /// The usage's definitions of metaclass `kind`: its most specific effective types, those no
+    /// other effective type specializes (KerML `Feature::type`, SysML `Usage::definition`).
+    fn usage_definitions(
+        &self,
+        declaration: DeclarationId,
+        kind: sysml_contract::ElementKind,
+    ) -> Vec<DeclarationId> {
+        self.types
+            .feature_types(declaration)
+            .into_iter()
+            .filter(|definition| self.declaration_conforms(*definition, kind))
+            .collect()
+    }
+
+    /// `if referencedFeatureTarget() = null then self else ... endif`: the target of the
+    /// usage's owned ReferenceSubsetting when it is of metaclass `kind`, nothing when it is not,
+    /// and the usage itself when it references nothing.
+    fn referenced_feature_target_or_self(
+        &self,
+        declaration: DeclarationId,
+        kind: sysml_contract::ElementKind,
+    ) -> Box<[SymbolId]> {
+        let references = self.relationships_of_kinds(declaration, &[ReferenceKind::References]);
+        match references.first().map(|relationship| &relationship.target) {
+            None => self.symbols(std::iter::once(declaration)),
+            Some(RelationshipTarget::Resolved(target)) => {
+                let conforms = self
+                    .declaration_of(*target)
+                    .is_some_and(|target| self.declaration_conforms(target, kind));
+                if conforms {
+                    Box::new([*target])
+                } else {
+                    Box::new([])
+                }
+            }
+            Some(_) => Box::new([]),
+        }
+    }
+
+    /// `objectiveRequirement.featureMembership->selectByKind(RequirementVerificationMembership)
+    /// .verifiedRequirement`: each `verify` member of the case's objective, as its referenced
+    /// requirement or, declared inline, itself.
+    fn verified_requirements(&self, case: DeclarationId) -> Box<[SymbolId]> {
+        let Some(objective) = self.feature_members(case).into_iter().find(|member| {
+            self.storage
+                .declaration(*member)
+                .is_some_and(|member| member.kind == DeclarationKind::ObjectiveRequirement)
+        }) else {
+            return Box::new([]);
+        };
+        let mut values = Vec::new();
+        for member in self.feature_members(objective) {
+            if self.storage.declaration(member).map(|member| member.kind)
+                != Some(DeclarationKind::VerifyRequirement)
+            {
+                continue;
+            }
+            let targets =
+                self.relationships_of_kinds(member, &[ReferenceKind::VerifyRequirementTarget]);
+            match targets.first().map(|relationship| &relationship.target) {
+                None => values.extend(self.symbol_id(member)),
+                Some(RelationshipTarget::Resolved(target)) => values.push(*target),
+                Some(_) => {}
+            }
+        }
+        values.dedup();
+        values.into_boxed_slice()
+    }
+
+    /// `ownedUseCase->selectByKind(IncludeUseCaseUsage).useCaseIncluded`: each `include` of the
+    /// use case, as the use case it references or, declared inline, itself.
+    fn included_use_cases(&self, use_case: DeclarationId) -> Box<[SymbolId]> {
+        let mut values = self
+            .relationships_of_kinds(use_case, &[ReferenceKind::IncludeUseCase])
+            .iter()
+            .filter_map(|relationship| match relationship.target {
+                RelationshipTarget::Resolved(target) => Some(target),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        values.extend(
+            self.child_declarations(use_case)
+                .iter()
+                .copied()
+                .filter(|member| {
+                    self.storage
+                        .declaration_facts(*member)
+                        .is_some_and(|facts| facts.is_included_use_case)
+                })
+                .filter_map(|member| self.symbol_id(member)),
+        );
+        values.into_boxed_slice()
+    }
+
+    /// The `filter` conditions an owner declares, in authored order
+    /// (`ownedMembership->selectByKind(ElementFilterMembership).condition`).
+    fn filter_conditions(
+        &self,
+        owner: SymbolId,
+        declaration: DeclarationId,
+    ) -> Box<[crate::action_query::FilterConditionId]> {
+        self.storage
+            .filter_conditions
+            .iter()
+            .filter(|condition| condition.owner == declaration)
+            .zip(1u32..)
+            .map(|(_, position)| crate::action_query::FilterConditionId { owner, position })
+            .collect()
+    }
+
+    /// A KerML AnnotatingElement declaration: a comment, documentation or textual
+    /// representation.
+    fn is_annotating_kind(kind: Option<DeclarationKind>) -> bool {
+        matches!(
+            kind,
+            Some(
+                DeclarationKind::Comment
+                    | DeclarationKind::Documentation
+                    | DeclarationKind::TextualRepresentation
+            )
+        )
+    }
+
+    fn is_owned_annotation(&self, declaration: DeclarationId) -> bool {
+        self.storage
+            .declaration_facts(declaration)
+            .is_some_and(|facts| facts.is_owned_annotation)
+    }
+
+    /// Whether the element is owned through an OwningMembership of its owner.
+    fn is_owned_member(&self, declaration: DeclarationId) -> bool {
+        !self.is_owned_annotation(declaration)
+            && self.memberships.get(declaration).is_some_and(|membership| {
+                matches!(
+                    membership.kind,
+                    MembershipKind::Owning | MembershipKind::Feature
+                )
+            })
+    }
+
+    /// The annotating elements an element owns through Annotations.
+    fn owned_annotating_elements(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
+        self.child_declarations(declaration)
+            .iter()
+            .copied()
+            .filter(|member| self.is_owned_annotation(*member))
+            .collect()
+    }
+
+    /// The elements an annotating element's owned Annotations (`about`) annotate.
+    fn annotation_targets(&self, declaration: DeclarationId) -> Vec<SymbolId> {
+        self.relationships_of_kinds(declaration, &[ReferenceKind::Annotation])
+            .iter()
+            .filter_map(|relationship| match relationship.target {
+                RelationshipTarget::Resolved(target) => Some(target),
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// The member elements of a namespace's owned Memberships: its owned members, and the
+    /// element each owned alias names.
+    fn owned_membership_elements(&self, namespace: DeclarationId) -> Vec<DeclarationId> {
+        let mut members = Vec::new();
+        for member in self.child_declarations(namespace).iter().copied() {
+            let Some(candidate) = self.storage.declaration(member) else {
+                continue;
+            };
+            if candidate.kind == DeclarationKind::Alias {
+                members.extend(
+                    self.relationships_of_kinds(member, &[ReferenceKind::AliasBinding])
+                        .iter()
+                        .filter_map(|relationship| match relationship.target {
+                            RelationshipTarget::Resolved(target) => self.declaration_of(target),
+                            _ => None,
+                        }),
+                );
+            } else if self.is_owned_member(member) {
+                members.push(member);
+            }
+        }
+        members
+    }
+
+    /// The member elements of a namespace's imported Memberships.
+    fn imported_members(&self, namespace: DeclarationId) -> Vec<DeclarationId> {
+        self.effective_imports
+            .entries_for_owner(Some(namespace))
+            .flat_map(|(_, candidates)| candidates.iter().copied())
+            .collect()
+    }
+
+    /// KerML `effectiveName()`.
+    fn effective_name(&self, declaration: DeclarationId) -> Option<&str> {
+        match self
+            .resolution
+            .effective_names
+            .get(declaration.index())?
+            .name
+        {
+            crate::resolve::results::EffectiveNameOutcome::Resolved(name) => {
+                self.storage.symbol(name)
+            }
+            _ => None,
+        }
+    }
+
+    /// KerML `effectiveShortName()`.
+    fn effective_short_name(&self, declaration: DeclarationId) -> Option<&str> {
+        match self
+            .resolution
+            .effective_names
+            .get(declaration.index())?
+            .short_name
+        {
+            crate::resolve::results::EffectiveNameOutcome::Resolved(name) => {
+                self.storage.symbol(name)
+            }
+            _ => None,
+        }
+    }
+
+    /// KerML `escapedName()`: the effective name, or the short name when there is none, quoted
+    /// unless it is a basic name.
+    fn escaped_name(&self, declaration: DeclarationId) -> Option<String> {
+        let name = self
+            .effective_name(declaration)
+            .or_else(|| self.effective_short_name(declaration))?;
+        if valid_identifier(name) {
+            return Some(name.to_owned());
+        }
+        let mut quoted = String::with_capacity(name.len() + 2);
+        quoted.push('\'');
+        for character in name.chars() {
+            if matches!(character, '\'' | '\\') {
+                quoted.push('\\');
+            }
+            quoted.push(character);
+        }
+        quoted.push('\'');
+        Some(quoted)
+    }
+
+    /// KerML `deriveElementQualifiedName`. A top-level element is a member of its document's
+    /// root namespace, which has no owner.
+    fn normative_qualified_name(&self, declaration: DeclarationId, depth: usize) -> Option<String> {
+        if depth > self.storage.declarations.len() || !self.is_owned_member(declaration) {
+            return None;
+        }
+        let candidate = self.storage.declaration(declaration)?;
+        // A name that an earlier owned member of the same namespace also has is not unique.
+        if let Some(name) = self.effective_name(declaration) {
+            let siblings = match candidate.owner {
+                Some(owner) => self.child_declarations(owner).to_vec(),
+                None => self
+                    .documents
+                    .document_declarations(candidate.document)
+                    .iter()
+                    .copied()
+                    .filter(|other| {
+                        self.storage
+                            .declaration(*other)
+                            .is_some_and(|other| other.owner.is_none())
+                    })
+                    .collect(),
+            };
+            let first = siblings
+                .into_iter()
+                .filter(|other| self.is_owned_member(*other))
+                .find(|other| self.effective_name(*other) == Some(name));
+            if first != Some(declaration) {
+                return None;
+            }
+        }
+        let escaped = self.escaped_name(declaration)?;
+        match candidate.owner {
+            None => Some(escaped),
+            Some(owner) => {
+                let qualified = self.normative_qualified_name(owner, depth + 1)?;
+                Some(format!("{qualified}::{escaped}"))
+            }
+        }
+    }
+
+    /// `connectorEnd.ownedReferenceSubsetting->select(s | s <> null).subsettedFeature`, in end
+    /// order. A dotted end subsets a feature chain that is not lowered as its own Feature.
+    fn connector_related_features(
+        &self,
+        connector: DeclarationId,
+    ) -> Result<Vec<DeclarationId>, ActionDerivedFactPrerequisite> {
+        let mut related = Vec::new();
+        for end in self.connector_ends(connector).iter() {
+            match &end.endpoint {
+                ConnectorEndpoint::Feature(RelationshipTarget::Resolved(target)) => {
+                    related.extend(self.declaration_of(*target));
+                }
+                ConnectorEndpoint::FeatureChain { .. } => {
+                    return Err(ActionDerivedFactPrerequisite::UnloweredFeatureChain);
+                }
+                ConnectorEndpoint::Feature(_) | ConnectorEndpoint::Unconnected => {}
+            }
+        }
+        Ok(related)
+    }
+
+    /// `deriveConnectorDefaultFeaturingType`: of the featuring types (transitively) of the
+    /// related features within which every related feature is featured, the first that no other
+    /// such type is featured within.
+    fn nearest_common_featuring_type(&self, related: &[DeclarationId]) -> Option<DeclarationId> {
+        let closure = |feature: DeclarationId| {
+            let mut seen = Vec::new();
+            let mut pending = vec![feature];
+            while let Some(current) = pending.pop() {
+                for (featuring, _) in self.types.featuring_types(current).iter() {
+                    if !seen.contains(featuring) {
+                        seen.push(*featuring);
+                        pending.push(*featuring);
+                    }
+                }
+            }
+            seen
+        };
+        let featured_within = |feature: DeclarationId, featuring: DeclarationId| {
+            let types = closure(feature);
+            types.is_empty() || types.contains(&featuring)
+        };
+        let mut common = Vec::new();
+        for feature in related {
+            for featuring in closure(*feature) {
+                if !common.contains(&featuring)
+                    && related
+                        .iter()
+                        .all(|other| featured_within(*other, featuring))
+                {
+                    common.push(featuring);
+                }
+            }
+        }
+        common.iter().copied().find(|candidate| {
+            !common
+                .iter()
+                .any(|other| other != candidate && closure(*other).contains(candidate))
+        })
     }
 
     /// The exact Actions derivation boundary. Canonical effective usages and the ordered argument
@@ -1871,7 +2335,936 @@ impl<D> SemanticModel<D> {
             ));
             return self.resolved_outcome(ActionDerivedFactOutcome::Values(values));
         }
+        let state_subaction = |kind: DeclarationKind| {
+            self.symbols_in_order(
+                self.child_declarations(declaration)
+                    .iter()
+                    .copied()
+                    .filter(|member| {
+                        self.storage
+                            .declaration(*member)
+                            .is_some_and(|member| member.kind == kind)
+                    })
+                    .take(1),
+            )
+        };
+        let usage_projection = |kinds: &[DeclarationKind]| {
+            self.symbols(
+                self.effective_usage_members(declaration)
+                    .into_iter()
+                    .filter(|member| {
+                        self.storage
+                            .declaration(*member)
+                            .is_some_and(|member| kinds.contains(&member.kind))
+                    }),
+            )
+        };
         match collection {
+            ActionDerivedFactCollection::StateDefinitionEntryAction
+                if source_kind == Some(DeclarationKind::StateDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::EntryActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateDefinitionDoAction
+                if source_kind == Some(DeclarationKind::StateDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::DoActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateDefinitionExitAction
+                if source_kind == Some(DeclarationKind::StateDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::ExitActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateUsageEntryAction
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::EntryActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateUsageDoAction
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::DoActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateUsageExitAction
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::ExitActionBinding,
+                )))
+            }
+            ActionDerivedFactCollection::StateDefinitionState
+                if source_kind == Some(DeclarationKind::StateDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::StateUsage,
+                    DeclarationKind::ExhibitStateUsage,
+                    DeclarationKind::FinalState,
+                ])))
+            }
+            ActionDerivedFactCollection::CalculationDefinitionCalculation
+                if source_kind == Some(DeclarationKind::CalcDefinition) =>
+            {
+                // `calculation = action->selectByKind(CalculationUsage)`: case, analysis,
+                // verification and use-case usages are CalculationUsages too.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(
+                        self.effective_usage_members(declaration)
+                            .into_iter()
+                            .filter(|member| {
+                                self.storage.declaration(*member).is_some_and(|member| {
+                                    element_kind::element_kind(member.kind)
+                                        .conforms_to(sysml_contract::ElementKind::CalculationUsage)
+                                })
+                            }),
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::AllocationDefinitionAllocation
+                if source_kind == Some(DeclarationKind::AllocationDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::Allocate,
+                ])))
+            }
+            ActionDerivedFactCollection::RenderingDefinitionRendering
+                if source_kind == Some(DeclarationKind::RenderingDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::RenderingUsage,
+                ])))
+            }
+            ActionDerivedFactCollection::ViewDefinitionView
+                if source_kind == Some(DeclarationKind::ViewDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
+                    DeclarationKind::ViewUsage,
+                ])))
+            }
+            ActionDerivedFactCollection::ViewDefinitionViewRendering
+                if source_kind == Some(DeclarationKind::ViewDefinition) =>
+            {
+                self.view_rendering_fact(symbol)
+            }
+            ActionDerivedFactCollection::ViewUsageViewRendering
+                if source_kind == Some(DeclarationKind::ViewUsage) =>
+            {
+                self.view_rendering_fact(symbol)
+            }
+            ActionDerivedFactCollection::ViewDefinitionSatisfiedViewpoint
+                if source_kind == Some(DeclarationKind::ViewDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.composite_viewpoint_usages(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::ViewUsageSatisfiedViewpoint
+                if source_kind == Some(DeclarationKind::ViewUsage) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.composite_viewpoint_usages(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::PortDefinitionConjugatedPortDefinition
+                if source_kind == Some(DeclarationKind::PortDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                    DeclarationKind::ConjugatedPortDefinition,
+                )))
+            }
+            ActionDerivedFactCollection::FeatureCrossFeature
+                if self
+                    .memberships
+                    .get(declaration)
+                    .is_some_and(|membership| membership.kind == MembershipKind::Feature) =>
+            {
+                match crate::resolve::end_features::cross_feature_of(
+                    &self.storage,
+                    &self.resolution.member_access_paths,
+                    declaration,
+                ) {
+                    Ok(crate::resolve::end_features::CrossFeature::Resolved(target)) => {
+                        let values = self.symbol_id(target).into_iter().collect::<Vec<_>>();
+                        self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                            values.into_boxed_slice(),
+                        ))
+                    }
+                    Ok(crate::resolve::end_features::CrossFeature::Absent) => {
+                        self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
+                    }
+                    Ok(crate::resolve::end_features::CrossFeature::Unpublished) | Err(_) => {
+                        self.query_outcome(QueryAnswer::Unresolved)
+                    }
+                }
+            }
+            ActionDerivedFactCollection::FeatureFeatureTarget
+                if self
+                    .memberships
+                    .get(declaration)
+                    .is_some_and(|membership| membership.kind == MembershipKind::Feature) =>
+            {
+                let chaining =
+                    self.relationships_of_kinds(declaration, &[ReferenceKind::FeatureChaining]);
+                match chaining.last().map(|relationship| &relationship.target) {
+                    None => {
+                        let values = self.symbol_id(declaration).into_iter().collect::<Vec<_>>();
+                        self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                            values.into_boxed_slice(),
+                        ))
+                    }
+                    Some(RelationshipTarget::Resolved(target)) => {
+                        self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([*target])))
+                    }
+                    Some(
+                        RelationshipTarget::Unresolved
+                        | RelationshipTarget::Ambiguous(_)
+                        | RelationshipTarget::Unsupported,
+                    ) => self.query_outcome(QueryAnswer::Unresolved),
+                }
+            }
+            ActionDerivedFactCollection::FunctionResult
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::Function)
+                }) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.first_return_parameter(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::ExpressionResult
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::Expression)
+                }) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.first_return_parameter(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::BehaviorStep
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::Behavior)
+                }) =>
+            {
+                let members = self
+                    .owned_feature_members(declaration)
+                    .into_iter()
+                    .chain(self.inherited_feature_members(declaration))
+                    .filter(|member| {
+                        self.storage.declaration(*member).is_some_and(|candidate| {
+                            element_kind::element_kind(candidate.kind)
+                                .conforms_to(sysml_contract::ElementKind::Step)
+                        })
+                    });
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(members)))
+            }
+            ActionDerivedFactCollection::MultiplicityRangeLowerBound
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::MultiplicityRange)
+                }) =>
+            {
+                let expressions = self.owned_expression_members(declaration);
+                let values = if expressions.len() < 2 {
+                    Vec::new()
+                } else {
+                    vec![expressions[0]]
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::MultiplicityRangeUpperBound
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::MultiplicityRange)
+                }) =>
+            {
+                let expressions = self.owned_expression_members(declaration);
+                let values = match expressions.as_ref() {
+                    [] => Vec::new(),
+                    [only] | [_, only, ..] => vec![*only],
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::MultiplicityRangeBound
+                if source_kind.is_some_and(|kind| {
+                    element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::MultiplicityRange)
+                }) =>
+            {
+                let expressions = self.owned_expression_members(declaration);
+                let values = match expressions.as_ref() {
+                    [] => Vec::new(),
+                    [upper] => vec![*upper],
+                    [lower, upper, ..] => vec![*lower, *upper],
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::ItemUsageItemDefinition
+                if self
+                    .declaration_conforms(declaration, sysml_contract::ElementKind::ItemUsage) =>
+            {
+                // `itemDefinition = occurrenceDefinition->selectByKind(Structure)`.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(
+                        self.usage_definitions(declaration, sysml_contract::ElementKind::Structure)
+                            .into_iter(),
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::PartUsagePartDefinition
+                if self
+                    .declaration_conforms(declaration, sysml_contract::ElementKind::PartUsage) =>
+            {
+                // `itemDefinition->selectByKind(PartDefinition)`.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(
+                        self.usage_definitions(
+                            declaration,
+                            sysml_contract::ElementKind::PartDefinition,
+                        )
+                        .into_iter(),
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::OccurrenceUsageIndividualDefinition
+                if self.declaration_conforms(
+                    declaration,
+                    sysml_contract::ElementKind::OccurrenceUsage,
+                ) =>
+            {
+                // The first occurrence definition that is `individual`.
+                let first = self
+                    .usage_definitions(
+                        declaration,
+                        sysml_contract::ElementKind::OccurrenceDefinition,
+                    )
+                    .into_iter()
+                    .find(|definition| {
+                        self.storage
+                            .declaration_facts(*definition)
+                            .is_some_and(|facts| facts.modifiers.individual)
+                    });
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(first.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::ConjugatedPortTypingPortDefinition
+                if source_kind == Some(DeclarationKind::PortUsage) =>
+            {
+                // The ConjugatedPortTyping a port usage owns (`port p : ~P`) is authored as a
+                // conjugated FeatureTyping of the original port definition, which is
+                // `conjugatedPortDefinition.originalPortDefinition`.
+                let originals = self
+                    .storage
+                    .references
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, reference)| {
+                        reference.source == declaration
+                            && reference.kind == ReferenceKind::FeatureTyping
+                            && reference.flags.conjugated
+                    })
+                    .filter_map(|(index, _)| {
+                        let reference = AuthoredReferenceId::from_index(index).ok()?;
+                        match self.resolution.outcome(reference)? {
+                            ResolutionStatus::Resolved(original) => Some(original),
+                            _ => None,
+                        }
+                    })
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(originals.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::TransitionUsageSuccession
+                if source_kind == Some(DeclarationKind::Transition) =>
+            {
+                // `ownedMember->selectByKind(Succession)->at(1)`.
+                let first = self
+                    .child_declarations(declaration)
+                    .iter()
+                    .copied()
+                    .find(|member| {
+                        self.storage.declaration(*member).is_some_and(|member| {
+                            element_kind::element_kind(member.kind)
+                                .conforms_to(sysml_contract::ElementKind::Succession)
+                        })
+                    });
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(first.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::TransitionUsageTarget
+                if source_kind == Some(DeclarationKind::Transition) =>
+            {
+                // The succession's first target feature, when it is an ActionUsage. The
+                // transition's `then` end is that target.
+                let targets = self
+                    .relationships_of_kinds(declaration, &[ReferenceKind::TransitionTarget])
+                    .iter()
+                    .filter_map(|relationship| match relationship.target {
+                        RelationshipTarget::Resolved(target) => Some(target),
+                        _ => None,
+                    })
+                    .take(1)
+                    .filter(|target| {
+                        self.declaration_of(*target).is_some_and(|target| {
+                            self.declaration_conforms(
+                                target,
+                                sysml_contract::ElementKind::ActionUsage,
+                            )
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(targets.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::TransitionUsageTriggerAction
+                if source_kind == Some(DeclarationKind::Transition) =>
+            {
+                // The AcceptActionUsages owned through a `trigger` TransitionFeatureMembership.
+                let triggers = self
+                    .child_declarations(declaration)
+                    .iter()
+                    .copied()
+                    .filter(|member| {
+                        self.storage.declaration(*member).is_some_and(|candidate| {
+                            element_kind::membership_role_with_trigger(
+                                candidate.kind,
+                                self.storage
+                                    .declaration_facts(*member)
+                                    .and_then(|facts| facts.is_trigger_action),
+                            ) == Some(sysml_contract::MembershipRole::TransitionTriggerAction)
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(triggers.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::AssertConstraintUsageAssertedConstraint
+                if source_kind == Some(DeclarationKind::AssertConstraintUsage) =>
+            {
+                // The referenced ConstraintUsage, or the usage itself when it references none.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.referenced_feature_target_or_self(
+                        declaration,
+                        sysml_contract::ElementKind::ConstraintUsage,
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::EventOccurrenceUsageEventOccurrence
+                if source_kind == Some(DeclarationKind::OccurrenceUsage)
+                    && self
+                        .storage
+                        .declaration_facts(declaration)
+                        .is_some_and(|facts| facts.modifiers.event) =>
+            {
+                // The referenced OccurrenceUsage, or the usage itself when it references none.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.referenced_feature_target_or_self(
+                        declaration,
+                        sysml_contract::ElementKind::OccurrenceUsage,
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::VerificationCaseDefinitionVerifiedRequirement
+                if source_kind == Some(DeclarationKind::VerificationCaseDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.verified_requirements(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::VerificationCaseUsageVerifiedRequirement
+                if source_kind == Some(DeclarationKind::VerificationCaseUsage) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.verified_requirements(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::UseCaseDefinitionIncludedUseCase
+                if source_kind == Some(DeclarationKind::UseCaseDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.included_use_cases(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::UseCaseUsageIncludedUseCase
+                if source_kind == Some(DeclarationKind::UseCaseUsage) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.included_use_cases(declaration),
+                ))
+            }
+            ActionDerivedFactCollection::ViewDefinitionViewCondition
+                if source_kind == Some(DeclarationKind::ViewDefinition) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::FilterConditions(
+                    self.filter_conditions(symbol, declaration),
+                ))
+            }
+            ActionDerivedFactCollection::ViewUsageViewCondition
+                if source_kind == Some(DeclarationKind::ViewUsage) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::FilterConditions(
+                    self.filter_conditions(symbol, declaration),
+                ))
+            }
+            ActionDerivedFactCollection::ElementIsLibraryElement => {
+                // `libraryNamespace() <> null`: the element is, or is owned within, a library
+                // package.
+                let mut current = Some(declaration);
+                let mut is_library = false;
+                while let Some(id) = current {
+                    let Some(candidate) = self.storage.declaration(id) else {
+                        break;
+                    };
+                    if candidate.kind == DeclarationKind::LibraryPackage {
+                        is_library = true;
+                        break;
+                    }
+                    current = candidate.owner;
+                }
+                self.resolved_outcome(ActionDerivedFactOutcome::Flag(is_library))
+            }
+            ActionDerivedFactCollection::ElementName
+            | ActionDerivedFactCollection::OwningMembershipOwnedMemberName
+                if collection == ActionDerivedFactCollection::ElementName
+                    || self.is_owned_member(declaration) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Text(
+                    self.effective_name(declaration).map(Into::into),
+                ))
+            }
+            ActionDerivedFactCollection::ElementShortName
+            | ActionDerivedFactCollection::OwningMembershipOwnedMemberShortName
+                if collection == ActionDerivedFactCollection::ElementShortName
+                    || self.is_owned_member(declaration) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Text(
+                    self.effective_short_name(declaration).map(Into::into),
+                ))
+            }
+            ActionDerivedFactCollection::ElementQualifiedName => {
+                self.resolved_outcome(ActionDerivedFactOutcome::Text(
+                    self.normative_qualified_name(declaration, 0)
+                        .map(String::into_boxed_str),
+                ))
+            }
+            ActionDerivedFactCollection::ElementOwnedElement => {
+                // `ownedRelationship.ownedRelatedElement`, in ownership order.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(self.child_declarations(declaration).iter().copied()),
+                ))
+            }
+            ActionDerivedFactCollection::ElementOwnedAnnotation => {
+                // The Annotations the element owns that annotate it, each identified by the
+                // annotating element it owns: only a relationship body owns such Annotations.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(self.owned_annotating_elements(declaration).into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::ElementOwningNamespace => {
+                let owner = self
+                    .storage
+                    .declaration(declaration)
+                    .and_then(|candidate| candidate.owner)
+                    .filter(|_| self.is_owned_member(declaration));
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(owner.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::RelationshipRelatedElement
+                if source_kind == Some(DeclarationKind::Dependency) =>
+            {
+                // `source->union(target)`: a Dependency's clients, then its suppliers.
+                let values = self
+                    .relationships_of_kinds(
+                        declaration,
+                        &[
+                            ReferenceKind::DependencyClient,
+                            ReferenceKind::DependencySupplier,
+                        ],
+                    )
+                    .iter()
+                    .filter_map(|relationship| match relationship.target {
+                        RelationshipTarget::Resolved(target) => Some(target),
+                        _ => None,
+                    })
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::AnnotatingElementAnnotatedElement
+                if Self::is_annotating_kind(source_kind) =>
+            {
+                // The annotated elements of its Annotations, else its owning namespace.
+                let mut values = self.annotation_targets(declaration);
+                if values.is_empty() {
+                    values.extend(
+                        self.storage
+                            .declaration(declaration)
+                            .and_then(|candidate| candidate.owner)
+                            .and_then(|owner| self.symbol_id(owner)),
+                    );
+                }
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::AnnotatingElementAnnotation
+                if Self::is_annotating_kind(source_kind) =>
+            {
+                // Its owning Annotation, then the Annotations it owns, each identified by the
+                // element it annotates.
+                let mut values = Vec::new();
+                if self.is_owned_annotation(declaration) {
+                    values.extend(
+                        self.storage
+                            .declaration(declaration)
+                            .and_then(|candidate| candidate.owner)
+                            .and_then(|owner| self.symbol_id(owner)),
+                    );
+                }
+                values.extend(self.annotation_targets(declaration));
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::AnnotatingElementOwnedAnnotatingRelationship
+                if Self::is_annotating_kind(source_kind) =>
+            {
+                // The Annotations it owns (`about`), each identified by the element it annotates.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.annotation_targets(declaration).into_boxed_slice(),
+                ))
+            }
+            ActionDerivedFactCollection::AnnotationOwnedAnnotatingElement
+                if Self::is_annotating_kind(source_kind) =>
+            {
+                // The source identifies the Annotation that owns it, if any: that Annotation's
+                // owned annotating element is the source itself.
+                let values = self
+                    .is_owned_annotation(declaration)
+                    .then_some(declaration)
+                    .into_iter();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(values)))
+            }
+            ActionDerivedFactCollection::MembershipImportImportedElement
+                if source_kind == Some(DeclarationKind::Import) =>
+            {
+                let values = self
+                    .relationships_of_kinds(declaration, &[ReferenceKind::MembershipImport])
+                    .iter()
+                    .filter_map(|relationship| match relationship.target {
+                        RelationshipTarget::Resolved(target) => Some(target),
+                        _ => None,
+                    })
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::NamespaceImportedMembership
+                if source_kind.is_some_and(|kind| DeclarationDomain::Namespace.accepts(kind)) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(self.imported_members(declaration).into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::NamespaceOwnedMembership
+                if source_kind.is_some_and(|kind| DeclarationDomain::Namespace.accepts(kind)) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(self.owned_membership_elements(declaration).into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::NamespaceMember
+                if source_kind.is_some_and(|kind| DeclarationDomain::Namespace.accepts(kind)) =>
+            {
+                // `membership.memberElement`: owned, imported and, for a Type, inherited members.
+                let mut members = self.owned_membership_elements(declaration);
+                members.extend(self.imported_members(declaration));
+                members.extend(self.inherited_feature_members(declaration));
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(members.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::PackageFilterCondition
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::Package | DeclarationKind::LibraryPackage)
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::FilterConditions(
+                    self.filter_conditions(symbol, declaration),
+                ))
+            }
+            ActionDerivedFactCollection::FeatureFeaturingType
+                if self.declaration_conforms(declaration, sysml_contract::ElementKind::Feature) =>
+            {
+                // `featuring.type`, with the featuring types of a chain's first chaining
+                // feature, as the canonical TypeFeaturing/FeatureChaining facts settle them.
+                if self.types.featuring_requires_snapshots(declaration) {
+                    return self.query_outcome(QueryAnswer::Unsupported);
+                }
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(
+                        self.types
+                            .featuring_types(declaration)
+                            .iter()
+                            .map(|(featuring, _)| *featuring),
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::AssociationRelatedType
+            | ActionDerivedFactCollection::AssociationSourceType
+            | ActionDerivedFactCollection::AssociationTargetType
+                if self.declaration_conforms(
+                    declaration,
+                    sysml_contract::ElementKind::Association,
+                ) =>
+            {
+                // `associationEnd.type`: the most specific types of each end, in end order.
+                let related = self
+                    .feature_members(declaration)
+                    .into_iter()
+                    .filter(|member| self.is_end_feature(*member))
+                    .flat_map(|end| self.usage_definitions(end, sysml_contract::ElementKind::Type))
+                    .collect::<Vec<_>>();
+                let values = match collection {
+                    ActionDerivedFactCollection::AssociationSourceType => {
+                        related.into_iter().take(1).collect()
+                    }
+                    ActionDerivedFactCollection::AssociationTargetType => {
+                        related.into_iter().skip(1).collect()
+                    }
+                    _ => related,
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(values.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::ConnectorRelatedFeature
+            | ActionDerivedFactCollection::ConnectorSourceFeature
+            | ActionDerivedFactCollection::ConnectorTargetFeature
+            | ActionDerivedFactCollection::ConnectorDefaultFeaturingType
+                if self
+                    .declaration_conforms(declaration, sysml_contract::ElementKind::Connector) =>
+            {
+                let related = match self.connector_related_features(declaration) {
+                    Ok(related) => related,
+                    Err(prerequisite) => {
+                        return self.resolved_outcome(ActionDerivedFactOutcome::Unsupported {
+                            prerequisite,
+                        })
+                    }
+                };
+                let values = match collection {
+                    ActionDerivedFactCollection::ConnectorSourceFeature => {
+                        related.into_iter().take(1).collect()
+                    }
+                    ActionDerivedFactCollection::ConnectorTargetFeature => {
+                        related.into_iter().skip(1).collect()
+                    }
+                    ActionDerivedFactCollection::ConnectorDefaultFeaturingType => self
+                        .nearest_common_featuring_type(&related)
+                        .into_iter()
+                        .collect(),
+                    _ => related,
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(values.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::StepBehavior
+                if self.declaration_conforms(declaration, sysml_contract::ElementKind::Step) =>
+            {
+                // `type->selectByKind(Behavior)`.
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(
+                        self.usage_definitions(declaration, sysml_contract::ElementKind::Behavior)
+                            .into_iter(),
+                    ),
+                ))
+            }
+            ActionDerivedFactCollection::LiteralExpressionIsModelLevelEvaluable
+                if self.declaration_conforms(
+                    declaration,
+                    sysml_contract::ElementKind::LiteralExpression,
+                ) =>
+            {
+                self.resolved_outcome(ActionDerivedFactOutcome::Flag(true))
+            }
+            ActionDerivedFactCollection::MetadataAccessExpressionReferencedElement
+                if source_kind == Some(DeclarationKind::KermlMetadataAccessExpression) =>
+            {
+                // The member element of its first non-FeatureMembership membership: the element
+                // its ElementReferenceMember names.
+                let values = self
+                    .relationships_of_kinds(declaration, &[ReferenceKind::MetadataAccessTarget])
+                    .iter()
+                    .filter_map(|relationship| match relationship.target {
+                        RelationshipTarget::Resolved(target) => Some(target),
+                        _ => None,
+                    })
+                    .take(1)
+                    .collect::<Vec<_>>();
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(values.into_boxed_slice()))
+            }
+            ActionDerivedFactCollection::FeatureChainExpressionTargetFeature => {
+                let values = self
+                    .resolution
+                    .feature_chain_expression_projections
+                    .iter()
+                    .filter(|projection| projection.expression == declaration)
+                    .map(|projection| projection.target_feature);
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(values)))
+            }
+            ActionDerivedFactCollection::FeatureReferenceExpressionReferent => {
+                let values = self
+                    .resolution
+                    .feature_reference_expression_projections
+                    .iter()
+                    .filter(|projection| projection.expression == declaration)
+                    .map(|projection| projection.referent);
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(self.symbols(values)))
+            }
+            ActionDerivedFactCollection::InstantiationExpressionInstantiatedType => {
+                // `instantiatedType()`: the Type a constructor or invocation instantiates.
+                let constructed = self
+                    .resolution
+                    .constructor_expression_projections
+                    .iter()
+                    .filter(|projection| projection.expression == declaration)
+                    .map(|projection| projection.instantiated_type);
+                let invoked = self
+                    .resolution
+                    .invocation_expression_projections
+                    .iter()
+                    .filter(|projection| projection.expression == declaration)
+                    .map(|projection| projection.instantiated_type);
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols(constructed.chain(invoked)),
+                ))
+            }
+            ActionDerivedFactCollection::FlowFlowEnd
+            | ActionDerivedFactCollection::FlowSourceOutputFeature
+            | ActionDerivedFactCollection::FlowTargetInputFeature
+                if matches!(
+                    source_kind,
+                    Some(DeclarationKind::Flow | DeclarationKind::SuccessionFlow)
+                ) =>
+            {
+                let ends = self
+                    .child_declarations(declaration)
+                    .iter()
+                    .copied()
+                    .filter(|member| {
+                        self.storage
+                            .declaration(*member)
+                            .is_some_and(|member| member.kind == DeclarationKind::FlowEnd)
+                    })
+                    .collect::<Vec<_>>();
+                // The first owned feature of the first or the second connector end.
+                let end_feature = |position: usize| {
+                    ends.get(position)
+                        .and_then(|end| self.child_declarations(*end).first().copied())
+                };
+                let values = match collection {
+                    ActionDerivedFactCollection::FlowSourceOutputFeature => {
+                        end_feature(0).into_iter().collect()
+                    }
+                    ActionDerivedFactCollection::FlowTargetInputFeature => {
+                        end_feature(1).into_iter().collect()
+                    }
+                    _ => ends,
+                };
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(
+                    self.symbols_in_order(values.into_iter()),
+                ))
+            }
+            ActionDerivedFactCollection::StateDefinitionEntryAction
+            | ActionDerivedFactCollection::StateDefinitionDoAction
+            | ActionDerivedFactCollection::StateDefinitionExitAction
+            | ActionDerivedFactCollection::StateUsageEntryAction
+            | ActionDerivedFactCollection::StateUsageDoAction
+            | ActionDerivedFactCollection::StateUsageExitAction
+            | ActionDerivedFactCollection::StateDefinitionState
+            | ActionDerivedFactCollection::CalculationDefinitionCalculation
+            | ActionDerivedFactCollection::AllocationDefinitionAllocation
+            | ActionDerivedFactCollection::RenderingDefinitionRendering
+            | ActionDerivedFactCollection::ViewDefinitionView
+            | ActionDerivedFactCollection::ViewDefinitionViewRendering
+            | ActionDerivedFactCollection::ViewUsageViewRendering
+            | ActionDerivedFactCollection::ViewDefinitionSatisfiedViewpoint
+            | ActionDerivedFactCollection::ViewUsageSatisfiedViewpoint
+            | ActionDerivedFactCollection::PortDefinitionConjugatedPortDefinition
+            | ActionDerivedFactCollection::FeatureCrossFeature
+            | ActionDerivedFactCollection::FeatureFeatureTarget
+            | ActionDerivedFactCollection::FunctionResult
+            | ActionDerivedFactCollection::ExpressionResult
+            | ActionDerivedFactCollection::BehaviorStep
+            | ActionDerivedFactCollection::MultiplicityRangeLowerBound
+            | ActionDerivedFactCollection::MultiplicityRangeUpperBound
+            | ActionDerivedFactCollection::MultiplicityRangeBound
+            | ActionDerivedFactCollection::ItemUsageItemDefinition
+            | ActionDerivedFactCollection::PartUsagePartDefinition
+            | ActionDerivedFactCollection::OccurrenceUsageIndividualDefinition
+            | ActionDerivedFactCollection::ConjugatedPortTypingPortDefinition
+            | ActionDerivedFactCollection::TransitionUsageSuccession
+            | ActionDerivedFactCollection::TransitionUsageTarget
+            | ActionDerivedFactCollection::TransitionUsageTriggerAction
+            | ActionDerivedFactCollection::AssertConstraintUsageAssertedConstraint
+            | ActionDerivedFactCollection::EventOccurrenceUsageEventOccurrence
+            | ActionDerivedFactCollection::VerificationCaseDefinitionVerifiedRequirement
+            | ActionDerivedFactCollection::VerificationCaseUsageVerifiedRequirement
+            | ActionDerivedFactCollection::UseCaseDefinitionIncludedUseCase
+            | ActionDerivedFactCollection::UseCaseUsageIncludedUseCase
+            | ActionDerivedFactCollection::ViewDefinitionViewCondition
+            | ActionDerivedFactCollection::ViewUsageViewCondition
+            | ActionDerivedFactCollection::ElementName
+            | ActionDerivedFactCollection::ElementShortName
+            | ActionDerivedFactCollection::RelationshipRelatedElement
+            | ActionDerivedFactCollection::AnnotatingElementAnnotatedElement
+            | ActionDerivedFactCollection::AnnotatingElementAnnotation
+            | ActionDerivedFactCollection::AnnotatingElementOwnedAnnotatingRelationship
+            | ActionDerivedFactCollection::AnnotationOwnedAnnotatingElement
+            | ActionDerivedFactCollection::MembershipImportImportedElement
+            | ActionDerivedFactCollection::NamespaceImportedMembership
+            | ActionDerivedFactCollection::NamespaceMember
+            | ActionDerivedFactCollection::NamespaceOwnedMembership
+            | ActionDerivedFactCollection::OwningMembershipOwnedMemberName
+            | ActionDerivedFactCollection::OwningMembershipOwnedMemberShortName
+            | ActionDerivedFactCollection::PackageFilterCondition
+            | ActionDerivedFactCollection::FeatureFeaturingType
+            | ActionDerivedFactCollection::AssociationRelatedType
+            | ActionDerivedFactCollection::AssociationSourceType
+            | ActionDerivedFactCollection::AssociationTargetType
+            | ActionDerivedFactCollection::ConnectorRelatedFeature
+            | ActionDerivedFactCollection::ConnectorSourceFeature
+            | ActionDerivedFactCollection::ConnectorTargetFeature
+            | ActionDerivedFactCollection::ConnectorDefaultFeaturingType
+            | ActionDerivedFactCollection::StepBehavior
+            | ActionDerivedFactCollection::LiteralExpressionIsModelLevelEvaluable
+            | ActionDerivedFactCollection::MetadataAccessExpressionReferencedElement
+            | ActionDerivedFactCollection::FlowFlowEnd
+            | ActionDerivedFactCollection::FlowSourceOutputFeature
+            | ActionDerivedFactCollection::FlowTargetInputFeature => {
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(Box::new([])))
+            }
             ActionDerivedFactCollection::TerminateOccurrenceArgument
             | ActionDerivedFactCollection::SendSenderArgument
             | ActionDerivedFactCollection::SendReceiverArgument
@@ -2669,8 +4062,7 @@ impl<D> SemanticModel<D> {
             | SpecializationCheckKind::FeatureSuboccurrence => unreachable!("handled above"),
             SpecializationCheckKind::FeatureValuation => unreachable!("handled above"),
             SpecializationCheckKind::MetadataFeatureSemantic => unreachable!("handled above"),
-            SpecializationCheckKind::ConnectorBinaryObject
-            | SpecializationCheckKind::ConnectorObject => {
+            SpecializationCheckKind::ConnectorObject => {
                 SpecializationCheckPrerequisite::ConnectorAssociationProjectionAndLibraryAnchor
             }
             SpecializationCheckKind::StepOwnedPerformance

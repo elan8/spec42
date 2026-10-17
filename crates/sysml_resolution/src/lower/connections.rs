@@ -346,6 +346,9 @@ impl SemanticModelBuilder {
                 },
                 direction: occurrence_prefix_direction(&node.value.prefix),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                // `connect` ends are owned end features even when the usage has no brace body.
+                // The body walker preserves a count that is already open.
+                owned_end_feature_count: Some(0),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -403,10 +406,14 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
         body: &ConnectionDefBody,
     ) -> Result<(), ConstructionError> {
-        self.declaration_facts
+        let facts = self
+            .declaration_facts
             .get_mut(declaration.index())
-            .ok_or(ConstructionError::InvalidMembership)?
-            .owned_end_feature_count = Some(0);
+            .ok_or(ConstructionError::InvalidMembership)?;
+        // A `connect` clause already opened the count. Resetting it would drop those ends.
+        if facts.owned_end_feature_count.is_none() {
+            facts.owned_end_feature_count = Some(0);
+        }
         if let ConnectionDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
@@ -638,6 +645,27 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Counts one owned end feature on a connector whose end is not a nested declaration.
+    ///
+    /// Named `end` members and labeled `connect` ends already increment the count when they are
+    /// lowered as declarations. A bare `connect a to b` end and an interface end publish only a
+    /// connector-end reference, which is still an owned end feature for the binary-connection
+    /// predicates.
+    fn note_owned_end_feature(&mut self, owner: DeclarationId) -> Result<(), ConstructionError> {
+        let facts = self
+            .declaration_facts
+            .get_mut(owner.index())
+            .ok_or(ConstructionError::InvalidMembership)?;
+        match facts.owned_end_feature_count {
+            Some(count) => {
+                facts.owned_end_feature_count =
+                    Some(count.checked_add(1).ok_or(ConstructionError::Capacity)?);
+            }
+            None => facts.owned_end_feature_count = Some(1),
+        }
+        Ok(())
+    }
+
     /// Lowers one connector end (`ConnectionEnd`, used by both `ConnectStmt` and
     /// `ConnectionUsageMember`'s inline `connect` clause): its path expression is a structured
     /// `Expression` (not a flattened string), so a simple/qualified name (`Expression::FeatureRef`)
@@ -677,7 +705,10 @@ impl SemanticModelBuilder {
                 self.push_membership(end, MembershipKind::Feature, Visibility::Default, node.span)?;
                 end
             }
-            None => owner,
+            None => {
+                self.note_owned_end_feature(owner)?;
+                owner
+            }
         };
         match &node.value.expression.value {
             Expression::FeatureRef(target) => {
@@ -779,6 +810,13 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
         body: &InterfaceDefBody,
     ) -> Result<(), ConstructionError> {
+        let facts = self
+            .declaration_facts
+            .get_mut(declaration.index())
+            .ok_or(ConstructionError::InvalidMembership)?;
+        if facts.owned_end_feature_count.is_none() {
+            facts.owned_end_feature_count = Some(0);
+        }
         if let InterfaceDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
@@ -936,6 +974,7 @@ impl SemanticModelBuilder {
                 direction: occurrence_prefix_direction(prefix),
                 portion_kind: portion_kind_node_fact(prefix.portion()),
                 multiplicity: multiplicity_facts(multiplicity),
+                owned_end_feature_count: Some(0),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1058,6 +1097,7 @@ impl SemanticModelBuilder {
             InterfaceEndTarget::Direct(target) => *target,
             InterfaceEndTarget::Named { target, .. } => *target,
         };
+        self.note_owned_end_feature(owner)?;
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(target)
@@ -1505,8 +1545,13 @@ impl SemanticModelBuilder {
             DeclarationKind::BareConnect,
             None,
             node.span,
-            // A synthesized scope giving the bare `connect a to b;` ends a lexical owner.
-            DeclarationFacts::none(),
+            // A synthesized scope giving the bare `connect a to b;` ends a lexical owner. Its end
+            // count starts at zero, as a connection usage's does, so a named (`references`) end,
+            // which is its own end declaration, is counted alongside a bare one.
+            DeclarationFacts {
+                owned_end_feature_count: Some(0),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,

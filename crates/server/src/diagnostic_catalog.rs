@@ -1030,6 +1030,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "control_node_invalid_owner",
+        severity: "warning",
+        meaning: "A control node is owned by a type that is neither an action definition nor an action usage (SysML validateControlNodeOwningType).",
+        typical_fix: "Move the control node into an action definition or action usage.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "control_node_incoming_multiplicity",
         severity: "warning",
         meaning: "An incoming succession to a control node (decide, merge, fork, join) authors a target end multiplicity other than 1..1 (SysML validateControlNodeIncomingSuccessions).",

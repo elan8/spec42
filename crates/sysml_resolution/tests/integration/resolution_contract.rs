@@ -1218,34 +1218,6 @@ fn calc_usage_typed_by_a_calc_def_resolves() {
 }
 
 #[test]
-fn calc_usage_redefining_another_calc_usage_resolves() {
-    // `CalcUsage::redefines` is a bare `Vec<QualifiedReferenceId>`, not a
-    // `Node<SubsettingRelationship>` -- lowered as direct `Redefinition` references rather
-    // than through `lower_subsetting_relationship`.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tpart def P {\n\
-         \t\tcalc def Calc;\n\
-         \t\tcalc calcA : Calc;\n\
-         \t\tcalc calcB : Calc :>> calcA;\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains("(qualified-name \"Demo::P::calcB\"))) (kind calc)"),
-        "expected a calc usage declaration, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind redefinition) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::calcB\")))"
-        ) && output.contains(
-            "(target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::P::calcA\")))"
-        ),
-        "expected calcB's redefinition of calcA to resolve, got:\n{output}"
-    );
-}
-
-#[test]
 fn view_usage_typed_by_a_view_def_resolves() {
     // planning/UPSTREAM_PARSER_GAPS.md #8 was resolved upstream in `0757de13`: `ViewUsage` now carries
     // a `subsets` field, so `view` usage lowering is no longer deferred.
@@ -5271,12 +5243,12 @@ fn exact_feature_relationship_collections_project_canonical_authored_and_implied
     let published = detail_publication(
         &[ (
             "memory://model.sysml",
-            "package Model { classifier Vehicle { feature base; feature 'derived' : Vehicle redefines base chains base; } }",
+            "package Model { classifier Base { feature base; } classifier Vehicle specializes Base { feature 'derived' : Vehicle redefines base chains base; } }",
         ) ],
         ConstructionSchedule::Sequential,
     );
     let vehicle = identity_of(&published, "memory://model.sysml", "Model::Vehicle");
-    let base = identity_of(&published, "memory://model.sysml", "Model::Vehicle::base");
+    let base = identity_of(&published, "memory://model.sysml", "Model::Base::base");
     let derived = identity_of(
         &published,
         "memory://model.sysml",
@@ -5387,6 +5359,10 @@ fn feature_relationship_collections_have_sequential_parallel_and_warm_library_pa
             FeatureDerivedRelationshipCollection::OwnedSubsetting,
             FeatureDerivedRelationshipCollection::OwnedTyping,
             FeatureDerivedRelationshipCollection::OwnedTypeFeaturing,
+            FeatureDerivedRelationshipCollection::ChainingFeature,
+            FeatureDerivedRelationshipCollection::OwnedFeatureInverting,
+            FeatureDerivedRelationshipCollection::OwnedReferenceSubsetting,
+            FeatureDerivedRelationshipCollection::OwnedCrossSubsetting,
         ]
         .into_iter()
         .map(|collection| settled(published.feature_derived_relationships(derived, collection)))
@@ -6727,5 +6703,79 @@ fn header_specialization_clauses_reach_the_model() {
     assert!(
         subject.contains("(redefinition (reference \"vehicle\"))"),
         "expected the subject `:>>` clause to publish a redefinition, got:\n{subject}"
+    );
+}
+
+/// Derivations that select from `featureMembership` include inherited memberships, singular
+/// parameters keep only the first membership, and kind selections use metaclass conformance
+/// (KerML deriveFunctionResult; SysML deriveCaseDefinitionSubjectParameter,
+/// deriveCalculationDefinitionCalculation, deriveViewDefinitionViewRendering).
+#[test]
+fn derived_facts_follow_feature_membership_and_conformance() {
+    let source = "package Model {
+        calc def A { return r; }
+        calc def B :> A;
+        case def C { subject primary; subject secondary; }
+        case def D :> C;
+        calc def F { calc nested; }
+        rendering detail;
+        view def V { render detail; }
+    }";
+    let published = detail_publication(
+        &[("memory://model.sysml", source)],
+        ConstructionSchedule::Sequential,
+    );
+    let id = |name: &str| identity_of(&published, "memory://model.sysml", name);
+    let action_values = |symbol: SymbolId, collection| match published
+        .action_derived_fact(symbol, collection)
+        .answer
+    {
+        QueryAnswer::Resolved(ActionDerivedFactOutcome::Values(values)) => values.into_vec(),
+        other => panic!("expected action-derived values, got {other:?}"),
+    };
+    let requirement_elements = |symbol: SymbolId, collection| match published
+        .requirement_derived_fact(symbol, collection)
+        .answer
+    {
+        QueryAnswer::Resolved(RequirementDerivedFactOutcome::Elements(values)) => values.into_vec(),
+        other => panic!("expected requirement-derived elements, got {other:?}"),
+    };
+
+    // A result owned in a supertype is the subtype's result.
+    assert_eq!(
+        action_values(id("Model::B"), ActionDerivedFactCollection::FunctionResult),
+        vec![id("Model::A::r")]
+    );
+    // The subject parameter is singular, and inherited.
+    assert_eq!(
+        requirement_elements(
+            id("Model::C"),
+            RequirementDerivedFactCollection::CaseDefinitionSubjectParameter
+        ),
+        vec![id("Model::C::primary")]
+    );
+    assert_eq!(
+        requirement_elements(
+            id("Model::D"),
+            RequirementDerivedFactCollection::CaseDefinitionSubjectParameter
+        ),
+        vec![id("Model::C::primary")]
+    );
+    // Calculations are selected by conformance to CalculationUsage. Case and analysis usages
+    // conform too, but the parser does not yet accept them in a calculation body.
+    assert_eq!(
+        action_values(
+            id("Model::F"),
+            ActionDerivedFactCollection::CalculationDefinitionCalculation,
+        ),
+        vec![id("Model::F::nested")]
+    );
+    // `render detail;` yields the referenced rendering, not the anonymous owned usage.
+    assert_eq!(
+        action_values(
+            id("Model::V"),
+            ActionDerivedFactCollection::ViewDefinitionViewRendering
+        ),
+        vec![id("Model::detail")]
     );
 }

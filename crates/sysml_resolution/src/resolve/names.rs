@@ -844,8 +844,8 @@ pub(crate) struct LookupTarget {
     /// Anonymous perform usages are not in scope for this reference. See
     /// [`is_anonymous_perform`].
     pub(crate) excludes_anonymous_performs: bool,
-    /// Redefinition is scoped from the general Types of the redefining Feature, not from its
-    /// owned memberships. Other reference kinds use ordinary owned-before-inherited lookup.
+    /// An owned Redefinition is scoped from the general Types of its owning Type, excluding
+    /// that Type's owned memberships. Other reference kinds use owned-before-inherited lookup.
     pub(crate) first_scope: FirstScopePolicy,
 }
 
