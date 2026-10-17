@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Workspaces with several documents no longer lose their semantic publication.** Per-document
+  lowering left each authored reference pointing at the first document. A feature-reference
+  check then read a later document's ranges against the first document's lines: the diagnostic
+  landed in the wrong file, or the whole build failed with `ConstructionFailed`, as on a
+  SysML-v2-Release workspace where `workspace/symbol` returned nothing.
+
 - **Semantic metadata keywords supply inherited members (#279).** Keyword-implied
   specialization participates in name resolution, including chained semantic metadata and
   bare `#keyword def` declarations. SysML definitions using KerML-only `disjoint from` headers
