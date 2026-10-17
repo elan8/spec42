@@ -421,7 +421,7 @@ package ProvenanceExample {
     {
       "kind": "relationship",
       "ordinal": 0,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 2
     },
     {
@@ -516,7 +516,7 @@ package ProvenanceExample {
   "projection": {
     "edges": [
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 2,
         "origin": 1,
         "provenance": "authored",

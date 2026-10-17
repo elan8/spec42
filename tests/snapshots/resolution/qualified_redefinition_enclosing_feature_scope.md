@@ -3,10 +3,6 @@
 description=Qualified redefinition of a nested feature starts from the enclosing feature's inherited membership
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
-source_expectation=accepted
-rule_family=derive
-expectation=semantics
-rule_id=kerml-1.0:8.2.3.5.3:resolveLocalName
 libraries=none
 ~~~
 # SOURCE

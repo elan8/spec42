@@ -32,6 +32,12 @@ package Feed {
 (fixture-diagnostics
   (document "memory://snapshot/model.sysml"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 11 16) (end 11 27))
+      )
     )
   )
 )
@@ -106,7 +112,7 @@ package Feed {
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
       (authored-target "source::feed")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Source::feed")))))
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1))
       (authored-target "load::feed")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Load::feed")))))
@@ -128,7 +134,6 @@ package Feed {
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Supply::volts"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Supply::volts"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::links"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::links"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind view) (name "links")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind view) (name "links")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Source::feed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Load::feed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::load"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Load"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::load"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::source"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Source"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::source"))) (kind featureTyping) (ordinal 0)))
@@ -165,6 +170,7 @@ package Feed {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::links"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind view) (name "links")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::links"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
@@ -432,8 +438,11 @@ package Feed {
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
@@ -442,13 +451,18 @@ package Feed {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -508,7 +522,7 @@ package Feed {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature-chain (root (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::source"))) (terminal (resolved (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Source::feed")))) (path (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::source")) (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Source::feed"))) "source::feed")) (end bare (feature-chain (root (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::load"))) (terminal (resolved (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Load::feed")))) (path (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::load")) (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Load::feed"))) "load::feed")))
+  (connector (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature-chain (root (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source"))) (terminal unresolved) (path (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source")) unresolved) "source::feed")) (end bare (feature-chain (root (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::load"))) (terminal (resolved (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Load::feed")))) (path (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::system::load")) (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Load::feed"))) "load::feed")))
 )
 ~~~
 # NAVIGATION
@@ -576,7 +590,7 @@ package Feed {
   )
   (query (document "memory://snapshot/model.sysml") (range (start 11 16) (end 11 27)) (probe (position 11 16))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Feed")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "source::feed")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Feed::Source::feed")))))
+      (outcome (status unresolved)))
     )
   )
   (query (document "memory://snapshot/model.sysml") (range (start 11 31) (end 11 40)) (probe (position 11 31))
@@ -885,6 +899,11 @@ package Feed {
     {
       "document": 1,
       "kind": "qualified-name",
+      "qualifiedName": "Connections::binaryConnections"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
       "qualifiedName": "Connections::connections"
     },
     {
@@ -974,12 +993,6 @@ package Feed {
       "ordinal": 10,
       "relationshipKind": "typing",
       "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "connection",
-      "source": 6
     },
     {
       "kind": "relationship",
@@ -1104,6 +1117,12 @@ package Feed {
     {
       "kind": "relationship",
       "ordinal": 34,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
       "relationshipKind": "typeFeaturing",
       "source": 12
     },
@@ -1193,8 +1212,13 @@ package Feed {
     "source": 19
   },
   "completeness": {
-    "status": "complete",
-    "reasons": []
+    "status": "incomplete",
+    "reasons": [
+      {
+        "code": "relationship-unresolved",
+        "relationshipKind": "connectorEnd"
+      }
+    ]
   },
   "projection": {
     "edges": [
@@ -1212,7 +1236,7 @@ package Feed {
         "navigation": 7,
         "origin": 3,
         "provenance": "implied",
-        "reference": 53,
+        "reference": 54,
         "source": 2,
         "target": 3
       },
@@ -1221,7 +1245,7 @@ package Feed {
         "navigation": 9,
         "origin": 4,
         "provenance": "implied",
-        "reference": 54,
+        "reference": 55,
         "source": 2,
         "target": 4
       },
@@ -1239,7 +1263,7 @@ package Feed {
         "navigation": 5,
         "origin": 6,
         "provenance": "implied",
-        "reference": 59,
+        "reference": 60,
         "source": 5,
         "target": 6
       },
@@ -1248,7 +1272,7 @@ package Feed {
         "navigation": 1,
         "origin": 7,
         "provenance": "implied",
-        "reference": 60,
+        "reference": 61,
         "source": 5,
         "target": 7
       },
@@ -1257,7 +1281,7 @@ package Feed {
         "navigation": 3,
         "origin": 8,
         "provenance": "implied",
-        "reference": 61,
+        "reference": 62,
         "source": 5,
         "target": 8
       },
@@ -1269,15 +1293,6 @@ package Feed {
         "reference": 46,
         "source": 0,
         "target": 1
-      },
-      {
-        "kind": "connector",
-        "navigation": 17,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 31,
-        "source": 7,
-        "target": 3
       }
     ],
     "exposedRoots": [
@@ -1344,7 +1359,7 @@ package Feed {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 21,
+        "reference": 22,
         "source": 16,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1541,7 +1556,7 @@ package Feed {
         "reference": 47,
         "source": 0,
         "target": {
-          "reference": 18,
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -1549,21 +1564,10 @@ package Feed {
         "kind": "typing",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 59,
         "source": 2,
         "target": {
           "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 55,
-        "source": 2,
-        "target": {
-          "reference": 16,
           "status": "resolved"
         }
       },
@@ -1574,7 +1578,18 @@ package Feed {
         "reference": 56,
         "source": 2,
         "target": {
-          "reference": 18,
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 57,
+        "source": 2,
+        "target": {
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -1582,7 +1597,7 @@ package Feed {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 57,
+        "reference": 58,
         "source": 2,
         "target": {
           "node": 0,
@@ -1593,7 +1608,7 @@ package Feed {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 26,
         "source": 3,
         "target": {
           "reference": 9,
@@ -1604,21 +1619,10 @@ package Feed {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 26,
+        "reference": 27,
         "source": 3,
         "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 22,
-        "source": 3,
-        "target": {
-          "reference": 17,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -1629,7 +1633,18 @@ package Feed {
         "reference": 23,
         "source": 3,
         "target": {
-          "reference": 19,
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 24,
+        "source": 3,
+        "target": {
+          "reference": 20,
           "status": "resolved"
         }
       },
@@ -1637,7 +1652,7 @@ package Feed {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 24,
+        "reference": 25,
         "source": 3,
         "target": {
           "reference": 1,
@@ -1648,7 +1663,7 @@ package Feed {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 31,
         "source": 4,
         "target": {
           "reference": 9,
@@ -1659,10 +1674,10 @@ package Feed {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 27,
+        "reference": 28,
         "source": 4,
         "target": {
-          "reference": 17,
+          "reference": 18,
           "status": "resolved"
         }
       },
@@ -1670,10 +1685,10 @@ package Feed {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 28,
+        "reference": 29,
         "source": 4,
         "target": {
-          "reference": 19,
+          "reference": 20,
           "status": "resolved"
         }
       },
@@ -1681,7 +1696,7 @@ package Feed {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 29,
+        "reference": 30,
         "source": 4,
         "target": {
           "reference": 1,
@@ -1692,7 +1707,7 @@ package Feed {
         "kind": "typing",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 65,
+        "reference": 66,
         "source": 5,
         "target": {
           "reference": 5,
@@ -1703,10 +1718,10 @@ package Feed {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 62,
+        "reference": 63,
         "source": 5,
         "target": {
-          "reference": 16,
+          "reference": 17,
           "status": "resolved"
         }
       },
@@ -1714,10 +1729,10 @@ package Feed {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 63,
+        "reference": 64,
         "source": 5,
         "target": {
-          "reference": 18,
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -1725,7 +1740,7 @@ package Feed {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 64,
+        "reference": 65,
         "source": 5,
         "target": {
           "node": 0,
@@ -1750,7 +1765,7 @@ package Feed {
         "reference": 40,
         "source": 6,
         "target": {
-          "reference": 17,
+          "reference": 18,
           "status": "resolved"
         }
       },
@@ -1761,7 +1776,7 @@ package Feed {
         "reference": 41,
         "source": 6,
         "target": {
-          "reference": 19,
+          "reference": 20,
           "status": "resolved"
         }
       },
@@ -1794,7 +1809,7 @@ package Feed {
         "reference": 32,
         "source": 7,
         "target": {
-          "reference": 17,
+          "reference": 18,
           "status": "resolved"
         }
       },
@@ -1805,7 +1820,7 @@ package Feed {
         "reference": 33,
         "source": 7,
         "target": {
-          "reference": 19,
+          "reference": 20,
           "status": "resolved"
         }
       },
@@ -1838,7 +1853,7 @@ package Feed {
         "reference": 36,
         "source": 8,
         "target": {
-          "reference": 17,
+          "reference": 18,
           "status": "resolved"
         }
       },
@@ -1849,7 +1864,7 @@ package Feed {
         "reference": 37,
         "source": 8,
         "target": {
-          "reference": 19,
+          "reference": 20,
           "status": "resolved"
         }
       },
@@ -1871,8 +1886,7 @@ package Feed {
         "reference": 48,
         "source": 1,
         "target": {
-          "node": 7,
-          "status": "resolved"
+          "status": "unresolved"
         }
       },
       {
@@ -1893,7 +1907,7 @@ package Feed {
         "reference": 50,
         "source": 1,
         "target": {
-          "reference": 15,
+          "reference": 16,
           "status": "resolved"
         }
       },
@@ -1904,7 +1918,18 @@ package Feed {
         "reference": 51,
         "source": 1,
         "target": {
-          "reference": 16,
+          "reference": 15,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 52,
+        "source": 1,
+        "target": {
+          "reference": 17,
           "status": "resolved"
         }
       },
@@ -1912,7 +1937,7 @@ package Feed {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 52,
+        "reference": 53,
         "source": 1,
         "target": {
           "node": 0,

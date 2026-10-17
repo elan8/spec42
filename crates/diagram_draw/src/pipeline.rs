@@ -59,16 +59,21 @@ pub fn draw_input_from_payload_with_disclosure(
 
 /// Prepare + layout with the renderer-owned presentation choices: which nested nodes a general
 /// view discloses, and how many levels below its exposed elements a view draws.
+/// Explicit disclosure takes precedence over the nesting default.
 pub fn draw_input_from_payload_with_presentation(
     payload: &Value,
     disclosure: Option<&DisclosureState>,
     nesting: Nesting,
 ) -> Result<Value, PipelineError> {
     let mut prepared = prepare_view_data(payload).map_err(PipelineError::InvalidPayload)?;
+    // Disclosure names the reader's choices for individual occurrences. A depth
+    // default must not clip that projection again or reopen a deliberately closed
+    // definition next to an expanded usage.
     if let Some(state) = disclosure {
         apply_general_disclosure(&mut prepared, state);
+    } else {
+        apply_nesting(&mut prepared, nesting);
     }
-    apply_nesting(&mut prepared, nesting);
     Ok(layout_to_draw_input(&prepared)?)
 }
 

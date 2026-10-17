@@ -122,7 +122,7 @@ fn path_for_ibd_edge(
     Some(points_to_path_d(&points))
 }
 
-fn route_points_for_edge(
+pub(crate) fn route_points_for_edge(
     edge: &LaidOutEdge,
     layout_edges_by_id: &HashMap<&str, &InterconnectionLayoutEdgeDto>,
 ) -> Vec<Point> {

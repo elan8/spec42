@@ -2930,12 +2930,27 @@ impl SemanticModelBuilder {
                     self.push_recovery(document, error.span);
                 }
                 RelationshipBodyElement::Annotating(member) => {
+                    let first = self.declarations.len();
                     self.lower_annotating_member(
                         document,
                         annotated,
                         UnsupportedFamily::RelationshipBodyMember,
                         member,
                     )?;
+                    // A relationship body owns its annotating elements through Annotations
+                    // (KerML `OwnedAnnotation`), which annotate the relationship itself.
+                    for index in first..self.declarations.len() {
+                        if self.declarations[index].owner == annotated
+                            && matches!(
+                                self.declarations[index].kind,
+                                DeclarationKind::Comment
+                                    | DeclarationKind::Documentation
+                                    | DeclarationKind::TextualRepresentation
+                            )
+                        {
+                            self.declaration_facts[index].is_owned_annotation = true;
+                        }
+                    }
                 }
                 RelationshipBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
                     document,

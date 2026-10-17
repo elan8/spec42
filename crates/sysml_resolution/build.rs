@@ -17,6 +17,10 @@ fn feature_collection(kind: FeatureDerivedRelationshipKind) -> &'static str {
         FeatureDerivedRelationshipKind::OwnedSubsetting => "OwnedSubsetting",
         FeatureDerivedRelationshipKind::OwnedTyping => "OwnedTyping",
         FeatureDerivedRelationshipKind::OwnedTypeFeaturing => "OwnedTypeFeaturing",
+        FeatureDerivedRelationshipKind::ChainingFeature => "ChainingFeature",
+        FeatureDerivedRelationshipKind::OwnedFeatureInverting => "OwnedFeatureInverting",
+        FeatureDerivedRelationshipKind::OwnedReferenceSubsetting => "OwnedReferenceSubsetting",
+        FeatureDerivedRelationshipKind::OwnedCrossSubsetting => "OwnedCrossSubsetting",
     }
 }
 
@@ -30,6 +34,7 @@ fn type_collection(kind: TypeDerivedRelationshipKind) -> &'static str {
         TypeDerivedRelationshipKind::UnioningType => "UnioningType",
         TypeDerivedRelationshipKind::IntersectingType => "IntersectingType",
         TypeDerivedRelationshipKind::DifferencingType => "DifferencingType",
+        TypeDerivedRelationshipKind::OwnedSubclassification => "OwnedSubclassification",
     }
 }
 
@@ -77,6 +82,119 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> &'static str {
         ActionDerivedFactKind::IfThenAction => "IfThenAction",
         ActionDerivedFactKind::IfElseAction => "IfElseAction",
         ActionDerivedFactKind::IfArgument => "IfArgument",
+        ActionDerivedFactKind::StateDefinitionEntryAction => "StateDefinitionEntryAction",
+        ActionDerivedFactKind::StateDefinitionDoAction => "StateDefinitionDoAction",
+        ActionDerivedFactKind::StateDefinitionExitAction => "StateDefinitionExitAction",
+        ActionDerivedFactKind::StateUsageEntryAction => "StateUsageEntryAction",
+        ActionDerivedFactKind::StateUsageDoAction => "StateUsageDoAction",
+        ActionDerivedFactKind::StateUsageExitAction => "StateUsageExitAction",
+        ActionDerivedFactKind::StateDefinitionState => "StateDefinitionState",
+        ActionDerivedFactKind::CalculationDefinitionCalculation => {
+            "CalculationDefinitionCalculation"
+        }
+        ActionDerivedFactKind::AllocationDefinitionAllocation => "AllocationDefinitionAllocation",
+        ActionDerivedFactKind::RenderingDefinitionRendering => "RenderingDefinitionRendering",
+        ActionDerivedFactKind::ViewDefinitionView => "ViewDefinitionView",
+        ActionDerivedFactKind::ViewDefinitionViewRendering => "ViewDefinitionViewRendering",
+        ActionDerivedFactKind::ViewUsageViewRendering => "ViewUsageViewRendering",
+        ActionDerivedFactKind::ViewDefinitionSatisfiedViewpoint => {
+            "ViewDefinitionSatisfiedViewpoint"
+        }
+        ActionDerivedFactKind::ViewUsageSatisfiedViewpoint => "ViewUsageSatisfiedViewpoint",
+        ActionDerivedFactKind::PortDefinitionConjugatedPortDefinition => {
+            "PortDefinitionConjugatedPortDefinition"
+        }
+        ActionDerivedFactKind::FeatureCrossFeature => "FeatureCrossFeature",
+        ActionDerivedFactKind::FeatureFeatureTarget => "FeatureFeatureTarget",
+        ActionDerivedFactKind::FunctionResult => "FunctionResult",
+        ActionDerivedFactKind::ExpressionResult => "ExpressionResult",
+        ActionDerivedFactKind::BehaviorStep => "BehaviorStep",
+        ActionDerivedFactKind::MultiplicityRangeLowerBound => "MultiplicityRangeLowerBound",
+        ActionDerivedFactKind::MultiplicityRangeUpperBound => "MultiplicityRangeUpperBound",
+        ActionDerivedFactKind::MultiplicityRangeBound => "MultiplicityRangeBound",
+        ActionDerivedFactKind::ItemUsageItemDefinition => "ItemUsageItemDefinition",
+        ActionDerivedFactKind::PartUsagePartDefinition => "PartUsagePartDefinition",
+        ActionDerivedFactKind::OccurrenceUsageIndividualDefinition => {
+            "OccurrenceUsageIndividualDefinition"
+        }
+        ActionDerivedFactKind::ConjugatedPortTypingPortDefinition => {
+            "ConjugatedPortTypingPortDefinition"
+        }
+        ActionDerivedFactKind::TransitionUsageSuccession => "TransitionUsageSuccession",
+        ActionDerivedFactKind::TransitionUsageTarget => "TransitionUsageTarget",
+        ActionDerivedFactKind::TransitionUsageTriggerAction => "TransitionUsageTriggerAction",
+        ActionDerivedFactKind::AssertConstraintUsageAssertedConstraint => {
+            "AssertConstraintUsageAssertedConstraint"
+        }
+        ActionDerivedFactKind::EventOccurrenceUsageEventOccurrence => {
+            "EventOccurrenceUsageEventOccurrence"
+        }
+        ActionDerivedFactKind::VerificationCaseDefinitionVerifiedRequirement => {
+            "VerificationCaseDefinitionVerifiedRequirement"
+        }
+        ActionDerivedFactKind::VerificationCaseUsageVerifiedRequirement => {
+            "VerificationCaseUsageVerifiedRequirement"
+        }
+        ActionDerivedFactKind::UseCaseDefinitionIncludedUseCase => {
+            "UseCaseDefinitionIncludedUseCase"
+        }
+        ActionDerivedFactKind::UseCaseUsageIncludedUseCase => "UseCaseUsageIncludedUseCase",
+        ActionDerivedFactKind::ViewDefinitionViewCondition => "ViewDefinitionViewCondition",
+        ActionDerivedFactKind::ViewUsageViewCondition => "ViewUsageViewCondition",
+        ActionDerivedFactKind::ElementIsLibraryElement => "ElementIsLibraryElement",
+        ActionDerivedFactKind::ElementName => "ElementName",
+        ActionDerivedFactKind::ElementShortName => "ElementShortName",
+        ActionDerivedFactKind::ElementQualifiedName => "ElementQualifiedName",
+        ActionDerivedFactKind::ElementOwnedElement => "ElementOwnedElement",
+        ActionDerivedFactKind::ElementOwnedAnnotation => "ElementOwnedAnnotation",
+        ActionDerivedFactKind::ElementOwningNamespace => "ElementOwningNamespace",
+        ActionDerivedFactKind::RelationshipRelatedElement => "RelationshipRelatedElement",
+        ActionDerivedFactKind::AnnotatingElementAnnotatedElement => {
+            "AnnotatingElementAnnotatedElement"
+        }
+        ActionDerivedFactKind::AnnotatingElementAnnotation => "AnnotatingElementAnnotation",
+        ActionDerivedFactKind::AnnotatingElementOwnedAnnotatingRelationship => {
+            "AnnotatingElementOwnedAnnotatingRelationship"
+        }
+        ActionDerivedFactKind::AnnotationOwnedAnnotatingElement => {
+            "AnnotationOwnedAnnotatingElement"
+        }
+        ActionDerivedFactKind::MembershipImportImportedElement => "MembershipImportImportedElement",
+        ActionDerivedFactKind::NamespaceImportedMembership => "NamespaceImportedMembership",
+        ActionDerivedFactKind::NamespaceMember => "NamespaceMember",
+        ActionDerivedFactKind::NamespaceOwnedMembership => "NamespaceOwnedMembership",
+        ActionDerivedFactKind::OwningMembershipOwnedMemberName => "OwningMembershipOwnedMemberName",
+        ActionDerivedFactKind::OwningMembershipOwnedMemberShortName => {
+            "OwningMembershipOwnedMemberShortName"
+        }
+        ActionDerivedFactKind::PackageFilterCondition => "PackageFilterCondition",
+        ActionDerivedFactKind::FeatureFeaturingType => "FeatureFeaturingType",
+        ActionDerivedFactKind::AssociationRelatedType => "AssociationRelatedType",
+        ActionDerivedFactKind::AssociationSourceType => "AssociationSourceType",
+        ActionDerivedFactKind::AssociationTargetType => "AssociationTargetType",
+        ActionDerivedFactKind::ConnectorRelatedFeature => "ConnectorRelatedFeature",
+        ActionDerivedFactKind::ConnectorSourceFeature => "ConnectorSourceFeature",
+        ActionDerivedFactKind::ConnectorTargetFeature => "ConnectorTargetFeature",
+        ActionDerivedFactKind::ConnectorDefaultFeaturingType => "ConnectorDefaultFeaturingType",
+        ActionDerivedFactKind::StepBehavior => "StepBehavior",
+        ActionDerivedFactKind::LiteralExpressionIsModelLevelEvaluable => {
+            "LiteralExpressionIsModelLevelEvaluable"
+        }
+        ActionDerivedFactKind::MetadataAccessExpressionReferencedElement => {
+            "MetadataAccessExpressionReferencedElement"
+        }
+        ActionDerivedFactKind::FeatureChainExpressionTargetFeature => {
+            "FeatureChainExpressionTargetFeature"
+        }
+        ActionDerivedFactKind::FeatureReferenceExpressionReferent => {
+            "FeatureReferenceExpressionReferent"
+        }
+        ActionDerivedFactKind::InstantiationExpressionInstantiatedType => {
+            "InstantiationExpressionInstantiatedType"
+        }
+        ActionDerivedFactKind::FlowFlowEnd => "FlowFlowEnd",
+        ActionDerivedFactKind::FlowSourceOutputFeature => "FlowSourceOutputFeature",
+        ActionDerivedFactKind::FlowTargetInputFeature => "FlowTargetInputFeature",
     }
 }
 
@@ -94,6 +212,18 @@ fn requirement_fact_collection(kind: RequirementDerivedFactKind) -> &'static str
         RequirementDerivedFactKind::UsageRequiredConstraint => "UsageRequiredConstraint",
         RequirementDerivedFactKind::UsageAssumedConstraint => "UsageAssumedConstraint",
         RequirementDerivedFactKind::UsageFramedConcern => "UsageFramedConcern",
+        RequirementDerivedFactKind::CaseDefinitionActorParameter => "CaseDefinitionActorParameter",
+        RequirementDerivedFactKind::CaseDefinitionSubjectParameter => {
+            "CaseDefinitionSubjectParameter"
+        }
+        RequirementDerivedFactKind::CaseUsageActorParameter => "CaseUsageActorParameter",
+        RequirementDerivedFactKind::CaseUsageSubjectParameter => "CaseUsageSubjectParameter",
+        RequirementDerivedFactKind::CaseDefinitionObjectiveRequirement => {
+            "CaseDefinitionObjectiveRequirement"
+        }
+        RequirementDerivedFactKind::CaseUsageObjectiveRequirement => {
+            "CaseUsageObjectiveRequirement"
+        }
     }
 }
 
@@ -186,7 +316,6 @@ fn specialization_check_kind(kind: SpecializationCheckKind) -> &'static str {
         SpecializationCheckKind::FeatureSuboccurrence => "FeatureSuboccurrence",
         SpecializationCheckKind::FeatureValuation => "FeatureValuation",
         SpecializationCheckKind::MetadataFeatureSemantic => "MetadataFeatureSemantic",
-        SpecializationCheckKind::ConnectorBinaryObject => "ConnectorBinaryObject",
         SpecializationCheckKind::ConnectorObject => "ConnectorObject",
         SpecializationCheckKind::StepOwnedPerformance => "StepOwnedPerformance",
         SpecializationCheckKind::StepSubperformance => "StepSubperformance",

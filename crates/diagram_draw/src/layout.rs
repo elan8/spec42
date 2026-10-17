@@ -17,8 +17,6 @@ use crate::sysml_node::{
 };
 use crate::types::{attr_str, LaidOutEdge, LaidOutNode, Point, IBD_NODE_HEIGHT, IBD_NODE_WIDTH};
 
-const NODE_WIDTH: f64 = 200.0;
-const NODE_HEIGHT: f64 = 70.0;
 const IBD_PORT_LABEL_HEIGHT: f64 = 10.0;
 
 pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::LayoutError> {
@@ -145,10 +143,11 @@ fn build_elk_layout_options(
     let per_kind: &[(&str, &str)] = match kind {
         ElkViewKind::General => &[
             ("elk.direction", "DOWN"),
-            ("elk.spacing.nodeNode", "140"),
-            ("elk.layered.spacing.nodeNodeBetweenLayers", "180"),
-            ("elk.spacing.edgeNode", "90"),
-            ("elk.spacing.edgeEdge", "80"),
+            ("elk.spacing.nodeNode", "40"),
+            ("elk.layered.spacing.nodeNodeBetweenLayers", "64"),
+            ("elk.spacing.edgeNode", "20"),
+            ("elk.spacing.edgeEdge", "16"),
+            ("elk.layered.crossingMinimization.strategy", "LAYER_SWEEP"),
             ("elk.aspectRatio", "1.4"),
             ("elk.padding", "[top=100,left=100,bottom=100,right=100]"),
             ("org.eclipse.elk.portConstraints", "FIXED_SIDE"),
@@ -321,7 +320,10 @@ fn compute_containment_parent(diagram_edges: &[Value]) -> HashMap<String, String
             normalize_edge_kind(&as_string(
                 first_nonempty([field(edge, "edgeKind"), field(edge, "label")]),
                 "",
-            )) == "hierarchy"
+            ))
+            .as_str()
+                == "hierarchy"
+                || as_string(field(edge, "edgeKind"), "") == "noncomposite-membership"
         })
         .map(|edge| {
             (
@@ -334,10 +336,8 @@ fn compute_containment_parent(diagram_edges: &[Value]) -> HashMap<String, String
 
 struct GeneralElkGraphBuild {
     graph: Value,
-    flat_graph: Value,
     diagram_nodes: Vec<Value>,
     diagram_edges: Vec<Value>,
-    use_hierarchy: bool,
 }
 
 fn build_general_elk_graph(prepared: &Value) -> Option<GeneralElkGraphBuild> {
@@ -347,10 +347,6 @@ fn build_general_elk_graph(prepared: &Value) -> Option<GeneralElkGraphBuild> {
     }
     let package_groups = as_array(field(field(prepared, "meta"), "packageContainerGroups"));
     let use_hierarchy = package_groups.len() >= 2;
-    let containment_parent = compute_containment_parent(&diagram_edges);
-    if !use_hierarchy && !containment_parent.is_empty() {
-        return None;
-    }
     let mut flat_children_were_chunked = false;
     let children = if use_hierarchy {
         let mut member_to_package = HashMap::new();
@@ -393,9 +389,14 @@ fn build_general_elk_graph(prepared: &Value) -> Option<GeneralElkGraphBuild> {
         containers
     } else {
         let flat_children: Vec<Value> = diagram_nodes.iter().map(general_leaf_elk_node).collect();
-        let children = chunk_general_elk_children("root", flat_children.clone());
-        flat_children_were_chunked =
-            children.len() != flat_children.len() || (flat_children.len() > 8);
+        // Synthetic chunks impose arbitrary compound boundaries on connected nodes,
+        // preventing the layered algorithm from arranging their real hierarchy.
+        let children = if diagram_edges.is_empty() {
+            chunk_general_elk_children("root", flat_children.clone())
+        } else {
+            flat_children.clone()
+        };
+        flat_children_were_chunked = children.len() != flat_children.len();
         children
     };
     let edges: Vec<Value> = diagram_edges
@@ -423,15 +424,8 @@ fn build_general_elk_graph(prepared: &Value) -> Option<GeneralElkGraphBuild> {
             "children": children,
             "edges": edges,
         }),
-        flat_graph: json!({
-            "id": "root",
-            "layoutOptions": build_elk_layout_options(ElkViewKind::General, &[]),
-            "children": diagram_nodes.iter().map(general_leaf_elk_node).collect::<Vec<_>>(),
-            "edges": edges,
-        }),
         diagram_nodes,
         diagram_edges,
-        use_hierarchy,
     })
 }
 
@@ -469,6 +463,7 @@ fn reshape_general_layout_result(
     }
     collect_edges(laid_out, &mut edges_by_id);
 
+    // Only a view without containment gets here; `layout_nested_general` lays out the rest.
     let nodes: Vec<Value> = diagram_nodes
         .iter()
         .map(|node| {
@@ -508,186 +503,267 @@ fn reshape_general_layout_result(
     json!({ "nodes": nodes, "edges": edges })
 }
 
-fn fallback_general_layout(nodes: &[Value], edges: &[Value]) -> Value {
-    let columns = (nodes.len() as f64).sqrt().ceil().max(1.0) as usize;
-    let horizontal_gap = 90.0;
-    let vertical_gap = 90.0;
-    let measured: Vec<(Value, f64, f64, crate::sysml_node::Compartments)> = nodes
-        .iter()
-        .map(|node| {
-            let (width, height, compartments) = general_node_box(node);
-            (node.clone(), width, height, compartments)
-        })
-        .collect();
-    let row_height = NODE_HEIGHT.max(
-        measured
-            .iter()
-            .map(|(_, _, height, _)| *height)
-            .fold(0.0, f64::max),
-    );
-    let column_width = NODE_WIDTH.max(
-        measured
-            .iter()
-            .map(|(_, width, _, _)| *width)
-            .fold(0.0, f64::max),
-    );
-    let laid_out_nodes: Vec<Value> = measured
-        .into_iter()
-        .enumerate()
-        .map(|(index, (mut node, width, height, compartments))| {
-            node["compartments"] = compartments_to_value(&compartments);
-            node["x"] = json!((index % columns) as f64 * (column_width + horizontal_gap));
-            node["y"] = json!((index / columns) as f64 * (row_height + vertical_gap));
-            node["width"] = json!(width);
-            node["height"] = json!(height);
-            node
-        })
-        .collect();
-    let by_id: HashMap<String, Value> = laid_out_nodes
-        .iter()
-        .map(|node| (as_string(field(node, "id"), ""), node.clone()))
-        .collect();
-    let laid_out_edges: Vec<Value> = edges
-        .iter()
-        .map(|edge| {
-            let source = by_id.get(&as_string(field(edge, "source"), ""));
-            let target = by_id.get(&as_string(field(edge, "target"), ""));
-            let start = json!({
-                "x": source.map(|n| num(field(n, "x")) + num(field(n, "width"))).unwrap_or(NODE_WIDTH),
-                "y": source.map(|n| num(field(n, "y")) + num(field(n, "height")) / 2.0).unwrap_or(NODE_HEIGHT / 2.0),
-            });
-            let end = json!({
-                "x": target.map(|n| num(field(n, "x"))).unwrap_or(0.0),
-                "y": target.map(|n| num(field(n, "y")) + num(field(n, "height")) / 2.0).unwrap_or(NODE_HEIGHT / 2.0),
-            });
-            let mid_x = (num(&start["x"]) + num(&end["x"])) / 2.0;
-            let mut out = edge.clone();
-            out["layout"] = json!({
-                "sections": [{
-                    "startPoint": start,
-                    "bendPoints": [
-                        { "x": mid_x, "y": start["y"] },
-                        { "x": mid_x, "y": end["y"] },
-                    ],
-                    "endPoint": end,
-                }],
-            });
-            out
-        })
-        .collect();
-    json!({ "nodes": laid_out_nodes, "edges": laid_out_edges })
+struct PackedGeneral {
+    nodes: Vec<Value>,
+    width: f64,
+    height: f64,
 }
 
-/// Lays out a general view that shows containment as a tree: boxes by `tree_layout`, aimed at
-/// the reference page, with each containment line following the tree and every other
-/// relationship drawn as a three-segment line between the two boxes.
-fn hierarchy_general_layout(
+/// Pack members inside their actual owner before placing the top-level boxes. The
+/// layout engine's single layered direction must not turn every assembly into a row
+/// (or a column) of all its members. This step owns geometry only.
+fn pack_general_members(
+    node: &Value,
+    nodes: &[Value],
+    parents: &HashMap<String, String>,
+    active: &mut HashSet<String>,
+) -> Result<PackedGeneral, diagram_layout::LayoutError> {
+    let id = as_string(field(node, "id"), "");
+    if !active.insert(id.clone()) {
+        return Err(diagram_layout::LayoutError::InvalidJson(
+            "cyclic general-view containment".into(),
+        ));
+    }
+    let (mut width, mut height, compartments) = general_node_box(node);
+    let mut packed = node.clone();
+    packed["compartments"] = compartments_to_value(&compartments);
+    packed["x"] = json!(0);
+    packed["y"] = json!(0);
+    let children = nodes
+        .iter()
+        .filter(|child| parents.get(&as_string(field(child, "id"), "")) == Some(&id))
+        .map(|child| pack_general_members(child, nodes, parents, active))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut members = Vec::new();
+    if !children.is_empty() {
+        let header = height;
+        let arrangement = |columns: usize| {
+            let mut widths = vec![0.0_f64; columns];
+            let mut heights = vec![0.0_f64; children.len().div_ceil(columns)];
+            for (index, child) in children.iter().enumerate() {
+                widths[index % columns] = widths[index % columns].max(child.width);
+                heights[index / columns] = heights[index / columns].max(child.height);
+            }
+            let w = (widths.iter().sum::<f64>() + 24.0 * columns.saturating_sub(1) as f64 + 48.0)
+                .max(width);
+            let h = header
+                + 48.0
+                + heights.iter().sum::<f64>()
+                + 24.0 * heights.len().saturating_sub(1) as f64;
+            (w, h, widths, heights)
+        };
+        let columns = (1..=children.len())
+            .min_by(|left, right| {
+                let a = arrangement(*left);
+                let b = arrangement(*right);
+                // A larger fit scale preserves a larger font. Among equal fits,
+                // prefer a balanced rectangle.
+                reference_page_scale((b.0, b.1))
+                    .total_cmp(&reference_page_scale((a.0, a.1)))
+                    .then_with(|| (a.0 / a.1).ln().abs().total_cmp(&(b.0 / b.1).ln().abs()))
+            })
+            .unwrap();
+        let (w, h, widths, heights) = arrangement(columns);
+        width = w;
+        height = h;
+        packed["attributes"]["generalContainerHeaderHeight"] = json!(header);
+        for (index, child) in children.into_iter().enumerate() {
+            let x = 24.0
+                + widths[..index % columns]
+                    .iter()
+                    .map(|width| width + 24.0)
+                    .sum::<f64>();
+            let y = header
+                + 24.0
+                + heights[..index / columns]
+                    .iter()
+                    .map(|height| height + 24.0)
+                    .sum::<f64>();
+            for mut member in child.nodes {
+                member["x"] = json!(num(&member["x"]) + x);
+                member["y"] = json!(num(&member["y"]) + y);
+                members.push(member);
+            }
+        }
+    }
+    active.remove(&id);
+    packed["width"] = json!(width);
+    packed["height"] = json!(height);
+    let mut result = vec![packed];
+    result.extend(members);
+    Ok(PackedGeneral {
+        nodes: result,
+        width,
+        height,
+    })
+}
+
+fn layout_nested_general(
     nodes: &[Value],
     edges: &[Value],
-    parent_by_id: &HashMap<String, String>,
-) -> Value {
-    let order: Vec<String> = nodes
-        .iter()
-        .map(|node| as_string(field(node, "id"), ""))
-        .collect();
-    let measured: Vec<(f64, f64, crate::sysml_node::Compartments)> =
-        nodes.iter().map(general_node_box).collect();
-    let sizes: HashMap<String, (f64, f64)> = order
-        .iter()
-        .zip(&measured)
-        .map(|(id, (width, height, _))| (id.clone(), (*width, *height)))
-        .collect();
-    let tree =
-        crate::tree_layout::layout_tree_for(&order, &sizes, parent_by_id, reference_page_scale);
-    let laid_out_nodes: Vec<Value> = nodes
-        .iter()
-        .zip(&measured)
-        .map(|(node, (width, height, compartments))| {
-            let (x, y) = tree
-                .positions
-                .get(&as_string(field(node, "id"), ""))
-                .copied()
-                .unwrap_or((0.0, 0.0));
-            let mut out = node.clone();
-            out["compartments"] = compartments_to_value(compartments);
-            out["x"] = json!(x);
-            out["y"] = json!(y);
-            out["width"] = json!(*width);
-            out["height"] = json!(*height);
-            out
-        })
-        .collect();
-    let rect = |id: &str| -> Option<(f64, f64, f64, f64)> {
-        let (x, y) = tree.positions.get(id).copied()?;
-        let (width, height) = sizes.get(id).copied()?;
-        Some((x, y, width, height))
+    parents: &HashMap<String, String>,
+) -> Result<Value, diagram_layout::LayoutError> {
+    let root_of = |id: &str| {
+        let mut current = id.to_owned();
+        for _ in 0..nodes.len() {
+            match parents.get(&current) {
+                Some(parent) => current = parent.clone(),
+                None => return Some(current),
+            }
+        }
+        None
     };
-    let section = |points: &[(f64, f64)]| -> Value {
-        let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
-        json!({
-            "startPoint": point(&points[0]),
-            "bendPoints": points[1..points.len() - 1].iter().map(point).collect::<Vec<_>>(),
-            "endPoint": point(&points[points.len() - 1]),
-        })
-    };
-    let laid_out_edges: Vec<Value> = edges
+    let mut packed_roots = Vec::new();
+    for root in nodes
         .iter()
-        .map(|edge| {
-            let source = as_string(field(edge, "source"), "");
-            let target = as_string(field(edge, "target"), "");
-            // A containment line follows the tree, from the parent to the child.
-            let along_tree = |parent: &str, child: &str| {
-                (parent_by_id.get(child).map(String::as_str) == Some(parent))
-                    .then(|| tree.routes.get(child))
-                    .flatten()
-            };
-            let points: Vec<(f64, f64)> = if let Some(route) = along_tree(&source, &target) {
-                route.clone()
-            } else if let Some(route) = along_tree(&target, &source) {
-                route.iter().rev().copied().collect()
-            } else {
-                let (Some(from), Some(to)) = (rect(&source), rect(&target)) else {
-                    return edge.clone();
-                };
-                // A line that is not part of the tree goes around the boxes between its ends.
-                let others: Vec<crate::ortho_route::Rect> = order
-                    .iter()
-                    .filter(|id| **id != source && **id != target)
-                    .filter_map(|id| rect(id))
-                    .collect();
-                if let Some(route) = crate::ortho_route::route(from, to, &others, 8.0) {
-                    let mut out = edge.clone();
-                    out["layout"] = json!({ "sections": [section(&route)] });
-                    return out;
-                }
-                let from_x = from.0 + from.2 / 2.0;
-                let to_x = to.0 + to.2 / 2.0;
-                if (from.1 - to.1).abs() < 1.0 {
-                    // Two boxes at the same height: over the top of both.
-                    let lane = from.1 - 14.0;
-                    vec![(from_x, from.1), (from_x, lane), (to_x, lane), (to_x, to.1)]
-                } else {
-                    let downward = to.1 > from.1;
-                    let start = if downward { from.1 + from.3 } else { from.1 };
-                    let end = if downward { to.1 } else { to.1 + to.3 };
-                    let middle = (start + end) / 2.0;
-                    vec![
-                        (from_x, start),
-                        (from_x, middle),
-                        (to_x, middle),
-                        (to_x, end),
-                    ]
-                }
-            };
-            let mut out = edge.clone();
-            out["layout"] = json!({ "sections": [section(&points)] });
-            out
+        .filter(|node| !parents.contains_key(&as_string(field(node, "id"), "")))
+    {
+        packed_roots.push(pack_general_members(
+            root,
+            nodes,
+            parents,
+            &mut HashSet::new(),
+        )?);
+    }
+    if packed_roots.is_empty() {
+        return Err(diagram_layout::LayoutError::InvalidJson(
+            "general-view containment has no root".into(),
+        ));
+    }
+    let root_edges: Vec<Value> = edges
+        .iter()
+        .filter_map(|edge| {
+            let source = root_of(field(edge, "source").as_str()?)?;
+            let target = root_of(field(edge, "target").as_str()?)?;
+            (source != target)
+                .then(|| json!({ "id": edge["id"], "sources": [source], "targets": [target] }))
         })
         .collect();
-    json!({ "nodes": laid_out_nodes, "edges": laid_out_edges })
+    let children: Vec<Value> = packed_roots
+        .iter()
+        .map(
+            |root| json!({ "id": root.nodes[0]["id"], "width": root.width, "height": root.height }),
+        )
+        .collect();
+    let mut graph = json!({ "id": "root", "children": children, "edges": root_edges,
+        "layoutOptions": build_elk_layout_options(ElkViewKind::General, &[("elk.direction", Some("RIGHT"))]) });
+    let across = diagram_layout::layout_value(&graph)?;
+    graph["layoutOptions"]["elk.direction"] = json!("DOWN");
+    let down = diagram_layout::layout_value(&graph)?;
+    let extent = |layout: &Value| (num(&layout["width"]), num(&layout["height"]));
+    let laid_out = if reference_page_scale(extent(&across)) > reference_page_scale(extent(&down)) {
+        across
+    } else {
+        down
+    };
+    let mut drawn = Vec::new();
+    for root in packed_roots {
+        let layout = as_array(&laid_out["children"])
+            .iter()
+            .find(|layout| layout["id"] == root.nodes[0]["id"])
+            .ok_or_else(|| {
+                diagram_layout::LayoutError::Engine("general-view root missing from layout".into())
+            })?;
+        for mut node in root.nodes {
+            node["x"] = json!(num(&node["x"]) + num(&layout["x"]));
+            node["y"] = json!(num(&node["y"]) + num(&layout["y"]));
+            drawn.push(node);
+        }
+    }
+    let by_id: HashMap<&str, &Value> = drawn
+        .iter()
+        .filter_map(|node| Some((node["id"].as_str()?, node)))
+        .collect();
+    let rect = |id: &str| {
+        by_id.get(id).map(|node| {
+            (
+                num(&node["x"]),
+                num(&node["y"]),
+                num(&node["width"]),
+                num(&node["height"]),
+            )
+        })
+    };
+    let ancestor = |parent: &str, child: &str| {
+        let mut current = child;
+        while let Some(owner) = parents.get(current) {
+            if owner == parent {
+                return true;
+            }
+            current = owner;
+        }
+        false
+    };
+    let mut routed = Vec::new();
+    for edge in edges {
+        if matches!(
+            field(edge, "edgeKind").as_str(),
+            Some("hierarchy" | "noncomposite-membership")
+        ) {
+            continue;
+        }
+        let source = as_string(&edge["source"], "");
+        let target = as_string(&edge["target"], "");
+        let (Some(from), Some(to)) = (rect(&source), rect(&target)) else {
+            continue;
+        };
+        // An end that contains the other end (a recursive structure, `part children : Node[*]`
+        // inside `Node`) is reached at its header: the rest of its box is where the other end is.
+        let header = |id: &str, rect: crate::ortho_route::Rect| {
+            by_id
+                .get(id)
+                .and_then(|node| node["attributes"]["generalContainerHeaderHeight"].as_f64())
+                .map_or(rect, |height| (rect.0, rect.1, rect.2, height))
+        };
+        let from = if ancestor(&source, &target) {
+            header(&source, from)
+        } else {
+            from
+        };
+        let to = if ancestor(&target, &source) {
+            header(&target, to)
+        } else {
+            to
+        };
+        let obstacles: Vec<_> = drawn
+            .iter()
+            .filter_map(|node| {
+                let id = node["id"].as_str()?;
+                if id == source || id == target {
+                    return None;
+                }
+                if ancestor(id, &source) || ancestor(id, &target) {
+                    return Some((
+                        num(&node["x"]),
+                        num(&node["y"]),
+                        num(&node["width"]),
+                        num(&node["attributes"]["generalContainerHeaderHeight"]),
+                    ));
+                }
+                rect(id)
+            })
+            .collect();
+        // A diagram too large to route, or one with no gap between the ends, still draws the
+        // line: straight between the facing sides, as before routing existed.
+        let route = crate::ortho_route::route(from, to, &obstacles, 6.0)
+            .unwrap_or_else(|| crate::ortho_route::direct(from, to));
+        let point = |p: &(f64, f64)| json!({"x":p.0,"y":p.1});
+        let mut routed_edge = edge.clone();
+        routed_edge["layout"] = json!({"sections":[{"startPoint":point(&route[0]),"bendPoints":route[1..route.len()-1].iter().map(point).collect::<Vec<_>>(),"endPoint":point(route.last().unwrap())}]});
+        routed.push(routed_edge);
+    }
+    Ok(json!({ "nodes": drawn, "edges": routed }))
 }
 
 fn layout_general_prepared(prepared: &Value) -> Result<Value, diagram_layout::LayoutError> {
+    let (nodes, edges) = general_diagram_elements(prepared);
+    let parents = compute_containment_parent(&edges);
+    if !parents.is_empty() {
+        let nested = layout_nested_general(&nodes, &edges, &parents)?;
+        return Ok(
+            json!({ "title": prepared["title"], "view": prepared["view"], "meta": prepared["meta"], "nodes": nested["nodes"], "edges": nested["edges"] }),
+        );
+    }
     if as_array(field(prepared, "nodes")).is_empty() {
         return Ok(json!({
             "title": field(prepared, "title"),
@@ -698,52 +774,13 @@ fn layout_general_prepared(prepared: &Value) -> Result<Value, diagram_layout::La
         }));
     }
     let Some(build) = build_general_elk_graph(prepared) else {
-        let (diagram_nodes, diagram_edges) = general_diagram_elements(prepared);
-        if diagram_nodes.is_empty() {
-            return Ok(json!({
-                "title": field(prepared, "title"),
-                "view": field(prepared, "view"),
-                "meta": field(prepared, "meta"),
-                "nodes": [],
-                "edges": [],
-            }));
-        }
-        let containment_parent = compute_containment_parent(&diagram_edges);
-        let layout = hierarchy_general_layout(&diagram_nodes, &diagram_edges, &containment_parent);
-        return Ok(json!({
-            "title": field(prepared, "title"),
-            "view": field(prepared, "view"),
-            "meta": field(prepared, "meta"),
-            "nodes": field(&layout, "nodes"),
-            "edges": field(&layout, "edges"),
-        }));
+        return Ok(
+            json!({ "title": field(prepared, "title"), "view": field(prepared, "view"), "meta": field(prepared, "meta"), "nodes": [], "edges": [] }),
+        );
     };
-    let laid_out = match diagram_layout::layout_value(&build.graph) {
-        Ok(value) => value,
-        Err(_) if !build.use_hierarchy => {
-            let layout = fallback_general_layout(&build.diagram_nodes, &build.diagram_edges);
-            return Ok(json!({
-                "title": field(prepared, "title"),
-                "view": field(prepared, "view"),
-                "meta": field(prepared, "meta"),
-                "nodes": field(&layout, "nodes"),
-                "edges": field(&layout, "edges"),
-            }));
-        }
-        Err(_) => match diagram_layout::layout_value(&build.flat_graph) {
-            Ok(value) => value,
-            Err(_) => {
-                let layout = fallback_general_layout(&build.diagram_nodes, &build.diagram_edges);
-                return Ok(json!({
-                    "title": field(prepared, "title"),
-                    "view": field(prepared, "view"),
-                    "meta": field(prepared, "meta"),
-                    "nodes": field(&layout, "nodes"),
-                    "edges": field(&layout, "edges"),
-                }));
-            }
-        },
-    };
+    // A layout failure must remain a failure. Flattening the graph as recovery would
+    // silently erase the ownership representation selected above.
+    let laid_out = diagram_layout::layout_value(&build.graph)?;
     let layout =
         reshape_general_layout_result(&laid_out, &build.diagram_nodes, &build.diagram_edges);
     Ok(json!({
@@ -2890,5 +2927,75 @@ mod crowded_layer_tests {
                 .matches("shared-transition")
                 .count()
                 == 0));
+    }
+}
+
+#[cfg(test)]
+mod general_hierarchy_tests {
+    use super::*;
+
+    #[test]
+    fn ownership_is_nested_and_cross_links_remain_routed() {
+        let node =
+            |id: &str| json!({ "id": id, "label": id, "kind": "PartUsage", "attributes": {} });
+        let mut nodes = vec![node("assembly"), node("definition")];
+        let mut edges = Vec::new();
+        for index in 0..10 {
+            let id = format!("member{index}");
+            nodes.push(node(&id));
+            edges.push(json!({ "id": format!("owns{index}"), "source": "assembly", "target": id, "edgeKind": "hierarchy" }));
+            edges.push(json!({ "id": format!("types{index}"), "source": id, "target": "definition", "edgeKind": "typing" }));
+        }
+        let prepared = json!({ "nodes": nodes, "edges": edges, "meta": {} });
+        let result = layout_general_prepared(&prepared).expect("compound layout");
+        assert_eq!(
+            result,
+            layout_general_prepared(&prepared).expect("deterministic layout")
+        );
+        let drawn = as_array(field(&result, "nodes"));
+        assert_eq!(drawn.len(), 12);
+        let parent = drawn.iter().find(|node| node["id"] == "assembly").unwrap();
+        let ratio = num(&parent["width"]) / num(&parent["height"]);
+        assert!(
+            (0.4..=2.5).contains(&ratio),
+            "unreadable member packing: {ratio}"
+        );
+        for child in drawn
+            .iter()
+            .filter(|node| node["id"] != "assembly" && node["id"] != "definition")
+        {
+            assert!(num(&child["x"]) >= num(&parent["x"]));
+            assert!(
+                num(&child["y"])
+                    >= num(&parent["y"])
+                        + num(&parent["attributes"]["generalContainerHeaderHeight"])
+            );
+            assert!(
+                num(&child["x"]) + num(&child["width"])
+                    <= num(&parent["x"]) + num(&parent["width"]) + 0.01
+            );
+            assert!(
+                num(&child["y"]) + num(&child["height"])
+                    <= num(&parent["y"]) + num(&parent["height"]) + 0.01
+            );
+        }
+        let routed = as_array(field(&result, "edges"));
+        assert_eq!(
+            routed.len(),
+            10,
+            "membership is represented by nesting, all typing links remain"
+        );
+        assert!(routed
+            .iter()
+            .all(|edge| !as_array(&edge["layout"]["sections"]).is_empty()));
+        for (index, first) in drawn.iter().enumerate().skip(2) {
+            for second in drawn.iter().skip(index + 1) {
+                let separated = num(&first["x"]) + num(&first["width"]) <= num(&second["x"])
+                    || num(&second["x"]) + num(&second["width"]) <= num(&first["x"])
+                    || num(&first["y"]) + num(&first["height"]) <= num(&second["y"])
+                    || num(&second["y"]) + num(&second["height"]) <= num(&first["y"]);
+                assert!(separated, "sibling boxes must not overlap");
+            }
+        }
     }
 }

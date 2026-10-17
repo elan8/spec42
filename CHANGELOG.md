@@ -17,12 +17,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   message names; cyclic ordering remains explicit. Adds the diagram `Conjugation` relationship
   kind and advances the semantic vocabulary to v49; pins parser AST 282.
 
+- **Repeated redefinitions resolve inherited targets consistently (#255).** Sibling features no
+  longer shadow a redefinition target as their effective names settle. Repeated anonymous ends
+  retain namespace collision warnings without spurious target ambiguity; genuinely ambiguous
+  inherited targets remain ambiguous.
+
+- **State entry, do, and exit actions are derived collections.** `deriveStateDefinitionEntryAction`,
+  `deriveStateDefinitionDoAction`, `deriveStateDefinitionExitAction`, and the matching state-usage
+  rules project the first owned state subaction of that kind. `deriveStateDefinitionState` projects
+  the nested state usages. Calculation, allocation, rendering, and view definitions project their
+  matching owned usages. Case definitions and usages project their actor and subject parameters
+  and their first objective requirement. A view projects its first rendering and its composite
+  satisfied viewpoints. A port definition projects its conjugated port definition. A classifier
+  projects its owned subclassifications, and a feature projects its first reference subsetting
+  and cross subsetting, its cross feature, and its feature target. A function or expression
+  projects its first owned return parameter. A behavior projects its steps. A multiplicity
+  range projects its lower bound, upper bound, and bound sequence from the expressions it owns.
+
+- **Feature chain targets and inverses are derived collections.** `deriveFeatureChainingFeature`
+  projects the owned feature-chaining relationship, and `deriveFeatureOwnedFeatureInverting`
+  projects an owned `inverse of` relationship. The other KerML element, namespace, and feature
+  derivations stay uncovered where the pinned body branches, calls an operation, or needs a
+  relationship identity this publication does not own.
+
+- **A control node outside an action is reported.** `validateControlNodeOwningType` (SysML
+  8.3.17.6) warns with `control_node_invalid_owner` when a decide, merge, fork, or join node is
+  owned by a type that is neither an action definition nor an action usage, such as a constraint
+  definition. Calculation and state definitions still qualify, because they specialize action
+  definitions.
+
+- **Nested usages take their library specializations.** Composite SysML usages now use the
+  effective `isComposite` derivation, so a part inside an item subsets `Items::Item::subparts`,
+  a step inside a behavior subsets `Performances::Performance::enclosedPerformances`, and the
+  other contracted nested-usage checks resolve the same way. `event occurrence` consults the
+  `EventOccurrenceUsage` contracts. A bare `connect` and an interface end count as owned ends,
+  so binary connections and interfaces specialize `binaryConnections`, `BinaryInterface`, and
+  `binaryInterfaces`. The XMI anchor `Items::Item::subitem` resolves to the library feature
+  `Items::Item::subitems`. A two-ended connector typed by an association structure subsets
+  `Objects::binaryLinkObjects`.
+
 - **The Elan8 method libraries are no longer bundled.** `elan8/mbse-methodology` no longer ships a
   SysML library: its decisions, assumptions and risks overlap the standard `ModelingMetadata` and
   `RiskMetadata` libraries, and real models did not use the rest. The `method` managed library,
   its pin (`config/libraries/method.json`), its reference page and its CI bundle are removed; the
   domain libraries remain. `--disable-kpar-library method` and a `method` entry in
   `spec42.disabledLibraries` are still accepted and have no effect.
+
+- **General views retain hierarchy and cross-links.** Ownership is drawn with nested boxes;
+  filtered allocations between exposed endpoints are included even when their owner is outside
+  the view. Reference membership stays distinct from composition, and allocation, redefinition
+  and reference-subsetting symbols follow SysML 2.0 graphical notation.
+  Explicit per-node expansion choices take precedence over the export depth default.
+  Interconnection views retain connections owned outside separately exposed modules;
+  closing a module also hides its internally owned boundary-to-boundary connections.
+  Edge labels stay on routed segments, and interconnection exports include their full view frames.
 
 - **The editor opens an interconnection view one part at a time (#262).** It drew every level
   of parts. It now starts with the exposed parts and their direct parts closed; a part with parts
