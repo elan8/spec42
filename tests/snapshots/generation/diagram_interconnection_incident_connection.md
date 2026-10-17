@@ -66,6 +66,12 @@ package Model {
         (severity information)
         (code "missing_library_anchor")
         (source "semantic")
+        (range (start 7 8) (end 7 40))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_library_anchor")
+        (source "semantic")
         (range (start 11 4) (end 14 5))
       )
     )
