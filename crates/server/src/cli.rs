@@ -132,8 +132,8 @@ pub struct DiagramArgs {
     /// as JSON when no view is given.
     #[arg(long = "format", value_enum, default_value_t = DiagramFormat::Svg)]
     pub format: DiagramFormat,
-    /// For an interconnection view: how many levels of parts to draw below the exposed parts.
-    /// A part with deeper content is drawn closed. `all` draws every level.
+    /// For general and interconnection views: how many levels of members to draw below the
+    /// exposed elements. Deeper content is drawn closed. `all` draws every level.
     #[arg(long = "depth", default_value = "1", value_parser = parse_depth)]
     pub depth: diagram_draw::Nesting,
     /// Write to this file instead of standard output.

@@ -204,9 +204,6 @@ fn close_interconnection_parts(prepared: &mut Value, open: OpenParts<'_>) {
                 .collect()
         }
     };
-    if drawn.len() == nodes.len() && disclosure.is_empty() {
-        return;
-    }
     // The drawn part a part belongs to: itself, or its nearest drawn ancestor.
     let drawn_owner = |id: &str| -> Option<String> {
         let mut current = id.to_owned();
@@ -265,6 +262,18 @@ fn close_interconnection_parts(prepared: &mut Value, open: OpenParts<'_>) {
         };
         let moved_source = drawn_source != source;
         let moved_target = drawn_target != target;
+        // A closed harness may connect two of its own boundary ports. The
+        // connection is internal content too; retaining it would show only loops
+        // while hiding the other internals. An externally owned self-connection
+        // stays visible. Ownership comes from the canonical connector origin. A leaf part
+        // hides nothing and cannot be opened, so its own feed-through stays drawn.
+        if source == target
+            && !is_open(&source)
+            && closed.contains_key(&source)
+            && field(field(edge, "attributes"), "connectorOwner").as_str() == Some(&source)
+        {
+            continue;
+        }
         if !moved_source && !moved_target {
             kept_edges.push(edge.clone());
             continue;
@@ -322,6 +331,12 @@ fn close_interconnection_parts(prepared: &mut Value, open: OpenParts<'_>) {
         kept_edges.push(edge);
     }
 
+    if drawn.len() == nodes.len()
+        && disclosure.is_empty()
+        && kept_edges == as_array(field(prepared, "edges"))
+    {
+        return;
+    }
     let kept_nodes: Vec<Value> = nodes
         .iter()
         .filter(|node| drawn.contains(&as_string(field(node, "id"), "")))
@@ -410,6 +425,32 @@ mod tests {
             .iter()
             .map(|item| as_string(field(item, "id"), ""))
             .collect()
+    }
+
+    #[test]
+    fn a_closed_parts_internal_boundary_connection_is_hidden_but_an_external_loop_is_not() {
+        let mut internal = connector("inside-harness", ("harness", "out"), ("harness", "shaft"));
+        internal["attributes"]["connectorOwner"] = json!("harness");
+        let external = connector("external-loop", ("harness", "out"), ("harness", "shaft"));
+        let prepared = json!({
+            "view": "interconnection-view",
+            "nodes": [part("harness", None), part("wire", Some("harness"))],
+            "edges": [internal.clone(), external], "meta": {},
+        });
+        let mut closed = prepared.clone();
+        apply_interconnection_nesting(&mut closed, Nesting::Levels(0));
+        assert_eq!(ids(&closed, "edges"), ["external-loop"]);
+        let mut open = prepared;
+        apply_interconnection_nesting(&mut open, Nesting::Levels(1));
+        assert_eq!(ids(&open, "edges"), ["inside-harness", "external-loop"]);
+        // A leaf hides nothing and has nothing to open: its own feed-through stays drawn.
+        let mut leaf = json!({
+            "view": "interconnection-view",
+            "nodes": [part("harness", None)],
+            "edges": [internal], "meta": {},
+        });
+        apply_interconnection_nesting(&mut leaf, Nesting::Levels(0));
+        assert_eq!(ids(&leaf, "edges"), ["inside-harness"]);
     }
 
     #[test]

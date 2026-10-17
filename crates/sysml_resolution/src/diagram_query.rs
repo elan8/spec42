@@ -593,6 +593,36 @@ impl PublishedResolution {
             DiagramOccurrenceIdentity,
             (SymbolId, Option<DiagramOccurrenceIdentity>),
         >::new();
+        // Each connector with the resolved feature path of each of its ends.
+        let mut connected_ports: Vec<(SymbolId, Vec<SymbolId>)> = Vec::new();
+        if view_entry.kind == DiagramViewKind::Interconnection {
+            // Reuse the canonical connector paths, including intermediate port hops.
+            // Do not expand generic library collections such as Port::subports as if
+            // they were contextual physical ports.
+            for connector in self.model.all_connectors().iter() {
+                for end in connector.ends.iter() {
+                    use crate::connection_query::ConnectorEndpoint;
+                    match &end.endpoint {
+                        ConnectorEndpoint::Feature(RelationshipTarget::Resolved(target)) => {
+                            connected_ports.push((connector.identity, vec![*target]));
+                        }
+                        ConnectorEndpoint::FeatureChain { path, .. } => {
+                            let resolved = path
+                                .iter()
+                                .map_while(|target| match target {
+                                    RelationshipTarget::Resolved(target) => Some(*target),
+                                    _ => None,
+                                })
+                                .collect::<Vec<_>>();
+                            if !resolved.is_empty() {
+                                connected_ports.push((connector.identity, resolved));
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
         let mut queue = VecDeque::new();
         for root in &roots {
             // The scene id of an occurrence is published text, so the boundary token is taken
@@ -627,8 +657,37 @@ impl PublishedResolution {
             } else {
                 BTreeSet::new()
             };
-            for child in children {
-                if !workspace.contains(&child.identity) && !library_ends.contains(&child.identity) {
+            let owned_connectors = children
+                .iter()
+                .map(|child| child.identity)
+                .collect::<BTreeSet<_>>();
+            for child in &children {
+                // An inherited library port is still a port of this contextual part. Omitting
+                // it removes resolved connector endpoints (e.g. a purchased sensor's data). It
+                // is connected in this occurrence only: an end path that ends at this occurrence
+                // (`sensor.data`), or a bare end of a connector this occurrence owns. The same
+                // port inherited by another part stays hidden there.
+                let inherited_port = view_entry.kind == DiagramViewKind::Interconnection
+                    && child.kind == ElementKind::PortUsage
+                    && {
+                        let mut path = owner_occurrence.semantic_path.to_vec();
+                        path.push(child.identity);
+                        connected_ports.iter().any(|(connector, end)| {
+                            (1..=end.len()).any(|length| {
+                                let hops = &end[..length];
+                                hops.last() == Some(&child.identity)
+                                    && if length == 1 {
+                                        owned_connectors.contains(connector)
+                                    } else {
+                                        path.ends_with(hops)
+                                    }
+                            })
+                        })
+                    };
+                if !workspace.contains(&child.identity)
+                    && !library_ends.contains(&child.identity)
+                    && !inherited_port
+                {
                     continue;
                 }
                 if !self.diagram_candidate_selected(view, child.identity, &mut reasons) {
@@ -655,6 +714,109 @@ impl PublishedResolution {
             .iter()
             .filter_map(|(_, (identity, owner))| owner.is_none().then_some(*identity))
             .collect::<BTreeSet<_>>();
+        // Relationship usages may be owned outside the exposed subtrees (a deployment
+        // allocation normally belongs to the enclosing assembly). Include the authored
+        // relationship when its metaclass passes the filter and both of its settled ends
+        // are already represented. Do not expose unrelated endpoints or expand its owner.
+        if view_entry.kind == DiagramViewKind::General {
+            let represented = occurrences
+                .values()
+                .map(|(id, _)| *id)
+                .collect::<BTreeSet<_>>();
+            let already_present = represented.clone();
+            for entry in all
+                .values()
+                .filter(|entry| workspace.contains(&entry.identity))
+            {
+                let Some((source_kind, target_kind, _)) = general_binary_relationship(entry.kind)
+                else {
+                    continue;
+                };
+                if already_present.contains(&entry.identity)
+                    || !self.diagram_candidate_selected(view, entry.identity, &mut reasons)
+                {
+                    continue;
+                }
+                let Some(inspection) = usable_value(self.inspect(entry.identity)) else {
+                    continue;
+                };
+                let end_present = |kind| {
+                    inspection.relationships.iter().any(|relationship| {
+                    relationship_kind_from_name(relationship.kind) == Some(kind)
+                        && matches!(&relationship.target, RelationshipTarget::Resolved(target) if represented.contains(target))
+                })
+                };
+                if !end_present(source_kind) || !end_present(target_kind) {
+                    continue;
+                }
+                let Some(token) = self.symbol_token(entry.identity) else {
+                    continue;
+                };
+                occurrences.insert(
+                    DiagramOccurrenceIdentity::root(entry.identity, token.as_str()),
+                    (entry.identity, None),
+                );
+            }
+        }
+        if view_entry.kind == DiagramViewKind::Interconnection {
+            // Connections between separately exposed modules are commonly owned by
+            // their enclosing assembly. Select their canonical endpoint paths, not
+            // merely their terminal port declarations: two sensors may inherit the
+            // same port while only one sensor is exposed.
+            use crate::connection_query::ConnectorEndpoint;
+            let represented_paths = occurrences
+                .keys()
+                .map(|occurrence| occurrence.semantic_path.as_ref())
+                .collect::<Vec<_>>();
+            let incident = self
+                .model
+                .all_connectors()
+                .iter()
+                .filter(|connector| {
+                    workspace.contains(&connector.identity)
+                        && !occurrences
+                            .values()
+                            .any(|(id, _)| *id == connector.identity)
+                        && connector.ends.len() >= 2
+                        && connector.ends.iter().all(|end| match &end.endpoint {
+                            ConnectorEndpoint::Feature(RelationshipTarget::Resolved(target)) => {
+                                represented_paths
+                                    .iter()
+                                    .any(|path| path.last() == Some(target))
+                            }
+                            ConnectorEndpoint::FeatureChain { path, .. } => {
+                                let resolved = path
+                                    .iter()
+                                    .map(|segment| match segment {
+                                        RelationshipTarget::Resolved(id) => Some(*id),
+                                        _ => None,
+                                    })
+                                    .collect::<Option<Vec<_>>>();
+                                resolved.is_some_and(|resolved| {
+                                    represented_paths.iter().any(|shown| {
+                                        shown.len() >= 2
+                                            && (shown.ends_with(&resolved)
+                                                || resolved.ends_with(shown))
+                                    })
+                                })
+                            }
+                            _ => false,
+                        })
+                })
+                .map(|connector| connector.identity)
+                .collect::<Vec<_>>();
+            for identity in incident {
+                if !self.diagram_candidate_selected(view, identity, &mut reasons) {
+                    continue;
+                }
+                if let Some(token) = self.symbol_token(identity) {
+                    occurrences.insert(
+                        DiagramOccurrenceIdentity::root(identity, token.as_str()),
+                        (identity, None),
+                    );
+                }
+            }
+        }
         let mut elements = occurrences
             .iter()
             .filter_map(|(occurrence_id, (identity, owner))| {
@@ -877,7 +1039,19 @@ impl PublishedResolution {
                     source_semantic_id: owner.semantic_id(),
                     target: element.occurrence_id.clone(),
                     target_semantic_id: element.semantic_id,
-                    kind: DiagramEdgeKind::Containment,
+                    kind: if view_entry.kind == DiagramViewKind::General
+                        && self
+                            .model
+                            .declaration_of(element.semantic_id)
+                            .and_then(|id| {
+                                self.model.types.usage_is_reference(&self.model.storage, id)
+                            })
+                            == Some(true)
+                    {
+                        DiagramEdgeKind::Relationship("noncomposite-membership".into())
+                    } else {
+                        DiagramEdgeKind::Containment
+                    },
                     provenance: if all.get(&element.semantic_id).and_then(|entry| entry.owner)
                         == Some(owner.semantic_id())
                     {
@@ -894,6 +1068,36 @@ impl PublishedResolution {
                 .iter()
                 .filter(|relationship| relationship.source == element.occurrence_id)
                 .collect::<Vec<_>>();
+            if view_entry.kind == DiagramViewKind::General {
+                if let Some((source_kind, target_kind, kind)) =
+                    general_binary_relationship(element.kind)
+                {
+                    // A dependency may have several clients and suppliers
+                    // (`dependency from a, b to c`): one line for each pair whose ends are
+                    // drawn.
+                    let ends = |wanted: DiagramRelationshipKind| {
+                        outgoing
+                            .iter()
+                            .filter(move |relationship| relationship.kind == wanted)
+                            .filter_map(|relationship| resolved_target(&relationship.target))
+                    };
+                    let before = edges.len();
+                    for source in ends(source_kind) {
+                        for target in ends(target_kind) {
+                            edges.push(edge_from_relationships(
+                                origin as u32,
+                                source,
+                                target,
+                                DiagramEdgeKind::Relationship(kind.into()),
+                                &outgoing,
+                            ));
+                        }
+                    }
+                    if edges.len() > before {
+                        continue;
+                    }
+                }
+            }
             if let Some(edge) = composed_edge(
                 origin as u32,
                 &outgoing,
@@ -1366,10 +1570,16 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
                 | DiagramRelationshipKind::FlowTarget
                 | DiagramRelationshipKind::Succession
         ),
-        DiagramViewKind::General
-        | DiagramViewKind::Browser
-        | DiagramViewKind::Grid
-        | DiagramViewKind::Geometry => false,
+        DiagramViewKind::General => matches!(
+            kind,
+            DiagramRelationshipKind::AllocateSource
+                | DiagramRelationshipKind::AllocateTarget
+                | DiagramRelationshipKind::DependencyClient
+                | DiagramRelationshipKind::DependencySupplier
+                | DiagramRelationshipKind::BindSource
+                | DiagramRelationshipKind::BindTarget
+        ),
+        DiagramViewKind::Browser | DiagramViewKind::Grid | DiagramViewKind::Geometry => false,
     }
 }
 
@@ -2133,7 +2343,7 @@ fn connector_end_incomplete_reason(target: &DiagramRelationshipTarget) -> Diagra
 }
 
 /// The General View edge kind for one specialization-family relationship, or `None` for a
-/// relationship kind the view does not draw as a line (`typeFeaturing`, `referenceSubsetting`,
+/// relationship kind the view does not draw as a line (`typeFeaturing`,
 /// unions, and the rest). The names match `spec42_generator_protocol::RelationshipKind` so the
 /// renderer applies the SysML 8.2.3.6 glyph for each.
 fn general_specialization_edge_kind(kind: DiagramRelationshipKind) -> Option<&'static str> {
@@ -2142,6 +2352,26 @@ fn general_specialization_edge_kind(kind: DiagramRelationshipKind) -> Option<&'s
         DiagramRelationshipKind::Subsetting => Some("subsetting"),
         DiagramRelationshipKind::Redefinition => Some("redefinition"),
         DiagramRelationshipKind::FeatureTyping => Some("typing"),
+        DiagramRelationshipKind::ReferenceSubsetting => Some("reference-subsetting"),
+        _ => None,
+    }
+}
+
+/// Directional end roles are semantic facts; the drawing never infers them from labels.
+fn general_binary_relationship(
+    kind: ElementKind,
+) -> Option<(
+    DiagramRelationshipKind,
+    DiagramRelationshipKind,
+    &'static str,
+)> {
+    use DiagramRelationshipKind as R;
+    match kind {
+        ElementKind::AllocationUsage => Some((R::AllocateSource, R::AllocateTarget, "allocate")),
+        ElementKind::Dependency => Some((R::DependencyClient, R::DependencySupplier, "dependency")),
+        ElementKind::BindingConnectorAsUsage | ElementKind::BindingConnector => {
+            Some((R::BindSource, R::BindTarget, "bind"))
+        }
         _ => None,
     }
 }

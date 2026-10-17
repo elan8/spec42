@@ -53,6 +53,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   domain libraries remain. `--disable-kpar-library method` and a `method` entry in
   `spec42.disabledLibraries` are still accepted and have no effect.
 
+- **General views retain hierarchy and cross-links.** Ownership is drawn with nested boxes;
+  filtered allocations between exposed endpoints are included even when their owner is outside
+  the view. Reference membership stays distinct from composition, and allocation, redefinition
+  and reference-subsetting symbols follow SysML 2.0 graphical notation.
+  Explicit per-node expansion choices take precedence over the export depth default.
+  Interconnection views retain connections owned outside separately exposed modules;
+  closing a module also hides its internally owned boundary-to-boundary connections.
+  Edge labels stay on routed segments, and interconnection exports include their full view frames.
+
 - **The editor opens an interconnection view one part at a time (#262).** It drew every level
   of parts. It now starts with the exposed parts and their direct parts closed; a part with parts
   of its own carries the `+` / `-` control the general view has, and a connector ending inside a
