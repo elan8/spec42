@@ -81,7 +81,10 @@ pub fn materialize_embedded_stdlib_kpar_bundle(
         let mut entry = archive
             .by_index(index)
             .map_err(|e| format!("read embedded stdlib entry {index}: {e}"))?;
-        let name = entry.name().replace('\\', "/");
+        let name = entry
+            .name()
+            .map_err(|e| format!("read embedded stdlib entry {index} name: {e}"))?
+            .replace('\\', "/");
         if !name.starts_with(STDLIB_KPAR_EMBED_PREFIX) || name.ends_with('/') {
             continue;
         }
@@ -115,7 +118,12 @@ fn read_zip_entry_names(bytes: &[u8]) -> Result<Vec<String>, String> {
             .by_index(index)
             .map_err(|e| format!("read zip entry {index}: {e}"))?;
         if !entry.is_dir() {
-            names.push(entry.name().replace('\\', "/"));
+            names.push(
+                entry
+                    .name()
+                    .map_err(|e| format!("read zip entry {index} name: {e}"))?
+                    .replace('\\', "/"),
+            );
         }
     }
     Ok(names)
