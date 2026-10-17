@@ -39,6 +39,7 @@ use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::OperatorExpressionRecord;
 use crate::lower::facts::OwnedEndFeature;
 use crate::lower::facts::OwnedEndRecord;
+use crate::lower::facts::ParserReferenceId;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::ThenSource;
@@ -202,6 +203,15 @@ impl Relocation {
             .ok_or(ConstructionError::InvalidIdentity)
     }
 
+    /// A parser reference's local id indexes its own document's parse tree, which splicing does
+    /// not change; only the document it names moves.
+    fn parser_reference(&self, local: ParserReferenceId) -> ParserReferenceId {
+        ParserReferenceId {
+            document: self.document,
+            local: local.local,
+        }
+    }
+
     fn expression(&self, expression: &AuthoredExpression) -> AuthoredExpression {
         AuthoredExpression {
             document: self.document,
@@ -335,7 +345,7 @@ impl SemanticModelBuilder {
             self.references.push(AuthoredReference {
                 source: relocation.declaration(reference.source)?,
                 kind: reference.kind,
-                target: reference.target,
+                target: relocation.parser_reference(reference.target),
                 path: relocation.path(reference.path)?,
                 ordinal: reference.ordinal,
                 import: reference.import,
