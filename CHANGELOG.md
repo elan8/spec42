@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.56.0] - 2026-10-17
+
+- **Upgrade notes.** The semantic contract version is now
+  `spec-rule-burndown-element-kinds-v49`; consumers of `model-export` and the published model
+  must accept the new element kinds, derived collections and the diagram `Conjugation`
+  relationship kind listed below. The diagram compatibility token changed: **a generator plugin
+  built against 0.55.0 must be rebuilt.** The `method` managed library is no longer bundled.
+  Results can change for models that were clean on 0.55.0: the non-normative
+  `missing_final_state` advisory is gone, SysML definitions using KerML-only `disjoint from`
+  headers report syntax errors, and new KerML/SysML validations can report on existing models.
+  Pins sysml-v2-parser `3ac51ee4` (`PARSE_AST_VERSION` 283).
+
 - **Workspaces with several documents no longer lose their semantic publication.** Per-document
   lowering left each authored reference pointing at the first document. A feature-reference
   check then read a later document's ranges against the first document's lines: the diagnostic
