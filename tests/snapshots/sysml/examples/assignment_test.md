@@ -70,12 +70,6 @@ package AssignmentTest {
         (range (start 3 20) (end 3 41))
       )
       (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 17 1) (end 36 2))
-      )
-      (diagnostic
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")

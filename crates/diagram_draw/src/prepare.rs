@@ -1754,6 +1754,15 @@ fn prepare_interconnection_from_typed_projection(
     );
     let mut prepared = prepare_interconnection_scene(&scene, &json!({ "selectedViewName": name }));
     prepared["meta"]["typedProjection"] = json!(true);
+    let connector_owners: HashMap<String, String> = edges
+        .iter()
+        .enumerate()
+        .filter_map(|(index, edge)| {
+            let origin = field(edge, "origin").as_u64()? as usize;
+            let owner = field(nodes.get(origin)?, "owner").as_u64()?;
+            Some((format!("e:{index}"), format!("n:{owner}")))
+        })
+        .collect();
     let port_type_keys: HashMap<String, String> = nodes
         .iter()
         .enumerate()
@@ -1779,6 +1788,12 @@ fn prepare_interconnection_from_typed_projection(
     if let Some(edges) = prepared.get_mut("edges").and_then(Value::as_array_mut) {
         for edge in edges {
             edge["attributes"]["typedProjection"] = json!(true);
+            if let Some(owner) = field(edge, "id")
+                .as_str()
+                .and_then(|id| connector_owners.get(id))
+            {
+                edge["attributes"]["connectorOwner"] = json!(owner);
+            }
             let attributes = &edge["attributes"];
             let source_type = field(attributes, "sourcePortId")
                 .as_str()
@@ -3120,6 +3135,17 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 .as_u64()
                 .and_then(|i| references.get(i as usize))
                 .cloned();
+            // A usage drawn as a reference: effectively referential (its membership is not
+            // composite) and of a kind that is composite unless declared `ref`. Ports,
+            // attributes, directed features and `perform`/`exhibit`/`include` usages are
+            // referential by their kind, so they carry no `ref` keyword (SysML 8.2.3).
+            let reference_membership = projection_edges.iter().any(|edge| {
+                field(edge, "kind").as_str() == Some("noncomposite-membership")
+                    && field(edge, "target").as_u64() == Some(index as u64)
+            });
+            let authored_reference = reference_membership
+                && field(element, "direction").is_null()
+                && composite_unless_ref(&as_string(field(element, "metaclass"), ""));
             json!({
                 "id": format!("n:{index}"),
                 "label": if field(element, "name").is_string() {
@@ -3136,6 +3162,8 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "owner": field(element, "owner"),
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
+                    "referenceMembership": reference_membership,
+                    "authoredReference": authored_reference,
                 },
             })
         })
@@ -3182,6 +3210,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 "label": "",
                 "edgeKind": normalize_edge_kind(&as_string(field(edge, "kind"), "relationship")),
                 "attributes": {
+                    "typedProjection": true,
                     "originNodeId": origin,
                     "semanticReference": field(edge, "reference")
                         .as_u64()
@@ -3226,6 +3255,32 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
     });
     enrich_typed_catalog_product(selected_kind, &mut prepared);
     Some(Ok(prepared))
+}
+
+/// Usage metaclasses whose usages are composite unless declared `ref` (SysML 8.2.2: occurrence
+/// usages other than those that perform, exhibit, include or reference an occurrence).
+fn composite_unless_ref(metaclass: &str) -> bool {
+    matches!(
+        metaclass,
+        "PartUsage"
+            | "ItemUsage"
+            | "OccurrenceUsage"
+            | "ActionUsage"
+            | "StateUsage"
+            | "CalculationUsage"
+            | "CaseUsage"
+            | "AnalysisCaseUsage"
+            | "VerificationCaseUsage"
+            | "UseCaseUsage"
+            | "RequirementUsage"
+            | "ConcernUsage"
+            | "ConnectionUsage"
+            | "InterfaceUsage"
+            | "AllocationUsage"
+            | "FlowUsage"
+            | "ViewUsage"
+            | "RenderingUsage"
+    )
 }
 
 #[cfg(test)]

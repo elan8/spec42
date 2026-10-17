@@ -55,18 +55,6 @@ package KeywordAsName {
         (source "parser")
         (range (start 22 7) (end 22 19))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
-        (source "parser")
-        (range (start 25 1) (end 25 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 25 1) (end 25 29))
-      )
     )
   )
 )
@@ -74,10 +62,11 @@ package KeywordAsName {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:b53a33e58810d54d4899ae0e054408c031c6c3918335693d1e8518e955cc185c"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b53a33e58810d54d4899ae0e054408c031c6c3918335693d1e8518e955cc185c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (malformed-name (kind alias) (ordinal 0))))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "SpatialFrame")))))
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (short-name "do")) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SpatialFrame")))))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::Container"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-classifier) (name "Container")) (anonymous (kind part) (ordinal 0))))) (kind part) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SpatialFrame")))))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse"))) (kind kerml-function) (membership (kind owning) (visibility default)))
@@ -119,6 +108,9 @@ package KeywordAsName {
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-behavior) (name "TestBehavior")) (named (kind kerml-expression) (name "whileTest")) (anonymous (kind kerml-literal-boolean) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "SpatialFrame")
+      (outcome (status resolved) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")))))
     (reference (id (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (malformed-name (kind alias) (ordinal 0))))) (kind aliasBinding) (ordinal 0))
       (authored-target "SpatialFrame")
       (outcome (status resolved) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")))))
@@ -133,6 +125,7 @@ package KeywordAsName {
       (outcome (status resolved) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (malformed-name (kind alias) (ordinal 0))))) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (malformed-name (kind alias) (ordinal 0))))) (kind aliasBinding) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-classifier) (name "Container")) (anonymous (kind part) (ordinal 0))))) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-classifier) (name "Container")) (anonymous (kind part) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-structure) (name "MyStruct")) (malformed-name (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-structure) (name "MyStruct")) (malformed-name (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
@@ -184,6 +177,11 @@ package KeywordAsName {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (type (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")) (source direct))
+      (supertype (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-classifier) (name "Container")) (anonymous (kind part) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::Container")))
       (type (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")) (provenance authored))
@@ -278,6 +276,7 @@ package KeywordAsName {
       (featured-by (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-structure) (name "MyStruct")) (named (kind kerml-feature) (name "frame")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")))
+      (subtype (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any))
       (subtype (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-classifier) (name "Container")) (anonymous (kind part) (ordinal 0)))) (scopes any))
       (subtype (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (named (kind kerml-structure) (name "MyStruct")) (malformed-name (kind kerml-feature) (ordinal 0)))) (scopes any))
       (subtype (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::MyStruct::frame")) (scopes any))
@@ -315,6 +314,11 @@ package KeywordAsName {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/keyword_as_name.md") (range (start 25 16) (end 25 28)) (probe (position 25 16))
+    (reference (id (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (anonymous (kind kerml-feature) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "SpatialFrame")
+      (outcome (status resolved) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")))))
+    )
+  )
   (query (document "memory://snapshot/keyword_as_name.md") (range (start 22 24) (end 22 36)) (probe (position 22 24))
     (reference (id (source (node (document "memory://snapshot/keyword_as_name.md") (path (named (kind package) (name "KeywordAsName")) (malformed-name (kind alias) (ordinal 0))))) (kind aliasBinding) (ordinal 0) (authored-target "SpatialFrame")
       (outcome (status resolved) (target (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::SpatialFrame")))))

@@ -7,6 +7,7 @@ validation_rule=8.3.4.4.2 validateAssociationEndTypes
 source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
+coverage_role=secondary
 rule_id=kerml-1.0:8.3.4.4.2:validateAssociationEndTypes
 type=file
 libraries=standard

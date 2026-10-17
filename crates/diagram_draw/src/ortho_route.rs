@@ -238,6 +238,22 @@ pub(crate) fn route(from: Rect, to: Rect, boxes: &[Rect], clearance: f64) -> Opt
 }
 
 /// Drops the points that lie on a straight run between their neighbours.
+/// A straight line between the sides of `from` and `to` that face each other, for when no route
+/// is found.
+pub(crate) fn direct(from: Rect, to: Rect) -> Vec<Point> {
+    let centre = |(x, y, width, height): Rect| (x + width / 2.0, y + height / 2.0);
+    let (a, b) = (centre(from), centre(to));
+    let side = |(x, y, width, height): Rect, (cx, cy): Point, toward: Point| {
+        let (dx, dy) = (toward.0 - cx, toward.1 - cy);
+        if dx.abs() * height >= dy.abs() * width {
+            (if dx >= 0.0 { x + width } else { x }, cy)
+        } else {
+            (cx, if dy >= 0.0 { y + height } else { y })
+        }
+    };
+    vec![side(from, a, b), side(to, b, a)]
+}
+
 fn simplified(points: Vec<Point>) -> Vec<Point> {
     let mut out: Vec<Point> = Vec::with_capacity(points.len());
     for point in points {

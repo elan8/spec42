@@ -4,6 +4,7 @@ description=KerML constructor result specialization remains unresolved when inst
 source_expectation=accepted
 rule_family=check
 expectation=semantics
+coverage_role=secondary
 rule_id=kerml-1.0:8.3.4.8.3:checkConstructorExpressionResultSpecialization
 ~~~
 # SOURCE

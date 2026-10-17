@@ -36,6 +36,10 @@ pub struct NodeBodyChromeStyle {
 pub fn notation_role_from_attributes(attributes: &BTreeMap<String, Value>) -> NotationRole {
     match attr_str(attributes, "notationRole").as_deref() {
         Some("definition") => return NotationRole::Definition,
+        // A usage declared `ref` is drawn as a reference, with the dashed outline.
+        Some("usage") if matches!(attributes.get("authoredReference"), Some(Value::Bool(true))) => {
+            return NotationRole::ReferenceUsage
+        }
         Some("usage") => return NotationRole::Usage,
         Some("reference-usage") => return NotationRole::ReferenceUsage,
         Some("namespace") => return NotationRole::Namespace,

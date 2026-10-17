@@ -90,6 +90,8 @@ package InterconnectionExample {
     (relationship (kind typing) (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (qualified-name "InterconnectionExample::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (qualified-name "InterconnectionExample::selected"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (path (named (kind package) (name "InterconnectionExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_interconnection_complete.md") (qualified-name "InterconnectionExample::Assembly"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (path (named (kind package) (name "InterconnectionExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (qualified-name "InterconnectionExample::Assembly"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (path (named (kind package) (name "InterconnectionExample")) (named (kind part-def) (name "Assembly")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (path (named (kind package) (name "InterconnectionExample")) (named (kind part-def) (name "Assembly")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (path (named (kind package) (name "InterconnectionExample")) (named (kind part-def) (name "Assembly")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (path (named (kind package) (name "InterconnectionExample")) (named (kind part-def) (name "Assembly")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_interconnection_complete.md") (path (named (kind package) (name "InterconnectionExample")) (named (kind part-def) (name "Assembly")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_interconnection_complete.md") (qualified-name "InterconnectionExample::Assembly"))) (provenance implied))
@@ -131,8 +133,11 @@ package InterconnectionExample {
       (featured-by (node (document "memory://snapshot/diagram_interconnection_complete.md") (qualified-name "InterconnectionExample::Assembly")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
@@ -141,13 +146,18 @@ package InterconnectionExample {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -160,8 +170,11 @@ package InterconnectionExample {
       (featured-by (node (document "memory://snapshot/diagram_interconnection_complete.md") (qualified-name "InterconnectionExample::Assembly")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
@@ -170,13 +183,18 @@ package InterconnectionExample {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -351,7 +369,7 @@ package InterconnectionExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:84ff62f9c7e0a302b6900d7b70fb39508502e0f549a4ea81118fe3b6e56e2c6d",
+  "modelDigest": "blake3:dface66026900a79323b21174b35e020a731624c8eccca5c8312aee2e4bcd680",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_complete.md",
@@ -523,6 +541,11 @@ package InterconnectionExample {
     {
       "document": 1,
       "kind": "qualified-name",
+      "qualifiedName": "Connections::binaryConnections"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
       "qualifiedName": "Connections::connections"
     },
     {
@@ -614,13 +637,13 @@ package InterconnectionExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "ordinal": 19,
       "relationshipKind": "connectorEnd",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "ordinal": 20,
       "relationshipKind": "memberAccessOperand",
       "source": 1
     },
@@ -638,7 +661,7 @@ package InterconnectionExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 17,
       "relationshipKind": "subsetting",
       "source": 1
     },
@@ -650,13 +673,25 @@ package InterconnectionExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "ordinal": 22,
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
       "relationshipKind": "typeFeaturing",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "ordinal": 24,
       "relationshipKind": "typeFeaturing",
       "source": 1
     },
@@ -768,7 +803,7 @@ package InterconnectionExample {
         "navigation": 1,
         "origin": 5,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 16,
         "source": 0,
         "target": 5
       },
@@ -777,7 +812,7 @@ package InterconnectionExample {
         "navigation": 3,
         "origin": 3,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 17,
         "source": 0,
         "target": 3
       },
@@ -786,7 +821,7 @@ package InterconnectionExample {
         "navigation": 4,
         "origin": 4,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 38,
         "source": 3,
         "target": 4
       },
@@ -795,7 +830,7 @@ package InterconnectionExample {
         "navigation": 2,
         "origin": 6,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 18,
         "source": 0,
         "target": 6
       },
@@ -804,7 +839,7 @@ package InterconnectionExample {
         "navigation": 5,
         "origin": 1,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 19,
         "source": 0,
         "target": 1
       },
@@ -813,7 +848,7 @@ package InterconnectionExample {
         "navigation": 6,
         "origin": 1,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 34,
         "source": 5,
         "target": 6
       },
@@ -822,7 +857,7 @@ package InterconnectionExample {
         "navigation": 8,
         "origin": 2,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 20,
         "source": 0,
         "target": 2
       },
@@ -831,7 +866,7 @@ package InterconnectionExample {
         "navigation": 9,
         "origin": 2,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 45,
         "source": 6,
         "target": 4
       }
@@ -906,7 +941,7 @@ package InterconnectionExample {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 13,
+        "reference": 14,
         "source": 5,
         "stateSubaction": null,
         "successionGuard": null,
@@ -923,7 +958,7 @@ package InterconnectionExample {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 14,
+        "reference": 15,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1013,19 +1048,8 @@ package InterconnectionExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 20,
+        "reference": 21,
         "source": 0,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 5,
         "target": {
           "reference": 10,
           "status": "resolved"
@@ -1035,21 +1059,10 @@ package InterconnectionExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 33,
+        "reference": 35,
         "source": 5,
         "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 34,
-        "source": 5,
-        "target": {
-          "node": 0,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -1058,20 +1071,9 @@ package InterconnectionExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 36,
-        "source": 3,
+        "source": 5,
         "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 3,
-        "target": {
-          "reference": 11,
+          "reference": 13,
           "status": "resolved"
         }
       },
@@ -1079,8 +1081,8 @@ package InterconnectionExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 38,
-        "source": 3,
+        "reference": 37,
+        "source": 5,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -1091,9 +1093,9 @@ package InterconnectionExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 39,
-        "source": 4,
+        "source": 3,
         "target": {
-          "reference": 10,
+          "reference": 9,
           "status": "resolved"
         }
       },
@@ -1102,7 +1104,7 @@ package InterconnectionExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 40,
-        "source": 4,
+        "source": 3,
         "target": {
           "reference": 12,
           "status": "resolved"
@@ -1113,6 +1115,39 @@ package InterconnectionExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 41,
+        "source": 3,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 42,
+        "source": 4,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 43,
+        "source": 4,
+        "target": {
+          "reference": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 44,
         "source": 4,
         "target": {
           "node": 3,
@@ -1123,10 +1158,10 @@ package InterconnectionExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 43,
+        "reference": 46,
         "source": 6,
         "target": {
-          "reference": 10,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -1134,10 +1169,10 @@ package InterconnectionExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 44,
+        "reference": 47,
         "source": 6,
         "target": {
-          "reference": 12,
+          "reference": 13,
           "status": "resolved"
         }
       },
@@ -1145,7 +1180,7 @@ package InterconnectionExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 45,
+        "reference": 48,
         "source": 6,
         "target": {
           "node": 0,
@@ -1156,7 +1191,7 @@ package InterconnectionExample {
         "kind": "connectorEnd",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 22,
         "source": 1,
         "target": {
           "node": 5,
@@ -1167,21 +1202,10 @@ package InterconnectionExample {
         "kind": "connectorEnd",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 23,
         "source": 1,
         "target": {
           "node": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 25,
-        "source": 1,
-        "target": {
-          "reference": 7,
           "status": "resolved"
         }
       },
@@ -1197,44 +1221,11 @@ package InterconnectionExample {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 29,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "connectorEnd",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 23,
-        "source": 2,
-        "target": {
-          "node": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 10,
-        "provenance": "authored",
-        "reference": 24,
-        "source": 2,
-        "target": {
-          "node": 4,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 27,
-        "source": 2,
+        "source": 1,
         "target": {
           "reference": 7,
           "status": "resolved"
@@ -1245,9 +1236,9 @@ package InterconnectionExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 28,
-        "source": 2,
+        "source": 1,
         "target": {
-          "reference": 8,
+          "reference": 9,
           "status": "resolved"
         }
       },
@@ -1255,7 +1246,73 @@ package InterconnectionExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
+        "reference": 32,
+        "source": 1,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "connectorEnd",
+        "navigation": 9,
+        "provenance": "authored",
+        "reference": 24,
+        "source": 2,
+        "target": {
+          "node": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 10,
+        "provenance": "authored",
+        "reference": 25,
+        "source": 2,
+        "target": {
+          "node": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 29,
+        "source": 2,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 30,
+        "source": 2,
+        "target": {
+          "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 31,
+        "source": 2,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 33,
         "source": 2,
         "target": {
           "node": 0,

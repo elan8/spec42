@@ -35,7 +35,6 @@ pub mod svg_markers;
 mod sysml_node;
 pub mod theme;
 mod tooltip;
-mod tree_layout;
 pub mod types;
 pub mod xml;
 
@@ -88,6 +87,21 @@ fn content_bounds(nodes: &[LaidOutNode]) -> (f64, f64, f64, f64) {
         })
         .fold(f64::NEG_INFINITY, f64::max);
     (min_x, min_y, max_x - min_x, max_y - min_y)
+}
+
+fn bounds_with_routes(
+    bounds: (f64, f64, f64, f64),
+    points: impl IntoIterator<Item = types::Point>,
+) -> (f64, f64, f64, f64) {
+    let (mut left, mut top, width, height) = bounds;
+    let (mut right, mut bottom) = (left + width, top + height);
+    for point in points {
+        left = left.min(point.x);
+        top = top.min(point.y);
+        right = right.max(point.x);
+        bottom = bottom.max(point.y);
+    }
+    (left, top, right - left, bottom - top)
 }
 
 /// The margin around a diagram's content inside its view box.
@@ -184,6 +198,13 @@ pub fn render_general_view_svg(
     {
         root = root.child(containers_layer);
     }
+    if graph
+        .nodes
+        .iter()
+        .any(|node| node.attributes.contains_key("generalContainerHeaderHeight"))
+    {
+        root = root.child(nodes::draw_general_containers(&graph.nodes, theme));
+    }
     for edge_layer in edges::draw_edges(&graph.edges, &nodes_by_id, theme) {
         root = root.child(edge_layer);
     }
@@ -194,8 +215,30 @@ pub fn render_general_view_svg(
         width,
         height,
         &graph.title,
-        content_bounds(&graph.nodes),
-        None,
+        bounds_with_routes(
+            content_bounds(&graph.nodes),
+            graph.edges.iter().flat_map(|edge| {
+                edge.layout.iter().flat_map(|layout| {
+                    layout.sections.first().into_iter().flat_map(|section| {
+                        section
+                            .start_point
+                            .into_iter()
+                            .chain(section.bend_points.iter().copied())
+                            .chain(section.end_point)
+                    })
+                })
+            }),
+        ),
+        graph
+            .edges
+            .iter()
+            .any(|edge| {
+                matches!(
+                    edge.edge_kind.as_deref(),
+                    Some("reference-subsetting" | "redefinition")
+                )
+            })
+            .then(|| markers::general_relationship_markers(theme)),
         root,
     )
 }
@@ -378,16 +421,27 @@ pub fn render_interconnection_view_svg(
         .as_ref()
         .map(|l| l.edges.as_slice())
         .unwrap_or(&[]);
+    let layout_edges_by_id = layout_edges
+        .iter()
+        .map(|edge| (edge.id.as_str(), edge))
+        .collect();
 
     let mut root = Element::new("g").attr("class", "viz-root");
-
+    let mut view_frame_bounds = None;
     if ibd_containers::should_draw_ibd_view_frame(&graph.nodes) {
         let selected_root = graph
             .meta
             .get("selectedRoot")
             .and_then(serde_json::Value::as_str)
             .unwrap_or("");
-        let label = if graph.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true)) {
+        let multiple_roots = graph
+            .meta
+            .get("rootCandidates")
+            .and_then(serde_json::Value::as_array)
+            .is_some_and(|roots| roots.len() > 1);
+        let label = if multiple_roots {
+            &graph.title
+        } else if graph.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true)) {
             graph
                 .nodes
                 .iter()
@@ -401,6 +455,9 @@ pub fn render_interconnection_view_svg(
             selected_root
         };
         if let Some(frame) = ibd_containers::draw_ibd_view_frame(label, bounds, theme) {
+            if graph.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true)) {
+                view_frame_bounds = Some(ibd_containers::ibd_view_frame_bounds(bounds));
+            }
             root = root.child(frame);
         }
     }
@@ -445,6 +502,9 @@ pub fn render_interconnection_view_svg(
             extent.3.max(bottom),
         );
     };
+    if let Some((x, y, width, height)) = view_frame_bounds {
+        include(x, y, x + width, y + height);
+    }
     for node in graph
         .interconnection_layout
         .iter()
@@ -464,7 +524,13 @@ pub fn render_interconnection_view_svg(
         background_width,
         background_height,
         &graph.title,
-        (extent.0, extent.1, extent.2 - extent.0, extent.3 - extent.1),
+        bounds_with_routes(
+            (extent.0, extent.1, extent.2 - extent.0, extent.3 - extent.1),
+            graph
+                .edges
+                .iter()
+                .flat_map(|edge| ibd_edges::route_points_for_edge(edge, &layout_edges_by_id)),
+        ),
         None,
         root,
     )
@@ -480,3 +546,26 @@ pub use pipeline::{
     render_svg_from_payload_str, render_svg_from_payload_with_options,
     render_svg_from_payload_with_theme, PipelineError,
 };
+
+#[cfg(test)]
+mod export_bounds_tests {
+    use super::*;
+
+    #[test]
+    fn export_includes_routes_outside_the_node_boxes() {
+        assert_eq!(
+            bounds_with_routes(
+                (100.0, 100.0, 200.0, 200.0),
+                [
+                    types::Point { x: -80.0, y: 150.0 },
+                    types::Point { x: 160.0, y: 420.0 }
+                ],
+            ),
+            (-80.0, 100.0, 380.0, 320.0)
+        );
+        assert_eq!(
+            bounds_with_routes((0.0, 0.0, 100.0, 100.0), []),
+            (0.0, 0.0, 100.0, 100.0)
+        );
+    }
+}

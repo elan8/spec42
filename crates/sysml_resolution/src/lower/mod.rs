@@ -2660,18 +2660,6 @@ impl SemanticModelBuilder {
             PackageBodyElement::UseCaseUsage(node) => {
                 self.lower_use_case_usage(document, owner, node)?
             }
-            PackageBodyElement::FeatureDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
-            PackageBodyElement::ClassifierDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
-            PackageBodyElement::KermlSemanticDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
-            PackageBodyElement::KermlFeatureDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
             PackageBodyElement::KermlClassifier(node) => {
                 self.lower_kerml_classifier_decl(document, owner, node)?
             }
@@ -2683,6 +2671,13 @@ impl SemanticModelBuilder {
                 // A connector at the root of a document has no type to be featured by, so there
                 // is no owner to source its ends at; the `connect` statement arm above defers the
                 // same shape for the same reason.
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
+            },
+            PackageBodyElement::KermlSuccession(node) => match owner {
+                Some(owner) => self.lower_kerml_succession_member(document, owner, node)?,
+                // As for a root connector: no type to source its ends at.
                 None => {
                     self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
                 }
@@ -2699,9 +2694,6 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node,
             )?,
-            PackageBodyElement::ExtendedLibraryDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
             PackageBodyElement::ItemUsage(node) => self.lower_item_usage(document, owner, node)?,
             PackageBodyElement::MetadataUsage(node) => {
                 self.lower_metadata_usage(document, owner, node)?
@@ -2938,12 +2930,27 @@ impl SemanticModelBuilder {
                     self.push_recovery(document, error.span);
                 }
                 RelationshipBodyElement::Annotating(member) => {
+                    let first = self.declarations.len();
                     self.lower_annotating_member(
                         document,
                         annotated,
                         UnsupportedFamily::RelationshipBodyMember,
                         member,
                     )?;
+                    // A relationship body owns its annotating elements through Annotations
+                    // (KerML `OwnedAnnotation`), which annotate the relationship itself.
+                    for index in first..self.declarations.len() {
+                        if self.declarations[index].owner == annotated
+                            && matches!(
+                                self.declarations[index].kind,
+                                DeclarationKind::Comment
+                                    | DeclarationKind::Documentation
+                                    | DeclarationKind::TextualRepresentation
+                            )
+                        {
+                            self.declaration_facts[index].is_owned_annotation = true;
+                        }
+                    }
                 }
                 RelationshipBodyElement::KermlFeature(node) => self.lower_kerml_feature_member(
                     document,

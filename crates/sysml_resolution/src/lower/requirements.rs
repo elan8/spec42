@@ -747,6 +747,7 @@ impl SemanticModelBuilder {
                     node.span,
                     DeclarationFacts {
                         multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                        is_included_use_case: true,
                         ..DeclarationFacts::none()
                     },
                 )?;
@@ -1587,6 +1588,7 @@ impl SemanticModelBuilder {
                 short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
+                    variation: node.value.is_variation,
                     ..DeclarationModifiers::default()
                 },
                 // `ast::UseCaseUsage` has no `nonunique` field; see
@@ -1653,6 +1655,7 @@ impl SemanticModelBuilder {
                 short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
+                    variation: node.value.is_variation,
                     ..DeclarationModifiers::default()
                 },
                 // `ast::VerificationCaseUsage` has no `nonunique` field; see

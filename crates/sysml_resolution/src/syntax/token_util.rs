@@ -61,13 +61,6 @@ pub fn declaration_name_text(
         .map(|name| name.into_owned())
 }
 
-/// The authored source text under a span.
-pub fn span_text<'a>(source: &'a str, span: &Span) -> &'a str {
-    source
-        .get(span.offset..span.offset.saturating_add(span.len))
-        .unwrap_or("")
-}
-
 /// Locate a whole-word occurrence of `word` inside `span` on a single source line.
 pub fn word_range_within_span(source: &str, span: &SyntaxRange, word: &str) -> Option<SyntaxRange> {
     if word.is_empty() || span.start_line != span.end_line {
@@ -169,40 +162,6 @@ pub fn push_usage_name_type_spans<T: TypeNameRef + ?Sized>(
             out.push((r, SyntaxRole::Type));
         }
     }
-}
-
-/// Best-effort declared name from a KerML modeled declaration (`FeatureDecl` /
-/// `ClassifierDecl` / similar), mirroring graph-builder name extraction.
-pub fn modeled_decl_name(keyword: &str, text: &str) -> Option<String> {
-    let t = text.trim().trim_end_matches(';').trim();
-    let tokens: Vec<&str> = t.split_whitespace().collect();
-    let kw = keyword.trim();
-    if let Some(pos) = tokens.iter().position(|tok| tok.eq_ignore_ascii_case(kw)) {
-        let mut i = pos + 1;
-        while i < tokens.len() {
-            let tok = tokens[i].trim_end_matches([';', ',', ')', '{']);
-            if tok.eq_ignore_ascii_case("def")
-                || tok.eq_ignore_ascii_case("id")
-                || tok.eq_ignore_ascii_case("case")
-                || tok.starts_with('\'')
-            {
-                i += 1;
-                continue;
-            }
-            if tok.eq_ignore_ascii_case("specializes") {
-                break;
-            }
-            let name: String = tok
-                .chars()
-                .filter(|c| c.is_alphanumeric() || *c == '_')
-                .collect();
-            if !name.is_empty() {
-                return Some(name);
-            }
-            break;
-        }
-    }
-    None
 }
 
 /// Push a whole-word occurrence of `name` inside `span` when present in `source`.

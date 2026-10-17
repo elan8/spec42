@@ -22,15 +22,9 @@ package Declarations {
   (document "memory://snapshot/declaration_hints.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_grammar_form")
+        (severity error)
+        (code "recovered_package_body_element")
         (source "parser")
-        (range (start 2 4) (end 2 23))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
         (range (start 2 4) (end 2 23))
       )
       (diagnostic
@@ -58,7 +52,7 @@ package Declarations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:22ca0f3217afe51a8671935032a7f5441d40b57ffd4e9e80dc13d1b87dc4983d"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:22ca0f3217afe51a8671935032a7f5441d40b57ffd4e9e80dc13d1b87dc4983d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Redefines"))) (kind part-def) (membership (kind owning) (visibility default)))

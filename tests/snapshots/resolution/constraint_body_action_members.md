@@ -6,6 +6,7 @@ specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
+coverage_role=secondary
 rule_id=sysml-2.0:8.3.17.8:checkForkNodeSpecialization
 rule_id=sysml-2.0:8.3.17.13:checkMergeNodeSpecialization
 type=file
@@ -31,6 +32,18 @@ package Constraints {
 (fixture-diagnostics
   (document "memory://snapshot/constraint_body_action_members.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "control_node_invalid_owner")
+        (source "semantic")
+        (range (start 2 8) (end 2 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "control_node_invalid_owner")
+        (source "semantic")
+        (range (start 3 8) (end 3 21))
+      )
     )
   )
 )

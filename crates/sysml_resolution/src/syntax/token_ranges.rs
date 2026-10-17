@@ -21,9 +21,8 @@ use sysml_v2_parser::ast::{
 use sysml_v2_parser::{ParsedDocument, QualifiedReferenceId};
 
 use super::token_util::{
-    modeled_decl_name, push_identification_definition_spans,
-    push_qualified_identification_definition_spans, push_usage_name_type_spans, push_word_token,
-    span_text, span_to_source_range,
+    push_identification_definition_spans, push_qualified_identification_definition_spans,
+    push_usage_name_type_spans, push_word_token, span_to_source_range,
 };
 use super::{SyntaxRange, SyntaxRole};
 use sysml_v2_parser::ast::{Dependency, SatisfyRequirementUsage as Satisfy};
@@ -747,46 +746,6 @@ fn collect_semantic_ranges_package_body_element(
         }
         PBE::Satisfy(satisfy_node) => collect_semantic_ranges_satisfy(ctx, satisfy_node, out),
         PBE::Dependency(dep_node) => collect_semantic_ranges_dependency(ctx, dep_node, out),
-        PBE::FeatureDecl(feature_node) => {
-            collect_semantic_ranges_modeled_decl(
-                ctx,
-                &feature_node.span,
-                &feature_node.value.keyword_span,
-                feature_node.value.text,
-                SyntaxRole::Property,
-                out,
-            );
-        }
-        PBE::ClassifierDecl(classifier_node) => {
-            collect_semantic_ranges_modeled_decl(
-                ctx,
-                &classifier_node.span,
-                &classifier_node.value.keyword_span,
-                classifier_node.value.text,
-                SyntaxRole::Class,
-                out,
-            );
-        }
-        PBE::KermlFeatureDecl(decl) => {
-            collect_semantic_ranges_modeled_decl(
-                ctx,
-                &decl.span,
-                &decl.value.keyword_span,
-                decl.value.text,
-                SyntaxRole::Property,
-                out,
-            );
-        }
-        PBE::KermlSemanticDecl(decl) => {
-            collect_semantic_ranges_modeled_decl(
-                ctx,
-                &decl.span,
-                &decl.value.keyword_span,
-                decl.value.text,
-                SyntaxRole::Class,
-                out,
-            );
-        }
         // `datatype Magnitude;`, `struct S { ... }`, `feature baseType;` -- these arrive as typed
         // nodes now, where they used to be opaque `KermlSemanticDecl`/`KermlFeatureDecl` raw text
         // whose declared name had to be recovered by re-scanning the source. Classify them from
@@ -800,16 +759,6 @@ fn collect_semantic_ranges_package_body_element(
             if let Some(name) = decl.value.name {
                 out.push((span_to_source_range(name.span()), SyntaxRole::Property));
             }
-        }
-        PBE::ExtendedLibraryDecl(decl) => {
-            collect_semantic_ranges_modeled_decl(
-                ctx,
-                &decl.span,
-                &decl.value.keyword_span,
-                decl.value.text,
-                SyntaxRole::Class,
-                out,
-            );
         }
         _ => {}
     }
@@ -881,24 +830,6 @@ fn collect_semantic_ranges_dependency(
             ));
         }
     }
-}
-
-fn collect_semantic_ranges_modeled_decl(
-    ctx: &RangeCtx<'_>,
-    span: &sysml_v2_parser::Span,
-    keyword_span: &sysml_v2_parser::Span,
-    text: sysml_v2_parser::ast::OpaqueText,
-    role: SyntaxRole,
-    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
-) {
-    let keyword = span_text(ctx.source, keyword_span);
-    let Some(text) = ctx.document.opaque_text(text) else {
-        return;
-    };
-    let Some(name) = modeled_decl_name(keyword, text) else {
-        return;
-    };
-    push_word_token(ctx.source, span, &name, role, out);
 }
 
 fn collect_semantic_ranges_definition_body(
@@ -1910,6 +1841,7 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
+        ADBE::ViewUsage(view) => collect_semantic_ranges_view_usage(ctx, view, out),
         ADBE::PartUsage(pu_node) => {
             if let Some(name) = pu_node.value.name {
                 out.push((span_to_source_range(name.span()), SyntaxRole::Property));
@@ -2012,6 +1944,7 @@ fn collect_semantic_ranges_action_usage_body_element(
         AUBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }
+        AUBE::ViewUsage(view) => collect_semantic_ranges_view_usage(ctx, view, out),
         AUBE::PartUsage(pu_node) => {
             if let Some(name) = pu_node.value.name {
                 out.push((span_to_source_range(name.span()), SyntaxRole::Property));

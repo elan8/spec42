@@ -171,8 +171,8 @@ package Oven {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::doAction"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
@@ -183,8 +183,8 @@ package Oven {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exitAction"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::doAction"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::warmUp"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
@@ -352,6 +352,7 @@ package Oven {
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking")))
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (provenance authored))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::doAction"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
@@ -359,9 +360,11 @@ package Oven {
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
@@ -371,6 +374,7 @@ package Oven {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::do")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
@@ -443,6 +447,7 @@ package Oven {
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle")))
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (provenance authored))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::doAction"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
@@ -450,9 +455,11 @@ package Oven {
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
@@ -462,6 +469,7 @@ package Oven {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::do")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
@@ -878,7 +886,7 @@ package Oven {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:1b206d4984676e90bc0b3c8d15db8390f53b8cbecae75f5e362f14bd1b8fdd31",
+  "modelDigest": "blake3:ea7e8f387eaae408ac808f6f91b31a78b699a65423b6fbb8882c89dce5819adf",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1233,6 +1241,11 @@ package Oven {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "Oven::machine"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
+      "qualifiedName": "Actions::Action::subactions"
     },
     {
       "document": 1,
@@ -2034,7 +2047,7 @@ package Oven {
         "navigation": 4,
         "origin": 17,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 47,
         "source": 0,
         "target": 17
       },
@@ -2043,7 +2056,7 @@ package Oven {
         "navigation": 7,
         "origin": 18,
         "provenance": "authored",
-        "reference": 73,
+        "reference": 74,
         "source": 17,
         "target": 18
       },
@@ -2052,7 +2065,7 @@ package Oven {
         "navigation": 5,
         "origin": 20,
         "provenance": "authored",
-        "reference": 74,
+        "reference": 75,
         "source": 17,
         "target": 20
       },
@@ -2061,7 +2074,7 @@ package Oven {
         "navigation": 9,
         "origin": 19,
         "provenance": "authored",
-        "reference": 75,
+        "reference": 76,
         "source": 17,
         "target": 19
       },
@@ -2070,7 +2083,7 @@ package Oven {
         "navigation": 11,
         "origin": 21,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 48,
         "source": 0,
         "target": 21
       },
@@ -2079,7 +2092,7 @@ package Oven {
         "navigation": 12,
         "origin": 22,
         "provenance": "authored",
-        "reference": 61,
+        "reference": 62,
         "source": 21,
         "target": 22
       },
@@ -2088,7 +2101,7 @@ package Oven {
         "navigation": 2,
         "origin": 15,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 49,
         "source": 0,
         "target": 15
       },
@@ -2097,7 +2110,7 @@ package Oven {
         "navigation": 3,
         "origin": 15,
         "provenance": "authored",
-        "reference": 53,
+        "reference": 54,
         "source": 15,
         "target": 17
       },
@@ -2106,7 +2119,7 @@ package Oven {
         "navigation": 20,
         "origin": 1,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 50,
         "source": 0,
         "target": 1
       },
@@ -2115,18 +2128,9 @@ package Oven {
         "navigation": 21,
         "origin": 1,
         "provenance": "implied",
-        "reference": 66,
+        "reference": 67,
         "source": 21,
         "target": 17
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 124,
-        "source": 1,
-        "target": 7
       },
       {
         "kind": "containment",
@@ -2149,9 +2153,18 @@ package Oven {
       {
         "kind": "containment",
         "navigation": 19,
-        "origin": 2,
+        "origin": 7,
         "provenance": "authored",
         "reference": 127,
+        "source": 1,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 19,
+        "origin": 2,
+        "provenance": "authored",
+        "reference": 128,
         "source": 1,
         "target": 2
       },
@@ -2160,7 +2173,7 @@ package Oven {
         "navigation": 21,
         "origin": 2,
         "provenance": "implied",
-        "reference": 65,
+        "reference": 66,
         "source": 21,
         "target": 17
       },
@@ -2169,7 +2182,7 @@ package Oven {
         "navigation": 19,
         "origin": 3,
         "provenance": "authored",
-        "reference": 128,
+        "reference": 129,
         "source": 1,
         "target": 3
       },
@@ -2178,7 +2191,7 @@ package Oven {
         "navigation": 19,
         "origin": 4,
         "provenance": "authored",
-        "reference": 136,
+        "reference": 137,
         "source": 3,
         "target": 4
       },
@@ -2187,7 +2200,7 @@ package Oven {
         "navigation": 15,
         "origin": 8,
         "provenance": "authored",
-        "reference": 50,
+        "reference": 51,
         "source": 0,
         "target": 8
       },
@@ -2196,18 +2209,9 @@ package Oven {
         "navigation": 16,
         "origin": 8,
         "provenance": "implied",
-        "reference": 80,
+        "reference": 81,
         "source": 17,
         "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 14,
-        "origin": 14,
-        "provenance": "authored",
-        "reference": 97,
-        "source": 8,
-        "target": 14
       },
       {
         "kind": "containment",
@@ -2230,9 +2234,18 @@ package Oven {
       {
         "kind": "containment",
         "navigation": 14,
-        "origin": 9,
+        "origin": 14,
         "provenance": "authored",
         "reference": 100,
+        "source": 8,
+        "target": 14
+      },
+      {
+        "kind": "containment",
+        "navigation": 14,
+        "origin": 9,
+        "provenance": "authored",
+        "reference": 101,
         "source": 8,
         "target": 9
       },
@@ -2241,7 +2254,7 @@ package Oven {
         "navigation": 16,
         "origin": 9,
         "provenance": "implied",
-        "reference": 79,
+        "reference": 80,
         "source": 17,
         "target": 21
       },
@@ -2250,7 +2263,7 @@ package Oven {
         "navigation": 14,
         "origin": 10,
         "provenance": "authored",
-        "reference": 101,
+        "reference": 102,
         "source": 8,
         "target": 10
       },
@@ -2259,7 +2272,7 @@ package Oven {
         "navigation": 14,
         "origin": 11,
         "provenance": "authored",
-        "reference": 109,
+        "reference": 110,
         "source": 10,
         "target": 11
       },
@@ -2268,7 +2281,7 @@ package Oven {
         "navigation": 1,
         "origin": 16,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 52,
         "source": 0,
         "target": 16
       }
@@ -2365,7 +2378,7 @@ package Oven {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 43,
+        "reference": 44,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2390,7 +2403,7 @@ package Oven {
         "name": null,
         "notationRole": "usage",
         "owner": 1,
-        "reference": 41,
+        "reference": 42,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2407,7 +2420,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 3,
-        "reference": 44,
+        "reference": 45,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2424,7 +2437,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 42,
+        "reference": 43,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2441,7 +2454,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 42,
+        "reference": 43,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2458,7 +2471,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 42,
+        "reference": 43,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2509,7 +2522,7 @@ package Oven {
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
-        "reference": 39,
+        "reference": 40,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2534,7 +2547,7 @@ package Oven {
         "name": null,
         "notationRole": "usage",
         "owner": 8,
-        "reference": 37,
+        "reference": 38,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2551,7 +2564,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 10,
-        "reference": 40,
+        "reference": 41,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2568,7 +2581,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 38,
+        "reference": 39,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2585,7 +2598,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 38,
+        "reference": 39,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2602,7 +2615,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 38,
+        "reference": 39,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2619,7 +2632,7 @@ package Oven {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 36,
+        "reference": 37,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2636,7 +2649,7 @@ package Oven {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 35,
+        "reference": 36,
         "source": 1,
         "stateSubaction": "entry",
         "successionGuard": null,
@@ -2794,21 +2807,10 @@ package Oven {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 52,
+        "reference": 53,
         "source": 0,
         "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 76,
-        "source": 17,
-        "target": {
-          "reference": 24,
+          "reference": 27,
           "status": "resolved"
         }
       },
@@ -2819,7 +2821,7 @@ package Oven {
         "reference": 77,
         "source": 17,
         "target": {
-          "reference": 29,
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -2830,7 +2832,18 @@ package Oven {
         "reference": 78,
         "source": 17,
         "target": {
-          "reference": 34,
+          "reference": 30,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 79,
+        "source": 17,
+        "target": {
+          "reference": 35,
           "status": "resolved"
         }
       },
@@ -2838,7 +2851,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 81,
+        "reference": 82,
         "source": 17,
         "target": {
           "node": 0,
@@ -2849,7 +2862,7 @@ package Oven {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 91,
+        "reference": 92,
         "source": 18,
         "target": {
           "reference": 3,
@@ -2860,21 +2873,10 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 87,
-        "source": 18,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 88,
         "source": 18,
         "target": {
-          "reference": 22,
+          "reference": 28,
           "status": "resolved"
         }
       },
@@ -2885,7 +2887,18 @@ package Oven {
         "reference": 89,
         "source": 18,
         "target": {
-          "reference": 24,
+          "reference": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 90,
+        "source": 18,
+        "target": {
+          "reference": 23,
           "status": "resolved"
         }
       },
@@ -2893,7 +2906,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 90,
+        "reference": 91,
         "source": 18,
         "target": {
           "node": 17,
@@ -2904,7 +2917,7 @@ package Oven {
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 96,
+        "reference": 97,
         "source": 20,
         "target": {
           "reference": 4,
@@ -2915,21 +2928,10 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 92,
-        "source": 20,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 93,
         "source": 20,
         "target": {
-          "reference": 22,
+          "reference": 29,
           "status": "resolved"
         }
       },
@@ -2940,7 +2942,18 @@ package Oven {
         "reference": 94,
         "source": 20,
         "target": {
-          "reference": 24,
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 95,
+        "source": 20,
+        "target": {
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -2948,7 +2961,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 95,
+        "reference": 96,
         "source": 20,
         "target": {
           "node": 17,
@@ -2959,7 +2972,7 @@ package Oven {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 86,
+        "reference": 87,
         "source": 19,
         "target": {
           "reference": 0,
@@ -2970,21 +2983,10 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 82,
-        "source": 19,
-        "target": {
-          "reference": 30,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 83,
         "source": 19,
         "target": {
-          "reference": 22,
+          "reference": 31,
           "status": "resolved"
         }
       },
@@ -2995,7 +2997,18 @@ package Oven {
         "reference": 84,
         "source": 19,
         "target": {
-          "reference": 24,
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 85,
+        "source": 19,
+        "target": {
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -3003,7 +3016,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 85,
+        "reference": 86,
         "source": 19,
         "target": {
           "node": 17,
@@ -3014,21 +3027,10 @@ package Oven {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 62,
-        "source": 21,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 63,
         "source": 21,
         "target": {
-          "reference": 29,
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -3039,7 +3041,18 @@ package Oven {
         "reference": 64,
         "source": 21,
         "target": {
-          "reference": 34,
+          "reference": 30,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 65,
+        "source": 21,
+        "target": {
+          "reference": 35,
           "status": "resolved"
         }
       },
@@ -3047,7 +3060,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 67,
+        "reference": 68,
         "source": 21,
         "target": {
           "node": 0,
@@ -3058,7 +3071,7 @@ package Oven {
         "kind": "typing",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 72,
+        "reference": 73,
         "source": 22,
         "target": {
           "reference": 3,
@@ -3069,21 +3082,10 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 68,
-        "source": 22,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 69,
         "source": 22,
         "target": {
-          "reference": 22,
+          "reference": 28,
           "status": "resolved"
         }
       },
@@ -3094,7 +3096,18 @@ package Oven {
         "reference": 70,
         "source": 22,
         "target": {
-          "reference": 24,
+          "reference": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 71,
+        "source": 22,
+        "target": {
+          "reference": 23,
           "status": "resolved"
         }
       },
@@ -3102,7 +3115,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 71,
+        "reference": 72,
         "source": 22,
         "target": {
           "node": 21,
@@ -3113,7 +3126,7 @@ package Oven {
         "kind": "initialState",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 54,
+        "reference": 55,
         "source": 15,
         "target": {
           "node": 17,
@@ -3124,10 +3137,10 @@ package Oven {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 56,
+        "reference": 57,
         "source": 15,
         "target": {
-          "reference": 25,
+          "reference": 26,
           "status": "resolved"
         }
       },
@@ -3135,21 +3148,10 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 59,
+        "reference": 60,
         "source": 15,
         "target": {
           "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 129,
-        "source": 1,
-        "target": {
-          "reference": 23,
           "status": "resolved"
         }
       },
@@ -3171,7 +3173,18 @@ package Oven {
         "reference": 131,
         "source": 1,
         "target": {
-          "reference": 31,
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 132,
+        "source": 1,
+        "target": {
+          "reference": 32,
           "status": "resolved"
         }
       },
@@ -3179,7 +3192,7 @@ package Oven {
         "kind": "transitionSource",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 132,
+        "reference": 133,
         "source": 1,
         "target": {
           "node": 21,
@@ -3190,7 +3203,7 @@ package Oven {
         "kind": "transitionTarget",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 133,
+        "reference": 134,
         "source": 1,
         "target": {
           "node": 17,
@@ -3201,7 +3214,7 @@ package Oven {
         "kind": "transitionTrigger",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 134,
+        "reference": 135,
         "source": 1,
         "target": {
           "reference": 2,
@@ -3212,43 +3225,10 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 135,
+        "reference": 136,
         "source": 1,
         "target": {
           "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 145,
-        "source": 7,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 137,
-        "source": 7,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 138,
-        "source": 7,
-        "target": {
-          "reference": 33,
           "status": "resolved"
         }
       },
@@ -3267,21 +3247,21 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 139,
+        "reference": 138,
         "source": 7,
         "target": {
-          "reference": 32,
+          "reference": 22,
           "status": "resolved"
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 140,
+        "reference": 139,
         "source": 7,
         "target": {
-          "node": 4,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -3297,13 +3277,46 @@ package Oven {
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 140,
+        "source": 7,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 141,
+        "source": 7,
+        "target": {
+          "node": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 148,
+        "source": 7,
+        "target": {
+          "node": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 142,
         "source": 2,
         "target": {
-          "reference": 25,
+          "reference": 26,
           "status": "resolved"
         }
       },
@@ -3311,7 +3324,7 @@ package Oven {
         "kind": "succession",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 143,
+        "reference": 144,
         "source": 2,
         "target": {
           "node": 21,
@@ -3322,7 +3335,7 @@ package Oven {
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 144,
+        "reference": 145,
         "source": 2,
         "target": {
           "node": 17,
@@ -3333,10 +3346,10 @@ package Oven {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 142,
+        "reference": 143,
         "source": 3,
         "target": {
-          "reference": 20,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -3344,7 +3357,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 148,
+        "reference": 149,
         "source": 3,
         "target": {
           "node": 1,
@@ -3355,10 +3368,10 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 149,
+        "reference": 150,
         "source": 4,
         "target": {
-          "reference": 45,
+          "reference": 46,
           "status": "resolved"
         }
       },
@@ -3366,21 +3379,10 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 150,
+        "reference": 151,
         "source": 4,
         "target": {
           "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 102,
-        "source": 8,
-        "target": {
-          "reference": 23,
           "status": "resolved"
         }
       },
@@ -3402,7 +3404,18 @@ package Oven {
         "reference": 104,
         "source": 8,
         "target": {
-          "reference": 31,
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 105,
+        "source": 8,
+        "target": {
+          "reference": 32,
           "status": "resolved"
         }
       },
@@ -3410,7 +3423,7 @@ package Oven {
         "kind": "transitionSource",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 105,
+        "reference": 106,
         "source": 8,
         "target": {
           "node": 17,
@@ -3421,7 +3434,7 @@ package Oven {
         "kind": "transitionTarget",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 106,
+        "reference": 107,
         "source": 8,
         "target": {
           "node": 21,
@@ -3432,7 +3445,7 @@ package Oven {
         "kind": "transitionTrigger",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 107,
+        "reference": 108,
         "source": 8,
         "target": {
           "reference": 1,
@@ -3443,43 +3456,10 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 108,
+        "reference": 109,
         "source": 8,
         "target": {
           "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 118,
-        "source": 14,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 110,
-        "source": 14,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 111,
-        "source": 14,
-        "target": {
-          "reference": 33,
           "status": "resolved"
         }
       },
@@ -3498,21 +3478,21 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 112,
+        "reference": 111,
         "source": 14,
         "target": {
-          "reference": 32,
+          "reference": 22,
           "status": "resolved"
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 113,
+        "reference": 112,
         "source": 14,
         "target": {
-          "node": 11,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -3528,13 +3508,46 @@ package Oven {
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 113,
+        "source": 14,
+        "target": {
+          "reference": 33,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 114,
+        "source": 14,
+        "target": {
+          "node": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 121,
+        "source": 14,
+        "target": {
+          "node": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 115,
         "source": 9,
         "target": {
-          "reference": 25,
+          "reference": 26,
           "status": "resolved"
         }
       },
@@ -3542,7 +3555,7 @@ package Oven {
         "kind": "succession",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 116,
+        "reference": 117,
         "source": 9,
         "target": {
           "node": 17,
@@ -3553,7 +3566,7 @@ package Oven {
         "kind": "succession",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 117,
+        "reference": 118,
         "source": 9,
         "target": {
           "node": 21,
@@ -3564,10 +3577,10 @@ package Oven {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 115,
+        "reference": 116,
         "source": 10,
         "target": {
-          "reference": 20,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -3575,7 +3588,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 121,
+        "reference": 122,
         "source": 10,
         "target": {
           "node": 8,
@@ -3586,10 +3599,10 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 122,
+        "reference": 123,
         "source": 11,
         "target": {
-          "reference": 45,
+          "reference": 46,
           "status": "resolved"
         }
       },
@@ -3597,7 +3610,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 123,
+        "reference": 124,
         "source": 11,
         "target": {
           "node": 10,
@@ -3608,21 +3621,10 @@ package Oven {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 55,
+        "reference": 56,
         "source": 16,
         "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 57,
-        "source": 16,
-        "target": {
-          "reference": 22,
+          "reference": 29,
           "status": "resolved"
         }
       },
@@ -3633,7 +3635,18 @@ package Oven {
         "reference": 58,
         "source": 16,
         "target": {
-          "reference": 24,
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 59,
+        "source": 16,
+        "target": {
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -3641,7 +3654,7 @@ package Oven {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 60,
+        "reference": 61,
         "source": 16,
         "target": {
           "node": 0,

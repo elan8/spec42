@@ -36,12 +36,6 @@ package Model {
     (diagnostics
       (diagnostic
         (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 1 4) (end 10 5))
-      )
-      (diagnostic
-        (severity information)
         (code "missing_initial_state")
         (source "semantic")
         (range (start 1 4) (end 10 5))

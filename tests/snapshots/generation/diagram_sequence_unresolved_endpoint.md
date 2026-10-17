@@ -295,7 +295,7 @@ package SequenceUnresolved {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:9237ea4921232241ef5074c49cd40d71b245dc560e12c988aab2edb5153bf093",
+  "modelDigest": "blake3:4b801f15c918daa66be1e735d939eab799878f74930ae00bb163c8eb039f0370",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unresolved_endpoint.md",

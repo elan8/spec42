@@ -169,6 +169,11 @@ pub fn should_draw_ibd_view_frame(nodes: &[LaidOutNode]) -> bool {
 /// unconditionally, regardless of view -- `contentBounds` only ever imports `nodeWidth`/
 /// `nodeHeight`, confirmed from source), not an IBD-specific variant. The caller passes in
 /// `content_bounds(&graph.nodes)`.
+pub fn ibd_view_frame_bounds(bounds: (f64, f64, f64, f64)) -> (f64, f64, f64, f64) {
+    let (x, y, width, height) = bounds;
+    (x - 20.0, y - 38.0, width + 40.0, height + 58.0)
+}
+
 pub fn draw_ibd_view_frame(
     label: &str,
     bounds: (f64, f64, f64, f64),
@@ -179,12 +184,8 @@ pub fn draw_ibd_view_frame(
     if label.is_empty() || bounds_width <= 0.0 || bounds_height <= 0.0 {
         return None;
     }
-    let padding = 20.0;
-    let header_height = 18.0;
-    let x = bounds_x - padding;
-    let y = bounds_y - padding - header_height;
-    let width = bounds_width + padding * 2.0;
-    let height = bounds_height + padding * 2.0 + header_height;
+    let (x, y, width, height) =
+        ibd_view_frame_bounds((bounds_x, bounds_y, bounds_width, bounds_height));
     Some(
         Element::new("g")
             .attr("class", "ibd-view-frame")

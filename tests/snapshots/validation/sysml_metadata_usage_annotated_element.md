@@ -7,6 +7,7 @@ validation_rule=8.3.4.12.3 validateMetadataFeatureAnnotatedElement
 source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
+coverage_role=secondary
 rule_id=kerml-1.0:8.3.4.12.3:validateMetadataFeatureAnnotatedElement
 libraries=standard
 type=file

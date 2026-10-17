@@ -722,6 +722,9 @@ semantic_diagnostic_codes! {
     /// SysML 8.3.17.6 `validateControlNodeIsComposite`.
     ControlNodeNotComposite => "control_node_not_composite",
         "A control node must be composite.";
+    /// SysML 8.3.17.6 `validateControlNodeOwningType`.
+    ControlNodeInvalidOwner => "control_node_invalid_owner",
+        "A control node must be owned by an action definition or action usage.";
     /// SysML 8.3.17 `validateControlNodeIncomingSuccessions`.
     ControlNodeIncomingMultiplicity => "control_node_incoming_multiplicity",
         "An incoming succession to a control node must have a target multiplicity of 1..1.";
@@ -754,7 +757,7 @@ semantic_diagnostic_codes! {
     /// A state definition owns states but declares no initial transition.
     MissingInitialState => "missing_initial_state",
         "This state definition owns states but declares no initial transition.";
-    /// A state definition owns states but declares no finality indicator.
+    /// Retired advisory code, retained for compatibility; finality is optional in SysML.
     MissingFinalState => "missing_final_state",
         "This state definition owns states but declares no finality indicator.";
     }

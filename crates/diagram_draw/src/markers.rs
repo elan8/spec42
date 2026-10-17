@@ -217,3 +217,70 @@ pub fn node_chrome_style(theme: &Theme) -> Element {
         .attr("class", "sysml-node-chrome-style")
         .text(node_chrome_style_sheet(theme))
 }
+
+/// Additional normative relationship markers, emitted only when the graph uses them.
+pub fn general_relationship_markers(theme: &Theme) -> Element {
+    Element::new("defs")
+        // SysML 8.2.3.6: reference subsetting has four dots behind the hollow
+        // triangle; redefinition has a transverse bar behind it. Both are solid.
+        .child(
+            Element::new("marker")
+                .attr("id", "general-d3-reference-subsets")
+                .attr("viewBox", "-9 -6 22 12")
+                .attr("refX", "11")
+                .attr("refY", "0")
+                .attr("markerWidth", "15")
+                .attr("markerHeight", "8")
+                .attr("orient", "auto")
+                .child(
+                    Element::new("path")
+                        .attr("d", "M1,-4.5L11,0L1,4.5Z")
+                        .style("fill", theme.node_fill)
+                        .style("stroke", theme.edge_default),
+                )
+                .child(
+                    Element::new("circle")
+                        .attr("cx", "-2")
+                        .attr("cy", "-3")
+                        .attr("r", "1")
+                        .style("fill", theme.edge_default),
+                )
+                .child(
+                    Element::new("circle")
+                        .attr("cx", "-2")
+                        .attr("cy", "3")
+                        .attr("r", "1")
+                        .style("fill", theme.edge_default),
+                )
+                .child(
+                    Element::new("circle")
+                        .attr("cx", "-6")
+                        .attr("cy", "-3")
+                        .attr("r", "1")
+                        .style("fill", theme.edge_default),
+                )
+                .child(
+                    Element::new("circle")
+                        .attr("cx", "-6")
+                        .attr("cy", "3")
+                        .attr("r", "1")
+                        .style("fill", theme.edge_default),
+                ),
+        )
+        .child(
+            Element::new("marker")
+                .attr("id", "general-d3-redefines")
+                .attr("viewBox", "-5 -6 18 12")
+                .attr("refX", "11")
+                .attr("refY", "0")
+                .attr("markerWidth", "12")
+                .attr("markerHeight", "8")
+                .attr("orient", "auto")
+                .child(
+                    Element::new("path")
+                        .attr("d", "M1,-4.5L11,0L1,4.5Z M-2,-5L-2,5")
+                        .style("fill", theme.node_fill)
+                        .style("stroke", theme.edge_default),
+                ),
+        )
+}
