@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Repeated redefinitions resolve inherited targets consistently (#255).** Sibling features no
+  longer shadow a redefinition target as their effective names settle. Repeated anonymous ends
+  retain namespace collision warnings without spurious target ambiguity; genuinely ambiguous
+  inherited targets remain ambiguous.
+
 - **State entry, do, and exit actions are derived collections.** `deriveStateDefinitionEntryAction`,
   `deriveStateDefinitionDoAction`, `deriveStateDefinitionExitAction`, and the matching state-usage
   rules project the first owned state subaction of that kind. `deriveStateDefinitionState` projects

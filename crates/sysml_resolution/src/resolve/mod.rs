@@ -2321,6 +2321,13 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
     // is a lowering defect -- an unnamed member must not acquire a declared name -- and it is
     // recorded in planning/UPSTREAM_PARSER_GAPS.md rather than compensated for here.
     let excluded = (reference.kind() == ReferenceKind::Redefinition).then(|| reference.source());
+    let inherited_redefinition_scope = reference.kind() == ReferenceKind::Redefinition
+        && source.owner.is_some_and(|owner| {
+            declarations.get(owner.index()).is_some_and(|declaration| {
+                crate::model::element_kind::element_kind(declaration.kind)
+                    .conforms_to(sysml_contract::ElementKind::Type)
+            })
+        });
     // The reference that names a perform usage's performed action does not see anonymous perform
     // usages, which are named by what they perform (see `is_anonymous_perform`).
     let excludes_anonymous_performs = reference.kind() == ReferenceKind::References
@@ -2425,7 +2432,13 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
                 domain: first_segment_domain,
                 excluded,
                 excludes_anonymous_performs,
-                first_scope: if qualified_redefinition_owner.is_some() {
+                // KerML 8.2.3.5.1 starts a redefinedFeature lookup from the owning Type's
+                // general Types. Excluding just the source Feature still admits its siblings:
+                // same-named redefinitions would shadow that target, including anonymous
+                // redefinitions named after their targets.
+                first_scope: if inherited_redefinition_scope
+                    || qualified_redefinition_owner.is_some()
+                {
                     FirstScopePolicy::InheritedOnly
                 } else {
                     FirstScopePolicy::OwnedThenInherited
