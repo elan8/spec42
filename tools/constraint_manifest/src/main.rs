@@ -175,6 +175,14 @@ fn official_library_anchor_corrections(
                         LibraryAnchorCorrectionIssue::Sysml21_348,
                     )
                 }
+                "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization"
+                    if contract.anchor == "Items::Item::subitem" =>
+                {
+                    (
+                        "Items::Item::subitems",
+                        LibraryAnchorCorrectionIssue::SysmlLibrarySubitems,
+                    )
+                }
                 _ => return None,
             };
             Some(LibraryAnchorCorrection {
@@ -467,6 +475,18 @@ fn exact_feature_derived_relationship(body: &str) -> Option<FeatureDerivedRelati
         "ownedTypeFeaturing = ownedRelationship->selectByKind(TypeFeaturing)-> select(tf | tf.featureOfType = self)" => {
             Some(FeatureDerivedRelationshipKind::OwnedTypeFeaturing)
         }
+        "chainingFeature = ownedFeatureChaining.chainingFeature" => {
+            Some(FeatureDerivedRelationshipKind::ChainingFeature)
+        }
+        "ownedFeatureInverting = ownedRelationship->selectByKind(FeatureInverting)-> select(fi | fi.featureInverted = self)" => {
+            Some(FeatureDerivedRelationshipKind::OwnedFeatureInverting)
+        }
+        "ownedReferenceSubsetting =     let referenceSubsettings : OrderedSet(ReferenceSubsetting) =         ownedSubsetting->selectByKind(ReferenceSubsetting) in     if referenceSubsettings->isEmpty() then null     else referenceSubsettings->first() endif" => {
+            Some(FeatureDerivedRelationshipKind::OwnedReferenceSubsetting)
+        }
+        "ownedCrossSubsetting =     let crossSubsettings: Sequence(CrossSubsetting) =          ownedSubsetting->selectByKind(CrossSubsetting) in     if crossSubsettings->isEmpty() then null     else crossSubsettings->first()     endif" => {
+            Some(FeatureDerivedRelationshipKind::OwnedCrossSubsetting)
+        }
         _ => None,
     }
 }
@@ -499,6 +519,9 @@ fn exact_type_derived_relationship(body: &str) -> Option<TypeDerivedRelationship
         }
         "differencingType = ownedDifferencing.differencingType" => {
             Some(TypeDerivedRelationshipKind::DifferencingType)
+        }
+        "ownedSubclassification = ownedSpecialization->selectByKind(Subclassification)" => {
+            Some(TypeDerivedRelationshipKind::OwnedSubclassification)
         }
         _ => None,
     }
@@ -636,6 +659,306 @@ fn exact_action_derived_fact(constraint: &str, body: &str) -> Option<ActionDeriv
             "deriveIfActionUsageIfArgument",
             "7dc57a8093de6438288f6693d9bde3fbfa1648a41713512361efce3fe7cfa942",
         ) => Some(ActionDerivedFactKind::IfArgument),
+        (
+            "deriveStateDefinitionEntryAction",
+            "de66da27adbac23a4512a4b67de81b43baee9909131e88109a00ce7c2579d7c7",
+        ) => Some(ActionDerivedFactKind::StateDefinitionEntryAction),
+        (
+            "deriveStateDefinitionDoAction",
+            "7504cbb610de030b568ccb86c456d53fb76c9e285b9ee2d224494461d3569ecd",
+        ) => Some(ActionDerivedFactKind::StateDefinitionDoAction),
+        (
+            "deriveStateDefinitionExitAction",
+            "11748e51537922c815f42ba588ddc89fa0f431c5940e8ddd89ca948d829342d1",
+        ) => Some(ActionDerivedFactKind::StateDefinitionExitAction),
+        (
+            "deriveStateUsageEntryAction",
+            "de66da27adbac23a4512a4b67de81b43baee9909131e88109a00ce7c2579d7c7",
+        ) => Some(ActionDerivedFactKind::StateUsageEntryAction),
+        (
+            "deriveStateUsageDoAction",
+            "7504cbb610de030b568ccb86c456d53fb76c9e285b9ee2d224494461d3569ecd",
+        ) => Some(ActionDerivedFactKind::StateUsageDoAction),
+        (
+            "deriveStateUsageExitAction",
+            "539d4ff4461d9382d6554691e5534fee7919c15da57763be0ceb98e8680dbfba",
+        ) => Some(ActionDerivedFactKind::StateUsageExitAction),
+        (
+            "deriveStateDefinitionState",
+            "b58b47767f5165bdda410c70849654fd36f8c4787aea44d3f6b932ad2bd3e4bd",
+        ) => Some(ActionDerivedFactKind::StateDefinitionState),
+        (
+            "deriveCalculationUsageCalculation",
+            "b4baa079e5a5c64ebb50b4b74cb7fd2ffbb691ad8e8bc50a292d27a45868bd37",
+        ) => Some(ActionDerivedFactKind::CalculationDefinitionCalculation),
+        (
+            "deriveAllocationDefinitionAllocation",
+            "2768a8d8ea56a460f43880ad6391cf212b65e2f991ee61cdabf0b0b693e49cf8",
+        ) => Some(ActionDerivedFactKind::AllocationDefinitionAllocation),
+        (
+            "deriveRenderingDefinitionRendering",
+            "d946ef4e13c22ae0e21efd39124c8fc8832afa3335429a5e24c526d98f1f6949",
+        ) => Some(ActionDerivedFactKind::RenderingDefinitionRendering),
+        (
+            "deriveViewDefinitionView",
+            "87fbc56d9b161c66525a13c8ba44e224be24eaaf3947caecb17bf7cc2b9b82ca",
+        ) => Some(ActionDerivedFactKind::ViewDefinitionView),
+        (
+            "deriveViewDefinitionViewRendering",
+            "9864358916d3351ba82bff9b11ac489e34af1bdbf7c86a4d5986d81195d2b355",
+        ) => Some(ActionDerivedFactKind::ViewDefinitionViewRendering),
+        (
+            "deriveViewUsageViewRendering",
+            "9864358916d3351ba82bff9b11ac489e34af1bdbf7c86a4d5986d81195d2b355",
+        ) => Some(ActionDerivedFactKind::ViewUsageViewRendering),
+        (
+            "deriveViewDefinitionSatisfiedViewpoint",
+            "32c18de6997d4fa844c15a847dc04b0df6a9b75cd98a3c7ea7e99f0e3ca597b4",
+        ) => Some(ActionDerivedFactKind::ViewDefinitionSatisfiedViewpoint),
+        (
+            "deriveViewUsageSatisfiedViewpoint",
+            "32c18de6997d4fa844c15a847dc04b0df6a9b75cd98a3c7ea7e99f0e3ca597b4",
+        ) => Some(ActionDerivedFactKind::ViewUsageSatisfiedViewpoint),
+        (
+            "derivePortDefinitionConjugatedPortDefinition",
+            "43daa4ecdbb903d0b247f650243e1e7c0d8401c579516503a932c10db54ad6b5",
+        ) => Some(ActionDerivedFactKind::PortDefinitionConjugatedPortDefinition),
+        (
+            "deriveFeatureCrossFeature",
+            "123e59671db3d0715fa649164ad6630531be8a6f2583819c80ba66ced95668d5",
+        ) => Some(ActionDerivedFactKind::FeatureCrossFeature),
+        (
+            "deriveFeatureFeatureTarget",
+            "ea6f90216766a8fa0b6408b7cdc1107a3a05fc99d3812dcffbe6f3013b8f1495",
+        ) => Some(ActionDerivedFactKind::FeatureFeatureTarget),
+        (
+            "deriveFunctionResult",
+            "2511f6b349b77ff3f133397ce2d9e1153c7d26f3439c68a6a89b9b4b6f265142",
+        ) => Some(ActionDerivedFactKind::FunctionResult),
+        (
+            "deriveExpressionResult",
+            "b8fc48fd43050c62bd529fbda2cda0f6e6b1e6a2da8d1817717e95383024e9af",
+        ) => Some(ActionDerivedFactKind::ExpressionResult),
+        (
+            "deriveBehaviorStep",
+            "313eb7db063437ed4a982db6b69bf7d97cf3f3b8a182d3d3a1dc0219f53b6731",
+        ) => Some(ActionDerivedFactKind::BehaviorStep),
+        (
+            "deriveMultiplicityRangeLowerBound",
+            "a525836d943746a4025ece78f7b3a9717f99fa312a749136b1a2446489e6c98d",
+        ) => Some(ActionDerivedFactKind::MultiplicityRangeLowerBound),
+        (
+            "deriveMultiplicityRangeUpperBound",
+            "c27116679d4a56f10160e01a9f992069aca67ea6f5d57956fca1f62c117982c3",
+        ) => Some(ActionDerivedFactKind::MultiplicityRangeUpperBound),
+        (
+            "deriveMultiplicityRangeBound",
+            "a5f4cf32616c9e35fdb3d082b0b4784293acdef987ebe6db63845c340ce7fcbe",
+        ) => Some(ActionDerivedFactKind::MultiplicityRangeBound),
+        (
+            "deriveItemUsageItemDefinition",
+            "0a48c18c389bf2fc0df29c141495d4679224be7710b842b8aa911490c6725638",
+        ) => Some(ActionDerivedFactKind::ItemUsageItemDefinition),
+        (
+            "derivePartUsagePartDefinition",
+            "c8361d6f6ee1d6fcaffcaeca02febe15cf1aa8c96d28575635fb9282219c8b72",
+        ) => Some(ActionDerivedFactKind::PartUsagePartDefinition),
+        (
+            "deriveOccurrenceUsageIndividualDefinition",
+            "ef160aea6c88982d4ef24da30b5261ede6e51e036093b635432c7ea427660b17",
+        ) => Some(ActionDerivedFactKind::OccurrenceUsageIndividualDefinition),
+        (
+            "deriveConjugatedPortTypingPortDefinition",
+            "23fb89fc02bccfd719659553534ae178ceb54ee59fdd3f897406bb586ddb8425",
+        ) => Some(ActionDerivedFactKind::ConjugatedPortTypingPortDefinition),
+        (
+            "deriveTransitionUsageSuccession",
+            "0ee10b6835cf424d0f7d9e943f0af27b24a56975fdcb4eefbdb6339e2f3b6eae",
+        ) => Some(ActionDerivedFactKind::TransitionUsageSuccession),
+        (
+            "deriveTransitionUsageTarget",
+            "0f0a60f1a0e8a98417a60bd541d8675b44c63db074251412784fbf75632dc926",
+        ) => Some(ActionDerivedFactKind::TransitionUsageTarget),
+        (
+            "deriveTransitionUsageTriggerAction",
+            "4bf5fe30abd61249957450670e668fa7755b66d600494b8d0f0f6372667adbdf",
+        ) => Some(ActionDerivedFactKind::TransitionUsageTriggerAction),
+        (
+            "deriveAssertConstraintUsageAssertedConstraint",
+            "14eac91af07e8c732b6ea9cb18fb2440502206c18bde9f4acfa75912e410d7a9",
+        ) => Some(ActionDerivedFactKind::AssertConstraintUsageAssertedConstraint),
+        (
+            "deriveEventOccurrenceUsageEventOccurrence",
+            "2443d8c1abd676ffd235fe8075193e01f1de21f6865ab63c1654635aa485ca33",
+        ) => Some(ActionDerivedFactKind::EventOccurrenceUsageEventOccurrence),
+        (
+            "deriveVerificationCaseDefinitionVerifiedRequirement",
+            "bdd913b873aec07d10ff2bc0da1d8c688e8a687753d403c48065e12a00208e55",
+        ) => Some(ActionDerivedFactKind::VerificationCaseDefinitionVerifiedRequirement),
+        (
+            "deriveVerificationCaseUsageVerifiedRequirement",
+            "bdd913b873aec07d10ff2bc0da1d8c688e8a687753d403c48065e12a00208e55",
+        ) => Some(ActionDerivedFactKind::VerificationCaseUsageVerifiedRequirement),
+        (
+            "deriveUseCaseDefinitionIncludedUseCase",
+            "9204a8b51a8bd507032ea57c7dd5346975f0538bd11878ad358695203a8fd8c9",
+        ) => Some(ActionDerivedFactKind::UseCaseDefinitionIncludedUseCase),
+        (
+            "deriveUseCaseUsageIncludedUseCase",
+            "9204a8b51a8bd507032ea57c7dd5346975f0538bd11878ad358695203a8fd8c9",
+        ) => Some(ActionDerivedFactKind::UseCaseUsageIncludedUseCase),
+        (
+            "deriveViewDefinitionViewCondition",
+            "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e",
+        ) => Some(ActionDerivedFactKind::ViewDefinitionViewCondition),
+        (
+            "deriveViewUsageViewCondition",
+            "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e",
+        ) => Some(ActionDerivedFactKind::ViewUsageViewCondition),
+        (
+            "deriveElementIsLibraryElement",
+            "0021f0214f54ff108b7d37ef5ef65978ee4d47f3e46b2668bd1848cfd06c1609",
+        ) => Some(ActionDerivedFactKind::ElementIsLibraryElement),
+        (
+            "deriveElementName",
+            "3a1c1371a6c25d49fe66728863410ef5576928b9da436ab232fe99e418468ea0",
+        ) => Some(ActionDerivedFactKind::ElementName),
+        (
+            "deriveElementShortName",
+            "69bedea5d5a0a8054299a657c325fee6d83d2f61653858ac4b75988b562296e8",
+        ) => Some(ActionDerivedFactKind::ElementShortName),
+        (
+            "deriveElementQualifiedName",
+            "b59ce915e7a53da44a86e902e4837636d30f358b616b7b21808b6c16c845404a",
+        ) => Some(ActionDerivedFactKind::ElementQualifiedName),
+        (
+            "deriveElementOwnedElement",
+            "cd17f8b72bf2082fba2ab59a28ede06c374310fa53d218070f03e3fb64dee897",
+        ) => Some(ActionDerivedFactKind::ElementOwnedElement),
+        (
+            "deriveElementOwnedAnnotation",
+            "d21c8f97a2996ae70cea69132e835affd9e07ef330971a0900d6197607db76a1",
+        ) => Some(ActionDerivedFactKind::ElementOwnedAnnotation),
+        (
+            "deriveOwningNamespace",
+            "d015eab423252a85bb739a3b525283a80fb550a323374d0794f014939da5291b",
+        ) => Some(ActionDerivedFactKind::ElementOwningNamespace),
+        (
+            "deriveRelationshipRelatedElement",
+            "f6dcbb23155f405dac933adf9ff1e6ca34d461f58231782c1155a5f656738739",
+        ) => Some(ActionDerivedFactKind::RelationshipRelatedElement),
+        (
+            "deriveAnnotatingElementAnnotatedElement",
+            "324693f3275c2d5a8eaec18a97d6e9277152d4e7d64e05ec1ea7725c978700e5",
+        ) => Some(ActionDerivedFactKind::AnnotatingElementAnnotatedElement),
+        (
+            "deriveAnnotatingElementAnnotation",
+            "9c9b7f5324b32a5ed69fb91c821565801ca550e122da8f8121dc6e2ad58b884d",
+        ) => Some(ActionDerivedFactKind::AnnotatingElementAnnotation),
+        (
+            "deriveAnnotatingElementOwnedAnnotatingRelationship",
+            "7ceb540818e23f9b1b2c8486296b35234fb7e9ad346c38fbaaf5d9ef4a3ed6f8",
+        ) => Some(ActionDerivedFactKind::AnnotatingElementOwnedAnnotatingRelationship),
+        (
+            "deriveAnnotationOwnedAnnotatingElement",
+            "97cf5a48e7d26e587af87988afa408b5d581bb0b710219091b6ce70a14da17ba",
+        ) => Some(ActionDerivedFactKind::AnnotationOwnedAnnotatingElement),
+        (
+            "deriveMembershipImportImportedElement",
+            "b51bedf08ca4dae51099291762ae54cc6de6952ef949b25154ec7fe6a4949dd3",
+        ) => Some(ActionDerivedFactKind::MembershipImportImportedElement),
+        (
+            "deriveNamespaceImportedMembership",
+            "5d7577c19c88ef9f374546a2e9dfc28f6425a3fb88d41706f8b98db9bf31160b",
+        ) => Some(ActionDerivedFactKind::NamespaceImportedMembership),
+        (
+            "deriveNamespaceMembers",
+            "80369e614bd4f1d5d3db1be4f2c846dccbc08603a53409476d15e1dc805a0281",
+        ) => Some(ActionDerivedFactKind::NamespaceMember),
+        (
+            "deriveNamespaceOwnedMembership",
+            "e227af4eb60b3f4167624d81b0384f4ebc5a77b740a9c687a0423cce514821ef",
+        ) => Some(ActionDerivedFactKind::NamespaceOwnedMembership),
+        (
+            "deriveOwningMembershipOwnedMemberName",
+            "8c94796659e407f86d44a269769b8bc44e584c501e0304f42d78b99694fb7a55",
+        ) => Some(ActionDerivedFactKind::OwningMembershipOwnedMemberName),
+        (
+            "deriveOwningMembershipOwnedMemberShortName",
+            "a4b49f1b0064c097ffe31a9da1bbc60c93a0d9603285c767bbc30452c8b8135a",
+        ) => Some(ActionDerivedFactKind::OwningMembershipOwnedMemberShortName),
+        (
+            "derivePackageFilterCondition",
+            "ed0ee5f522c31d0421dcadb9402317d7afb5c8a459254b1ffc6e25ef761a9814",
+        ) => Some(ActionDerivedFactKind::PackageFilterCondition),
+        (
+            "deriveFeatureFeaturingType",
+            "b24c019641828ef3c1aafeeb5b95aac9b49115c3c2716b63332f583828e0a27f",
+        ) => Some(ActionDerivedFactKind::FeatureFeaturingType),
+        (
+            "deriveAssociationRelatedType",
+            "74ddaeb5af7af8c99ff47cdcbf84efe08662b688d9ad136ffb064fe542cf3184",
+        ) => Some(ActionDerivedFactKind::AssociationRelatedType),
+        (
+            "deriveAssociationSourceType",
+            "df94b29521235f4b17eb65aa8573bef14868518b47705efc019a741875c665b9",
+        ) => Some(ActionDerivedFactKind::AssociationSourceType),
+        (
+            "deriveAssociationTargetType",
+            "683de593de141fdfb91ab890bf8e83d8d7ed010eb558c0c284033e90d2956cbe",
+        ) => Some(ActionDerivedFactKind::AssociationTargetType),
+        (
+            "deriveConnectorRelatedFeature",
+            "c077b622060b040c6bdc2b128aa6afe094e5ff279b769db5b9cb40f02430f309",
+        ) => Some(ActionDerivedFactKind::ConnectorRelatedFeature),
+        (
+            "deriveConnectorSourceFeature",
+            "d0f296805a4e12557c119da4d53e401e7bf68e9ad7350c5401b72354ea15d958",
+        ) => Some(ActionDerivedFactKind::ConnectorSourceFeature),
+        (
+            "deriveConnectorTargetFeature",
+            "8ae57036a190b491d32ca2c61344fee2e51f1c20249cf9d644ec0576b421ae8e",
+        ) => Some(ActionDerivedFactKind::ConnectorTargetFeature),
+        (
+            "deriveConnectorDefaultFeaturingType",
+            "1bf4e14a79f7697ccc8e70e8a5a2592e9b3077eaa8373c22dd1d9b6e5a22f035",
+        ) => Some(ActionDerivedFactKind::ConnectorDefaultFeaturingType),
+        (
+            "deriveStepBehavior",
+            "b778fec045c33fa91d2288a1feeae9d67587ceeb2db0c2b0716aa4b871974af0",
+        ) => Some(ActionDerivedFactKind::StepBehavior),
+        (
+            "deriveLiteralExpressionIsModelLevelEvaluable",
+            "8b72451905a13a1bd524a45f96b0fc411a296b745ebffe9d2f4d489f7f318d31",
+        ) => Some(ActionDerivedFactKind::LiteralExpressionIsModelLevelEvaluable),
+        (
+            "deriveMetadataAccessExpressionReferencdElement",
+            "30f2eb753ad483cb31b86838485d35a01da06b6899894232306a357054b5e8b1",
+        ) => Some(ActionDerivedFactKind::MetadataAccessExpressionReferencedElement),
+        (
+            "deriveFeatureChainExpressionTargetFeature",
+            "383c7aeafc1dfde3cd3112f5c6a7969f639c2e65849c790ab294483dec8c4e9b",
+        ) => Some(ActionDerivedFactKind::FeatureChainExpressionTargetFeature),
+        (
+            "deriveFeatureReferenceExpressionReferent",
+            "72f1113b57186d033b665541f8c8e26c42c5bc080079d31265c2444a83bf1723",
+        ) => Some(ActionDerivedFactKind::FeatureReferenceExpressionReferent),
+        (
+            "deriveInstantiationExpressionInstantiatedType",
+            "6e11708fe1bdc2a21092c0d22fc19188bb4c61bc622512b37233df8c6355a2fb",
+        ) => Some(ActionDerivedFactKind::InstantiationExpressionInstantiatedType),
+        (
+            "deriveFlowFlowEnd",
+            "ad5c9208e1ee4da829f26a70875d28dea2d9e75f7ba3fe67d9e1a0569657e7f0",
+        ) => Some(ActionDerivedFactKind::FlowFlowEnd),
+        (
+            "deriveFlowSourceOutputFeature",
+            "b3148a1f91bac656c98a51831c8f073c208b66cac48e656464917f67cf25e409",
+        ) => Some(ActionDerivedFactKind::FlowSourceOutputFeature),
+        (
+            "deriveFlowTargetInputFeature",
+            "bc01f1e7cb0b2963bf6123d0780a619417762866d52b0ca880f7ecf503e59606",
+        ) => Some(ActionDerivedFactKind::FlowTargetInputFeature),
         _ => None,
     }
 }
@@ -710,6 +1033,30 @@ fn exact_requirement_derived_fact(
             "deriveRequirementUsageFramedConcern",
             "c915c2298f5bfebaa9a0e06d06f3d83d3f4c2c2601cc17f332926bf72ea94e3e",
         ) => Some(RequirementDerivedFactKind::UsageFramedConcern),
+        (
+            "deriveCaseDefinitionActorParameter",
+            "4491cc267914513216e0de41b0fab6f99422326393c937b7499fc16c9fde61a9",
+        ) => Some(RequirementDerivedFactKind::CaseDefinitionActorParameter),
+        (
+            "deriveCaseDefinitionSubjectParameter",
+            "1a98d33c65896c4f582d9e7f8d4636d5533e81cd539cf7133780fdafb5de5f33",
+        ) => Some(RequirementDerivedFactKind::CaseDefinitionSubjectParameter),
+        (
+            "deriveCaseUsageActorParameter",
+            "4491cc267914513216e0de41b0fab6f99422326393c937b7499fc16c9fde61a9",
+        ) => Some(RequirementDerivedFactKind::CaseUsageActorParameter),
+        (
+            "deriveCaseUsageSubjectParameter",
+            "a974bff5d79e5ed8c5fbb92464594e2dcbc25c9780cc5b414d65204077d098cd",
+        ) => Some(RequirementDerivedFactKind::CaseUsageSubjectParameter),
+        (
+            "deriveCaseDefinitionObjectiveRequirement",
+            "8d1e71edf2933dcc5e4cd8ffff54892eb28edbc71ed6cf60cd2f7679bcb19f71",
+        ) => Some(RequirementDerivedFactKind::CaseDefinitionObjectiveRequirement),
+        (
+            "deriveCaseUsageObjectiveRequirement",
+            "8d1e71edf2933dcc5e4cd8ffff54892eb28edbc71ed6cf60cd2f7679bcb19f71",
+        ) => Some(RequirementDerivedFactKind::CaseUsageObjectiveRequirement),
         _ => None,
     }
 }
@@ -817,10 +1164,6 @@ fn exact_specialization_check(constraint: &str, body: &str) -> Option<Specializa
             "checkMetadataFeatureSemanticSpecialization",
             "936940ed125c2c95d5d880dc54f0116978ccd57d6bc97d53b10559ed7633d6d2",
         ) => Some(SpecializationCheckKind::MetadataFeatureSemantic),
-        (
-            "checkConnectorBinaryObjectSpecialization",
-            "ef980ca3cf7281d3144fadfdfd58f140ad6e820bd1018d454600c432c58d4482",
-        ) => Some(SpecializationCheckKind::ConnectorBinaryObject),
         (
             "checkConnectorObjectSpecialization",
             "9ae2298b97dbbf830e4340a5775ed25be9a04cf483dbbeb8418570eba4ec9092",
@@ -1026,6 +1369,9 @@ fn exact_conditional_library_specialization(
     if let Some(contract) = exact_feature_category_specialization(body) {
         return Some(contract);
     }
+    if let Some(contract) = exact_connector_binary_object_specialization(body) {
+        return Some(contract);
+    }
     if let Some(contract) = exact_connector_association_specialization(body) {
         return Some(contract);
     }
@@ -1127,6 +1473,22 @@ fn exact_conditional_library_specialization(
         predicate,
         owner_metaclasses,
         anchor,
+        true_anchor: None,
+    })
+}
+
+/// `connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure))`.
+fn exact_connector_binary_object_specialization(
+    body: &str,
+) -> Option<ConditionalLibrarySpecializationContract> {
+    const BODY: &str = "connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure)) implies specializesFromLibrary('Objects::binaryLinkObjects')";
+    if body != BODY {
+        return None;
+    }
+    Some(ConditionalLibrarySpecializationContract {
+        predicate: LibrarySpecializationPredicate::ConnectorBinaryAssociationStructure,
+        owner_metaclasses: Vec::new(),
+        anchor: "Objects::binaryLinkObjects".to_string(),
         true_anchor: None,
     })
 }
@@ -1856,10 +2218,17 @@ mod tests {
                 true_anchor: None,
             })
         );
-        assert!(exact_conditional_library_specialization(
-            "connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure)) implies specializesFromLibrary('Objects::binaryLinkObjects')"
-        )
-        .is_none());
+        assert_eq!(
+            exact_conditional_library_specialization(
+                "connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure)) implies specializesFromLibrary('Objects::binaryLinkObjects')"
+            ),
+            Some(ConditionalLibrarySpecializationContract {
+                predicate: LibrarySpecializationPredicate::ConnectorBinaryAssociationStructure,
+                owner_metaclasses: Vec::new(),
+                anchor: "Objects::binaryLinkObjects".to_string(),
+                true_anchor: None,
+            })
+        );
         assert_eq!(
             exact_conditional_library_specialization(
                 "owningType <> null and (owningType.oclIsKindOf(Behavior) or owningType.oclIsKindOf(Step)) and self.isComposite implies specializesFromLibrary('Performances::Performance::subperformance')"
@@ -2059,6 +2428,18 @@ mod tests {
             ),
             Some(FeatureDerivedRelationshipKind::OwnedTypeFeaturing)
         );
+        assert_eq!(
+            exact_feature_derived_relationship(
+                "chainingFeature = ownedFeatureChaining.chainingFeature"
+            ),
+            Some(FeatureDerivedRelationshipKind::ChainingFeature)
+        );
+        assert_eq!(
+            exact_feature_derived_relationship(
+                "ownedFeatureInverting = ownedRelationship->selectByKind(FeatureInverting)-> select(fi | fi.featureInverted = self)"
+            ),
+            Some(FeatureDerivedRelationshipKind::OwnedFeatureInverting)
+        );
         assert!(exact_feature_derived_relationship(
             "ownedTyping = ownedGeneralization->selectByKind(FeatureTyping)->asOrderedSet()"
         )
@@ -2158,6 +2539,27 @@ mod tests {
                 "payloadArgument = argument(1)",
             ),
             Some(ActionDerivedFactKind::SendPayloadArgument)
+        );
+        assert_eq!(
+            exact_action_derived_fact(
+                "deriveStateDefinitionEntryAction",
+                "entryAction =     let entryMemberships : Sequence(StateSubactionMembership) =         ownedMembership->             selectByKind(StateSubactionMembership)->             select(kind = StateSubactionKind::entry) in     if entryMemberships->isEmpty() then null     else entryMemberships->at(1)     endif",
+            ),
+            Some(ActionDerivedFactKind::StateDefinitionEntryAction)
+        );
+        assert_eq!(
+            exact_action_derived_fact(
+                "deriveStateDefinitionState",
+                "state = action->selectByKind(StateUsage)",
+            ),
+            Some(ActionDerivedFactKind::StateDefinitionState)
+        );
+        assert_eq!(
+            exact_action_derived_fact(
+                "deriveRenderingDefinitionRendering",
+                "rendering = usages->selectByKind(RenderingUsage)",
+            ),
+            Some(ActionDerivedFactKind::RenderingDefinitionRendering)
         );
         assert!(exact_action_derived_fact(
             "deriveSendActionUsagePayloadArgument",

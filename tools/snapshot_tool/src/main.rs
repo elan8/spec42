@@ -36,8 +36,8 @@ use spec42_constraint_manifest::{
     TypeDerivedRelationshipKind,
 };
 use sysml_query::resolved_slice::{
-    ActionDerivedFactCollection, ActionDerivedFactOutcome, AnnotationForm,
-    AnonymousElementReference, BindingConnectorValidationOutcome,
+    ActionDerivedFactCollection, ActionDerivedFactOutcome, ActionDerivedFactPrerequisite,
+    AnnotationForm, AnonymousElementReference, BindingConnectorValidationOutcome,
     BindingConnectorValidationPrerequisite, DefinitionUsageDerivedOutcome,
     DefinitionUsageDerivedPrerequisite, DerivedElementOwner, Documentation, EditorProbe,
     ElementDerivedDocumentationCollection, ElementKind, FeatureDerivedRelationshipCollection,
@@ -493,6 +493,9 @@ enum SemanticRelationshipKind {
     Differencing,
     Disjoining,
     Annotation,
+    FeatureInverting,
+    ReferenceSubsetting,
+    CrossSubsetting,
 }
 
 impl SemanticRelationshipKind {
@@ -510,8 +513,11 @@ impl SemanticRelationshipKind {
             "differencing" => Ok(Self::Differencing),
             "disjoining" => Ok(Self::Disjoining),
             "annotation" => Ok(Self::Annotation),
+            "feature_inverting" => Ok(Self::FeatureInverting),
+            "reference_subsetting" => Ok(Self::ReferenceSubsetting),
+            "cross_subsetting" => Ok(Self::CrossSubsetting),
             _ => Err(format!(
-                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, disjoining, or annotation)"
+                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, disjoining, annotation, feature_inverting, reference_subsetting, or cross_subsetting)"
             )),
         }
     }
@@ -531,6 +537,9 @@ impl SemanticRelationshipKind {
             Self::Differencing => "differencing",
             Self::Disjoining => "disjoining",
             Self::Annotation => "annotation",
+            Self::FeatureInverting => "featureInverting",
+            Self::ReferenceSubsetting => "referenceSubsetting",
+            Self::CrossSubsetting => "crossSubsetting",
         }
     }
 }
@@ -555,6 +564,18 @@ fn feature_collection(
         }
         FeatureDerivedRelationshipKind::OwnedTypeFeaturing => {
             FeatureDerivedRelationshipCollection::OwnedTypeFeaturing
+        }
+        FeatureDerivedRelationshipKind::ChainingFeature => {
+            FeatureDerivedRelationshipCollection::ChainingFeature
+        }
+        FeatureDerivedRelationshipKind::OwnedFeatureInverting => {
+            FeatureDerivedRelationshipCollection::OwnedFeatureInverting
+        }
+        FeatureDerivedRelationshipKind::OwnedReferenceSubsetting => {
+            FeatureDerivedRelationshipCollection::OwnedReferenceSubsetting
+        }
+        FeatureDerivedRelationshipKind::OwnedCrossSubsetting => {
+            FeatureDerivedRelationshipCollection::OwnedCrossSubsetting
         }
     }
 }
@@ -615,6 +636,9 @@ fn type_collection(kind: TypeDerivedRelationshipKind) -> TypeDerivedRelationship
         }
         TypeDerivedRelationshipKind::DifferencingType => {
             TypeDerivedRelationshipCollection::DifferencingType
+        }
+        TypeDerivedRelationshipKind::OwnedSubclassification => {
+            TypeDerivedRelationshipCollection::OwnedSubclassification
         }
     }
 }
@@ -689,6 +713,215 @@ fn action_fact_collection(kind: ActionDerivedFactKind) -> ActionDerivedFactColle
         ActionDerivedFactKind::IfThenAction => ActionDerivedFactCollection::IfThenAction,
         ActionDerivedFactKind::IfElseAction => ActionDerivedFactCollection::IfElseAction,
         ActionDerivedFactKind::IfArgument => ActionDerivedFactCollection::IfArgument,
+        ActionDerivedFactKind::StateDefinitionEntryAction => {
+            ActionDerivedFactCollection::StateDefinitionEntryAction
+        }
+        ActionDerivedFactKind::StateDefinitionDoAction => {
+            ActionDerivedFactCollection::StateDefinitionDoAction
+        }
+        ActionDerivedFactKind::StateDefinitionExitAction => {
+            ActionDerivedFactCollection::StateDefinitionExitAction
+        }
+        ActionDerivedFactKind::StateUsageEntryAction => {
+            ActionDerivedFactCollection::StateUsageEntryAction
+        }
+        ActionDerivedFactKind::StateUsageDoAction => {
+            ActionDerivedFactCollection::StateUsageDoAction
+        }
+        ActionDerivedFactKind::StateUsageExitAction => {
+            ActionDerivedFactCollection::StateUsageExitAction
+        }
+        ActionDerivedFactKind::StateDefinitionState => {
+            ActionDerivedFactCollection::StateDefinitionState
+        }
+        ActionDerivedFactKind::CalculationDefinitionCalculation => {
+            ActionDerivedFactCollection::CalculationDefinitionCalculation
+        }
+        ActionDerivedFactKind::AllocationDefinitionAllocation => {
+            ActionDerivedFactCollection::AllocationDefinitionAllocation
+        }
+        ActionDerivedFactKind::RenderingDefinitionRendering => {
+            ActionDerivedFactCollection::RenderingDefinitionRendering
+        }
+        ActionDerivedFactKind::ViewDefinitionView => {
+            ActionDerivedFactCollection::ViewDefinitionView
+        }
+        ActionDerivedFactKind::ViewDefinitionViewRendering => {
+            ActionDerivedFactCollection::ViewDefinitionViewRendering
+        }
+        ActionDerivedFactKind::ViewUsageViewRendering => {
+            ActionDerivedFactCollection::ViewUsageViewRendering
+        }
+        ActionDerivedFactKind::ViewDefinitionSatisfiedViewpoint => {
+            ActionDerivedFactCollection::ViewDefinitionSatisfiedViewpoint
+        }
+        ActionDerivedFactKind::ViewUsageSatisfiedViewpoint => {
+            ActionDerivedFactCollection::ViewUsageSatisfiedViewpoint
+        }
+        ActionDerivedFactKind::PortDefinitionConjugatedPortDefinition => {
+            ActionDerivedFactCollection::PortDefinitionConjugatedPortDefinition
+        }
+        ActionDerivedFactKind::FeatureCrossFeature => {
+            ActionDerivedFactCollection::FeatureCrossFeature
+        }
+        ActionDerivedFactKind::FeatureFeatureTarget => {
+            ActionDerivedFactCollection::FeatureFeatureTarget
+        }
+        ActionDerivedFactKind::FunctionResult => ActionDerivedFactCollection::FunctionResult,
+        ActionDerivedFactKind::ExpressionResult => ActionDerivedFactCollection::ExpressionResult,
+        ActionDerivedFactKind::BehaviorStep => ActionDerivedFactCollection::BehaviorStep,
+        ActionDerivedFactKind::MultiplicityRangeLowerBound => {
+            ActionDerivedFactCollection::MultiplicityRangeLowerBound
+        }
+        ActionDerivedFactKind::MultiplicityRangeUpperBound => {
+            ActionDerivedFactCollection::MultiplicityRangeUpperBound
+        }
+        ActionDerivedFactKind::MultiplicityRangeBound => {
+            ActionDerivedFactCollection::MultiplicityRangeBound
+        }
+        ActionDerivedFactKind::ItemUsageItemDefinition => {
+            ActionDerivedFactCollection::ItemUsageItemDefinition
+        }
+        ActionDerivedFactKind::PartUsagePartDefinition => {
+            ActionDerivedFactCollection::PartUsagePartDefinition
+        }
+        ActionDerivedFactKind::OccurrenceUsageIndividualDefinition => {
+            ActionDerivedFactCollection::OccurrenceUsageIndividualDefinition
+        }
+        ActionDerivedFactKind::ConjugatedPortTypingPortDefinition => {
+            ActionDerivedFactCollection::ConjugatedPortTypingPortDefinition
+        }
+        ActionDerivedFactKind::TransitionUsageSuccession => {
+            ActionDerivedFactCollection::TransitionUsageSuccession
+        }
+        ActionDerivedFactKind::TransitionUsageTarget => {
+            ActionDerivedFactCollection::TransitionUsageTarget
+        }
+        ActionDerivedFactKind::TransitionUsageTriggerAction => {
+            ActionDerivedFactCollection::TransitionUsageTriggerAction
+        }
+        ActionDerivedFactKind::AssertConstraintUsageAssertedConstraint => {
+            ActionDerivedFactCollection::AssertConstraintUsageAssertedConstraint
+        }
+        ActionDerivedFactKind::EventOccurrenceUsageEventOccurrence => {
+            ActionDerivedFactCollection::EventOccurrenceUsageEventOccurrence
+        }
+        ActionDerivedFactKind::VerificationCaseDefinitionVerifiedRequirement => {
+            ActionDerivedFactCollection::VerificationCaseDefinitionVerifiedRequirement
+        }
+        ActionDerivedFactKind::VerificationCaseUsageVerifiedRequirement => {
+            ActionDerivedFactCollection::VerificationCaseUsageVerifiedRequirement
+        }
+        ActionDerivedFactKind::UseCaseDefinitionIncludedUseCase => {
+            ActionDerivedFactCollection::UseCaseDefinitionIncludedUseCase
+        }
+        ActionDerivedFactKind::UseCaseUsageIncludedUseCase => {
+            ActionDerivedFactCollection::UseCaseUsageIncludedUseCase
+        }
+        ActionDerivedFactKind::ViewDefinitionViewCondition => {
+            ActionDerivedFactCollection::ViewDefinitionViewCondition
+        }
+        ActionDerivedFactKind::ViewUsageViewCondition => {
+            ActionDerivedFactCollection::ViewUsageViewCondition
+        }
+        ActionDerivedFactKind::ElementIsLibraryElement => {
+            ActionDerivedFactCollection::ElementIsLibraryElement
+        }
+        ActionDerivedFactKind::ElementName => ActionDerivedFactCollection::ElementName,
+        ActionDerivedFactKind::ElementShortName => ActionDerivedFactCollection::ElementShortName,
+        ActionDerivedFactKind::ElementQualifiedName => {
+            ActionDerivedFactCollection::ElementQualifiedName
+        }
+        ActionDerivedFactKind::ElementOwnedElement => {
+            ActionDerivedFactCollection::ElementOwnedElement
+        }
+        ActionDerivedFactKind::ElementOwnedAnnotation => {
+            ActionDerivedFactCollection::ElementOwnedAnnotation
+        }
+        ActionDerivedFactKind::ElementOwningNamespace => {
+            ActionDerivedFactCollection::ElementOwningNamespace
+        }
+        ActionDerivedFactKind::RelationshipRelatedElement => {
+            ActionDerivedFactCollection::RelationshipRelatedElement
+        }
+        ActionDerivedFactKind::AnnotatingElementAnnotatedElement => {
+            ActionDerivedFactCollection::AnnotatingElementAnnotatedElement
+        }
+        ActionDerivedFactKind::AnnotatingElementAnnotation => {
+            ActionDerivedFactCollection::AnnotatingElementAnnotation
+        }
+        ActionDerivedFactKind::AnnotatingElementOwnedAnnotatingRelationship => {
+            ActionDerivedFactCollection::AnnotatingElementOwnedAnnotatingRelationship
+        }
+        ActionDerivedFactKind::AnnotationOwnedAnnotatingElement => {
+            ActionDerivedFactCollection::AnnotationOwnedAnnotatingElement
+        }
+        ActionDerivedFactKind::MembershipImportImportedElement => {
+            ActionDerivedFactCollection::MembershipImportImportedElement
+        }
+        ActionDerivedFactKind::NamespaceImportedMembership => {
+            ActionDerivedFactCollection::NamespaceImportedMembership
+        }
+        ActionDerivedFactKind::NamespaceMember => ActionDerivedFactCollection::NamespaceMember,
+        ActionDerivedFactKind::NamespaceOwnedMembership => {
+            ActionDerivedFactCollection::NamespaceOwnedMembership
+        }
+        ActionDerivedFactKind::OwningMembershipOwnedMemberName => {
+            ActionDerivedFactCollection::OwningMembershipOwnedMemberName
+        }
+        ActionDerivedFactKind::OwningMembershipOwnedMemberShortName => {
+            ActionDerivedFactCollection::OwningMembershipOwnedMemberShortName
+        }
+        ActionDerivedFactKind::PackageFilterCondition => {
+            ActionDerivedFactCollection::PackageFilterCondition
+        }
+        ActionDerivedFactKind::FeatureFeaturingType => {
+            ActionDerivedFactCollection::FeatureFeaturingType
+        }
+        ActionDerivedFactKind::AssociationRelatedType => {
+            ActionDerivedFactCollection::AssociationRelatedType
+        }
+        ActionDerivedFactKind::AssociationSourceType => {
+            ActionDerivedFactCollection::AssociationSourceType
+        }
+        ActionDerivedFactKind::AssociationTargetType => {
+            ActionDerivedFactCollection::AssociationTargetType
+        }
+        ActionDerivedFactKind::ConnectorRelatedFeature => {
+            ActionDerivedFactCollection::ConnectorRelatedFeature
+        }
+        ActionDerivedFactKind::ConnectorSourceFeature => {
+            ActionDerivedFactCollection::ConnectorSourceFeature
+        }
+        ActionDerivedFactKind::ConnectorTargetFeature => {
+            ActionDerivedFactCollection::ConnectorTargetFeature
+        }
+        ActionDerivedFactKind::ConnectorDefaultFeaturingType => {
+            ActionDerivedFactCollection::ConnectorDefaultFeaturingType
+        }
+        ActionDerivedFactKind::StepBehavior => ActionDerivedFactCollection::StepBehavior,
+        ActionDerivedFactKind::LiteralExpressionIsModelLevelEvaluable => {
+            ActionDerivedFactCollection::LiteralExpressionIsModelLevelEvaluable
+        }
+        ActionDerivedFactKind::MetadataAccessExpressionReferencedElement => {
+            ActionDerivedFactCollection::MetadataAccessExpressionReferencedElement
+        }
+        ActionDerivedFactKind::FeatureChainExpressionTargetFeature => {
+            ActionDerivedFactCollection::FeatureChainExpressionTargetFeature
+        }
+        ActionDerivedFactKind::FeatureReferenceExpressionReferent => {
+            ActionDerivedFactCollection::FeatureReferenceExpressionReferent
+        }
+        ActionDerivedFactKind::InstantiationExpressionInstantiatedType => {
+            ActionDerivedFactCollection::InstantiationExpressionInstantiatedType
+        }
+        ActionDerivedFactKind::FlowFlowEnd => ActionDerivedFactCollection::FlowFlowEnd,
+        ActionDerivedFactKind::FlowSourceOutputFeature => {
+            ActionDerivedFactCollection::FlowSourceOutputFeature
+        }
+        ActionDerivedFactKind::FlowTargetInputFeature => {
+            ActionDerivedFactCollection::FlowTargetInputFeature
+        }
     }
 }
 
@@ -753,14 +986,17 @@ fn action_fact_collection_for_rule(
     manifest: Option<&ConstraintManifest>,
     rule_id: &str,
     fixture: &str,
-) -> Result<ActionDerivedFactCollection, String> {
+) -> Result<Option<ActionDerivedFactCollection>, String> {
     let manifest = manifest
         .ok_or_else(|| format!("{fixture}: semantic Action fact requires a loaded manifest"))?;
     let entry = manifest.find_rule(rule_id).ok_or_else(|| {
         format!("{fixture}: semantic Action fact rule_id {rule_id:?} is absent from the manifest")
     })?;
     match entry.query_family() {
-        Some(ConstraintQueryFamily::ActionDerivedFact(kind)) => Ok(action_fact_collection(kind)),
+        Some(ConstraintQueryFamily::ActionDerivedFact(kind)) => {
+            Ok(Some(action_fact_collection(kind)))
+        }
+        None if entry.family == ConstraintFamily::Derive => Ok(None),
         _ => Err(format!(
             "{fixture}: semantic Action fact rule_id {rule_id:?} does not own an exact Action fact query"
         )),
@@ -811,6 +1047,12 @@ fn requirement_derived_fact_collection_for_rule(
             RequirementDerivedFactKind::UsageRequiredConstraint => RequirementDerivedFactCollection::UsageRequiredConstraint,
             RequirementDerivedFactKind::UsageAssumedConstraint => RequirementDerivedFactCollection::UsageAssumedConstraint,
             RequirementDerivedFactKind::UsageFramedConcern => RequirementDerivedFactCollection::UsageFramedConcern,
+            RequirementDerivedFactKind::CaseDefinitionActorParameter => RequirementDerivedFactCollection::CaseDefinitionActorParameter,
+            RequirementDerivedFactKind::CaseDefinitionSubjectParameter => RequirementDerivedFactCollection::CaseDefinitionSubjectParameter,
+            RequirementDerivedFactKind::CaseUsageActorParameter => RequirementDerivedFactCollection::CaseUsageActorParameter,
+            RequirementDerivedFactKind::CaseUsageSubjectParameter => RequirementDerivedFactCollection::CaseUsageSubjectParameter,
+            RequirementDerivedFactKind::CaseDefinitionObjectiveRequirement => RequirementDerivedFactCollection::CaseDefinitionObjectiveRequirement,
+            RequirementDerivedFactKind::CaseUsageObjectiveRequirement => RequirementDerivedFactCollection::CaseUsageObjectiveRequirement,
         }),
         _ => Err(format!(
             "{fixture}: semantic Requirements derivation rule_id {rule_id:?} does not own an exact Requirements query"
@@ -1000,10 +1242,15 @@ struct TypeDerivedFactExpectation {
 /// asserted without inventing a declaration identity.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct ActionDerivedFactExpectation {
-    collection: ActionDerivedFactCollection,
-    source: String,
-    target: Option<String>,
+    /// `None` for a manifest derive rule that owns no exact contract because its pinned body is
+    /// not evaluable. Such an expectation is always observed as unpublished, so it can only be
+    /// carried by a fixture blocked on the normative gap.
+    collection: Option<ActionDerivedFactCollection>,
+    source: ElementReferenceExpectation,
+    target: Option<ElementReferenceExpectation>,
     position: Option<u32>,
+    /// The expected value of a String- or Boolean-valued property.
+    value: Option<String>,
     outcome: TypeDerivedElementOutcome,
 }
 
@@ -2944,7 +3191,20 @@ fn check_fixture_expectation(
             fixture_path,
         );
     }
-    check_untagged_diagnostics(fixture, actual, fallback_name)
+    // A snapshot may pin authored expectations without claiming a manifest rule. Those
+    // expectations still fail the run; they just do not count as normative coverage.
+    let mut checked = check_untagged_diagnostics(fixture, actual, fallback_name)?;
+    if let Some(error) = semantic_mismatch {
+        if checked.failure.is_none() {
+            checked = CheckedExpectation {
+                state: ExpectationState::Failed,
+                failure: Some(error.to_string()),
+            };
+        }
+    } else if has_semantic_expectations && checked.state == ExpectationState::NotApplicable {
+        checked.state = ExpectationState::Passed;
+    }
+    Ok(checked)
 }
 
 fn validate_source_intent(
@@ -3860,9 +4120,13 @@ fn parse_action_derived_fact_expectation(
             "{fallback_name}: Action fact expectation must be a list"
         ));
     };
+    let (source, rest) = take_element_reference_field(&items[1..], "source", fallback_name)?;
+    let source =
+        source.ok_or_else(|| format!("{fallback_name}: semantic Action fact requires source"))?;
+    let (target, rest) = take_element_reference_field(&rest, "target", fallback_name)?;
     let fields = parse_semantic_assertion_fields(
-        &items[1..],
-        &["rule_id", "source", "target", "position", "outcome"],
+        &rest,
+        &["rule_id", "position", "value", "outcome"],
         "semantic Action fact",
         fallback_name,
     )?;
@@ -3873,18 +4137,17 @@ fn parse_action_derived_fact_expectation(
             .ok_or_else(|| format!("{fallback_name}: semantic Action fact requires rule_id"))?,
         fallback_name,
     )?;
-    let source = fields
-        .get("source")
-        .filter(|value| !value.is_empty())
-        .cloned()
-        .ok_or_else(|| format!("{fallback_name}: semantic Action fact requires source"))?;
     let outcome = TypeDerivedElementOutcome::parse(
         fields
             .get("outcome")
             .ok_or_else(|| format!("{fallback_name}: semantic Action fact requires outcome"))?,
         fallback_name,
     )?;
-    let target = fields.get("target").cloned();
+    if collection.is_none() && outcome == TypeDerivedElementOutcome::Unsupported {
+        return Err(format!(
+            "{fallback_name}: a semantic Action fact for a rule without an exact contract states the specified outcome, not unsupported"
+        ));
+    }
     let position = fields
         .get("position")
         .map(|value| {
@@ -3915,11 +4178,23 @@ fn parse_action_derived_fact_expectation(
             "{fallback_name}: semantic Action fact must not declare both target and position"
         ));
     }
+    let value = fields.get("value").cloned();
+    if value.is_some() && (target.is_some() || position.is_some()) {
+        return Err(format!(
+            "{fallback_name}: semantic Action fact value excludes target and position"
+        ));
+    }
+    if value.is_some() && outcome != TypeDerivedElementOutcome::Resolved {
+        return Err(format!(
+            "{fallback_name}: semantic Action fact value requires outcome resolved"
+        ));
+    }
     Ok(ActionDerivedFactExpectation {
         collection,
         source,
         target,
         position,
+        value,
         outcome,
     })
 }
@@ -5115,18 +5390,22 @@ fn observe_action_derived_fact(
     model: &PublishedModel,
     expectation: &ActionDerivedFactExpectation,
 ) -> Result<ActionDerivedFactObservation, String> {
-    let source = match resolve_semantic_identity(model, &expectation.source) {
+    let source = match resolve_element_reference(model, &expectation.source) {
         Ok(source) => source,
         Err(SemanticIdentityStatus::Incomplete) => {
             return Ok(ActionDerivedFactObservation::Incomplete)
         }
         Err(status) => return Err(format!("source reference is {}", status.description())),
     };
-    let value = match snapshot_answer(
-        model
-            .inspection()
-            .action_derived_fact(source, expectation.collection),
-    ) {
+    let Some(collection) = expectation.collection else {
+        return Ok(ActionDerivedFactObservation::Outcome {
+            value: ActionDerivedFactOutcome::Unsupported {
+                prerequisite: ActionDerivedFactPrerequisite::RuleNotPublished,
+            },
+            expected: None,
+        });
+    };
+    let value = match snapshot_answer(model.inspection().action_derived_fact(source, collection)) {
         QueryAnswer::Resolved(value) => value,
         QueryAnswer::Incomplete => return Ok(ActionDerivedFactObservation::Incomplete),
         QueryAnswer::Unresolved => return Err("Action fact query is unresolved".to_string()),
@@ -5136,9 +5415,9 @@ fn observe_action_derived_fact(
     };
     let expected = expectation
         .target
-        .as_deref()
+        .as_ref()
         .map(|target| {
-            resolve_semantic_identity(model, target)
+            resolve_element_reference(model, target)
                 .map_err(|status| format!("target reference is {}", status.description()))
         })
         .transpose()?;
@@ -6068,6 +6347,46 @@ fn compare_action_derived_fact_observation(
                 ..
             },
         ) if values.is_empty() => Ok(()),
+        (
+            TypeDerivedElementOutcome::Absent,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::FilterConditions(values),
+                ..
+            },
+        ) if values.is_empty() => Ok(()),
+        (
+            TypeDerivedElementOutcome::Absent,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Text(None),
+                ..
+            },
+        ) => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Text(Some(actual)),
+                ..
+            },
+        ) if expectation.value.as_deref() == Some(actual.as_ref()) => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::Flag(actual),
+                ..
+            },
+        ) if expectation.value.as_deref() == Some(if *actual { "true" } else { "false" }) => Ok(()),
+        (
+            TypeDerivedElementOutcome::Resolved,
+            ActionDerivedFactObservation::Outcome {
+                value: ActionDerivedFactOutcome::FilterConditions(values),
+                expected: None,
+            },
+        ) if expectation
+            .position
+            .is_some_and(|position| values.iter().any(|actual| actual.position == position)) =>
+        {
+            Ok(())
+        }
         (
             TypeDerivedElementOutcome::Resolved,
             ActionDerivedFactObservation::Outcome {
@@ -8786,17 +9105,25 @@ mod tests {
             expectations.action_derived_facts,
             vec![
                 ActionDerivedFactExpectation {
-                    collection: ActionDerivedFactCollection::ActionDefinitionAction,
-                    source: "Actions::Procedure".to_string(),
-                    target: Some("Actions::Procedure::step".to_string()),
+                    collection: Some(ActionDerivedFactCollection::ActionDefinitionAction),
+                    source: ElementReferenceExpectation::Qualified(
+                        "Actions::Procedure".to_string()
+                    ),
+                    target: Some(ElementReferenceExpectation::Qualified(
+                        "Actions::Procedure::step".to_string(),
+                    )),
                     position: None,
+                    value: None,
                     outcome: TypeDerivedElementOutcome::Resolved,
                 },
                 ActionDerivedFactExpectation {
-                    collection: ActionDerivedFactCollection::AssignmentValueExpression,
-                    source: "Actions::Procedure".to_string(),
+                    collection: Some(ActionDerivedFactCollection::AssignmentValueExpression),
+                    source: ElementReferenceExpectation::Qualified(
+                        "Actions::Procedure".to_string()
+                    ),
                     target: None,
                     position: Some(2),
+                    value: None,
                     outcome: TypeDerivedElementOutcome::Resolved,
                 },
             ]
@@ -8813,6 +9140,10 @@ mod tests {
             (
                 "(fixture-semantics (action-derived-fact (rule_id sysml-2.0:8.3.17.5:deriveAssignmentActionUsageValueExpression) (source Actions::Procedure) (position 0) (outcome resolved)))",
                 "position must be a positive integer",
+            ),
+            (
+                "(fixture-semantics (action-derived-fact (rule_id kerml-1.0:8.3.3.3.4:deriveFeatureType) (source Model::feature) (outcome unsupported)))",
+                "states the specified outcome",
             ),
         ] {
             let fixture = format!("# EXPECTED SEMANTICS\n~~~sexpr\n{body}\n~~~\n");

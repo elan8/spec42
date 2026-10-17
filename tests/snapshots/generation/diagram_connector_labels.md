@@ -178,10 +178,13 @@ package Links {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::Box::q"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::Box"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::Box::q"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::Box::q"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink"))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink"))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink::a"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink::a"))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface::source"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink::a"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink::b"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink::b"))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface::target"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink::b"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerLink"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerLink"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection"))) (provenance implied))
@@ -196,8 +199,11 @@ package Links {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind view) (name "links")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind connection) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind connection) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind interface) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind interface) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind connection) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (provenance implied))
@@ -214,9 +220,11 @@ package Links {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::c"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::c"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::c"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::mainPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::mainPower"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::mainPower"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::mainPower"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::namedUntyped"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::namedUntyped"))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::namedUntyped"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::namedUntyped"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
@@ -285,9 +293,12 @@ package Links {
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink")))
       (positional-ends (authored 2) (effective 2))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
@@ -299,20 +310,25 @@ package Links {
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerPort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerPort")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection::source"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface::source"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (source inherited) (from (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links"))))
       (effective-type (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (source inherited) (from (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerPort")) (scopes any))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection::source")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface::source")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
@@ -324,6 +340,7 @@ package Links {
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any feature))
@@ -333,20 +350,25 @@ package Links {
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerPort")) (provenance authored))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerPort")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection::target"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface::target"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))))
       (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (source inherited) (from (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links"))))
       (effective-type (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (source inherited) (from (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerPort")) (scopes any))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection::target")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface::target")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
@@ -358,6 +380,7 @@ package Links {
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any feature))
@@ -508,7 +531,9 @@ package Links {
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
@@ -520,11 +545,14 @@ package Links {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -543,7 +571,9 @@ package Links {
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerLink")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
@@ -557,12 +587,14 @@ package Links {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -581,8 +613,11 @@ package Links {
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface")) (source inherited) (from (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))))
       (effective-type (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface")) (source inherited) (from (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
@@ -594,14 +629,20 @@ package Links {
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::BinaryInterface")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::binaryInterfaces")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -689,7 +730,9 @@ package Links {
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::PowerLink")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
@@ -703,12 +746,14 @@ package Links {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::BinaryConnection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -724,7 +769,9 @@ package Links {
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
@@ -736,11 +783,14 @@ package Links {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::binaryConnections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::BinaryLinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::binaryLinkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -1376,7 +1426,27 @@ package Links {
     {
       "document": 1,
       "kind": "qualified-name",
+      "qualifiedName": "Connections::binaryConnections"
+    },
+    {
+      "document": 1,
+      "kind": "qualified-name",
       "qualifiedName": "Connections::connections"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "Interfaces::BinaryInterface::source"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "Interfaces::BinaryInterface::target"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "Interfaces::binaryInterfaces"
     },
     {
       "document": 2,
@@ -1444,73 +1514,73 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 50,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 27,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "subsetting",
       "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 39,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
+      "relationshipKind": "subsetting",
       "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 51,
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
       "relationshipKind": "typeFeaturing",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 41,
+      "relationshipKind": "typeFeaturing",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "typeFeaturing",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
       "relationshipKind": "typing",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 38,
       "relationshipKind": "typing",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 50,
       "relationshipKind": "typing",
       "source": 1
     },
@@ -1528,205 +1598,217 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 31,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
+      "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 43,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 55,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "typing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "typing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
       "relationshipKind": "subsetting",
-      "source": 4
+      "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "ordinal": 56,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
       "relationshipKind": "typeFeaturing",
-      "source": 4
+      "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
+      "ordinal": 45,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
       "relationshipKind": "typing",
-      "source": 4
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 42,
+      "relationshipKind": "typing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "typing",
+      "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 66,
-      "relationshipKind": "subsetting",
-      "source": 5
+      "relationshipKind": "redefinition",
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 67,
+      "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
       "relationshipKind": "typeFeaturing",
-      "source": 5
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 65,
       "relationshipKind": "typing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 70,
+      "relationshipKind": "redefinition",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "redefinition",
-      "source": 7
+      "ordinal": 71,
+      "relationshipKind": "subsetting",
+      "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "redefinition",
-      "source": 7
+      "ordinal": 72,
+      "relationshipKind": "typeFeaturing",
+      "source": 5
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "typing",
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 9,
-      "relationshipKind": "subsetting",
+      "relationshipKind": "redefinition",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "subsetting",
+      "ordinal": 81,
+      "relationshipKind": "redefinition",
       "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "typing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "typing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "redefinition",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "redefinition",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
       "relationshipKind": "subsetting",
-      "source": 8
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "subsetting",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "typeFeaturing",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "typeFeaturing",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "typing",
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 80,
-      "relationshipKind": "subsetting",
+      "relationshipKind": "typing",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "redefinition",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 85,
+      "relationshipKind": "redefinition",
       "source": 8
     },
     {
       "kind": "relationship",
       "ordinal": 14,
+      "relationshipKind": "subsetting",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 86,
+      "relationshipKind": "subsetting",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
       "relationshipKind": "typeFeaturing",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 81,
+      "ordinal": 87,
       "relationshipKind": "typeFeaturing",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "ordinal": 12,
       "relationshipKind": "typing",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 78,
+      "ordinal": 84,
       "relationshipKind": "typing",
       "source": 8
     },
@@ -1786,13 +1868,13 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 58,
       "relationshipKind": "connectorEnd",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 59,
       "relationshipKind": "connectorEnd",
       "source": 12
     },
@@ -1822,91 +1904,109 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 69,
+      "ordinal": 74,
       "relationshipKind": "memberAccessOperand",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 70,
+      "ordinal": 75,
       "relationshipKind": "memberAccessOperand",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 82,
+      "ordinal": 88,
       "relationshipKind": "memberAccessOperand",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 83,
+      "ordinal": 89,
       "relationshipKind": "memberAccessOperand",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "subsetting",
       "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 61,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 77,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 78,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 90,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 91,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 92,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 64,
       "relationshipKind": "typeFeaturing",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 73,
+      "ordinal": 79,
       "relationshipKind": "typeFeaturing",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 86,
+      "ordinal": 93,
       "relationshipKind": "typeFeaturing",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 60,
       "relationshipKind": "typing",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 73,
       "relationshipKind": "typing",
       "source": 12
     },
@@ -1924,25 +2024,25 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
       "ordinal": 23,
+      "relationshipKind": "subsetting",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "subsetting",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
       "relationshipKind": "typeFeaturing",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 22,
       "relationshipKind": "typing",
       "source": 13
     },
@@ -1960,25 +2060,25 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
       "ordinal": 35,
+      "relationshipKind": "subsetting",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "subsetting",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
       "relationshipKind": "typeFeaturing",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
+      "ordinal": 34,
       "relationshipKind": "typing",
       "source": 14
     },
@@ -1996,25 +2096,25 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 46,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
       "ordinal": 47,
+      "relationshipKind": "subsetting",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "subsetting",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
       "relationshipKind": "typeFeaturing",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 46,
       "relationshipKind": "typing",
       "source": 15
     },
@@ -2057,6 +2157,12 @@ package Links {
     {
       "kind": "relationship",
       "ordinal": 6,
+      "relationshipKind": "subsetting",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
       "relationshipKind": "typeFeaturing",
       "source": 16
     },
@@ -2068,12 +2174,6 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "memberAccessOperand",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "memberAccessOperand",
       "source": 17
@@ -2081,7 +2181,7 @@ package Links {
     {
       "kind": "relationship",
       "ordinal": 17,
-      "relationshipKind": "subsetting",
+      "relationshipKind": "memberAccessOperand",
       "source": 17
     },
     {
@@ -2093,6 +2193,18 @@ package Links {
     {
       "kind": "relationship",
       "ordinal": 19,
+      "relationshipKind": "subsetting",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "subsetting",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
       "relationshipKind": "typeFeaturing",
       "source": 17
     }
@@ -2114,7 +2226,7 @@ package Links {
         "navigation": 26,
         "origin": 5,
         "provenance": "authored",
-        "reference": 80,
+        "reference": 86,
         "source": 0,
         "target": 5
       },
@@ -2123,7 +2235,7 @@ package Links {
         "navigation": 28,
         "origin": 5,
         "provenance": "authored",
-        "reference": 44,
+        "reference": 48,
         "source": 14,
         "target": 17
       },
@@ -2132,7 +2244,7 @@ package Links {
         "navigation": 0,
         "origin": 6,
         "provenance": "implied",
-        "reference": 128,
+        "reference": 137,
         "source": 5,
         "target": 6
       },
@@ -2141,7 +2253,7 @@ package Links {
         "navigation": 2,
         "origin": 7,
         "provenance": "implied",
-        "reference": 129,
+        "reference": 138,
         "source": 5,
         "target": 7
       },
@@ -2150,7 +2262,7 @@ package Links {
         "navigation": 30,
         "origin": 4,
         "provenance": "authored",
-        "reference": 81,
+        "reference": 87,
         "source": 0,
         "target": 4
       },
@@ -2159,7 +2271,7 @@ package Links {
         "navigation": 31,
         "origin": 4,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 33,
         "source": 10,
         "target": 16
       },
@@ -2168,7 +2280,7 @@ package Links {
         "navigation": 13,
         "origin": 9,
         "provenance": "authored",
-        "reference": 82,
+        "reference": 88,
         "source": 0,
         "target": 9
       },
@@ -2177,7 +2289,7 @@ package Links {
         "navigation": 8,
         "origin": 10,
         "provenance": "implied",
-        "reference": 110,
+        "reference": 119,
         "source": 9,
         "target": 10
       },
@@ -2186,7 +2298,7 @@ package Links {
         "navigation": 10,
         "origin": 11,
         "provenance": "implied",
-        "reference": 111,
+        "reference": 120,
         "source": 9,
         "target": 11
       },
@@ -2195,7 +2307,7 @@ package Links {
         "navigation": 15,
         "origin": 12,
         "provenance": "authored",
-        "reference": 83,
+        "reference": 89,
         "source": 0,
         "target": 12
       },
@@ -2204,7 +2316,7 @@ package Links {
         "navigation": 8,
         "origin": 13,
         "provenance": "implied",
-        "reference": 116,
+        "reference": 125,
         "source": 12,
         "target": 13
       },
@@ -2213,7 +2325,7 @@ package Links {
         "navigation": 10,
         "origin": 14,
         "provenance": "implied",
-        "reference": 117,
+        "reference": 126,
         "source": 12,
         "target": 14
       },
@@ -2222,7 +2334,7 @@ package Links {
         "navigation": 17,
         "origin": 15,
         "provenance": "authored",
-        "reference": 84,
+        "reference": 90,
         "source": 0,
         "target": 15
       },
@@ -2231,7 +2343,7 @@ package Links {
         "navigation": 8,
         "origin": 16,
         "provenance": "implied",
-        "reference": 122,
+        "reference": 131,
         "source": 15,
         "target": 16
       },
@@ -2240,7 +2352,7 @@ package Links {
         "navigation": 10,
         "origin": 17,
         "provenance": "implied",
-        "reference": 123,
+        "reference": 132,
         "source": 15,
         "target": 17
       },
@@ -2249,7 +2361,7 @@ package Links {
         "navigation": 33,
         "origin": 18,
         "provenance": "authored",
-        "reference": 85,
+        "reference": 91,
         "source": 0,
         "target": 18
       },
@@ -2258,7 +2370,7 @@ package Links {
         "navigation": 35,
         "origin": 18,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 34,
         "source": 13,
         "target": 16
       },
@@ -2267,7 +2379,7 @@ package Links {
         "navigation": 4,
         "origin": 19,
         "provenance": "implied",
-        "reference": 91,
+        "reference": 97,
         "source": 18,
         "target": 19
       },
@@ -2276,7 +2388,7 @@ package Links {
         "navigation": 6,
         "origin": 20,
         "provenance": "implied",
-        "reference": 92,
+        "reference": 98,
         "source": 18,
         "target": 20
       },
@@ -2285,7 +2397,7 @@ package Links {
         "navigation": 22,
         "origin": 1,
         "provenance": "authored",
-        "reference": 86,
+        "reference": 92,
         "source": 0,
         "target": 1
       },
@@ -2294,7 +2406,7 @@ package Links {
         "navigation": 24,
         "origin": 1,
         "provenance": "authored",
-        "reference": 45,
+        "reference": 49,
         "source": 11,
         "target": 14
       },
@@ -2303,7 +2415,7 @@ package Links {
         "navigation": 0,
         "origin": 2,
         "provenance": "implied",
-        "reference": 93,
+        "reference": 99,
         "source": 1,
         "target": 2
       },
@@ -2312,7 +2424,7 @@ package Links {
         "navigation": 2,
         "origin": 3,
         "provenance": "implied",
-        "reference": 94,
+        "reference": 100,
         "source": 1,
         "target": 3
       },
@@ -2321,7 +2433,7 @@ package Links {
         "navigation": 19,
         "origin": 8,
         "provenance": "authored",
-        "reference": 87,
+        "reference": 93,
         "source": 0,
         "target": 8
       },
@@ -2330,7 +2442,7 @@ package Links {
         "navigation": 20,
         "origin": 8,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 35,
         "source": 10,
         "target": 13
       }
@@ -2430,7 +2542,7 @@ package Links {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 27,
+        "reference": 31,
         "source": 22,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2594,7 +2706,7 @@ package Links {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 26,
+        "reference": 30,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2854,7 +2966,7 @@ package Links {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 28,
+        "reference": 32,
         "source": 33,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2920,10 +3032,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 88,
+        "reference": 94,
         "source": 0,
         "target": {
-          "reference": 24,
+          "reference": 28,
           "status": "resolved"
         }
       },
@@ -2931,7 +3043,7 @@ package Links {
         "kind": "typing",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 135,
+        "reference": 145,
         "source": 5,
         "target": {
           "reference": 6,
@@ -2942,7 +3054,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 130,
+        "reference": 139,
         "source": 5,
         "target": {
           "node": 14,
@@ -2953,7 +3065,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 131,
+        "reference": 140,
         "source": 5,
         "target": {
           "node": 17,
@@ -2964,7 +3076,18 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 132,
+        "reference": 141,
+        "source": 5,
+        "target": {
+          "reference": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 142,
         "source": 5,
         "target": {
           "reference": 20,
@@ -2975,10 +3098,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 133,
+        "reference": 143,
         "source": 5,
         "target": {
-          "reference": 22,
+          "reference": 26,
           "status": "resolved"
         }
       },
@@ -2986,7 +3109,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 134,
+        "reference": 144,
         "source": 5,
         "target": {
           "node": 0,
@@ -2997,7 +3120,7 @@ package Links {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 70,
+        "reference": 76,
         "source": 6,
         "target": {
           "reference": 9,
@@ -3008,7 +3131,7 @@ package Links {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 64,
+        "reference": 70,
         "source": 6,
         "target": {
           "reference": 18,
@@ -3019,10 +3142,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 66,
+        "reference": 72,
         "source": 6,
         "target": {
-          "reference": 20,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -3030,7 +3153,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 68,
+        "reference": 74,
         "source": 6,
         "target": {
           "reference": 6,
@@ -3041,7 +3164,7 @@ package Links {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 78,
+        "reference": 84,
         "source": 7,
         "target": {
           "reference": 9,
@@ -3052,7 +3175,7 @@ package Links {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 72,
+        "reference": 78,
         "source": 7,
         "target": {
           "reference": 19,
@@ -3063,10 +3186,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 74,
+        "reference": 80,
         "source": 7,
         "target": {
-          "reference": 20,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -3074,7 +3197,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 76,
+        "reference": 82,
         "source": 7,
         "target": {
           "reference": 6,
@@ -3085,7 +3208,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 136,
+        "reference": 146,
         "source": 4,
         "target": {
           "node": 10,
@@ -3096,7 +3219,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 137,
+        "reference": 147,
         "source": 4,
         "target": {
           "node": 16,
@@ -3107,7 +3230,18 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 138,
+        "reference": 148,
+        "source": 4,
+        "target": {
+          "reference": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 149,
         "source": 4,
         "target": {
           "reference": 20,
@@ -3118,10 +3252,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 139,
+        "reference": 150,
         "source": 4,
         "target": {
-          "reference": 22,
+          "reference": 26,
           "status": "resolved"
         }
       },
@@ -3129,7 +3263,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 140,
+        "reference": 151,
         "source": 4,
         "target": {
           "node": 0,
@@ -3140,285 +3274,10 @@ package Links {
         "kind": "typing",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 115,
-        "source": 9,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 112,
-        "source": 9,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 113,
-        "source": 9,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 114,
-        "source": 9,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 41,
-        "source": 10,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 10,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 33,
-        "source": 10,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 38,
-        "source": 10,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 11,
-        "provenance": "authored",
-        "reference": 55,
-        "source": 11,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 46,
-        "source": 11,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 47,
-        "source": 11,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 52,
-        "source": 11,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 121,
-        "source": 12,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 118,
-        "source": 12,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 119,
-        "source": 12,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 120,
-        "source": 12,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 42,
-        "source": 13,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 34,
-        "source": 13,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 35,
-        "source": 13,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 39,
-        "source": 13,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 11,
-        "provenance": "authored",
-        "reference": 56,
-        "source": 14,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 48,
-        "source": 14,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 49,
-        "source": 14,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
-        "source": 14,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 18,
-        "provenance": "authored",
-        "reference": 127,
-        "source": 15,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 124,
-        "source": 15,
+        "source": 9,
         "target": {
-          "reference": 22,
+          "reference": 0,
           "status": "resolved"
         }
       },
@@ -3426,10 +3285,21 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 125,
-        "source": 15,
+        "reference": 121,
+        "source": 9,
         "target": {
-          "reference": 24,
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 122,
+        "source": 9,
+        "target": {
+          "reference": 28,
           "status": "resolved"
         }
       },
@@ -3437,8 +3307,8 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 126,
-        "source": 15,
+        "reference": 123,
+        "source": 9,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -3448,8 +3318,8 @@ package Links {
         "kind": "typing",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 43,
-        "source": 16,
+        "reference": 45,
+        "source": 10,
         "target": {
           "reference": 9,
           "status": "resolved"
@@ -3460,9 +3330,9 @@ package Links {
         "navigation": null,
         "provenance": "implied",
         "reference": 36,
-        "source": 16,
+        "source": 10,
         "target": {
-          "reference": 23,
+          "reference": 27,
           "status": "resolved"
         }
       },
@@ -3471,9 +3341,9 @@ package Links {
         "navigation": null,
         "provenance": "implied",
         "reference": 37,
-        "source": 16,
+        "source": 10,
         "target": {
-          "reference": 25,
+          "reference": 29,
           "status": "resolved"
         }
       },
@@ -3481,8 +3351,8 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 40,
-        "source": 16,
+        "reference": 42,
+        "source": 10,
         "target": {
           "reference": 0,
           "status": "resolved"
@@ -3492,8 +3362,8 @@ package Links {
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 57,
-        "source": 17,
+        "reference": 59,
+        "source": 11,
         "target": {
           "reference": 9,
           "status": "resolved"
@@ -3504,9 +3374,9 @@ package Links {
         "navigation": null,
         "provenance": "implied",
         "reference": 50,
-        "source": 17,
+        "source": 11,
         "target": {
-          "reference": 23,
+          "reference": 27,
           "status": "resolved"
         }
       },
@@ -3515,9 +3385,9 @@ package Links {
         "navigation": null,
         "provenance": "implied",
         "reference": 51,
-        "source": 17,
+        "source": 11,
         "target": {
-          "reference": 25,
+          "reference": 29,
           "status": "resolved"
         }
       },
@@ -3525,7 +3395,271 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
+        "reference": 56,
+        "source": 11,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 16,
+        "provenance": "authored",
+        "reference": 130,
+        "source": 12,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 127,
+        "source": 12,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 128,
+        "source": 12,
+        "target": {
+          "reference": 28,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 129,
+        "source": 12,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 9,
+        "provenance": "authored",
+        "reference": 46,
+        "source": 13,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 38,
+        "source": 13,
+        "target": {
+          "reference": 27,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 39,
+        "source": 13,
+        "target": {
+          "reference": 29,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 43,
+        "source": 13,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 11,
+        "provenance": "authored",
+        "reference": 60,
+        "source": 14,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 52,
+        "source": 14,
+        "target": {
+          "reference": 27,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 53,
+        "source": 14,
+        "target": {
+          "reference": 29,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 57,
+        "source": 14,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 136,
+        "source": 15,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 133,
+        "source": 15,
+        "target": {
+          "reference": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 134,
+        "source": 15,
+        "target": {
+          "reference": 28,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 135,
+        "source": 15,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 9,
+        "provenance": "authored",
+        "reference": 47,
+        "source": 16,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 40,
+        "source": 16,
+        "target": {
+          "reference": 27,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 41,
+        "source": 16,
+        "target": {
+          "reference": 29,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 44,
+        "source": 16,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 11,
+        "provenance": "authored",
+        "reference": 61,
+        "source": 17,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 54,
+        "source": 17,
+        "target": {
+          "reference": 27,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 55,
+        "source": 17,
+        "target": {
+          "reference": 29,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 58,
         "source": 17,
         "target": {
           "reference": 0,
@@ -3536,7 +3670,7 @@ package Links {
         "kind": "connectorEnd",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 89,
+        "reference": 95,
         "source": 18,
         "target": {
           "node": 13,
@@ -3547,7 +3681,7 @@ package Links {
         "kind": "connectorEnd",
         "navigation": 36,
         "provenance": "authored",
-        "reference": 90,
+        "reference": 96,
         "source": 18,
         "target": {
           "node": 16,
@@ -3558,7 +3692,7 @@ package Links {
         "kind": "typing",
         "navigation": 34,
         "provenance": "authored",
-        "reference": 108,
+        "reference": 117,
         "source": 18,
         "target": {
           "reference": 3,
@@ -3569,10 +3703,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 99,
+        "reference": 105,
         "source": 18,
         "target": {
-          "reference": 21,
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -3580,10 +3714,21 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 100,
+        "reference": 106,
         "source": 18,
         "target": {
-          "reference": 22,
+          "reference": 24,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 107,
+        "source": 18,
+        "target": {
+          "reference": 26,
           "status": "resolved"
         }
       },
@@ -3591,7 +3736,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 105,
+        "reference": 114,
         "source": 18,
         "target": {
           "node": 0,
@@ -3602,7 +3747,7 @@ package Links {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 60,
+        "reference": 65,
         "source": 19,
         "target": {
           "reference": 9,
@@ -3610,13 +3755,24 @@ package Links {
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 62,
+        "source": 19,
+        "target": {
+          "reference": 22,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 58,
+        "reference": 63,
         "source": 19,
         "target": {
-          "reference": 20,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -3624,7 +3780,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 59,
+        "reference": 64,
         "source": 19,
         "target": {
           "reference": 3,
@@ -3635,7 +3791,7 @@ package Links {
         "kind": "typing",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 63,
+        "reference": 69,
         "source": 20,
         "target": {
           "reference": 9,
@@ -3643,13 +3799,24 @@ package Links {
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 66,
+        "source": 20,
+        "target": {
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 61,
+        "reference": 67,
         "source": 20,
         "target": {
-          "reference": 20,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -3657,7 +3824,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 62,
+        "reference": 68,
         "source": 20,
         "target": {
           "reference": 3,
@@ -3668,7 +3835,7 @@ package Links {
         "kind": "typing",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 109,
+        "reference": 118,
         "source": 1,
         "target": {
           "reference": 6,
@@ -3679,7 +3846,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 24,
         "provenance": "authored",
-        "reference": 95,
+        "reference": 101,
         "source": 1,
         "target": {
           "node": 11,
@@ -3690,7 +3857,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 96,
+        "reference": 102,
         "source": 1,
         "target": {
           "node": 14,
@@ -3701,7 +3868,18 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 101,
+        "reference": 108,
+        "source": 1,
+        "target": {
+          "reference": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 109,
         "source": 1,
         "target": {
           "reference": 20,
@@ -3712,10 +3890,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 102,
+        "reference": 110,
         "source": 1,
         "target": {
-          "reference": 22,
+          "reference": 26,
           "status": "resolved"
         }
       },
@@ -3723,7 +3901,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 106,
+        "reference": 115,
         "source": 1,
         "target": {
           "node": 0,
@@ -3734,7 +3912,7 @@ package Links {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 71,
+        "reference": 77,
         "source": 2,
         "target": {
           "reference": 9,
@@ -3745,7 +3923,7 @@ package Links {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 65,
+        "reference": 71,
         "source": 2,
         "target": {
           "reference": 18,
@@ -3756,10 +3934,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 67,
+        "reference": 73,
         "source": 2,
         "target": {
-          "reference": 20,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -3767,7 +3945,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 69,
+        "reference": 75,
         "source": 2,
         "target": {
           "reference": 6,
@@ -3778,7 +3956,7 @@ package Links {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 79,
+        "reference": 85,
         "source": 3,
         "target": {
           "reference": 9,
@@ -3789,7 +3967,7 @@ package Links {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 73,
+        "reference": 79,
         "source": 3,
         "target": {
           "reference": 19,
@@ -3800,10 +3978,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 75,
+        "reference": 81,
         "source": 3,
         "target": {
-          "reference": 20,
+          "reference": 21,
           "status": "resolved"
         }
       },
@@ -3811,7 +3989,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 77,
+        "reference": 83,
         "source": 3,
         "target": {
           "reference": 6,
@@ -3822,7 +4000,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 97,
+        "reference": 103,
         "source": 8,
         "target": {
           "node": 10,
@@ -3833,7 +4011,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 98,
+        "reference": 104,
         "source": 8,
         "target": {
           "node": 13,
@@ -3844,7 +4022,18 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 103,
+        "reference": 111,
+        "source": 8,
+        "target": {
+          "reference": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 112,
         "source": 8,
         "target": {
           "reference": 20,
@@ -3855,10 +4044,10 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 104,
+        "reference": 113,
         "source": 8,
         "target": {
-          "reference": 22,
+          "reference": 26,
           "status": "resolved"
         }
       },
@@ -3866,7 +4055,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 107,
+        "reference": 116,
         "source": 8,
         "target": {
           "node": 0,

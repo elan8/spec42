@@ -1906,7 +1906,8 @@ pub(crate) fn requirement_derived_source_matches(metaclass: &str, kind: Declarat
         ) | (
             "RequirementUsage",
             DeclarationKind::RequirementUsage | DeclarationKind::ObjectiveRequirement
-        )
+        ) | ("CaseDefinition", DeclarationKind::CaseDefinition)
+            | ("CaseUsage", DeclarationKind::CaseUsage)
     )
 }
 
@@ -1915,12 +1916,16 @@ pub(crate) fn requirement_derived_membership_role(
 ) -> Option<MembershipRole> {
     use RequirementDerivedFactCollection as Collection;
     match collection {
-        Collection::DefinitionActorParameter | Collection::UsageActorParameter => {
-            Some(MembershipRole::Actor)
-        }
-        Collection::DefinitionSubjectParameter | Collection::UsageSubjectParameter => {
-            Some(MembershipRole::Subject)
-        }
+        Collection::DefinitionActorParameter
+        | Collection::UsageActorParameter
+        | Collection::CaseDefinitionActorParameter
+        | Collection::CaseUsageActorParameter => Some(MembershipRole::Actor),
+        Collection::DefinitionSubjectParameter
+        | Collection::UsageSubjectParameter
+        | Collection::CaseDefinitionSubjectParameter
+        | Collection::CaseUsageSubjectParameter => Some(MembershipRole::Subject),
+        Collection::CaseDefinitionObjectiveRequirement
+        | Collection::CaseUsageObjectiveRequirement => Some(MembershipRole::Objective),
         Collection::DefinitionRequiredConstraint | Collection::UsageRequiredConstraint => Some(
             MembershipRole::RequirementConstraint(RequirementConstraintKind::Requirement),
         ),

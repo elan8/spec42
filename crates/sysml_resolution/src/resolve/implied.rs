@@ -365,6 +365,14 @@ pub(crate) fn feature_derived_relationship_kinds(
         }
         FeatureDerivedRelationshipCollection::OwnedTyping => &[ReferenceKind::FeatureTyping],
         FeatureDerivedRelationshipCollection::OwnedTypeFeaturing => &[ReferenceKind::TypeFeaturing],
+        FeatureDerivedRelationshipCollection::ChainingFeature => &[ReferenceKind::FeatureChaining],
+        FeatureDerivedRelationshipCollection::OwnedFeatureInverting => {
+            &[ReferenceKind::FeatureInverting]
+        }
+        FeatureDerivedRelationshipCollection::OwnedReferenceSubsetting => {
+            &[ReferenceKind::References]
+        }
+        FeatureDerivedRelationshipCollection::OwnedCrossSubsetting => &[ReferenceKind::Crosses],
     }
 }
 
@@ -469,7 +477,33 @@ pub(crate) fn type_derived_relationship_kinds(
         TypeDerivedRelationshipCollection::OwnedDifferencing
         | TypeDerivedRelationshipCollection::DifferencingType => &[ReferenceKind::Differencing],
         TypeDerivedRelationshipCollection::OwnedDisjoining => &[ReferenceKind::Disjoining],
+        TypeDerivedRelationshipCollection::OwnedSubclassification => {
+            &[ReferenceKind::Subclassification]
+        }
     }
+}
+
+/// Metaclasses whose library rules apply to one lowered declaration.
+///
+/// An `event occurrence` is an `OccurrenceUsage` plus the event modifier. Its
+/// `EventOccurrenceUsage` contracts are not visible from `OccurrenceUsage` alone.
+pub(crate) fn applicable_library_metaclasses(
+    storage: &SemanticModelStorage,
+    source: DeclarationId,
+    kind: crate::model::DeclarationKind,
+) -> Vec<ApplicableRuleMetaclass> {
+    let mut metaclasses = library_specialization_metaclasses(kind);
+    if kind == crate::model::DeclarationKind::OccurrenceUsage
+        && storage
+            .declaration_facts(source)
+            .is_some_and(|facts| facts.modifiers.event)
+        && metaclasses
+            .iter()
+            .all(|metaclass| metaclass.metaclass != "EventOccurrenceUsage")
+    {
+        metaclasses.push(ApplicableRuleMetaclass::all("EventOccurrenceUsage"));
+    }
+    metaclasses
 }
 
 /// Metaclasses whose generated `specializesFromLibrary` rules apply to `kind`.
@@ -661,6 +695,7 @@ fn predicate_selects_default_supertype(predicate: LibrarySpecializationPredicate
         | P::OwnedTypingStructure
         | P::EndOwnedByAssociationOrConnector
         | P::ConnectorAssociationStructure
+        | P::ConnectorBinaryAssociationStructure
         | P::OwnedBy
         | P::IsSubactionUsage
         | P::IsSubactionUsageAndNotTriggerAction
@@ -2844,6 +2879,7 @@ pub(crate) fn synthesize_generated_library_specializations(
     let (ancestors, cyclic) = build_ancestor_closures(&storage.declarations, references, outcomes)?;
     let owned_typings =
         OwnedTypingTargets::collect(storage.declarations.len(), references, outcomes);
+    let variant_members = crate::resolve::usage_composition::variant_member_flags(storage)?;
     let conjugated = conjugated_types(storage);
     let mut implied = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
@@ -2851,7 +2887,7 @@ pub(crate) fn synthesize_generated_library_specializations(
         if conjugated.contains(&source) {
             continue;
         }
-        for metaclass in library_specialization_metaclasses(declaration.kind) {
+        for metaclass in applicable_library_metaclasses(storage, source, declaration.kind) {
             for rule in metaclass.rules() {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
                     anchor_facts.generated_outcome(rule.rule_id)
@@ -2875,6 +2911,7 @@ pub(crate) fn synthesize_generated_library_specializations(
             for rule in metaclass.conditional_rules() {
                 if !conditional_library_specialization_predicate_holds_with_resolution(
                     storage,
+                    &variant_members,
                     source,
                     rule,
                     &owned_typings,
@@ -2934,6 +2971,7 @@ pub(crate) fn provisional_library_specializations(
     if !anchor_facts.has_resolved_anchor() {
         return Ok(Box::default());
     }
+    let variant_members = crate::resolve::usage_composition::variant_member_flags(storage)?;
     let conjugated = conjugated_types(storage);
     let mut implied = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
@@ -2941,7 +2979,7 @@ pub(crate) fn provisional_library_specializations(
         if conjugated.contains(&source) {
             continue;
         }
-        for metaclass in library_specialization_metaclasses(declaration.kind) {
+        for metaclass in applicable_library_metaclasses(storage, source, declaration.kind) {
             for rule in metaclass.rules() {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
                     anchor_facts.generated_outcome(rule.rule_id)
@@ -2958,7 +2996,12 @@ pub(crate) fn provisional_library_specializations(
                 });
             }
             for rule in metaclass.conditional_rules() {
-                if !conditional_library_specialization_predicate_holds(storage, source, rule) {
+                if !conditional_library_specialization_predicate_holds_with_variants(
+                    storage,
+                    &variant_members,
+                    source,
+                    rule,
+                ) {
                     continue;
                 }
                 let branch =
@@ -3047,11 +3090,50 @@ fn implied_library_specialization_kind(
     }
 }
 
+/// The ownership half of SysML `ActionUsage::isSubactionUsage()`: the owning type is an
+/// ActionDefinition or ActionUsage (`oclIsKindOf`, so state, calculation and case definitions and
+/// `if`, `while` and `for` actions count), and the usage is not the entry or exit action of a state
+/// (a `do` action is a subaction). The composite half is checked by the caller.
+fn owned_as_subaction(storage: &SemanticModelStorage, declaration: &Declaration) -> bool {
+    if matches!(
+        declaration.kind,
+        DeclarationKind::EntryActionBinding | DeclarationKind::ExitActionBinding
+    ) {
+        return false;
+    }
+    declaration.owner.is_some_and(|owner| {
+        storage.declaration(owner).is_some_and(|owner| {
+            let kind = crate::model::element_kind::element_kind(owner.kind);
+            kind.conforms_to(sysml_contract::ElementKind::ActionDefinition)
+                || kind.conforms_to(sysml_contract::ElementKind::ActionUsage)
+        })
+    })
+}
+
 /// Evaluates only the exact predicate vocabulary emitted by the pinned-manifest extractor.
 /// The predicate is the manifest's closed enum, so adding a contract requires an exhaustive
 /// resolver decision rather than falling through a similarly spelled string label.
+#[cfg(test)]
 pub(crate) fn conditional_library_specialization_predicate_holds(
     storage: &SemanticModelStorage,
+    source: DeclarationId,
+    rule: &ConditionalLibrarySpecializationRule,
+) -> bool {
+    let Ok(variant_members) = crate::resolve::usage_composition::variant_member_flags(storage)
+    else {
+        return false;
+    };
+    conditional_library_specialization_predicate_holds_with_variants(
+        storage,
+        &variant_members,
+        source,
+        rule,
+    )
+}
+
+pub(crate) fn conditional_library_specialization_predicate_holds_with_variants(
+    storage: &SemanticModelStorage,
+    variant_members: &[bool],
     source: DeclarationId,
     rule: &ConditionalLibrarySpecializationRule,
 ) -> bool {
@@ -3075,13 +3157,16 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
                 && facts.portion_kind == Some(PortionKind::Timeslice)
         }
         LibrarySpecializationPredicate::CompositeOwnedBy => {
-            facts.modifiers.composite
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        rule.owner_metaclasses
-                            .contains(&library_rule_metaclass(owner.kind))
-                    })
+            crate::resolve::usage_composition::feature_is_composite(
+                storage,
+                variant_members,
+                source,
+            ) && declaration.owner.is_some_and(|owner| {
+                storage.declaration(owner).is_some_and(|owner| {
+                    rule.owner_metaclasses
+                        .contains(&library_rule_metaclass(owner.kind))
                 })
+            })
         }
         LibrarySpecializationPredicate::OwnedBy => declaration.owner.is_some_and(|owner| {
             storage.declaration(owner).is_some_and(|owner| {
@@ -3090,19 +3175,11 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
             })
         }),
         LibrarySpecializationPredicate::IsSubactionUsage => {
-            facts.modifiers.composite
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        matches!(
-                            owner.kind,
-                            DeclarationKind::ActionDefinition
-                                | DeclarationKind::ActionUsage
-                                | DeclarationKind::AcceptActionUsage
-                                | DeclarationKind::SendActionUsage
-                                | DeclarationKind::TerminateActionUsage
-                        )
-                    })
-                })
+            crate::resolve::usage_composition::feature_is_composite(
+                storage,
+                variant_members,
+                source,
+            ) && owned_as_subaction(storage, declaration)
         }
         LibrarySpecializationPredicate::IsNotTriggerAction => {
             declaration.kind == DeclarationKind::AcceptActionUsage
@@ -3111,19 +3188,12 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
         LibrarySpecializationPredicate::IsSubactionUsageAndNotTriggerAction => {
             declaration.kind == DeclarationKind::AcceptActionUsage
                 && facts.is_trigger_action == Some(false)
-                && facts.modifiers.composite
-                && declaration.owner.is_some_and(|owner| {
-                    storage.declaration(owner).is_some_and(|owner| {
-                        matches!(
-                            owner.kind,
-                            DeclarationKind::ActionDefinition
-                                | DeclarationKind::ActionUsage
-                                | DeclarationKind::AcceptActionUsage
-                                | DeclarationKind::SendActionUsage
-                                | DeclarationKind::TerminateActionUsage
-                        )
-                    })
-                })
+                && crate::resolve::usage_composition::feature_is_composite(
+                    storage,
+                    variant_members,
+                    source,
+                )
+                && owned_as_subaction(storage, declaration)
         }
         LibrarySpecializationPredicate::IsTriggerAction => {
             declaration.kind == DeclarationKind::AcceptActionUsage
@@ -3154,7 +3224,8 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
         | LibrarySpecializationPredicate::OwnedTypingClass
         | LibrarySpecializationPredicate::OwnedTypingStructure
         | LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector
-        | LibrarySpecializationPredicate::ConnectorAssociationStructure => false,
+        | LibrarySpecializationPredicate::ConnectorAssociationStructure
+        | LibrarySpecializationPredicate::ConnectorBinaryAssociationStructure => false,
         LibrarySpecializationPredicate::PolarityBranch => facts.negated.is_some(),
         LibrarySpecializationPredicate::FramedConcernMembership => {
             element_kind::membership_role(declaration.kind) == Some(MembershipRole::FramedConcern)
@@ -3183,6 +3254,7 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
 /// resolved facts; this owner never rereads syntax or derives a type from a display name.
 pub(crate) fn conditional_library_specialization_predicate_holds_with_resolution(
     storage: &SemanticModelStorage,
+    variant_members: &[bool],
     source: DeclarationId,
     rule: &ConditionalLibrarySpecializationRule,
     owned_typings: &OwnedTypingTargets,
@@ -3226,7 +3298,20 @@ pub(crate) fn conditional_library_specialization_predicate_holds_with_resolution
         LibrarySpecializationPredicate::ConnectorAssociationStructure => {
             declaration_has_direct_association_structure_typing(storage, source, owned_typings)
         }
-        _ => conditional_library_specialization_predicate_holds(storage, source, rule),
+        LibrarySpecializationPredicate::ConnectorBinaryAssociationStructure => {
+            positional_end_count(storage, source) == 2
+                && declaration_has_direct_association_structure_typing(
+                    storage,
+                    source,
+                    owned_typings,
+                )
+        }
+        _ => conditional_library_specialization_predicate_holds_with_variants(
+            storage,
+            variant_members,
+            source,
+            rule,
+        ),
     }
 }
 
@@ -3364,6 +3449,7 @@ pub(crate) fn conditional_library_specialization_anchor_branch(
         | LibrarySpecializationPredicate::OwnedTypingStructure
         | LibrarySpecializationPredicate::EndOwnedByAssociationOrConnector
         | LibrarySpecializationPredicate::ConnectorAssociationStructure
+        | LibrarySpecializationPredicate::ConnectorBinaryAssociationStructure
         | LibrarySpecializationPredicate::OwnedBy
         | LibrarySpecializationPredicate::IsSubactionUsage
         | LibrarySpecializationPredicate::IsNotTriggerAction

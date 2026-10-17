@@ -747,6 +747,7 @@ impl SemanticModelBuilder {
                     node.span,
                     DeclarationFacts {
                         multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                        is_included_use_case: true,
                         ..DeclarationFacts::none()
                     },
                 )?;
