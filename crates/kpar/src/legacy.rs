@@ -27,6 +27,7 @@ pub fn extract_archive_subset(
             .map_err(|e| KparError::Zip(format!("inspect archive: {e}")))?;
         first
             .name()
+            .map_err(|e| KparError::Zip(format!("inspect archive: {e}")))?
             .split('/')
             .next()
             .ok_or_else(|| KparError::InvalidArchive("malformed archive".to_string()))?
@@ -45,7 +46,10 @@ pub fn extract_archive_subset(
         let mut entry = archive
             .by_index(index)
             .map_err(|e| KparError::Zip(format!("read entry {index}: {e}")))?;
-        let name = entry.name().to_string();
+        let name = entry
+            .name()
+            .map_err(|e| KparError::Zip(format!("read entry {index} name: {e}")))?
+            .into_owned();
         if !name.starts_with(&wanted_prefix) || name.ends_with('/') {
             continue;
         }

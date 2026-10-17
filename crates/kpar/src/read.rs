@@ -358,7 +358,11 @@ fn read_zip_entries(bytes: &[u8]) -> Result<HashMap<String, Vec<u8>>> {
         if entry.is_dir() {
             continue;
         }
-        let name = normalize_zip_path(entry.name())?;
+        let name = normalize_zip_path(
+            &entry
+                .name()
+                .map_err(|e| KparError::Zip(format!("read entry {index} name: {e}")))?,
+        )?;
         let mut buf = Vec::new();
         entry
             .read_to_end(&mut buf)

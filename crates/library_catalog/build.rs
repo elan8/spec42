@@ -642,7 +642,9 @@ fn embedded_stdlib_archive_is_usable(path: &Path) -> bool {
         let Ok(entry) = archive.by_index(i) else {
             continue;
         };
-        let name = entry.name();
+        let Ok(name) = entry.name() else {
+            continue;
+        };
         if name.starts_with(STDLIB_KPAR_EMBED_PREFIX)
             && name.ends_with(".kpar")
             && !name.ends_with('/')
