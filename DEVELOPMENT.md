@@ -411,15 +411,18 @@ The OMG standard library is bundled from `sysml.library.kpar` at the pinned SysM
 
 For local development, `build.rs` prefers, in order (per managed library):
 
-1. `SPEC42_KPAR_LIBRARY_BUNDLE_<ID>` (path to `.kpar`, CI/release; legacy `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP` still maps to domain)
-2. `SPEC42_KPAR_LIBRARY_SOURCE_DIR_<ID>` (pack on the fly with `spec42 bundle`; the source root must contain its authoritative `.project.json`)
-3. A sibling checkout from `pack.siblingRelative` in the library config (packed when no cached bundle exists)
-4. Cached `.cache/<artifact>` from the library pin
+1. `SPEC42_KPAR_LIBRARY_SOURCE_DIR_<ID>`, packed on the fly. The source root must contain its authoritative `.project.json` at the pinned version; anything else fails the build.
+2. A sibling checkout from `pack.siblingRelative` in the library config, packed the same way. A sibling without `.project.json` or at another version is skipped with a build warning.
+3. The archive an earlier build embedded, when it is still usable.
+4. `SPEC42_KPAR_LIBRARY_BUNDLE_<ID>` (path to `.kpar`, CI/release; legacy `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP` still maps to domain), then the cached `.cache/<artifact>` from the library pin.
+
+Packing from source is always `spec42 bundle` of the checkout, with the config's `pack.archivePrefix` and `pack.exclude`. The library's own release workflow packs the same way, so a local pack of a release tag is byte-identical to the published archive. `scripts/fetch-kpar-libraries-bundle.sh` uses the same fields when no release asset can be downloaded.
 
 Domain library releases are published from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) via the `release-kpar` GitHub Action when a `v*` tag is pushed. Pack locally with:
 
 ```bash
-cargo run -p server --no-default-features --bin spec42 -- bundle ../sysml-domain-libraries -o elan8-domain-libraries-0.3.0.kpar
+cargo run -p server --no-default-features --bin spec42 -- bundle ../sysml-domain-libraries -o elan8-domain-libraries-0.4.0.kpar \
+  --exclude .git --exclude docs --exclude scripts --exclude examples --exclude model/Examples.sysml
 ```
 
 `vscode/.gitignore` ignores `vscode/examples` so duplicate checkouts under `vscode/` are not committed. If you see the same example folders twice in the Spec42 **Examples** view, remove the extra copy under `vscode/examples` and keep the root submodule.
