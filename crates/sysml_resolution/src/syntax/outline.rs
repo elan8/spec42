@@ -250,42 +250,6 @@ fn split_body<E>(
     }
 }
 
-fn modeled_decl_name(keyword: &str, text: &str, fallback: &str) -> String {
-    let t = text.trim().trim_end_matches(';').trim();
-    let tokens: Vec<String> = t
-        .split_whitespace()
-        .map(|s| {
-            s.trim_end_matches(';')
-                .trim_end_matches(',')
-                .trim_end_matches(')')
-                .to_string()
-        })
-        .filter(|s| !s.is_empty())
-        .collect();
-    let kw = keyword.trim();
-    if let Some(pos) = tokens.iter().position(|tok| tok.eq_ignore_ascii_case(kw)) {
-        if pos + 1 < tokens.len() {
-            let name = sanitize_identifier(&tokens[pos + 1]);
-            if !name.is_empty() && !name.eq_ignore_ascii_case("specializes") {
-                return name;
-            }
-        }
-    }
-    for tok in &tokens {
-        let name = sanitize_identifier(tok);
-        if !name.is_empty() {
-            return name;
-        }
-    }
-    fallback.to_string()
-}
-
-fn sanitize_identifier(s: &str) -> String {
-    s.chars()
-        .filter(|c| c.is_alphanumeric() || *c == '_')
-        .collect()
-}
-
 fn outline_view_def(
     document: &sysml_v2_parser::ParsedDocument,
     node: &sysml_v2_parser::Node<sysml_v2_parser::ast::ViewDef>,
@@ -551,42 +515,6 @@ fn outline_symbol_from_element(
             Some(SyntaxOutlineNode {
                 name,
                 short_name: declaration_name_text(document, p.value.identification.short_name),
-                kind: SyntaxOutlineKind::ClassifierDecl,
-                range,
-                selection_range: range,
-                children: vec![],
-                ..SyntaxOutlineNode::bare(range)
-            })
-        }
-        PBE::FeatureDecl(p) => {
-            let name = modeled_decl_name(
-                document.source.slice(&p.keyword_span).unwrap_or_default(),
-                document.opaque_text(p.text).unwrap_or_default(),
-                "_feature",
-            );
-            if name.is_empty() {
-                return None;
-            }
-            Some(SyntaxOutlineNode {
-                name,
-                kind: SyntaxOutlineKind::FeatureDecl,
-                range,
-                selection_range: range,
-                children: vec![],
-                ..SyntaxOutlineNode::bare(range)
-            })
-        }
-        PBE::ClassifierDecl(p) => {
-            let name = modeled_decl_name(
-                document.source.slice(&p.keyword_span).unwrap_or_default(),
-                document.opaque_text(p.text).unwrap_or_default(),
-                "_classifier",
-            );
-            if name.is_empty() {
-                return None;
-            }
-            Some(SyntaxOutlineNode {
-                name,
                 kind: SyntaxOutlineKind::ClassifierDecl,
                 range,
                 selection_range: range,

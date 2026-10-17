@@ -1280,44 +1280,10 @@ impl<D> SemanticModel<D> {
                     )),
                 )?);
             }
-            // A machine whose transitions form a cycle has no terminating path by construction,
-            // so the absence of a final state states its shape rather than an omission.
-            if !final_by_context.contains_key(&id) && !self.state_transitions_are_cyclic(id) {
-                diagnostics.push(self.declaration_message_diagnostic(
-                    id,
-                    DiagnosticCode::MissingFinalState,
-                    DiagnosticSeverity::Information,
-                    Some(format!(
-                        "State definition '{}' owns states but declares no finality indicator.",
-                        self.display_name(id)
-                    )),
-                )?);
-            }
+            // SysML 7.18.2-3 permits state behavior without a transition to `done`.
+            // A finality indicator is optional even when there is no transition cycle.
         }
         Ok(())
-    }
-
-    /// Whether the settled transitions owned by one state definition form a cycle.
-    ///
-    /// Over settled endpoints, not authored expressions: a transition whose ends did not resolve
-    /// contributes no edge, which is the same answer as having no transition at all.
-    pub(crate) fn state_transitions_are_cyclic(&self, state_definition: DeclarationId) -> bool {
-        let mut edges: BTreeMap<DeclarationId, Vec<DeclarationId>> = BTreeMap::new();
-        for child in self.child_declarations(state_definition) {
-            if self.kind_of(*child) != Some(DeclarationKind::Transition) {
-                continue;
-            }
-            let source = self.settled_targets(*child, &[ReferenceKind::TransitionSource]);
-            let target = self.settled_targets(*child, &[ReferenceKind::TransitionTarget]);
-            if let (Some(source), Some(target)) = (source.first(), target.first()) {
-                edges.entry(*source).or_default().push(*target);
-            }
-        }
-        let mut visited = BTreeSet::new();
-        let mut stack = BTreeSet::new();
-        edges
-            .keys()
-            .any(|start| reaches_cycle(*start, &edges, &mut visited, &mut stack))
     }
 
     // ------------------------------------------------------------------------------------------
@@ -2247,27 +2213,4 @@ impl<D> SemanticModel<D> {
                 .any(|fact| fact.declaration == id || Some(fact.declaration) == value)
         }
     }
-}
-
-/// Whether a directed graph reaches a cycle from `node`.
-pub(crate) fn reaches_cycle(
-    node: DeclarationId,
-    edges: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
-    visited: &mut BTreeSet<DeclarationId>,
-    stack: &mut BTreeSet<DeclarationId>,
-) -> bool {
-    if stack.contains(&node) {
-        return true;
-    }
-    if !visited.insert(node) {
-        return false;
-    }
-    stack.insert(node);
-    let found = edges
-        .get(&node)
-        .into_iter()
-        .flatten()
-        .any(|next| reaches_cycle(*next, edges, visited, stack));
-    stack.remove(&node);
-    found
 }

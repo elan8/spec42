@@ -857,8 +857,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "missing_final_state",
         severity: "information",
-        meaning: "Modeling guidance: a state definition has state usages but no finality indicator (`final`/`final state` or a transition to `done` per SysML 7.18.3).",
-        typical_fix: "Add a transition to `done` from a terminal state, or an explicit `final` marker if your tooling uses that extension.",
+        meaning: "Retired modeling guidance; no longer emitted. SysML 7.18.2-3 does not require state behavior to terminate.",
+        typical_fix: "No change required. A transition to `done` is optional and should only express intended completion.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

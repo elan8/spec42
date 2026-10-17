@@ -2648,39 +2648,6 @@ fn first_then_succession_inside_action_def_body_resolves_both_ends() {
     );
 }
 
-/// A `state def` body's `entry action X;` / `do action Y;` / `exit action Z;` bindings (BNF
-/// `EntryAction`/`DoAction`/`ExitAction.action_reference`) must each resolve to the enclosing
-/// package's action declarations (there is no `StateDefBodyElement::ActionUsage` shape --
-/// bound actions are ordinarily declared alongside the state def, not nested inside it,
-/// mirroring the real corpus fixture `24_state_actions.md`), not fall through to
-/// `unsupported_state_definition_member`.
-#[test]
-fn entry_do_exit_action_bindings_inside_state_def_body_resolve() {
-    let sexpr = semantic_sexpr_for(
-        "package P { action enter1; action running1; action leave1; state def S { entry action enter1; do action running1; exit action leave1; } }",
-    );
-    assert!(
-        sexpr.contains("(kind entryActionBinding)"),
-        "expected an entryActionBinding relationship kind, got: {sexpr}"
-    );
-    assert!(
-        sexpr.contains("(kind doActionBinding)"),
-        "expected a doActionBinding relationship kind, got: {sexpr}"
-    );
-    assert!(
-        sexpr.contains("(kind exitActionBinding)"),
-        "expected an exitActionBinding relationship kind, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("unsupported_state_definition_member"),
-        "did not expect unsupported_state_definition_member, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("(status unresolved)"),
-        "expected all three action bindings to resolve to their sibling declarations, got: {sexpr}"
-    );
-}
-
 /// A `state def` body's `then <target>;` initial-state marker (BNF `ThenStmt.state_reference`)
 /// must resolve to the sibling owned state declaration, not fall through to
 /// `unsupported_state_definition_member`.

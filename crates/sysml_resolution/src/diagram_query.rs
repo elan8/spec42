@@ -1329,7 +1329,10 @@ impl PublishedResolution {
             }
             // A `then` shorthand declares a succession from the source the lowering settled
             // for it (SysML 7.17.4) to the feature it names, or to the node written after it.
-            if view_entry.kind == DiagramViewKind::ActionFlow {
+            if matches!(
+                view_entry.kind,
+                DiagramViewKind::ActionFlow | DiagramViewKind::Sequence
+            ) {
                 let source = self
                     .model
                     .then_source(element.semantic_id)
@@ -1981,7 +1984,7 @@ fn sequence_scene(
         .iter()
         .map(|(index, element)| (element.occurrence_id.clone(), *index))
         .collect::<BTreeMap<_, _>>();
-    let precedence = edges
+    let mut precedence = edges
         .iter()
         .filter(|edge| edge.kind == DiagramEdgeKind::Succession)
         .filter_map(|edge| {
@@ -1989,7 +1992,78 @@ fn sequence_scene(
                 *occurrence_to_index.get(&edge.source)?,
                 *occurrence_to_index.get(&edge.target)?,
             ))
-        });
+        })
+        .collect::<BTreeSet<_>>();
+    // A message is ordered by its event occurrences, not by its name or declaration order.
+    // Preserve the event graph through each transfer so causal paths may cross lifelines.
+    let event_end = |message: &DiagramElement, kind| {
+        relationships
+            .iter()
+            .find(|relationship| {
+                relationship.source == message.occurrence_id && relationship.kind == kind
+            })
+            .and_then(|relationship| resolved_target(&relationship.target))
+            .cloned()
+    };
+    let message_events = messages
+        .iter()
+        .filter_map(|(index, message)| {
+            Some((
+                *index,
+                event_end(message, DiagramRelationshipKind::FlowSource)?,
+                event_end(message, DiagramRelationshipKind::FlowTarget)?,
+            ))
+        })
+        .collect::<Vec<_>>();
+    let mut event_successors =
+        BTreeMap::<DiagramOccurrenceIdentity, BTreeSet<DiagramOccurrenceIdentity>>::new();
+    for edge in edges
+        .iter()
+        .filter(|edge| edge.kind == DiagramEdgeKind::Succession)
+    {
+        event_successors
+            .entry(edge.source.clone())
+            .or_default()
+            .insert(edge.target.clone());
+    }
+    for (_, source, target) in &message_events {
+        event_successors
+            .entry(source.clone())
+            .or_default()
+            .insert(target.clone());
+    }
+    for (index, source, target) in &message_events {
+        let mut reachable = BTreeSet::new();
+        for start in [source, target] {
+            let mut seen = BTreeSet::new();
+            let mut pending = event_successors
+                .get(start)
+                .into_iter()
+                .flatten()
+                .cloned()
+                .collect::<Vec<_>>();
+            while let Some(event) = pending.pop() {
+                if seen.insert(event.clone()) {
+                    pending.extend(event_successors.get(&event).into_iter().flatten().cloned());
+                }
+            }
+            // A cycle through one message's own endpoint must not acquire a guessed order,
+            // even when no second message exists to produce a pairwise ordering cycle.
+            if seen.contains(start) {
+                precedence.insert((*index, *index));
+            }
+            reachable.extend(seen);
+        }
+        for (next, next_source, next_target) in &message_events {
+            if index != next
+                && (target == next_source
+                    || reachable.contains(next_source)
+                    || reachable.contains(next_target))
+            {
+                precedence.insert((*index, *next));
+            }
+        }
+    }
     let order = canonical_sequence_order(&message_indexes, precedence);
     if order.len() != messages.len() {
         reasons.insert(DiagramIncompleteReason::SequenceOrderingCycle);
@@ -2214,68 +2288,10 @@ fn usable_value<T>(outcome: QueryOutcome<T>) -> Option<T> {
 /// The canonical reference-kind name the inspection publishes, as the diagram vocabulary variant.
 /// The kind one canonical name states, or `None` where the name is not one of them.
 fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
-    match name {
-        "namespaceImport" => Some(DiagramRelationshipKind::NamespaceImport),
-        "membershipImport" => Some(DiagramRelationshipKind::MembershipImport),
-        "filterImport" => Some(DiagramRelationshipKind::FilterImport),
-        "featureTyping" => Some(DiagramRelationshipKind::FeatureTyping),
-        "typeFeaturing" => Some(DiagramRelationshipKind::TypeFeaturing),
-        "featureChaining" => Some(DiagramRelationshipKind::FeatureChaining),
-        "specialization" => Some(DiagramRelationshipKind::Specialization),
-        "subsetting" => Some(DiagramRelationshipKind::Subsetting),
-        "redefinition" => Some(DiagramRelationshipKind::Redefinition),
-        "referenceSubsetting" => Some(DiagramRelationshipKind::ReferenceSubsetting),
-        "crossSubsetting" => Some(DiagramRelationshipKind::CrossSubsetting),
-        "intersects" => Some(DiagramRelationshipKind::Intersects),
-        "unioning" => Some(DiagramRelationshipKind::Unioning),
-        "intersecting" => Some(DiagramRelationshipKind::Intersecting),
-        "differencing" => Some(DiagramRelationshipKind::Differencing),
-        "disjoining" => Some(DiagramRelationshipKind::Disjoining),
-        "aliasBinding" => Some(DiagramRelationshipKind::AliasBinding),
-        "connectorEnd" => Some(DiagramRelationshipKind::ConnectorEnd),
-        "succession" => Some(DiagramRelationshipKind::Succession),
-        "entryActionBinding" => Some(DiagramRelationshipKind::EntryActionBinding),
-        "doActionBinding" => Some(DiagramRelationshipKind::DoActionBinding),
-        "exitActionBinding" => Some(DiagramRelationshipKind::ExitActionBinding),
-        "initialState" => Some(DiagramRelationshipKind::InitialState),
-        "expressionOperand" => Some(DiagramRelationshipKind::ExpressionOperand),
-        "transitionSource" => Some(DiagramRelationshipKind::TransitionSource),
-        "transitionTarget" => Some(DiagramRelationshipKind::TransitionTarget),
-        "transitionTrigger" => Some(DiagramRelationshipKind::TransitionTrigger),
-        "transitionEffect" => Some(DiagramRelationshipKind::TransitionEffect),
-        "metadataAnnotation" => Some(DiagramRelationshipKind::MetadataAnnotation),
-        "filterMetadataTest" => Some(DiagramRelationshipKind::FilterMetadataTest),
-        "satisfySource" => Some(DiagramRelationshipKind::SatisfySource),
-        "satisfyTarget" => Some(DiagramRelationshipKind::SatisfyTarget),
-        "allocateSource" => Some(DiagramRelationshipKind::AllocateSource),
-        "allocateTarget" => Some(DiagramRelationshipKind::AllocateTarget),
-        "bindSource" => Some(DiagramRelationshipKind::BindSource),
-        "bindTarget" => Some(DiagramRelationshipKind::BindTarget),
-        "variant" => Some(DiagramRelationshipKind::Variant),
-        "includeUseCase" => Some(DiagramRelationshipKind::IncludeUseCase),
-        "viewExpose" => Some(DiagramRelationshipKind::ViewExpose),
-        "memberAccessOperand" => Some(DiagramRelationshipKind::MemberAccessOperand),
-        "invocationCallee" => Some(DiagramRelationshipKind::InvocationCallee),
-        "thenTarget" => Some(DiagramRelationshipKind::ThenTarget),
-        "acceptVia" => Some(DiagramRelationshipKind::AcceptVia),
-        "sendTarget" => Some(DiagramRelationshipKind::SendTarget),
-        "acceptPayloadType" => Some(DiagramRelationshipKind::AcceptPayloadType),
-        "terminateTarget" => Some(DiagramRelationshipKind::TerminateTarget),
-        "flowSource" => Some(DiagramRelationshipKind::FlowSource),
-        "flowTarget" => Some(DiagramRelationshipKind::FlowTarget),
-        "typeCheckTarget" => Some(DiagramRelationshipKind::TypeCheckTarget),
-        "metaCastTarget" => Some(DiagramRelationshipKind::MetaCastTarget),
-        "metadataAccessTarget" => Some(DiagramRelationshipKind::MetadataAccessTarget),
-        "stakeholderTarget" => Some(DiagramRelationshipKind::StakeholderTarget),
-        "purposeTarget" => Some(DiagramRelationshipKind::PurposeTarget),
-        "verifyRequirementTarget" => Some(DiagramRelationshipKind::VerifyRequirementTarget),
-        "assignTarget" => Some(DiagramRelationshipKind::AssignTarget),
-        "dependencyClient" => Some(DiagramRelationshipKind::DependencyClient),
-        "dependencySupplier" => Some(DiagramRelationshipKind::DependencySupplier),
-        "performParameterTarget" => Some(DiagramRelationshipKind::PerformParameterTarget),
-        "flowPayloadType" => Some(DiagramRelationshipKind::FlowPayloadType),
-        _ => None,
-    }
+    DiagramRelationshipKind::ALL
+        .iter()
+        .copied()
+        .find(|kind| kind.name() == name)
 }
 
 /// Whether an element is a port -- the only kind [`DiagramElement::direction`] and

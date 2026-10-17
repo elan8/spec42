@@ -655,21 +655,6 @@ fn first_then_succession_unresolvable_target_stays_unresolved() {
     );
 }
 
-/// An `entry action X;` binding whose target is not declared anywhere in the model must stay
-/// an explicit unresolved reference fact, not a fabricated or guessed target.
-#[test]
-fn entry_action_binding_unresolvable_target_stays_unresolved() {
-    let sexpr = semantic_sexpr_for("package P { state def S { entry action missingAction; } }");
-    assert!(
-        sexpr.contains("(kind entryActionBinding)"),
-        "expected an entryActionBinding reference to be authored, got: {sexpr}"
-    );
-    assert!(
-        sexpr.contains("(status unresolved)"),
-        "expected the unresolvable entry action target to remain explicitly unresolved, got: {sexpr}"
-    );
-}
-
 /// A `then <target>;` initial-state marker whose target is not declared anywhere in the model
 /// must stay an explicit unresolved reference fact, not a fabricated or guessed target.
 #[test]

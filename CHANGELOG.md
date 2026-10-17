@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **State behavior may remain active.** Stop emitting the non-normative
+  `missing_final_state` advisory; SysML 2.0 does not require a transition to `done`.
+
+- **Views and behavior follow declared model facts (#284–#287).** General, Browser and Grid
+  views retain port-definition conjugation without panicking. Action bodies admit typed view
+  usages, and semicolon entry/do/exit action declarations no longer produce false unresolved
+  references. Sequence messages follow event successions and transfer causality rather than
+  message names; cyclic ordering remains explicit. Adds the diagram `Conjugation` relationship
+  kind and advances the semantic vocabulary to v49; pins parser AST 282.
+
 - **Repeated redefinitions resolve inherited targets consistently (#255).** Sibling features no
   longer shadow a redefinition target as their effective names settle. Repeated anonymous ends
   retain namespace collision warnings without spurious target ambiguity; genuinely ambiguous

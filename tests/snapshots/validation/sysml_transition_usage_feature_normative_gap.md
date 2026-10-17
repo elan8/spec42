@@ -44,12 +44,6 @@ package Transitions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_transition_usage_feature_normative_gap.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 3 4) (end 14 5))
-      )
     )
   )
 )
