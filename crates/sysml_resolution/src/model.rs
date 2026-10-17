@@ -877,10 +877,9 @@ pub(crate) enum DeclarationKind {
     /// shape an ordinary `package { ... }` body uses, so its owned members are lowered through
     /// the shared `lower_package_body` walker (reused verbatim, mirroring `lower_package`/
     /// `lower_namespace`). An optional `:>` `specializes` clause is lowered like
-    /// `AllocationDefinition`/`ViewDefinition`. The `#`-prefix keyword tags themselves
-    /// (`prefix_keywords`, a metadata-annotation-shaped list) and the `abstract`/`variation`
-    /// `definition_prefix` flag are out of scope, matching every other definition kind's
-    /// established "ownership, specialization, and owned-member structure only" scope boundary.
+    /// `AllocationDefinition`/`ViewDefinition`. Prefix keywords are metadata annotations;
+    /// semantic metadata supplies implicit subclassification (SysML 7.27.3–7.27.4). The authored
+    /// declaration remains a generic Definition, and its abstract/variation modifiers are retained.
     ExtendedDefinition,
     /// An anonymous connector feature synthesized for a keyword-less bare `connect <from> to
     /// <to> [:> ...] [:>> ...] { ... }` member (BNF `Connect`, distinct from `ConnectStmt`; see

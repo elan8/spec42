@@ -3181,14 +3181,29 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         declaration: DeclarationId,
     ) -> Result<(), ConstructionError> {
-        for entry in std::mem::take(&mut self.pending_prefix_metadata) {
+        let entries = std::mem::take(&mut self.pending_prefix_metadata)
+            .into_iter()
+            .map(|entry| (entry.reference, entry.span))
+            .collect();
+        self.bind_prefix_metadata(document, declaration, entries)
+    }
+
+    /// Binds each `#tag` prefix keyword, given as its metadata reference and keyword span, to
+    /// `declaration` as one `MetadataAnnotation`.
+    fn bind_prefix_metadata(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        entries: Vec<(QualifiedReferenceId, Span)>,
+    ) -> Result<(), ConstructionError> {
+        for (reference, keyword_span) in entries {
             let kind = self.metadata_feature_kind(document)?;
             let annotation = self.push_typed_declaration(
                 document,
                 Some(declaration),
                 kind,
                 None,
-                entry.span,
+                keyword_span,
                 DeclarationFacts::none(),
             )?;
             // `PrefixMetadataMember` is an OwningMembership, as `AnnotatingMember` is: the
@@ -3197,7 +3212,7 @@ impl SemanticModelBuilder {
                 annotation,
                 MembershipKind::Owning,
                 Visibility::Default,
-                entry.span,
+                keyword_span,
             )?;
             self.metadata_annotations.push(MetadataAnnotationRecord {
                 annotation,
@@ -3206,7 +3221,7 @@ impl SemanticModelBuilder {
             });
             let span = self.documents[document.index()]
                 .parsed
-                .qualified_reference(entry.reference)
+                .qualified_reference(reference)
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
                 .span;
@@ -3214,7 +3229,7 @@ impl SemanticModelBuilder {
                 source: annotation,
                 kind: ReferenceKind::MetadataAnnotation,
                 document,
-                local: entry.reference,
+                local: reference,
                 flags: RelationshipFlags::default(),
                 span,
                 import: None,
@@ -3336,8 +3351,8 @@ impl SemanticModelBuilder {
     /// PackageBody` shares with an ordinary `package { ... }`. `ExtendedDefinition` has no
     /// `Membership` node of its own (unlike `Package`, which also lowers with a synthesized
     /// `Owning`/`Default` membership for the same reason -- see `lower_package`), so membership is
-    /// synthesized identically. The `#`-prefix keyword tags and `abstract`/`variation` prefix are
-    /// out of scope; see `DeclarationKind::ExtendedDefinition`'s doc comment.
+    /// synthesized identically. Prefix keywords annotate this declaration just as they do a
+    /// language-keyword-led definition (SysML 7.27.4).
     pub(crate) fn lower_extended_definition(
         &mut self,
         document: DocumentIdx,
@@ -3370,6 +3385,15 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
+        // The keywords belong to this declaration's own header, so they bind directly rather than
+        // through the body-level prefix buffer a preceding sibling tag may still occupy.
+        let keywords = node
+            .value
+            .prefix_keywords
+            .iter()
+            .map(|keyword| (keyword.value.reference, keyword.span))
+            .collect::<Vec<_>>();
+        self.bind_prefix_metadata(document, declaration, keywords)?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
