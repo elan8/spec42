@@ -3529,6 +3529,133 @@ mod tests {
         );
     }
 
+    /// KerML 8.3.3.1: `class B conjugates A` gives `B` the memberships of `A`, so `B::f` and a
+    /// further specialization `C :> B` both name `A::f`. A feature may also conjugate a feature
+    /// directly (`feature k ~ f`).
+    #[test]
+    fn conjugated_type_exposes_its_original_types_members() {
+        let mut symbols = SymbolTableBuilder::default();
+        let package_name = symbols.intern("Conjugation").unwrap();
+        let a_name = symbols.intern("A").unwrap();
+        let b_name = symbols.intern("B").unwrap();
+        let c_name = symbols.intern("C").unwrap();
+        let f_name = symbols.intern("f").unwrap();
+        let g_name = symbols.intern("g").unwrap();
+        let h_name = symbols.intern("h").unwrap();
+        let k_name = symbols.intern("k").unwrap();
+        let mut paths = SymbolPathArenaBuilder::default();
+        let a_path = paths.push(&[a_name], false).unwrap();
+        let b_path = paths.push(&[b_name], false).unwrap();
+        let f_path = paths.push(&[f_name], false).unwrap();
+        let b_f_path = paths.push(&[b_name, f_name], false).unwrap();
+        let c_f_path = paths.push(&[c_name, f_name], false).unwrap();
+
+        let package = DeclarationId(0);
+        let class_a = DeclarationId(1);
+        let feature_f = DeclarationId(2);
+        let class_b = DeclarationId(3);
+        let class_c = DeclarationId(5);
+        let declarations = vec![
+            declaration(
+                DocumentIdx(0),
+                None,
+                Some(package_name),
+                DeclarationKind::Package,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(package),
+                Some(a_name),
+                DeclarationKind::ClassDefinition,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(class_a),
+                Some(f_name),
+                DeclarationKind::KermlFeature,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(package),
+                Some(b_name),
+                DeclarationKind::ClassDefinition,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(package),
+                Some(g_name),
+                DeclarationKind::KermlFeature,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(package),
+                Some(c_name),
+                DeclarationKind::ClassDefinition,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(package),
+                Some(h_name),
+                DeclarationKind::KermlFeature,
+            ),
+            declaration(
+                DocumentIdx(0),
+                Some(class_a),
+                Some(k_name),
+                DeclarationKind::KermlFeature,
+            ),
+        ];
+        let references = vec![
+            reference(class_b, ReferenceKind::Conjugation, a_path, false),
+            reference(class_c, ReferenceKind::Subclassification, b_path, false),
+            reference(
+                DeclarationId(4),
+                ReferenceKind::Conjugation,
+                b_f_path,
+                false,
+            ),
+            reference(
+                DeclarationId(6),
+                ReferenceKind::Conjugation,
+                c_f_path,
+                false,
+            ),
+            reference(DeclarationId(7), ReferenceKind::Conjugation, f_path, false),
+        ];
+        let _symbols = symbols.freeze();
+        let memberships = memberships_for(&declarations, &[]);
+        let fixture = ResolverFixture {
+            declarations: declarations.into_boxed_slice(),
+            memberships,
+            paths: paths.freeze(),
+            references: references.into_boxed_slice(),
+        };
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
+        assert_eq!(resolution.solver_status, SolverStatus::Converged);
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(0)),
+            Some(ResolutionStatus::Resolved(class_a))
+        );
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(1)),
+            Some(ResolutionStatus::Resolved(class_b))
+        );
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(2)),
+            Some(ResolutionStatus::Resolved(feature_f)),
+            "B::f is a member B inherits through its conjugation of A"
+        );
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(3)),
+            Some(ResolutionStatus::Resolved(feature_f)),
+            "C :> B still sees the member B inherited by conjugation"
+        );
+        assert_eq!(
+            resolution.outcome(AuthoredReferenceId(4)),
+            Some(ResolutionStatus::Resolved(feature_f))
+        );
+    }
+
     #[test]
     fn single_ancestor_inherited_lookup_resolves_through_one_specialization_hop() {
         // A minimal non-diamond case: Diamond specializes only Left (drop the Right edge by
