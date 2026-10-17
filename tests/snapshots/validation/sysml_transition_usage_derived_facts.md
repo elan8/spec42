@@ -39,12 +39,6 @@ package TransitionFacts {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_transition_usage_derived_facts.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 2 4) (end 10 5))
-      )
     )
   )
 )
