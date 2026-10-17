@@ -343,6 +343,9 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::ActionDefinitionMember,
                 element.span,
             ),
+            ActionDefBodyElement::ViewUsage(node) => {
+                self.lower_view_usage(document, Some(owner), node.as_ref())?;
+            }
         }
         Ok(())
     }
@@ -764,6 +767,9 @@ impl SemanticModelBuilder {
             }
             ActionUsageBodyElement::MetadataKeywordUsage(_) => {
                 self.push_unsupported(document, UnsupportedFamily::ActionUsageMember, element.span)
+            }
+            ActionUsageBodyElement::ViewUsage(node) => {
+                self.lower_view_usage(document, Some(owner), node.as_ref())?;
             }
         }
         Ok(())

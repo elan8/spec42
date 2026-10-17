@@ -2660,24 +2660,18 @@ impl SemanticModelBuilder {
             PackageBodyElement::UseCaseUsage(node) => {
                 self.lower_use_case_usage(document, owner, node)?
             }
-            PackageBodyElement::FeatureDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
-            PackageBodyElement::ClassifierDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
-            PackageBodyElement::KermlSemanticDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
-            PackageBodyElement::KermlFeatureDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
             PackageBodyElement::KermlClassifier(node) => {
                 self.lower_kerml_classifier_decl(document, owner, node)?
             }
             PackageBodyElement::KermlInvariant(node) => {
                 self.lower_kerml_invariant_member(document, owner, node)?
             }
+            PackageBodyElement::KermlSuccession(node) => match owner {
+                Some(owner) => self.lower_kerml_succession_member(document, owner, node)?,
+                None => {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
+                }
+            },
             PackageBodyElement::KermlConnector(node) => match owner {
                 Some(owner) => self.lower_kerml_connector_member(document, owner, node)?,
                 // A connector at the root of a document has no type to be featured by, so there
@@ -2699,9 +2693,6 @@ impl SemanticModelBuilder {
                 UnsupportedFamily::PackageMember,
                 node,
             )?,
-            PackageBodyElement::ExtendedLibraryDecl(node) => {
-                self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
-            }
             PackageBodyElement::ItemUsage(node) => self.lower_item_usage(document, owner, node)?,
             PackageBodyElement::MetadataUsage(node) => {
                 self.lower_metadata_usage(document, owner, node)?

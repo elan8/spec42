@@ -277,16 +277,27 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .copied()
         .filter(|index| *index >= settled)
         .collect();
-    // Subclassification alone is resolved first because the ancestor-scoped inherited-member
-    // lookup used by all other type references is built directly from its settled outcomes.
-    // KerML's other type relationships are not ancestry edges and may themselves name inherited
-    // members, so resolving them in this early pass would incorrectly deny them inherited scope.
+    // Subclassification and Conjugation are resolved first. KerML 8.3.3.1 builds
+    // `Type::inheritedMemberships` from generalizations and from the owned conjugator's
+    // `originalType`, and the ancestor-scoped name index used by every later reference is built
+    // directly from those settled outcomes. A conjugation target may itself be a qualified name
+    // through a conjugated type (`feature g ~ B::f`), so Conjugation is resolved again once that
+    // index exists. KerML's other type relationships are not inheritance edges and may themselves
+    // name inherited members, so resolving them in this early pass would deny them that scope.
     let subclass_slots: Vec<usize> = references
         .iter()
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
             (reference.kind() == ReferenceKind::Subclassification).then_some(index)
+        })
+        .collect();
+    let conjugation_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter(|(index, _)| *index >= settled)
+        .filter_map(|(index, reference)| {
+            (reference.kind() == ReferenceKind::Conjugation).then_some(index)
         })
         .collect();
     let type_relationship_slots: Vec<usize> = references
@@ -598,6 +609,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         for index in import_slots
             .iter()
             .chain(&subclass_slots)
+            .chain(&conjugation_slots)
             .chain(&type_relationship_slots)
             .chain(&typing_slots)
             .chain(&state_binding_slots)
@@ -618,7 +630,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
 
     let mut inherited_names = InheritedNameIndex::empty()?;
     if converged {
-        for index in subclass_slots.iter().copied() {
+        for index in subclass_slots.iter().chain(&conjugation_slots).copied() {
             work.downstream_evaluations = work
                 .downstream_evaluations
                 .checked_add(1)
@@ -627,7 +639,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 declarations,
                 paths,
                 &references[index],
-                DeclarationDomain::Type,
+                reference_target_domain(references[index].kind()),
                 ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
@@ -645,17 +657,25 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         }
 
         // Ancestor-scoped inherited-member lookup is built once here, over the now-settled
-        // Subclassification outcomes above, as its own bounded fixed point: diamond ancestry
-        // (Left -> Base and Right -> Base) is visited once per declaration because the closure is a
-        // set, and a specialization cycle is detected explicitly rather than looped forever.
-        let (ancestor_closures, cyclic_ancestry) = build_ancestor_closures_with_implied(
+        // Subclassification and Conjugation outcomes above, as its own bounded fixed point:
+        // diamond ancestry (Left -> Base and Right -> Base) is visited once per declaration
+        // because the closure is a set, and a specialization cycle is detected explicitly rather
+        // than looped forever. Cyclic ancestry stays subclassification-only; conjugation is an
+        // inheritance source, not a specialization cycle.
+        let (_, cyclic_ancestry) = build_ancestor_closures_with_implied(
+            declarations,
+            references,
+            &outcomes,
+            provisional_relationships,
+        )?;
+        let (inheritance_closures, _) = build_member_inheritance_closures(
             declarations,
             references,
             &outcomes,
             provisional_relationships,
         )?;
         inherited_names =
-            build_inherited_name_index(declarations, &direct_names, &ancestor_closures)?;
+            build_inherited_name_index(declarations, &direct_names, &inheritance_closures)?;
 
         for index in typing_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -1115,7 +1135,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     declarations,
                     paths,
                     reference,
-                    DeclarationDomain::Type,
+                    reference_target_domain(reference.kind()),
                     ResolutionIndexes {
                         direct_names: &direct_names,
                         exported_names: &exported_names,
@@ -1594,6 +1614,11 @@ fn build_ancestor_closures_with_implied<R: ResolutionReferenceFact>(
 /// inherited members of the annotation. Without this, a metadata body redefinition
 /// (`concern = purpose;`) has no general Type to scope its redefined feature from and reports
 /// `unresolved_reference`.
+///
+/// Conjugation is not a specialization. It is included because this closure feeds inherited-member
+/// lookup, and KerML 8.3.3.1 also draws `inheritedMemberships` from the owned conjugator's
+/// `originalType`. The published specialization relation is unchanged. Inherited feature directions
+/// are reversed for direction facts; name lookup uses the original member.
 fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     references: &[R],
@@ -1610,8 +1635,35 @@ fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
                 | ReferenceKind::References
                 | ReferenceKind::Crosses
                 | ReferenceKind::MetadataAnnotation
+                | ReferenceKind::Conjugation
         )
     })
+}
+
+/// Subclassification plus conjugation, the two edges that contribute owned members to a type
+/// before any other relationship family has settled.
+fn build_member_inheritance_closures<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    implied: &[ImpliedRelationship],
+) -> Result<AncestorClosures, ResolutionError> {
+    build_ancestor_closures_for(declarations, references, outcomes, implied, false, |kind| {
+        matches!(
+            kind,
+            ReferenceKind::Subclassification | ReferenceKind::Conjugation
+        )
+    })
+}
+
+fn reference_target_domain(kind: ReferenceKind) -> DeclarationDomain {
+    if kind == ReferenceKind::Conjugation {
+        // `originalType` is any KerML Type, including a Feature (`feature g ~ B::f`).
+        // `DeclarationDomain::Type` admits definition-like types only.
+        DeclarationDomain::MetamodelType
+    } else {
+        DeclarationDomain::Type
+    }
 }
 
 fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
@@ -2204,6 +2256,9 @@ pub(crate) enum DeclarationDomain {
     Any,
     Namespace,
     Type,
+    /// A KerML `Type`, including every `Feature`. Conjugation's `originalType` uses this rather
+    /// than [`Self::Type`], which admits definition-like types only.
+    MetamodelType,
 }
 
 impl DeclarationDomain {
@@ -2267,6 +2322,11 @@ impl DeclarationDomain {
                     | DeclarationKind::KermlType
                     | DeclarationKind::Alias
             ),
+            Self::MetamodelType => {
+                kind == DeclarationKind::Alias
+                    || crate::model::element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::Type)
+            }
         }
     }
 }

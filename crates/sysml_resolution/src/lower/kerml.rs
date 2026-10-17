@@ -407,6 +407,25 @@ impl SemanticModelBuilder {
             &node.value.specializations,
             direction_node_fact(node.value.prefix.direction()),
         )?;
+        // `FeatureDeclaration` takes `ConjugationPart` instead of `FeatureSpecializationPart`
+        // (KerML 8.2.4.3.1): `feature g ~ B::f`. The declared feature is the conjugated type.
+        if let Some(conjugation) = &node.value.conjugates {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(conjugation.value.target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::Conjugation,
+                document,
+                local: conjugation.value.target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
         self.lower_kerml_feature_relationship_parts(
             document,
             declaration,
