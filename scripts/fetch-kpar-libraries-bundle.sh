@@ -80,13 +80,14 @@ process.exit(1);
 ' "${id}" "${expr}"
 }
 
+# Pack exactly as the library's own release does: `spec42 bundle` of the checkout, with the
+# config's `pack.archivePrefix` and `pack.exclude` (the library catalog build script reads the same
+# fields).
 pack_library() {
   local id="$1"
   local version="$2"
-  local kind="$3"
-  local source_dir="$4"
-  local archive_prefix="$5"
-  local out="$6"
+  local source_dir="$3"
+  local out="$4"
 
   echo "Packing ${id} KPAR from ${source_dir}"
   local project_file="${source_dir}/.project.json"
@@ -104,26 +105,30 @@ pack_library() {
     echo "Cannot bundle ${id}: ${project_file} version ${project_version} does not match pinned version ${version}." >&2
     exit 1
   fi
-  local command=(cargo run --quiet -p server --no-default-features --bin spec42 -- bundle "${source_dir}" --output "${out}" --exclude .git --exclude examples --exclude scripts --exclude docs)
-  if [[ "${kind}" == "named-prefix" ]]; then
+  local command=(cargo run --quiet -p server --no-default-features --bin spec42 -- bundle "${source_dir}" --output "${out}")
+  local archive_prefix
+  archive_prefix="$(library_field "${id}" "c.pack.archivePrefix || ''")"
+  if [[ -n "${archive_prefix}" ]]; then
     command+=(--archive-prefix "${archive_prefix}")
   fi
+  local exclude
+  while IFS= read -r exclude || [[ -n "${exclude}" ]]; do
+    [[ -n "${exclude}" ]] && command+=(--exclude "${exclude}")
+  done < <(library_field "${id}" "(c.pack.exclude || []).join('\\n')")
   "${command[@]}"
   unzip -tq "${out}" >/dev/null
 }
 
 fetch_one() {
   local id="$1"
-  local version repo artifact kind sibling prefix
+  local version repo artifact sibling
   if ! version="$(library_field "${id}" "c.version")"; then
     echo "Unknown KPAR library id '${id}' (no matching config/libraries/*.json)" >&2
     exit 1
   fi
   repo="$(library_field "${id}" "c.repo")"
   artifact="$(library_field "${id}" "c.artifact || ('elan8-' + (c.id || '${id}') + '-libraries-' + c.version + '.kpar')")"
-  kind="$(library_field "${id}" "c.pack.kind")"
   sibling="$(library_field "${id}" "c.pack.siblingRelative")"
-  prefix="$(library_field "${id}" "c.pack.archivePrefix || c.id || '${id}'")"
 
   local env_bundle="SPEC42_KPAR_LIBRARY_BUNDLE_$(upper_id "${id}")"
   local env_source="SPEC42_KPAR_LIBRARY_SOURCE_DIR_$(upper_id "${id}")"
@@ -154,7 +159,7 @@ fetch_one() {
     exit 1
   fi
 
-  pack_library "${id}" "${version}" "${kind}" "${source_dir}" "${prefix}" "${out}"
+  pack_library "${id}" "${version}" "${source_dir}" "${out}"
   echo "Packed ${id} KPAR locally at ${out}"
 }
 

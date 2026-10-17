@@ -6,7 +6,6 @@ use std::path::{Path, PathBuf};
 use std::process;
 
 use kpar::pack::{build_kpar, PackOptions};
-use kpar::schema::Project;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use zip::read::ZipArchive;
@@ -33,13 +32,17 @@ struct StdlibProjectConfig {
     resources: Vec<String>,
 }
 
+/// How a library is packed from a source checkout when no release archive is available: the
+/// same `spec42 bundle` of the checkout directory that the library's own release uses.
 #[derive(Debug, Deserialize, Clone)]
 struct PackConfig {
-    kind: String,
     #[serde(rename = "siblingRelative")]
     sibling_relative: String,
     #[serde(rename = "archivePrefix", default)]
     archive_prefix: Option<String>,
+    /// `spec42 bundle --exclude` prefixes.
+    #[serde(default)]
+    exclude: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -321,7 +324,11 @@ fn pack_or_copy_library(entry: &LibraryEntry, out_kpar: &Path) {
         entry.id.to_ascii_uppercase().replace('-', "_")
     );
     if let Some(source_dir) = resolve_source_dir_env(&env_source) {
-        pack_library(entry, &source_dir, out_kpar);
+        let project = bundle_project(entry, &source_dir).unwrap_or_else(|e| {
+            eprintln!("workspace build: {env_source}: {e}");
+            process::exit(1);
+        });
+        pack_library(entry, project, &source_dir, out_kpar);
         eprintln!(
             "workspace build: packed {} from {}",
             entry.id,
@@ -333,13 +340,20 @@ fn pack_or_copy_library(entry: &LibraryEntry, out_kpar: &Path) {
     let sibling = repo_root().join(&entry.pack.sibling_relative);
     if sibling.is_dir() {
         println!("cargo:rerun-if-changed={}", sibling.display());
-        pack_library(entry, &sibling, out_kpar);
-        eprintln!(
-            "workspace build: packed {} from sibling {}",
-            entry.id,
-            sibling.display()
-        );
-        return;
+        // A sibling checkout is opportunistic: one on another branch or version is not the
+        // pinned library, so it is skipped in favour of the release archive below.
+        match bundle_project(entry, &sibling) {
+            Ok(project) => {
+                pack_library(entry, project, &sibling, out_kpar);
+                eprintln!(
+                    "workspace build: packed {} from sibling {}",
+                    entry.id,
+                    sibling.display()
+                );
+                return;
+            }
+            Err(e) => println!("cargo:warning=skipping sibling {}: {e}", sibling.display()),
+        }
     }
 
     let cache_name = entry
@@ -351,7 +365,7 @@ fn pack_or_copy_library(entry: &LibraryEntry, out_kpar: &Path) {
         entry.id.to_ascii_uppercase().replace('-', "_")
     );
 
-    if out_kpar.exists() && embedded_kpar_is_usable(out_kpar) {
+    if out_kpar.exists() && embedded_kpar_is_usable(out_kpar, &entry.version) {
         eprintln!(
             "workspace build: reusing cached embedded {} KPAR at {}",
             entry.id,
@@ -372,7 +386,9 @@ fn pack_or_copy_library(entry: &LibraryEntry, out_kpar: &Path) {
         return;
     }
 
-    if let Some(cached) = find_cached_embedded_kpar(out_kpar, out_kpar.file_name().unwrap()) {
+    if let Some(cached) =
+        find_cached_embedded_kpar(out_kpar, out_kpar.file_name().unwrap(), &entry.version)
+    {
         copy_file(
             &cached,
             out_kpar,
@@ -394,47 +410,33 @@ fn pack_or_copy_library(entry: &LibraryEntry, out_kpar: &Path) {
         "workspace build: set {env_source}, place sibling {}, or run scripts/fetch-kpar-libraries-bundle.sh {}",
         entry.pack.sibling_relative, entry.id
     );
-    let _ = entry.config_path;
     process::exit(1);
 }
 
-fn pack_library(entry: &LibraryEntry, source_dir: &Path, out_kpar: &Path) {
-    let project = Project {
-        name: format!("elan8-{}-libraries", entry.id),
-        version: entry.version.clone(),
-        description: Some(entry.display_name.clone()),
-        license: Some("MIT".to_string()),
-        publisher: Some("elan8".to_string()),
-        maintainer: vec![],
-        website: None,
-        topic: vec![],
-        usage: vec![],
-    };
-    let options = match entry.pack.kind.as_str() {
-        "domain-roots" => PackOptions::domain_libraries_defaults(project, source_dir),
-        "named-prefix" => {
-            let prefix = entry
-                .pack
-                .archive_prefix
-                .clone()
-                .unwrap_or_else(|| entry.id.clone());
-            PackOptions {
-                project,
-                source_roots: Vec::new(),
-                named_source_roots: vec![(prefix, source_dir.to_path_buf())],
-                excludes: kpar::pack::default_domain_excludes(),
-                timestamp: kpar::pack::ArchiveTimestamp::default(),
-                compression: kpar::pack::ArchiveCompression::default(),
-            }
-        }
-        other => {
-            eprintln!(
-                "workspace build: unknown pack.kind '{other}' for library {}",
-                entry.id
-            );
-            process::exit(1);
-        }
-    };
+/// The checkout's own `.project.json`, the archive metadata exactly as for `spec42 bundle`, when
+/// it is the pinned version of `entry`.
+fn bundle_project(entry: &LibraryEntry, source_dir: &Path) -> Result<kpar::Project, String> {
+    let project = kpar::read_project_file(source_dir)
+        .map_err(|e| format!("cannot bundle {}: {e}", entry.id))?;
+    if project.version != entry.version {
+        return Err(format!(
+            "{} is version {}, but {} pins {}",
+            source_dir.display(),
+            project.version,
+            entry.config_path.display(),
+            entry.version
+        ));
+    }
+    Ok(project)
+}
+
+fn pack_library(entry: &LibraryEntry, project: kpar::Project, source_dir: &Path, out_kpar: &Path) {
+    let options = PackOptions::bundle(
+        project,
+        source_dir.to_path_buf(),
+        entry.pack.archive_prefix.clone(),
+        entry.pack.exclude.clone(),
+    );
     // `build_kpar` publishes with no-force semantics (`kpar::read::ensure_absent_publish_target`),
     // so a leftover archive -- or the empty stub `write_empty_stub` leaves when the feature is
     // off -- from an earlier build in the same `OUT_DIR` makes an otherwise-clean rebuild abort
@@ -620,11 +622,18 @@ fn find_cached_embedded_zip(out_zip: &Path) -> Option<PathBuf> {
     None
 }
 
-fn find_cached_embedded_kpar(out_kpar: &Path, file_name: &std::ffi::OsStr) -> Option<PathBuf> {
+fn find_cached_embedded_kpar(
+    out_kpar: &Path,
+    file_name: &std::ffi::OsStr,
+    version: &str,
+) -> Option<PathBuf> {
     let build_root = out_kpar.parent()?.parent()?.parent()?;
     for entry in fs::read_dir(build_root).ok()?.flatten() {
         let candidate = entry.path().join("out").join(file_name);
-        if candidate != out_kpar && candidate.is_file() && embedded_kpar_is_usable(&candidate) {
+        if candidate != out_kpar
+            && candidate.is_file()
+            && embedded_kpar_is_usable(&candidate, version)
+        {
             return Some(candidate);
         }
     }
@@ -655,11 +664,15 @@ fn embedded_stdlib_archive_is_usable(path: &Path) -> bool {
     false
 }
 
-fn embedded_kpar_is_usable(path: &Path) -> bool {
+/// An archive left by an earlier build is reused only when it is the pinned version: the build
+/// script reruns in the same `OUT_DIR` after the pin changes, and other `OUT_DIR`s keep archives
+/// for older pins, so "is a KPAR" alone would embed a stale library under the new version.
+fn embedded_kpar_is_usable(path: &Path, version: &str) -> bool {
     let Ok(bytes) = fs::read(path) else {
         return false;
     };
-    !bytes.is_empty() && kpar::is_kpar_archive(&bytes)
+    !bytes.is_empty()
+        && kpar::open_kpar_bytes(&bytes).is_ok_and(|archive| archive.project.version == version)
 }
 
 fn write_empty_stub(path: &Path, label: &str) {

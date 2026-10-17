@@ -155,25 +155,16 @@ fn run_bundle(args: &BundleArgs) -> Result<ExitCode, String> {
         .output
         .clone()
         .unwrap_or_else(|| PathBuf::from(format!("{}-{}.kpar", project.name, project.version)));
-    kpar::build_kpar(
-        &kpar::PackOptions {
-            project,
-            source_roots: Vec::new(),
-            named_source_roots: vec![(
-                (args.archive_prefix.clone().unwrap_or_default()),
-                args.directory.clone(),
-            )],
-            excludes: args.excludes.clone(),
-            timestamp: kpar::ArchiveTimestamp::default(),
-            compression: if args.no_compress {
-                kpar::ArchiveCompression::Stored
-            } else {
-                kpar::ArchiveCompression::Deflated
-            },
-        },
-        &output,
-    )
-    .map_err(|error| error.to_string())?;
+    let mut options = kpar::PackOptions::bundle(
+        project,
+        args.directory.clone(),
+        args.archive_prefix.clone(),
+        args.excludes.clone(),
+    );
+    if args.no_compress {
+        options.compression = kpar::ArchiveCompression::Stored;
+    }
+    kpar::build_kpar(&options, &output).map_err(|error| error.to_string())?;
     println!(
         "Bundled {} into {}",
         args.directory.display(),
