@@ -30,6 +30,12 @@ source_anchor = "Views::viewpoints"
 corrected_anchor = "Views::viewpointChecks"
 issue = "sysml21_301"
 
+[[library_anchor_corrections]]
+rule_id = "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization"
+source_anchor = "Items::Item::subitem"
+corrected_anchor = "Items::Item::subitems"
+issue = "sysml_library_subitems"
+
 [[specifications]]
 name = "KerML"
 version = "1.0"
@@ -57,6 +63,10 @@ family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementIsLibraryElement"
 
+[specifications.constraints.action_derived_fact]
+kind = "element_is_library_element"
+body_sha256 = "0021f0214f54ff108b7d37ef5ef65978ee4d47f3e46b2668bd1848cfd06c1609"
+
 [[specifications.constraints]]
 package = "Root::Elements"
 metaclass = "Element"
@@ -64,6 +74,10 @@ constraint = "deriveElementName"
 family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementName"
+
+[specifications.constraints.action_derived_fact]
+kind = "element_name"
+body_sha256 = "3a1c1371a6c25d49fe66728863410ef5576928b9da436ab232fe99e418468ea0"
 
 [[specifications.constraints]]
 package = "Root::Elements"
@@ -73,6 +87,10 @@ family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementOwnedAnnotation"
 
+[specifications.constraints.action_derived_fact]
+kind = "element_owned_annotation"
+body_sha256 = "d21c8f97a2996ae70cea69132e835affd9e07ef330971a0900d6197607db76a1"
+
 [[specifications.constraints]]
 package = "Root::Elements"
 metaclass = "Element"
@@ -80,6 +98,10 @@ constraint = "deriveElementOwnedElement"
 family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementOwnedElement"
+
+[specifications.constraints.action_derived_fact]
+kind = "element_owned_element"
+body_sha256 = "cd17f8b72bf2082fba2ab59a28ede06c374310fa53d218070f03e3fb64dee897"
 
 [[specifications.constraints]]
 package = "Root::Elements"
@@ -100,6 +122,10 @@ family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementQualifiedName"
 
+[specifications.constraints.action_derived_fact]
+kind = "element_qualified_name"
+body_sha256 = "b59ce915e7a53da44a86e902e4837636d30f358b616b7b21808b6c16c845404a"
+
 [[specifications.constraints]]
 package = "Root::Elements"
 metaclass = "Element"
@@ -107,6 +133,10 @@ constraint = "deriveElementShortName"
 family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveElementShortName"
+
+[specifications.constraints.action_derived_fact]
+kind = "element_short_name"
+body_sha256 = "69bedea5d5a0a8054299a657c325fee6d83d2f61653858ac4b75988b562296e8"
 
 [[specifications.constraints]]
 package = "Root::Elements"
@@ -127,6 +157,10 @@ family = "derive"
 clause = "8.3.2.1.2"
 rule_id = "kerml-1.0:8.3.2.1.2:deriveOwningNamespace"
 
+[specifications.constraints.action_derived_fact]
+kind = "element_owning_namespace"
+body_sha256 = "d015eab423252a85bb739a3b525283a80fb550a323374d0794f014939da5291b"
+
 [[specifications.constraints]]
 package = "Root::Elements"
 metaclass = "Element"
@@ -143,6 +177,10 @@ family = "derive"
 clause = "8.3.2.1.3"
 rule_id = "kerml-1.0:8.3.2.1.3:deriveRelationshipRelatedElement"
 
+[specifications.constraints.action_derived_fact]
+kind = "relationship_related_element"
+body_sha256 = "f6dcbb23155f405dac933adf9ff1e6ca34d461f58231782c1155a5f656738739"
+
 [[specifications.constraints]]
 package = "Root::Annotations"
 metaclass = "AnnotatingElement"
@@ -150,6 +188,10 @@ constraint = "deriveAnnotatingElementAnnotatedElement"
 family = "derive"
 clause = "8.3.2.3.2"
 rule_id = "kerml-1.0:8.3.2.3.2:deriveAnnotatingElementAnnotatedElement"
+
+[specifications.constraints.action_derived_fact]
+kind = "annotating_element_annotated_element"
+body_sha256 = "324693f3275c2d5a8eaec18a97d6e9277152d4e7d64e05ec1ea7725c978700e5"
 
 [[specifications.constraints]]
 package = "Root::Annotations"
@@ -159,6 +201,10 @@ family = "derive"
 clause = "8.3.2.3.2"
 rule_id = "kerml-1.0:8.3.2.3.2:deriveAnnotatingElementAnnotation"
 
+[specifications.constraints.action_derived_fact]
+kind = "annotating_element_annotation"
+body_sha256 = "9c9b7f5324b32a5ed69fb91c821565801ca550e122da8f8121dc6e2ad58b884d"
+
 [[specifications.constraints]]
 package = "Root::Annotations"
 metaclass = "AnnotatingElement"
@@ -166,6 +212,10 @@ constraint = "deriveAnnotatingElementOwnedAnnotatingRelationship"
 family = "derive"
 clause = "8.3.2.3.2"
 rule_id = "kerml-1.0:8.3.2.3.2:deriveAnnotatingElementOwnedAnnotatingRelationship"
+
+[specifications.constraints.action_derived_fact]
+kind = "annotating_element_owned_annotating_relationship"
+body_sha256 = "7ceb540818e23f9b1b2c8486296b35234fb7e9ad346c38fbaaf5d9ef4a3ed6f8"
 
 [[specifications.constraints]]
 package = "Root::Annotations"
@@ -182,6 +232,10 @@ constraint = "deriveAnnotationOwnedAnnotatingElement"
 family = "derive"
 clause = "8.3.2.3.3"
 rule_id = "kerml-1.0:8.3.2.3.3:deriveAnnotationOwnedAnnotatingElement"
+
+[specifications.constraints.action_derived_fact]
+kind = "annotation_owned_annotating_element"
+body_sha256 = "97cf5a48e7d26e587af87988afa408b5d581bb0b710219091b6ce70a14da17ba"
 
 [[specifications.constraints]]
 package = "Root::Annotations"
@@ -223,6 +277,10 @@ family = "derive"
 clause = "8.3.2.4.4"
 rule_id = "kerml-1.0:8.3.2.4.4:deriveMembershipImportImportedElement"
 
+[specifications.constraints.action_derived_fact]
+kind = "membership_import_imported_element"
+body_sha256 = "b51bedf08ca4dae51099291762ae54cc6de6952ef949b25154ec7fe6a4949dd3"
+
 [[specifications.constraints]]
 package = "Root::Namespaces"
 metaclass = "Namespace"
@@ -231,6 +289,10 @@ family = "derive"
 clause = "8.3.2.4.5"
 rule_id = "kerml-1.0:8.3.2.4.5:deriveNamespaceImportedMembership"
 
+[specifications.constraints.action_derived_fact]
+kind = "namespace_imported_membership"
+body_sha256 = "5d7577c19c88ef9f374546a2e9dfc28f6425a3fb88d41706f8b98db9bf31160b"
+
 [[specifications.constraints]]
 package = "Root::Namespaces"
 metaclass = "Namespace"
@@ -238,6 +300,10 @@ constraint = "deriveNamespaceMembers"
 family = "derive"
 clause = "8.3.2.4.5"
 rule_id = "kerml-1.0:8.3.2.4.5:deriveNamespaceMembers"
+
+[specifications.constraints.action_derived_fact]
+kind = "namespace_member"
+body_sha256 = "80369e614bd4f1d5d3db1be4f2c846dccbc08603a53409476d15e1dc805a0281"
 
 [[specifications.constraints]]
 package = "Root::Namespaces"
@@ -269,6 +335,10 @@ family = "derive"
 clause = "8.3.2.4.5"
 rule_id = "kerml-1.0:8.3.2.4.5:deriveNamespaceOwnedMembership"
 
+[specifications.constraints.action_derived_fact]
+kind = "namespace_owned_membership"
+body_sha256 = "e227af4eb60b3f4167624d81b0384f4ebc5a77b740a9c687a0423cce514821ef"
+
 [[specifications.constraints]]
 package = "Root::Namespaces"
 metaclass = "Namespace"
@@ -296,6 +366,10 @@ family = "derive"
 clause = "8.3.2.4.8"
 rule_id = "kerml-1.0:8.3.2.4.8:deriveOwningMembershipOwnedMemberName"
 
+[specifications.constraints.action_derived_fact]
+kind = "owning_membership_owned_member_name"
+body_sha256 = "8c94796659e407f86d44a269769b8bc44e584c501e0304f42d78b99694fb7a55"
+
 [[specifications.constraints]]
 package = "Root::Namespaces"
 metaclass = "OwningMembership"
@@ -303,6 +377,10 @@ constraint = "deriveOwningMembershipOwnedMemberShortName"
 family = "derive"
 clause = "8.3.2.4.8"
 rule_id = "kerml-1.0:8.3.2.4.8:deriveOwningMembershipOwnedMemberShortName"
+
+[specifications.constraints.action_derived_fact]
+kind = "owning_membership_owned_member_short_name"
+body_sha256 = "a4b49f1b0064c097ffe31a9da1bbc60c93a0d9603285c767bbc30452c8b8135a"
 
 [[specifications.constraints]]
 package = "Core::Types"
@@ -645,6 +723,9 @@ family = "derive"
 clause = "8.3.3.2.2"
 rule_id = "kerml-1.0:8.3.3.2.2:deriveClassifierOwnedSubclassification"
 
+[specifications.constraints.type_derived_relationship]
+kind = "owned_subclassification"
+
 [[specifications.constraints]]
 package = "Core::Classifiers"
 metaclass = "Classifier"
@@ -924,6 +1005,9 @@ family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureChainingFeature"
 
+[specifications.constraints.feature_derived_relationship]
+kind = "chaining_feature"
+
 [[specifications.constraints]]
 package = "Core::Features"
 metaclass = "Feature"
@@ -931,6 +1015,10 @@ constraint = "deriveFeatureCrossFeature"
 family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureCrossFeature"
+
+[specifications.constraints.action_derived_fact]
+kind = "feature_cross_feature"
+body_sha256 = "123e59671db3d0715fa649164ad6630531be8a6f2583819c80ba66ced95668d5"
 
 [[specifications.constraints]]
 package = "Core::Features"
@@ -940,6 +1028,10 @@ family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureFeatureTarget"
 
+[specifications.constraints.action_derived_fact]
+kind = "feature_feature_target"
+body_sha256 = "ea6f90216766a8fa0b6408b7cdc1107a3a05fc99d3812dcffbe6f3013b8f1495"
+
 [[specifications.constraints]]
 package = "Core::Features"
 metaclass = "Feature"
@@ -948,6 +1040,10 @@ family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureFeaturingType"
 
+[specifications.constraints.action_derived_fact]
+kind = "feature_featuring_type"
+body_sha256 = "b24c019641828ef3c1aafeeb5b95aac9b49115c3c2716b63332f583828e0a27f"
+
 [[specifications.constraints]]
 package = "Core::Features"
 metaclass = "Feature"
@@ -955,6 +1051,9 @@ constraint = "deriveFeatureOwnedCrossSubsetting"
 family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedCrossSubsetting"
+
+[specifications.constraints.feature_derived_relationship]
+kind = "owned_cross_subsetting"
 
 [[specifications.constraints]]
 package = "Core::Features"
@@ -975,6 +1074,9 @@ family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedFeatureInverting"
 
+[specifications.constraints.feature_derived_relationship]
+kind = "owned_feature_inverting"
+
 [[specifications.constraints]]
 package = "Core::Features"
 metaclass = "Feature"
@@ -993,6 +1095,9 @@ constraint = "deriveFeatureOwnedReferenceSubsetting"
 family = "derive"
 clause = "8.3.3.3.4"
 rule_id = "kerml-1.0:8.3.3.3.4:deriveFeatureOwnedReferenceSubsetting"
+
+[specifications.constraints.feature_derived_relationship]
+kind = "owned_reference_subsetting"
 
 [[specifications.constraints]]
 package = "Core::Features"
@@ -1242,6 +1347,10 @@ family = "derive"
 clause = "8.3.4.11.2"
 rule_id = "kerml-1.0:8.3.4.11.2:deriveMultiplicityRangeBound"
 
+[specifications.constraints.action_derived_fact]
+kind = "multiplicity_range_bound"
+body_sha256 = "a5f4cf32616c9e35fdb3d082b0b4784293acdef987ebe6db63845c340ce7fcbe"
+
 [[specifications.constraints]]
 package = "Kernel::Multiplicities"
 metaclass = "MultiplicityRange"
@@ -1250,6 +1359,10 @@ family = "derive"
 clause = "8.3.4.11.2"
 rule_id = "kerml-1.0:8.3.4.11.2:deriveMultiplicityRangeLowerBound"
 
+[specifications.constraints.action_derived_fact]
+kind = "multiplicity_range_lower_bound"
+body_sha256 = "a525836d943746a4025ece78f7b3a9717f99fa312a749136b1a2446489e6c98d"
+
 [[specifications.constraints]]
 package = "Kernel::Multiplicities"
 metaclass = "MultiplicityRange"
@@ -1257,6 +1370,10 @@ constraint = "deriveMultiplicityRangeUpperBound"
 family = "derive"
 clause = "8.3.4.11.2"
 rule_id = "kerml-1.0:8.3.4.11.2:deriveMultiplicityRangeUpperBound"
+
+[specifications.constraints.action_derived_fact]
+kind = "multiplicity_range_upper_bound"
+body_sha256 = "c27116679d4a56f10160e01a9f992069aca67ea6f5d57956fca1f62c117982c3"
 
 [[specifications.constraints]]
 package = "Kernel::Multiplicities"
@@ -1372,6 +1489,10 @@ family = "derive"
 clause = "8.3.4.13.4"
 rule_id = "kerml-1.0:8.3.4.13.4:derivePackageFilterCondition"
 
+[specifications.constraints.action_derived_fact]
+kind = "package_filter_condition"
+body_sha256 = "ed0ee5f522c31d0421dcadb9402317d7afb5c8a459254b1ffc6e25ef761a9814"
+
 [[specifications.constraints]]
 package = "Kernel::Classes"
 metaclass = "Class"
@@ -1442,6 +1563,10 @@ family = "derive"
 clause = "8.3.4.4.2"
 rule_id = "kerml-1.0:8.3.4.4.2:deriveAssociationRelatedType"
 
+[specifications.constraints.action_derived_fact]
+kind = "association_related_type"
+body_sha256 = "74ddaeb5af7af8c99ff47cdcbf84efe08662b688d9ad136ffb064fe542cf3184"
+
 [[specifications.constraints]]
 package = "Kernel::Associations"
 metaclass = "Association"
@@ -1450,6 +1575,10 @@ family = "derive"
 clause = "8.3.4.4.2"
 rule_id = "kerml-1.0:8.3.4.4.2:deriveAssociationSourceType"
 
+[specifications.constraints.action_derived_fact]
+kind = "association_source_type"
+body_sha256 = "df94b29521235f4b17eb65aa8573bef14868518b47705efc019a741875c665b9"
+
 [[specifications.constraints]]
 package = "Kernel::Associations"
 metaclass = "Association"
@@ -1457,6 +1586,10 @@ constraint = "deriveAssociationTargetType"
 family = "derive"
 clause = "8.3.4.4.2"
 rule_id = "kerml-1.0:8.3.4.4.2:deriveAssociationTargetType"
+
+[specifications.constraints.action_derived_fact]
+kind = "association_target_type"
+body_sha256 = "683de593de141fdfb91ab890bf8e83d8d7ed010eb558c0c284033e90d2956cbe"
 
 [[specifications.constraints]]
 package = "Kernel::Associations"
@@ -1541,9 +1674,10 @@ family = "check"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:checkConnectorBinaryObjectSpecialization"
 
-[specifications.constraints.specialization_check]
-kind = "connector_binary_object"
-body_sha256 = "ef980ca3cf7281d3144fadfdfd58f140ad6e820bd1018d454600c432c58d4482"
+[specifications.constraints.conditional_specializes_from_library]
+predicate = "connector_binary_association_structure"
+owner_metaclasses = []
+anchor = "Objects::binaryLinkObjects"
 
 [[specifications.constraints]]
 package = "Kernel::Connectors"
@@ -1602,6 +1736,10 @@ family = "derive"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:deriveConnectorDefaultFeaturingType"
 
+[specifications.constraints.action_derived_fact]
+kind = "connector_default_featuring_type"
+body_sha256 = "1bf4e14a79f7697ccc8e70e8a5a2592e9b3077eaa8373c22dd1d9b6e5a22f035"
+
 [[specifications.constraints]]
 package = "Kernel::Connectors"
 metaclass = "Connector"
@@ -1609,6 +1747,10 @@ constraint = "deriveConnectorRelatedFeature"
 family = "derive"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:deriveConnectorRelatedFeature"
+
+[specifications.constraints.action_derived_fact]
+kind = "connector_related_feature"
+body_sha256 = "c077b622060b040c6bdc2b128aa6afe094e5ff279b769db5b9cb40f02430f309"
 
 [[specifications.constraints]]
 package = "Kernel::Connectors"
@@ -1618,6 +1760,10 @@ family = "derive"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:deriveConnectorSourceFeature"
 
+[specifications.constraints.action_derived_fact]
+kind = "connector_source_feature"
+body_sha256 = "d0f296805a4e12557c119da4d53e401e7bf68e9ad7350c5401b72354ea15d958"
+
 [[specifications.constraints]]
 package = "Kernel::Connectors"
 metaclass = "Connector"
@@ -1625,6 +1771,10 @@ constraint = "deriveConnectorTargetFeature"
 family = "derive"
 clause = "8.3.4.5.3"
 rule_id = "kerml-1.0:8.3.4.5.3:deriveConnectorTargetFeature"
+
+[specifications.constraints.action_derived_fact]
+kind = "connector_target_feature"
+body_sha256 = "8ae57036a190b491d32ca2c61344fee2e51f1c20249cf9d644ec0576b421ae8e"
 
 [[specifications.constraints]]
 package = "Kernel::Connectors"
@@ -1671,6 +1821,10 @@ constraint = "deriveBehaviorStep"
 family = "derive"
 clause = "8.3.4.6.2"
 rule_id = "kerml-1.0:8.3.4.6.2:deriveBehaviorStep"
+
+[specifications.constraints.action_derived_fact]
+kind = "behavior_step"
+body_sha256 = "313eb7db063437ed4a982db6b69bf7d97cf3f3b8a182d3d3a1dc0219f53b6731"
 
 [[specifications.constraints]]
 package = "Kernel::Behaviors"
@@ -1747,6 +1901,10 @@ family = "derive"
 clause = "8.3.4.6.3"
 rule_id = "kerml-1.0:8.3.4.6.3:deriveStepBehavior"
 
+[specifications.constraints.action_derived_fact]
+kind = "step_behavior"
+body_sha256 = "b778fec045c33fa91d2288a1feeae9d67587ceeb2db0c2b0716aa4b871974af0"
+
 [[specifications.constraints]]
 package = "Kernel::Behaviors"
 metaclass = "ParameterMembership"
@@ -1821,6 +1979,10 @@ family = "derive"
 clause = "8.3.4.7.3"
 rule_id = "kerml-1.0:8.3.4.7.3:deriveExpressionResult"
 
+[specifications.constraints.action_derived_fact]
+kind = "expression_result"
+body_sha256 = "b8fc48fd43050c62bd529fbda2cda0f6e6b1e6a2da8d1817717e95383024e9af"
+
 [[specifications.constraints]]
 package = "Kernel::Functions"
 metaclass = "Expression"
@@ -1867,6 +2029,10 @@ constraint = "deriveFunctionResult"
 family = "derive"
 clause = "8.3.4.7.4"
 rule_id = "kerml-1.0:8.3.4.7.4:deriveFunctionResult"
+
+[specifications.constraints.action_derived_fact]
+kind = "function_result"
+body_sha256 = "2511f6b349b77ff3f133397ce2d9e1153c7d26f3439c68a6a89b9b4b6f265142"
 
 [[specifications.constraints]]
 package = "Kernel::Functions"
@@ -1944,6 +2110,10 @@ family = "derive"
 clause = "8.3.4.8.10"
 rule_id = "kerml-1.0:8.3.4.8.10:deriveLiteralExpressionIsModelLevelEvaluable"
 
+[specifications.constraints.action_derived_fact]
+kind = "literal_expression_is_model_level_evaluable"
+body_sha256 = "8b72451905a13a1bd524a45f96b0fc411a296b745ebffe9d2f4d489f7f318d31"
+
 [[specifications.constraints]]
 package = "Kernel::Expressions"
 metaclass = "LiteralInfinity"
@@ -2006,6 +2176,10 @@ constraint = "deriveMetadataAccessExpressionReferencdElement"
 family = "derive"
 clause = "8.3.4.8.15"
 rule_id = "kerml-1.0:8.3.4.8.15:deriveMetadataAccessExpressionReferencdElement"
+
+[specifications.constraints.action_derived_fact]
+kind = "metadata_access_expression_referenced_element"
+body_sha256 = "30f2eb753ad483cb31b86838485d35a01da06b6899894232306a357054b5e8b1"
 
 [[specifications.constraints]]
 package = "Kernel::Expressions"
@@ -2170,6 +2344,10 @@ family = "derive"
 clause = "8.3.4.8.4"
 rule_id = "kerml-1.0:8.3.4.8.4:deriveFeatureChainExpressionTargetFeature"
 
+[specifications.constraints.action_derived_fact]
+kind = "feature_chain_expression_target_feature"
+body_sha256 = "383c7aeafc1dfde3cd3112f5c6a7969f639c2e65849c790ab294483dec8c4e9b"
+
 [[specifications.constraints]]
 package = "Kernel::Expressions"
 metaclass = "FeatureChainExpression"
@@ -2218,6 +2396,10 @@ family = "derive"
 clause = "8.3.4.8.5"
 rule_id = "kerml-1.0:8.3.4.8.5:deriveFeatureReferenceExpressionReferent"
 
+[specifications.constraints.action_derived_fact]
+kind = "feature_reference_expression_referent"
+body_sha256 = "72f1113b57186d033b665541f8c8e26c42c5bc080079d31265c2444a83bf1723"
+
 [[specifications.constraints]]
 package = "Kernel::Expressions"
 metaclass = "FeatureReferenceExpression"
@@ -2261,6 +2443,10 @@ constraint = "deriveInstantiationExpressionInstantiatedType"
 family = "derive"
 clause = "8.3.4.8.7"
 rule_id = "kerml-1.0:8.3.4.8.7:deriveInstantiationExpressionInstantiatedType"
+
+[specifications.constraints.action_derived_fact]
+kind = "instantiation_expression_instantiated_type"
+body_sha256 = "6e11708fe1bdc2a21092c0d22fc19188bb4c61bc622512b37233df8c6355a2fb"
 
 [[specifications.constraints]]
 package = "Kernel::Expressions"
@@ -2409,6 +2595,10 @@ family = "derive"
 clause = "8.3.4.9.2"
 rule_id = "kerml-1.0:8.3.4.9.2:deriveFlowFlowEnd"
 
+[specifications.constraints.action_derived_fact]
+kind = "flow_flow_end"
+body_sha256 = "ad5c9208e1ee4da829f26a70875d28dea2d9e75f7ba3fe67d9e1a0569657e7f0"
+
 [[specifications.constraints]]
 package = "Kernel::Interactions"
 metaclass = "Flow"
@@ -2433,6 +2623,10 @@ family = "derive"
 clause = "8.3.4.9.2"
 rule_id = "kerml-1.0:8.3.4.9.2:deriveFlowSourceOutputFeature"
 
+[specifications.constraints.action_derived_fact]
+kind = "flow_source_output_feature"
+body_sha256 = "b3148a1f91bac656c98a51831c8f073c208b66cac48e656464917f67cf25e409"
+
 [[specifications.constraints]]
 package = "Kernel::Interactions"
 metaclass = "Flow"
@@ -2440,6 +2634,10 @@ constraint = "deriveFlowTargetInputFeature"
 family = "derive"
 clause = "8.3.4.9.2"
 rule_id = "kerml-1.0:8.3.4.9.2:deriveFlowTargetInputFeature"
+
+[specifications.constraints.action_derived_fact]
+kind = "flow_target_input_feature"
+body_sha256 = "bc01f1e7cb0b2963bf6123d0780a619417762866d52b0ca880f7ecf503e59606"
 
 [[specifications.constraints]]
 package = "Kernel::Interactions"
@@ -2549,6 +2747,10 @@ family = "derive"
 clause = "8.3.10.3"
 rule_id = "sysml-2.0:8.3.10.3:deriveItemUsageItemDefinition"
 
+[specifications.constraints.action_derived_fact]
+kind = "item_usage_item_definition"
+body_sha256 = "0a48c18c389bf2fc0df29c141495d4679224be7710b842b8aa911490c6725638"
+
 [[specifications.constraints]]
 package = "Systems::Parts"
 metaclass = "PartDefinition"
@@ -2622,6 +2824,10 @@ family = "derive"
 clause = "8.3.11.3"
 rule_id = "sysml-2.0:8.3.11.3:derivePartUsagePartDefinition"
 
+[specifications.constraints.action_derived_fact]
+kind = "part_usage_part_definition"
+body_sha256 = "c8361d6f6ee1d6fcaffcaeca02febe15cf1aa8c96d28575635fb9282219c8b72"
+
 [[specifications.constraints]]
 package = "Systems::Parts"
 metaclass = "PartUsage"
@@ -2654,6 +2860,10 @@ family = "derive"
 clause = "8.3.12.3"
 rule_id = "sysml-2.0:8.3.12.3:deriveConjugatedPortTypingPortDefinition"
 
+[specifications.constraints.action_derived_fact]
+kind = "conjugated_port_typing_port_definition"
+body_sha256 = "23fb89fc02bccfd719659553534ae178ceb54ee59fdd3f897406bb586ddb8425"
+
 [[specifications.constraints]]
 package = "Systems::Ports"
 metaclass = "PortDefinition"
@@ -2672,6 +2882,10 @@ constraint = "derivePortDefinitionConjugatedPortDefinition"
 family = "derive"
 clause = "8.3.12.5"
 rule_id = "sysml-2.0:8.3.12.5:derivePortDefinitionConjugatedPortDefinition"
+
+[specifications.constraints.action_derived_fact]
+kind = "port_definition_conjugated_port_definition"
+body_sha256 = "43daa4ecdbb903d0b247f650243e1e7c0d8401c579516503a932c10db54ad6b5"
 
 [[specifications.constraints]]
 package = "Systems::Ports"
@@ -2870,6 +3084,10 @@ constraint = "deriveAllocationDefinitionAllocation"
 family = "derive"
 clause = "8.3.15.2"
 rule_id = "sysml-2.0:8.3.15.2:deriveAllocationDefinitionAllocation"
+
+[specifications.constraints.action_derived_fact]
+kind = "allocation_definition_allocation"
+body_sha256 = "2768a8d8ea56a460f43880ad6391cf212b65e2f991ee61cdabf0b0b693e49cf8"
 
 [[specifications.constraints]]
 package = "Systems::Allocations"
@@ -3808,6 +4026,10 @@ family = "derive"
 clause = "8.3.18.5"
 rule_id = "sysml-2.0:8.3.18.5:deriveStateDefinitionDoAction"
 
+[specifications.constraints.action_derived_fact]
+kind = "state_definition_do_action"
+body_sha256 = "7504cbb610de030b568ccb86c456d53fb76c9e285b9ee2d224494461d3569ecd"
+
 [[specifications.constraints]]
 package = "Systems::States"
 metaclass = "StateDefinition"
@@ -3815,6 +4037,10 @@ constraint = "deriveStateDefinitionEntryAction"
 family = "derive"
 clause = "8.3.18.5"
 rule_id = "sysml-2.0:8.3.18.5:deriveStateDefinitionEntryAction"
+
+[specifications.constraints.action_derived_fact]
+kind = "state_definition_entry_action"
+body_sha256 = "de66da27adbac23a4512a4b67de81b43baee9909131e88109a00ce7c2579d7c7"
 
 [[specifications.constraints]]
 package = "Systems::States"
@@ -3824,6 +4050,10 @@ family = "derive"
 clause = "8.3.18.5"
 rule_id = "sysml-2.0:8.3.18.5:deriveStateDefinitionExitAction"
 
+[specifications.constraints.action_derived_fact]
+kind = "state_definition_exit_action"
+body_sha256 = "11748e51537922c815f42ba588ddc89fa0f431c5940e8ddd89ca948d829342d1"
+
 [[specifications.constraints]]
 package = "Systems::States"
 metaclass = "StateDefinition"
@@ -3831,6 +4061,10 @@ constraint = "deriveStateDefinitionState"
 family = "derive"
 clause = "8.3.18.5"
 rule_id = "sysml-2.0:8.3.18.5:deriveStateDefinitionState"
+
+[specifications.constraints.action_derived_fact]
+kind = "state_definition_state"
+body_sha256 = "b58b47767f5165bdda410c70849654fd36f8c4787aea44d3f6b932ad2bd3e4bd"
 
 [[specifications.constraints]]
 package = "Systems::States"
@@ -3907,6 +4141,10 @@ family = "derive"
 clause = "8.3.18.6"
 rule_id = "sysml-2.0:8.3.18.6:deriveStateUsageDoAction"
 
+[specifications.constraints.action_derived_fact]
+kind = "state_usage_do_action"
+body_sha256 = "7504cbb610de030b568ccb86c456d53fb76c9e285b9ee2d224494461d3569ecd"
+
 [[specifications.constraints]]
 package = "Systems::States"
 metaclass = "StateUsage"
@@ -3915,6 +4153,10 @@ family = "derive"
 clause = "8.3.18.6"
 rule_id = "sysml-2.0:8.3.18.6:deriveStateUsageEntryAction"
 
+[specifications.constraints.action_derived_fact]
+kind = "state_usage_entry_action"
+body_sha256 = "de66da27adbac23a4512a4b67de81b43baee9909131e88109a00ce7c2579d7c7"
+
 [[specifications.constraints]]
 package = "Systems::States"
 metaclass = "StateUsage"
@@ -3922,6 +4164,10 @@ constraint = "deriveStateUsageExitAction"
 family = "derive"
 clause = "8.3.18.6"
 rule_id = "sysml-2.0:8.3.18.6:deriveStateUsageExitAction"
+
+[specifications.constraints.action_derived_fact]
+kind = "state_usage_exit_action"
+body_sha256 = "539d4ff4461d9382d6554691e5534fee7919c15da57763be0ceb98e8680dbfba"
 
 [[specifications.constraints]]
 package = "Systems::States"
@@ -4098,6 +4344,10 @@ family = "derive"
 clause = "8.3.18.9"
 rule_id = "sysml-2.0:8.3.18.9:deriveTransitionUsageSuccession"
 
+[specifications.constraints.action_derived_fact]
+kind = "transition_usage_succession"
+body_sha256 = "0ee10b6835cf424d0f7d9e943f0af27b24a56975fdcb4eefbdb6339e2f3b6eae"
+
 [[specifications.constraints]]
 package = "Systems::States"
 metaclass = "TransitionUsage"
@@ -4106,6 +4356,10 @@ family = "derive"
 clause = "8.3.18.9"
 rule_id = "sysml-2.0:8.3.18.9:deriveTransitionUsageTarget"
 
+[specifications.constraints.action_derived_fact]
+kind = "transition_usage_target"
+body_sha256 = "0f0a60f1a0e8a98417a60bd541d8675b44c63db074251412784fbf75632dc926"
+
 [[specifications.constraints]]
 package = "Systems::States"
 metaclass = "TransitionUsage"
@@ -4113,6 +4367,10 @@ constraint = "deriveTransitionUsageTriggerAction"
 family = "derive"
 clause = "8.3.18.9"
 rule_id = "sysml-2.0:8.3.18.9:deriveTransitionUsageTriggerAction"
+
+[specifications.constraints.action_derived_fact]
+kind = "transition_usage_trigger_action"
+body_sha256 = "4bf5fe30abd61249957450670e668fa7755b66d600494b8d0f0f6372667adbdf"
 
 [[specifications.constraints]]
 package = "Systems::States"
@@ -4156,6 +4414,10 @@ constraint = "deriveCalculationUsageCalculation"
 family = "derive"
 clause = "8.3.19.2"
 rule_id = "sysml-2.0:8.3.19.2:deriveCalculationUsageCalculation"
+
+[specifications.constraints.action_derived_fact]
+kind = "calculation_definition_calculation"
+body_sha256 = "b4baa079e5a5c64ebb50b4b74cb7fd2ffbb691ad8e8bc50a292d27a45868bd37"
 
 [[specifications.constraints]]
 package = "Systems::Calculations"
@@ -4205,6 +4467,10 @@ constraint = "deriveAssertConstraintUsageAssertedConstraint"
 family = "derive"
 clause = "8.3.20.2"
 rule_id = "sysml-2.0:8.3.20.2:deriveAssertConstraintUsageAssertedConstraint"
+
+[specifications.constraints.action_derived_fact]
+kind = "assert_constraint_usage_asserted_constraint"
+body_sha256 = "14eac91af07e8c732b6ea9cb18fb2440502206c18bde9f4acfa75912e410d7a9"
 
 [[specifications.constraints]]
 package = "Systems::Constraints"
@@ -4673,6 +4939,10 @@ family = "derive"
 clause = "8.3.22.2"
 rule_id = "sysml-2.0:8.3.22.2:deriveCaseDefinitionActorParameter"
 
+[specifications.constraints.requirement_derived_fact]
+kind = "case_definition_actor_parameter"
+body_sha256 = "4491cc267914513216e0de41b0fab6f99422326393c937b7499fc16c9fde61a9"
+
 [[specifications.constraints]]
 package = "Systems::Cases"
 metaclass = "CaseDefinition"
@@ -4681,6 +4951,10 @@ family = "derive"
 clause = "8.3.22.2"
 rule_id = "sysml-2.0:8.3.22.2:deriveCaseDefinitionObjectiveRequirement"
 
+[specifications.constraints.requirement_derived_fact]
+kind = "case_definition_objective_requirement"
+body_sha256 = "8d1e71edf2933dcc5e4cd8ffff54892eb28edbc71ed6cf60cd2f7679bcb19f71"
+
 [[specifications.constraints]]
 package = "Systems::Cases"
 metaclass = "CaseDefinition"
@@ -4688,6 +4962,10 @@ constraint = "deriveCaseDefinitionSubjectParameter"
 family = "derive"
 clause = "8.3.22.2"
 rule_id = "sysml-2.0:8.3.22.2:deriveCaseDefinitionSubjectParameter"
+
+[specifications.constraints.requirement_derived_fact]
+kind = "case_definition_subject_parameter"
+body_sha256 = "1a98d33c65896c4f582d9e7f8d4636d5533e81cd539cf7133780fdafb5de5f33"
 
 [[specifications.constraints]]
 package = "Systems::Cases"
@@ -4748,6 +5026,10 @@ family = "derive"
 clause = "8.3.22.3"
 rule_id = "sysml-2.0:8.3.22.3:deriveCaseUsageActorParameter"
 
+[specifications.constraints.requirement_derived_fact]
+kind = "case_usage_actor_parameter"
+body_sha256 = "4491cc267914513216e0de41b0fab6f99422326393c937b7499fc16c9fde61a9"
+
 [[specifications.constraints]]
 package = "Systems::Cases"
 metaclass = "CaseUsage"
@@ -4756,6 +5038,10 @@ family = "derive"
 clause = "8.3.22.3"
 rule_id = "sysml-2.0:8.3.22.3:deriveCaseUsageObjectiveRequirement"
 
+[specifications.constraints.requirement_derived_fact]
+kind = "case_usage_objective_requirement"
+body_sha256 = "8d1e71edf2933dcc5e4cd8ffff54892eb28edbc71ed6cf60cd2f7679bcb19f71"
+
 [[specifications.constraints]]
 package = "Systems::Cases"
 metaclass = "CaseUsage"
@@ -4763,6 +5049,10 @@ constraint = "deriveCaseUsageSubjectParameter"
 family = "derive"
 clause = "8.3.22.3"
 rule_id = "sysml-2.0:8.3.22.3:deriveCaseUsageSubjectParameter"
+
+[specifications.constraints.requirement_derived_fact]
+kind = "case_usage_subject_parameter"
+body_sha256 = "a974bff5d79e5ed8c5fbb92464594e2dcbc25c9780cc5b414d65204077d098cd"
 
 [[specifications.constraints]]
 package = "Systems::Cases"
@@ -4893,6 +5183,10 @@ family = "derive"
 clause = "8.3.24.3"
 rule_id = "sysml-2.0:8.3.24.3:deriveVerificationCaseDefinitionVerifiedRequirement"
 
+[specifications.constraints.action_derived_fact]
+kind = "verification_case_definition_verified_requirement"
+body_sha256 = "bdd913b873aec07d10ff2bc0da1d8c688e8a687753d403c48065e12a00208e55"
+
 [[specifications.constraints]]
 package = "Systems::VerificationCases"
 metaclass = "VerificationCaseUsage"
@@ -4927,6 +5221,10 @@ constraint = "deriveVerificationCaseUsageVerifiedRequirement"
 family = "derive"
 clause = "8.3.24.4"
 rule_id = "sysml-2.0:8.3.24.4:deriveVerificationCaseUsageVerifiedRequirement"
+
+[specifications.constraints.action_derived_fact]
+kind = "verification_case_usage_verified_requirement"
+body_sha256 = "bdd913b873aec07d10ff2bc0da1d8c688e8a687753d403c48065e12a00208e55"
 
 [[specifications.constraints]]
 package = "Systems::UseCases"
@@ -4967,6 +5265,10 @@ family = "derive"
 clause = "8.3.25.3"
 rule_id = "sysml-2.0:8.3.25.3:deriveUseCaseDefinitionIncludedUseCase"
 
+[specifications.constraints.action_derived_fact]
+kind = "use_case_definition_included_use_case"
+body_sha256 = "9204a8b51a8bd507032ea57c7dd5346975f0538bd11878ad358695203a8fd8c9"
+
 [[specifications.constraints]]
 package = "Systems::UseCases"
 metaclass = "UseCaseUsage"
@@ -5001,6 +5303,10 @@ constraint = "deriveUseCaseUsageIncludedUseCase"
 family = "derive"
 clause = "8.3.25.4"
 rule_id = "sysml-2.0:8.3.25.4:deriveUseCaseUsageIncludedUseCase"
+
+[specifications.constraints.action_derived_fact]
+kind = "use_case_usage_included_use_case"
+body_sha256 = "9204a8b51a8bd507032ea57c7dd5346975f0538bd11878ad358695203a8fd8c9"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -5061,6 +5367,10 @@ family = "derive"
 clause = "8.3.26.11"
 rule_id = "sysml-2.0:8.3.26.11:deriveViewUsageSatisfiedViewpoint"
 
+[specifications.constraints.action_derived_fact]
+kind = "view_usage_satisfied_viewpoint"
+body_sha256 = "32c18de6997d4fa844c15a847dc04b0df6a9b75cd98a3c7ea7e99f0e3ca597b4"
+
 [[specifications.constraints]]
 package = "Systems::Views"
 metaclass = "ViewUsage"
@@ -5069,6 +5379,10 @@ family = "derive"
 clause = "8.3.26.11"
 rule_id = "sysml-2.0:8.3.26.11:deriveViewUsageViewCondition"
 
+[specifications.constraints.action_derived_fact]
+kind = "view_usage_view_condition"
+body_sha256 = "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e"
+
 [[specifications.constraints]]
 package = "Systems::Views"
 metaclass = "ViewUsage"
@@ -5076,6 +5390,10 @@ constraint = "deriveViewUsageViewRendering"
 family = "derive"
 clause = "8.3.26.11"
 rule_id = "sysml-2.0:8.3.26.11:deriveViewUsageViewRendering"
+
+[specifications.constraints.action_derived_fact]
+kind = "view_usage_view_rendering"
+body_sha256 = "9864358916d3351ba82bff9b11ac489e34af1bdbf7c86a4d5986d81195d2b355"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -5127,6 +5445,10 @@ constraint = "deriveRenderingDefinitionRendering"
 family = "derive"
 clause = "8.3.26.5"
 rule_id = "sysml-2.0:8.3.26.5:deriveRenderingDefinitionRendering"
+
+[specifications.constraints.action_derived_fact]
+kind = "rendering_definition_rendering"
+body_sha256 = "d946ef4e13c22ae0e21efd39124c8fc8832afa3335429a5e24c526d98f1f6949"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -5186,6 +5508,10 @@ family = "derive"
 clause = "8.3.26.7"
 rule_id = "sysml-2.0:8.3.26.7:deriveViewDefinitionSatisfiedViewpoint"
 
+[specifications.constraints.action_derived_fact]
+kind = "view_definition_satisfied_viewpoint"
+body_sha256 = "32c18de6997d4fa844c15a847dc04b0df6a9b75cd98a3c7ea7e99f0e3ca597b4"
+
 [[specifications.constraints]]
 package = "Systems::Views"
 metaclass = "ViewDefinition"
@@ -5193,6 +5519,10 @@ constraint = "deriveViewDefinitionView"
 family = "derive"
 clause = "8.3.26.7"
 rule_id = "sysml-2.0:8.3.26.7:deriveViewDefinitionView"
+
+[specifications.constraints.action_derived_fact]
+kind = "view_definition_view"
+body_sha256 = "87fbc56d9b161c66525a13c8ba44e224be24eaaf3947caecb17bf7cc2b9b82ca"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -5202,6 +5532,10 @@ family = "derive"
 clause = "8.3.26.7"
 rule_id = "sysml-2.0:8.3.26.7:deriveViewDefinitionViewCondition"
 
+[specifications.constraints.action_derived_fact]
+kind = "view_definition_view_condition"
+body_sha256 = "d7331c9b67397c85b8fc082489750d78d1016414867fc31df89aca978416962e"
+
 [[specifications.constraints]]
 package = "Systems::Views"
 metaclass = "ViewDefinition"
@@ -5209,6 +5543,10 @@ constraint = "deriveViewDefinitionViewRendering"
 family = "derive"
 clause = "8.3.26.7"
 rule_id = "sysml-2.0:8.3.26.7:deriveViewDefinitionViewRendering"
+
+[specifications.constraints.action_derived_fact]
+kind = "view_definition_view_rendering"
+body_sha256 = "9864358916d3351ba82bff9b11ac489e34af1bdbf7c86a4d5986d81195d2b355"
 
 [[specifications.constraints]]
 package = "Systems::Views"
@@ -6233,6 +6571,10 @@ family = "derive"
 clause = "8.3.9.2"
 rule_id = "sysml-2.0:8.3.9.2:deriveEventOccurrenceUsageEventOccurrence"
 
+[specifications.constraints.action_derived_fact]
+kind = "event_occurrence_usage_event_occurrence"
+body_sha256 = "2443d8c1abd676ffd235fe8075193e01f1de21f6865ab63c1654635aa485ca33"
+
 [[specifications.constraints]]
 package = "Systems::Occurrences"
 metaclass = "EventOccurrenceUsage"
@@ -6330,6 +6672,10 @@ constraint = "deriveOccurrenceUsageIndividualDefinition"
 family = "derive"
 clause = "8.3.9.4"
 rule_id = "sysml-2.0:8.3.9.4:deriveOccurrenceUsageIndividualDefinition"
+
+[specifications.constraints.action_derived_fact]
+kind = "occurrence_usage_individual_definition"
+body_sha256 = "ef160aea6c88982d4ef24da30b5261ede6e51e036093b635432c7ea427660b17"
 
 [[specifications.constraints]]
 package = "Systems::Occurrences"

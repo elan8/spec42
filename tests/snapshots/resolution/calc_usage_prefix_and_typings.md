@@ -7,6 +7,7 @@ validation_rule=8.3.3.3.4 deriveFeatureOwnedTyping
 source_expectation=accepted
 rule_family=derive
 expectation=semantics
+coverage_role=secondary
 rule_id=kerml-1.0:8.3.3.3.4:deriveFeatureOwnedTyping
 type=file
 ~~~

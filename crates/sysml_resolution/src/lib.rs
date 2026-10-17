@@ -70,7 +70,7 @@ mod view_query;
 pub use action_query::{
     ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
     ActionDerivedFactPrerequisite, ActionInputParameterId, ActionOwnedMembershipId,
-    ActionOwnedMembershipKind, ActionOwnedMembershipMember,
+    ActionOwnedMembershipKind, ActionOwnedMembershipMember, FilterConditionId,
 };
 pub use connection_query::{
     ConnectorEndpoint, ConnectorKind, PublishedConnectionGraph, PublishedConnector,

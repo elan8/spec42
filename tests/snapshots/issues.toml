@@ -37,12 +37,6 @@ owner = "omg-specification"
 summary = "Pinned KerML XMI body for checkStepOwnedPerformanceSpecialization is unbalanced (SHA-256 899aa2a17a9527d1b448a84bc4a336a933bc6b067fb99ff9095bd5a866854bd8); OMG must publish an evaluable predicate before a specialization contract can be derived."
 
 [[issue]]
-id = "semantic-connector-binary-object-specialization-contract"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "The owned connectorEnd collection is now canonical (SemanticModelStorage::owned_end_features), but the pinned manifest classifies checkConnectorBinaryObjectSpecialization as a specialization_check: the extractor rejects its compound XMI body (`connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure))`, note the XMI spelling `connectorEnds`), so no conditional contract or Objects::binaryLinkObjects anchor is generated to synthesize from. Needs extractor support for the compound predicate and an XMI-backed manifest refresh."
-
-[[issue]]
 id = "semantic-attribute-feature-composite"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -67,7 +61,61 @@ owner = "spec42-semantic"
 summary = "checkAcceptActionUsageReceiverBindingConnector binds the AcceptActionUsage's second parameter (`receiver`) to the second parameter of its TriggerInvocationExpression payload argument. `accept when|at|after` now lowers its TriggerInvocationExpression element with its kind, but the accept action still owns no payload or receiver parameter (AcceptParameterPart's PayloadParameterMember / `via` NodeParameterMember), and the expression's second parameter is not owned: the grammar gives a TriggerExpression one ArgumentMember, and the Pilot's addReceiverBinding binds only an owned second parameter (TypeUtil.getOwnedParameterOf(target, 1)), so which Feature the OCL's invocation.parameter->at(2) (an inherited TriggerWhen/At/After::receiver) denotes as a binding end needs a normative decision before it can be lowered."
 
 [[issue]]
-id = "semantic-control-node-owning-type"
-kind = "semantic_not_implemented"
+id = "normative-specification-gap-feature-type-body"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned KerML XMI body for deriveFeatureType (SHA-256 f9aed3e0a17318af2486c8f0dddc17b08a5a699c550080534de82bff5140460c) declares `types : OrderedSet(Types)`, which names no type, and calls `exist`, which is not an OCL collection operation; OMG must publish an evaluable body before an exact Feature::type contract can be pinned."
+
+[[issue]]
+id = "normative-specification-gap-metadata-feature-metaclass-body"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned KerML XMI body for deriveMetadataFeatureMetaclass (SHA-256 38c1e3fb2046edc75065c04316268613afe77faeac3787a4aab4f90e8574f5c5) returns `metaClassTypes->first()`, but the let variable is `metaclassTypes`; OMG must publish an evaluable body before an exact MetadataFeature::metaclass contract can be pinned."
+
+[[issue]]
+id = "normative-specification-gap-transition-usage-feature-bodies"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Three pinned SysML XMI bodies for TransitionUsage are not evaluable as the properties they derive: deriveTransitionUsageEffectAction (SHA-256 f2726da6990e4f18fd3495764628cecb2c57f54bdf5ceb0767b4b3a9b8ec6ad1) defines `triggerAction`, selects `kind = TransitionFeatureKind::trigger` and navigates `transitionFeatures`; deriveTransitionUsageGuardExpression (SHA-256 b494a80a5c5188cdb961a4f0640014d590332f8da2043b9999181460469accd8) selects `kind = TransitionFeatureKind::trigger` instead of guard; deriveTransitionUsageSource (SHA-256 2ef525a7fcd5b9598cd4979357e0a741ad10d0e88937e739368d8e02688c3d40) is unbalanced, with an `if` that has no `endif`. OMG must publish evaluable bodies before exact contracts can be pinned."
+
+[[issue]]
+id = "normative-specification-gap-satisfy-requirement-satisfying-feature-body"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned SysML XMI body for deriveSatisfyRequirementUsageSatisfyingFeature (SHA-256 2b4e3ec6cb6dd923f7325ca3f433284b20a66b22c57ef3880e91a1c346cbba06) calls `exits`, which is not an OCL collection operation, and declares the binding collection as a single `BindingConnector`; OMG must publish an evaluable body before an exact satisfyingFeature contract can be pinned."
+
+[[issue]]
+id = "normative-specification-gap-referenced-membership-target-bodies"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned SysML XMI bodies for deriveRequirementConstraintMembershipReferencedConstraint (SHA-256 90916b3030d5d7c8cf3bfb2532b2de2bf0a80e0c2de28f56323a789bfd65f5cc) and deriveVewRenderingMembershipReferencedRendering (SHA-256 d5eb9fbe7b85df1723a15e892e5e98bb18d3b4d62c9b463cd55540afaa2ca618) return `refrencedFeature.oclAsType(...)`, but the let variable is `referencedFeature`; OMG must publish evaluable bodies before exact contracts can be pinned."
+
+[[issue]]
+id = "normative-specification-gap-stakeholder-parameter-bodies"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Four pinned SysML XMI stakeholder bodies name nothing that exists: deriveRequirementDefinitionStakeholderParameter (SHA-256 065acc8cde297502db44e6793024341ef7eee9c876175f251b67eeac4ace6ac6) selects `StakholderMembership`, deriveRequirementUsageStakeholderParameter (SHA-256 95b6e8e2f578570ae8f0ac7b2a4fd5e537ea2c25b33b79ac428d66c2b66a4993) selects `AStakholderMembership`, and deriveViewpointDefinitionViewpointStakeholder (SHA-256 80da034cdddc08773c8a3a0384ba795e285c1adfdc14dc33f2ca55e66c3a7985) and deriveViewpointUsageViewpointStakeholder (SHA-256 4701ea2e039e281866b12c75e9aa53e2d3b176543fc2dbe714a7f8417510d767) navigate `featureMemberhsip`; OMG must publish evaluable bodies before exact contracts can be pinned."
+
+[[issue]]
+id = "normative-specification-gap-analysis-case-result-expression-bodies"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned SysML XMI bodies for deriveAnalysisCaseDefinitionResultExpression and deriveAnalysisCaseUsageResultExpression (both SHA-256 6dea4bccd48ee1ae4afa5b0790f848924ab0701f2b76d330e43af9df2708c0e2) navigate `featureMembersip`, which is not a property; OMG must publish evaluable bodies before exact contracts can be pinned."
+
+[[issue]]
+id = "lowering-gap-flow-payload-feature"
+kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "validateControlNodeOwningType (SysML 8.3.17.6) is not implemented. It was recorded as holding by construction while the parser admitted control nodes only in action bodies; since sysml-v2-parser #172 a CalculationBody (constraint and calc bodies) parses every ActionBodyItem, so `constraint def C { fork f; }` is authorable and reports nothing. Tracked with the remaining normative validations in elan8/spec42#193."
+summary = "A flow's `of` payload is lowered as a FlowPayloadType reference on the flow, not as the PayloadFeature the flow owns (KerML 8.3.4.9), so Flow::payloadFeature, Flow::payloadType (derived from the payload feature's type) and checkPayloadFeatureRedefinition (the payload feature redefines Transfers::Transfer::payload) have no element to read until the payload feature is minted."
+
+[[issue]]
+id = "lowering-gap-expression-model-level-evaluable"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "deriveExpressionIsModelLevelEvaluable reads modelLevelEvaluable over every owned sub-expression, but only a top-level value or result expression and the operands of index and select operators are lowered as Expression elements; arithmetic, comparison and invocation operands are not, so model-level evaluability is decided only for filter conditions (from their classified expression trees) and cannot be published per Expression."
+
+[[issue]]
+id = "lowering-gap-instantiation-argument-values"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "An invocation or constructor mints one argument Feature per authored argument, redefining the instantiated type's parameter, but the argument's value Expression is not lowered as that feature's FeatureValue, so deriveInvocationExpressionArgument and deriveConstructorExpressionArgument (the values of the features redefining the instantiated type's inputs or features) have no value to read."

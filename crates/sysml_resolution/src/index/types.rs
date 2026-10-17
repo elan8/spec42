@@ -386,6 +386,10 @@ pub(crate) struct TypeIndex {
     /// The resolved `Links::BinaryLink` anchor that `validateAssociationBinarySpecialization` and
     /// `validateConnectorBinarySpecialization` test conformance against.
     binary_link: BinaryLinkAnchor,
+    /// `Base::Anything`, which every Type specializes (`checkTypeSpecialization`) whether or not
+    /// that implied edge is in the closure: the root metaclasses' implied specializations are
+    /// deferred.
+    anything: Option<DeclarationId>,
     /// Source-role-verified anchors used together by the exact `Usage::mayTimeVary` derivation.
     /// Keeping the family here makes every consumer use the same anchor identities and settled
     /// specialization closure rather than reinterpreting rendered names or direct edges.
@@ -658,6 +662,10 @@ impl TypeIndex {
             authored_ends: authored_ends.into_boxed_slice(),
             effective_ends: effective_ends.into_boxed_slice(),
             end_features,
+            anything: match resolve_library_specialization_anchor(storage, "Base::Anything") {
+                LibrarySpecializationAnchor::Resolved(anchor) => Some(anchor),
+                _ => None,
+            },
             binary_link: BinaryLinkAnchor(resolve_library_specialization_anchor(
                 storage,
                 "Links::BinaryLink",
@@ -962,15 +970,18 @@ impl TypeIndex {
         types.dedup();
         let redundant = |general: DeclarationId| {
             types.iter().any(|specific| {
-                *specific != general
-                    && self
-                        .specialization
-                        .reaches(*specific, general, ScopeBits::AnySpecialization)
-                    && !self.specialization.reaches(
-                        general,
-                        *specific,
-                        ScopeBits::AnySpecialization,
-                    )
+                *specific != general && Some(general) == self.anything
+                    || *specific != general
+                        && self.specialization.reaches(
+                            *specific,
+                            general,
+                            ScopeBits::AnySpecialization,
+                        )
+                        && !self.specialization.reaches(
+                            general,
+                            *specific,
+                            ScopeBits::AnySpecialization,
+                        )
             })
         };
         types

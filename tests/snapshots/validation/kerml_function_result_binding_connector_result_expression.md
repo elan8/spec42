@@ -6,6 +6,7 @@ specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
+coverage_role=secondary
 rule_id=kerml-1.0:8.3.4.7.4:checkFunctionResultBindingConnector
 type=file
 ~~~
