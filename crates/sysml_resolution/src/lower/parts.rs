@@ -521,7 +521,7 @@ impl SemanticModelBuilder {
                 self.lower_part_usage(document, Some(owner), part)?;
             }
             PartUsageBodyElement::ExtendedUsage(usage) => {
-                self.lower_extended_usage(document, Some(owner), usage)?;
+                self.lower_extended_end_usage(document, owner, usage)?;
             }
             PartUsageBodyElement::Import(import) => {
                 self.lower_import(document, Some(owner), import)?;
