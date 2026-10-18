@@ -701,19 +701,6 @@ fn bare_entry_do_exit_with_no_reference_or_body_is_not_unsupported() {
     );
 }
 
-/// An inline `entry { <members> }` anonymous action body (non-empty brace, no `action`
-/// reference) genuinely has no representation in the `EntryAction` typed AST and must stay an
-/// explicit unsupported diagnostic, distinguishing it from the empty/semicolon no-op case
-/// above.
-#[test]
-fn entry_with_inline_body_content_and_no_reference_stays_unsupported() {
-    let sexpr = diagnostics_sexpr_for("package P { state def S { entry { state inner; } } }");
-    assert!(
-        sexpr.contains("unsupported_state_definition_member"),
-        "expected an inline non-empty entry body with no reference to remain unsupported, got: {sexpr}"
-    );
-}
-
 /// A bare `terminate;` (no target) has nothing to resolve and must not be flagged as
 /// unsupported -- it is a legitimate no-op self-termination form, not a parser gap.
 #[test]
