@@ -369,9 +369,12 @@ impl SemanticModelBuilder {
                     StateSubactionKind::Exit => ReferenceKind::ExitActionBinding,
                 };
                 self.lower_perform_target(document, declaration, target, reference_kind)?;
-                if let Some(value) = value {
-                    self.record_feature_value(document, declaration, value)?;
-                }
+                self.lower_value_assignment(
+                    document,
+                    declaration,
+                    UnsupportedFamily::StateDefinitionMember,
+                    value.as_deref(),
+                )?;
             }
             StateActionUsage::Effect { effect, .. } => {
                 if let Some(usage) = usage {
