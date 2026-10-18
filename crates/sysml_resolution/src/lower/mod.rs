@@ -3504,8 +3504,8 @@ impl SemanticModelBuilder {
 
     /// Shared implementation behind `lower_typing_relationship`, with two extra flags.
     ///
-    /// `variation` is set only by `lower_part_usage` (when its prefix's variance slot is
-    /// `DefinitionPrefix::Variation`), mirroring the `conjugated` flag convention on a port's
+    /// `variation` is set only by the occurrence-prefixed part, item and view usages (when the
+    /// prefix's variance slot is `DefinitionPrefix::Variation`), mirroring the `conjugated` flag convention on a port's
     /// typing target. `direction` is set only by `lower_kerml_feature_member`, whose node absorbed
     /// the directed kinded parameter (`in expr p : Boolean`) upstream: that declaration's typing
     /// reference has always carried its direction, so it keeps doing so now that the declaration

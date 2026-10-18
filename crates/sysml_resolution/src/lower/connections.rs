@@ -433,7 +433,7 @@ impl SemanticModelBuilder {
                         self.lower_extended_definition(document, Some(declaration), node)?;
                     }
                     ConnectionDefBodyElement::ExtendedUsage(node) => {
-                        self.lower_extended_usage(document, Some(declaration), node)?;
+                        self.lower_extended_end_usage(document, declaration, node)?;
                     }
                     ConnectionDefBodyElement::DefaultReferenceUsage(node) => self
                         .lower_default_reference_usage(

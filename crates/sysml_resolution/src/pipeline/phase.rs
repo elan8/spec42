@@ -879,4 +879,20 @@ mod failure_tests {
         assert_eq!(documents.as_ref(), identities);
         assert_eq!(cause, "Capacity");
     }
+
+    #[test]
+    fn model_wide_failure_message_names_a_bounded_document_prefix() {
+        let identities: Vec<Box<str>> = (0..5)
+            .map(|index| format!("memory://{index}.sysml").into())
+            .collect();
+        let failure = resolution_failure(
+            ConstructionPhase::Resolution,
+            &identities,
+            ResolutionError::Capacity,
+        );
+        assert_eq!(
+            failure.to_string(),
+            "Resolution failed for documents [\"memory://0.sysml\", \"memory://1.sysml\", \"memory://2.sysml\"] and 2 more: Capacity"
+        );
+    }
 }

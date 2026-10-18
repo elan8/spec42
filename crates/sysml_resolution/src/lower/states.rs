@@ -270,7 +270,20 @@ impl SemanticModelBuilder {
         )
     }
 
-    /// State actions own the same complete declaration, value and action body as perform members.
+    /// Lowers the StateActionUsage of one `entry`/`do`/`exit` member (SysML BNF
+    /// `StateActionUsage`) as the member of a StateSubactionMembership of `kind`, owned by the
+    /// enclosing state `owner`. State actions own the same complete declaration, value and action
+    /// body as perform members:
+    ///
+    /// - the perform forms (`entry action entryAction :>> 'entry';`, `do myAction;`) publish the
+    ///   `Entry`/`Do`/`ExitActionBinding` declaration and lower the declaration's clauses, or bind
+    ///   the referenced action through the state's own scope;
+    /// - the effect forms (`entry assign ...;`, `do send ...;`, `do action a accept S;`) publish
+    ///   the AssignmentActionUsage, SendActionUsage or AcceptActionUsage itself with its operands;
+    /// - a bare `entry;` is the `EmptyActionUsage` alternative, an anonymous ActionUsage.
+    ///
+    /// Every form publishes its occupant of the StateSubactionMembership, which
+    /// `checkActionUsageStateActionRedefinition` enumerates.
     fn lower_state_subaction(
         &mut self,
         document: DocumentIdx,

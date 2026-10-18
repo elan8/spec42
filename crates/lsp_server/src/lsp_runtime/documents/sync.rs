@@ -403,9 +403,7 @@ pub(crate) async fn did_change_configuration(
 ) {
     let library_path_base = runtime_config
         .get()
-        .expect("initialize precedes configuration")
-        .library_path_base
-        .as_deref();
+        .and_then(|config| config.library_path_base.as_deref());
     let client_library_paths = params
         .settings
         .get("spec42")

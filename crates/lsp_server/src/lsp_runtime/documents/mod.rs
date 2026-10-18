@@ -58,9 +58,9 @@ async fn publish_semantic_change(
         diagnostic_uris =
             merge_diagnostic_fanout(diagnostic_uris, diagnostic_fanout(&new, &changed_uri));
         publish_workspace_diagnostics(client, handle, runtime_config, Some(&diagnostic_uris)).await;
-    } else {
-        report_publication_failure(client, handle).await;
     }
+    // Also after a success: that clears the reported failure, so a recurrence is announced.
+    report_publication_failure(client, handle).await;
 }
 
 fn merge_diagnostic_fanout(mut old: Vec<Url>, new: Vec<Url>) -> Vec<Url> {
@@ -146,8 +146,7 @@ async fn send_semantic_ready_notification(client: &Client, handle: &WorkspaceHan
 
 /// A retained publication must be visible as stale analysis, with the owning phase's cause.
 async fn report_publication_failure(client: &Client, handle: &WorkspaceHandle) {
-    let failure = handle.snapshot().publication_failure.clone();
-    if let Some(failure) = failure {
+    if let Some(failure) = handle.unreported_publication_failure() {
         client
             .show_message(MessageType::ERROR, publication_failure_message(&failure))
             .await;
