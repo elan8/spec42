@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   workloads together, preserves individual logs and kills timed-out process trees.
 
 - **Project analysis reliability.** Relative custom-library paths use the original first workspace
-  folder at startup and after configuration changes. Project diagnostic counts remain visible
+  folder at startup and after configuration changes. Missing-file containment uses the same Windows
+  drive-letter identity as admitted library roots. Project diagnostic counts remain visible
   while the server is rebuilding. A failed publication reports its phase and source identity, and
   the editor warns when the previous analysis remains visible.
 
