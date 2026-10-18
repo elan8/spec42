@@ -345,9 +345,12 @@ pub fn normalize_uri(uri: &Url) -> Url {
 ///
 /// This is lexical rather than filesystem-based so it also works for unsaved documents beneath
 /// a root that does not exist yet. A root matches itself and descendants, but never a sibling
-/// whose last common path segment merely starts with the same characters.
+/// whose last common path segment merely starts with the same characters. Windows file drive
+/// letters use the same lexical policy as admitted sources, even when neither path exists.
 pub fn uri_under_any(candidate: &Url, roots: &[Url]) -> bool {
+    let candidate = lowercase_drive_letter(candidate.clone());
     roots.iter().any(|root| {
+        let root = lowercase_drive_letter(root.clone());
         if candidate.scheme() != root.scheme()
             || candidate.username() != root.username()
             || candidate.password() != root.password()
@@ -393,6 +396,9 @@ pub fn path_to_file_url(path: &Path) -> Result<Url, SourceError> {
 }
 
 fn lowercase_drive_letter(url: Url) -> Url {
+    if url.scheme() != "file" {
+        return url;
+    }
     let path = url.path();
     let bytes = path.as_bytes();
     if bytes.len() >= 3 && bytes[0] == b'/' && bytes[1].is_ascii_uppercase() && bytes[2] == b':' {
@@ -1064,6 +1070,21 @@ mod tests {
         assert!(uri_under_any(&root, std::slice::from_ref(&root)));
         assert!(uri_under_any(&child, std::slice::from_ref(&root)));
         assert!(!uri_under_any(&sibling_prefix, &[root]));
+    }
+
+    #[test]
+    fn containment_normalizes_file_drive_letters_without_changing_custom_paths() {
+        let root = Url::parse("file:///c:/future-library").unwrap();
+        let child = Url::parse("file:///C:/future-library/Model.sysml").unwrap();
+        assert!(uri_under_any(&child, std::slice::from_ref(&root)));
+        assert!(uri_under_any(
+            &root,
+            &[Url::parse("file:///C:/future-library").unwrap()]
+        ));
+        let root = Url::parse("memory:///c:/future-library").unwrap();
+        let child = Url::parse("memory:///C:/future-library/Model.sysml").unwrap();
+        assert!(!uri_under_any(&child, &[root]));
+        assert_eq!(normalize_uri(&child), child);
     }
 
     #[test]
