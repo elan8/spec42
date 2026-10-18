@@ -1,13 +1,13 @@
 {
   "id": "domain",
   "displayName": "Domain libraries",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "repo": "elan8/sysml-domain-libraries",
   "format": "kpar",
-  "artifact": "elan8-domain-libraries-0.3.0.kpar",
+  "artifact": "elan8-domain-libraries-0.4.0.kpar",
   "contentPath": "",
   "pack": {
-    "kind": "domain-roots",
-    "siblingRelative": "../sysml-domain-libraries"
+    "siblingRelative": "../sysml-domain-libraries",
+    "exclude": [".git", "docs", "scripts", "examples", "model/Examples.sysml"]
   }
 }

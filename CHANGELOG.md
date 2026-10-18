@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Domain libraries 0.4.0, packed by `spec42 bundle` everywhere.** Pins the redesigned Elan8
+  domain libraries (generic and technical vocabulary under `model/`, with `Elan8` as the umbrella
+  package); archive paths are now `model/generic/...` and `model/technical/...`. A library
+  checkout is packed from its own `.project.json` with the config's `pack.exclude`, exactly as its
+  release is, in `spec42 bundle`, the library catalog build script and
+  `scripts/fetch-kpar-libraries-bundle.sh`; `pack.kind` and the `domain-roots` layout are removed.
+  A sibling checkout that is not the pinned version is skipped rather than packed under the pin.
+  A library archive left by an earlier build is reused only when it is the pinned version, so a
+  pin bump no longer embeds the previous library.
+
 ## [0.56.0] - 2026-10-17
 
 - **Upgrade notes.** The semantic contract version is now

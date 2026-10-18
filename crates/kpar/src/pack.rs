@@ -115,12 +115,21 @@ pub struct PackOptions {
 }
 
 impl PackOptions {
-    pub fn domain_libraries_defaults(project: Project, repo_root: &Path) -> Self {
+    /// The `spec42 bundle` packing of one project directory: every SysML/KerML file under
+    /// `directory` at its path relative to it, or under `archive_prefix/` when one is given,
+    /// except the `excludes` (see [`PackOptions::excludes`]). The project metadata is the
+    /// directory's own [`PROJECT_FILE`]; [`read_project_file`] reads it.
+    pub fn bundle(
+        project: Project,
+        directory: PathBuf,
+        archive_prefix: Option<String>,
+        excludes: Vec<String>,
+    ) -> Self {
         Self {
             project,
-            source_roots: domain_library_source_roots(repo_root),
-            named_source_roots: Vec::new(),
-            excludes: default_domain_excludes(),
+            source_roots: Vec::new(),
+            named_source_roots: vec![(archive_prefix.unwrap_or_default(), directory)],
+            excludes,
             timestamp: ArchiveTimestamp::default(),
             compression: ArchiveCompression::default(),
         }
@@ -139,36 +148,17 @@ impl PackOptions {
     }
 }
 
-/// Canonical domain-library roots, in archive-prefix order.
-///
-/// Current checkouts keep these directories under `model/`. Older checkouts and the pack
-/// tests keep them at the repository root. A `model/<name>` directory wins when both exist,
-/// because that is the layout the domain-library conventions declare. The archive prefix stays
-/// the directory's own name (`generic`, `technical`, `domain`), so either layout publishes the
-/// same KPAR paths.
-fn domain_library_source_roots(repo_root: &Path) -> Vec<PathBuf> {
-    ["domain", "technical", "generic"]
-        .into_iter()
-        .filter_map(|name| resolve_domain_library_root(repo_root, name))
-        .collect()
-}
-
-fn resolve_domain_library_root(repo_root: &Path, name: &str) -> Option<PathBuf> {
-    let under_model = repo_root.join("model").join(name);
-    if under_model.is_dir() {
-        return Some(under_model);
-    }
-    let at_root = repo_root.join(name);
-    at_root.is_dir().then_some(at_root)
-}
-
-pub fn default_domain_excludes() -> Vec<String> {
-    vec![
-        ".git/".to_string(),
-        "examples/".to_string(),
-        "scripts/".to_string(),
-        "docs/".to_string(),
-    ]
+/// Read and validate the [`PROJECT_FILE`] of a project directory, the metadata authority for
+/// [`PackOptions::bundle`].
+pub fn read_project_file(directory: &Path) -> Result<Project> {
+    let path = directory.join(PROJECT_FILE);
+    let bytes = fs::read(&path).map_err(|source| KparError::Io {
+        path: path.display().to_string(),
+        source,
+    })?;
+    let project: Project = serde_json::from_slice(&bytes)?;
+    project.validate_identity()?;
+    Ok(project)
 }
 
 /// Pack source trees into a KPAR file at `dest`.
@@ -486,51 +476,53 @@ mod tests {
         }
     }
 
+    fn write_source(root: &Path, relative: &str, text: &str) {
+        let path = root.join(relative);
+        fs::create_dir_all(path.parent().expect("parent")).expect("source dir");
+        fs::write(path, text).expect("write source");
+    }
+
+    fn bundle_of(repo: &Path) -> PackOptions {
+        PackOptions::bundle(test_project(), repo.to_path_buf(), None, Vec::new())
+    }
+
+    /// The domain-library layout as `spec42 bundle` and the library catalog both pack it:
+    /// archive paths are relative to the project directory, and the configured excludes drop
+    /// documentation, scripts, every `examples/` directory and one named file.
     #[test]
-    fn domain_libraries_defaults_pack_expected_roots_and_materialize() {
+    fn bundle_packs_a_project_directory_at_its_relative_paths() {
         let repo = tempdir().expect("temp repo");
-        let monetary_units = repo
-            .path()
-            .join("generic")
-            .join("units")
-            .join("MonetaryUnits.sysml");
-        fs::create_dir_all(monetary_units.parent().unwrap()).expect("generic units dir");
-        fs::write(
-            &monetary_units,
+        write_source(
+            repo.path(),
+            "model/generic/units/MonetaryUnits.sysml",
             "package MonetaryUnits { attribute <EUR> 'euro'; }",
-        )
-        .expect("write monetary units");
+        );
+        write_source(
+            repo.path(),
+            "model/technical/software/SoftwareCore.sysml",
+            "package SoftwareCore {}",
+        );
+        write_source(
+            repo.path(),
+            "model/technical/software/duplicate/SoftwareCore.sysml",
+            "package SoftwareCore {}",
+        );
+        write_source(
+            repo.path(),
+            "model/technical/software/examples/Ignored.sysml",
+            "package Ignored {}",
+        );
+        write_source(repo.path(), "model/Examples.sysml", "package Examples {}");
+        write_source(repo.path(), "docs/Notes.sysml", "package Notes {}");
 
-        let robotics_core = repo
-            .path()
-            .join("domain")
-            .join("robotics")
-            .join("RoboticsCore.sysml");
-        fs::create_dir_all(robotics_core.parent().unwrap()).expect("robotics dir");
-        fs::write(&robotics_core, "package RoboticsCore {}").expect("write robotics");
-
-        let software_core = repo
-            .path()
-            .join("technical")
-            .join("software")
-            .join("SoftwareCore.sysml");
-        fs::create_dir_all(software_core.parent().unwrap()).expect("software dir");
-        fs::write(&software_core, "package SoftwareCore {}").expect("write software");
-
-        let duplicate_core = repo
-            .path()
-            .join("technical")
-            .join("software")
-            .join("duplicate")
-            .join("SoftwareCore.sysml");
-        fs::create_dir_all(duplicate_core.parent().unwrap()).expect("duplicate dir");
-        fs::write(&duplicate_core, "package SoftwareCore {}").expect("write duplicate");
-
-        let example = repo.path().join("examples").join("Ignored.sysml");
-        fs::create_dir_all(example.parent().unwrap()).expect("examples dir");
-        fs::write(&example, "package Ignored {}").expect("write ignored example");
-
-        let options = PackOptions::domain_libraries_defaults(test_project(), repo.path());
+        let options = PackOptions::bundle(
+            test_project(),
+            repo.path().to_path_buf(),
+            None,
+            ["docs", "examples", "model/Examples.sysml"]
+                .map(str::to_string)
+                .to_vec(),
+        );
         let kpar_path = repo.path().join("elan8-domain-libraries-0.1.0.kpar");
         build_kpar(&options, &kpar_path).expect("pack domain libraries");
         verify_checksums(&fs::read(&kpar_path).expect("read kpar")).expect("checksums");
@@ -539,101 +531,63 @@ mod tests {
         assert_eq!(archive.project.name, "elan8-domain-libraries");
         assert_eq!(
             archive.meta.index.get("MonetaryUnits"),
-            Some(&"generic/units/MonetaryUnits.sysml".to_string())
+            Some(&"model/generic/units/MonetaryUnits.sysml".to_string())
         );
         assert_eq!(
             archive
                 .meta
                 .checksum
-                .get("generic/units/MonetaryUnits.sysml")
+                .get("model/generic/units/MonetaryUnits.sysml")
                 .map(|entry| entry.algorithm.as_str()),
             Some("SHA256")
         );
-        assert!(archive.meta.index.contains_key("RoboticsCore"));
-        assert!(archive
-            .meta
-            .index
-            .contains_key("technical/software/SoftwareCore.sysml"));
-        assert!(archive
-            .meta
-            .index
-            .contains_key("technical/software/duplicate/SoftwareCore.sysml"));
+        // Two sources declaring one package are indexed by path rather than by that name.
         assert!(!archive.meta.index.contains_key("SoftwareCore"));
-        assert!(!archive.meta.index.contains_key("examples/Ignored.sysml"));
+        assert!(archive
+            .meta
+            .index
+            .contains_key("model/technical/software/duplicate/SoftwareCore.sysml"));
+        for excluded in ["Ignored", "Examples", "Notes"] {
+            assert!(!archive.meta.index.contains_key(excluded), "{excluded}");
+        }
 
         let out = repo.path().join("out");
         let materialized =
             materialize(&fs::read(&kpar_path).expect("read kpar"), &out).expect("materialize");
-        assert_eq!(materialized.source_files.len(), 4);
-        assert!(out.join("generic/units/MonetaryUnits.sysml").is_file());
-        assert!(out.join("domain/robotics/RoboticsCore.sysml").is_file());
-        assert!(out.join("technical/software/SoftwareCore.sysml").is_file());
+        assert_eq!(materialized.source_files.len(), 3);
         assert!(out
-            .join("technical/software/duplicate/SoftwareCore.sysml")
+            .join("model/generic/units/MonetaryUnits.sysml")
             .is_file());
     }
 
     #[test]
-    fn domain_libraries_defaults_pack_roots_nested_under_model() {
+    fn read_project_file_reads_and_validates_the_project_metadata() {
         let repo = tempdir().expect("temp repo");
-        let monetary_units = repo
-            .path()
-            .join("model")
-            .join("generic")
-            .join("units")
-            .join("MonetaryUnits.sysml");
-        fs::create_dir_all(monetary_units.parent().unwrap()).expect("generic units dir");
+        assert!(matches!(
+            read_project_file(repo.path()),
+            Err(KparError::Io { .. })
+        ));
         fs::write(
-            &monetary_units,
-            "package MonetaryUnits { attribute <EUR> 'euro'; }",
+            repo.path().join(PROJECT_FILE),
+            serde_json::to_vec(&test_project()).expect("project json"),
         )
-        .expect("write monetary units");
-
-        let software_core = repo
-            .path()
-            .join("model")
-            .join("technical")
-            .join("software")
-            .join("SoftwareCore.sysml");
-        fs::create_dir_all(software_core.parent().unwrap()).expect("software dir");
-        fs::write(&software_core, "package SoftwareCore {}").expect("write software");
-
-        let nested_example = repo
-            .path()
-            .join("model")
-            .join("technical")
-            .join("software")
-            .join("examples")
-            .join("Ignored.sysml");
-        fs::create_dir_all(nested_example.parent().unwrap()).expect("examples dir");
-        fs::write(&nested_example, "package Ignored {}").expect("write ignored example");
-
-        let stale_root = repo
-            .path()
-            .join("generic")
-            .join("units")
-            .join("Stale.sysml");
-        fs::create_dir_all(stale_root.parent().unwrap()).expect("stale root dir");
-        fs::write(&stale_root, "package Stale {}").expect("write stale root source");
-
-        let options = PackOptions::domain_libraries_defaults(test_project(), repo.path());
-        let kpar_path = repo.path().join("elan8-domain-libraries-0.1.0.kpar");
-        build_kpar(&options, &kpar_path).expect("pack domain libraries");
-
-        let archive = open_kpar_path(&kpar_path).expect("open kpar");
+        .expect("write project");
         assert_eq!(
-            archive.meta.index.get("MonetaryUnits"),
-            Some(&"generic/units/MonetaryUnits.sysml".to_string())
+            read_project_file(repo.path()).expect("project"),
+            test_project()
         );
-        assert_eq!(
-            archive.meta.index.get("SoftwareCore"),
-            Some(&"technical/software/SoftwareCore.sysml".to_string())
-        );
-        assert!(!archive.meta.index.contains_key("Ignored"));
-        assert!(
-            !archive.meta.index.contains_key("Stale"),
-            "model/generic is the canonical root when a legacy generic/ directory also exists"
-        );
+
+        let mut invalid = test_project();
+        invalid.version = "../invalid".to_string();
+        fs::write(
+            repo.path().join(PROJECT_FILE),
+            serde_json::to_vec(&invalid).expect("project json"),
+        )
+        .expect("write project");
+        assert!(matches!(
+            read_project_file(repo.path()),
+            Err(KparError::InvalidArchive(_))
+        ));
     }
 
     #[test]
@@ -647,8 +601,8 @@ mod tests {
         let method_file = method.path().join("Elan8Method.sysml");
         fs::write(&method_file, "library package Elan8Method {}").expect("write method");
 
-        let options = PackOptions::domain_libraries_defaults(test_project(), repo.path())
-            .with_named_source_root("method", method.path().to_path_buf());
+        let options =
+            bundle_of(repo.path()).with_named_source_root("method", method.path().to_path_buf());
         let kpar_path = repo.path().join("bundle.kpar");
         build_kpar(&options, &kpar_path).expect("pack");
 
@@ -670,7 +624,7 @@ mod tests {
         let model = repo.path().join("domain/Example.sysml");
         fs::create_dir_all(model.parent().expect("parent")).expect("create source root");
         fs::write(&model, "package Example {}").expect("write model");
-        let options = PackOptions::domain_libraries_defaults(test_project(), repo.path());
+        let options = bundle_of(repo.path());
         let first = repo.path().join("first.kpar");
         let second = repo.path().join("second.kpar");
 
@@ -692,11 +646,8 @@ mod tests {
         fs::write(&model, "package Broken {").expect("write invalid model");
         let destination = repo.path().join("broken.kpar");
 
-        let error = build_kpar(
-            &PackOptions::domain_libraries_defaults(test_project(), repo.path()),
-            &destination,
-        )
-        .expect_err("strict parse failure must reject packing");
+        let error = build_kpar(&bundle_of(repo.path()), &destination)
+            .expect_err("strict parse failure must reject packing");
 
         assert!(matches!(error, KparError::InvalidArchive(_)));
         assert!(
@@ -714,11 +665,8 @@ mod tests {
         let destination = repo.path().join("existing.kpar");
         fs::write(&destination, "preserve me").expect("write sentinel archive");
 
-        let error = build_kpar(
-            &PackOptions::domain_libraries_defaults(test_project(), repo.path()),
-            &destination,
-        )
-        .expect_err("packing must not replace an existing archive");
+        let error = build_kpar(&bundle_of(repo.path()), &destination)
+            .expect_err("packing must not replace an existing archive");
 
         assert!(matches!(error, KparError::InvalidArchive(_)));
         assert_eq!(
@@ -734,7 +682,7 @@ mod tests {
         fs::create_dir_all(model.parent().expect("parent")).expect("create source root");
         fs::write(&model, "package Example {}").expect("write model");
         let destination = repo.path().join("invalid.kpar");
-        let mut options = PackOptions::domain_libraries_defaults(test_project(), repo.path());
+        let mut options = bundle_of(repo.path());
         options.project.version = "../invalid".to_string();
 
         let error = build_kpar(&options, &destination)
@@ -752,11 +700,7 @@ mod tests {
         fs::write(&model, "// package Incorrect\npackage Actual {}").expect("write model");
         let destination = repo.path().join("actual.kpar");
 
-        build_kpar(
-            &PackOptions::domain_libraries_defaults(test_project(), repo.path()),
-            &destination,
-        )
-        .expect("pack strict AST source");
+        build_kpar(&bundle_of(repo.path()), &destination).expect("pack strict AST source");
 
         let archive = open_kpar_path(&destination).expect("open archive");
         assert_eq!(
@@ -778,11 +722,8 @@ mod tests {
         fs::write(&outside, "package Outside {}").expect("write outside source");
         symlink(&outside, domain.join("linked.sysml")).expect("create source symlink");
 
-        let error = build_kpar(
-            &PackOptions::domain_libraries_defaults(test_project(), repo.path()),
-            &repo.path().join("linked.kpar"),
-        )
-        .expect_err("symlinked source must be rejected");
+        let error = build_kpar(&bundle_of(repo.path()), &repo.path().join("linked.kpar"))
+            .expect_err("symlinked source must be rejected");
 
         assert!(matches!(error, KparError::InvalidArchive(_)));
     }
