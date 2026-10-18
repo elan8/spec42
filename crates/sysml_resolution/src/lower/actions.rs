@@ -2322,11 +2322,12 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        // Constructs the canonical value Expression/result and preserves its authored spelling.
-        // This usage family does not yet classify the expression operands.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(document, declaration, feature_value)?;
-        }
+        self.lower_value_assignment(
+            document,
+            declaration,
+            UnsupportedFamily::ActionDefinitionMember,
+            node.value.value.as_ref(),
+        )?;
         self.lower_perform_target(
             document,
             declaration,

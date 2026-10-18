@@ -868,9 +868,12 @@ impl SemanticModelBuilder {
         }
         self.lower_usage_extension_keywords(document, declaration, &node.value.extension_keywords)?;
         self.lower_usage_declaration_clauses(document, declaration, usage, variation, direction)?;
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(document, declaration, feature_value)?;
-        }
+        self.lower_value_assignment(
+            document,
+            declaration,
+            UnsupportedFamily::PartUsageMember,
+            node.value.value.as_ref(),
+        )?;
         for element in node.value.body.members() {
             self.lower_part_usage_body_element(
                 document,
