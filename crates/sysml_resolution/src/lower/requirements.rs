@@ -397,9 +397,12 @@ impl SemanticModelBuilder {
         {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
-        if let Some(value) = &node.value.value {
-            self.record_feature_value(document, declaration, value)?;
-        }
+        self.lower_value_assignment(
+            document,
+            declaration,
+            unsupported,
+            node.value.value.as_ref(),
+        )?;
         self.lower_requirement_shaped_body(document, declaration, &node.value.body, unsupported)
     }
 
