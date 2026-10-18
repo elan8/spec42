@@ -105,6 +105,12 @@ impl SemanticModelBuilder {
         element: &Node<PartDefBodyElement>,
     ) -> Result<(), ConstructionError> {
         match &element.value {
+            PartDefBodyElement::ExtendedDefinition(node) => {
+                self.lower_extended_definition(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::ExtendedUsage(node) => {
+                self.lower_extended_usage(document, Some(declaration), node)?;
+            }
             PartDefBodyElement::Error(error) => {
                 self.push_recovery(document, error.span);
             }
@@ -502,6 +508,9 @@ impl SemanticModelBuilder {
         element: &Node<PartUsageBodyElement>,
     ) -> Result<(), ConstructionError> {
         match &element.value {
+            PartUsageBodyElement::ExtendedDefinition(node) => {
+                self.lower_extended_definition(document, Some(owner), node)?;
+            }
             PartUsageBodyElement::Error(error) => {
                 self.push_recovery(document, error.span);
             }
@@ -1098,6 +1107,12 @@ impl SemanticModelBuilder {
         element: &Node<AttributeBodyElement>,
     ) -> Result<(), ConstructionError> {
         match &element.value {
+            AttributeBodyElement::ExtendedDefinition(node) => {
+                self.lower_extended_definition(document, Some(owner), node)?;
+            }
+            AttributeBodyElement::ExtendedUsage(node) => {
+                self.lower_extended_usage(document, Some(owner), node)?;
+            }
             AttributeBodyElement::Error(error) => {
                 self.push_recovery(document, error.span);
             }
@@ -1301,9 +1316,7 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a package/definition/usage-level `enum` feature member (BNF EnumerationUsage), e.g.
-    /// `enum color : ColorKind;`, mirroring `lower_attribute_usage`. `type_name` is a bare
-    /// `QualifiedReferenceId` (not a `TypingRelationship` node), so its `FeatureTyping` reference
-    /// is pushed directly rather than through `lower_typing_relationship`.
+    /// `enum color : ColorKind;`, retaining every typing target, its value and its owned body.
     pub(crate) fn lower_enum_usage(
         &mut self,
         document: DocumentIdx,
@@ -1337,28 +1350,14 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
         }
         // `Usage`'s `ValuePart` (`enum size : SizeChoice = SizeChoice::small;`).
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(document, declaration, feature_value)?;
         }
-        Ok(())
+        self.lower_attribute_body(document, declaration, &node.value.body)
     }
 
     /// Lowers an `item def` (BNF ItemDefinition), mirroring `lower_part_def`: ownership,
@@ -1511,25 +1510,8 @@ impl SemanticModelBuilder {
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(document, declaration, feature_value)?;
         }
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags {
-                    variation: occurrence_prefix_is_variation(&node.value.prefix),
-                    ..RelationshipFlags::default()
-                },
-                span,
-                import: None,
-            })?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
         }
         if let Some(relationship) = &node.value.subsets {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
@@ -1935,6 +1917,12 @@ impl SemanticModelBuilder {
         element: &Node<OccurrenceBodyElement>,
     ) -> Result<(), ConstructionError> {
         match &element.value {
+            OccurrenceBodyElement::ExtendedDefinition(node) => {
+                self.lower_extended_definition(document, Some(owner), node)?;
+            }
+            OccurrenceBodyElement::ExtendedUsage(node) => {
+                self.lower_extended_usage(document, Some(owner), node)?;
+            }
             OccurrenceBodyElement::DefaultReferenceUsage(node) => self
                 .lower_default_reference_usage(
                     document,

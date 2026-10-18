@@ -1,75 +1,8 @@
 # Upstream sysml-v2-parser gaps
 
-This is the active record of information the parser must preserve or distinguish before spec42 can
-implement the corresponding semantic or syntax-fidelity behavior without guessing.
-
-The parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@c28ca7680856cb5ab5cb10ea1e87e111619f73f2` (`PARSE_AST_VERSION` 268): the
-merge commit of `elan8/sysml-v2-parser#185` (`perform` members and a value on action usages, loop
-nodes as `then` targets, `perform` in occurrence usage bodies). Only
-the rows this pin closed or narrowed were re-verified against it. An earlier
-canonical upstream pin was `elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3`
-(parser `main`, `PARSE_AST_VERSION` 256), which added `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted
-`verify_requirement_expects_declaration` recovery for the invalid `verify requirement
-<feature-chain>;` form (was the generic `recovered_requirement_body_element`) -- a
-diagnostic-only change with no AST shape effect, so spec42 passes the code through unchanged. And
-`elan8/sysml-v2-parser#138` (`elan8/spec42#138`): a use-case /
-`analysis` / `verification` body is a SysML `ActionBody`, so `first`/`then`/`then done` now parse
-into the shared `FirstStmt` / `ThenAction` nodes (removing the bespoke `FirstSuccession` /
-`ThenDone`), and spec42's `lower_case_family_def_body` lowers them through the same
-`lower_first_stmt` / `lower_then_action` the action-def and `entry`/`do`/`exit` state bodies use,
-plus `then use case <name> { … }` through `lower_use_case_usage`. This is on top of
-`a5557ea` (the Apollo 11 normative-form fixes for `elan8/sysml-v2-parser#132` / `#134` /
-`elan8/spec42#100`) and `378e41b` (`#128`/`#137` item-usage trailing `:>`). The five Apollo forms
-all reach typed lowering: forms 1, 3, and 5 (keyword-less feature usage in use-case-family bodies,
-multiplicity before typing on nested action usages, and the `abstract` prefix on `def`-less
-connection usages) landed with `#133`; `#135` closes form 2 (`return :>` anonymous subsetting,
-whose chained `->select { … }->collect { … }->sum()` value the parser now retains instead of
-recovering) and form 4 (`do action <name> { <body> }` routes the name to `declared_name`, and
-spec42's `lower_state_{entry,do,exit}_action` now declares the nested action and walks its body).
-Gaps 83 and 84 are removed. The gap list
-below was last re-exercised against `65c67de8a38269f8bcaf1bc42500bde30083ff81` (the merge commit
-for `elan8/sysml-v2-parser#129`, including the follow-up attribute-body recovery boundary fix),
-one spelling per document through `spec42 check` (a
-second error in the same document suppresses the first as `recovery_cascade_suppressed`, which
-made an earlier multi-spelling probe read as "parses"), and by re-reading the owning
-`sysml_resolution` lowering; the entries the bump closed were removed rather than annotated. The
-upstream commits since `65c67de8` — directed `ref` declarations in port bodies, serde
-prefix-tampering hardening, feature-chain targets on `verify`, and the Apollo 11 normative-form
-fixes (`#133`, `#135`) — touch areas outside the remaining gap list; adopting them added a
-`PortDefBodyElement::AliasDef` arm to port-definition lowering and the form 2 / form 4 lowering
-above. New upstream work must be based on the full pinned identity, not an abbreviated revision or
-the old `sysml-v2-parser-next` dependency alias.
-
-The bump from `c81e0b69236d57c64df127104232b54f72646484` closes parser gaps 62, 66, 69, 74,
-79 and 82: flow payload and feature-specialization clause identity, binding body ends, directed
-action parameter kinds, and invalid membership owners now reach typed lowering.
-The remaining unmet corpus expectations have explicit semantic or lowering blockers rather than
-continuing to masquerade as parser gaps.
-
-The bump from `c1677e75d3b0b4d2b806fbdf438c2bfb1dfc1056` (12 upstream commits in the parser
-speculation-removal performance series) leaves the open gaps below unchanged. Corpus regeneration
-newly retains the `#Safety feature z1 : T;` extended usage in
-`kerml/coverage_features_advanced.md` as an explicit `unsupported_package_member` rather than
-omitting that unsupported semantic member.
-
-The bump from `f52100fd71b5950fba6a8e9ba2760f1a1887ce34` (40 upstream commits: the "gaps wave 2"
-and "corpus snapshot wave 3" work, the parser performance pass and the span-backed authored-text
-migration) closed gaps 59, 64, 65, 67, 70,
-72, 73, 75, 80 and 81 outright and narrowed 62, 66, 74 and 76. It opened one gap, recorded below as
-82. It also removed the standard library's last parse recoveries (`Flows.sysml`,
-`Interfaces.sysml`, `Items.sysml`, `CausationConnections.sysml`), so the library's publication is
-now honestly `unsupported-syntax` rather than `parse-recovery`; the seven members that keep it
-there are listed under "Library members still unsupported".
-
-Lowering that the bump unblocked has landed with it: `end` on every occurrence-usage family with
-its owned cross feature; `#Tag` extension keywords and the keyword-less `#Tag <name>`
-`ExtendedUsage`; `MetadataBody` definition, alias and import members; the declared
-`include use case <name> : <Type>;`; `require constraint <name> : <Type>;`'s typing; the
-`perform <path>;` reference target; named connector ends; `end derived x : T;` / `end in x : T;`
-prefixes; the `parallel` state body modifier; and the `conjugates` / `~` conjugation part. The
-members the bump newly types but whose lowering has not caught up are listed under "Typed
-upstream, not yet lowered here".
+The parser baseline is `elan8/sysml-v2-parser@78c34b54ecc64c98cfed7bf09682e786f55590d7`
+(v0.58.0, AST 284). This file records remaining parser and lowering gaps. The immutable dependency
+pin is owned by `Cargo.toml`; consumed parser changes are covered by the semantic snapshot corpus.
 
 ## Ownership and evidence rules
 
@@ -101,31 +34,6 @@ rerun against the exact replacement revision when fixed.
 | occurrence-usage-typings | Every typing target of an `occurrence` usage: `ast::OccurrenceUsage::type_name` is one `QualifiedReferenceId`, so `occurrence x : A, B;` silently keeps only `A` (no recovery diagnostic), unlike `PartUsage`'s structured `typing` clause | Give `OccurrenceUsage` the same structured `TypingRelationship` clause `PartUsage`/`AttributeUsage` carry (every comma-separated target); prove `occurrence x : A, B;` produces both targets in order, so spec42 can lower each FeatureTyping |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
-| view-rendering-usage | Which `ViewRenderingUsage` alternative was written: `ast::ViewRenderingUsage` drops the `rendering` keyword and reads the `OwnedReferenceSubsetting` shorthand's target (`render asTreeDiagram;`) as a declared `name`, so a qualified target cannot be represented and a reference is indistinguishable from a declaration | Distinguish `render <QualifiedName> ...;` (ReferenceSubsetting target, qualified allowed) from `render rendering r : R;` / `render <keyword>+ r;` (declared Usage); prove both produce distinct typed nodes, so spec42 can lower the ViewRenderingMembership member (`lowering-gap-redefinition-view-rendering-membership`) |
-| state-action-declaration | Which `PerformActionUsageDeclaration` alternative an `entry`/`do`/`exit` member wrote: `entry action started;` is `'action' UsageDeclaration` (a new action named `started`), but the parser reads it as `action_reference` and only treats the name as declared when a `: Type`, `:>>` clause or owned body follows | Read `(entry\|do\|exit) action <Name> ...;` as `declared_name` and keep `action_reference` for the keyword-less `OwnedReferenceSubsetting` form (`entry started;`); prove `entry action started;` yields a declared action, so spec42 snapshots can use the plain spelling for StateSubactionMembership rules |
-| body-member-expression-shredding | Use-case-family body members the dispatcher does not recognise still fall through to the terminal `expression` arm: `include system.uc1;` and `include use case u :> v [1..5];` in a `use case` body yield stray `Expression` elements (`include`, ...). Constraint, calculation and KerML type bodies are fixed | Dispatch every use-case-family body member keyword (`include` with a feature-chain or `use case` target) before the expression fallback; prove `use case uc { include a.b; }` yields no expression element. spec42 can then lower case-body result expressions as ResultExpressionMemberships (constraint/calc/KerML bodies already are) |
-
-The contribution target is the pinned `elan8/sysml-v2-parser` repository (the canonical upstream;
-the `lukewilliamboswell/sysml-v2-parser` fork used during the pipeline-rewrite cycle merged into it
-as `#123` and is no longer the target). References below to `elan8/sysml-v2-parser#121` record
-where the arena-backed work originated; they do not authorize changing spec42 to follow a moving
-upstream branch. A fix is consumed only by updating the single full revision in spec42 and
-regenerating the lockfile through the normal dependency workflow.
-
-- Gaps 83 and 84 (Apollo 11 `spec42#100` forms 2 and 4) are closed by
-  `elan8/sysml-v2-parser@a5557ea` (`#135`). Form 2: `return :>` anonymous subsetting parses and
-  its chained `->select { … }->collect { … }->sum()` value is retained (`ret.value.is_some()`)
-  instead of recovering as `recovered_calc_body_element`; `lower_return_decl`'s existing
-  `is_subsetting` branch handles the target, and the collection-operator value stays a
-  typed-but-unevaluated expression (the `lower_expression` collection-operator arm is a separate
-  "typed upstream, not lowered" item, not a recovery). Form 4: `state_behavior_action_target`
-  routes a name immediately followed by `{` to `declared_name`, and
-  `lower_state_{entry,do,exit}_action` now takes a declared-action branch
-  (`lower_state_declared_action`) that pushes the named `{Entry,Do,Exit}ActionBinding`
-  declaration, lowers any `: Type` / `:>>` clause, and recurses through `lower_state_def_body`
-  so the `first` / `then action` flow resolves against the action's own scope. Apollo 11's
-  `Purpose/MissionPhasesPackage.sysml` states and the `satisfy … by …operations.<action>` feature
-  chains in `MissionSpecificationPackage.sysml` now resolve.
 
 - Gap 61. One member spelling of three remains unrepresentable in a calc-shaped body, and it is
   rejected honestly rather than shredded: `classifier C { message m of T; }` is
@@ -152,34 +60,6 @@ regenerating the lockfile through the normal dependency workflow.
   `connection … connect (e1, e2, e3)` parses through `connect_ends`. Evidence:
   `tests/snapshots/syntax/nary_bare_connect.md` and `tests/snapshots/syntax/connect_and_bind.md`.
 
-### Closed by grammar, not by the parser
-
-Gaps 76, 77, 78 and 52 were recorded as parser gaps because Spec42 fixtures used spellings the
-pinned textual BNF does not contain. The compiler corpus now authors the productions instead
-(`docs/reference/TEXTUAL-SYNTAX-INVENTORY.md`).
-
-- Gap 76. `IfNode` (SysML BNF 1123-1138) has no `then` keyword; `ActionBodyParameter` is always a
-  braced body. `if true { a1; } else { a2; }` is the production. The shorthand `if <cond> then
-  <a> else <b>;` is not a parser omission.
-- Gap 77. `EffectBehaviorMember` (`do`) precedes `then` in `TransitionUsage` (BNF 1277-1286).
-  `transition first idle do notify then running;` is the production; `then … do …` is not.
-- Gap 78. `BasicDefinitionPrefix` / `RefPrefix` are the exclusive slot `abstract` | `variation`
-  (BNF 219, 278). Dual-keyword `abstract variation` is `abstract-syntax-nonrepresentable-abstract-variation`.
-  Bare `variation` spellings parse; remaining variation rules are semantic/lowering blockers.
-- Gap 52. SysML `RefPrefix` has `constant` and no `var`/`variable` keyword. KerML `var` remains
-  in `BasicFeaturePrefix`. Assignment validation now authors constant vs non-constant SysML
-  attributes (`semantic-assignment-action-usage`).
-
-Two violating sides this document used to attribute to gap 64 are grammar exclusions. KerML's
-`ConjugationPart = ( 'conjugates' | '~' ) OwnedConjugation` (BNF 462) admits one clause per type
-declaration, so a second owned Conjugation has no spelling (`classifier Two conjugates A
-conjugates B;` is `unsupported_grammar_form`, honestly), and `TypeDeclaration` makes
-`SpecializationPart` and `ConjugationPart` exclusive alternatives, so `classifier C conjugates A
-specializes B;` is likewise refused. The first is recorded as
-`abstract-syntax-nonrepresentable-second-conjugation`; the second is authorable through a
-standalone `subclassifier C specializes B;` declaration, which is a spec42 lowering gap
-(`lowering-gap-kerml-relationship-declarations`, below).
-
 ## Typed upstream, not yet lowered here
 
 Not upstream gaps: the parser carries these typed facts, and the remaining work is
@@ -201,15 +81,6 @@ at pinned `695b2b44`; entries whose lowering has since landed were removed.
   SelfSameLifeLink;` is the library's one such member, and
   `kerml_specialization_specific_not_conjugated.md` waits on it
   (`lowering-gap-kerml-relationship-declarations`).
-
-- **`EntryAction`/`DoAction`/`ExitAction` declaration facts.** `declared_name`, `type_name`,
-  `redefines`, and `effect` are typed; `lower_state_entry_action` and its siblings still read only
-  `action_reference` and `body`, so `entry action entryAction :>> 'entry';` lowers as the reference
-  form.
-
-- **`variant attribute` in a `variation attribute def` body.** `ast::AttributeBodyElement` carries
-  a `VariantUsage` variant; `lower_attribute_body_element` reports it as
-  `unsupported_attribute_member` rather than delegating to `lower_variant_usage`.
 
 - **`MetadataKeywordUsage.reference`.** The `#<Name>;` / `#<Name> { ... }` member (no declared
   usage) carries a resolvable `QualifiedReferenceId`, but every scope still reports the member as
