@@ -438,9 +438,9 @@ impl WorkspaceHandle {
                 if let Some(failure) = failure.as_ref() {
                     tracing::error!(stage = ?failure.stage(), message = %failure.message(), ?outcome, "semantic publication failed; retaining last good publication");
                 }
-                state.publication_failure = failure;
                 match outcome {
                     PublicationOutcome::Published => {
+                        state.publication_failure = None;
                         crate::session::state::refresh_symbol_table_from_publication(state);
                         state
                             .services
@@ -449,7 +449,12 @@ impl WorkspaceHandle {
                         Mutation::Changed(true)
                     }
                     PublicationOutcome::Superseded => Mutation::Unchanged(false),
-                    PublicationOutcome::IdentityMismatch | PublicationOutcome::Failed => {
+                    PublicationOutcome::IdentityMismatch => {
+                        state.publication_failure = Some(Arc::new(PublicationBuildFailure::admission_identity_mismatch()));
+                        Mutation::Changed(false)
+                    }
+                    PublicationOutcome::Failed => {
+                        state.publication_failure = failure;
                         Mutation::Changed(false)
                     }
                 }

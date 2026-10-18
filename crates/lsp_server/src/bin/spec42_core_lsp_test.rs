@@ -3,13 +3,17 @@ use std::sync::Arc;
 #[tokio::main]
 async fn main() {
     let mut config = lsp_server::default_server_config();
-    if let Some(stdlib) = std::env::var_os("SPEC42_LSP_TEST_STDLIB") {
-        let stdlib = std::path::PathBuf::from(stdlib);
+    let stdlib = std::env::var_os("SPEC42_LSP_TEST_STDLIB").map(std::path::PathBuf::from);
+    let no_stdlib = std::env::var_os("SPEC42_LSP_TEST_NO_STDLIB").is_some();
+    if stdlib.is_some() || no_stdlib {
         let catalog =
             library_catalog::resolve_library_catalog(&library_catalog::HostLibraryRequest {
-                cache_dir: stdlib.join(".cache"),
-                no_stdlib: false,
-                stdlib_path_override: Some(stdlib),
+                cache_dir: stdlib
+                    .as_ref()
+                    .map(|root| root.join(".cache"))
+                    .unwrap_or_else(std::env::temp_dir),
+                no_stdlib,
+                stdlib_path_override: stdlib,
                 kpar_library_path_overrides: Default::default(),
                 project_library_paths: Default::default(),
                 disabled_kpar_libraries: Default::default(),

@@ -793,12 +793,90 @@ pub(crate) fn build_model(
     standard_library_availability: sysml_contract::StandardLibraryAvailability,
     library: Option<&SettledLibrary>,
     reported: &[Box<str>],
-) -> Result<(ResolvedSemanticModel, ParsedSources), ResolutionError> {
-    let (indexed, sources) = Lowered::from((storage, sources))
-        .resolve(library)?
+) -> Result<(ResolvedSemanticModel, ParsedSources), crate::BuildFailure> {
+    let identities: Vec<_> = storage
+        .documents
+        .iter()
+        .map(|document| document.identity.clone())
+        .collect();
+    let failure = |phase, error| resolution_failure(phase, &identities, error);
+    let resolved = Lowered::from((storage, sources))
+        .resolve(library)
+        .map_err(|error| failure(crate::ConstructionPhase::Resolution, error))?;
+    let (indexed, sources) = resolved
         .evaluate(policy)
-        .index()?;
+        .index()
+        .map_err(|error| failure(crate::ConstructionPhase::Indexing, error))?;
     Ok(indexed
-        .diagnose(sources, reported, standard_library_availability)?
+        .diagnose(sources, reported, standard_library_availability)
+        .map_err(|error| failure(crate::ConstructionPhase::Diagnostics, error))?
         .into_parts())
+}
+
+fn resolution_failure(
+    phase: crate::ConstructionPhase,
+    identities: &[Box<str>],
+    error: ResolutionError,
+) -> crate::BuildFailure {
+    let documents: Vec<&str> = match error
+        .document()
+        .and_then(|document| identities.get(document.index()))
+    {
+        Some(identity) => vec![identity.as_ref()],
+        None => identities.iter().map(|uri| uri.as_ref()).collect(),
+    };
+    crate::BuildFailure::construction(phase, documents, error)
+}
+
+#[cfg(test)]
+mod failure_tests {
+    use super::{resolution_failure, ResolutionError};
+    use crate::model::DocumentIdx;
+    use crate::{BuildFailure, ConstructionPhase};
+
+    #[test]
+    fn invalid_storage_reports_the_owning_phase_and_failed_document() {
+        let identities = ["memory://short.sysml".into(), "memory://long.sysml".into()];
+        let failure = resolution_failure(
+            ConstructionPhase::Diagnostics,
+            &identities,
+            ResolutionError::InvalidStorage.in_document(DocumentIdx(1)),
+        );
+        let BuildFailure::ConstructionFailed {
+            phase,
+            documents,
+            cause,
+        } = &failure
+        else {
+            panic!("construction failure");
+        };
+        assert_eq!(*phase, ConstructionPhase::Diagnostics);
+        assert_eq!(
+            documents.as_ref(),
+            [Box::<str>::from("memory://long.sysml")]
+        );
+        assert_eq!(cause, "InvalidDocumentStorage(DocumentIdx(1))");
+        assert_eq!(failure.to_string(), "Diagnostics failed for documents [\"memory://long.sysml\"]: InvalidDocumentStorage(DocumentIdx(1))");
+    }
+
+    #[test]
+    fn model_wide_failure_reports_all_inputs_without_guessing_a_failed_source() {
+        let identities = ["memory://a.sysml".into(), "memory://b.sysml".into()];
+        let failure = resolution_failure(
+            ConstructionPhase::Indexing,
+            &identities,
+            ResolutionError::Capacity,
+        );
+        let BuildFailure::ConstructionFailed {
+            phase,
+            documents,
+            cause,
+        } = failure
+        else {
+            panic!("construction failure");
+        };
+        assert_eq!(phase, ConstructionPhase::Indexing);
+        assert_eq!(documents.as_ref(), identities);
+        assert_eq!(cause, "Capacity");
+    }
 }

@@ -470,14 +470,26 @@ impl TestSession {
         );
     }
 
+    pub fn notify(&mut self, method: &str, params: serde_json::Value) {
+        send_message(
+            &mut self.stdin,
+            &serde_json::json!({
+                "jsonrpc":"2.0", "method":method, "params":params
+            })
+            .to_string(),
+        );
+    }
+
     pub fn request(&mut self, method: &str, params: serde_json::Value) -> serde_json::Value {
         let id = next_id();
-        let req = serde_json::json!({
+        let mut req = serde_json::json!({
             "jsonrpc":"2.0",
             "id": id,
-            "method": method,
-            "params": params
+            "method": method
         });
+        if !params.is_null() {
+            req["params"] = params;
+        }
         send_message(&mut self.stdin, &req.to_string());
         let raw = read_response(&mut self.stdout, id).expect("request response");
         serde_json::from_str(&raw).expect("json response")
@@ -489,6 +501,23 @@ impl TestSession {
     /// (e.g. didOpen/didChange) are processed in-order before assertions.
     pub fn barrier(&mut self) {
         let _ = self.request("workspace/symbol", serde_json::json!({ "query": "" }));
+    }
+
+    pub fn wait_for_diagnostics(&mut self, uri: &str) -> Vec<serde_json::Value> {
+        loop {
+            let message: serde_json::Value = serde_json::from_str(
+                &read_message(&mut self.stdout).expect("diagnostic publication"),
+            )
+            .expect("JSON-RPC message");
+            if message["method"] == "textDocument/publishDiagnostics"
+                && message["params"]["uri"] == uri
+            {
+                return message["params"]["diagnostics"]
+                    .as_array()
+                    .expect("diagnostics array")
+                    .clone();
+            }
+        }
     }
 
     pub fn wait_for_publications(&mut self, uris: &[&str]) {

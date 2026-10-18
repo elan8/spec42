@@ -58,6 +58,8 @@ async fn publish_semantic_change(
         diagnostic_uris =
             merge_diagnostic_fanout(diagnostic_uris, diagnostic_fanout(&new, &changed_uri));
         publish_workspace_diagnostics(client, handle, runtime_config, Some(&diagnostic_uris)).await;
+    } else {
+        report_publication_failure(client, handle).await;
     }
 }
 
@@ -137,8 +139,25 @@ pub(crate) fn semantic_index_ready_notification(
 /// Sends the `spec42/semanticIndexReady` LSP notification to the client.
 /// The session must already be in `Ready` state before calling this.
 async fn send_semantic_ready_notification(client: &Client, handle: &WorkspaceHandle) {
+    report_publication_failure(client, handle).await;
     let params = semantic_index_ready_notification(&handle.snapshot());
     client.send_notification::<SemanticIndexReady>(params).await;
+}
+
+/// A retained publication must be visible as stale analysis, with the owning phase's cause.
+async fn report_publication_failure(client: &Client, handle: &WorkspaceHandle) {
+    let failure = handle.snapshot().publication_failure.clone();
+    if let Some(failure) = failure {
+        client
+            .show_message(MessageType::ERROR, publication_failure_message(&failure))
+            .await;
+    }
+}
+
+fn publication_failure_message(
+    failure: &sysml_query::publication::PublicationBuildFailure,
+) -> String {
+    format!("Spec42 could not analyze the current project; the previous analysis remains visible. {failure}")
 }
 
 mod startup;
@@ -151,6 +170,15 @@ pub(crate) use sync::{
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn retained_publication_failure_message_exposes_the_cause() {
+        let failure = sysml_query::publication::PublicationBuildFailure::construction_worker(
+            "worker panicked",
+        );
+        assert_eq!(publication_failure_message(&failure),
+            "Spec42 could not analyze the current project; the previous analysis remains visible. ConstructionWorker: worker panicked");
+    }
 
     #[test]
     fn diagnostic_fanout_retains_old_dependants_and_adds_new_dependants() {
