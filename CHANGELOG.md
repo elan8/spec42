@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   while the server is rebuilding. A failed publication reports its phase and source identity, and
   the editor warns when the previous analysis remains visible.
 
-- **Parser 0.58.0 / AST 284.** Retains all usage typing targets, extended body members,
+- **Parser 0.58.0 / AST 284.** Retains all usage typing targets (except `occurrence` usages,
+  which the parser still types with a single target), extended body members,
   nested action definitions and case usages, variants, and complete state-action declarations,
   specializations and values. `model-export` and generator consumers should process every authored
   typing relationship; a usage may have several targets. State-action names and values now appear
