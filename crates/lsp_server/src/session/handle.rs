@@ -67,6 +67,37 @@ mod publication_tests {
     }
 
     #[tokio::test]
+    async fn a_retained_failure_is_reported_once_until_a_publication_succeeds() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let uri = Url::parse("memory://workspace/model.sysml").unwrap();
+        state
+            .index
+            .insert(uri.clone(), entry(&uri, "package W { part p; }"));
+        state.semantic_revision += 1;
+        state.publication_failure = Some(Arc::new(PublicationBuildFailure::construction_worker(
+            "worker panicked",
+        )));
+        let handle = WorkspaceHandle::spawn(state);
+
+        assert!(handle.unreported_publication_failure().is_some());
+        assert!(
+            handle.unreported_publication_failure().is_none(),
+            "the same retained failure must not be announced again"
+        );
+        assert!(handle.rebuild_publication().await.unwrap());
+        assert!(handle.unreported_publication_failure().is_none());
+        assert!(
+            handle
+                .reported_publication_failure
+                .lock()
+                .unwrap()
+                .is_none(),
+            "a successful publication clears the record so a recurrence is reported"
+        );
+    }
+
+    #[tokio::test]
     async fn watched_rename_rebuilds_one_publication_with_new_source_identity() {
         let old_uri = Url::parse("memory://workspace/old.sysml").unwrap();
         let new_uri = Url::parse("memory://workspace/new.sysml").unwrap();
@@ -314,6 +345,8 @@ pub(crate) struct WorkspaceHandle {
     actor: SessionActor<ServerState>,
     snapshot: SnapshotHandle<ServerState>,
     diagnostics_debounce_generation: Arc<AtomicU64>,
+    /// The retained failure last shown to the user, so one failure is announced once.
+    reported_publication_failure: Arc<std::sync::Mutex<Option<String>>>,
 }
 
 impl WorkspaceHandle {
@@ -328,7 +361,26 @@ impl WorkspaceHandle {
             actor,
             snapshot,
             diagnostics_debounce_generation: Arc::new(AtomicU64::new(0)),
+            reported_publication_failure: Arc::default(),
         }
+    }
+
+    /// The retained publication failure, unless this same failure was already returned.
+    ///
+    /// Later edits that fail identically, or are superseded, keep the earlier report instead of
+    /// repeating it. A successful publication clears the record so a recurrence is reported again.
+    pub(crate) fn unreported_publication_failure(&self) -> Option<Arc<PublicationBuildFailure>> {
+        let failure = self.snapshot().publication_failure.clone();
+        let mut reported = self
+            .reported_publication_failure
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let key = failure.as_ref().map(|failure| failure.to_string());
+        if *reported == key {
+            return None;
+        }
+        *reported = key;
+        failure
     }
 
     pub(crate) fn next_diagnostics_debounce_generation(&self) -> u64 {

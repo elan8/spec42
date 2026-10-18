@@ -715,14 +715,21 @@ impl fmt::Display for BuildFailure {
                 documents,
                 cause,
             } => {
-                write!(
-                    formatter,
-                    "{phase:?} failed for documents {documents:?}: {cause}"
-                )
+                // A model-wide phase names every input, standard library included; a message for
+                // a person shows the first few and counts the rest.
+                let shown = &documents[..documents.len().min(BUILD_FAILURE_DOCUMENTS_SHOWN)];
+                write!(formatter, "{phase:?} failed for documents {shown:?}")?;
+                if documents.len() > shown.len() {
+                    write!(formatter, " and {} more", documents.len() - shown.len())?;
+                }
+                write!(formatter, ": {cause}")
             }
         }
     }
 }
+
+/// How many failed documents a [`BuildFailure`] message names before counting the rest.
+const BUILD_FAILURE_DOCUMENTS_SHOWN: usize = 3;
 
 impl std::error::Error for BuildFailure {}
 
