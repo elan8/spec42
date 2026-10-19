@@ -449,10 +449,20 @@ impl PublishedResolution {
             source: ElementSource::Workspace,
         })) {
             let types = resolved_values(self.direct_types(entry.identity));
-            for ty in types {
-                let Some(kind) = definitions.get(&ty.symbol).copied() else {
-                    continue;
-                };
+            let kinds =
+                types
+                    .iter()
+                    .flat_map(|ty| {
+                        resolved_values(self.all_supertypes(
+                            ty.symbol,
+                            crate::SpecializationScope::Subclassification,
+                        ))
+                        .iter()
+                        .filter_map(|supertype| definitions.get(supertype).copied())
+                        .collect::<Vec<_>>()
+                    })
+                    .collect::<BTreeSet<_>>();
+            for kind in kinds {
                 catalog.push(DiagramViewCatalogEntry {
                     kind,
                     semantic_id: entry.identity,

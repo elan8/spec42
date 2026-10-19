@@ -184,6 +184,13 @@ pub(crate) fn classify_filter_predicate(
             *metadata_ordinal = metadata_ordinal.saturating_add(1);
             FilterPredicate::Metadata(ordinal)
         }
+        Expression::UnaryOp {
+            op: UnaryOperator::Not,
+            operand,
+        } => FilterPredicate::Not(Box::new(classify_filter_predicate(
+            &operand.value,
+            metadata_ordinal,
+        ))),
         Expression::Sequence { operands, .. }
             if matches!(operands.value.elements.as_slice(), [_]) =>
         {

@@ -66,6 +66,13 @@ impl From<bool> for PredicateTruth {
 }
 
 impl PredicateTruth {
+    pub(crate) fn not(self) -> Self {
+        match self {
+            Self::True => Self::False,
+            Self::False => Self::True,
+            Self::Indeterminate(obstacles) => Self::Indeterminate(obstacles),
+        }
+    }
     pub(crate) fn and(left: Self, right: Self) -> Self {
         match (left, right) {
             (Self::False, _) | (_, Self::False) => Self::False,
@@ -323,7 +330,12 @@ impl<D> SemanticModel<D> {
                 match reference_id.and_then(|id| self.resolution.outcome(*id)) {
                     Some(ResolutionStatus::Resolved(target)) => PredicateTruth::from(
                         metadata.contains(&target)
-                            || candidate_kind == self.standard_element_classification(target),
+                            || self.standard_element_classification(target).is_some_and(
+                                |general| {
+                                    candidate_kind
+                                        .is_some_and(|specific| specific.conforms_to(general))
+                                },
+                            ),
                     ),
                     Some(ResolutionStatus::Ambiguous(range)) => {
                         let mut candidates = self
@@ -348,6 +360,9 @@ impl<D> SemanticModel<D> {
                     ]),
                 }
             }
+            FilterPredicate::Not(operand) => self
+                .evaluate_view_predicate(owner, operand, metadata, candidate_kind)
+                .not(),
             FilterPredicate::And(left, right) => PredicateTruth::and(
                 self.evaluate_view_predicate(owner, left, metadata, candidate_kind),
                 self.evaluate_view_predicate(owner, right, metadata, candidate_kind),

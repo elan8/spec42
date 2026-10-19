@@ -18,6 +18,11 @@ elements, relationships, typed view metadata, provenance, and typed incomplete r
 is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 5
 is the sole renderer product for this contract.
 
+A custom view definition inherits every standard diagram kind reachable through its canonical
+subclassification closure. Multiple paths to one kind yield one catalog entry. Effective view
+conditions include inherited conditions; metaclass tests include specializing kinds, and Boolean
+negation preserves unresolved, ambiguous and unsupported predicate outcomes.
+
 ## View inputs and projections
 
 | View | Authoritative semantic inputs | Projection |
@@ -37,6 +42,9 @@ Unresolved and ambiguous exposure, unsupported syntax or features, parser recove
 publication, absent authoritative geometry, and incomplete relationship endpoints are distinct
 typed reasons. An empty resolved exposure is a valid complete empty projection when the view kind
 permits it. Elements outside the transitive semantic scope of resolved exposures are never added.
+An empty drawing explains that no elements are selected and directs the reader to the view's
+exposes and filters. It does not turn an empty selection into an incomplete result or render
+elements excluded by the view's filters.
 
 Projection completeness is scoped to facts the selected query consumes. Publication-wide parser
 recovery or unsupported syntax is not itself a diagram reason: a selected exposure, required
