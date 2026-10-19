@@ -105,8 +105,17 @@ fn project_diagnostics_survive_tabs_and_closure_until_file_removal() {
         if message["method"] == "textDocument/publishDiagnostics"
             && message["params"]["uri"] == broken_uri
         {
-            assert_eq!(message["params"]["diagnostics"], json!([]));
-            break;
+            // The `workspace/symbol` barrier above does not order the republish triggered by
+            // `didClose`: the server handles them concurrently, so that republish can still
+            // arrive here, ahead of the clear. It must carry the unchanged project diagnostics.
+            if message["params"]["diagnostics"] == json!([]) {
+                break;
+            }
+            assert_eq!(
+                message["params"]["diagnostics"],
+                json!(initial),
+                "only the unchanged project diagnostics may precede the clear"
+            );
         }
     }
 }
