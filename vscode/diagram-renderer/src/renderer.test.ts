@@ -1,4 +1,7 @@
 // @vitest-environment jsdom
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { renderVisualization } from "./renderer";
 import type { RequestServerDraw } from "./render/types";
@@ -15,6 +18,7 @@ function host(): HTMLElement {
 const SAMPLE_SVG = `<svg class="sysml-viz-svg" width="100%" height="100%" viewBox="0 0 200 100" role="img">
   <rect class="viz-bg" width="200" height="100" fill="#f6f7f9"></rect>
   <g class="viz-root">
+    <g class="view-frame" style="pointer-events:none"><rect class="view-frame-border" x="0" y="0" width="200" height="100"></rect><text class="view-frame-name">«view» General</text></g>
     <g class="general-node viz-node" data-node-id="n:0">
       <g class="general-node-toggle sysml-disclosure" role="button" tabindex="0" aria-expanded="false"></g>
       <g class="sysml-compartment-toggle" data-compartment-key="parts" role="button" aria-expanded="true"></g>
@@ -23,6 +27,33 @@ const SAMPLE_SVG = `<svg class="sysml-viz-svg" width="100%" height="100%" viewBo
 </svg>`;
 
 describe("shared renderer", () => {
+  it("preserves each native view frame when mounting, fitting and exporting SVG", async () => {
+    for (const [fixture, view] of [
+      ["general-view", "general-view"],
+      ["interconnection-view-fidelity", "interconnection-view"],
+      ["action-flow-view", "action-flow-view"],
+      ["state-transition-view", "state-transition-view"],
+      ["sequence-view", "sequence-view"],
+    ]) {
+      const svg = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../../../crates/diagram_draw/tests/fixtures", `${fixture}.rendered.svg`), "utf8");
+      const original = new DOMParser().parseFromString(svg, "image/svg+xml");
+      const target = host();
+      const controller = await renderVisualization(target, { title:"View", view, nodes:[], edges:[] }, {
+        theme: LIGHT_THEME,
+        productIdentity: {modelDigest:"blake3:test", viewHandle:view},
+        product: {schemaVersion:5},
+        requestDraw: async () => svg,
+      });
+      expect(target.querySelectorAll(".view-frame")).toHaveLength(1);
+      expect(target.querySelector(".view-frame-name")?.textContent).toBe(original.querySelector(".view-frame-name")?.textContent);
+      controller.reset();
+      const exported = new DOMParser().parseFromString(controller.exportSvg(), "image/svg+xml");
+      expect(exported.querySelectorAll(".view-frame")).toHaveLength(1);
+      expect(exported.querySelector(".view-frame-name")?.textContent).toBe(original.querySelector(".view-frame-name")?.textContent);
+      controller.destroy();
+    }
+  });
+
   it("does not draw Browser, Grid, or Geometry locally when the host has no requestDraw", async () => {
     for (const view of ["browser-view", "grid-view", "geometry-view"]) {
       const target = host();

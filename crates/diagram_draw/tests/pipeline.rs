@@ -250,7 +250,10 @@ fn unconnected_second_monitor_preserves_first_monitor_connections() {
     }
     let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw interconnection");
     assert_eq!(svg.matches("class=\"ibd-connector").count(), 3);
-    assert!(svg.contains("data-view-name=\"Workplace\""));
+    assert!(svg.contains(&format!(
+        "data-view-name=\"{}\"",
+        payload["selectedView"]["name"].as_str().unwrap()
+    )));
     assert!(!svg.contains("marker-start: url(#ibd-connection-dot)"));
     assert!(!svg.contains("viz-edge-label--connection"));
     assert_eq!(svg.matches("data-port-type=").count(), 3);
@@ -391,7 +394,7 @@ fn multiple_exposed_modules_use_the_view_title_for_the_frame() {
     assert!(svg.contains(&format!("data-view-name=\"{title}\"")));
     let xml = diagram_draw::xml::parse(&svg);
     fn frame(node: &diagram_draw::xml::XmlNode) -> Option<&diagram_draw::xml::XmlNode> {
-        if node.attrs.get("class").map(String::as_str) == Some("ibd-view-frame") {
+        if node.attrs.get("class").map(String::as_str) == Some("view-frame") {
             node.children.iter().find(|child| child.tag == "rect")
         } else {
             node.children.iter().find_map(frame)

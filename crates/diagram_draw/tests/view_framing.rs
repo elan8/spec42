@@ -148,3 +148,84 @@ fn nested_behavior_containers_do_not_acquire_extra_view_frames() {
         assert_frame(&svg, product["selectedView"]["name"].as_str().unwrap());
     }
 }
+
+#[test]
+fn all_five_standard_views_share_one_selected_view_frame() {
+    for name in [
+        "diagram_general_complete",
+        "diagram_interconnection_complete",
+        "diagram_action_flow_complete",
+        "diagram_state_transition_complete",
+        "diagram_sequence_complete",
+    ] {
+        let mut product = fixture(name);
+        product["selectedView"]["name"] =
+            json!("視圖::ArchitectureReview_WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+        for nesting in [diagram_draw::Nesting::All, diagram_draw::Nesting::Levels(0)] {
+            let input =
+                pipeline::draw_input_from_payload_with_presentation(&product, None, nesting)
+                    .unwrap();
+            for theme in [&LIGHT, &DARK] {
+                let svg =
+                    diagram_draw::render_svg_from_json_with_theme(&input, theme, 0.0, 0.0).unwrap();
+                assert_frame(&svg, product["selectedView"]["name"].as_str().unwrap());
+                assert_eq!(with_class(&xml::parse(&svg), "ibd-view-frame").len(), 0);
+            }
+        }
+    }
+}
+
+#[test]
+fn multiple_roots_and_incomplete_projections_keep_a_single_view_frame() {
+    for name in [
+        "diagram_interconnection_incident_connection",
+        "diagram_interconnection_connector_incomplete",
+        "diagram_action_flow_unresolved",
+        "diagram_state_transition_unresolved",
+    ] {
+        let product = fixture(name);
+        let svg = pipeline::render_svg_from_payload(&product, 800.0, 600.0).unwrap();
+        assert_frame(&svg, product["selectedView"]["name"].as_str().unwrap());
+    }
+}
+
+#[test]
+fn empty_standard_views_keep_the_selected_view_name() {
+    for kind in ["general-view", "interconnection-view", "sequence-view"] {
+        let input =
+            json!({"view":kind, "title":"EmptySelection", "nodes":[], "edges":[], "meta":{}});
+        let svg = diagram_draw::render_svg_from_json(&input, 800.0, 600.0).unwrap();
+        assert_frame(&svg, "EmptySelection");
+    }
+}
+
+#[test]
+fn interconnection_frame_encloses_external_port_labels_and_container_boxes() {
+    let mut input: Value = serde_json::from_str(include_str!(
+        "fixtures/interconnection-view-fidelity.laid-out.json"
+    ))
+    .unwrap();
+    // Place one port label well outside its owning part. This is renderer geometry, not a model edit.
+    let nodes = input["interconnectionLayout"]["nodes"]
+        .as_array_mut()
+        .unwrap();
+    let node = nodes
+        .iter_mut()
+        .find(|n| !n["portAnchors"].as_object().unwrap().is_empty())
+        .unwrap();
+    let x = node["x"].as_f64().unwrap();
+    let y = node["y"].as_f64().unwrap();
+    let anchor = node["portAnchors"]
+        .as_object_mut()
+        .unwrap()
+        .values_mut()
+        .next()
+        .unwrap();
+    anchor["label"] = json!({"x":-550,"y":-90,"width":250,"height":14,"text":"external label"});
+    let svg = diagram_draw::render_svg_from_json(&input, 800.0, 600.0).unwrap();
+    assert_frame(&svg, input["title"].as_str().unwrap());
+    let tree = xml::parse(&svg);
+    let border = with_class(&tree, "view-frame-border")[0];
+    assert!(border.attrs["x"].parse::<f64>().unwrap() < x - 550.0);
+    assert!(border.attrs["y"].parse::<f64>().unwrap() < y - 90.0);
+}

@@ -15,6 +15,7 @@ pub fn view_frame(
     content: (f64, f64, f64, f64),
     theme: &Theme,
 ) -> (Element, (f64, f64, f64, f64)) {
+    let view_name = title;
     let title = format!("«view» {title}");
     // Conservative one-em advance also accommodates wide Unicode names without clipping.
     let tab_width = title.chars().count() as f64 * 12.0 + 24.0;
@@ -34,6 +35,7 @@ pub fn view_frame(
     );
     let frame = Element::new("g")
         .attr("class", "view-frame")
+        .attr("data-view-name", view_name)
         .style("pointer-events", "none")
         .child(
             Element::new("rect")
@@ -65,4 +67,16 @@ pub fn view_frame(
                 .text(title),
         );
     (frame, (min_x, min_y, max_x, max_y))
+}
+
+/// Enclose the completed drawing, including text, containers and boundary decorations.
+pub(crate) fn enclose(
+    root: Element,
+    title: &str,
+    content: (f64, f64, f64, f64),
+    theme: &Theme,
+) -> (Element, (f64, f64, f64, f64)) {
+    let content = root.decorated_extent(content);
+    let (frame, extent) = view_frame(title, content, theme);
+    (root.prepend_child(frame), extent)
 }

@@ -9,7 +9,7 @@ use diagram_draw::types::InterconnectionViewGraph;
 use diagram_draw::xml;
 
 #[test]
-fn interconnection_view_fidelity_rendered_svg_matches_the_real_typescript_output() {
+fn interconnection_view_fidelity_rendered_svg_matches_the_native_golden() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let fixture_path =
         manifest_dir.join("tests/fixtures/interconnection-view-fidelity.laid-out.json");
@@ -29,6 +29,21 @@ fn interconnection_view_fidelity_rendered_svg_matches_the_real_typescript_output
     let actual_tree = xml::parse(&actual_svg);
     assert_eq!(
         actual_tree, expected_tree,
-        "Rust output:\n{actual_svg}\n\nReal TS/D3 output:\n{rendered_svg}"
+        "Rust output:\n{actual_svg}\n\nNative golden output:\n{rendered_svg}"
+    );
+}
+
+#[test]
+fn interconnection_structural_markers_match_the_native_golden() {
+    let input: InterconnectionViewGraph = serde_json::from_str(include_str!(
+        "fixtures/interconnection-view-fidelity.laid-out.json"
+    ))
+    .unwrap();
+    let svg = render_interconnection_view_svg(&input, &LIGHT, 1280.0, 900.0);
+    let summary = diagram_draw::svg_markers::summarize_svg_markers(&svg);
+    let expected: serde_json::Value = serde_json::from_str(include_str!("../../../vscode/diagram-renderer/src/test-support/golden-parity/interconnection-view.markers.json")).unwrap();
+    assert_eq!(
+        serde_json::json!({"classCounts":summary.class_counts, "markerIds":summary.marker_ids}),
+        expected
     );
 }

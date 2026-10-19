@@ -66,6 +66,102 @@ impl Element {
         self
     }
 
+    /// Bounds of rendered decorations that extend beyond layout rectangles. Routes supply
+    /// their geometry separately; this visits actual text/shape placements, not model facts.
+    pub(crate) fn decorated_extent(
+        &self,
+        mut extent: (f64, f64, f64, f64),
+    ) -> (f64, f64, f64, f64) {
+        self.include_decorations(0.0, 0.0, 12.0, &mut extent);
+        extent
+    }
+
+    fn include_decorations(
+        &self,
+        mut tx: f64,
+        mut ty: f64,
+        inherited_font: f64,
+        extent: &mut (f64, f64, f64, f64),
+    ) {
+        let value = |key: &str| {
+            self.styles
+                .iter()
+                .chain(&self.attrs)
+                .find(|(name, _)| name == key)
+                .map(|(_, value)| value.as_str())
+        };
+        let number = |key: &str| {
+            value(key)
+                .and_then(|v| v.trim_end_matches("px").parse::<f64>().ok())
+                .unwrap_or(0.0)
+        };
+        if let Some(transform) = value("transform")
+            .and_then(|v| v.strip_prefix("translate("))
+            .and_then(|v| v.strip_suffix(')'))
+        {
+            let mut coordinates = transform
+                .split([',', ' '])
+                .filter(|v| !v.is_empty())
+                .filter_map(|v| v.parse::<f64>().ok());
+            tx += coordinates.next().unwrap_or(0.0);
+            ty += coordinates.next().unwrap_or(0.0);
+        }
+        let font = value("font-size")
+            .and_then(|v| v.trim_end_matches("px").parse().ok())
+            .unwrap_or(inherited_font);
+        let mut include = |left: f64, top: f64, right: f64, bottom: f64| {
+            extent.0 = extent.0.min(left + tx);
+            extent.1 = extent.1.min(top + ty);
+            extent.2 = extent.2.max(right + tx);
+            extent.3 = extent.3.max(bottom + ty);
+        };
+        match self.tag.as_str() {
+            "rect" => include(
+                number("x"),
+                number("y"),
+                number("x") + number("width"),
+                number("y") + number("height"),
+            ),
+            "circle" => include(
+                number("cx") - number("r"),
+                number("cy") - number("r"),
+                number("cx") + number("r"),
+                number("cy") + number("r"),
+            ),
+            "line" => include(
+                number("x1").min(number("x2")),
+                number("y1").min(number("y2")),
+                number("x1").max(number("x2")),
+                number("y1").max(number("y2")),
+            ),
+            "text" if self.text.is_some() => {
+                // Conservative one-em advance; no browser font metrics are needed for exports.
+                let width = self.text.as_ref().unwrap().chars().count() as f64 * font;
+                let x = number("x")
+                    - match value("text-anchor") {
+                        Some("middle") => width / 2.0,
+                        Some("end") => width,
+                        _ => 0.0,
+                    };
+                let dy = value("dy")
+                    .and_then(|v| v.strip_suffix("em"))
+                    .and_then(|v| v.parse::<f64>().ok())
+                    .map_or_else(|| number("dy"), |v| v * font);
+                let y = number("y") + dy;
+                include(x, y - font, x + width, y + font * 0.3);
+            }
+            _ => {}
+        }
+        for child in &self.children {
+            child.include_decorations(tx, ty, font, extent);
+        }
+    }
+
+    pub(crate) fn prepend_child(mut self, child: Element) -> Self {
+        self.children.insert(0, child);
+        self
+    }
+
     pub fn child(mut self, child: Element) -> Self {
         self.children.push(child);
         self
@@ -180,4 +276,37 @@ fn escape_xml(value: &str) -> String {
         .replace('<', "&lt;")
         .replace('>', "&gt;")
         .replace('"', "&quot;")
+}
+
+#[cfg(test)]
+mod extent_tests {
+    use super::Element;
+
+    #[test]
+    fn decoration_extents_follow_nested_translations_and_inherited_font_sizes() {
+        let drawing = Element::new("g")
+            .attr("transform", "translate(100,50)")
+            .style("font-size", "10px")
+            .child(
+                Element::new("g")
+                    .attr("transform", "translate(-200 -80)")
+                    .child(
+                        Element::new("text")
+                            .attr_f("x", 0.0)
+                            .attr_f("y", 0.0)
+                            .attr("text-anchor", "end")
+                            .attr("dy", "-0.5em")
+                            .text("WWWW"),
+                    ),
+            )
+            .child(
+                Element::new("rect")
+                    .attr_f("x", 300.0)
+                    .attr_f("y", 200.0)
+                    .attr_f("width", 40.0)
+                    .attr_f("height", 30.0),
+            );
+        let extent = drawing.decorated_extent((0.0, 0.0, 1.0, 1.0));
+        assert_eq!(extent, (-140.0, -45.0, 440.0, 280.0));
+    }
 }

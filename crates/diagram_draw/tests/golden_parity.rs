@@ -26,7 +26,7 @@ fn render_fixture(name: &str) -> (GeneralViewGraph, String) {
     (graph, svg)
 }
 
-fn assert_matches_real_typescript_output(name: &str) {
+fn assert_matches_native_golden(name: &str) {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let rendered_path = manifest_dir.join(format!("tests/fixtures/{name}.rendered.svg"));
     let rendered_svg = std::fs::read_to_string(&rendered_path)
@@ -38,7 +38,7 @@ fn assert_matches_real_typescript_output(name: &str) {
     let actual_tree = xml::parse(&actual_svg);
     assert_eq!(
         actual_tree, expected_tree,
-        "Rust output:\n{actual_svg}\n\nReal TS/D3 output:\n{rendered_svg}"
+        "Rust output:\n{actual_svg}\n\nNative golden output:\n{rendered_svg}"
     );
 }
 
@@ -86,8 +86,8 @@ fn general_view_structural_markers_match_the_golden_fixture() {
 /// equality: same tags in the same order, same attributes (order-independent, since D3 and this
 /// crate build attributes in different but equally arbitrary sequences), same text.
 #[test]
-fn general_view_rendered_svg_matches_the_real_typescript_output() {
-    assert_matches_real_typescript_output("general-view");
+fn general_view_rendered_svg_matches_the_native_golden() {
+    assert_matches_native_golden("general-view");
 }
 
 /// `general-view` (above) only has a plain two-node/one-edge `typing` graph -- it never exercises
@@ -97,6 +97,6 @@ fn general_view_rendered_svg_matches_the_real_typescript_output() {
 /// (`generalViewFidelityPayload` in `dump-general-view-fixture.test.ts`) exists specifically to
 /// exercise those paths.
 #[test]
-fn general_view_fidelity_rendered_svg_matches_the_real_typescript_output() {
-    assert_matches_real_typescript_output("general-view-fidelity");
+fn general_view_fidelity_rendered_svg_matches_the_native_golden() {
+    assert_matches_native_golden("general-view-fidelity");
 }
