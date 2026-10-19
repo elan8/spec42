@@ -1,5 +1,5 @@
-//! spec42 #176 phase 2 acceptance test for action-flow-view, mirroring `golden_parity.rs`'s
-//! full-tree byte-comparison approach.
+//! Action Flow native SVG goldens: parsed-tree comparisons cover geometry, text and attributes.
+//! See fixtures/README.md for native regeneration and visual review.
 
 use std::path::Path;
 

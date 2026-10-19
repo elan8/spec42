@@ -1,6 +1,5 @@
-//! spec42 #176 phase 2 acceptance test for sequence-view, mirroring `golden_parity.rs`'s
-//! full-tree byte-comparison approach: parse both the Rust output and a real TS/D3-rendered SVG of
-//! the identical fixture into trees and assert full structural equality.
+//! Sequence native SVG goldens: parsed-tree comparisons cover geometry, text and attributes.
+//! See fixtures/README.md for native regeneration and visual review.
 
 use std::path::Path;
 
