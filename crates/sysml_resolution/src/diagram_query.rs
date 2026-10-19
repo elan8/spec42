@@ -1029,40 +1029,39 @@ impl PublishedResolution {
                 relationship.ordinal
             )
         });
-        let mut edges = elements
-            .iter()
-            .enumerate()
-            .filter_map(|(origin, element)| {
-                element.owner.as_ref().map(|owner| DiagramEdge {
-                    origin: origin as u32,
-                    source: owner.clone(),
-                    source_semantic_id: owner.semantic_id(),
-                    target: element.occurrence_id.clone(),
-                    target_semantic_id: element.semantic_id,
-                    kind: if view_entry.kind == DiagramViewKind::General
-                        && self
-                            .model
-                            .declaration_of(element.semantic_id)
-                            .and_then(|id| {
-                                self.model.types.usage_is_reference(&self.model.storage, id)
-                            })
-                            == Some(true)
-                    {
-                        DiagramEdgeKind::Relationship("noncomposite-membership".into())
-                    } else {
-                        DiagramEdgeKind::Containment
-                    },
-                    provenance: if all.get(&element.semantic_id).and_then(|entry| entry.owner)
-                        == Some(owner.semantic_id())
-                    {
-                        RelationshipProvenance::Authored
-                    } else {
-                        RelationshipProvenance::Implied
-                    },
-                    source_location: Some(element.source),
+        let mut edges =
+            elements
+                .iter()
+                .enumerate()
+                .filter_map(|(origin, element)| {
+                    element.owner.as_ref().map(|owner| DiagramEdge {
+                        origin: origin as u32,
+                        source: owner.clone(),
+                        source_semantic_id: owner.semantic_id(),
+                        target: element.occurrence_id.clone(),
+                        target_semantic_id: element.semantic_id,
+                        kind: if matches!(
+                            view_entry.kind,
+                            DiagramViewKind::General | DiagramViewKind::Interconnection
+                        ) && self.model.declaration_of(element.semantic_id).and_then(
+                            |id| self.model.types.usage_is_reference(&self.model.storage, id),
+                        ) == Some(true)
+                        {
+                            DiagramEdgeKind::Relationship("noncomposite-membership".into())
+                        } else {
+                            DiagramEdgeKind::Containment
+                        },
+                        provenance: if all.get(&element.semantic_id).and_then(|entry| entry.owner)
+                            == Some(owner.semantic_id())
+                        {
+                            RelationshipProvenance::Authored
+                        } else {
+                            RelationshipProvenance::Implied
+                        },
+                        source_location: Some(element.source),
+                    })
                 })
-            })
-            .collect::<Vec<_>>();
+                .collect::<Vec<_>>();
         for (origin, element) in elements.iter().enumerate() {
             let outgoing = relationships
                 .iter()

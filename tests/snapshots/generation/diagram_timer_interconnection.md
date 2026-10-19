@@ -8776,7 +8776,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 39,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 27
     },
     {
@@ -8806,7 +8806,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 27,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 28
     },
     {
@@ -9238,13 +9238,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 16,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 17,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 39
     },
     {
@@ -9274,19 +9274,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 23,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 40
     },
     {
       "kind": "relationship",
       "ordinal": 24,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 40
     },
     {
       "kind": "relationship",
       "ordinal": 25,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 40
     },
     {
@@ -9316,19 +9316,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 19,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 41
     },
     {
       "kind": "relationship",
       "ordinal": 20,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 41
     },
     {
       "kind": "relationship",
       "ordinal": 21,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 41
     },
     {
@@ -9358,31 +9358,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 4,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 5,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 6,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 42
     },
     {
@@ -9441,7 +9441,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 15
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 15,
         "origin": 17,
         "provenance": "implied",
@@ -9450,7 +9450,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 17
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 7,
         "origin": 18,
         "provenance": "implied",
@@ -9459,7 +9459,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 18
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 11,
         "origin": 19,
         "provenance": "implied",
@@ -9468,7 +9468,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 19
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 13,
         "origin": 20,
         "provenance": "implied",
@@ -9477,7 +9477,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 20
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 9,
         "origin": 16,
         "provenance": "implied",
@@ -9567,7 +9567,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 21
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 31,
         "origin": 22,
         "provenance": "implied",
@@ -9576,7 +9576,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 22
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 29,
         "origin": 23,
         "provenance": "implied",
@@ -9594,7 +9594,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 24
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 23,
         "origin": 25,
         "provenance": "implied",
@@ -9603,7 +9603,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 25
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 27,
         "origin": 26,
         "provenance": "implied",
@@ -9612,7 +9612,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 26
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 25,
         "origin": 27,
         "provenance": "implied",
@@ -9630,7 +9630,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 11
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 19,
         "origin": 13,
         "provenance": "implied",
@@ -9639,7 +9639,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 13
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 17,
         "origin": 14,
         "provenance": "implied",
@@ -9648,7 +9648,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 14
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 21,
         "origin": 12,
         "provenance": "implied",
@@ -9666,7 +9666,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 28
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 33,
         "origin": 29,
         "provenance": "implied",
@@ -9774,7 +9774,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "target": 30
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 55,
         "origin": 31,
         "provenance": "implied",
