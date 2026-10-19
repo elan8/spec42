@@ -848,14 +848,16 @@ impl PublishedResolution {
                             .unwrap_or_default(),
                     ),
                     kind: entry.kind,
-                    name: usable_value(self.effective_identification(entry.identity)).and_then(
-                        |identification| match identification.name {
+                    // A declared name is its own effective name, so it survives an effective
+                    // identification the publication cannot answer.
+                    name: usable_value(self.effective_identification(entry.identity))
+                        .and_then(|identification| match identification.name {
                             crate::EffectiveName::Resolved(name) => Some(name.into()),
                             crate::EffectiveName::Absent
                             | crate::EffectiveName::Unresolved
                             | crate::EffectiveName::NonConverged => None,
-                        },
-                    ),
+                        })
+                        .or_else(|| entry.name.clone()),
                     typing: diagram_element_typing(self.element_details(entry.identity)),
                     owner: owner.clone(),
                     source: entry.location,
