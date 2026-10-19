@@ -192,7 +192,7 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       };
     });
     return {
-      title: frame?.label ?? selected.name,
+      title: selected.name,
       view: selected.kind,
       nodes,
       edges,

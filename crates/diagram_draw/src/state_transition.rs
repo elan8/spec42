@@ -287,8 +287,8 @@ pub fn render_state_transition_view(
         .map(|node| (node.id.as_str(), node))
         .collect();
 
-    // SysML 8.2.3.5: the view is drawn in a frame that carries its name.
-    let (frame, extent) = crate::behavior_common::view_frame(
+    // SysML v2 §§8.2.3.1 and 8.2.3.26: the view is drawn in a frame that carries its name.
+    let (frame, extent) = crate::view_frame::view_frame(
         if prepared.title.is_empty() {
             "State Transition"
         } else {
