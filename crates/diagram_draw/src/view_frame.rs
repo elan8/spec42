@@ -17,8 +17,7 @@ pub fn view_frame(
 ) -> (Element, (f64, f64, f64, f64)) {
     let view_name = title;
     let title = format!("«view» {title}");
-    // Conservative one-em advance also accommodates wide Unicode names without clipping.
-    let tab_width = title.chars().count() as f64 * 12.0 + 24.0;
+    let tab_width = crate::svg::estimated_text_width(&title, 12.0) + 24.0;
     let min_x = content.0 - VIEW_FRAME_PADDING;
     let min_y = content.1 - VIEW_FRAME_PADDING - VIEW_FRAME_TAB_HEIGHT;
     let max_x = (content.2 + VIEW_FRAME_PADDING).max(min_x + tab_width + VIEW_FRAME_PADDING);

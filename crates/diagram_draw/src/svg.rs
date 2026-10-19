@@ -135,8 +135,8 @@ impl Element {
                 number("y1").max(number("y2")),
             ),
             "text" if self.text.is_some() => {
-                // Conservative one-em advance; no browser font metrics are needed for exports.
-                let width = self.text.as_ref().unwrap().chars().count() as f64 * font;
+                // No browser font metrics are needed for exports.
+                let width = estimated_text_width(self.text.as_ref().unwrap(), font);
                 let x = number("x")
                     - match value("text-anchor") {
                         Some("middle") => width / 2.0,
@@ -270,6 +270,43 @@ fn set_or_update(pairs: &mut Vec<(String, String)>, name: &str, value: String) {
     }
 }
 
+/// A width for `text` at `font_size` that a bold sans-serif rendering stays within, without font
+/// metrics. Per-character classes keep it close for ordinary names: a flat one-em advance made
+/// a typical label about 1.7 times its drawn width. Wide East Asian, fullwidth and emoji
+/// characters, and the widest Latin letters, still get at least a full em.
+pub(crate) fn estimated_text_width(text: &str, font_size: f64) -> f64 {
+    text.chars().map(advance_em).sum::<f64>() * font_size
+}
+
+fn advance_em(character: char) -> f64 {
+    match character {
+        'W' | 'M' | 'm' | 'w' | '@' | '%' | 'Æ' | 'Œ' | 'æ' | 'œ' | '—' => 1.05,
+        'i' | 'j' | 'l' | 'I' | 'f' | 't' | 'r' | '.' | ',' | ':' | ';' | '\'' | '"' | '`'
+        | '!' | '|' | '(' | ')' | '[' | ']' | ' ' => 0.45,
+        'A'..='Z' | '0'..='9' => 0.78,
+        _ if is_wide(character) => 1.0,
+        _ => 0.7,
+    }
+}
+
+/// East Asian wide and fullwidth characters, and emoji (Unicode East_Asian_Width W/F blocks).
+fn is_wide(character: char) -> bool {
+    matches!(character as u32,
+        0x1100..=0x115F
+        | 0x2E80..=0x303E
+        | 0x3041..=0x33FF
+        | 0x3400..=0x4DBF
+        | 0x4E00..=0x9FFF
+        | 0xA000..=0xA4CF
+        | 0xAC00..=0xD7A3
+        | 0xF900..=0xFAFF
+        | 0xFE30..=0xFE4F
+        | 0xFF00..=0xFF60
+        | 0xFFE0..=0xFFE6
+        | 0x1F300..=0x1FAFF
+        | 0x20000..=0x3FFFD)
+}
+
 fn escape_xml(value: &str) -> String {
     value
         .replace('&', "&amp;")
@@ -307,6 +344,23 @@ mod extent_tests {
                     .attr_f("height", 30.0),
             );
         let extent = drawing.decorated_extent((0.0, 0.0, 1.0, 1.0));
-        assert_eq!(extent, (-140.0, -45.0, 440.0, 280.0));
+        // `WWWW` at 10px: the widest Latin letters keep more than an em each (4 x 10.5).
+        assert_eq!(extent, (-142.0, -45.0, 440.0, 280.0));
+    }
+}
+
+#[cfg(test)]
+mod text_width_tests {
+    use super::estimated_text_width;
+
+    #[test]
+    fn ordinary_names_are_estimated_near_their_drawn_width_and_wide_text_by_full_ems() {
+        // Typical identifiers sit well below a flat em per character.
+        let name = "accept delivered / send archive";
+        assert!(estimated_text_width(name, 10.0) < name.chars().count() as f64 * 10.0 * 0.75);
+        // The widest Latin letters and East Asian text keep at least a full em per character.
+        assert!(estimated_text_width("WWWW", 12.0) >= 48.0);
+        assert_eq!(estimated_text_width("視圖承認", 12.0), 48.0);
+        assert_eq!(estimated_text_width("", 12.0), 0.0);
     }
 }
