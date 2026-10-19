@@ -18,8 +18,10 @@ elements, relationships, typed view metadata, provenance, and typed incomplete r
 is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 5
 is the sole renderer product for this contract.
 
-A custom view definition inherits every standard diagram kind reachable through its canonical
-subclassification closure. Multiple paths to one kind yield one catalog entry. Effective view
+A custom view definition inherits the most specific standard diagram kinds reachable through its
+canonical subclassification closure: `ActionFlowView` and `StateTransitionView` specialize
+`InterconnectionView`, so a view typed by either is not also an interconnection view. Multiple
+paths to one kind yield one catalog entry. Effective view
 conditions include inherited conditions; metaclass tests include specializing kinds, and Boolean
 negation preserves unresolved, ambiguous and unsupported predicate outcomes.
 

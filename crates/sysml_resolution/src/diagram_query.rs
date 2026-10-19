@@ -449,19 +449,33 @@ impl PublishedResolution {
             source: ElementSource::Workspace,
         })) {
             let types = resolved_values(self.direct_types(entry.identity));
-            let kinds =
-                types
-                    .iter()
-                    .flat_map(|ty| {
-                        resolved_values(self.all_supertypes(
-                            ty.symbol,
-                            crate::SpecializationScope::Subclassification,
-                        ))
+            let supertypes = |symbol| {
+                resolved_values(
+                    self.all_supertypes(symbol, crate::SpecializationScope::Subclassification),
+                )
+            };
+            // Each authored type contributes the most specific standard view definitions it
+            // conforms to. `StateTransitionView` and `ActionFlowView` specialize
+            // `InterconnectionView`; a view typed by one of them is that view, not also an
+            // interconnection view.
+            let kinds = types
+                .iter()
+                .flat_map(|ty| {
+                    let standard = std::iter::once(ty.symbol)
+                        .chain(supertypes(ty.symbol).iter().copied())
+                        .filter(|symbol| definitions.contains_key(symbol))
+                        .collect::<BTreeSet<_>>();
+                    standard
                         .iter()
-                        .filter_map(|supertype| definitions.get(supertype).copied())
+                        .filter(|general| {
+                            !standard.iter().any(|specific| {
+                                specific != *general && supertypes(*specific).contains(general)
+                            })
+                        })
+                        .map(|definition| definitions[definition])
                         .collect::<Vec<_>>()
-                    })
-                    .collect::<BTreeSet<_>>();
+                })
+                .collect::<BTreeSet<_>>();
             for kind in kinds {
                 catalog.push(DiagramViewCatalogEntry {
                     kind,
