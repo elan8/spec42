@@ -64,7 +64,7 @@ describe("shared renderer", () => {
       {
         theme: LIGHT_THEME,
         productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-        product: { schemaVersion: 5 },
+        product: { schemaVersion: 6 },
         requestDraw,
         onNodeClick,
       },
@@ -98,7 +98,7 @@ describe("shared renderer", () => {
         {
           theme: LIGHT_THEME,
           productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-          product: { schemaVersion: 5 },
+          product: { schemaVersion: 6 },
           requestDraw,
         },
       );
@@ -113,7 +113,7 @@ describe("shared renderer", () => {
       const options = {
         theme: LIGHT_THEME,
         productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-        product: { schemaVersion: 5 },
+        product: { schemaVersion: 6 },
         requestDraw,
       };
       const prepared = {
@@ -152,7 +152,7 @@ describe("shared renderer", () => {
           theme: LIGHT_THEME,
           productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
           abortSignal: abort.signal,
-          product: { schemaVersion: 5 },
+          product: { schemaVersion: 6 },
           requestDraw,
         },
       );

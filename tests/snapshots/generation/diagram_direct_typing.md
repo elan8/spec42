@@ -229,24 +229,12 @@ package DirectTypingExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:69267fbb225208d0727467cf99ff9304fae56c18592ecc8f63100e522e092090",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_direct_typing.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -337,61 +325,10 @@ package DirectTypingExample {
       "qualifiedName": "DirectTypingExample::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "typing",
       "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
     },
     {
       "kind": "relationship",
@@ -403,12 +340,6 @@ package DirectTypingExample {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
       "source": 4
     },
     {
@@ -435,7 +366,7 @@ package DirectTypingExample {
         "navigation": 0,
         "origin": 1,
         "provenance": "implied",
-        "reference": 16,
+        "reference": 7,
         "source": 0,
         "target": 1
       },
@@ -444,7 +375,7 @@ package DirectTypingExample {
         "navigation": 2,
         "origin": 2,
         "provenance": "implied",
-        "reference": 17,
+        "reference": 8,
         "source": 0,
         "target": 2
       }
@@ -537,21 +468,10 @@ package DirectTypingExample {
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 9,
         "source": 0,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 0,
-        "target": {
-          "reference": 8,
           "status": "resolved"
         }
       },
@@ -559,76 +479,10 @@ package DirectTypingExample {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 6,
         "source": 1,
         "target": {
           "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 9,
-        "source": 1,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 10,
-        "source": 1,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 11,
-        "source": 1,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 13,
-        "source": 2,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 14,
-        "source": 2,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 15,
-        "source": 2,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       }

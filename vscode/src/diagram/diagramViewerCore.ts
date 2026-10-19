@@ -238,6 +238,21 @@ export function parseStateTransitionViewCatalog(value: unknown): StateTransition
   return { modelDigest: candidate.modelDigest, views };
 }
 
+// Says how big the view is, so the author can tell what to narrow rather than only that it failed.
+export function oversizedProductMessage(text: string, bytes: number): string {
+  const mib = (value: number) => (value / (1024 * 1024)).toFixed(1);
+  let counts = "";
+  try {
+    const projection = (JSON.parse(text) as { projection?: Record<string, unknown> }).projection ?? {};
+    const length = (value: unknown) => (Array.isArray(value) ? value.length : 0);
+    counts = ` (${length(projection.nodes)} elements, ${length(projection.edges)} edges, ` +
+      `${length(projection.relationships)} relationships)`;
+  } catch { /* The size alone still explains the refusal. */ }
+  return `This view's diagram product is ${mib(bytes)} MiB${counts}, over the ` +
+    `${mib(MAX_DIAGRAM_PRODUCT_BYTES)} MiB viewer limit. Narrow what the view exposes, ` +
+    "or split it into several views.";
+}
+
 export function parseLspDiagramResult(value: unknown): LspDiagramResult {
   if (!value || typeof value !== "object") throw new Error("Spec42 returned an invalid diagram result.");
   const candidate = value as Record<string, unknown>;
@@ -252,10 +267,11 @@ export function parseLspDiagramResult(value: unknown): LspDiagramResult {
   };
 }
 
+export const MAX_DIAGRAM_PRODUCT_BYTES = 16 * 1024 * 1024;
+
 export function parseDiagramProduct(text: string): DiagramProduct {
-  if (Buffer.byteLength(text, "utf8") > 16 * 1024 * 1024) {
-    throw new Error("Generated diagram product exceeds the 16 MiB viewer limit.");
-  }
+  const bytes = Buffer.byteLength(text, "utf8");
+  if (bytes > MAX_DIAGRAM_PRODUCT_BYTES) throw new Error(oversizedProductMessage(text, bytes));
   let value: unknown;
   try { value = JSON.parse(text); }
   catch { throw new Error("Generated diagram product is not valid JSON."); }
@@ -267,7 +283,7 @@ export function parseDiagramProduct(text: string): DiagramProduct {
   const documents = product.documents;
   const sources = product.sources;
   const references = product.references;
-  if (product.schemaVersion !== 5 || typeof product.modelDigest !== "string" ||
+  if (product.schemaVersion !== 6 || typeof product.modelDigest !== "string" ||
       !Array.isArray(documents) || !documents.every(isDiagramDocument) ||
       !Array.isArray(sources) || !sources.every((source) => isDiagramSource(source, documents.length)) ||
       !Array.isArray(references) || !references.every((reference) => isProductReference(reference, documents.length, sources.length, references.length)) ||

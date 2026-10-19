@@ -8,6 +8,8 @@ import {
   diagramViewKindForHandle,
   DIAGRAM_VIEWS,
   isPathInsideWorkspace,
+  MAX_DIAGRAM_PRODUCT_BYTES,
+  oversizedProductMessage,
   parseDiagramProduct,
   parseDiagramViewCatalog,
   parseLspDiagramResult,
@@ -101,9 +103,21 @@ describe("diagram viewer core", () => {
     assert.deepEqual(diagramViewsForDocument(catalog, "file:///workspace/structure.sysml"), []);
   });
 
+  it("explains an oversized product by its size and element counts", () => {
+    const message = oversizedProductMessage(JSON.stringify({
+      projection: { nodes: [{}, {}], edges: [{}], relationships: [] },
+    }), 20 * 1024 * 1024);
+    assert.match(message, /20\.0 MiB \(2 elements, 1 edges, 0 relationships\), over the 16\.0 MiB viewer limit/);
+    assert.match(oversizedProductMessage("{", 17 * 1024 * 1024), /^This view's diagram product is 17\.0 MiB, over/);
+    assert.throws(
+      () => parseDiagramProduct(" ".repeat(MAX_DIAGRAM_PRODUCT_BYTES + 1)),
+      /over the 16\.0 MiB viewer limit/,
+    );
+  });
+
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 5,
+      schemaVersion: 6,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
@@ -152,7 +166,7 @@ describe("diagram viewer core", () => {
       ...value,
       projection: { ...value.projection, exposedRoots: [0], nodes: [node] },
     })).projection.nodes.length, 1);
-    const versionFive = {
+    const typedNodes = {
       ...value,
       projection: {
         ...value.projection,
@@ -160,15 +174,15 @@ describe("diagram viewer core", () => {
         nodes: [{ ...node, typing: { status: "resolved", types: [{ reference: 0, label: "P" }] } }],
       },
     };
-    assert.equal(parseDiagramProduct(JSON.stringify(versionFive)).projection.nodes.length, 1);
+    assert.equal(parseDiagramProduct(JSON.stringify(typedNodes)).projection.nodes.length, 1);
     assert.throws(() => parseDiagramProduct(JSON.stringify({
-      ...versionFive,
-      projection: { ...versionFive.projection, nodes: [{ ...node, typing: undefined }] },
+      ...typedNodes,
+      projection: { ...typedNodes.projection, nodes: [{ ...node, typing: undefined }] },
     })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({
-      ...versionFive,
+      ...typedNodes,
       projection: {
-        ...versionFive.projection,
+        ...typedNodes.projection,
         nodes: [{ ...node, typing: { status: "resolved", types: [] } }],
       },
     })));
@@ -177,6 +191,7 @@ describe("diagram viewer core", () => {
       projection: { ...value.projection, nodes: [{ ...node, compartments: undefined }] },
     })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 4 })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 5 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, sources: [{ document: 1, range: [0, 0, 0, 1] }] })));

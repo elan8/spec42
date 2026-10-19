@@ -90,7 +90,7 @@ pub(crate) struct DiagramParams {
     pub(crate) expected_model_digest: Option<String>,
 }
 
-/// `spec42/diagram`: the schema-5 diagram product of one catalog view, built natively.
+/// `spec42/diagram`: the schema-6 diagram product of one catalog view, built natively.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramResult {
@@ -298,7 +298,7 @@ impl GeneratorService {
         let projection = model
             .diagram_view(handle)
             .map_err(|error| error.to_string())?;
-        let product = diagram_product::diagram_product_json(&projection)?;
+        let product = diagram_product::diagram_product_json_compact(&projection)?;
         Ok(DiagramResult {
             model_digest,
             semantic_status: language_service::dto::SemanticResultStatus::from_publication(

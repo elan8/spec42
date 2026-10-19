@@ -885,24 +885,12 @@ package Oven {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:ea7e8f387eaae408ac808f6f91b31a78b699a65423b6fbb8882c89dce5819adf",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/actions.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/states.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -1130,15 +1118,6 @@ package Oven {
         20,
         16
       ]
-    },
-    {
-      "document": 1,
-      "range": [
-        212,
-        2,
-        212,
-        20
-      ]
     }
   ],
   "references": [
@@ -1220,11 +1199,6 @@ package Oven {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Oven::Machine::start::::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Oven::Machine::stop"
     },
     {
@@ -1235,92 +1209,7 @@ package Oven {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Oven::Machine::stop::::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Oven::machine"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::Action::subactions"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::TransitionAction::accepter"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::TransitionAction::transitionLinkSource"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::actions"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::transitionActions"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::happensBeforeLinks"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::doAction"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::entryAction"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::exclusiveStates"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::exitAction"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::stateTransitions"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateTransitionAction::payload"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateTransitionAction::transitionLinkSource"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::stateActions"
     },
     {
       "kind": "source-anchor",
@@ -1393,13 +1282,6 @@ package Oven {
       "sourceDomain": "workspace"
     },
     {
-      "kind": "source-anchor",
-      "metaclass": "ReferenceUsage",
-      "ownerQualifiedName": "Actions::AcceptMessageAction",
-      "source": 25,
-      "sourceDomain": "standard-library"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -1437,12 +1319,6 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "initialState",
       "source": 6
@@ -1455,62 +1331,8 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "redefinition",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "containment",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "subsetting",
       "source": 7
     },
     {
@@ -1524,36 +1346,6 @@ package Oven {
       "ordinal": 9,
       "relationshipKind": "transition",
       "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "redefinition",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
     },
     {
       "kind": "relationship",
@@ -1581,24 +1373,6 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
       "ordinal": 23,
       "relationshipKind": "succession",
       "source": 9
@@ -1611,93 +1385,15 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "redefinition",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "subsetting",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "typeFeaturing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "typing",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "redefinition",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typeFeaturing",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "typing",
       "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "redefinition",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
     },
     {
       "kind": "relationship",
@@ -1733,24 +1429,6 @@ package Oven {
       "kind": "relationship",
       "ordinal": 24,
       "relationshipKind": "containment",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "subsetting",
       "source": 13
     },
     {
@@ -1773,50 +1451,8 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
       "ordinal": 25,
       "relationshipKind": "containment",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "redefinition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "redefinition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "redefinition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "subsetting",
       "source": 14
     },
     {
@@ -1833,205 +1469,73 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "redefinition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 11,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 12,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "containment",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "subsetting",
-      "source": 16
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 35,
       "relationshipKind": "transitionSource",
-      "source": 16
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 36,
       "relationshipKind": "transitionTarget",
-      "source": 16
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 37,
       "relationshipKind": "transitionTrigger",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "typeFeaturing",
-      "source": 16
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "containment",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "redefinition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "redefinition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "redefinition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 46,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "subsetting",
-      "source": 17
+      "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 47,
       "relationshipKind": "succession",
-      "source": 17
+      "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 48,
       "relationshipKind": "succession",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 50,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "redefinition",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "typeFeaturing",
-      "source": 18
+      "source": 16
     }
   ],
   "selectedView": {
-    "reference": 19,
+    "reference": 17,
     "kind": "state-transition-view",
     "name": "machine",
     "source": 24
@@ -2047,7 +1551,7 @@ package Oven {
         "navigation": 4,
         "origin": 17,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 28,
         "source": 0,
         "target": 17
       },
@@ -2056,7 +1560,7 @@ package Oven {
         "navigation": 7,
         "origin": 18,
         "provenance": "authored",
-        "reference": 74,
+        "reference": 40,
         "source": 17,
         "target": 18
       },
@@ -2065,7 +1569,7 @@ package Oven {
         "navigation": 5,
         "origin": 20,
         "provenance": "authored",
-        "reference": 75,
+        "reference": 41,
         "source": 17,
         "target": 20
       },
@@ -2074,7 +1578,7 @@ package Oven {
         "navigation": 9,
         "origin": 19,
         "provenance": "authored",
-        "reference": 76,
+        "reference": 42,
         "source": 17,
         "target": 19
       },
@@ -2083,7 +1587,7 @@ package Oven {
         "navigation": 11,
         "origin": 21,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 29,
         "source": 0,
         "target": 21
       },
@@ -2092,7 +1596,7 @@ package Oven {
         "navigation": 12,
         "origin": 22,
         "provenance": "authored",
-        "reference": 62,
+        "reference": 36,
         "source": 21,
         "target": 22
       },
@@ -2101,7 +1605,7 @@ package Oven {
         "navigation": 2,
         "origin": 15,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 30,
         "source": 0,
         "target": 15
       },
@@ -2110,7 +1614,7 @@ package Oven {
         "navigation": 3,
         "origin": 15,
         "provenance": "authored",
-        "reference": 54,
+        "reference": 34,
         "source": 15,
         "target": 17
       },
@@ -2119,7 +1623,7 @@ package Oven {
         "navigation": 20,
         "origin": 1,
         "provenance": "authored",
-        "reference": 50,
+        "reference": 31,
         "source": 0,
         "target": 1
       },
@@ -2128,7 +1632,7 @@ package Oven {
         "navigation": 21,
         "origin": 1,
         "provenance": "implied",
-        "reference": 67,
+        "reference": 38,
         "source": 21,
         "target": 17
       },
@@ -2137,7 +1641,7 @@ package Oven {
         "navigation": 19,
         "origin": 7,
         "provenance": "authored",
-        "reference": 125,
+        "reference": 59,
         "source": 1,
         "target": 7
       },
@@ -2146,7 +1650,7 @@ package Oven {
         "navigation": 19,
         "origin": 7,
         "provenance": "authored",
-        "reference": 126,
+        "reference": 60,
         "source": 1,
         "target": 7
       },
@@ -2155,7 +1659,7 @@ package Oven {
         "navigation": 19,
         "origin": 7,
         "provenance": "authored",
-        "reference": 127,
+        "reference": 61,
         "source": 1,
         "target": 7
       },
@@ -2164,7 +1668,7 @@ package Oven {
         "navigation": 19,
         "origin": 2,
         "provenance": "authored",
-        "reference": 128,
+        "reference": 62,
         "source": 1,
         "target": 2
       },
@@ -2173,7 +1677,7 @@ package Oven {
         "navigation": 21,
         "origin": 2,
         "provenance": "implied",
-        "reference": 66,
+        "reference": 37,
         "source": 21,
         "target": 17
       },
@@ -2182,7 +1686,7 @@ package Oven {
         "navigation": 19,
         "origin": 3,
         "provenance": "authored",
-        "reference": 129,
+        "reference": 63,
         "source": 1,
         "target": 3
       },
@@ -2191,7 +1695,7 @@ package Oven {
         "navigation": 19,
         "origin": 4,
         "provenance": "authored",
-        "reference": 137,
+        "reference": 67,
         "source": 3,
         "target": 4
       },
@@ -2200,7 +1704,7 @@ package Oven {
         "navigation": 15,
         "origin": 8,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 32,
         "source": 0,
         "target": 8
       },
@@ -2209,7 +1713,7 @@ package Oven {
         "navigation": 16,
         "origin": 8,
         "provenance": "implied",
-        "reference": 81,
+        "reference": 44,
         "source": 17,
         "target": 21
       },
@@ -2218,7 +1722,7 @@ package Oven {
         "navigation": 14,
         "origin": 14,
         "provenance": "authored",
-        "reference": 98,
+        "reference": 48,
         "source": 8,
         "target": 14
       },
@@ -2227,7 +1731,7 @@ package Oven {
         "navigation": 14,
         "origin": 14,
         "provenance": "authored",
-        "reference": 99,
+        "reference": 49,
         "source": 8,
         "target": 14
       },
@@ -2236,7 +1740,7 @@ package Oven {
         "navigation": 14,
         "origin": 14,
         "provenance": "authored",
-        "reference": 100,
+        "reference": 50,
         "source": 8,
         "target": 14
       },
@@ -2245,7 +1749,7 @@ package Oven {
         "navigation": 14,
         "origin": 9,
         "provenance": "authored",
-        "reference": 101,
+        "reference": 51,
         "source": 8,
         "target": 9
       },
@@ -2254,7 +1758,7 @@ package Oven {
         "navigation": 16,
         "origin": 9,
         "provenance": "implied",
-        "reference": 80,
+        "reference": 43,
         "source": 17,
         "target": 21
       },
@@ -2263,7 +1767,7 @@ package Oven {
         "navigation": 14,
         "origin": 10,
         "provenance": "authored",
-        "reference": 102,
+        "reference": 52,
         "source": 8,
         "target": 10
       },
@@ -2272,7 +1776,7 @@ package Oven {
         "navigation": 14,
         "origin": 11,
         "provenance": "authored",
-        "reference": 110,
+        "reference": 56,
         "source": 10,
         "target": 11
       },
@@ -2281,7 +1785,7 @@ package Oven {
         "navigation": 1,
         "origin": 16,
         "provenance": "authored",
-        "reference": 52,
+        "reference": 33,
         "source": 0,
         "target": 16
       }
@@ -2361,7 +1865,7 @@ package Oven {
         "name": "stop",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 16,
+        "reference": 15,
         "source": 20,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2378,7 +1882,7 @@ package Oven {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 44,
+        "reference": 26,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2403,7 +1907,7 @@ package Oven {
         "name": null,
         "notationRole": "usage",
         "owner": 1,
-        "reference": 42,
+        "reference": 24,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2420,7 +1924,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 3,
-        "reference": 45,
+        "reference": 27,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2437,7 +1941,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 43,
+        "reference": 25,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2454,7 +1958,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 43,
+        "reference": 25,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2471,7 +1975,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 43,
+        "reference": 25,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2522,7 +2026,7 @@ package Oven {
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
-        "reference": 40,
+        "reference": 22,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2547,7 +2051,7 @@ package Oven {
         "name": null,
         "notationRole": "usage",
         "owner": 8,
-        "reference": 38,
+        "reference": 20,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2564,7 +2068,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 10,
-        "reference": 41,
+        "reference": 23,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2581,7 +2085,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 39,
+        "reference": 21,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2598,7 +2102,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 39,
+        "reference": 21,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2615,7 +2119,7 @@ package Oven {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 39,
+        "reference": 21,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2632,7 +2136,7 @@ package Oven {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 37,
+        "reference": 19,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2649,7 +2153,7 @@ package Oven {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 36,
+        "reference": 18,
         "source": 1,
         "stateSubaction": "entry",
         "successionGuard": null,
@@ -2804,112 +2308,13 @@ package Oven {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
-        "source": 0,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 77,
-        "source": 17,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 78,
-        "source": 17,
-        "target": {
-          "reference": 30,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 79,
-        "source": 17,
-        "target": {
-          "reference": 35,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 82,
-        "source": 17,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 92,
+        "reference": 46,
         "source": 18,
         "target": {
           "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 88,
-        "source": 18,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 89,
-        "source": 18,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 90,
-        "source": 18,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 91,
-        "source": 18,
-        "target": {
-          "node": 17,
           "status": "resolved"
         }
       },
@@ -2917,7 +2322,7 @@ package Oven {
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 97,
+        "reference": 47,
         "source": 20,
         "target": {
           "reference": 4,
@@ -2925,54 +2330,10 @@ package Oven {
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 93,
-        "source": 20,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 94,
-        "source": 20,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 95,
-        "source": 20,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 96,
-        "source": 20,
-        "target": {
-          "node": 17,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 87,
+        "reference": 45,
         "source": 19,
         "target": {
           "reference": 0,
@@ -2980,98 +2341,10 @@ package Oven {
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 83,
-        "source": 19,
-        "target": {
-          "reference": 31,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 84,
-        "source": 19,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 85,
-        "source": 19,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 86,
-        "source": 19,
-        "target": {
-          "node": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 63,
-        "source": 21,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 64,
-        "source": 21,
-        "target": {
-          "reference": 30,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 65,
-        "source": 21,
-        "target": {
-          "reference": 35,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 68,
-        "source": 21,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 73,
+        "reference": 39,
         "source": 22,
         "target": {
           "reference": 3,
@@ -3079,54 +2352,10 @@ package Oven {
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 69,
-        "source": 22,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 70,
-        "source": 22,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 71,
-        "source": 22,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 72,
-        "source": 22,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "initialState",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 55,
+        "reference": 35,
         "source": 15,
         "target": {
           "node": 17,
@@ -3134,65 +2363,10 @@ package Oven {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 57,
-        "source": 15,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 60,
-        "source": 15,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 130,
-        "source": 1,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 131,
-        "source": 1,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 132,
-        "source": 1,
-        "target": {
-          "reference": 32,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 133,
+        "reference": 64,
         "source": 1,
         "target": {
           "node": 21,
@@ -3203,7 +2377,7 @@ package Oven {
         "kind": "transitionTarget",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 134,
+        "reference": 65,
         "source": 1,
         "target": {
           "node": 17,
@@ -3214,7 +2388,7 @@ package Oven {
         "kind": "transitionTrigger",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 135,
+        "reference": 66,
         "source": 1,
         "target": {
           "reference": 2,
@@ -3222,109 +2396,10 @@ package Oven {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 136,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 146,
-        "source": 7,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 138,
-        "source": 7,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 139,
-        "source": 7,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 147,
-        "source": 7,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 140,
-        "source": 7,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 141,
-        "source": 7,
-        "target": {
-          "node": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 148,
-        "source": 7,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 142,
-        "source": 2,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 144,
+        "reference": 68,
         "source": 2,
         "target": {
           "node": 21,
@@ -3335,7 +2410,7 @@ package Oven {
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 145,
+        "reference": 69,
         "source": 2,
         "target": {
           "node": 17,
@@ -3343,87 +2418,10 @@ package Oven {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 143,
-        "source": 3,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 149,
-        "source": 3,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 150,
-        "source": 4,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 151,
-        "source": 4,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 103,
-        "source": 8,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 104,
-        "source": 8,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 105,
-        "source": 8,
-        "target": {
-          "reference": 32,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 106,
+        "reference": 53,
         "source": 8,
         "target": {
           "node": 17,
@@ -3434,7 +2432,7 @@ package Oven {
         "kind": "transitionTarget",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 107,
+        "reference": 54,
         "source": 8,
         "target": {
           "node": 21,
@@ -3445,7 +2443,7 @@ package Oven {
         "kind": "transitionTrigger",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 108,
+        "reference": 55,
         "source": 8,
         "target": {
           "reference": 1,
@@ -3453,109 +2451,10 @@ package Oven {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 109,
-        "source": 8,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 119,
-        "source": 14,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 111,
-        "source": 14,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 112,
-        "source": 14,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 120,
-        "source": 14,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 113,
-        "source": 14,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 114,
-        "source": 14,
-        "target": {
-          "node": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 121,
-        "source": 14,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 115,
-        "source": 9,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 117,
+        "reference": 57,
         "source": 9,
         "target": {
           "node": 17,
@@ -3566,98 +2465,10 @@ package Oven {
         "kind": "succession",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 118,
+        "reference": 58,
         "source": 9,
         "target": {
           "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 116,
-        "source": 10,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 122,
-        "source": 10,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 123,
-        "source": 11,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 124,
-        "source": 11,
-        "target": {
-          "node": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 16,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 58,
-        "source": 16,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 59,
-        "source": 16,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 61,
-        "source": 16,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

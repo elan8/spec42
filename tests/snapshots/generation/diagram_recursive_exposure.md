@@ -205,20 +205,12 @@ package RecursiveExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:2fa567f92ab25d1f8d7c95469ed3a1134dc75148d23524b84b1baf37faddd04c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_recursive_exposure.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -295,16 +287,6 @@ package RecursiveExample {
       "qualifiedName": "RecursiveExample::vehicle::wheel"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -318,69 +300,9 @@ package RecursiveExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "containment",
       "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
     }
   ],
   "selectedView": {
@@ -400,7 +322,7 @@ package RecursiveExample {
         "navigation": 3,
         "origin": 1,
         "provenance": "authored",
-        "reference": 7,
+        "reference": 5,
         "source": 0,
         "target": 1
       },
@@ -409,7 +331,7 @@ package RecursiveExample {
         "navigation": 1,
         "origin": 2,
         "provenance": "authored",
-        "reference": 8,
+        "reference": 6,
         "source": 0,
         "target": 2
       },
@@ -418,7 +340,7 @@ package RecursiveExample {
         "navigation": 2,
         "origin": 3,
         "provenance": "authored",
-        "reference": 10,
+        "reference": 7,
         "source": 2,
         "target": 3
       }
@@ -519,118 +441,7 @@ package RecursiveExample {
         }
       }
     ],
-    "relationships": [
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 9,
-        "source": 0,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 17,
-        "source": 1,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 1,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 11,
-        "source": 2,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 12,
-        "source": 2,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 13,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 14,
-        "source": 3,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 15,
-        "source": 3,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 3,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      }
-    ],
+    "relationships": [],
     "scene": {
       "kind": "general"
     }

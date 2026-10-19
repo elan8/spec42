@@ -231,7 +231,7 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:a122f173850d163d98eef386e4e0afd0fe09c66f50437e4f8216a70afd9683fc",
   "documents": [
     {
@@ -420,20 +420,8 @@ package Model {
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
@@ -446,12 +434,6 @@ package Model {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "containment",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
       "source": 3
     },
     {
@@ -492,18 +474,6 @@ package Model {
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "typing",
       "source": 7
@@ -532,7 +502,7 @@ package Model {
         "navigation": 0,
         "origin": 2,
         "provenance": "implied",
-        "reference": 19,
+        "reference": 16,
         "source": 0,
         "target": 2
       },
@@ -541,7 +511,7 @@ package Model {
         "navigation": 10,
         "origin": 3,
         "provenance": "implied",
-        "reference": 13,
+        "reference": 12,
         "source": 2,
         "target": 3
       },
@@ -550,7 +520,7 @@ package Model {
         "navigation": 2,
         "origin": 4,
         "provenance": "implied",
-        "reference": 20,
+        "reference": 17,
         "source": 0,
         "target": 4
       },
@@ -559,7 +529,7 @@ package Model {
         "navigation": 10,
         "origin": 5,
         "provenance": "implied",
-        "reference": 16,
+        "reference": 14,
         "source": 4,
         "target": 5
       },
@@ -568,7 +538,7 @@ package Model {
         "navigation": 4,
         "origin": 1,
         "provenance": "implied",
-        "reference": 21,
+        "reference": 18,
         "source": 0,
         "target": 1
       },
@@ -577,7 +547,7 @@ package Model {
         "navigation": 5,
         "origin": 1,
         "provenance": "authored",
-        "reference": 23,
+        "reference": 20,
         "source": 3,
         "target": 5
       }
@@ -771,7 +741,7 @@ package Model {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 19,
         "source": 0,
         "target": {
           "reference": 0,
@@ -782,21 +752,10 @@ package Model {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 13,
         "source": 2,
         "target": {
           "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 14,
-        "source": 2,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -804,21 +763,10 @@ package Model {
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 21,
         "source": 3,
         "target": {
           "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 3,
-        "target": {
-          "reference": 6,
           "status": "resolved"
         }
       },
@@ -826,21 +774,10 @@ package Model {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 15,
         "source": 4,
         "target": {
           "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 17,
-        "source": 4,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -848,21 +785,10 @@ package Model {
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 22,
         "source": 5,
         "target": {
           "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 25,
-        "source": 5,
-        "target": {
-          "reference": 6,
           "status": "resolved"
         }
       },
@@ -885,17 +811,6 @@ package Model {
         "source": 1,
         "target": {
           "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 12,
-        "source": 1,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       }

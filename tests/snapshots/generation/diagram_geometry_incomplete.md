@@ -120,16 +120,12 @@ package GeometryExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:fa3c748194b3462f437aed05c6b8f625931f6fbbb92e5e48df2f4c38b0904140",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_geometry_incomplete.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -162,17 +158,6 @@ package GeometryExample {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "GeometryExample::selected"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
     }
   ],
   "selectedView": {
@@ -220,19 +205,7 @@ package GeometryExample {
         }
       }
     ],
-    "relationships": [
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 3,
-        "source": 0,
-        "target": {
-          "reference": 2,
-          "status": "resolved"
-        }
-      }
-    ],
+    "relationships": [],
     "scene": {
       "kind": "geometry"
     }

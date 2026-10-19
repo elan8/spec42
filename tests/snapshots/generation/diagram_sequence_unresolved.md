@@ -135,7 +135,7 @@ package SequenceNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:b82371c9fdcd83beaf5efb03be1a486624ebfbadc24aa1d5f5c6f6a84e505b4c",
   "documents": [
     {

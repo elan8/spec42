@@ -950,32 +950,12 @@ package Links {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:c283bd408e63a62c86726a772afd355ce139817d31150672b94ef780f9802790",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/connections.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/interfaces.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -1414,66 +1394,6 @@ package Links {
       "qualifiedName": "Links::system::namedUntyped"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::BinaryConnection::source"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::BinaryConnection::target"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::binaryConnections"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::connections"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Interfaces::BinaryInterface::source"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Interfaces::BinaryInterface::target"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Interfaces::binaryInterfaces"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Interfaces::interfaces"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "Links::system",
@@ -1514,60 +1434,6 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 26,
       "relationshipKind": "typing",
       "source": 1
@@ -1598,60 +1464,6 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 56,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 30,
       "relationshipKind": "typing",
       "source": 2
@@ -1670,87 +1482,15 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "redefinition",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
       "ordinal": 65,
       "relationshipKind": "typing",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "redefinition",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
       "ordinal": 69,
       "relationshipKind": "typing",
       "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "redefinition",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "redefinition",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
     },
     {
       "kind": "relationship",
@@ -1763,42 +1503,6 @@ package Links {
       "ordinal": 80,
       "relationshipKind": "typing",
       "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "redefinition",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "redefinition",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 86,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 87,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
     },
     {
       "kind": "relationship",
@@ -1858,12 +1562,6 @@ package Links {
       "kind": "relationship",
       "ordinal": 23,
       "relationshipKind": "containment",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "subsetting",
       "source": 11
     },
     {
@@ -1928,78 +1626,6 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 78,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 90,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 91,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 92,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 93,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
       "ordinal": 60,
       "relationshipKind": "typing",
       "source": 12
@@ -2024,24 +1650,6 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
       "ordinal": 22,
       "relationshipKind": "typing",
       "source": 13
@@ -2060,24 +1668,6 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
       "ordinal": 34,
       "relationshipKind": "typing",
       "source": 14
@@ -2092,24 +1682,6 @@ package Links {
       "kind": "relationship",
       "ordinal": 14,
       "relationshipKind": "containment",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 48,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "typeFeaturing",
       "source": 15
     },
     {
@@ -2144,30 +1716,6 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "typeFeaturing",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "typing",
       "source": 16
@@ -2182,30 +1730,6 @@ package Links {
       "kind": "relationship",
       "ordinal": 17,
       "relationshipKind": "memberAccessOperand",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
       "source": 17
     }
   ],
@@ -2226,7 +1750,7 @@ package Links {
         "navigation": 26,
         "origin": 5,
         "provenance": "authored",
-        "reference": 86,
+        "reference": 38,
         "source": 0,
         "target": 5
       },
@@ -2235,7 +1759,7 @@ package Links {
         "navigation": 28,
         "origin": 5,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 27,
         "source": 14,
         "target": 17
       },
@@ -2244,7 +1768,7 @@ package Links {
         "navigation": 0,
         "origin": 6,
         "provenance": "implied",
-        "reference": 137,
+        "reference": 67,
         "source": 5,
         "target": 6
       },
@@ -2253,7 +1777,7 @@ package Links {
         "navigation": 2,
         "origin": 7,
         "provenance": "implied",
-        "reference": 138,
+        "reference": 68,
         "source": 5,
         "target": 7
       },
@@ -2262,7 +1786,7 @@ package Links {
         "navigation": 30,
         "origin": 4,
         "provenance": "authored",
-        "reference": 87,
+        "reference": 39,
         "source": 0,
         "target": 4
       },
@@ -2271,7 +1795,7 @@ package Links {
         "navigation": 31,
         "origin": 4,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 21,
         "source": 10,
         "target": 16
       },
@@ -2280,7 +1804,7 @@ package Links {
         "navigation": 13,
         "origin": 9,
         "provenance": "authored",
-        "reference": 88,
+        "reference": 40,
         "source": 0,
         "target": 9
       },
@@ -2289,7 +1813,7 @@ package Links {
         "navigation": 8,
         "origin": 10,
         "provenance": "implied",
-        "reference": 119,
+        "reference": 58,
         "source": 9,
         "target": 10
       },
@@ -2298,7 +1822,7 @@ package Links {
         "navigation": 10,
         "origin": 11,
         "provenance": "implied",
-        "reference": 120,
+        "reference": 59,
         "source": 9,
         "target": 11
       },
@@ -2307,7 +1831,7 @@ package Links {
         "navigation": 15,
         "origin": 12,
         "provenance": "authored",
-        "reference": 89,
+        "reference": 41,
         "source": 0,
         "target": 12
       },
@@ -2316,7 +1840,7 @@ package Links {
         "navigation": 8,
         "origin": 13,
         "provenance": "implied",
-        "reference": 125,
+        "reference": 61,
         "source": 12,
         "target": 13
       },
@@ -2325,7 +1849,7 @@ package Links {
         "navigation": 10,
         "origin": 14,
         "provenance": "implied",
-        "reference": 126,
+        "reference": 62,
         "source": 12,
         "target": 14
       },
@@ -2334,7 +1858,7 @@ package Links {
         "navigation": 17,
         "origin": 15,
         "provenance": "authored",
-        "reference": 90,
+        "reference": 42,
         "source": 0,
         "target": 15
       },
@@ -2343,7 +1867,7 @@ package Links {
         "navigation": 8,
         "origin": 16,
         "provenance": "implied",
-        "reference": 131,
+        "reference": 64,
         "source": 15,
         "target": 16
       },
@@ -2352,7 +1876,7 @@ package Links {
         "navigation": 10,
         "origin": 17,
         "provenance": "implied",
-        "reference": 132,
+        "reference": 65,
         "source": 15,
         "target": 17
       },
@@ -2361,7 +1885,7 @@ package Links {
         "navigation": 33,
         "origin": 18,
         "provenance": "authored",
-        "reference": 91,
+        "reference": 43,
         "source": 0,
         "target": 18
       },
@@ -2370,7 +1894,7 @@ package Links {
         "navigation": 35,
         "origin": 18,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 22,
         "source": 13,
         "target": 16
       },
@@ -2379,7 +1903,7 @@ package Links {
         "navigation": 4,
         "origin": 19,
         "provenance": "implied",
-        "reference": 97,
+        "reference": 48,
         "source": 18,
         "target": 19
       },
@@ -2388,7 +1912,7 @@ package Links {
         "navigation": 6,
         "origin": 20,
         "provenance": "implied",
-        "reference": 98,
+        "reference": 49,
         "source": 18,
         "target": 20
       },
@@ -2397,7 +1921,7 @@ package Links {
         "navigation": 22,
         "origin": 1,
         "provenance": "authored",
-        "reference": 92,
+        "reference": 44,
         "source": 0,
         "target": 1
       },
@@ -2406,7 +1930,7 @@ package Links {
         "navigation": 24,
         "origin": 1,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 28,
         "source": 11,
         "target": 14
       },
@@ -2415,7 +1939,7 @@ package Links {
         "navigation": 0,
         "origin": 2,
         "provenance": "implied",
-        "reference": 99,
+        "reference": 50,
         "source": 1,
         "target": 2
       },
@@ -2424,7 +1948,7 @@ package Links {
         "navigation": 2,
         "origin": 3,
         "provenance": "implied",
-        "reference": 100,
+        "reference": 51,
         "source": 1,
         "target": 3
       },
@@ -2433,7 +1957,7 @@ package Links {
         "navigation": 19,
         "origin": 8,
         "provenance": "authored",
-        "reference": 93,
+        "reference": 45,
         "source": 0,
         "target": 8
       },
@@ -2442,7 +1966,7 @@ package Links {
         "navigation": 20,
         "origin": 8,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 23,
         "source": 10,
         "target": 13
       }
@@ -2542,7 +2066,7 @@ package Links {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 31,
+        "reference": 19,
         "source": 22,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2706,7 +2230,7 @@ package Links {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 30,
+        "reference": 18,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2966,7 +2490,7 @@ package Links {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 32,
+        "reference": 20,
         "source": 33,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3029,21 +2553,10 @@ package Links {
     ],
     "relationships": [
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 94,
-        "source": 0,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 145,
+        "reference": 71,
         "source": 5,
         "target": {
           "reference": 6,
@@ -3054,7 +2567,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 139,
+        "reference": 69,
         "source": 5,
         "target": {
           "node": 14,
@@ -3065,7 +2578,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 140,
+        "reference": 70,
         "source": 5,
         "target": {
           "node": 17,
@@ -3073,90 +2586,13 @@ package Links {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 141,
-        "source": 5,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 142,
-        "source": 5,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 143,
-        "source": 5,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 144,
-        "source": 5,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 76,
+        "reference": 34,
         "source": 6,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 70,
-        "source": 6,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 72,
-        "source": 6,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 74,
-        "source": 6,
-        "target": {
-          "reference": 6,
           "status": "resolved"
         }
       },
@@ -3164,7 +2600,7 @@ package Links {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 84,
+        "reference": 36,
         "source": 7,
         "target": {
           "reference": 9,
@@ -3172,43 +2608,10 @@ package Links {
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 78,
-        "source": 7,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 80,
-        "source": 7,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 82,
-        "source": 7,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 146,
+        "reference": 72,
         "source": 4,
         "target": {
           "node": 10,
@@ -3219,7 +2622,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 147,
+        "reference": 73,
         "source": 4,
         "target": {
           "node": 16,
@@ -3227,90 +2630,13 @@ package Links {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 148,
-        "source": 4,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 149,
-        "source": 4,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 150,
-        "source": 4,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 151,
-        "source": 4,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 124,
+        "reference": 60,
         "source": 9,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 121,
-        "source": 9,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 122,
-        "source": 9,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 123,
-        "source": 9,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -3318,43 +2644,10 @@ package Links {
         "kind": "typing",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 45,
+        "reference": 24,
         "source": 10,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 10,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 10,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 42,
-        "source": 10,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -3362,43 +2655,10 @@ package Links {
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 59,
+        "reference": 29,
         "source": 11,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 50,
-        "source": 11,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 51,
-        "source": 11,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 11,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -3406,43 +2666,10 @@ package Links {
         "kind": "typing",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 130,
+        "reference": 63,
         "source": 12,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 127,
-        "source": 12,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 128,
-        "source": 12,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 129,
-        "source": 12,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -3450,43 +2677,10 @@ package Links {
         "kind": "typing",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 25,
         "source": 13,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 38,
-        "source": 13,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 39,
-        "source": 13,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 43,
-        "source": 13,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -3494,43 +2688,10 @@ package Links {
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 60,
+        "reference": 30,
         "source": 14,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 52,
-        "source": 14,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
-        "source": 14,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 57,
-        "source": 14,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -3538,43 +2699,10 @@ package Links {
         "kind": "typing",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 136,
+        "reference": 66,
         "source": 15,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 133,
-        "source": 15,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 134,
-        "source": 15,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 135,
-        "source": 15,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -3582,43 +2710,10 @@ package Links {
         "kind": "typing",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 26,
         "source": 16,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 40,
-        "source": 16,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 41,
-        "source": 16,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 16,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -3626,7 +2721,7 @@ package Links {
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 61,
+        "reference": 31,
         "source": 17,
         "target": {
           "reference": 9,
@@ -3634,43 +2729,10 @@ package Links {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 54,
-        "source": 17,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 55,
-        "source": 17,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 58,
-        "source": 17,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "connectorEnd",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 95,
+        "reference": 46,
         "source": 18,
         "target": {
           "node": 13,
@@ -3681,7 +2743,7 @@ package Links {
         "kind": "connectorEnd",
         "navigation": 36,
         "provenance": "authored",
-        "reference": 96,
+        "reference": 47,
         "source": 18,
         "target": {
           "node": 16,
@@ -3692,54 +2754,10 @@ package Links {
         "kind": "typing",
         "navigation": 34,
         "provenance": "authored",
-        "reference": 117,
+        "reference": 56,
         "source": 18,
         "target": {
           "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 105,
-        "source": 18,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 106,
-        "source": 18,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 107,
-        "source": 18,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 114,
-        "source": 18,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -3747,43 +2765,10 @@ package Links {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 65,
+        "reference": 32,
         "source": 19,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 62,
-        "source": 19,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 63,
-        "source": 19,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 64,
-        "source": 19,
-        "target": {
-          "reference": 3,
           "status": "resolved"
         }
       },
@@ -3791,7 +2776,7 @@ package Links {
         "kind": "typing",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 69,
+        "reference": 33,
         "source": 20,
         "target": {
           "reference": 9,
@@ -3799,43 +2784,10 @@ package Links {
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 66,
-        "source": 20,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 67,
-        "source": 20,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 68,
-        "source": 20,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 118,
+        "reference": 57,
         "source": 1,
         "target": {
           "reference": 6,
@@ -3846,7 +2798,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 24,
         "provenance": "authored",
-        "reference": 101,
+        "reference": 52,
         "source": 1,
         "target": {
           "node": 11,
@@ -3857,7 +2809,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 102,
+        "reference": 53,
         "source": 1,
         "target": {
           "node": 14,
@@ -3865,90 +2817,13 @@ package Links {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 108,
-        "source": 1,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 109,
-        "source": 1,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 110,
-        "source": 1,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 115,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 77,
+        "reference": 35,
         "source": 2,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 71,
-        "source": 2,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 73,
-        "source": 2,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 75,
-        "source": 2,
-        "target": {
-          "reference": 6,
           "status": "resolved"
         }
       },
@@ -3956,7 +2831,7 @@ package Links {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 85,
+        "reference": 37,
         "source": 3,
         "target": {
           "reference": 9,
@@ -3964,43 +2839,10 @@ package Links {
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 79,
-        "source": 3,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 81,
-        "source": 3,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 83,
-        "source": 3,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 103,
+        "reference": 54,
         "source": 8,
         "target": {
           "node": 10,
@@ -4011,54 +2853,10 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 104,
+        "reference": 55,
         "source": 8,
         "target": {
           "node": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 111,
-        "source": 8,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 112,
-        "source": 8,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 113,
-        "source": 8,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 116,
-        "source": 8,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

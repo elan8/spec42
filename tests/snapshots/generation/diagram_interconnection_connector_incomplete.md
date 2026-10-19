@@ -234,28 +234,12 @@ package ConnectorIncomplete {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:0c683f83b40ac4701a51006a3264e71c6d85ad622c7643176ea5ab2af6b4d931",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_connector_incomplete.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/connections.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -336,36 +320,6 @@ package ConnectorIncomplete {
       "qualifiedName": "ConnectorIncomplete::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::binaryConnections"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::connections"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "ConnectorIncomplete::Assembly",
@@ -386,12 +340,6 @@ package ConnectorIncomplete {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "connectorEnd",
       "source": 1
@@ -401,48 +349,6 @@ package ConnectorIncomplete {
       "ordinal": 5,
       "relationshipKind": "connectorEnd",
       "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
     }
   ],
   "selectedView": {
@@ -467,7 +373,7 @@ package ConnectorIncomplete {
         "navigation": 1,
         "origin": 2,
         "provenance": "authored",
-        "reference": 11,
+        "reference": 5,
         "source": 0,
         "target": 2
       },
@@ -476,7 +382,7 @@ package ConnectorIncomplete {
         "navigation": 2,
         "origin": 1,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 6,
         "source": 0,
         "target": 1
       }
@@ -538,7 +444,7 @@ package ConnectorIncomplete {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 10,
+        "reference": 4,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -566,54 +472,10 @@ package ConnectorIncomplete {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 13,
-        "source": 0,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
-        "source": 2,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 21,
-        "source": 2,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 22,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "connectorEnd",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 7,
         "source": 1,
         "target": {
           "node": 2,
@@ -624,54 +486,10 @@ package ConnectorIncomplete {
         "kind": "connectorEnd",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 8,
         "source": 1,
         "target": {
           "status": "unresolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 1,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 17,
-        "source": 1,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 1,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
         }
       }
     ],

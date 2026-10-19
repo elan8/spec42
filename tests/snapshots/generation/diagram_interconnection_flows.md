@@ -670,32 +670,12 @@ package Feed {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:8b7434be482f6ea7255b2261531ac204c83c2a557cb97403a956abca4b5b384e",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/flows.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/transfers.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -976,46 +956,6 @@ package Feed {
       "qualifiedName": "Feed::vehicle::topUp"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Flows::flows"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Flows::messages"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::flowTransfers"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::transfers"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "FlowUsage",
       "ownerQualifiedName": "Feed::vehicle",
@@ -1024,45 +964,9 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 38,
       "relationshipKind": "typing",
       "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
     },
     {
       "kind": "relationship",
@@ -1080,42 +984,6 @@ package Feed {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "flow",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "typeFeaturing",
       "source": 9
     },
     {
@@ -1162,12 +1030,6 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "flowPayloadType",
       "source": 12
@@ -1186,42 +1048,6 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "containment",
       "source": 13
@@ -1230,24 +1056,6 @@ package Feed {
       "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "containment",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "typeFeaturing",
       "source": 13
     },
     {
@@ -1264,24 +1072,6 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
       "ordinal": 26,
       "relationshipKind": "typing",
       "source": 14
@@ -1290,24 +1080,6 @@ package Feed {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "containment",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "typeFeaturing",
       "source": 15
     },
     {
@@ -1326,42 +1098,6 @@ package Feed {
       "kind": "relationship",
       "ordinal": 19,
       "relationshipKind": "flowTarget",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "typeFeaturing",
       "source": 16
     }
   ],
@@ -1382,7 +1118,7 @@ package Feed {
         "navigation": 13,
         "origin": 1,
         "provenance": "authored",
-        "reference": 44,
+        "reference": 24,
         "source": 0,
         "target": 1
       },
@@ -1391,7 +1127,7 @@ package Feed {
         "navigation": 14,
         "origin": 1,
         "provenance": "implied",
-        "reference": 34,
+        "reference": 20,
         "source": 4,
         "target": 8
       },
@@ -1400,7 +1136,7 @@ package Feed {
         "navigation": 7,
         "origin": 3,
         "provenance": "authored",
-        "reference": 45,
+        "reference": 25,
         "source": 0,
         "target": 3
       },
@@ -1409,7 +1145,7 @@ package Feed {
         "navigation": 0,
         "origin": 4,
         "provenance": "implied",
-        "reference": 70,
+        "reference": 37,
         "source": 3,
         "target": 4
       },
@@ -1418,7 +1154,7 @@ package Feed {
         "navigation": 17,
         "origin": 2,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 26,
         "source": 0,
         "target": 2
       },
@@ -1427,7 +1163,7 @@ package Feed {
         "navigation": 18,
         "origin": 2,
         "provenance": "implied",
-        "reference": 35,
+        "reference": 21,
         "source": 6,
         "target": 9
       },
@@ -1436,7 +1172,7 @@ package Feed {
         "navigation": 9,
         "origin": 5,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 27,
         "source": 0,
         "target": 5
       },
@@ -1445,7 +1181,7 @@ package Feed {
         "navigation": 0,
         "origin": 6,
         "provenance": "implied",
-        "reference": 65,
+        "reference": 35,
         "source": 5,
         "target": 6
       },
@@ -1454,7 +1190,7 @@ package Feed {
         "navigation": 11,
         "origin": 7,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 28,
         "source": 0,
         "target": 7
       },
@@ -1463,7 +1199,7 @@ package Feed {
         "navigation": 2,
         "origin": 8,
         "provenance": "implied",
-        "reference": 59,
+        "reference": 32,
         "source": 7,
         "target": 8
       },
@@ -1472,7 +1208,7 @@ package Feed {
         "navigation": 4,
         "origin": 9,
         "provenance": "implied",
-        "reference": 60,
+        "reference": 33,
         "source": 7,
         "target": 9
       }
@@ -1541,7 +1277,7 @@ package Feed {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 25,
+        "reference": 17,
         "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1755,21 +1491,10 @@ package Feed {
     ],
     "relationships": [
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 49,
-        "source": 0,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "flowPayloadType",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 50,
+        "reference": 29,
         "source": 1,
         "target": {
           "reference": 3,
@@ -1780,7 +1505,7 @@ package Feed {
         "kind": "flowSource",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 30,
         "source": 1,
         "target": {
           "reference": 7,
@@ -1791,7 +1516,7 @@ package Feed {
         "kind": "flowTarget",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 52,
+        "reference": 31,
         "source": 1,
         "target": {
           "reference": 5,
@@ -1799,112 +1524,13 @@ package Feed {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
-        "source": 1,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 54,
-        "source": 1,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 55,
-        "source": 1,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 1,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 57,
-        "source": 1,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 58,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 74,
+        "reference": 38,
         "source": 3,
         "target": {
           "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 71,
-        "source": 3,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 72,
-        "source": 3,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 73,
-        "source": 3,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -1912,7 +1538,7 @@ package Feed {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 22,
         "source": 4,
         "target": {
           "reference": 6,
@@ -1920,43 +1546,10 @@ package Feed {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 4,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 4,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 40,
-        "source": 4,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "flowSource",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 75,
+        "reference": 39,
         "source": 2,
         "target": {
           "node": 6,
@@ -1967,7 +1560,7 @@ package Feed {
         "kind": "flowTarget",
         "navigation": 19,
         "provenance": "authored",
-        "reference": 76,
+        "reference": 40,
         "source": 2,
         "target": {
           "node": 9,
@@ -1975,112 +1568,13 @@ package Feed {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 77,
-        "source": 2,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 78,
-        "source": 2,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 79,
-        "source": 2,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 80,
-        "source": 2,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 81,
-        "source": 2,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 82,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 69,
+        "reference": 36,
         "source": 5,
         "target": {
           "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 66,
-        "source": 5,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 67,
-        "source": 5,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 68,
-        "source": 5,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -2088,7 +1582,7 @@ package Feed {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 43,
+        "reference": 23,
         "source": 6,
         "target": {
           "reference": 6,
@@ -2096,79 +1590,13 @@ package Feed {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 38,
-        "source": 6,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 39,
-        "source": 6,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 41,
-        "source": 6,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 64,
+        "reference": 34,
         "source": 7,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 61,
-        "source": 7,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 62,
-        "source": 7,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 63,
-        "source": 7,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -2176,43 +1604,10 @@ package Feed {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 18,
         "source": 8,
         "target": {
           "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 8,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 8,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 28,
-        "source": 8,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -2220,43 +1615,10 @@ package Feed {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 19,
         "source": 9,
         "target": {
           "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 30,
-        "source": 9,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 9,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 9,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       }

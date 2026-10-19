@@ -295,24 +295,12 @@ package Membership {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:d743963d702dbe0ffb9e8205d29219a4e82cb11251cb56c3dab8012000ffebd6",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_reference_membership.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -449,31 +437,6 @@ package Membership {
       "qualifiedName": "Membership::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -499,24 +462,6 @@ package Membership {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "typing",
       "source": 2
@@ -535,57 +480,9 @@ package Membership {
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "typing",
       "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
     },
     {
       "kind": "relationship",
@@ -611,7 +508,7 @@ package Membership {
         "navigation": 1,
         "origin": 1,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 8,
         "source": 0,
         "target": 1
       },
@@ -620,7 +517,7 @@ package Membership {
         "navigation": 3,
         "origin": 4,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 9,
         "source": 0,
         "target": 4
       },
@@ -629,7 +526,7 @@ package Membership {
         "navigation": 5,
         "origin": 2,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 10,
         "source": 0,
         "target": 2
       },
@@ -638,7 +535,7 @@ package Membership {
         "navigation": 7,
         "origin": 3,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 11,
         "source": 0,
         "target": 3
       },
@@ -647,7 +544,7 @@ package Membership {
         "navigation": 8,
         "origin": 3,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 13,
         "source": 3,
         "target": 1
       }
@@ -785,57 +682,13 @@ package Membership {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 17,
-        "source": 0,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 15,
         "source": 1,
         "target": {
           "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 25,
-        "source": 1,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 1,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 1,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -843,7 +696,7 @@ package Membership {
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 16,
         "source": 4,
         "target": {
           "reference": 0,
@@ -851,43 +704,10 @@ package Membership {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 29,
-        "source": 4,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 30,
-        "source": 4,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 4,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 20,
+        "reference": 12,
         "source": 2,
         "target": {
           "reference": 6,
@@ -895,57 +715,13 @@ package Membership {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 2,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "referenceSubsetting",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 14,
         "source": 3,
         "target": {
           "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
-        "source": 3,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 3,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

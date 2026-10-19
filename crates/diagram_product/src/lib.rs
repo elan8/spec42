@@ -1,4 +1,4 @@
-//! The schema-5 diagram product: a typed diagram view projection
+//! The schema-6 diagram product: a typed diagram view projection
 //! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
 //! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
 //! once and referenced by index.
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 use spec42_generator_protocol as model;
 
 /// Version of the product format `diagram_draw` consumes.
-pub const SCHEMA_VERSION: u32 = 5;
+pub const SCHEMA_VERSION: u32 = 6;
 
 /// The file name under which generators publish the product.
 pub const ARTIFACT_PATH: &str = "diagram.json";
@@ -97,6 +97,22 @@ struct NormalizedProduct {
 /// trailing newline. The field order is part of the format, so the product is serialized from its
 /// typed form (never through `serde_json::Value`, whose maps sort their keys).
 pub fn diagram_product_json(projection: &model::DiagramViewProjection) -> Result<Vec<u8>, String> {
+    product_json(projection, true)
+}
+
+/// The same product as [`diagram_product_json`], without indentation or the trailing newline:
+/// the form for a transport such as the language server, where indentation is a large share of
+/// every message and nobody reads the bytes.
+pub fn diagram_product_json_compact(
+    projection: &model::DiagramViewProjection,
+) -> Result<Vec<u8>, String> {
+    product_json(projection, false)
+}
+
+fn product_json(
+    projection: &model::DiagramViewProjection,
+    pretty: bool,
+) -> Result<Vec<u8>, String> {
     let normalized = NormalizedProduct::new(projection)?;
     let kind = kind_id(projection.view.kind);
     let reasons = projection
@@ -133,15 +149,37 @@ pub fn diagram_product_json(projection: &model::DiagramViewProjection) -> Result
         },
         projection: projected,
     };
-    let mut contents = serde_json::to_vec_pretty(&product)
-        .map_err(|error| format!("could not serialize diagram product: {error}"))?;
-    contents.push(b'\n');
-    let published: wire::DiagramProduct = serde_json::from_slice(&contents)
-        .map_err(|error| format!("diagram product violates schema-5 wire contract: {error}"))?;
+    let mut contents = if pretty {
+        serde_json::to_vec_pretty(&product)
+    } else {
+        serde_json::to_vec(&product)
+    }
+    .map_err(|error| format!("could not serialize diagram product: {error}"))?;
+    if pretty {
+        contents.push(b'\n');
+    }
+    let published: wire::DiagramProduct = serde_json::from_slice(&contents).map_err(|error| {
+        format!("diagram product violates the schema-{SCHEMA_VERSION} wire contract: {error}")
+    })?;
     if published.schema_version != SCHEMA_VERSION {
         return Err("diagram product has an unexpected schema version".to_owned());
     }
     Ok(contents)
+}
+
+/// The relationships a product carries: the authored ones.
+///
+/// The projection also publishes what the library implies -- `Parts::parts` subsetting, type
+/// featuring, inherited redefinitions -- for every projected element. No drawing reads those, and
+/// with the references, sources and library documents they pull in they were most of a product's
+/// bytes, so schema 6 leaves them to the semantic query.
+fn published_relationships(
+    typed: &model::DiagramViewProjection,
+) -> impl Iterator<Item = &model::DiagramRelationship> {
+    typed
+        .relationships
+        .iter()
+        .filter(|relationship| relationship.provenance == model::RelationshipProvenance::Authored)
 }
 
 impl NormalizedProduct {
@@ -175,7 +213,7 @@ impl NormalizedProduct {
                 }
             }
         }
-        for relationship in &typed.relationships {
+        for relationship in published_relationships(typed) {
             collect_reference(&mut references, &relationship.reference);
             collect_reference(&mut references, &relationship.source_element);
             match &relationship.target {
@@ -311,7 +349,7 @@ impl NormalizedProduct {
             "kind": kind_id(typed.view.kind),
             "exposedRoots": typed.exposed_roots.iter().map(|value| self.node(value)).collect::<Result<Vec<_>, _>>()?,
             "nodes": typed.elements.iter().map(|value| self.element(value)).collect::<Result<Vec<_>, _>>()?,
-            "relationships": typed.relationships.iter().map(|value| self.relationship(value)).collect::<Result<Vec<_>, _>>()?,
+            "relationships": published_relationships(typed).map(|value| self.relationship(value)).collect::<Result<Vec<_>, _>>()?,
             "edges": typed.edges.iter().map(|value| self.edge(value)).collect::<Result<Vec<_>, _>>()?,
             "metadata": self.metadata(&typed.metadata)?,
             "scene": self.scene(&typed.scene)?,

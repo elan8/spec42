@@ -253,20 +253,12 @@ package BehaviorModel {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:de382dc5cfc6e76b00b31fbb5ea2275f1e06c2e221cc7796bc8253ab73c655ef",
   "documents": [
     {
       "uri": "memory://snapshot/structure.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -315,49 +307,10 @@ package BehaviorModel {
       "qualifiedName": "StructureModel::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
     }
   ],
   "selectedView": {
@@ -377,7 +330,7 @@ package BehaviorModel {
         "navigation": 1,
         "origin": 1,
         "provenance": "authored",
-        "reference": 6,
+        "reference": 3,
         "source": 0,
         "target": 1
       }
@@ -435,52 +388,7 @@ package BehaviorModel {
         }
       }
     ],
-    "relationships": [
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 7,
-        "source": 0,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 8,
-        "source": 1,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 9,
-        "source": 1,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 10,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      }
-    ],
+    "relationships": [],
     "scene": {
       "kind": "general"
     }

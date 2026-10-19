@@ -258,20 +258,12 @@ package Garage {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:a0eb70f034e26c1cb71ee5b2227f237cc9b19b2988cf47337df60a82ef773b0e",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -334,21 +326,6 @@ package Garage {
       "qualifiedName": "Garage::both"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -359,48 +336,6 @@ package Garage {
       "ordinal": 1,
       "relationshipKind": "containment",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
     }
   ],
   "selectedView": {
@@ -420,7 +355,7 @@ package Garage {
         "navigation": 1,
         "origin": 2,
         "provenance": "authored",
-        "reference": 7,
+        "reference": 4,
         "source": 0,
         "target": 2
       },
@@ -429,7 +364,7 @@ package Garage {
         "navigation": 2,
         "origin": 1,
         "provenance": "authored",
-        "reference": 8,
+        "reference": 5,
         "source": 0,
         "target": 1
       }
@@ -509,85 +444,7 @@ package Garage {
         }
       }
     ],
-    "relationships": [
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 9,
-        "source": 0,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 10,
-        "source": 2,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 11,
-        "source": 2,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 12,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 13,
-        "source": 1,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 14,
-        "source": 1,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 15,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      }
-    ],
+    "relationships": [],
     "scene": {
       "kind": "interconnection"
     }

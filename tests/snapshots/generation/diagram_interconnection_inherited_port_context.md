@@ -249,7 +249,7 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:d04ab0b1c70fab84c3920b70a3132066658b79b2593e588d19ecec65663c84f0",
   "documents": [
     {
@@ -461,20 +461,8 @@ package Model {
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
@@ -491,21 +479,9 @@ package Model {
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "typing",
       "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
     },
     {
       "kind": "relationship",
@@ -551,18 +527,6 @@ package Model {
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "typing",
       "source": 8
@@ -591,7 +555,7 @@ package Model {
         "navigation": 0,
         "origin": 2,
         "provenance": "implied",
-        "reference": 22,
+        "reference": 18,
         "source": 0,
         "target": 2
       },
@@ -600,7 +564,7 @@ package Model {
         "navigation": 12,
         "origin": 3,
         "provenance": "implied",
-        "reference": 14,
+        "reference": 13,
         "source": 2,
         "target": 3
       },
@@ -609,7 +573,7 @@ package Model {
         "navigation": 2,
         "origin": 4,
         "provenance": "implied",
-        "reference": 23,
+        "reference": 19,
         "source": 0,
         "target": 4
       },
@@ -618,7 +582,7 @@ package Model {
         "navigation": 12,
         "origin": 5,
         "provenance": "implied",
-        "reference": 17,
+        "reference": 15,
         "source": 4,
         "target": 5
       },
@@ -627,7 +591,7 @@ package Model {
         "navigation": 4,
         "origin": 6,
         "provenance": "implied",
-        "reference": 24,
+        "reference": 20,
         "source": 0,
         "target": 6
       },
@@ -636,7 +600,7 @@ package Model {
         "navigation": 6,
         "origin": 1,
         "provenance": "implied",
-        "reference": 25,
+        "reference": 21,
         "source": 0,
         "target": 1
       },
@@ -645,7 +609,7 @@ package Model {
         "navigation": 7,
         "origin": 1,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 23,
         "source": 3,
         "target": 5
       }
@@ -864,7 +828,7 @@ package Model {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 22,
         "source": 0,
         "target": {
           "reference": 0,
@@ -875,21 +839,10 @@ package Model {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 14,
         "source": 2,
         "target": {
           "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 15,
-        "source": 2,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -897,21 +850,10 @@ package Model {
         "kind": "typing",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 24,
         "source": 3,
         "target": {
           "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 28,
-        "source": 3,
-        "target": {
-          "reference": 7,
           "status": "resolved"
         }
       },
@@ -919,21 +861,10 @@ package Model {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 16,
         "source": 4,
         "target": {
           "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 4,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -941,7 +872,7 @@ package Model {
         "kind": "typing",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 25,
         "source": 5,
         "target": {
           "reference": 9,
@@ -949,35 +880,13 @@ package Model {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 29,
-        "source": 5,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 17,
         "source": 6,
         "target": {
           "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
-        "source": 6,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       },
@@ -1000,17 +909,6 @@ package Model {
         "source": 1,
         "target": {
           "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 13,
-        "source": 1,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       }

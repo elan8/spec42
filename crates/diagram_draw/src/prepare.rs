@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-5 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-6 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};
@@ -2871,7 +2871,7 @@ fn prepare_typed_action_flow(
 }
 
 fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
-    if field(input, "schemaVersion").as_u64() != Some(5) {
+    if field(input, "schemaVersion").as_u64() != Some(6) {
         return None;
     }
     let selected = field(input, "selectedView");

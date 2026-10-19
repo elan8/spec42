@@ -1158,24 +1158,12 @@ package Lamp {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:ecd33e59644a87cf56e53df707897b54243fa8118a241e5e28ddb42e98fcf99e",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/actions.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/states.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -1457,15 +1445,6 @@ package Lamp {
         18,
         16
       ]
-    },
-    {
-      "document": 1,
-      "range": [
-        212,
-        2,
-        212,
-        20
-      ]
     }
   ],
   "references": [
@@ -1493,11 +1472,6 @@ package Lamp {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "Lamp::Machine::fail::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
-      "qualifiedName": "Lamp::Machine::fail::::"
     },
     {
       "document": 0,
@@ -1547,11 +1521,6 @@ package Lamp {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Lamp::Machine::turnOff::::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Lamp::Machine::turnOn"
     },
     {
@@ -1562,82 +1531,12 @@ package Lamp {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Lamp::Machine::turnOn::::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Lamp::Switch"
     },
     {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "Lamp::machine"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::TransitionAction::accepter"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::TransitionAction::transitionLinkSource"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::actions"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::transitionActions"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::happensBeforeLinks"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::entryAction"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::exclusiveStates"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::stateTransitions"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateTransitionAction::payload"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateTransitionAction::transitionLinkSource"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "States::stateActions"
     },
     {
       "kind": "source-anchor",
@@ -1773,13 +1672,6 @@ package Lamp {
       "sourceDomain": "workspace"
     },
     {
-      "kind": "source-anchor",
-      "metaclass": "ReferenceUsage",
-      "ownerQualifiedName": "Actions::AcceptMessageAction",
-      "source": 31,
-      "sourceDomain": "standard-library"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -1829,12 +1721,6 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "initialState",
       "source": 2
@@ -1843,42 +1729,6 @@ package Lamp {
       "kind": "relationship",
       "ordinal": 41,
       "relationshipKind": "initialState",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 104,
-      "relationshipKind": "redefinition",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 105,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 106,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 107,
-      "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
@@ -1919,18 +1769,6 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 46,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 47,
       "relationshipKind": "transitionTarget",
       "source": 3
@@ -1943,38 +1781,8 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 24,
       "relationshipKind": "containment",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "redefinition",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "subsetting",
       "source": 4
     },
     {
@@ -1991,709 +1799,271 @@ package Lamp {
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "redefinition",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
       "ordinal": 31,
       "relationshipKind": "succession",
-      "source": 7
+      "source": 6
     },
     {
       "kind": "relationship",
       "ordinal": 26,
       "relationshipKind": "transition",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
+      "source": 6
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 11,
       "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 40,
       "relationshipKind": "succession",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 35,
       "relationshipKind": "transition",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "containment",
-      "source": 9
+      "source": 8
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "containment",
-      "source": 9
+      "source": 8
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "containment",
-      "source": 9
+      "source": 8
     },
     {
       "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "initialState",
-      "source": 9
+      "source": 8
     },
     {
       "kind": "relationship",
       "ordinal": 22,
       "relationshipKind": "initialState",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "redefinition",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "subsetting",
-      "source": 9
+      "source": 8
     },
     {
       "kind": "relationship",
       "ordinal": 8,
       "relationshipKind": "transitionSource",
-      "source": 9
+      "source": 8
     },
     {
       "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "transitionTarget",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "redefinition",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "redefinition",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 10
+      "source": 8
     },
     {
       "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "succession",
-      "source": 10
+      "source": 9
     },
     {
       "kind": "relationship",
       "ordinal": 17,
       "relationshipKind": "succession",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typeFeaturing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typeFeaturing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 11
+      "source": 9
     },
     {
       "kind": "relationship",
       "ordinal": 22,
       "relationshipKind": "succession",
-      "source": 11
+      "source": 10
     },
     {
       "kind": "relationship",
       "ordinal": 17,
       "relationshipKind": "transition",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 12
+      "source": 10
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "succession",
-      "source": 12
+      "source": 11
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "transition",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
+      "source": 11
     },
     {
       "kind": "relationship",
       "ordinal": 36,
       "relationshipKind": "containment",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 37,
       "relationshipKind": "containment",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 38,
       "relationshipKind": "containment",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 39,
       "relationshipKind": "containment",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 41,
       "relationshipKind": "containment",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "subsetting",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 86,
       "relationshipKind": "transitionSource",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 87,
       "relationshipKind": "transitionTarget",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 88,
       "relationshipKind": "transitionTrigger",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 89,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 42,
       "relationshipKind": "containment",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 91,
-      "relationshipKind": "redefinition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 92,
-      "relationshipKind": "redefinition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 94,
-      "relationshipKind": "redefinition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 95,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 97,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 100,
-      "relationshipKind": "subsetting",
-      "source": 14
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 98,
       "relationshipKind": "succession",
-      "source": 14
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 99,
       "relationshipKind": "succession",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 90,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 93,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 96,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 101,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 102,
-      "relationshipKind": "redefinition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 103,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 27,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 28,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 29,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 30,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 32,
       "relationshipKind": "containment",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "subsetting",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 65,
       "relationshipKind": "transitionSource",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 66,
       "relationshipKind": "transitionTarget",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 67,
       "relationshipKind": "transitionTrigger",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "typeFeaturing",
-      "source": 16
+      "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 33,
       "relationshipKind": "containment",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "redefinition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "redefinition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "redefinition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "subsetting",
-      "source": 17
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 77,
       "relationshipKind": "succession",
-      "source": 17
+      "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 78,
       "relationshipKind": "succession",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 69,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "redefinition",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "typeFeaturing",
-      "source": 18
+      "source": 15
     }
   ],
   "selectedView": {
-    "reference": 20,
+    "reference": 17,
     "kind": "state-transition-view",
     "name": "machine",
     "source": 30
@@ -2709,7 +2079,7 @@ package Lamp {
         "navigation": 5,
         "origin": 24,
         "provenance": "authored",
-        "reference": 54,
+        "reference": 37,
         "source": 0,
         "target": 24
       },
@@ -2718,7 +2088,7 @@ package Lamp {
         "navigation": 11,
         "origin": 25,
         "provenance": "authored",
-        "reference": 105,
+        "reference": 60,
         "source": 24,
         "target": 25
       },
@@ -2727,7 +2097,7 @@ package Lamp {
         "navigation": 12,
         "origin": 25,
         "provenance": "implied",
-        "reference": 150,
+        "reference": 79,
         "source": 32,
         "target": 31
       },
@@ -2736,7 +2106,7 @@ package Lamp {
         "navigation": 11,
         "origin": 28,
         "provenance": "authored",
-        "reference": 116,
+        "reference": 67,
         "source": 25,
         "target": 28
       },
@@ -2745,7 +2115,7 @@ package Lamp {
         "navigation": 11,
         "origin": 28,
         "provenance": "authored",
-        "reference": 117,
+        "reference": 68,
         "source": 25,
         "target": 28
       },
@@ -2754,7 +2124,7 @@ package Lamp {
         "navigation": 11,
         "origin": 26,
         "provenance": "authored",
-        "reference": 118,
+        "reference": 69,
         "source": 25,
         "target": 26
       },
@@ -2763,7 +2133,7 @@ package Lamp {
         "navigation": 12,
         "origin": 26,
         "provenance": "implied",
-        "reference": 149,
+        "reference": 78,
         "source": 32,
         "target": 31
       },
@@ -2772,7 +2142,7 @@ package Lamp {
         "navigation": 10,
         "origin": 31,
         "provenance": "authored",
-        "reference": 106,
+        "reference": 61,
         "source": 24,
         "target": 31
       },
@@ -2781,7 +2151,7 @@ package Lamp {
         "navigation": 7,
         "origin": 29,
         "provenance": "authored",
-        "reference": 107,
+        "reference": 62,
         "source": 24,
         "target": 29
       },
@@ -2790,7 +2160,7 @@ package Lamp {
         "navigation": 8,
         "origin": 29,
         "provenance": "authored",
-        "reference": 119,
+        "reference": 70,
         "source": 29,
         "target": 32
       },
@@ -2799,7 +2169,7 @@ package Lamp {
         "navigation": 9,
         "origin": 32,
         "provenance": "authored",
-        "reference": 108,
+        "reference": 63,
         "source": 24,
         "target": 32
       },
@@ -2808,7 +2178,7 @@ package Lamp {
         "navigation": 6,
         "origin": 30,
         "provenance": "authored",
-        "reference": 109,
+        "reference": 64,
         "source": 24,
         "target": 30
       },
@@ -2817,7 +2187,7 @@ package Lamp {
         "navigation": 4,
         "origin": 33,
         "provenance": "authored",
-        "reference": 55,
+        "reference": 38,
         "source": 0,
         "target": 33
       },
@@ -2826,7 +2196,7 @@ package Lamp {
         "navigation": 24,
         "origin": 34,
         "provenance": "authored",
-        "reference": 56,
+        "reference": 39,
         "source": 0,
         "target": 34
       },
@@ -2835,7 +2205,7 @@ package Lamp {
         "navigation": 2,
         "origin": 22,
         "provenance": "authored",
-        "reference": 57,
+        "reference": 40,
         "source": 0,
         "target": 22
       },
@@ -2844,7 +2214,7 @@ package Lamp {
         "navigation": 3,
         "origin": 22,
         "provenance": "authored",
-        "reference": 63,
+        "reference": 45,
         "source": 22,
         "target": 33
       },
@@ -2853,7 +2223,7 @@ package Lamp {
         "navigation": 26,
         "origin": 1,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 41,
         "source": 0,
         "target": 1
       },
@@ -2862,7 +2232,7 @@ package Lamp {
         "navigation": 27,
         "origin": 1,
         "provenance": "implied",
-        "reference": 144,
+        "reference": 77,
         "source": 31,
         "target": 34
       },
@@ -2871,7 +2241,7 @@ package Lamp {
         "navigation": 25,
         "origin": 7,
         "provenance": "authored",
-        "reference": 71,
+        "reference": 47,
         "source": 1,
         "target": 7
       },
@@ -2880,7 +2250,7 @@ package Lamp {
         "navigation": 25,
         "origin": 7,
         "provenance": "authored",
-        "reference": 72,
+        "reference": 48,
         "source": 1,
         "target": 7
       },
@@ -2889,7 +2259,7 @@ package Lamp {
         "navigation": 25,
         "origin": 7,
         "provenance": "authored",
-        "reference": 73,
+        "reference": 49,
         "source": 1,
         "target": 7
       },
@@ -2898,7 +2268,7 @@ package Lamp {
         "navigation": 25,
         "origin": 2,
         "provenance": "authored",
-        "reference": 74,
+        "reference": 50,
         "source": 1,
         "target": 2
       },
@@ -2907,7 +2277,7 @@ package Lamp {
         "navigation": 27,
         "origin": 2,
         "provenance": "implied",
-        "reference": 143,
+        "reference": 76,
         "source": 31,
         "target": 34
       },
@@ -2916,7 +2286,7 @@ package Lamp {
         "navigation": 25,
         "origin": 3,
         "provenance": "authored",
-        "reference": 75,
+        "reference": 51,
         "source": 1,
         "target": 3
       },
@@ -2925,7 +2295,7 @@ package Lamp {
         "navigation": 25,
         "origin": 4,
         "provenance": "authored",
-        "reference": 82,
+        "reference": 55,
         "source": 3,
         "target": 4
       },
@@ -2934,7 +2304,7 @@ package Lamp {
         "navigation": 15,
         "origin": 8,
         "provenance": "authored",
-        "reference": 59,
+        "reference": 42,
         "source": 0,
         "target": 8
       },
@@ -2943,7 +2313,7 @@ package Lamp {
         "navigation": 16,
         "origin": 8,
         "provenance": "implied",
-        "reference": 103,
+        "reference": 59,
         "source": 33,
         "target": 24
       },
@@ -2952,7 +2322,7 @@ package Lamp {
         "navigation": 14,
         "origin": 14,
         "provenance": "authored",
-        "reference": 179,
+        "reference": 91,
         "source": 8,
         "target": 14
       },
@@ -2961,7 +2331,7 @@ package Lamp {
         "navigation": 14,
         "origin": 14,
         "provenance": "authored",
-        "reference": 180,
+        "reference": 92,
         "source": 8,
         "target": 14
       },
@@ -2970,7 +2340,7 @@ package Lamp {
         "navigation": 14,
         "origin": 14,
         "provenance": "authored",
-        "reference": 181,
+        "reference": 93,
         "source": 8,
         "target": 14
       },
@@ -2979,7 +2349,7 @@ package Lamp {
         "navigation": 14,
         "origin": 9,
         "provenance": "authored",
-        "reference": 182,
+        "reference": 94,
         "source": 8,
         "target": 9
       },
@@ -2988,7 +2358,7 @@ package Lamp {
         "navigation": 16,
         "origin": 9,
         "provenance": "implied",
-        "reference": 102,
+        "reference": 58,
         "source": 33,
         "target": 24
       },
@@ -2997,7 +2367,7 @@ package Lamp {
         "navigation": 14,
         "origin": 10,
         "provenance": "authored",
-        "reference": 183,
+        "reference": 95,
         "source": 8,
         "target": 10
       },
@@ -3006,7 +2376,7 @@ package Lamp {
         "navigation": 14,
         "origin": 11,
         "provenance": "authored",
-        "reference": 191,
+        "reference": 99,
         "source": 10,
         "target": 11
       },
@@ -3015,7 +2385,7 @@ package Lamp {
         "navigation": 20,
         "origin": 15,
         "provenance": "authored",
-        "reference": 60,
+        "reference": 43,
         "source": 0,
         "target": 15
       },
@@ -3024,7 +2394,7 @@ package Lamp {
         "navigation": 21,
         "origin": 15,
         "provenance": "implied",
-        "reference": 114,
+        "reference": 66,
         "source": 24,
         "target": 33
       },
@@ -3033,7 +2403,7 @@ package Lamp {
         "navigation": 19,
         "origin": 21,
         "provenance": "authored",
-        "reference": 152,
+        "reference": 80,
         "source": 15,
         "target": 21
       },
@@ -3042,7 +2412,7 @@ package Lamp {
         "navigation": 19,
         "origin": 21,
         "provenance": "authored",
-        "reference": 153,
+        "reference": 81,
         "source": 15,
         "target": 21
       },
@@ -3051,7 +2421,7 @@ package Lamp {
         "navigation": 19,
         "origin": 21,
         "provenance": "authored",
-        "reference": 154,
+        "reference": 82,
         "source": 15,
         "target": 21
       },
@@ -3060,7 +2430,7 @@ package Lamp {
         "navigation": 19,
         "origin": 16,
         "provenance": "authored",
-        "reference": 155,
+        "reference": 83,
         "source": 15,
         "target": 16
       },
@@ -3069,7 +2439,7 @@ package Lamp {
         "navigation": 21,
         "origin": 16,
         "provenance": "implied",
-        "reference": 113,
+        "reference": 65,
         "source": 24,
         "target": 33
       },
@@ -3078,7 +2448,7 @@ package Lamp {
         "navigation": 19,
         "origin": 17,
         "provenance": "authored",
-        "reference": 156,
+        "reference": 84,
         "source": 15,
         "target": 17
       },
@@ -3087,7 +2457,7 @@ package Lamp {
         "navigation": 19,
         "origin": 18,
         "provenance": "authored",
-        "reference": 164,
+        "reference": 88,
         "source": 17,
         "target": 18
       },
@@ -3096,7 +2466,7 @@ package Lamp {
         "navigation": 1,
         "origin": 23,
         "provenance": "authored",
-        "reference": 61,
+        "reference": 44,
         "source": 0,
         "target": 23
       }
@@ -3198,7 +2568,7 @@ package Lamp {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 38,
+        "reference": 22,
         "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3223,7 +2593,7 @@ package Lamp {
         "name": null,
         "notationRole": "usage",
         "owner": 1,
-        "reference": 36,
+        "reference": 20,
         "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3240,7 +2610,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 3,
-        "reference": 39,
+        "reference": 23,
         "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3257,7 +2627,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 37,
+        "reference": 21,
         "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3274,7 +2644,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 37,
+        "reference": 21,
         "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3291,7 +2661,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 37,
+        "reference": 21,
         "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3325,7 +2695,7 @@ package Lamp {
         "name": "turnOn",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 16,
+        "reference": 14,
         "source": 15,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3342,7 +2712,7 @@ package Lamp {
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
-        "reference": 51,
+        "reference": 35,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3367,7 +2737,7 @@ package Lamp {
         "name": null,
         "notationRole": "usage",
         "owner": 8,
-        "reference": 49,
+        "reference": 33,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3384,7 +2754,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 10,
-        "reference": 52,
+        "reference": 36,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3401,7 +2771,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 50,
+        "reference": 34,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3418,7 +2788,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 50,
+        "reference": 34,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3435,7 +2805,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 50,
+        "reference": 34,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3469,7 +2839,7 @@ package Lamp {
         "name": "turnOff",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 13,
+        "reference": 12,
         "source": 20,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3486,7 +2856,7 @@ package Lamp {
         "name": null,
         "notationRole": "unsupported",
         "owner": 15,
-        "reference": 47,
+        "reference": 31,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3511,7 +2881,7 @@ package Lamp {
         "name": null,
         "notationRole": "usage",
         "owner": 15,
-        "reference": 45,
+        "reference": 29,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3528,7 +2898,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 17,
-        "reference": 48,
+        "reference": 32,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3545,7 +2915,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 15,
-        "reference": 46,
+        "reference": 30,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3562,7 +2932,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 15,
-        "reference": 46,
+        "reference": 30,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3579,7 +2949,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 15,
-        "reference": 46,
+        "reference": 30,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3596,7 +2966,7 @@ package Lamp {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 35,
+        "reference": 19,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3613,7 +2983,7 @@ package Lamp {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 34,
+        "reference": 18,
         "source": 1,
         "stateSubaction": "entry",
         "successionGuard": null,
@@ -3646,7 +3016,7 @@ package Lamp {
         "name": "on",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 8,
+        "reference": 7,
         "source": 5,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3672,7 +3042,7 @@ package Lamp {
         "name": null,
         "notationRole": "usage",
         "owner": 24,
-        "reference": 42,
+        "reference": 26,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3689,7 +3059,7 @@ package Lamp {
         "name": null,
         "notationRole": "unsupported",
         "owner": 25,
-        "reference": 44,
+        "reference": 28,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3706,7 +3076,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 25,
-        "reference": 43,
+        "reference": 27,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3723,7 +3093,7 @@ package Lamp {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 25,
-        "reference": 43,
+        "reference": 27,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3740,7 +3110,7 @@ package Lamp {
         "name": null,
         "notationRole": "unsupported",
         "owner": 24,
-        "reference": 41,
+        "reference": 25,
         "source": 7,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3757,7 +3127,7 @@ package Lamp {
         "name": null,
         "notationRole": "usage",
         "owner": 24,
-        "reference": 40,
+        "reference": 24,
         "source": 6,
         "stateSubaction": "entry",
         "successionGuard": null,
@@ -3774,7 +3144,7 @@ package Lamp {
         "name": "ready",
         "notationRole": "usage",
         "owner": 24,
-        "reference": 11,
+        "reference": 10,
         "source": 10,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3791,7 +3161,7 @@ package Lamp {
         "name": "warming",
         "notationRole": "usage",
         "owner": 24,
-        "reference": 12,
+        "reference": 11,
         "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3808,7 +3178,7 @@ package Lamp {
         "name": "off",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 7,
+        "reference": 6,
         "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3825,7 +3195,7 @@ package Lamp {
         "name": "fault",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 6,
+        "reference": 5,
         "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3836,98 +3206,10 @@ package Lamp {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 62,
-        "source": 0,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 110,
-        "source": 24,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 111,
-        "source": 24,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 112,
-        "source": 24,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 115,
-        "source": 24,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 122,
-        "source": 25,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 123,
-        "source": 25,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 124,
-        "source": 25,
-        "target": {
-          "reference": 30,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 128,
+        "reference": 72,
         "source": 25,
         "target": {
           "node": 32,
@@ -3938,7 +3220,7 @@ package Lamp {
         "kind": "transitionTarget",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 129,
+        "reference": 73,
         "source": 25,
         "target": {
           "node": 31,
@@ -3946,76 +3228,10 @@ package Lamp {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 130,
-        "source": 25,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 138,
-        "source": 28,
-        "target": {
-          "node": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 133,
-        "source": 28,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 134,
-        "source": 28,
-        "target": {
-          "reference": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 139,
-        "source": 28,
-        "target": {
-          "node": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 135,
-        "source": 26,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 136,
+        "reference": 74,
         "source": 26,
         "target": {
           "node": 32,
@@ -4026,54 +3242,10 @@ package Lamp {
         "kind": "succession",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 137,
+        "reference": 75,
         "source": 26,
         "target": {
           "node": 31,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 140,
-        "source": 31,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 141,
-        "source": 31,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 142,
-        "source": 31,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 145,
-        "source": 31,
-        "target": {
-          "node": 24,
           "status": "resolved"
         }
       },
@@ -4081,7 +3253,7 @@ package Lamp {
         "kind": "initialState",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 120,
+        "reference": 71,
         "source": 29,
         "target": {
           "node": 32,
@@ -4089,208 +3261,10 @@ package Lamp {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 125,
-        "source": 29,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 131,
-        "source": 29,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 146,
-        "source": 32,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 147,
-        "source": 32,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 148,
-        "source": 32,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 151,
-        "source": 32,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 121,
-        "source": 30,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 126,
-        "source": 30,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 127,
-        "source": 30,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 132,
-        "source": 30,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 99,
-        "source": 33,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 100,
-        "source": 33,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 101,
-        "source": 33,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 104,
-        "source": 33,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 95,
-        "source": 34,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 96,
-        "source": 34,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 97,
-        "source": 34,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 98,
-        "source": 34,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "initialState",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 64,
+        "reference": 46,
         "source": 22,
         "target": {
           "node": 33,
@@ -4298,32 +3272,10 @@ package Lamp {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 66,
-        "source": 22,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 69,
-        "source": 22,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 76,
+        "reference": 52,
         "source": 1,
         "target": {
           "node": 31,
@@ -4331,32 +3283,10 @@ package Lamp {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 77,
-        "source": 1,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 78,
-        "source": 1,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionTarget",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 79,
+        "reference": 53,
         "source": 1,
         "target": {
           "node": 34,
@@ -4367,7 +3297,7 @@ package Lamp {
         "kind": "transitionTrigger",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 80,
+        "reference": 54,
         "source": 1,
         "target": {
           "reference": 0,
@@ -4375,87 +3305,10 @@ package Lamp {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 81,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 89,
-        "source": 7,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 83,
-        "source": 7,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 90,
-        "source": 7,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 84,
-        "source": 7,
-        "target": {
-          "node": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 91,
-        "source": 7,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 85,
-        "source": 2,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 87,
+        "reference": 56,
         "source": 2,
         "target": {
           "node": 31,
@@ -4466,7 +3319,7 @@ package Lamp {
         "kind": "succession",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 88,
+        "reference": 57,
         "source": 2,
         "target": {
           "node": 34,
@@ -4474,87 +3327,10 @@ package Lamp {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 86,
-        "source": 3,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 92,
-        "source": 3,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 93,
-        "source": 4,
-        "target": {
-          "reference": 53,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 94,
-        "source": 4,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 184,
-        "source": 8,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 185,
-        "source": 8,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 186,
-        "source": 8,
-        "target": {
-          "reference": 30,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 187,
+        "reference": 96,
         "source": 8,
         "target": {
           "node": 33,
@@ -4565,7 +3341,7 @@ package Lamp {
         "kind": "transitionTarget",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 188,
+        "reference": 97,
         "source": 8,
         "target": {
           "node": 24,
@@ -4576,109 +3352,10 @@ package Lamp {
         "kind": "transitionTrigger",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 189,
+        "reference": 98,
         "source": 8,
         "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 190,
-        "source": 8,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 200,
-        "source": 14,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 192,
-        "source": 14,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 193,
-        "source": 14,
-        "target": {
-          "reference": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 201,
-        "source": 14,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 194,
-        "source": 14,
-        "target": {
-          "reference": 31,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 195,
-        "source": 14,
-        "target": {
-          "node": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 202,
-        "source": 14,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 196,
-        "source": 9,
-        "target": {
-          "reference": 26,
+          "reference": 16,
           "status": "resolved"
         }
       },
@@ -4686,7 +3363,7 @@ package Lamp {
         "kind": "succession",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 198,
+        "reference": 100,
         "source": 9,
         "target": {
           "node": 33,
@@ -4697,7 +3374,7 @@ package Lamp {
         "kind": "succession",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 199,
+        "reference": 101,
         "source": 9,
         "target": {
           "node": 24,
@@ -4705,87 +3382,10 @@ package Lamp {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 197,
-        "source": 10,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 203,
-        "source": 10,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 204,
-        "source": 11,
-        "target": {
-          "reference": 53,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 205,
-        "source": 11,
-        "target": {
-          "node": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 157,
-        "source": 15,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 158,
-        "source": 15,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 159,
-        "source": 15,
-        "target": {
-          "reference": 30,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 160,
+        "reference": 85,
         "source": 15,
         "target": {
           "node": 24,
@@ -4796,7 +3396,7 @@ package Lamp {
         "kind": "transitionTarget",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 161,
+        "reference": 86,
         "source": 15,
         "target": {
           "node": 33,
@@ -4807,109 +3407,10 @@ package Lamp {
         "kind": "transitionTrigger",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 162,
+        "reference": 87,
         "source": 15,
         "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 163,
-        "source": 15,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 173,
-        "source": 21,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 165,
-        "source": 21,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 166,
-        "source": 21,
-        "target": {
-          "reference": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 174,
-        "source": 21,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 167,
-        "source": 21,
-        "target": {
-          "reference": 31,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 168,
-        "source": 21,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 175,
-        "source": 21,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 169,
-        "source": 16,
-        "target": {
-          "reference": 26,
+          "reference": 16,
           "status": "resolved"
         }
       },
@@ -4917,7 +3418,7 @@ package Lamp {
         "kind": "succession",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 171,
+        "reference": 89,
         "source": 16,
         "target": {
           "node": 24,
@@ -4928,98 +3429,10 @@ package Lamp {
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 172,
+        "reference": 90,
         "source": 16,
         "target": {
           "node": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 170,
-        "source": 17,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 176,
-        "source": 17,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 177,
-        "source": 18,
-        "target": {
-          "reference": 53,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 178,
-        "source": 18,
-        "target": {
-          "node": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 65,
-        "source": 23,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 67,
-        "source": 23,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 68,
-        "source": 23,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 70,
-        "source": 23,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

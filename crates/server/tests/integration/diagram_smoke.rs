@@ -220,6 +220,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
                     format,
                     depth: diagram_draw::Nesting::Levels(1),
                     output: Some(path.clone()),
+                    stats: false,
                 },
             )
             .unwrap_or_else(|error| panic!("spec42 diagram: {error}"));
@@ -240,7 +241,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
         let product: serde_json::Value =
             serde_json::from_str(&run(Some(name), DiagramFormat::Json, "diagram.json"))
                 .expect("product JSON");
-        assert_eq!(product["schemaVersion"], 5);
+        assert_eq!(product["schemaVersion"], 6);
         assert_eq!(product["selectedView"]["kind"], "state-transition-view");
 
         let svg = run(Some(name), DiagramFormat::Svg, "diagram.svg");
@@ -258,6 +259,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
                 format: DiagramFormat::Svg,
                 depth: diagram_draw::Nesting::Levels(1),
                 output: None,
+                stats: false,
             },
         )
         .expect_err("an unknown view is an error");
@@ -294,6 +296,7 @@ fn the_diagram_command_selects_each_kind_of_a_view_typed_by_several_view_definit
                     format: DiagramFormat::Json,
                     depth: diagram_draw::Nesting::Levels(1),
                     output: Some(path.clone()),
+                    stats: false,
                 },
             )
             .map(|_| {
@@ -333,5 +336,66 @@ fn the_diagram_command_selects_each_kind_of_a_view_typed_by_several_view_definit
             mismatch.contains("no `Garage::both` view matches"),
             "{mismatch}"
         );
+    });
+}
+
+/// The LSP sends a view's product to the editor as compact JSON. Most of a product used to be
+/// implied library relationships and the references, sources and library documents they pull in;
+/// schema 6 carries only authored relationships. The ceilings sit about 1.5x above the sizes
+/// measured when that changed, so a projection that starts carrying bulk again fails here instead
+/// of on an author's machine at the editor's 16 MiB limit.
+#[test]
+fn diagram_products_carry_only_authored_relationships_within_a_size_budget() {
+    with_isolated_data_dir(|| {
+        for (example, view_name, ceiling) in [
+            ("drone", "flightModeStateMachine", 650_000),
+            ("drone", "connections", 160_000),
+            ("webshop", "structure", 260_000),
+        ] {
+            let workspace = repo_root().join("examples").join(example);
+            let snapshot =
+                load_snapshot_for_paths(&stdlib_cli(), &workspace, Some(&workspace), false)
+                    .unwrap_or_else(|error| panic!("examples/{example} publishes: {error}"));
+            let publication = snapshot.published_model_arc();
+            let model = GeneratorModelView::new(
+                Arc::clone(&publication),
+                publication.publication().model_digest().to_string(),
+                env!("CARGO_PKG_VERSION"),
+                QueryLimits::default(),
+            )
+            .expect("complete generator model");
+            let views = model.diagram_views().expect("the view catalog lists");
+            let view = views
+                .iter()
+                .find(|view| view.name == view_name)
+                .unwrap_or_else(|| panic!("examples/{example} authors {view_name}: {views:?}"));
+            let projection = model.diagram_view(&view.handle).expect("the view projects");
+            let compact =
+                diagram_product::diagram_product_json_compact(&projection).expect("product");
+            let pretty = diagram_product::diagram_product_json(&projection).expect("product");
+            let product: serde_json::Value =
+                serde_json::from_slice(&compact).expect("compact JSON");
+            assert_eq!(
+                product,
+                serde_json::from_slice::<serde_json::Value>(&pretty).expect("pretty JSON"),
+                "{example}/{view_name}: compact and pretty products differ only in layout"
+            );
+            assert_eq!(product["schemaVersion"], 6);
+            let implied = product["projection"]["relationships"]
+                .as_array()
+                .expect("relationships")
+                .iter()
+                .filter(|relationship| relationship["provenance"] != "authored")
+                .count();
+            assert_eq!(
+                implied, 0,
+                "{example}/{view_name} carries implied relationships"
+            );
+            assert!(
+                compact.len() <= ceiling,
+                "{example}/{view_name}: compact product is {} bytes, over its {ceiling}-byte budget",
+                compact.len()
+            );
+        }
     });
 }

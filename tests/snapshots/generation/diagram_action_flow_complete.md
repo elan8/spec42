@@ -216,20 +216,12 @@ package ActionFlowExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:6553f0a953aba3a9d10a9eb9f917e455cb5a3e45445a2f37142911ae392c5985",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_action_flow_complete.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/actions.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -324,26 +316,6 @@ package ActionFlowExample {
       "qualifiedName": "ActionFlowExample::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::Action"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::Action::subactions"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::actions"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::happensBeforeLinks"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "ActionFlowExample::Process",
@@ -370,18 +342,6 @@ package ActionFlowExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "succession",
       "source": 1
@@ -394,50 +354,8 @@ package ActionFlowExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "succession",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
       "source": 3
     }
   ],
@@ -458,7 +376,7 @@ package ActionFlowExample {
         "navigation": 3,
         "origin": 1,
         "provenance": "authored",
-        "reference": 10,
+        "reference": 6,
         "source": 0,
         "target": 1
       },
@@ -467,7 +385,7 @@ package ActionFlowExample {
         "navigation": 4,
         "origin": 1,
         "provenance": "implied",
-        "reference": 23,
+        "reference": 11,
         "source": 3,
         "target": 2
       },
@@ -476,7 +394,7 @@ package ActionFlowExample {
         "navigation": 2,
         "origin": 2,
         "provenance": "authored",
-        "reference": 11,
+        "reference": 7,
         "source": 0,
         "target": 2
       },
@@ -485,7 +403,7 @@ package ActionFlowExample {
         "navigation": 1,
         "origin": 3,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 8,
         "source": 0,
         "target": 3
       }
@@ -538,7 +456,7 @@ package ActionFlowExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 9,
+        "reference": 5,
         "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
@@ -583,32 +501,10 @@ package ActionFlowExample {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 13,
-        "source": 0,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 14,
-        "source": 1,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 9,
         "source": 1,
         "target": {
           "node": 3,
@@ -619,87 +515,10 @@ package ActionFlowExample {
         "kind": "succession",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 10,
         "source": 1,
         "target": {
           "node": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 17,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 2,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 2,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 21,
-        "source": 3,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 22,
-        "source": 3,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 3,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }
