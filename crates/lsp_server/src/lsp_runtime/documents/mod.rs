@@ -138,10 +138,13 @@ pub(crate) fn semantic_index_ready_notification(
 
 /// Sends the `spec42/semanticIndexReady` LSP notification to the client.
 /// The session must already be in `Ready` state before calling this.
+///
+/// Concurrent handlers may publish diagnostics as soon as the session is `Ready`, so nothing is
+/// awaited before the notification: the failure report follows it, keeping that window minimal.
 async fn send_semantic_ready_notification(client: &Client, handle: &WorkspaceHandle) {
-    report_publication_failure(client, handle).await;
     let params = semantic_index_ready_notification(&handle.snapshot());
     client.send_notification::<SemanticIndexReady>(params).await;
+    report_publication_failure(client, handle).await;
 }
 
 /// A retained publication must be visible as stale analysis, with the owning phase's cause.
