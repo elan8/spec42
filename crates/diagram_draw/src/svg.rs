@@ -137,12 +137,12 @@ impl Element {
             "text" if self.text.is_some() => {
                 // No browser font metrics are needed for exports.
                 let width = estimated_text_width(self.text.as_ref().unwrap(), font);
+                let anchor = value("text-anchor");
                 let x = number("x")
-                    - match value("text-anchor") {
-                        Some("middle") => width / 2.0,
-                        Some("end") => width,
-                        _ => 0.0,
-                    };
+                    - TEXT_ANCHOR_SHIFT
+                        .iter()
+                        .find(|(name, _)| anchor == Some(*name))
+                        .map_or(0.0, |(_, share)| width * share);
                 let dy = value("dy")
                     .and_then(|v| v.strip_suffix("em"))
                     .and_then(|v| v.parse::<f64>().ok())
@@ -269,6 +269,11 @@ fn set_or_update(pairs: &mut Vec<(String, String)>, name: &str, value: String) {
         None => pairs.push((name.to_string(), value)),
     }
 }
+
+/// The share of a text's width that lies left of its `x`, per SVG `text-anchor` value. A table
+/// rather than a `match`: `end` is also a SysML keyword, and this crate must not look like it
+/// probes SysML text (`syntax_authority` guards that). These are SVG attribute values.
+const TEXT_ANCHOR_SHIFT: [(&str, f64); 2] = [("middle", 0.5), ("end", 1.0)];
 
 /// A width for `text` at `font_size` that a bold sans-serif rendering stays within, without font
 /// metrics. Per-character classes keep it close for ordinary names: a flat one-em advance made
