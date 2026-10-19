@@ -11,7 +11,10 @@ use crate::ibd_route::resolve_ibd_route_points;
 use crate::svg::{format_number as n, Element};
 use crate::theme::{stroke_color_for_edge, Theme};
 use crate::tooltip::{edge_tooltip_descriptor_interconnection, tooltip_fallback_text};
-use crate::types::{attr_text, InterconnectionLayoutEdgeDto, LaidOutEdge, LaidOutNode, Point};
+use crate::types::{
+    attr_text, InterconnectionLayoutEdgeDto, InterconnectionLayoutNodeDto, LaidOutEdge,
+    LaidOutNode, Point,
+};
 
 /// Port of the `isInterconnectionView` branch of `applyEdgeMarker`.
 struct MarkerStyle {
@@ -420,6 +423,7 @@ pub fn draw_ibd_edges(
     edges: &[LaidOutEdge],
     nodes_by_id: &HashMap<&str, &LaidOutNode>,
     layout_edges: &[InterconnectionLayoutEdgeDto],
+    layout_nodes: &[InterconnectionLayoutNodeDto],
     theme: &Theme,
 ) -> Vec<Element> {
     let layout_edges_by_id: HashMap<&str, &InterconnectionLayoutEdgeDto> =
@@ -436,7 +440,27 @@ pub fn draw_ibd_edges(
         .into_iter()
         .collect();
     let mut typed_labels = HashMap::new();
-    let mut placed_labels = Vec::new();
+    // Port labels are painted after connectors, in a separate overlay. Reserve their actual
+    // measured boxes before placing connector names, including labels of unrelated ports.
+    let mut placed_labels: Vec<LabelBox> = layout_nodes
+        .iter()
+        .filter_map(|layout| {
+            nodes_by_id
+                .get(layout.id.as_str())
+                .map(|node| (layout, node))
+        })
+        .flat_map(|(layout, node)| {
+            layout.port_anchors.values().filter_map(move |anchor| {
+                let label = anchor.label.as_ref()?;
+                Some(LabelBox {
+                    left: node.x + label.x,
+                    top: node.y + label.y,
+                    right: node.x + label.x + label.width,
+                    bottom: node.y + label.y + label.height + 2.0,
+                })
+            })
+        })
+        .collect();
     for (edge, route) in edges.iter().zip(&all_routes) {
         if edge.attributes.get("typedProjection") != Some(&serde_json::Value::Bool(true)) {
             continue;
@@ -803,5 +827,79 @@ mod tests {
         )
         .unwrap();
         assert!(!first.intersects(second, 5.0));
+    }
+
+    #[test]
+    fn typed_connector_names_avoid_measured_port_labels_in_absolute_coordinates() {
+        use serde_json::json;
+
+        let node: LaidOutNode = serde_json::from_value(json!({
+            "id": "a", "label": "a", "kind": "part",
+            "x": 20, "y": 100, "width": 30, "height": 30
+        }))
+        .unwrap();
+        let nodes = HashMap::from([("a", &node), ("b", &node)]);
+        let (mut edge, route) = edge_with_layout_route_points(vec![
+            Point { x: 0.0, y: 0.0 },
+            Point { x: 200.0, y: 0.0 },
+        ]);
+        edge.edge_kind = Some("connection".into());
+        edge.label = "powerLink".into();
+        edge.attributes
+            .insert("typedProjection".into(), json!(true));
+        edge.attributes
+            .insert("relationType".into(), json!("powerLink"));
+
+        for (tops, expected_y) in [
+            (vec![], Some(-14.0)),
+            (vec![-26.0], Some(22.0)),
+            (vec![-26.0, 10.0], None),
+        ] {
+            let anchors: BTreeMap<String, serde_json::Value> = tops
+                .iter()
+                .enumerate()
+                .map(|(index, top)| {
+                    (
+                        format!("p{index}"),
+                        json!({
+                            "x": 0, "y": 0, "side": "EAST",
+                            "label": { "x": -20, "y": top - node.y, "width": 200,
+                                       "height": 16, "text": "longPortName" }
+                        }),
+                    )
+                })
+                .collect();
+            let layout: InterconnectionLayoutNodeDto = serde_json::from_value(json!({
+                "id": "a", "x": node.x, "y": node.y, "width": 30, "height": 30,
+                "portAnchors": anchors
+            }))
+            .unwrap();
+            let layers = draw_ibd_edges(
+                std::slice::from_ref(&edge),
+                &nodes,
+                std::slice::from_ref(&route),
+                &[layout],
+                &crate::theme::LIGHT,
+            );
+            let mut svg = String::new();
+            Element::new("svg").extend(layers).serialize(&mut svg);
+            let xml = crate::xml::parse(&svg);
+            let path = &xml.children[0].children[0];
+            assert_eq!(
+                path.attrs["data-label-placement"],
+                if expected_y.is_some() {
+                    "visible"
+                } else {
+                    "tooltip-only"
+                }
+            );
+            if let Some(y) = expected_y {
+                let label = &xml.children[1].children[0];
+                assert_eq!(label.text, "powerLink");
+                assert_eq!(label.attrs["y"].parse::<f64>().unwrap(), y);
+            } else {
+                assert_eq!(xml.children.len(), 1, "crowded name remains in its tooltip");
+            }
+        }
     }
 }
