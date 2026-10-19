@@ -101,6 +101,8 @@ pub struct DiagramElement {
     pub semantic_id: SymbolId,
     pub reference: DiagramSemanticReference,
     pub kind: ElementKind,
+    /// KerML effectiveName for display, including an unnamed redefinition's inherited name.
+    /// Authored identification and naming provenance remain owned by the publication.
     pub name: Option<Box<str>>,
     /// Authored FeatureTyping for compact labels; not the effective-type closure.
     pub typing: DiagramElementTyping,
@@ -846,7 +848,14 @@ impl PublishedResolution {
                             .unwrap_or_default(),
                     ),
                     kind: entry.kind,
-                    name: entry.name.clone(),
+                    name: usable_value(self.effective_identification(entry.identity)).and_then(
+                        |identification| match identification.name {
+                            crate::EffectiveName::Resolved(name) => Some(name.into()),
+                            crate::EffectiveName::Absent
+                            | crate::EffectiveName::Unresolved
+                            | crate::EffectiveName::NonConverged => None,
+                        },
+                    ),
                     typing: diagram_element_typing(self.element_details(entry.identity)),
                     owner: owner.clone(),
                     source: entry.location,
