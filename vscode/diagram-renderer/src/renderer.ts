@@ -14,6 +14,7 @@ export type { DisclosureState, RenderOptions } from "./render/types";
 export { isNativeDiagramView, NATIVE_DIAGRAM_VIEWS } from "./render/types";
 
 export interface RenderController {
+  getViewport: () => {x:number; y:number; k:number} | undefined;
   reset: () => void;
   exportSvg: () => string;
   destroy: () => void;
@@ -85,6 +86,7 @@ function inertController(target: HTMLElement, disclosure: DisclosureState, messa
     destroy: () => {
       clearCanvasIfOwner(target, owner);
     },
+    getViewport: () => undefined,
     getFitTransform: () => d3.zoomIdentity,
     getDisclosureState: () => disclosure,
   };
@@ -131,6 +133,12 @@ async function renderNativeSvgView(
   let activeAbort: AbortController | undefined;
   let destroyTooltips = (): void => undefined;
   let lastFitTransform = d3.zoomIdentity;
+  let mountedSvg: SVGSVGElement | undefined;
+  const getViewport = () => {
+    if (!mountedSvg) return undefined;
+    const {x,y,k} = d3.zoomTransform(mountedSvg);
+    return {x,y,k};
+  };
   let lastBounds: ContentBounds = { x: 0, y: 0, width: 100, height: 100 };
   let fitView = (): void => undefined;
   let lastSvg: string | null = null;
@@ -150,6 +158,7 @@ async function renderNativeSvgView(
 
   const mount = (svgMarkup: string, generation: number): void => {
     if (superseded(generation)) return;
+    const retainedViewport = getViewport() ?? options.viewport;
     destroyTooltips();
     claimCanvas(target, canvasOwner);
     target.innerHTML = svgMarkup;
@@ -183,6 +192,11 @@ async function renderNativeSvgView(
       );
     };
     fitView();
+    if (retainedViewport && [retainedViewport.x, retainedViewport.y, retainedViewport.k].every(Number.isFinite) && retainedViewport.k > 0) {
+      svg.interrupt();
+      svg.call(zoom.transform, d3.zoomIdentity.translate(retainedViewport.x, retainedViewport.y).scale(Math.min(5, Math.max(0.08, retainedViewport.k))));
+    }
+    mountedSvg = svgNode;
     destroyTooltips = installNativeSvgTooltips(target, theme);
   };
 
@@ -274,6 +288,7 @@ async function renderNativeSvgView(
 
   return {
     reset: () => fitView(),
+    getViewport,
     getFitTransform: () => lastFitTransform,
     getDisclosureState,
     exportSvg: () => {

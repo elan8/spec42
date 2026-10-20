@@ -54,15 +54,15 @@ After opening a SysML workspace, the **Spec42** sidebar gives you three tools:
 - **Help** for quick reference links and the quick-reference panel.
 - **Library** for searching the bundled standard/domain libraries and any custom libraries you add.
 
-## Opening the Diagram view
+## Opening the Views panel
 
-The **Diagram** view lives in the **secondary side bar** (right side of VS Code).
+The **Views** panel lives in the **secondary side bar** (right side of VS Code).
 
-- Run **Spec42: Open Diagram** from the Command Palette, or
-- Open **View → Secondary Side Bar** and select **Diagram**.
+- Run **Spec42: Open Views** from the Command Palette, or
+- Open **View → Secondary Side Bar** and select **Views**.
 
 Once open, pick an authored view from the toolbar dropdown to render your model as a diagram. It
-regenerates on its own as the model changes. See the [Diagram view guide](DIAGRAM-VIEW.md) for the
+regenerates on its own as the model changes. See the [Views panel guide](DIAGRAM-VIEW.md) for the
 toolbar and export options.
 
 ## Inspecting elements

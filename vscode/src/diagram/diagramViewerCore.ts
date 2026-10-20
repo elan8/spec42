@@ -68,7 +68,8 @@ export type DiagramViewCatalog = {
     kind: DiagramViewId;
     reference: DiagramSemanticReference;
     name: string;
-    source: { uri: string };
+    namespace?: string | null;
+    source: { uri: string; range?: { startLine: number; startCharacter: number; endLine: number; endCharacter: number } };
   }>;
 };
 
@@ -86,7 +87,17 @@ export function parseDiagramViewCatalog(value: unknown): DiagramViewCatalog {
         typeof view.name !== "string" || !source || typeof source.uri !== "string") {
       throw new Error("Spec42 returned malformed diagram view identity.");
     }
-    return { handle: view.handle, kind: view.kind as DiagramViewId, reference: view.reference, name: view.name, source: { uri: source.uri } };
+    if (view.namespace !== undefined && view.namespace !== null && typeof view.namespace !== "string") {
+      throw new Error("Spec42 returned an invalid view namespace.");
+    }
+    const range = source.range as DiagramViewCatalog["views"][number]["source"]["range"];
+    if (range !== undefined && !parseSourceNavigation({ ...range, uri: source.uri })) {
+      throw new Error("Spec42 returned an invalid view definition range.");
+    }
+    return { handle: view.handle, kind: view.kind as DiagramViewId, reference: view.reference, name: view.name,
+      ...(view.namespace !== undefined ? { namespace: view.namespace as string | null } : {}),
+      source: { uri: source.uri, ...(range ? {range} : {}) } };
+
   });
   return { modelDigest: candidate.modelDigest, views };
 }
@@ -107,9 +118,11 @@ export type DiagramViewOption = {
   kind: DiagramViewId;
   name: string;
   label: string;
-  /** Workspace URI of the file that authors this view — the dropdown groups by its basename. */
+  /** Canonical definition document; grouping uses its semantic owner namespace. */
   documentUri: string;
   group: string;
+  kindLabel?: string;
+  definition?: SourceNavigation;
 };
 
 const DIAGRAM_VIEW_LABELS = new Map<DiagramViewId, string>(
@@ -132,26 +145,36 @@ function toOption(view: DiagramViewCatalog["views"][number]): DiagramViewOption 
     handle: view.handle,
     kind: view.kind,
     name: view.name,
-    label: `${view.name} · ${DIAGRAM_VIEW_LABELS.get(view.kind) ?? view.kind}`,
+    label: view.name,
+    kindLabel: DIAGRAM_VIEW_LABELS.get(view.kind) ?? view.kind,
     documentUri: view.source.uri,
-    group: basename(view.source.uri),
+    group: view.namespace === null ? "(Root namespace)"
+      : view.namespace === "" ? "(Unnamed namespace)"
+      : view.namespace ?? "(Namespace unavailable)",
+    ...(view.source.range ? { definition: { ...view.source.range, uri: view.source.uri } } : {}),
   };
 }
 
-/**
- * Every authored diagram view in the model — the Diagram view is project-scoped, not tied to one
- * source file. Ordered by file, then kind, then name so the dropdown is stable across
- * regenerations. A document may author several views of one kind, so entries are keyed by handle.
- */
+/** Namespace groups and view names sort alphabetically, independently of kind and file.
+ * Older servers without ownership metadata get an explicit unavailable group, not a guessed owner. */
 export function allDiagramViewOptions(catalog: DiagramViewCatalog): DiagramViewOption[] {
-  return catalog.views
-    .map(toOption)
-    .sort(
-      (a, b) =>
-        a.group.localeCompare(b.group) ||
-        a.kind.localeCompare(b.kind) ||
-        a.name.localeCompare(b.name),
-    );
+  const options = catalog.views.map(toOption);
+  const counts = new Map<string, number>();
+  for (const option of options) {
+    for (const key of [JSON.stringify([option.group, option.name]), JSON.stringify([option.group, option.name, option.kind])]) {
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+  }
+  for (const option of options) {
+    if ((counts.get(JSON.stringify([option.group, option.name])) ?? 0) > 1) {
+      option.label = `${option.name} · ${option.kindLabel}`;
+      if ((counts.get(JSON.stringify([option.group, option.name, option.kind])) ?? 0) > 1) {
+        option.label += ` · ${basename(option.documentUri)}`;
+      }
+    }
+  }
+  const alphabetically = (a: string, b: string) => a.localeCompare(b, undefined, {sensitivity:"base", numeric:true}) || a.localeCompare(b);
+  return options.sort((a, b) => alphabetically(a.group,b.group) || alphabetically(a.name,b.name) || a.kind.localeCompare(b.kind) || a.documentUri.localeCompare(b.documentUri) || a.handle.localeCompare(b.handle));
 }
 
 /** The subset authored in `documentUri` (used to pick a sensible default when a file is active). */

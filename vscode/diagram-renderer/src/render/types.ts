@@ -42,7 +42,10 @@ export type RequestServerDraw = (
   signal: AbortSignal,
 ) => Promise<string | null>;
 
+export type ViewportTransform = {x: number; y: number; k: number};
+
 export interface RenderOptions {
+  viewport?: ViewportTransform;
   onNodeClick?: (node: PreparedNode) => void;
   disclosure?: DisclosureActions;
   disclosureState?: DisclosureState;

@@ -128,3 +128,18 @@ exports use the resulting bounds. Disclosure changes content visibility, not the
 or the existence of the root frame. The presentation uses existing schema-5 product fields;
 there is no semantic selection, wire-schema or request-shape change. Browser, Grid and Geometry
 are outside this standard graphical framing policy.
+
+## Editor view catalog presentation
+
+The editor's `spec42/diagramViews` response adapts canonical element inspection into two
+additional fields: `namespace` is the owning element's qualified name (null for no owner),
+and `source.range` is the declaration span in zero-based LSP coordinates (`startLine`,
+`startCharacter`, `endLine`, `endCharacter`). The adapter uses existing owner and source facts;
+it does not reconstruct ownership from qualified-name strings. The generator ABI and diagram
+product schema are unchanged. Clients talking to older servers without these additive fields
+show an explicit unavailable-namespace group and disable definition navigation.
+
+The Views picker groups by namespace and sorts names alphabetically, retaining catalog handles
+as selection identities. Viewport transforms are presentation state; node disclosure indexes
+are retained only at the same model digest. Onscreen canvas transparency is scoped to the panel;
+exports independently choose a white (default) or transparent canvas and retain semantic fills.

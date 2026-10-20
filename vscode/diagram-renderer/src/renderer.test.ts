@@ -27,6 +27,21 @@ const SAMPLE_SVG = `<svg class="sysml-viz-svg" width="100%" height="100%" viewBo
 </svg>`;
 
 describe("shared renderer", () => {
+  it("restores a viewport and preserves it through disclosure redraws", async () => {
+    const target=host();
+    const requestDraw=vi.fn<RequestServerDraw>(async()=>SAMPLE_SVG);
+    const viewport={x:125,y:-40,k:1.8};
+    const controller=await renderVisualization(target, {title:"View",view:"general-view",nodes:[{id:"n:0",label:"Root",kind:"part"}],edges:[]}, {
+      theme:LIGHT_THEME, productIdentity:{modelDigest:"m",viewHandle:"h"},product:{},requestDraw,viewport,
+    });
+    expect(controller.getViewport()).toEqual(viewport);
+    target.querySelector(".general-node-toggle")?.dispatchEvent(new MouseEvent("click",{bubbles:true}));
+    await vi.waitFor(()=>expect(requestDraw).toHaveBeenCalledTimes(2));
+    await vi.waitFor(()=>expect(controller.getViewport()).toEqual(viewport));
+    expect(target.querySelector(".viz-root")?.getAttribute("transform")).toBe("translate(125,-40) scale(1.8)");
+    controller.destroy();
+  });
+
   it("preserves each native view frame when mounting, fitting and exporting SVG", async () => {
     for (const [fixture, view] of [
       ["general-view", "general-view"],
