@@ -632,28 +632,12 @@ package Deployment {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:7c49bb3f1e45d12383e9461e47b06f847099404015da3c1cc3e3add0d3d77cfc",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_incident_allocation.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/allocations.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -784,11 +768,6 @@ package Deployment {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Deployment::System"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Deployment::System::"
     },
     {
@@ -804,11 +783,6 @@ package Deployment {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Deployment::Tasks"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Deployment::Tasks::workerA"
     },
     {
@@ -820,26 +794,6 @@ package Deployment {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "Deployment::selected"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Allocations::allocations"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
     },
     {
       "kind": "source-anchor",
@@ -859,149 +813,59 @@ package Deployment {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "allocateSource",
-      "source": 2
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "allocateSource",
-      "source": 2
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "allocateTarget",
-      "source": 2
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "allocateTarget",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "typing",
-      "source": 3
+      "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "allocate",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 14,
       "relationshipKind": "typing",
-      "source": 6
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "allocate",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 18,
       "relationshipKind": "typing",
-      "source": 7
+      "source": 5
     }
   ],
   "selectedView": {
-    "reference": 8,
+    "reference": 6,
     "kind": "general-view",
     "name": "selected",
     "source": 12
@@ -1017,7 +881,7 @@ package Deployment {
         "navigation": 7,
         "origin": 3,
         "provenance": "implied",
-        "reference": 29,
+        "reference": 14,
         "source": 0,
         "target": 2
       },
@@ -1026,7 +890,7 @@ package Deployment {
         "navigation": 10,
         "origin": 4,
         "provenance": "implied",
-        "reference": 34,
+        "reference": 16,
         "source": 1,
         "target": 2
       }
@@ -1054,7 +918,7 @@ package Deployment {
         "name": "workerA",
         "notationRole": "usage",
         "owner": null,
-        "reference": 6,
+        "reference": 4,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1063,7 +927,7 @@ package Deployment {
           "types": [
             {
               "label": "Task",
-              "reference": 4
+              "reference": 3
             }
           ]
         }
@@ -1077,7 +941,7 @@ package Deployment {
         "name": "workerB",
         "notationRole": "usage",
         "owner": null,
-        "reference": 7,
+        "reference": 5,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1086,7 +950,7 @@ package Deployment {
           "types": [
             {
               "label": "Task",
-              "reference": 4
+              "reference": 3
             }
           ]
         }
@@ -1100,7 +964,7 @@ package Deployment {
         "name": "cpu",
         "notationRole": "usage",
         "owner": null,
-        "reference": 3,
+        "reference": 2,
         "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1123,7 +987,7 @@ package Deployment {
         "name": null,
         "notationRole": "usage",
         "owner": null,
-        "reference": 13,
+        "reference": 7,
         "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1140,7 +1004,7 @@ package Deployment {
         "name": null,
         "notationRole": "usage",
         "owner": null,
-        "reference": 14,
+        "reference": 8,
         "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1154,7 +1018,7 @@ package Deployment {
         "kind": "allocateSource",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 9,
         "source": 3,
         "target": {
           "node": 0,
@@ -1165,7 +1029,7 @@ package Deployment {
         "kind": "allocateTarget",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 11,
         "source": 3,
         "target": {
           "node": 2,
@@ -1173,43 +1037,10 @@ package Deployment {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 3,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
-        "source": 3,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
-        "source": 3,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "allocateSource",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 10,
         "source": 4,
         "target": {
           "node": 1,
@@ -1220,7 +1051,7 @@ package Deployment {
         "kind": "allocateTarget",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 12,
         "source": 4,
         "target": {
           "node": 2,
@@ -1228,43 +1059,10 @@ package Deployment {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 21,
-        "source": 4,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 22,
-        "source": 4,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 4,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 13,
         "source": 2,
         "target": {
           "reference": 0,
@@ -1272,79 +1070,13 @@ package Deployment {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 25,
-        "source": 2,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 2,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 2,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 15,
         "source": 0,
         "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 30,
-        "source": 0,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 0,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 0,
-        "target": {
-          "reference": 5,
+          "reference": 3,
           "status": "resolved"
         }
       },
@@ -1352,43 +1084,10 @@ package Deployment {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 38,
+        "reference": 17,
         "source": 1,
         "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 35,
-        "source": 1,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 1,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 1,
-        "target": {
-          "reference": 5,
+          "reference": 3,
           "status": "resolved"
         }
       }

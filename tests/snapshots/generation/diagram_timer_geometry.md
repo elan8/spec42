@@ -6858,7 +6858,7 @@ package TimerGeometry {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:d144a256e3c8896ff7e7d3b0742384c1efd602a66843b0c3103b089a0a38c587",
   "documents": [
     {
@@ -6882,18 +6882,6 @@ package TimerGeometry {
       "sourceDomain": "workspace"
     },
     {
-      "uri": "memory://snapshot/sysml.library/actions.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/base.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/connections.md",
-      "sourceDomain": "standard-library"
-    },
-    {
       "uri": "memory://snapshot/sysml.library/isq_base.md",
       "sourceDomain": "standard-library"
     },
@@ -6906,31 +6894,7 @@ package TimerGeometry {
       "sourceDomain": "standard-library"
     },
     {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/performances.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
-    },
-    {
       "uri": "memory://snapshot/sysml.library/scalar_values.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/states.md",
       "sourceDomain": "standard-library"
     }
   ],
@@ -7424,15 +7388,6 @@ package TimerGeometry {
     {
       "document": 3,
       "range": [
-        6,
-        1,
-        11,
-        2
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
         8,
         6,
         8,
@@ -7500,15 +7455,6 @@ package TimerGeometry {
         33,
         10,
         40
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        13,
-        1,
-        19,
-        2
       ]
     },
     {
@@ -7604,15 +7550,6 @@ package TimerGeometry {
     {
       "document": 3,
       "range": [
-        21,
-        1,
-        23,
-        2
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
         22,
         6,
         22,
@@ -7631,15 +7568,6 @@ package TimerGeometry {
     {
       "document": 3,
       "range": [
-        25,
-        1,
-        28,
-        2
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
         27,
         6,
         27,
@@ -7653,15 +7581,6 @@ package TimerGeometry {
         20,
         27,
         26
-      ]
-    },
-    {
-      "document": 3,
-      "range": [
-        30,
-        1,
-        32,
-        2
       ]
     },
     {
@@ -8716,15 +8635,6 @@ package TimerGeometry {
         91,
         53
       ]
-    },
-    {
-      "document": 5,
-      "range": [
-        212,
-        2,
-        212,
-        20
-      ]
     }
   ],
   "references": [
@@ -8811,11 +8721,6 @@ package TimerGeometry {
     {
       "document": 2,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::decrement_idle::::"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::expired"
     },
     {
@@ -8832,11 +8737,6 @@ package TimerGeometry {
       "document": 2,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle::"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle::::"
     },
     {
       "document": 2,
@@ -8861,22 +8761,12 @@ package TimerGeometry {
     {
       "document": 2,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_expired::::"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"
     },
     {
       "document": 2,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired::"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired::::"
     },
     {
       "document": 2,
@@ -8891,22 +8781,12 @@ package TimerGeometry {
     {
       "document": 2,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused::::"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused"
     },
     {
       "document": 2,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused::"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused::::"
     },
     {
       "document": 2,
@@ -8921,22 +8801,12 @@ package TimerGeometry {
     {
       "document": 2,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running::::"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume"
     },
     {
       "document": 2,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume::"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume::::"
     },
     {
       "document": 3,
@@ -8956,11 +8826,6 @@ package TimerGeometry {
     {
       "document": 3,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent::::"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerPorts::BatteryOutlet::power"
     },
     {
@@ -8972,11 +8837,6 @@ package TimerGeometry {
       "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage::"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage::::"
     },
     {
       "document": 3,
@@ -9091,11 +8951,6 @@ package TimerGeometry {
     {
       "document": 4,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::ButtonInterface::pwr::::::"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::Buzzer"
     },
     {
@@ -9117,11 +8972,6 @@ package TimerGeometry {
       "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::Buzzer::pwr::::"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::Buzzer::pwr::::::"
     },
     {
       "document": 4,
@@ -9152,11 +9002,6 @@ package TimerGeometry {
       "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::::"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::::::"
     },
     {
       "document": 4,
@@ -9197,11 +9042,6 @@ package TimerGeometry {
       "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::Display::pwr::::"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::Display::pwr::::::"
     },
     {
       "document": 4,
@@ -9301,11 +9141,6 @@ package TimerGeometry {
     {
       "document": 4,
       "kind": "qualified-name",
-      "qualifiedName": "KitchenTimerStructure::MCU::pwr::::::"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::MCU::ramSize"
     },
     {
@@ -9346,162 +9181,42 @@ package TimerGeometry {
     {
       "document": 5,
       "kind": "qualified-name",
-      "qualifiedName": "Actions::TransitionAction::accepter"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::TransitionAction::transitionLinkSource"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::actions"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::transitionActions"
-    },
-    {
-      "document": 6,
-      "kind": "qualified-name",
-      "qualifiedName": "Base::dataValues"
-    },
-    {
-      "document": 6,
-      "kind": "qualified-name",
-      "qualifiedName": "Base::things"
-    },
-    {
-      "document": 7,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::binaryConnections"
-    },
-    {
-      "document": 7,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::connections"
-    },
-    {
-      "document": 8,
-      "kind": "qualified-name",
       "qualifiedName": "ISQBase::DurationValue"
     },
     {
-      "document": 9,
+      "document": 6,
       "kind": "qualified-name",
       "qualifiedName": "ISQElectromagnetism::ElectricChargeValue"
     },
     {
-      "document": 9,
+      "document": 6,
       "kind": "qualified-name",
       "qualifiedName": "ISQElectromagnetism::ElectricPotentialDifferenceValue"
     },
     {
-      "document": 9,
+      "document": 6,
       "kind": "qualified-name",
       "qualifiedName": "ISQElectromagnetism::electricPower"
     },
     {
-      "document": 10,
+      "document": 7,
       "kind": "qualified-name",
       "qualifiedName": "ISQSpaceTime::FrequencyValue"
     },
     {
-      "document": 11,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 12,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 12,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::happensBeforeLinks"
-    },
-    {
-      "document": 13,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::exhibitedStates"
-    },
-    {
-      "document": 13,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 13,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 14,
-      "kind": "qualified-name",
-      "qualifiedName": "Performances::Evaluation::result"
-    },
-    {
-      "document": 14,
-      "kind": "qualified-name",
-      "qualifiedName": "Performances::evaluations"
-    },
-    {
-      "document": 14,
-      "kind": "qualified-name",
-      "qualifiedName": "Performances::literalRationalEvaluations"
-    },
-    {
-      "document": 15,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
-      "document": 16,
+      "document": 8,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::Boolean"
     },
     {
-      "document": 16,
+      "document": 8,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::Real"
     },
     {
-      "document": 16,
+      "document": 8,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::String"
-    },
-    {
-      "document": 17,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::entryAction"
-    },
-    {
-      "document": 17,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::exclusiveStates"
-    },
-    {
-      "document": 17,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction::stateTransitions"
-    },
-    {
-      "document": 17,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateTransitionAction::payload"
-    },
-    {
-      "document": 17,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateTransitionAction::transitionLinkSource"
-    },
-    {
-      "document": 17,
-      "kind": "qualified-name",
-      "qualifiedName": "States::stateActions"
     },
     {
       "kind": "source-anchor",
@@ -9743,290 +9458,248 @@ package TimerGeometry {
     },
     {
       "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet",
-      "source": 54,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
       "metaclass": "Expression",
       "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent",
-      "source": 62,
+      "source": 61,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
-      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent::",
-      "source": 62,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralRational",
       "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent::",
       "source": 61,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
+      "metaclass": "LiteralRational",
+      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::maxCurrent::",
+      "source": 60,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "Expression",
       "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage",
-      "source": 59,
+      "source": 58,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
-      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage::",
-      "source": 59,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralRational",
       "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage::",
       "source": 58,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "KitchenTimerPorts::ButtonInputPort",
-      "source": 63,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "KitchenTimerPorts::BuzzerCommandPort",
-      "source": 80,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "KitchenTimerPorts::DisplayCommandPort",
-      "source": 74,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "KitchenTimerPorts::LcdSegmentDrivePort",
-      "source": 77,
+      "metaclass": "LiteralRational",
+      "ownerQualifiedName": "KitchenTimerPorts::BatteryOutlet::voltage::",
+      "source": 57,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::ButtonInterface::pwr",
-      "source": 131,
+      "source": 126,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Expression",
       "ownerQualifiedName": "KitchenTimerStructure::ButtonInterface::pwr::",
-      "source": 134,
+      "source": 129,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "KitchenTimerStructure::ButtonInterface::pwr::::",
-      "source": 134,
+      "source": 129,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "LiteralRational",
       "ownerQualifiedName": "KitchenTimerStructure::ButtonInterface::pwr::::",
-      "source": 133,
+      "source": 128,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::Buzzer::pwr",
-      "source": 139,
+      "source": 134,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Expression",
       "ownerQualifiedName": "KitchenTimerStructure::Buzzer::pwr::",
-      "source": 142,
+      "source": 137,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "KitchenTimerStructure::Buzzer::pwr::::",
-      "source": 142,
+      "source": 137,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "LiteralRational",
       "ownerQualifiedName": "KitchenTimerStructure::Buzzer::pwr::::",
-      "source": 141,
+      "source": 136,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn",
-      "source": 109,
+      "source": 104,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Expression",
       "ownerQualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::",
-      "source": 112,
+      "source": 107,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::::",
-      "source": 112,
+      "source": 107,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "LiteralRational",
       "ownerQualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn::::",
-      "source": 111,
+      "source": 106,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::Display::pwr",
-      "source": 123,
+      "source": 118,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Expression",
       "ownerQualifiedName": "KitchenTimerStructure::Display::pwr::",
-      "source": 126,
+      "source": 121,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "KitchenTimerStructure::Display::pwr::::",
-      "source": 126,
+      "source": 121,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "LiteralRational",
       "ownerQualifiedName": "KitchenTimerStructure::Display::pwr::::",
-      "source": 125,
+      "source": 120,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 183,
+      "source": 178,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 186,
+      "source": 181,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 189,
+      "source": 184,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 192,
+      "source": 187,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
-      "source": 195,
+      "source": 190,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "KitchenTimerStructure::MCU::pwr",
-      "source": 99,
+      "source": 94,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Expression",
       "ownerQualifiedName": "KitchenTimerStructure::MCU::pwr::",
-      "source": 102,
+      "source": 97,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "KitchenTimerStructure::MCU::pwr::::",
-      "source": 102,
+      "source": 97,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "LiteralRational",
       "ownerQualifiedName": "KitchenTimerStructure::MCU::pwr::::",
-      "source": 101,
+      "source": 96,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::PCB",
-      "source": 151,
+      "source": 146,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::PCB",
-      "source": 154,
+      "source": 149,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::PCB",
-      "source": 157,
+      "source": 152,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "KitchenTimerStructure::PCB",
-      "source": 160,
+      "source": 155,
       "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ReferenceUsage",
-      "ownerQualifiedName": "Actions::AcceptMessageAction",
-      "source": 198,
-      "sourceDomain": "standard-library"
     },
     {
       "kind": "relationship",
@@ -10084,12 +9757,6 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "typing",
       "source": 1
@@ -10104,42 +9771,6 @@ package TimerGeometry {
       "kind": "relationship",
       "ordinal": 88,
       "relationshipKind": "initialState",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 101,
-      "relationshipKind": "redefinition",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 89,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 102,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 103,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 90,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 104,
-      "relationshipKind": "typeFeaturing",
       "source": 13
     },
     {
@@ -10174,24 +9805,6 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 168,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 169,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 170,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
       "ordinal": 171,
       "relationshipKind": "transitionSource",
       "source": 14
@@ -10210,50 +9823,8 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 174,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
       "ordinal": 69,
       "relationshipKind": "containment",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 176,
-      "relationshipKind": "redefinition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 177,
-      "relationshipKind": "redefinition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 179,
-      "relationshipKind": "redefinition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 180,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 182,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 185,
-      "relationshipKind": "subsetting",
       "source": 15
     },
     {
@@ -10270,4317 +9841,1827 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
-      "ordinal": 175,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 178,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 181,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 186,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 187,
-      "relationshipKind": "redefinition",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 188,
-      "relationshipKind": "typeFeaturing",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 92,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 93,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 94,
-      "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
       "ordinal": 103,
       "relationshipKind": "succession",
-      "source": 17
+      "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 98,
       "relationshipKind": "transition",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 95,
-      "relationshipKind": "typeFeaturing",
-      "source": 17
+      "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 91,
       "relationshipKind": "typing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "subsetting",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "subsetting",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "subsetting",
-      "source": 18
+      "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 58,
       "relationshipKind": "succession",
-      "source": 18
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 67,
       "relationshipKind": "succession",
-      "source": 18
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 76,
       "relationshipKind": "succession",
-      "source": 18
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 53,
       "relationshipKind": "transition",
-      "source": 18
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 62,
       "relationshipKind": "transition",
-      "source": 18
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 71,
       "relationshipKind": "transition",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "typeFeaturing",
-      "source": 18
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 78,
       "relationshipKind": "typing",
-      "source": 18
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 72,
       "relationshipKind": "containment",
-      "source": 19
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 73,
       "relationshipKind": "containment",
-      "source": 19
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 74,
       "relationshipKind": "containment",
-      "source": 19
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 75,
       "relationshipKind": "containment",
-      "source": 19
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 77,
       "relationshipKind": "containment",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 189,
-      "relationshipKind": "subsetting",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 190,
-      "relationshipKind": "subsetting",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 191,
-      "relationshipKind": "subsetting",
-      "source": 19
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 192,
       "relationshipKind": "transitionSource",
-      "source": 19
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 193,
       "relationshipKind": "transitionTarget",
-      "source": 19
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 194,
       "relationshipKind": "transitionTrigger",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 195,
-      "relationshipKind": "typeFeaturing",
-      "source": 19
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 78,
       "relationshipKind": "containment",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 197,
-      "relationshipKind": "redefinition",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 198,
-      "relationshipKind": "redefinition",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 200,
-      "relationshipKind": "redefinition",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 201,
-      "relationshipKind": "subsetting",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 203,
-      "relationshipKind": "subsetting",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 206,
-      "relationshipKind": "subsetting",
-      "source": 20
+      "source": 19
     },
     {
       "kind": "relationship",
       "ordinal": 204,
       "relationshipKind": "succession",
-      "source": 20
+      "source": 19
     },
     {
       "kind": "relationship",
       "ordinal": 205,
       "relationshipKind": "succession",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 196,
-      "relationshipKind": "typeFeaturing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 199,
-      "relationshipKind": "typeFeaturing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 202,
-      "relationshipKind": "typeFeaturing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 207,
-      "relationshipKind": "typeFeaturing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 208,
-      "relationshipKind": "redefinition",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 209,
-      "relationshipKind": "typeFeaturing",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "subsetting",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "subsetting",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 86,
-      "relationshipKind": "subsetting",
-      "source": 22
+      "source": 19
     },
     {
       "kind": "relationship",
       "ordinal": 85,
       "relationshipKind": "succession",
-      "source": 22
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 94,
       "relationshipKind": "succession",
-      "source": 22
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 80,
       "relationshipKind": "transition",
-      "source": 22
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 89,
       "relationshipKind": "transition",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 87,
-      "relationshipKind": "typeFeaturing",
-      "source": 22
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 83,
       "relationshipKind": "typing",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 97,
-      "relationshipKind": "subsetting",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 98,
-      "relationshipKind": "subsetting",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 99,
-      "relationshipKind": "subsetting",
-      "source": 23
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 40,
       "relationshipKind": "succession",
-      "source": 23
+      "source": 21
     },
     {
       "kind": "relationship",
       "ordinal": 49,
       "relationshipKind": "succession",
-      "source": 23
+      "source": 21
     },
     {
       "kind": "relationship",
       "ordinal": 35,
       "relationshipKind": "transition",
-      "source": 23
+      "source": 21
     },
     {
       "kind": "relationship",
       "ordinal": 44,
       "relationshipKind": "transition",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 100,
-      "relationshipKind": "typeFeaturing",
-      "source": 23
+      "source": 21
     },
     {
       "kind": "relationship",
       "ordinal": 96,
       "relationshipKind": "typing",
-      "source": 23
+      "source": 21
     },
     {
       "kind": "relationship",
       "ordinal": 45,
       "relationshipKind": "containment",
-      "source": 24
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 46,
       "relationshipKind": "containment",
-      "source": 24
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 47,
       "relationshipKind": "containment",
-      "source": 24
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 48,
       "relationshipKind": "containment",
-      "source": 24
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 50,
       "relationshipKind": "containment",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 126,
-      "relationshipKind": "subsetting",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 127,
-      "relationshipKind": "subsetting",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 128,
-      "relationshipKind": "subsetting",
-      "source": 24
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 129,
       "relationshipKind": "transitionSource",
-      "source": 24
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 130,
       "relationshipKind": "transitionTarget",
-      "source": 24
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 131,
       "relationshipKind": "transitionTrigger",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 132,
-      "relationshipKind": "typeFeaturing",
-      "source": 24
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 51,
       "relationshipKind": "containment",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 134,
-      "relationshipKind": "redefinition",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 135,
-      "relationshipKind": "redefinition",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 137,
-      "relationshipKind": "redefinition",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 138,
-      "relationshipKind": "subsetting",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 140,
-      "relationshipKind": "subsetting",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 143,
-      "relationshipKind": "subsetting",
-      "source": 25
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 141,
       "relationshipKind": "succession",
-      "source": 25
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 142,
       "relationshipKind": "succession",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 133,
-      "relationshipKind": "typeFeaturing",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 136,
-      "relationshipKind": "typeFeaturing",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 139,
-      "relationshipKind": "typeFeaturing",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 144,
-      "relationshipKind": "typeFeaturing",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 145,
-      "relationshipKind": "redefinition",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 146,
-      "relationshipKind": "typeFeaturing",
-      "source": 26
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 99,
       "relationshipKind": "containment",
-      "source": 27
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 100,
       "relationshipKind": "containment",
-      "source": 27
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 101,
       "relationshipKind": "containment",
-      "source": 27
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 102,
       "relationshipKind": "containment",
-      "source": 27
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 104,
       "relationshipKind": "containment",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 252,
-      "relationshipKind": "subsetting",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 253,
-      "relationshipKind": "subsetting",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 254,
-      "relationshipKind": "subsetting",
-      "source": 27
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 255,
       "relationshipKind": "transitionSource",
-      "source": 27
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 256,
       "relationshipKind": "transitionTarget",
-      "source": 27
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 257,
       "relationshipKind": "transitionTrigger",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 258,
-      "relationshipKind": "typeFeaturing",
-      "source": 27
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 105,
       "relationshipKind": "containment",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 260,
-      "relationshipKind": "redefinition",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 261,
-      "relationshipKind": "redefinition",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 263,
-      "relationshipKind": "redefinition",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 264,
-      "relationshipKind": "subsetting",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 266,
-      "relationshipKind": "subsetting",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 269,
-      "relationshipKind": "subsetting",
-      "source": 28
+      "source": 25
     },
     {
       "kind": "relationship",
       "ordinal": 267,
       "relationshipKind": "succession",
-      "source": 28
+      "source": 25
     },
     {
       "kind": "relationship",
       "ordinal": 268,
       "relationshipKind": "succession",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 259,
-      "relationshipKind": "typeFeaturing",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 262,
-      "relationshipKind": "typeFeaturing",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 265,
-      "relationshipKind": "typeFeaturing",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 270,
-      "relationshipKind": "typeFeaturing",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 271,
-      "relationshipKind": "redefinition",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 272,
-      "relationshipKind": "typeFeaturing",
-      "source": 29
+      "source": 25
     },
     {
       "kind": "relationship",
       "ordinal": 90,
       "relationshipKind": "containment",
-      "source": 30
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 91,
       "relationshipKind": "containment",
-      "source": 30
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 92,
       "relationshipKind": "containment",
-      "source": 30
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 93,
       "relationshipKind": "containment",
-      "source": 30
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 95,
       "relationshipKind": "containment",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 231,
-      "relationshipKind": "subsetting",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 232,
-      "relationshipKind": "subsetting",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 233,
-      "relationshipKind": "subsetting",
-      "source": 30
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 234,
       "relationshipKind": "transitionSource",
-      "source": 30
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 235,
       "relationshipKind": "transitionTarget",
-      "source": 30
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 236,
       "relationshipKind": "transitionTrigger",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 237,
-      "relationshipKind": "typeFeaturing",
-      "source": 30
+      "source": 26
     },
     {
       "kind": "relationship",
       "ordinal": 96,
       "relationshipKind": "containment",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 239,
-      "relationshipKind": "redefinition",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 240,
-      "relationshipKind": "redefinition",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 242,
-      "relationshipKind": "redefinition",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 243,
-      "relationshipKind": "subsetting",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 245,
-      "relationshipKind": "subsetting",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 248,
-      "relationshipKind": "subsetting",
-      "source": 31
+      "source": 27
     },
     {
       "kind": "relationship",
       "ordinal": 246,
       "relationshipKind": "succession",
-      "source": 31
+      "source": 27
     },
     {
       "kind": "relationship",
       "ordinal": 247,
       "relationshipKind": "succession",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 238,
-      "relationshipKind": "typeFeaturing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 241,
-      "relationshipKind": "typeFeaturing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 244,
-      "relationshipKind": "typeFeaturing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 249,
-      "relationshipKind": "typeFeaturing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 250,
-      "relationshipKind": "redefinition",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 251,
-      "relationshipKind": "typeFeaturing",
-      "source": 32
+      "source": 27
     },
     {
       "kind": "relationship",
       "ordinal": 36,
       "relationshipKind": "containment",
-      "source": 33
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 37,
       "relationshipKind": "containment",
-      "source": 33
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 38,
       "relationshipKind": "containment",
-      "source": 33
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 39,
       "relationshipKind": "containment",
-      "source": 33
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 41,
       "relationshipKind": "containment",
-      "source": 33
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 105,
-      "relationshipKind": "subsetting",
-      "source": 33
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 106,
-      "relationshipKind": "subsetting",
-      "source": 33
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 107,
-      "relationshipKind": "subsetting",
-      "source": 33
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 108,
       "relationshipKind": "transitionSource",
-      "source": 33
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 109,
       "relationshipKind": "transitionTarget",
-      "source": 33
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 110,
       "relationshipKind": "transitionTrigger",
-      "source": 33
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 111,
-      "relationshipKind": "typeFeaturing",
-      "source": 33
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 42,
       "relationshipKind": "containment",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 113,
-      "relationshipKind": "redefinition",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 114,
-      "relationshipKind": "redefinition",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 116,
-      "relationshipKind": "redefinition",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 117,
-      "relationshipKind": "subsetting",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 119,
-      "relationshipKind": "subsetting",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 122,
-      "relationshipKind": "subsetting",
-      "source": 34
+      "source": 29
     },
     {
       "kind": "relationship",
       "ordinal": 120,
       "relationshipKind": "succession",
-      "source": 34
+      "source": 29
     },
     {
       "kind": "relationship",
       "ordinal": 121,
       "relationshipKind": "succession",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 112,
-      "relationshipKind": "typeFeaturing",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 115,
-      "relationshipKind": "typeFeaturing",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 118,
-      "relationshipKind": "typeFeaturing",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 123,
-      "relationshipKind": "typeFeaturing",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 124,
-      "relationshipKind": "redefinition",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 125,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
+      "source": 29
     },
     {
       "kind": "relationship",
       "ordinal": 54,
       "relationshipKind": "containment",
-      "source": 36
+      "source": 30
     },
     {
       "kind": "relationship",
       "ordinal": 55,
       "relationshipKind": "containment",
-      "source": 36
+      "source": 30
     },
     {
       "kind": "relationship",
       "ordinal": 56,
       "relationshipKind": "containment",
-      "source": 36
+      "source": 30
     },
     {
       "kind": "relationship",
       "ordinal": 57,
       "relationshipKind": "containment",
-      "source": 36
+      "source": 30
     },
     {
       "kind": "relationship",
       "ordinal": 59,
       "relationshipKind": "containment",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 147,
-      "relationshipKind": "subsetting",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 148,
-      "relationshipKind": "subsetting",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 149,
-      "relationshipKind": "subsetting",
-      "source": 36
+      "source": 30
     },
     {
       "kind": "relationship",
       "ordinal": 150,
       "relationshipKind": "transitionSource",
-      "source": 36
+      "source": 30
     },
     {
       "kind": "relationship",
       "ordinal": 151,
       "relationshipKind": "transitionTarget",
-      "source": 36
+      "source": 30
     },
     {
       "kind": "relationship",
       "ordinal": 152,
       "relationshipKind": "transitionTrigger",
-      "source": 36
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 153,
-      "relationshipKind": "typeFeaturing",
-      "source": 36
+      "source": 30
     },
     {
       "kind": "relationship",
       "ordinal": 60,
       "relationshipKind": "containment",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 155,
-      "relationshipKind": "redefinition",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 156,
-      "relationshipKind": "redefinition",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 158,
-      "relationshipKind": "redefinition",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 159,
-      "relationshipKind": "subsetting",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 161,
-      "relationshipKind": "subsetting",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 164,
-      "relationshipKind": "subsetting",
-      "source": 37
+      "source": 31
     },
     {
       "kind": "relationship",
       "ordinal": 162,
       "relationshipKind": "succession",
-      "source": 37
+      "source": 31
     },
     {
       "kind": "relationship",
       "ordinal": 163,
       "relationshipKind": "succession",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 154,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 157,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 160,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 165,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 166,
-      "relationshipKind": "redefinition",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 167,
-      "relationshipKind": "typeFeaturing",
-      "source": 38
+      "source": 31
     },
     {
       "kind": "relationship",
       "ordinal": 81,
       "relationshipKind": "containment",
-      "source": 39
+      "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 82,
       "relationshipKind": "containment",
-      "source": 39
+      "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 83,
       "relationshipKind": "containment",
-      "source": 39
+      "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 84,
       "relationshipKind": "containment",
-      "source": 39
+      "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 86,
       "relationshipKind": "containment",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 210,
-      "relationshipKind": "subsetting",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 211,
-      "relationshipKind": "subsetting",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 212,
-      "relationshipKind": "subsetting",
-      "source": 39
+      "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 213,
       "relationshipKind": "transitionSource",
-      "source": 39
+      "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 214,
       "relationshipKind": "transitionTarget",
-      "source": 39
+      "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 215,
       "relationshipKind": "transitionTrigger",
-      "source": 39
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 216,
-      "relationshipKind": "typeFeaturing",
-      "source": 39
+      "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 87,
       "relationshipKind": "containment",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 218,
-      "relationshipKind": "redefinition",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 219,
-      "relationshipKind": "redefinition",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 221,
-      "relationshipKind": "redefinition",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 222,
-      "relationshipKind": "subsetting",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 224,
-      "relationshipKind": "subsetting",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 227,
-      "relationshipKind": "subsetting",
-      "source": 40
+      "source": 33
     },
     {
       "kind": "relationship",
       "ordinal": 225,
       "relationshipKind": "succession",
-      "source": 40
+      "source": 33
     },
     {
       "kind": "relationship",
       "ordinal": 226,
       "relationshipKind": "succession",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 217,
-      "relationshipKind": "typeFeaturing",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 220,
-      "relationshipKind": "typeFeaturing",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 223,
-      "relationshipKind": "typeFeaturing",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 228,
-      "relationshipKind": "typeFeaturing",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 229,
-      "relationshipKind": "redefinition",
-      "source": 41
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 230,
-      "relationshipKind": "typeFeaturing",
-      "source": 41
+      "source": 33
     },
     {
       "kind": "relationship",
       "ordinal": 164,
       "relationshipKind": "containment",
-      "source": 43
+      "source": 35
     },
     {
       "kind": "relationship",
       "ordinal": 192,
       "relationshipKind": "containment",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 440,
-      "relationshipKind": "subsetting",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 529,
-      "relationshipKind": "subsetting",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 441,
-      "relationshipKind": "typeFeaturing",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 530,
-      "relationshipKind": "typeFeaturing",
-      "source": 43
+      "source": 35
     },
     {
       "kind": "relationship",
       "ordinal": 165,
       "relationshipKind": "containment",
-      "source": 44
+      "source": 36
     },
     {
       "kind": "relationship",
       "ordinal": 166,
       "relationshipKind": "containment",
-      "source": 44
+      "source": 36
     },
     {
       "kind": "relationship",
       "ordinal": 193,
       "relationshipKind": "containment",
-      "source": 44
+      "source": 36
     },
     {
       "kind": "relationship",
       "ordinal": 194,
       "relationshipKind": "containment",
-      "source": 44
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 442,
-      "relationshipKind": "subsetting",
-      "source": 44
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 531,
-      "relationshipKind": "subsetting",
-      "source": 44
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 443,
-      "relationshipKind": "typeFeaturing",
-      "source": 44
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 532,
-      "relationshipKind": "typeFeaturing",
-      "source": 44
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 444,
-      "relationshipKind": "redefinition",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 533,
-      "relationshipKind": "redefinition",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 445,
-      "relationshipKind": "subsetting",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 447,
-      "relationshipKind": "subsetting",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 534,
-      "relationshipKind": "subsetting",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 536,
-      "relationshipKind": "subsetting",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 446,
-      "relationshipKind": "typeFeaturing",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 535,
-      "relationshipKind": "typeFeaturing",
-      "source": 45
+      "source": 36
     },
     {
       "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "subsetting",
-      "source": 46
+      "source": 37
     },
     {
       "kind": "relationship",
       "ordinal": 309,
       "relationshipKind": "subsetting",
-      "source": 46
+      "source": 37
     },
     {
       "kind": "relationship",
       "ordinal": 359,
       "relationshipKind": "subsetting",
-      "source": 46
+      "source": 37
     },
     {
       "kind": "relationship",
       "ordinal": 398,
       "relationshipKind": "subsetting",
-      "source": 46
+      "source": 37
     },
     {
       "kind": "relationship",
       "ordinal": 429,
       "relationshipKind": "subsetting",
-      "source": 46
+      "source": 37
     },
     {
       "kind": "relationship",
       "ordinal": 457,
       "relationshipKind": "subsetting",
-      "source": 46
+      "source": 37
     },
     {
       "kind": "relationship",
       "ordinal": 518,
       "relationshipKind": "subsetting",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "typeFeaturing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 310,
-      "relationshipKind": "typeFeaturing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 360,
-      "relationshipKind": "typeFeaturing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 399,
-      "relationshipKind": "typeFeaturing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 430,
-      "relationshipKind": "typeFeaturing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 458,
-      "relationshipKind": "typeFeaturing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 519,
-      "relationshipKind": "typeFeaturing",
-      "source": 46
+      "source": 37
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "containment",
-      "source": 47
+      "source": 38
     },
     {
       "kind": "relationship",
       "ordinal": 115,
       "relationshipKind": "containment",
-      "source": 47
+      "source": 38
     },
     {
       "kind": "relationship",
       "ordinal": 134,
       "relationshipKind": "containment",
-      "source": 47
+      "source": 38
     },
     {
       "kind": "relationship",
       "ordinal": 148,
       "relationshipKind": "containment",
-      "source": 47
+      "source": 38
     },
     {
       "kind": "relationship",
       "ordinal": 160,
       "relationshipKind": "containment",
-      "source": 47
+      "source": 38
     },
     {
       "kind": "relationship",
       "ordinal": 171,
       "relationshipKind": "containment",
-      "source": 47
+      "source": 38
     },
     {
       "kind": "relationship",
       "ordinal": 188,
       "relationshipKind": "containment",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 311,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 312,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 361,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 362,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 400,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 401,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 431,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 432,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 459,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 460,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 520,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 521,
-      "relationshipKind": "subsetting",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 313,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 363,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 402,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 433,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 461,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 522,
-      "relationshipKind": "typeFeaturing",
-      "source": 47
+      "source": 38
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 116,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 117,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 135,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 136,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 149,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 150,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 161,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 162,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 172,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 173,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 189,
       "relationshipKind": "containment",
-      "source": 48
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 190,
       "relationshipKind": "containment",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 314,
-      "relationshipKind": "subsetting",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 364,
-      "relationshipKind": "subsetting",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 403,
-      "relationshipKind": "subsetting",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 434,
-      "relationshipKind": "subsetting",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 462,
-      "relationshipKind": "subsetting",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 523,
-      "relationshipKind": "subsetting",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 315,
-      "relationshipKind": "typeFeaturing",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 365,
-      "relationshipKind": "typeFeaturing",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 404,
-      "relationshipKind": "typeFeaturing",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 435,
-      "relationshipKind": "typeFeaturing",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 463,
-      "relationshipKind": "typeFeaturing",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 524,
-      "relationshipKind": "typeFeaturing",
-      "source": 48
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "redefinition",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 316,
-      "relationshipKind": "redefinition",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 366,
-      "relationshipKind": "redefinition",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 405,
-      "relationshipKind": "redefinition",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 436,
-      "relationshipKind": "redefinition",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 464,
-      "relationshipKind": "redefinition",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 525,
-      "relationshipKind": "redefinition",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 317,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 319,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 367,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 369,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 406,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 408,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 437,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 439,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 465,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 467,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 526,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 528,
-      "relationshipKind": "subsetting",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 318,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 368,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 407,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 438,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 466,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 527,
-      "relationshipKind": "typeFeaturing",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "typeFeaturing",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 340,
-      "relationshipKind": "typeFeaturing",
-      "source": 51
+      "source": 39
     },
     {
       "kind": "relationship",
       "ordinal": 46,
       "relationshipKind": "typing",
-      "source": 51
+      "source": 41
     },
     {
       "kind": "relationship",
       "ordinal": 339,
       "relationshipKind": "typing",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "typeFeaturing",
-      "source": 52
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 342,
-      "relationshipKind": "typeFeaturing",
-      "source": 52
+      "source": 41
     },
     {
       "kind": "relationship",
       "ordinal": 48,
       "relationshipKind": "typing",
-      "source": 52
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 341,
       "relationshipKind": "typing",
-      "source": 52
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "typeFeaturing",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 336,
-      "relationshipKind": "typeFeaturing",
-      "source": 53
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 42,
       "relationshipKind": "typing",
-      "source": 53
+      "source": 43
     },
     {
       "kind": "relationship",
       "ordinal": 335,
       "relationshipKind": "typing",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "typeFeaturing",
-      "source": 54
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 338,
-      "relationshipKind": "typeFeaturing",
-      "source": 54
+      "source": 43
     },
     {
       "kind": "relationship",
       "ordinal": 44,
       "relationshipKind": "typing",
-      "source": 54
+      "source": 44
     },
     {
       "kind": "relationship",
       "ordinal": 337,
       "relationshipKind": "typing",
-      "source": 54
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "typeFeaturing",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 334,
-      "relationshipKind": "typeFeaturing",
-      "source": 55
+      "source": 44
     },
     {
       "kind": "relationship",
       "ordinal": 40,
       "relationshipKind": "typing",
-      "source": 55
+      "source": 45
     },
     {
       "kind": "relationship",
       "ordinal": 333,
       "relationshipKind": "typing",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "typeFeaturing",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 424,
-      "relationshipKind": "typeFeaturing",
-      "source": 57
+      "source": 45
     },
     {
       "kind": "relationship",
       "ordinal": 60,
       "relationshipKind": "typing",
-      "source": 57
+      "source": 47
     },
     {
       "kind": "relationship",
       "ordinal": 423,
       "relationshipKind": "typing",
-      "source": 57
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
-      "relationshipKind": "typeFeaturing",
-      "source": 59
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 353,
-      "relationshipKind": "typeFeaturing",
-      "source": 59
+      "source": 47
     },
     {
       "kind": "relationship",
       "ordinal": 66,
       "relationshipKind": "typing",
-      "source": 59
+      "source": 49
     },
     {
       "kind": "relationship",
       "ordinal": 352,
       "relationshipKind": "typing",
-      "source": 59
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "typeFeaturing",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 385,
-      "relationshipKind": "typeFeaturing",
-      "source": 61
+      "source": 49
     },
     {
       "kind": "relationship",
       "ordinal": 54,
       "relationshipKind": "typing",
-      "source": 61
+      "source": 51
     },
     {
       "kind": "relationship",
       "ordinal": 384,
       "relationshipKind": "typing",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 538,
-      "relationshipKind": "subsetting",
-      "source": 63
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 539,
-      "relationshipKind": "typeFeaturing",
-      "source": 63
+      "source": 51
     },
     {
       "kind": "relationship",
       "ordinal": 537,
       "relationshipKind": "typing",
-      "source": 63
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 541,
-      "relationshipKind": "subsetting",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 542,
-      "relationshipKind": "typeFeaturing",
-      "source": 64
+      "source": 53
     },
     {
       "kind": "relationship",
       "ordinal": 540,
       "relationshipKind": "typing",
-      "source": 64
+      "source": 54
     },
     {
       "kind": "relationship",
       "ordinal": 186,
       "relationshipKind": "containment",
-      "source": 65
+      "source": 55
     },
     {
       "kind": "relationship",
       "ordinal": 187,
       "relationshipKind": "containment",
-      "source": 65
+      "source": 55
     },
     {
       "kind": "relationship",
       "ordinal": 191,
       "relationshipKind": "containment",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 515,
-      "relationshipKind": "subsetting",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 516,
-      "relationshipKind": "subsetting",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 517,
-      "relationshipKind": "typeFeaturing",
-      "source": 65
+      "source": 55
     },
     {
       "kind": "relationship",
       "ordinal": 514,
       "relationshipKind": "typing",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 544,
-      "relationshipKind": "subsetting",
-      "source": 66
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 545,
-      "relationshipKind": "typeFeaturing",
-      "source": 66
+      "source": 55
     },
     {
       "kind": "relationship",
       "ordinal": 543,
       "relationshipKind": "typing",
-      "source": 66
+      "source": 56
     },
     {
       "kind": "relationship",
       "ordinal": 123,
       "relationshipKind": "containment",
-      "source": 68
+      "source": 58
     },
     {
       "kind": "relationship",
       "ordinal": 124,
       "relationshipKind": "containment",
-      "source": 68
+      "source": 58
     },
     {
       "kind": "relationship",
       "ordinal": 125,
       "relationshipKind": "containment",
-      "source": 68
+      "source": 58
     },
     {
       "kind": "relationship",
       "ordinal": 126,
       "relationshipKind": "containment",
-      "source": 68
+      "source": 58
     },
     {
       "kind": "relationship",
       "ordinal": 127,
       "relationshipKind": "containment",
-      "source": 68
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 330,
-      "relationshipKind": "subsetting",
-      "source": 68
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 331,
-      "relationshipKind": "subsetting",
-      "source": 68
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 332,
-      "relationshipKind": "typeFeaturing",
-      "source": 68
+      "source": 58
     },
     {
       "kind": "relationship",
       "ordinal": 329,
       "relationshipKind": "typing",
-      "source": 68
+      "source": 58
     },
     {
       "kind": "relationship",
       "ordinal": 113,
       "relationshipKind": "containment",
-      "source": 69
+      "source": 59
     },
     {
       "kind": "relationship",
       "ordinal": 114,
       "relationshipKind": "containment",
-      "source": 69
+      "source": 59
     },
     {
       "kind": "relationship",
       "ordinal": 118,
       "relationshipKind": "containment",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 306,
-      "relationshipKind": "subsetting",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 307,
-      "relationshipKind": "subsetting",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 308,
-      "relationshipKind": "typeFeaturing",
-      "source": 69
+      "source": 59
     },
     {
       "kind": "relationship",
       "ordinal": 304,
       "relationshipKind": "typing",
-      "source": 69
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 305,
-      "relationshipKind": "typing",
-      "source": 69
+      "source": 59
     },
     {
       "kind": "relationship",
       "ordinal": 119,
       "relationshipKind": "containment",
-      "source": 70
+      "source": 60
     },
     {
       "kind": "relationship",
       "ordinal": 320,
       "relationshipKind": "redefinition",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 321,
-      "relationshipKind": "subsetting",
-      "source": 70
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 322,
-      "relationshipKind": "typeFeaturing",
-      "source": 70
+      "source": 60
     },
     {
       "kind": "relationship",
       "ordinal": 120,
       "relationshipKind": "containment",
-      "source": 71
+      "source": 61
     },
     {
       "kind": "relationship",
       "ordinal": 121,
       "relationshipKind": "containment",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 323,
-      "relationshipKind": "subsetting",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 324,
-      "relationshipKind": "typeFeaturing",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 325,
-      "relationshipKind": "redefinition",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 326,
-      "relationshipKind": "subsetting",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 328,
-      "relationshipKind": "subsetting",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 327,
-      "relationshipKind": "typeFeaturing",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 478,
-      "relationshipKind": "subsetting",
-      "source": 74
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 479,
-      "relationshipKind": "typeFeaturing",
-      "source": 74
+      "source": 61
     },
     {
       "kind": "relationship",
       "ordinal": 477,
       "relationshipKind": "typing",
-      "source": 74
+      "source": 63
     },
     {
       "kind": "relationship",
       "ordinal": 169,
       "relationshipKind": "containment",
-      "source": 75
+      "source": 64
     },
     {
       "kind": "relationship",
       "ordinal": 170,
       "relationshipKind": "containment",
-      "source": 75
+      "source": 64
     },
     {
       "kind": "relationship",
       "ordinal": 174,
       "relationshipKind": "containment",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 454,
-      "relationshipKind": "subsetting",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 455,
-      "relationshipKind": "subsetting",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 456,
-      "relationshipKind": "typeFeaturing",
-      "source": 75
+      "source": 64
     },
     {
       "kind": "relationship",
       "ordinal": 452,
       "relationshipKind": "typing",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 453,
-      "relationshipKind": "typing",
-      "source": 75
+      "source": 64
     },
     {
       "kind": "relationship",
       "ordinal": 175,
       "relationshipKind": "containment",
-      "source": 76
+      "source": 65
     },
     {
       "kind": "relationship",
       "ordinal": 468,
       "relationshipKind": "redefinition",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 469,
-      "relationshipKind": "subsetting",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 470,
-      "relationshipKind": "typeFeaturing",
-      "source": 76
+      "source": 65
     },
     {
       "kind": "relationship",
       "ordinal": 176,
       "relationshipKind": "containment",
-      "source": 77
+      "source": 66
     },
     {
       "kind": "relationship",
       "ordinal": 177,
       "relationshipKind": "containment",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 471,
-      "relationshipKind": "subsetting",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 472,
-      "relationshipKind": "typeFeaturing",
-      "source": 77
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 473,
-      "relationshipKind": "redefinition",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 474,
-      "relationshipKind": "subsetting",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 476,
-      "relationshipKind": "subsetting",
-      "source": 78
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 475,
-      "relationshipKind": "typeFeaturing",
-      "source": 78
+      "source": 66
     },
     {
       "kind": "relationship",
       "ordinal": 158,
       "relationshipKind": "containment",
-      "source": 80
+      "source": 68
     },
     {
       "kind": "relationship",
       "ordinal": 159,
       "relationshipKind": "containment",
-      "source": 80
+      "source": 68
     },
     {
       "kind": "relationship",
       "ordinal": 163,
       "relationshipKind": "containment",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 426,
-      "relationshipKind": "subsetting",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 427,
-      "relationshipKind": "subsetting",
-      "source": 80
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 428,
-      "relationshipKind": "typeFeaturing",
-      "source": 80
+      "source": 68
     },
     {
       "kind": "relationship",
       "ordinal": 425,
       "relationshipKind": "typing",
-      "source": 80
+      "source": 68
     },
     {
       "kind": "relationship",
       "ordinal": 156,
       "relationshipKind": "containment",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 420,
-      "relationshipKind": "subsetting",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 421,
-      "relationshipKind": "subsetting",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 422,
-      "relationshipKind": "typeFeaturing",
-      "source": 81
+      "source": 69
     },
     {
       "kind": "relationship",
       "ordinal": 418,
       "relationshipKind": "typing",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 419,
-      "relationshipKind": "typing",
-      "source": 81
+      "source": 69
     },
     {
       "kind": "relationship",
       "ordinal": 146,
       "relationshipKind": "containment",
-      "source": 82
+      "source": 70
     },
     {
       "kind": "relationship",
       "ordinal": 147,
       "relationshipKind": "containment",
-      "source": 82
+      "source": 70
     },
     {
       "kind": "relationship",
       "ordinal": 151,
       "relationshipKind": "containment",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 395,
-      "relationshipKind": "subsetting",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 396,
-      "relationshipKind": "subsetting",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 397,
-      "relationshipKind": "typeFeaturing",
-      "source": 82
+      "source": 70
     },
     {
       "kind": "relationship",
       "ordinal": 393,
       "relationshipKind": "typing",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 394,
-      "relationshipKind": "typing",
-      "source": 82
+      "source": 70
     },
     {
       "kind": "relationship",
       "ordinal": 152,
       "relationshipKind": "containment",
-      "source": 83
+      "source": 71
     },
     {
       "kind": "relationship",
       "ordinal": 409,
       "relationshipKind": "redefinition",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 410,
-      "relationshipKind": "subsetting",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 411,
-      "relationshipKind": "typeFeaturing",
-      "source": 83
+      "source": 71
     },
     {
       "kind": "relationship",
       "ordinal": 153,
       "relationshipKind": "containment",
-      "source": 84
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 154,
       "relationshipKind": "containment",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 412,
-      "relationshipKind": "subsetting",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 413,
-      "relationshipKind": "typeFeaturing",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 414,
-      "relationshipKind": "redefinition",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 415,
-      "relationshipKind": "subsetting",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 417,
-      "relationshipKind": "subsetting",
-      "source": 85
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 416,
-      "relationshipKind": "typeFeaturing",
-      "source": 85
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 130,
       "relationshipKind": "containment",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 349,
-      "relationshipKind": "subsetting",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 350,
-      "relationshipKind": "subsetting",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 351,
-      "relationshipKind": "typeFeaturing",
-      "source": 88
+      "source": 75
     },
     {
       "kind": "relationship",
       "ordinal": 347,
       "relationshipKind": "typing",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 348,
-      "relationshipKind": "typing",
-      "source": 88
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 387,
-      "relationshipKind": "subsetting",
-      "source": 89
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 388,
-      "relationshipKind": "typeFeaturing",
-      "source": 89
+      "source": 75
     },
     {
       "kind": "relationship",
       "ordinal": 386,
       "relationshipKind": "typing",
-      "source": 89
+      "source": 76
     },
     {
       "kind": "relationship",
       "ordinal": 142,
       "relationshipKind": "containment",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 381,
-      "relationshipKind": "subsetting",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 382,
-      "relationshipKind": "subsetting",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 383,
-      "relationshipKind": "typeFeaturing",
-      "source": 90
+      "source": 77
     },
     {
       "kind": "relationship",
       "ordinal": 379,
       "relationshipKind": "typing",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 380,
-      "relationshipKind": "typing",
-      "source": 90
+      "source": 77
     },
     {
       "kind": "relationship",
       "ordinal": 132,
       "relationshipKind": "containment",
-      "source": 91
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 133,
       "relationshipKind": "containment",
-      "source": 91
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 137,
       "relationshipKind": "containment",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 356,
-      "relationshipKind": "subsetting",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 357,
-      "relationshipKind": "subsetting",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 358,
-      "relationshipKind": "typeFeaturing",
-      "source": 91
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 354,
       "relationshipKind": "typing",
-      "source": 91
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 355,
-      "relationshipKind": "typing",
-      "source": 91
+      "source": 78
     },
     {
       "kind": "relationship",
       "ordinal": 138,
       "relationshipKind": "containment",
-      "source": 92
+      "source": 79
     },
     {
       "kind": "relationship",
       "ordinal": 370,
       "relationshipKind": "redefinition",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 371,
-      "relationshipKind": "subsetting",
-      "source": 92
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 372,
-      "relationshipKind": "typeFeaturing",
-      "source": 92
+      "source": 79
     },
     {
       "kind": "relationship",
       "ordinal": 139,
       "relationshipKind": "containment",
-      "source": 93
+      "source": 80
     },
     {
       "kind": "relationship",
       "ordinal": 140,
       "relationshipKind": "containment",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 373,
-      "relationshipKind": "subsetting",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 374,
-      "relationshipKind": "typeFeaturing",
-      "source": 93
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 375,
-      "relationshipKind": "redefinition",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 376,
-      "relationshipKind": "subsetting",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 378,
-      "relationshipKind": "subsetting",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 377,
-      "relationshipKind": "typeFeaturing",
-      "source": 94
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 551,
-      "relationshipKind": "subsetting",
-      "source": 96
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 552,
-      "relationshipKind": "subsetting",
-      "source": 96
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 553,
-      "relationshipKind": "typeFeaturing",
-      "source": 96
+      "source": 80
     },
     {
       "kind": "relationship",
       "ordinal": 550,
       "relationshipKind": "typing",
-      "source": 96
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 555,
-      "relationshipKind": "subsetting",
-      "source": 97
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 556,
-      "relationshipKind": "subsetting",
-      "source": 97
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 557,
-      "relationshipKind": "typeFeaturing",
-      "source": 97
+      "source": 82
     },
     {
       "kind": "relationship",
       "ordinal": 554,
       "relationshipKind": "typing",
-      "source": 97
+      "source": 83
     },
     {
       "kind": "relationship",
       "ordinal": 480,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 481,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 486,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 487,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 492,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 493,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 498,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 499,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 504,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 505,
       "relationshipKind": "memberAccessOperand",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 482,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 483,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 484,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 488,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 489,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 490,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 494,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 495,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 496,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 500,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 501,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 502,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 506,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 507,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 508,
-      "relationshipKind": "subsetting",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 485,
-      "relationshipKind": "typeFeaturing",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 491,
-      "relationshipKind": "typeFeaturing",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 497,
-      "relationshipKind": "typeFeaturing",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 503,
-      "relationshipKind": "typeFeaturing",
-      "source": 99
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 509,
-      "relationshipKind": "typeFeaturing",
-      "source": 99
+      "source": 85
     },
     {
       "kind": "relationship",
       "ordinal": 185,
       "relationshipKind": "containment",
-      "source": 100
+      "source": 86
     },
     {
       "kind": "relationship",
       "ordinal": 195,
       "relationshipKind": "containment",
-      "source": 100
+      "source": 86
     },
     {
       "kind": "relationship",
       "ordinal": 196,
       "relationshipKind": "containment",
-      "source": 100
+      "source": 86
     },
     {
       "kind": "relationship",
       "ordinal": 197,
       "relationshipKind": "containment",
-      "source": 100
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 511,
-      "relationshipKind": "subsetting",
-      "source": 100
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 512,
-      "relationshipKind": "subsetting",
-      "source": 100
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 513,
-      "relationshipKind": "typeFeaturing",
-      "source": 100
+      "source": 86
     },
     {
       "kind": "relationship",
       "ordinal": 510,
       "relationshipKind": "typing",
-      "source": 100
+      "source": 86
     },
     {
       "kind": "relationship",
       "ordinal": 168,
       "relationshipKind": "containment",
-      "source": 101
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 178,
       "relationshipKind": "containment",
-      "source": 101
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 449,
-      "relationshipKind": "subsetting",
-      "source": 101
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 450,
-      "relationshipKind": "subsetting",
-      "source": 101
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 451,
-      "relationshipKind": "typeFeaturing",
-      "source": 101
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 448,
       "relationshipKind": "typing",
-      "source": 101
+      "source": 87
     },
     {
       "kind": "relationship",
       "ordinal": 199,
       "relationshipKind": "containment",
-      "source": 102
+      "source": 88
     },
     {
       "kind": "relationship",
       "ordinal": 200,
       "relationshipKind": "containment",
-      "source": 102
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 547,
-      "relationshipKind": "subsetting",
-      "source": 102
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 548,
-      "relationshipKind": "subsetting",
-      "source": 102
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 549,
-      "relationshipKind": "typeFeaturing",
-      "source": 102
+      "source": 88
     },
     {
       "kind": "relationship",
       "ordinal": 546,
       "relationshipKind": "typing",
-      "source": 102
+      "source": 88
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 107,
       "relationshipKind": "containment",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 108,
       "relationshipKind": "containment",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 109,
       "relationshipKind": "containment",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 110,
       "relationshipKind": "containment",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 111,
       "relationshipKind": "containment",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 128,
       "relationshipKind": "containment",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 144,
       "relationshipKind": "containment",
-      "source": 103
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 103
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 103
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "typeFeaturing",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "typing",
-      "source": 103
+      "source": 89
     },
     {
       "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "containment",
-      "source": 105
+      "source": 91
     },
     {
       "kind": "relationship",
       "ordinal": 14,
       "relationshipKind": "containment",
-      "source": 105
+      "source": 91
     },
     {
       "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "containment",
-      "source": 105
+      "source": 91
     },
     {
       "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "containment",
-      "source": 105
+      "source": 91
     },
     {
       "kind": "relationship",
       "ordinal": 17,
       "relationshipKind": "containment",
-      "source": 105
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "subsetting",
-      "source": 105
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "subsetting",
-      "source": 105
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "typeFeaturing",
-      "source": 105
+      "source": 91
     },
     {
       "kind": "relationship",
       "ordinal": 35,
       "relationshipKind": "typing",
-      "source": 105
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "typing",
-      "source": 105
+      "source": 91
     },
     {
       "kind": "relationship",
       "ordinal": 21,
       "relationshipKind": "containment",
-      "source": 106
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "subsetting",
-      "source": 106
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "subsetting",
-      "source": 106
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "typeFeaturing",
-      "source": 106
+      "source": 92
     },
     {
       "kind": "relationship",
       "ordinal": 56,
       "relationshipKind": "typing",
-      "source": 106
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 274,
-      "relationshipKind": "subsetting",
-      "source": 107
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 275,
-      "relationshipKind": "typeFeaturing",
-      "source": 107
+      "source": 92
     },
     {
       "kind": "relationship",
       "ordinal": 273,
       "relationshipKind": "typing",
-      "source": 107
+      "source": 93
     },
     {
       "kind": "relationship",
       "ordinal": 23,
       "relationshipKind": "containment",
-      "source": 108
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "subsetting",
-      "source": 108
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "subsetting",
-      "source": 108
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "typeFeaturing",
-      "source": 108
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 62,
       "relationshipKind": "typing",
-      "source": 108
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "subsetting",
-      "source": 109
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "typeFeaturing",
-      "source": 109
+      "source": 94
     },
     {
       "kind": "relationship",
       "ordinal": 71,
       "relationshipKind": "typing",
-      "source": 109
+      "source": 95
     },
     {
       "kind": "relationship",
       "ordinal": 19,
       "relationshipKind": "containment",
-      "source": 110
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "subsetting",
-      "source": 110
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "subsetting",
-      "source": 110
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "typeFeaturing",
-      "source": 110
+      "source": 96
     },
     {
       "kind": "relationship",
       "ordinal": 50,
       "relationshipKind": "typing",
-      "source": 110
+      "source": 96
     },
     {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "containment",
-      "source": 111
+      "source": 97
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "containment",
-      "source": 111
+      "source": 97
     },
     {
       "kind": "relationship",
       "ordinal": 8,
       "relationshipKind": "containment",
-      "source": 111
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "subsetting",
-      "source": 111
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "subsetting",
-      "source": 111
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typeFeaturing",
-      "source": 111
+      "source": 97
     },
     {
       "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "typing",
-      "source": 111
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typing",
-      "source": 111
+      "source": 97
     },
     {
       "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "containment",
-      "source": 112
+      "source": 98
     },
     {
       "kind": "relationship",
       "ordinal": 26,
       "relationshipKind": "redefinition",
-      "source": 112
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 112
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typeFeaturing",
-      "source": 112
+      "source": 98
     },
     {
       "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "containment",
-      "source": 113
+      "source": 99
     },
     {
       "kind": "relationship",
       "ordinal": 11,
       "relationshipKind": "containment",
-      "source": 113
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "subsetting",
-      "source": 113
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "typeFeaturing",
-      "source": 113
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "redefinition",
-      "source": 114
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "subsetting",
-      "source": 114
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "subsetting",
-      "source": 114
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "typeFeaturing",
-      "source": 114
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 69,
-      "relationshipKind": "subsetting",
-      "source": 115
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "typeFeaturing",
-      "source": 115
+      "source": 99
     },
     {
       "kind": "relationship",
       "ordinal": 68,
       "relationshipKind": "typing",
-      "source": 115
+      "source": 100
     },
     {
       "kind": "relationship",
       "ordinal": 27,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 28,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 29,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 31,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 32,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 33,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 34,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 43,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 52,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 61,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 70,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 79,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 88,
       "relationshipKind": "containment",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 97,
       "relationshipKind": "containment",
-      "source": 116
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "subsetting",
-      "source": 116
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "subsetting",
-      "source": 116
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "typeFeaturing",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 74,
       "relationshipKind": "typing",
-      "source": 116
+      "source": 101
     },
     {
       "kind": "relationship",
       "ordinal": 276,
       "relationshipKind": "memberAccessOperand",
-      "source": 118
+      "source": 103
     },
     {
       "kind": "relationship",
       "ordinal": 277,
       "relationshipKind": "memberAccessOperand",
-      "source": 118
+      "source": 103
     },
     {
       "kind": "relationship",
       "ordinal": 282,
       "relationshipKind": "memberAccessOperand",
-      "source": 118
+      "source": 103
     },
     {
       "kind": "relationship",
       "ordinal": 283,
       "relationshipKind": "memberAccessOperand",
-      "source": 118
+      "source": 103
     },
     {
       "kind": "relationship",
       "ordinal": 288,
       "relationshipKind": "memberAccessOperand",
-      "source": 118
+      "source": 103
     },
     {
       "kind": "relationship",
       "ordinal": 289,
       "relationshipKind": "memberAccessOperand",
-      "source": 118
+      "source": 103
     },
     {
       "kind": "relationship",
       "ordinal": 294,
       "relationshipKind": "memberAccessOperand",
-      "source": 118
+      "source": 103
     },
     {
       "kind": "relationship",
       "ordinal": 295,
       "relationshipKind": "memberAccessOperand",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 278,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 279,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 280,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 284,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 285,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 286,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 290,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 291,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 292,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 296,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 297,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 298,
-      "relationshipKind": "subsetting",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 281,
-      "relationshipKind": "typeFeaturing",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 287,
-      "relationshipKind": "typeFeaturing",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 293,
-      "relationshipKind": "typeFeaturing",
-      "source": 118
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 299,
-      "relationshipKind": "typeFeaturing",
-      "source": 118
+      "source": 103
     },
     {
       "kind": "relationship",
       "ordinal": 112,
       "relationshipKind": "containment",
-      "source": 119
+      "source": 104
     },
     {
       "kind": "relationship",
       "ordinal": 122,
       "relationshipKind": "containment",
-      "source": 119
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 301,
-      "relationshipKind": "subsetting",
-      "source": 119
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 302,
-      "relationshipKind": "subsetting",
-      "source": 119
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 303,
-      "relationshipKind": "typeFeaturing",
-      "source": 119
+      "source": 104
     },
     {
       "kind": "relationship",
       "ordinal": 300,
       "relationshipKind": "typing",
-      "source": 119
+      "source": 104
     },
     {
       "kind": "relationship",
       "ordinal": 145,
       "relationshipKind": "containment",
-      "source": 120
+      "source": 105
     },
     {
       "kind": "relationship",
       "ordinal": 155,
       "relationshipKind": "containment",
-      "source": 120
+      "source": 105
     },
     {
       "kind": "relationship",
       "ordinal": 157,
       "relationshipKind": "containment",
-      "source": 120
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 390,
-      "relationshipKind": "subsetting",
-      "source": 120
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 391,
-      "relationshipKind": "subsetting",
-      "source": 120
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 392,
-      "relationshipKind": "typeFeaturing",
-      "source": 120
+      "source": 105
     },
     {
       "kind": "relationship",
       "ordinal": 389,
       "relationshipKind": "typing",
-      "source": 120
+      "source": 105
     },
     {
       "kind": "relationship",
       "ordinal": 129,
       "relationshipKind": "containment",
-      "source": 121
+      "source": 106
     },
     {
       "kind": "relationship",
       "ordinal": 131,
       "relationshipKind": "containment",
-      "source": 121
+      "source": 106
     },
     {
       "kind": "relationship",
       "ordinal": 141,
       "relationshipKind": "containment",
-      "source": 121
+      "source": 106
     },
     {
       "kind": "relationship",
       "ordinal": 143,
       "relationshipKind": "containment",
-      "source": 121
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 344,
-      "relationshipKind": "subsetting",
-      "source": 121
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 345,
-      "relationshipKind": "subsetting",
-      "source": 121
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 346,
-      "relationshipKind": "typeFeaturing",
-      "source": 121
+      "source": 106
     },
     {
       "kind": "relationship",
       "ordinal": 343,
       "relationshipKind": "typing",
-      "source": 121
+      "source": 106
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "containment",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 12,
       "relationshipKind": "containment",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 18,
       "relationshipKind": "containment",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 20,
       "relationshipKind": "containment",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 22,
       "relationshipKind": "containment",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 24,
       "relationshipKind": "containment",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 25,
       "relationshipKind": "containment",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 26,
       "relationshipKind": "containment",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 106,
       "relationshipKind": "containment",
-      "source": 122
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 122
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 122
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typeFeaturing",
-      "source": 122
+      "source": 107
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "typing",
-      "source": 122
+      "source": 107
     }
   ],
   "selectedView": {
@@ -14601,244 +11682,244 @@ package TimerGeometry {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 175,
+        "navigation": 170,
         "origin": 6,
         "provenance": "implied",
-        "reference": 230,
+        "reference": 185,
         "source": 0,
         "target": 6
       },
       {
         "kind": "containment",
-        "navigation": 143,
+        "navigation": 138,
         "origin": 34,
         "provenance": "implied",
-        "reference": 847,
+        "reference": 435,
         "source": 6,
         "target": 34
       },
       {
         "kind": "containment",
-        "navigation": 97,
+        "navigation": 92,
         "origin": 100,
         "provenance": "implied",
-        "reference": 976,
+        "reference": 502,
         "source": 34,
         "target": 100
       },
       {
         "kind": "containment",
-        "navigation": 55,
+        "navigation": 54,
         "origin": 105,
         "provenance": "implied",
-        "reference": 890,
+        "reference": 458,
         "source": 100,
         "target": 105
       },
       {
         "kind": "containment",
-        "navigation": 57,
+        "navigation": 56,
         "origin": 101,
         "provenance": "implied",
-        "reference": 891,
+        "reference": 459,
         "source": 100,
         "target": 101
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 102,
         "provenance": "authored",
-        "reference": 537,
+        "reference": 318,
         "source": 101,
         "target": 102
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 103,
         "provenance": "authored",
-        "reference": 565,
+        "reference": 325,
         "source": 102,
         "target": 103
       },
       {
         "kind": "containment",
-        "navigation": 58,
+        "navigation": 57,
         "origin": 104,
         "provenance": "authored",
-        "reference": 566,
+        "reference": 326,
         "source": 102,
         "target": 104
       },
       {
         "kind": "containment",
-        "navigation": 99,
+        "navigation": 94,
         "origin": 106,
         "provenance": "authored",
-        "reference": 892,
+        "reference": 460,
         "source": 100,
         "target": 106
       },
       {
         "kind": "containment",
-        "navigation": 102,
+        "navigation": 97,
         "origin": 107,
         "provenance": "authored",
-        "reference": 898,
+        "reference": 462,
         "source": 106,
         "target": 107
       },
       {
         "kind": "containment",
-        "navigation": 102,
+        "navigation": 97,
         "origin": 108,
         "provenance": "authored",
-        "reference": 902,
+        "reference": 464,
         "source": 107,
         "target": 108
       },
       {
         "kind": "containment",
-        "navigation": 101,
+        "navigation": 96,
         "origin": 109,
         "provenance": "authored",
-        "reference": 903,
+        "reference": 465,
         "source": 107,
         "target": 109
       },
       {
         "kind": "containment",
-        "navigation": 89,
+        "navigation": 84,
         "origin": 110,
         "provenance": "implied",
-        "reference": 977,
+        "reference": 503,
         "source": 34,
         "target": 110
       },
       {
         "kind": "containment",
-        "navigation": 66,
+        "navigation": 64,
         "origin": 111,
         "provenance": "implied",
-        "reference": 859,
+        "reference": 444,
         "source": 110,
         "target": 111
       },
       {
         "kind": "containment",
-        "navigation": 68,
+        "navigation": 66,
         "origin": 112,
         "provenance": "implied",
-        "reference": 860,
+        "reference": 445,
         "source": 110,
         "target": 112
       },
       {
         "kind": "containment",
-        "navigation": 64,
+        "navigation": 62,
         "origin": 113,
         "provenance": "implied",
-        "reference": 861,
+        "reference": 446,
         "source": 110,
         "target": 113
       },
       {
         "kind": "containment",
-        "navigation": 72,
+        "navigation": 70,
         "origin": 114,
         "provenance": "implied",
-        "reference": 862,
+        "reference": 447,
         "source": 110,
         "target": 114
       },
       {
         "kind": "containment",
-        "navigation": 70,
+        "navigation": 68,
         "origin": 115,
         "provenance": "implied",
-        "reference": 863,
+        "reference": 448,
         "source": 110,
         "target": 115
       },
       {
         "kind": "containment",
-        "navigation": 93,
+        "navigation": 88,
         "origin": 116,
         "provenance": "implied",
-        "reference": 978,
+        "reference": 504,
         "source": 34,
         "target": 116
       },
       {
         "kind": "containment",
-        "navigation": 78,
+        "navigation": 74,
         "origin": 117,
         "provenance": "implied",
-        "reference": 885,
+        "reference": 456,
         "source": 116,
         "target": 117
       },
       {
         "kind": "containment",
-        "navigation": 95,
+        "navigation": 90,
         "origin": 118,
         "provenance": "implied",
-        "reference": 979,
+        "reference": 505,
         "source": 34,
         "target": 118
       },
       {
         "kind": "containment",
-        "navigation": 81,
+        "navigation": 76,
         "origin": 119,
         "provenance": "implied",
-        "reference": 869,
+        "reference": 450,
         "source": 118,
         "target": 119
       },
       {
         "kind": "containment",
-        "navigation": 91,
+        "navigation": 86,
         "origin": 98,
         "provenance": "implied",
-        "reference": 980,
+        "reference": 506,
         "source": 34,
         "target": 98
       },
       {
         "kind": "containment",
-        "navigation": 75,
+        "navigation": 72,
         "origin": 99,
         "provenance": "implied",
-        "reference": 877,
+        "reference": 453,
         "source": 98,
         "target": 99
       },
       {
         "kind": "containment",
-        "navigation": 87,
+        "navigation": 82,
         "origin": 121,
         "provenance": "implied",
-        "reference": 981,
+        "reference": 507,
         "source": 34,
         "target": 121
       },
       {
         "kind": "containment",
-        "navigation": 85,
+        "navigation": 80,
         "origin": 122,
         "provenance": "implied",
-        "reference": 982,
+        "reference": 508,
         "source": 34,
         "target": 122
       },
       {
         "kind": "containment",
-        "navigation": 103,
+        "navigation": 98,
         "origin": 35,
         "provenance": "implied",
-        "reference": 983,
+        "reference": 509,
         "source": 34,
         "target": 35
       },
@@ -14847,7 +11928,7 @@ package TimerGeometry {
         "navigation": 6,
         "origin": 94,
         "provenance": "implied",
-        "reference": 913,
+        "reference": 467,
         "source": 35,
         "target": 94
       },
@@ -14856,7 +11937,7 @@ package TimerGeometry {
         "navigation": 10,
         "origin": 95,
         "provenance": "implied",
-        "reference": 914,
+        "reference": 468,
         "source": 35,
         "target": 95
       },
@@ -14865,7 +11946,7 @@ package TimerGeometry {
         "navigation": 4,
         "origin": 92,
         "provenance": "implied",
-        "reference": 915,
+        "reference": 469,
         "source": 35,
         "target": 92
       },
@@ -14874,7 +11955,7 @@ package TimerGeometry {
         "navigation": 5,
         "origin": 92,
         "provenance": "authored",
-        "reference": 241,
+        "reference": 195,
         "source": 92,
         "target": 94
       },
@@ -14883,7 +11964,7 @@ package TimerGeometry {
         "navigation": 12,
         "origin": 96,
         "provenance": "implied",
-        "reference": 916,
+        "reference": 470,
         "source": 35,
         "target": 96
       },
@@ -14892,7 +11973,7 @@ package TimerGeometry {
         "navigation": 8,
         "origin": 97,
         "provenance": "implied",
-        "reference": 917,
+        "reference": 471,
         "source": 35,
         "target": 97
       },
@@ -14901,7 +11982,7 @@ package TimerGeometry {
         "navigation": 3,
         "origin": 93,
         "provenance": "implied",
-        "reference": 918,
+        "reference": 472,
         "source": 35,
         "target": 93
       },
@@ -14910,7 +11991,7 @@ package TimerGeometry {
         "navigation": 30,
         "origin": 85,
         "provenance": "implied",
-        "reference": 919,
+        "reference": 473,
         "source": 35,
         "target": 85
       },
@@ -14919,7 +12000,7 @@ package TimerGeometry {
         "navigation": 31,
         "origin": 85,
         "provenance": "implied",
-        "reference": 335,
+        "reference": 236,
         "source": 97,
         "target": 95
       },
@@ -14928,7 +12009,7 @@ package TimerGeometry {
         "navigation": 29,
         "origin": 91,
         "provenance": "authored",
-        "reference": 420,
+        "reference": 272,
         "source": 85,
         "target": 91
       },
@@ -14937,7 +12018,7 @@ package TimerGeometry {
         "navigation": 29,
         "origin": 91,
         "provenance": "authored",
-        "reference": 421,
+        "reference": 273,
         "source": 85,
         "target": 91
       },
@@ -14946,7 +12027,7 @@ package TimerGeometry {
         "navigation": 29,
         "origin": 91,
         "provenance": "authored",
-        "reference": 422,
+        "reference": 274,
         "source": 85,
         "target": 91
       },
@@ -14955,7 +12036,7 @@ package TimerGeometry {
         "navigation": 29,
         "origin": 86,
         "provenance": "authored",
-        "reference": 423,
+        "reference": 275,
         "source": 85,
         "target": 86
       },
@@ -14964,7 +12045,7 @@ package TimerGeometry {
         "navigation": 31,
         "origin": 86,
         "provenance": "implied",
-        "reference": 333,
+        "reference": 234,
         "source": 97,
         "target": 95
       },
@@ -14973,7 +12054,7 @@ package TimerGeometry {
         "navigation": 29,
         "origin": 87,
         "provenance": "authored",
-        "reference": 424,
+        "reference": 276,
         "source": 85,
         "target": 87
       },
@@ -14982,7 +12063,7 @@ package TimerGeometry {
         "navigation": 29,
         "origin": 88,
         "provenance": "authored",
-        "reference": 432,
+        "reference": 280,
         "source": 87,
         "target": 88
       },
@@ -14991,7 +12072,7 @@ package TimerGeometry {
         "navigation": 35,
         "origin": 36,
         "provenance": "implied",
-        "reference": 920,
+        "reference": 474,
         "source": 35,
         "target": 36
       },
@@ -15000,7 +12081,7 @@ package TimerGeometry {
         "navigation": 36,
         "origin": 36,
         "provenance": "implied",
-        "reference": 336,
+        "reference": 237,
         "source": 97,
         "target": 96
       },
@@ -15009,7 +12090,7 @@ package TimerGeometry {
         "navigation": 34,
         "origin": 42,
         "provenance": "authored",
-        "reference": 339,
+        "reference": 239,
         "source": 36,
         "target": 42
       },
@@ -15018,7 +12099,7 @@ package TimerGeometry {
         "navigation": 34,
         "origin": 42,
         "provenance": "authored",
-        "reference": 340,
+        "reference": 240,
         "source": 36,
         "target": 42
       },
@@ -15027,7 +12108,7 @@ package TimerGeometry {
         "navigation": 34,
         "origin": 42,
         "provenance": "authored",
-        "reference": 341,
+        "reference": 241,
         "source": 36,
         "target": 42
       },
@@ -15036,7 +12117,7 @@ package TimerGeometry {
         "navigation": 34,
         "origin": 37,
         "provenance": "authored",
-        "reference": 342,
+        "reference": 242,
         "source": 36,
         "target": 37
       },
@@ -15045,7 +12126,7 @@ package TimerGeometry {
         "navigation": 36,
         "origin": 37,
         "provenance": "implied",
-        "reference": 334,
+        "reference": 235,
         "source": 97,
         "target": 96
       },
@@ -15054,7 +12135,7 @@ package TimerGeometry {
         "navigation": 34,
         "origin": 38,
         "provenance": "authored",
-        "reference": 343,
+        "reference": 243,
         "source": 36,
         "target": 38
       },
@@ -15063,7 +12144,7 @@ package TimerGeometry {
         "navigation": 34,
         "origin": 39,
         "provenance": "authored",
-        "reference": 351,
+        "reference": 247,
         "source": 38,
         "target": 39
       },
@@ -15072,7 +12153,7 @@ package TimerGeometry {
         "navigation": 15,
         "origin": 43,
         "provenance": "implied",
-        "reference": 921,
+        "reference": 475,
         "source": 35,
         "target": 43
       },
@@ -15081,7 +12162,7 @@ package TimerGeometry {
         "navigation": 16,
         "origin": 43,
         "provenance": "implied",
-        "reference": 289,
+        "reference": 214,
         "source": 94,
         "target": 97
       },
@@ -15090,7 +12171,7 @@ package TimerGeometry {
         "navigation": 14,
         "origin": 49,
         "provenance": "authored",
-        "reference": 447,
+        "reference": 283,
         "source": 43,
         "target": 49
       },
@@ -15099,7 +12180,7 @@ package TimerGeometry {
         "navigation": 14,
         "origin": 49,
         "provenance": "authored",
-        "reference": 448,
+        "reference": 284,
         "source": 43,
         "target": 49
       },
@@ -15108,7 +12189,7 @@ package TimerGeometry {
         "navigation": 14,
         "origin": 49,
         "provenance": "authored",
-        "reference": 449,
+        "reference": 285,
         "source": 43,
         "target": 49
       },
@@ -15117,7 +12198,7 @@ package TimerGeometry {
         "navigation": 14,
         "origin": 44,
         "provenance": "authored",
-        "reference": 450,
+        "reference": 286,
         "source": 43,
         "target": 44
       },
@@ -15126,7 +12207,7 @@ package TimerGeometry {
         "navigation": 16,
         "origin": 44,
         "provenance": "implied",
-        "reference": 286,
+        "reference": 211,
         "source": 94,
         "target": 97
       },
@@ -15135,7 +12216,7 @@ package TimerGeometry {
         "navigation": 14,
         "origin": 45,
         "provenance": "authored",
-        "reference": 451,
+        "reference": 287,
         "source": 43,
         "target": 45
       },
@@ -15144,7 +12225,7 @@ package TimerGeometry {
         "navigation": 14,
         "origin": 46,
         "provenance": "authored",
-        "reference": 459,
+        "reference": 291,
         "source": 45,
         "target": 46
       },
@@ -15153,7 +12234,7 @@ package TimerGeometry {
         "navigation": 25,
         "origin": 50,
         "provenance": "implied",
-        "reference": 922,
+        "reference": 476,
         "source": 35,
         "target": 50
       },
@@ -15162,7 +12243,7 @@ package TimerGeometry {
         "navigation": 26,
         "origin": 50,
         "provenance": "implied",
-        "reference": 290,
+        "reference": 215,
         "source": 94,
         "target": 94
       },
@@ -15171,7 +12252,7 @@ package TimerGeometry {
         "navigation": 24,
         "origin": 56,
         "provenance": "authored",
-        "reference": 249,
+        "reference": 197,
         "source": 50,
         "target": 56
       },
@@ -15180,7 +12261,7 @@ package TimerGeometry {
         "navigation": 24,
         "origin": 56,
         "provenance": "authored",
-        "reference": 250,
+        "reference": 198,
         "source": 50,
         "target": 56
       },
@@ -15189,7 +12270,7 @@ package TimerGeometry {
         "navigation": 24,
         "origin": 56,
         "provenance": "authored",
-        "reference": 251,
+        "reference": 199,
         "source": 50,
         "target": 56
       },
@@ -15198,7 +12279,7 @@ package TimerGeometry {
         "navigation": 24,
         "origin": 51,
         "provenance": "authored",
-        "reference": 252,
+        "reference": 200,
         "source": 50,
         "target": 51
       },
@@ -15207,7 +12288,7 @@ package TimerGeometry {
         "navigation": 26,
         "origin": 51,
         "provenance": "implied",
-        "reference": 287,
+        "reference": 212,
         "source": 94,
         "target": 94
       },
@@ -15216,7 +12297,7 @@ package TimerGeometry {
         "navigation": 24,
         "origin": 52,
         "provenance": "authored",
-        "reference": 253,
+        "reference": 201,
         "source": 50,
         "target": 52
       },
@@ -15225,7 +12306,7 @@ package TimerGeometry {
         "navigation": 24,
         "origin": 53,
         "provenance": "authored",
-        "reference": 261,
+        "reference": 205,
         "source": 52,
         "target": 53
       },
@@ -15234,7 +12315,7 @@ package TimerGeometry {
         "navigation": 20,
         "origin": 57,
         "provenance": "implied",
-        "reference": 923,
+        "reference": 477,
         "source": 35,
         "target": 57
       },
@@ -15243,7 +12324,7 @@ package TimerGeometry {
         "navigation": 21,
         "origin": 57,
         "provenance": "implied",
-        "reference": 291,
+        "reference": 216,
         "source": 94,
         "target": 94
       },
@@ -15252,7 +12333,7 @@ package TimerGeometry {
         "navigation": 19,
         "origin": 63,
         "provenance": "authored",
-        "reference": 294,
+        "reference": 218,
         "source": 57,
         "target": 63
       },
@@ -15261,7 +12342,7 @@ package TimerGeometry {
         "navigation": 19,
         "origin": 63,
         "provenance": "authored",
-        "reference": 295,
+        "reference": 219,
         "source": 57,
         "target": 63
       },
@@ -15270,7 +12351,7 @@ package TimerGeometry {
         "navigation": 19,
         "origin": 63,
         "provenance": "authored",
-        "reference": 296,
+        "reference": 220,
         "source": 57,
         "target": 63
       },
@@ -15279,7 +12360,7 @@ package TimerGeometry {
         "navigation": 19,
         "origin": 58,
         "provenance": "authored",
-        "reference": 297,
+        "reference": 221,
         "source": 57,
         "target": 58
       },
@@ -15288,7 +12369,7 @@ package TimerGeometry {
         "navigation": 21,
         "origin": 58,
         "provenance": "implied",
-        "reference": 288,
+        "reference": 213,
         "source": 94,
         "target": 94
       },
@@ -15297,7 +12378,7 @@ package TimerGeometry {
         "navigation": 19,
         "origin": 59,
         "provenance": "authored",
-        "reference": 298,
+        "reference": 222,
         "source": 57,
         "target": 59
       },
@@ -15306,7 +12387,7 @@ package TimerGeometry {
         "navigation": 19,
         "origin": 60,
         "provenance": "authored",
-        "reference": 306,
+        "reference": 226,
         "source": 59,
         "target": 60
       },
@@ -15315,7 +12396,7 @@ package TimerGeometry {
         "navigation": 40,
         "origin": 64,
         "provenance": "implied",
-        "reference": 924,
+        "reference": 478,
         "source": 35,
         "target": 64
       },
@@ -15324,7 +12405,7 @@ package TimerGeometry {
         "navigation": 41,
         "origin": 64,
         "provenance": "implied",
-        "reference": 326,
+        "reference": 231,
         "source": 95,
         "target": 97
       },
@@ -15333,7 +12414,7 @@ package TimerGeometry {
         "navigation": 39,
         "origin": 70,
         "provenance": "authored",
-        "reference": 474,
+        "reference": 294,
         "source": 64,
         "target": 70
       },
@@ -15342,7 +12423,7 @@ package TimerGeometry {
         "navigation": 39,
         "origin": 70,
         "provenance": "authored",
-        "reference": 475,
+        "reference": 295,
         "source": 64,
         "target": 70
       },
@@ -15351,7 +12432,7 @@ package TimerGeometry {
         "navigation": 39,
         "origin": 70,
         "provenance": "authored",
-        "reference": 476,
+        "reference": 296,
         "source": 64,
         "target": 70
       },
@@ -15360,7 +12441,7 @@ package TimerGeometry {
         "navigation": 39,
         "origin": 65,
         "provenance": "authored",
-        "reference": 477,
+        "reference": 297,
         "source": 64,
         "target": 65
       },
@@ -15369,7 +12450,7 @@ package TimerGeometry {
         "navigation": 41,
         "origin": 65,
         "provenance": "implied",
-        "reference": 324,
+        "reference": 229,
         "source": 95,
         "target": 97
       },
@@ -15378,7 +12459,7 @@ package TimerGeometry {
         "navigation": 39,
         "origin": 66,
         "provenance": "authored",
-        "reference": 478,
+        "reference": 298,
         "source": 64,
         "target": 66
       },
@@ -15387,7 +12468,7 @@ package TimerGeometry {
         "navigation": 39,
         "origin": 67,
         "provenance": "authored",
-        "reference": 486,
+        "reference": 302,
         "source": 66,
         "target": 67
       },
@@ -15396,7 +12477,7 @@ package TimerGeometry {
         "navigation": 45,
         "origin": 71,
         "provenance": "implied",
-        "reference": 925,
+        "reference": 479,
         "source": 35,
         "target": 71
       },
@@ -15405,7 +12486,7 @@ package TimerGeometry {
         "navigation": 46,
         "origin": 71,
         "provenance": "implied",
-        "reference": 327,
+        "reference": 232,
         "source": 95,
         "target": 94
       },
@@ -15414,7 +12495,7 @@ package TimerGeometry {
         "navigation": 44,
         "origin": 77,
         "provenance": "authored",
-        "reference": 393,
+        "reference": 261,
         "source": 71,
         "target": 77
       },
@@ -15423,7 +12504,7 @@ package TimerGeometry {
         "navigation": 44,
         "origin": 77,
         "provenance": "authored",
-        "reference": 394,
+        "reference": 262,
         "source": 71,
         "target": 77
       },
@@ -15432,7 +12513,7 @@ package TimerGeometry {
         "navigation": 44,
         "origin": 77,
         "provenance": "authored",
-        "reference": 395,
+        "reference": 263,
         "source": 71,
         "target": 77
       },
@@ -15441,7 +12522,7 @@ package TimerGeometry {
         "navigation": 44,
         "origin": 72,
         "provenance": "authored",
-        "reference": 396,
+        "reference": 264,
         "source": 71,
         "target": 72
       },
@@ -15450,7 +12531,7 @@ package TimerGeometry {
         "navigation": 46,
         "origin": 72,
         "provenance": "implied",
-        "reference": 325,
+        "reference": 230,
         "source": 95,
         "target": 94
       },
@@ -15459,7 +12540,7 @@ package TimerGeometry {
         "navigation": 44,
         "origin": 73,
         "provenance": "authored",
-        "reference": 397,
+        "reference": 265,
         "source": 71,
         "target": 73
       },
@@ -15468,7 +12549,7 @@ package TimerGeometry {
         "navigation": 44,
         "origin": 74,
         "provenance": "authored",
-        "reference": 405,
+        "reference": 269,
         "source": 73,
         "target": 74
       },
@@ -15477,7 +12558,7 @@ package TimerGeometry {
         "navigation": 50,
         "origin": 78,
         "provenance": "implied",
-        "reference": 926,
+        "reference": 480,
         "source": 35,
         "target": 78
       },
@@ -15486,7 +12567,7 @@ package TimerGeometry {
         "navigation": 51,
         "origin": 78,
         "provenance": "implied",
-        "reference": 280,
+        "reference": 209,
         "source": 96,
         "target": 94
       },
@@ -15495,7 +12576,7 @@ package TimerGeometry {
         "navigation": 49,
         "origin": 84,
         "provenance": "authored",
-        "reference": 366,
+        "reference": 250,
         "source": 78,
         "target": 84
       },
@@ -15504,7 +12585,7 @@ package TimerGeometry {
         "navigation": 49,
         "origin": 84,
         "provenance": "authored",
-        "reference": 367,
+        "reference": 251,
         "source": 78,
         "target": 84
       },
@@ -15513,7 +12594,7 @@ package TimerGeometry {
         "navigation": 49,
         "origin": 84,
         "provenance": "authored",
-        "reference": 368,
+        "reference": 252,
         "source": 78,
         "target": 84
       },
@@ -15522,7 +12603,7 @@ package TimerGeometry {
         "navigation": 49,
         "origin": 79,
         "provenance": "authored",
-        "reference": 369,
+        "reference": 253,
         "source": 78,
         "target": 79
       },
@@ -15531,7 +12612,7 @@ package TimerGeometry {
         "navigation": 51,
         "origin": 79,
         "provenance": "implied",
-        "reference": 279,
+        "reference": 208,
         "source": 96,
         "target": 94
       },
@@ -15540,7 +12621,7 @@ package TimerGeometry {
         "navigation": 49,
         "origin": 80,
         "provenance": "authored",
-        "reference": 370,
+        "reference": 254,
         "source": 78,
         "target": 80
       },
@@ -15549,862 +12630,862 @@ package TimerGeometry {
         "navigation": 49,
         "origin": 81,
         "provenance": "authored",
-        "reference": 378,
+        "reference": 258,
         "source": 80,
         "target": 81
       },
       {
         "kind": "containment",
-        "navigation": 83,
+        "navigation": 78,
         "origin": 120,
         "provenance": "implied",
-        "reference": 984,
+        "reference": 510,
         "source": 34,
         "target": 120
       },
       {
         "kind": "containment",
-        "navigation": 151,
+        "navigation": 146,
         "origin": 7,
         "provenance": "implied",
-        "reference": 848,
+        "reference": 436,
         "source": 6,
         "target": 7
       },
       {
         "kind": "containment",
-        "navigation": 154,
+        "navigation": 149,
         "origin": 8,
         "provenance": "implied",
-        "reference": 849,
+        "reference": 437,
         "source": 6,
         "target": 8
       },
       {
         "kind": "containment",
-        "navigation": 157,
+        "navigation": 152,
         "origin": 9,
         "provenance": "implied",
-        "reference": 850,
+        "reference": 438,
         "source": 6,
         "target": 9
       },
       {
         "kind": "containment",
-        "navigation": 160,
+        "navigation": 155,
         "origin": 10,
         "provenance": "implied",
-        "reference": 851,
+        "reference": 439,
         "source": 6,
         "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 147,
+        "navigation": 142,
         "origin": 123,
         "provenance": "implied",
-        "reference": 852,
+        "reference": 440,
         "source": 6,
         "target": 123
       },
       {
         "kind": "containment",
-        "navigation": 129,
+        "navigation": 124,
         "origin": 124,
         "provenance": "implied",
-        "reference": 955,
+        "reference": 490,
         "source": 123,
         "target": 124
       },
       {
         "kind": "containment",
-        "navigation": 55,
+        "navigation": 54,
         "origin": 129,
         "provenance": "implied",
-        "reference": 678,
+        "reference": 368,
         "source": 124,
         "target": 129
       },
       {
         "kind": "containment",
-        "navigation": 57,
+        "navigation": 56,
         "origin": 125,
         "provenance": "implied",
-        "reference": 679,
+        "reference": 369,
         "source": 124,
         "target": 125
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 126,
         "provenance": "authored",
-        "reference": 538,
+        "reference": 319,
         "source": 125,
         "target": 126
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 127,
         "provenance": "authored",
-        "reference": 567,
+        "reference": 327,
         "source": 126,
         "target": 127
       },
       {
         "kind": "containment",
-        "navigation": 58,
+        "navigation": 57,
         "origin": 128,
         "provenance": "authored",
-        "reference": 568,
+        "reference": 328,
         "source": 126,
         "target": 128
       },
       {
         "kind": "containment",
-        "navigation": 131,
+        "navigation": 126,
         "origin": 130,
         "provenance": "authored",
-        "reference": 680,
+        "reference": 370,
         "source": 124,
         "target": 130
       },
       {
         "kind": "containment",
-        "navigation": 134,
+        "navigation": 129,
         "origin": 131,
         "provenance": "authored",
-        "reference": 686,
+        "reference": 372,
         "source": 130,
         "target": 131
       },
       {
         "kind": "containment",
-        "navigation": 134,
+        "navigation": 129,
         "origin": 132,
         "provenance": "authored",
-        "reference": 690,
+        "reference": 374,
         "source": 131,
         "target": 132
       },
       {
         "kind": "containment",
-        "navigation": 133,
+        "navigation": 128,
         "origin": 133,
         "provenance": "authored",
-        "reference": 691,
+        "reference": 375,
         "source": 131,
         "target": 133
       },
       {
         "kind": "containment",
-        "navigation": 127,
+        "navigation": 122,
         "origin": 134,
         "provenance": "implied",
-        "reference": 956,
+        "reference": 491,
         "source": 123,
         "target": 134
       },
       {
         "kind": "containment",
-        "navigation": 66,
+        "navigation": 64,
         "origin": 135,
         "provenance": "implied",
-        "reference": 669,
+        "reference": 362,
         "source": 134,
         "target": 135
       },
       {
         "kind": "containment",
-        "navigation": 68,
+        "navigation": 66,
         "origin": 136,
         "provenance": "implied",
-        "reference": 670,
+        "reference": 363,
         "source": 134,
         "target": 136
       },
       {
         "kind": "containment",
-        "navigation": 64,
+        "navigation": 62,
         "origin": 137,
         "provenance": "implied",
-        "reference": 671,
+        "reference": 364,
         "source": 134,
         "target": 137
       },
       {
         "kind": "containment",
-        "navigation": 72,
+        "navigation": 70,
         "origin": 138,
         "provenance": "implied",
-        "reference": 672,
+        "reference": 365,
         "source": 134,
         "target": 138
       },
       {
         "kind": "containment",
-        "navigation": 70,
+        "navigation": 68,
         "origin": 139,
         "provenance": "implied",
-        "reference": 673,
+        "reference": 366,
         "source": 134,
         "target": 139
       },
       {
         "kind": "containment",
-        "navigation": 145,
+        "navigation": 140,
         "origin": 140,
         "provenance": "implied",
-        "reference": 853,
+        "reference": 441,
         "source": 6,
         "target": 140
       },
       {
         "kind": "containment",
-        "navigation": 117,
+        "navigation": 112,
         "origin": 141,
         "provenance": "implied",
-        "reference": 968,
+        "reference": 497,
         "source": 140,
         "target": 141
       },
       {
         "kind": "containment",
-        "navigation": 75,
+        "navigation": 72,
         "origin": 142,
         "provenance": "implied",
-        "reference": 754,
+        "reference": 399,
         "source": 141,
         "target": 142
       },
       {
         "kind": "containment",
-        "navigation": 121,
+        "navigation": 116,
         "origin": 143,
         "provenance": "implied",
-        "reference": 969,
+        "reference": 498,
         "source": 140,
         "target": 143
       },
       {
         "kind": "containment",
-        "navigation": 55,
+        "navigation": 54,
         "origin": 148,
         "provenance": "implied",
-        "reference": 769,
+        "reference": 404,
         "source": 143,
         "target": 148
       },
       {
         "kind": "containment",
-        "navigation": 57,
+        "navigation": 56,
         "origin": 144,
         "provenance": "implied",
-        "reference": 770,
+        "reference": 405,
         "source": 143,
         "target": 144
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 145,
         "provenance": "authored",
-        "reference": 539,
+        "reference": 320,
         "source": 144,
         "target": 145
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 146,
         "provenance": "authored",
-        "reference": 569,
+        "reference": 329,
         "source": 145,
         "target": 146
       },
       {
         "kind": "containment",
-        "navigation": 58,
+        "navigation": 57,
         "origin": 147,
         "provenance": "authored",
-        "reference": 570,
+        "reference": 330,
         "source": 145,
         "target": 147
       },
       {
         "kind": "containment",
-        "navigation": 123,
+        "navigation": 118,
         "origin": 149,
         "provenance": "authored",
-        "reference": 771,
+        "reference": 406,
         "source": 143,
         "target": 149
       },
       {
         "kind": "containment",
-        "navigation": 126,
+        "navigation": 121,
         "origin": 150,
         "provenance": "authored",
-        "reference": 777,
+        "reference": 408,
         "source": 149,
         "target": 150
       },
       {
         "kind": "containment",
-        "navigation": 126,
+        "navigation": 121,
         "origin": 151,
         "provenance": "authored",
-        "reference": 781,
+        "reference": 410,
         "source": 150,
         "target": 151
       },
       {
         "kind": "containment",
-        "navigation": 125,
+        "navigation": 120,
         "origin": 152,
         "provenance": "authored",
-        "reference": 782,
+        "reference": 411,
         "source": 150,
         "target": 152
       },
       {
         "kind": "containment",
-        "navigation": 119,
+        "navigation": 114,
         "origin": 153,
         "provenance": "implied",
-        "reference": 970,
+        "reference": 499,
         "source": 140,
         "target": 153
       },
       {
         "kind": "containment",
-        "navigation": 78,
+        "navigation": 74,
         "origin": 154,
         "provenance": "implied",
-        "reference": 763,
+        "reference": 402,
         "source": 153,
         "target": 154
       },
       {
         "kind": "containment",
-        "navigation": 115,
+        "navigation": 110,
         "origin": 155,
         "provenance": "implied",
-        "reference": 971,
+        "reference": 500,
         "source": 140,
         "target": 155
       },
       {
         "kind": "containment",
-        "navigation": 149,
+        "navigation": 144,
         "origin": 11,
         "provenance": "implied",
-        "reference": 854,
+        "reference": 442,
         "source": 6,
         "target": 11
       },
       {
         "kind": "containment",
-        "navigation": 107,
+        "navigation": 102,
         "origin": 22,
         "provenance": "implied",
-        "reference": 961,
+        "reference": 493,
         "source": 11,
         "target": 22
       },
       {
         "kind": "containment",
-        "navigation": 55,
+        "navigation": 54,
         "origin": 27,
         "provenance": "implied",
-        "reference": 734,
+        "reference": 391,
         "source": 22,
         "target": 27
       },
       {
         "kind": "containment",
-        "navigation": 57,
+        "navigation": 56,
         "origin": 23,
         "provenance": "implied",
-        "reference": 735,
+        "reference": 392,
         "source": 22,
         "target": 23
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 24,
         "provenance": "authored",
-        "reference": 540,
+        "reference": 321,
         "source": 23,
         "target": 24
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 25,
         "provenance": "authored",
-        "reference": 571,
+        "reference": 331,
         "source": 24,
         "target": 25
       },
       {
         "kind": "containment",
-        "navigation": 58,
+        "navigation": 57,
         "origin": 26,
         "provenance": "authored",
-        "reference": 572,
+        "reference": 332,
         "source": 24,
         "target": 26
       },
       {
         "kind": "containment",
-        "navigation": 109,
+        "navigation": 104,
         "origin": 28,
         "provenance": "authored",
-        "reference": 736,
+        "reference": 393,
         "source": 22,
         "target": 28
       },
       {
         "kind": "containment",
-        "navigation": 112,
+        "navigation": 107,
         "origin": 29,
         "provenance": "authored",
-        "reference": 742,
+        "reference": 395,
         "source": 28,
         "target": 29
       },
       {
         "kind": "containment",
-        "navigation": 112,
+        "navigation": 107,
         "origin": 30,
         "provenance": "authored",
-        "reference": 746,
+        "reference": 397,
         "source": 29,
         "target": 30
       },
       {
         "kind": "containment",
-        "navigation": 111,
+        "navigation": 106,
         "origin": 31,
         "provenance": "authored",
-        "reference": 747,
+        "reference": 398,
         "source": 29,
         "target": 31
       },
       {
         "kind": "containment",
-        "navigation": 105,
+        "navigation": 100,
         "origin": 32,
         "provenance": "implied",
-        "reference": 962,
+        "reference": 494,
         "source": 11,
         "target": 32
       },
       {
         "kind": "containment",
-        "navigation": 81,
+        "navigation": 76,
         "origin": 33,
         "provenance": "implied",
-        "reference": 728,
+        "reference": 389,
         "source": 32,
         "target": 33
       },
       {
         "kind": "containment",
-        "navigation": 113,
+        "navigation": 108,
         "origin": 12,
         "provenance": "implied",
-        "reference": 963,
+        "reference": 495,
         "source": 11,
         "target": 12
       },
       {
         "kind": "containment",
-        "navigation": 55,
+        "navigation": 54,
         "origin": 21,
         "provenance": "implied",
-        "reference": 721,
+        "reference": 385,
         "source": 12,
         "target": 21
       },
       {
         "kind": "containment",
-        "navigation": 57,
+        "navigation": 56,
         "origin": 17,
         "provenance": "implied",
-        "reference": 722,
+        "reference": 386,
         "source": 12,
         "target": 17
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 18,
         "provenance": "authored",
-        "reference": 541,
+        "reference": 322,
         "source": 17,
         "target": 18
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 19,
         "provenance": "authored",
-        "reference": 573,
+        "reference": 333,
         "source": 18,
         "target": 19
       },
       {
         "kind": "containment",
-        "navigation": 58,
+        "navigation": 57,
         "origin": 20,
         "provenance": "authored",
-        "reference": 574,
+        "reference": 334,
         "source": 18,
         "target": 20
       },
       {
         "kind": "containment",
-        "navigation": 60,
+        "navigation": 59,
         "origin": 13,
         "provenance": "implied",
-        "reference": 723,
+        "reference": 387,
         "source": 12,
         "target": 13
       },
       {
         "kind": "containment",
-        "navigation": 62,
+        "navigation": 61,
         "origin": 14,
         "provenance": "authored",
-        "reference": 501,
+        "reference": 305,
         "source": 13,
         "target": 14
       },
       {
         "kind": "containment",
-        "navigation": 62,
+        "navigation": 61,
         "origin": 15,
         "provenance": "authored",
-        "reference": 507,
+        "reference": 307,
         "source": 14,
         "target": 15
       },
       {
         "kind": "containment",
-        "navigation": 61,
+        "navigation": 60,
         "origin": 16,
         "provenance": "authored",
-        "reference": 508,
+        "reference": 308,
         "source": 14,
         "target": 16
       },
       {
         "kind": "containment",
-        "navigation": 179,
+        "navigation": 174,
         "origin": 156,
         "provenance": "implied",
-        "reference": 231,
+        "reference": 186,
         "source": 0,
         "target": 156
       },
       {
         "kind": "containment",
-        "navigation": 137,
+        "navigation": 132,
         "origin": 157,
         "provenance": "implied",
-        "reference": 835,
+        "reference": 429,
         "source": 156,
         "target": 157
       },
       {
         "kind": "containment",
-        "navigation": 55,
+        "navigation": 54,
         "origin": 162,
         "provenance": "implied",
-        "reference": 701,
+        "reference": 377,
         "source": 157,
         "target": 162
       },
       {
         "kind": "containment",
-        "navigation": 57,
+        "navigation": 56,
         "origin": 158,
         "provenance": "implied",
-        "reference": 702,
+        "reference": 378,
         "source": 157,
         "target": 158
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 159,
         "provenance": "authored",
-        "reference": 542,
+        "reference": 323,
         "source": 158,
         "target": 159
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 160,
         "provenance": "authored",
-        "reference": 575,
+        "reference": 335,
         "source": 159,
         "target": 160
       },
       {
         "kind": "containment",
-        "navigation": 58,
+        "navigation": 57,
         "origin": 161,
         "provenance": "authored",
-        "reference": 576,
+        "reference": 336,
         "source": 159,
         "target": 161
       },
       {
         "kind": "containment",
-        "navigation": 139,
+        "navigation": 134,
         "origin": 163,
         "provenance": "authored",
-        "reference": 703,
+        "reference": 379,
         "source": 157,
         "target": 163
       },
       {
         "kind": "containment",
-        "navigation": 142,
+        "navigation": 137,
         "origin": 164,
         "provenance": "authored",
-        "reference": 709,
+        "reference": 381,
         "source": 163,
         "target": 164
       },
       {
         "kind": "containment",
-        "navigation": 142,
+        "navigation": 137,
         "origin": 165,
         "provenance": "authored",
-        "reference": 713,
+        "reference": 383,
         "source": 164,
         "target": 165
       },
       {
         "kind": "containment",
-        "navigation": 141,
+        "navigation": 136,
         "origin": 166,
         "provenance": "authored",
-        "reference": 714,
+        "reference": 384,
         "source": 164,
         "target": 166
       },
       {
         "kind": "containment",
-        "navigation": 135,
+        "navigation": 130,
         "origin": 167,
         "provenance": "implied",
-        "reference": 836,
+        "reference": 430,
         "source": 156,
         "target": 167
       },
       {
         "kind": "containment",
-        "navigation": 183,
+        "navigation": 178,
         "origin": 1,
         "provenance": "implied",
-        "reference": 232,
+        "reference": 187,
         "source": 0,
         "target": 1
       },
       {
         "kind": "containment",
-        "navigation": 186,
+        "navigation": 181,
         "origin": 2,
         "provenance": "implied",
-        "reference": 233,
+        "reference": 188,
         "source": 0,
         "target": 2
       },
       {
         "kind": "containment",
-        "navigation": 189,
+        "navigation": 184,
         "origin": 3,
         "provenance": "implied",
-        "reference": 234,
+        "reference": 189,
         "source": 0,
         "target": 3
       },
       {
         "kind": "containment",
-        "navigation": 192,
+        "navigation": 187,
         "origin": 4,
         "provenance": "implied",
-        "reference": 235,
+        "reference": 190,
         "source": 0,
         "target": 4
       },
       {
         "kind": "containment",
-        "navigation": 195,
+        "navigation": 190,
         "origin": 5,
         "provenance": "implied",
-        "reference": 236,
+        "reference": 191,
         "source": 0,
         "target": 5
       },
       {
         "kind": "containment",
-        "navigation": 177,
+        "navigation": 172,
         "origin": 168,
         "provenance": "implied",
-        "reference": 237,
+        "reference": 192,
         "source": 0,
         "target": 168
       },
       {
         "kind": "containment",
-        "navigation": 169,
+        "navigation": 164,
         "origin": 169,
         "provenance": "implied",
-        "reference": 827,
+        "reference": 424,
         "source": 168,
         "target": 169
       },
       {
         "kind": "containment",
-        "navigation": 55,
+        "navigation": 54,
         "origin": 178,
         "provenance": "implied",
-        "reference": 659,
+        "reference": 357,
         "source": 169,
         "target": 178
       },
       {
         "kind": "containment",
-        "navigation": 57,
+        "navigation": 56,
         "origin": 174,
         "provenance": "implied",
-        "reference": 660,
+        "reference": 358,
         "source": 169,
         "target": 174
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 175,
         "provenance": "authored",
-        "reference": 543,
+        "reference": 324,
         "source": 174,
         "target": 175
       },
       {
         "kind": "containment",
-        "navigation": 59,
+        "navigation": 58,
         "origin": 176,
         "provenance": "authored",
-        "reference": 577,
+        "reference": 337,
         "source": 175,
         "target": 176
       },
       {
         "kind": "containment",
-        "navigation": 58,
+        "navigation": 57,
         "origin": 177,
         "provenance": "authored",
-        "reference": 578,
+        "reference": 338,
         "source": 175,
         "target": 177
       },
       {
         "kind": "containment",
-        "navigation": 60,
+        "navigation": 59,
         "origin": 170,
         "provenance": "implied",
-        "reference": 661,
+        "reference": 359,
         "source": 169,
         "target": 170
       },
       {
         "kind": "containment",
-        "navigation": 62,
+        "navigation": 61,
         "origin": 171,
         "provenance": "authored",
-        "reference": 502,
+        "reference": 306,
         "source": 170,
         "target": 171
       },
       {
         "kind": "containment",
-        "navigation": 62,
+        "navigation": 61,
         "origin": 172,
         "provenance": "authored",
-        "reference": 509,
+        "reference": 309,
         "source": 171,
         "target": 172
       },
       {
         "kind": "containment",
-        "navigation": 61,
+        "navigation": 60,
         "origin": 173,
         "provenance": "authored",
-        "reference": 510,
+        "reference": 310,
         "source": 171,
         "target": 173
       },
       {
         "kind": "containment",
-        "navigation": 163,
+        "navigation": 158,
         "origin": 181,
         "provenance": "implied",
-        "reference": 828,
+        "reference": 425,
         "source": 168,
         "target": 181
       },
       {
         "kind": "containment",
-        "navigation": 165,
+        "navigation": 160,
         "origin": 179,
         "provenance": "implied",
-        "reference": 829,
+        "reference": 426,
         "source": 168,
         "target": 179
       },
       {
         "kind": "containment",
-        "navigation": 167,
+        "navigation": 162,
         "origin": 180,
         "provenance": "implied",
-        "reference": 830,
+        "reference": 427,
         "source": 168,
         "target": 180
       },
       {
         "kind": "containment",
-        "navigation": 181,
+        "navigation": 176,
         "origin": 182,
         "provenance": "implied",
-        "reference": 238,
+        "reference": 193,
         "source": 0,
         "target": 182
       },
       {
         "kind": "containment",
-        "navigation": 173,
+        "navigation": 168,
         "origin": 184,
         "provenance": "implied",
-        "reference": 841,
+        "reference": 432,
         "source": 182,
         "target": 184
       },
       {
         "kind": "containment",
-        "navigation": 171,
+        "navigation": 166,
         "origin": 183,
         "provenance": "implied",
-        "reference": 842,
+        "reference": 433,
         "source": 182,
         "target": 183
       }
@@ -16644,7 +13725,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "KitchenTimer",
-              "reference": 98
+              "reference": 84
             }
           ]
         }
@@ -16658,8 +13739,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 216,
-        "source": 183,
+        "reference": 172,
+        "source": 178,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16675,8 +13756,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 217,
-        "source": 186,
+        "reference": 173,
+        "source": 181,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16692,8 +13773,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 218,
-        "source": 189,
+        "reference": 174,
+        "source": 184,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16709,8 +13790,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 219,
-        "source": 192,
+        "reference": 175,
+        "source": 187,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16726,8 +13807,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 220,
-        "source": 195,
+        "reference": 176,
+        "source": 190,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16764,8 +13845,8 @@ package TimerGeometry {
         "name": "pcb",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 103,
-        "source": 175,
+        "reference": 89,
+        "source": 170,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16773,7 +13854,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "PCB",
-              "reference": 117
+              "reference": 102
             }
           ]
         }
@@ -16787,8 +13868,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 225,
-        "source": 151,
+        "reference": 181,
+        "source": 146,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16804,8 +13885,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 226,
-        "source": 154,
+        "reference": 182,
+        "source": 149,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16821,8 +13902,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 227,
-        "source": 157,
+        "reference": 183,
+        "source": 152,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16838,8 +13919,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 228,
-        "source": 160,
+        "reference": 184,
+        "source": 155,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16865,8 +13946,8 @@ package TimerGeometry {
         "name": "buzzerDriver",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 120,
-        "source": 149,
+        "reference": 105,
+        "source": 144,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16874,7 +13955,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BuzzerDriver",
-              "reference": 79
+              "reference": 67
             }
           ]
         }
@@ -16898,8 +13979,8 @@ package TimerGeometry {
         "name": "buzzerPwrOut",
         "notationRole": "usage",
         "owner": 11,
-        "reference": 80,
-        "source": 113,
+        "reference": 68,
+        "source": 108,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16907,7 +13988,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BatteryOutlet",
-              "reference": 42
+              "reference": 34
             }
           ]
         }
@@ -16921,8 +14002,8 @@ package TimerGeometry {
         "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 12,
-        "reference": 43,
-        "source": 60,
+        "reference": 35,
+        "source": 59,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16938,8 +14019,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 13,
-        "reference": 190,
-        "source": 62,
+        "reference": 150,
+        "source": 61,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16955,8 +14036,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 14,
-        "reference": 191,
-        "source": 62,
+        "reference": 151,
+        "source": 61,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16972,8 +14053,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 14,
-        "reference": 192,
-        "source": 61,
+        "reference": 152,
+        "source": 60,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16989,8 +14070,8 @@ package TimerGeometry {
         "name": "voltage",
         "notationRole": "usage",
         "owner": 12,
-        "reference": 47,
-        "source": 57,
+        "reference": 38,
+        "source": 56,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17006,8 +14087,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 17,
-        "reference": 193,
-        "source": 59,
+        "reference": 153,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17023,8 +14104,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 18,
-        "reference": 194,
-        "source": 59,
+        "reference": 154,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17040,8 +14121,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 18,
-        "reference": 195,
-        "source": 58,
+        "reference": 155,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17057,8 +14138,8 @@ package TimerGeometry {
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 12,
-        "reference": 46,
-        "source": 55,
+        "reference": 37,
+        "source": 54,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17090,8 +14171,8 @@ package TimerGeometry {
         "name": "pwrIn",
         "notationRole": "usage",
         "owner": 11,
-        "reference": 82,
-        "source": 107,
+        "reference": 70,
+        "source": 102,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17099,7 +14180,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BatteryOutlet",
-              "reference": 42
+              "reference": 34
             }
           ]
         }
@@ -17113,8 +14194,8 @@ package TimerGeometry {
         "name": "voltage",
         "notationRole": "usage",
         "owner": 22,
-        "reference": 47,
-        "source": 57,
+        "reference": 38,
+        "source": 56,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17130,8 +14211,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 23,
-        "reference": 193,
-        "source": 59,
+        "reference": 153,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17147,8 +14228,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 24,
-        "reference": 194,
-        "source": 59,
+        "reference": 154,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17164,8 +14245,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 24,
-        "reference": 195,
-        "source": 58,
+        "reference": 155,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17181,8 +14262,8 @@ package TimerGeometry {
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 22,
-        "reference": 46,
-        "source": 55,
+        "reference": 37,
+        "source": 54,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17198,8 +14279,8 @@ package TimerGeometry {
         "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 22,
-        "reference": 208,
-        "source": 109,
+        "reference": 164,
+        "source": 104,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17215,8 +14296,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 28,
-        "reference": 209,
-        "source": 112,
+        "reference": 165,
+        "source": 107,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17232,8 +14313,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 29,
-        "reference": 210,
-        "source": 112,
+        "reference": 166,
+        "source": 107,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17249,8 +14330,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 29,
-        "reference": 211,
-        "source": 111,
+        "reference": 167,
+        "source": 106,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17274,8 +14355,8 @@ package TimerGeometry {
         "name": "ctrlIn",
         "notationRole": "usage",
         "owner": 11,
-        "reference": 81,
-        "source": 105,
+        "reference": 69,
+        "source": 100,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17283,7 +14364,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BuzzerCommandPort",
-              "reference": 56
+              "reference": 46
             }
           ]
         }
@@ -17297,8 +14378,8 @@ package TimerGeometry {
         "name": "buzzerOn",
         "notationRole": "reference-usage",
         "owner": 32,
-        "reference": 57,
-        "source": 81,
+        "reference": 47,
+        "source": 76,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17306,7 +14387,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -17348,8 +14429,8 @@ package TimerGeometry {
         "name": "mcu",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 122,
-        "source": 143,
+        "reference": 107,
+        "source": 138,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17357,7 +14438,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "MCU",
-              "reference": 104
+              "reference": 90
             }
           ]
         }
@@ -17389,8 +14470,8 @@ package TimerGeometry {
         "name": "timerMode",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 116,
-        "source": 103,
+        "reference": 101,
+        "source": 98,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17429,7 +14510,7 @@ package TimerGeometry {
         "name": "to_expired",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 24,
+        "reference": 22,
         "source": 35,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17446,7 +14527,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 36,
-        "reference": 167,
+        "reference": 128,
         "source": 34,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17471,7 +14552,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 36,
-        "reference": 165,
+        "reference": 126,
         "source": 34,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17488,7 +14569,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 38,
-        "reference": 168,
+        "reference": 129,
         "source": 34,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17505,7 +14586,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 36,
-        "reference": 166,
+        "reference": 127,
         "source": 34,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17522,7 +14603,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 36,
-        "reference": 166,
+        "reference": 127,
         "source": 34,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17539,7 +14620,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 36,
-        "reference": 166,
+        "reference": 127,
         "source": 34,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17573,7 +14654,7 @@ package TimerGeometry {
         "name": "to_running",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 36,
+        "reference": 30,
         "source": 15,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17590,7 +14671,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 43,
-        "reference": 183,
+        "reference": 144,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17615,7 +14696,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 43,
-        "reference": 181,
+        "reference": 142,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17632,7 +14713,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 45,
-        "reference": 184,
+        "reference": 145,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17649,7 +14730,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 43,
-        "reference": 182,
+        "reference": 143,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17666,7 +14747,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 43,
-        "reference": 182,
+        "reference": 143,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17683,7 +14764,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 43,
-        "reference": 182,
+        "reference": 143,
         "source": 14,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17734,7 +14815,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 50,
-        "reference": 159,
+        "reference": 120,
         "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17759,7 +14840,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 50,
-        "reference": 157,
+        "reference": 118,
         "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17776,7 +14857,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 52,
-        "reference": 160,
+        "reference": 121,
         "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17793,7 +14874,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 50,
-        "reference": 158,
+        "reference": 119,
         "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17810,7 +14891,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 50,
-        "reference": 158,
+        "reference": 119,
         "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17827,7 +14908,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 50,
-        "reference": 158,
+        "reference": 119,
         "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17861,7 +14942,7 @@ package TimerGeometry {
         "name": "increment_idle",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 19,
+        "reference": 18,
         "source": 20,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17878,7 +14959,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 57,
-        "reference": 163,
+        "reference": 124,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17903,7 +14984,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 57,
-        "reference": 161,
+        "reference": 122,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17920,7 +15001,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 59,
-        "reference": 164,
+        "reference": 125,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17937,7 +15018,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 57,
-        "reference": 162,
+        "reference": 123,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17954,7 +15035,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 57,
-        "reference": 162,
+        "reference": 123,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17971,7 +15052,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 57,
-        "reference": 162,
+        "reference": 123,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18005,7 +15086,7 @@ package TimerGeometry {
         "name": "to_running_resume",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 39,
+        "reference": 32,
         "source": 40,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18022,7 +15103,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 64,
-        "reference": 187,
+        "reference": 148,
         "source": 39,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18047,7 +15128,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 64,
-        "reference": 185,
+        "reference": 146,
         "source": 39,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18064,7 +15145,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 66,
-        "reference": 188,
+        "reference": 149,
         "source": 39,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18081,7 +15162,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 64,
-        "reference": 186,
+        "reference": 147,
         "source": 39,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18098,7 +15179,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 64,
-        "reference": 186,
+        "reference": 147,
         "source": 39,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18115,7 +15196,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 64,
-        "reference": 186,
+        "reference": 147,
         "source": 39,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18149,7 +15230,7 @@ package TimerGeometry {
         "name": "to_idle_from_paused",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 30,
+        "reference": 26,
         "source": 45,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18166,7 +15247,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 71,
-        "reference": 175,
+        "reference": 136,
         "source": 44,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18191,7 +15272,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 71,
-        "reference": 173,
+        "reference": 134,
         "source": 44,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18208,7 +15289,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 73,
-        "reference": 176,
+        "reference": 137,
         "source": 44,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18225,7 +15306,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 71,
-        "reference": 174,
+        "reference": 135,
         "source": 44,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18242,7 +15323,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 71,
-        "reference": 174,
+        "reference": 135,
         "source": 44,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18259,7 +15340,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 71,
-        "reference": 174,
+        "reference": 135,
         "source": 44,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18293,7 +15374,7 @@ package TimerGeometry {
         "name": "to_idle_from_expired",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 27,
+        "reference": 24,
         "source": 50,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18310,7 +15391,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 78,
-        "reference": 171,
+        "reference": 132,
         "source": 49,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18335,7 +15416,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 78,
-        "reference": 169,
+        "reference": 130,
         "source": 49,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18352,7 +15433,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 80,
-        "reference": 172,
+        "reference": 133,
         "source": 49,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18369,7 +15450,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 78,
-        "reference": 170,
+        "reference": 131,
         "source": 49,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18386,7 +15467,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 78,
-        "reference": 170,
+        "reference": 131,
         "source": 49,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18403,7 +15484,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 78,
-        "reference": 170,
+        "reference": 131,
         "source": 49,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18437,7 +15518,7 @@ package TimerGeometry {
         "name": "to_paused",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 33,
+        "reference": 28,
         "source": 30,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18454,7 +15535,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 85,
-        "reference": 179,
+        "reference": 140,
         "source": 29,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18479,7 +15560,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 85,
-        "reference": 177,
+        "reference": 138,
         "source": 29,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18496,7 +15577,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 87,
-        "reference": 180,
+        "reference": 141,
         "source": 29,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18513,7 +15594,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 85,
-        "reference": 178,
+        "reference": 139,
         "source": 29,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18530,7 +15611,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 85,
-        "reference": 178,
+        "reference": 139,
         "source": 29,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18547,7 +15628,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 85,
-        "reference": 178,
+        "reference": 139,
         "source": 29,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18564,7 +15645,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 35,
-        "reference": 156,
+        "reference": 117,
         "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18581,7 +15662,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 35,
-        "reference": 155,
+        "reference": 116,
         "source": 3,
         "stateSubaction": "entry",
         "successionGuard": null,
@@ -18598,7 +15679,7 @@ package TimerGeometry {
         "name": "idle",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 18,
+        "reference": 17,
         "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18621,7 +15702,7 @@ package TimerGeometry {
         "name": "paused",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 22,
+        "reference": 20,
         "source": 10,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18644,7 +15725,7 @@ package TimerGeometry {
         "name": "expired",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 17,
+        "reference": 16,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18667,7 +15748,7 @@ package TimerGeometry {
         "name": "running",
         "notationRole": "usage",
         "owner": 35,
-        "reference": 23,
+        "reference": 21,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18698,8 +15779,8 @@ package TimerGeometry {
         "name": "displayOut",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 108,
-        "source": 91,
+        "reference": 94,
+        "source": 86,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18707,7 +15788,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "DisplayCommandPort",
-              "reference": 58
+              "reference": 48
             }
           ]
         }
@@ -18721,8 +15802,8 @@ package TimerGeometry {
         "name": "displayValue",
         "notationRole": "reference-usage",
         "owner": 98,
-        "reference": 59,
-        "source": 75,
+        "reference": 49,
+        "source": 72,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18730,7 +15811,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 148
+              "reference": 115
             }
           ]
         }
@@ -18760,8 +15841,8 @@ package TimerGeometry {
         "name": "pwr",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 111,
-        "source": 97,
+        "reference": 97,
+        "source": 92,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18769,7 +15850,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BatteryOutlet",
-              "reference": 42
+              "reference": 34
             }
           ]
         }
@@ -18783,8 +15864,8 @@ package TimerGeometry {
         "name": "voltage",
         "notationRole": "usage",
         "owner": 100,
-        "reference": 47,
-        "source": 57,
+        "reference": 38,
+        "source": 56,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18800,8 +15881,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 101,
-        "reference": 193,
-        "source": 59,
+        "reference": 153,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18817,8 +15898,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 102,
-        "reference": 194,
-        "source": 59,
+        "reference": 154,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18834,8 +15915,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 102,
-        "reference": 195,
-        "source": 58,
+        "reference": 155,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18851,8 +15932,8 @@ package TimerGeometry {
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 100,
-        "reference": 46,
-        "source": 55,
+        "reference": 37,
+        "source": 54,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18868,8 +15949,8 @@ package TimerGeometry {
         "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 100,
-        "reference": 221,
-        "source": 99,
+        "reference": 177,
+        "source": 94,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18885,8 +15966,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 106,
-        "reference": 222,
-        "source": 102,
+        "reference": 178,
+        "source": 97,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18902,8 +15983,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 107,
-        "reference": 223,
-        "source": 102,
+        "reference": 179,
+        "source": 97,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18919,8 +16000,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 107,
-        "reference": 224,
-        "source": 101,
+        "reference": 180,
+        "source": 96,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18948,8 +16029,8 @@ package TimerGeometry {
         "name": "buttonIn",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 105,
-        "source": 89,
+        "reference": 91,
+        "source": 84,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18957,7 +16038,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "ButtonInputPort",
-              "reference": 50
+              "reference": 40
             }
           ]
         }
@@ -18971,8 +16052,8 @@ package TimerGeometry {
         "name": "stopPressed",
         "notationRole": "reference-usage",
         "owner": 110,
-        "reference": 55,
-        "source": 66,
+        "reference": 45,
+        "source": 64,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18980,7 +16061,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -18994,8 +16075,8 @@ package TimerGeometry {
         "name": "resetPressed",
         "notationRole": "reference-usage",
         "owner": 110,
-        "reference": 53,
-        "source": 68,
+        "reference": 43,
+        "source": 66,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19003,7 +16084,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19017,8 +16098,8 @@ package TimerGeometry {
         "name": "startPressed",
         "notationRole": "reference-usage",
         "owner": 110,
-        "reference": 54,
-        "source": 64,
+        "reference": 44,
+        "source": 62,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19026,7 +16107,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19040,8 +16121,8 @@ package TimerGeometry {
         "name": "decrementPressed",
         "notationRole": "reference-usage",
         "owner": 110,
-        "reference": 51,
-        "source": 72,
+        "reference": 41,
+        "source": 70,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19049,7 +16130,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19063,8 +16144,8 @@ package TimerGeometry {
         "name": "incrementPressed",
         "notationRole": "reference-usage",
         "owner": 110,
-        "reference": 52,
-        "source": 70,
+        "reference": 42,
+        "source": 68,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19072,7 +16153,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19094,8 +16175,8 @@ package TimerGeometry {
         "name": "lcdDrive",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 110,
-        "source": 93,
+        "reference": 96,
+        "source": 88,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19103,7 +16184,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "LcdSegmentDrivePort",
-              "reference": 60
+              "reference": 50
             }
           ]
         }
@@ -19117,8 +16198,8 @@ package TimerGeometry {
         "name": "comSegDrive",
         "notationRole": "reference-usage",
         "owner": 116,
-        "reference": 61,
-        "source": 78,
+        "reference": 51,
+        "source": 74,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19126,7 +16207,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 148
+              "reference": 115
             }
           ]
         }
@@ -19148,8 +16229,8 @@ package TimerGeometry {
         "name": "buzzerOut",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 106,
-        "source": 95,
+        "reference": 92,
+        "source": 90,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19157,7 +16238,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BuzzerCommandPort",
-              "reference": 56
+              "reference": 46
             }
           ]
         }
@@ -19171,8 +16252,8 @@ package TimerGeometry {
         "name": "buzzerOn",
         "notationRole": "reference-usage",
         "owner": 118,
-        "reference": 57,
-        "source": 81,
+        "reference": 47,
+        "source": 76,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19180,7 +16261,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19194,8 +16275,8 @@ package TimerGeometry {
         "name": "clockFrequency",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 107,
-        "source": 83,
+        "reference": 93,
+        "source": 78,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19203,7 +16284,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "FrequencyValue",
-              "reference": 135
+              "reference": 112
             }
           ]
         }
@@ -19217,8 +16298,8 @@ package TimerGeometry {
         "name": "ramSize",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 115,
-        "source": 87,
+        "reference": 100,
+        "source": 82,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19226,7 +16307,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Real",
-              "reference": 147
+              "reference": 114
             }
           ]
         }
@@ -19240,8 +16321,8 @@ package TimerGeometry {
         "name": "flashSize",
         "notationRole": "usage",
         "owner": 34,
-        "reference": 109,
-        "source": 85,
+        "reference": 95,
+        "source": 80,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19249,7 +16330,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Real",
-              "reference": 147
+              "reference": 114
             }
           ]
         }
@@ -19272,8 +16353,8 @@ package TimerGeometry {
         "name": "buttons",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 119,
-        "source": 147,
+        "reference": 104,
+        "source": 142,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19281,7 +16362,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "ButtonInterface",
-              "reference": 67
+              "reference": 57
             }
           ]
         }
@@ -19311,8 +16392,8 @@ package TimerGeometry {
         "name": "pwr",
         "notationRole": "usage",
         "owner": 123,
-        "reference": 69,
-        "source": 129,
+        "reference": 59,
+        "source": 124,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19320,7 +16401,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BatteryOutlet",
-              "reference": 42
+              "reference": 34
             }
           ]
         }
@@ -19334,8 +16415,8 @@ package TimerGeometry {
         "name": "voltage",
         "notationRole": "usage",
         "owner": 124,
-        "reference": 47,
-        "source": 57,
+        "reference": 38,
+        "source": 56,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19351,8 +16432,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 125,
-        "reference": 193,
-        "source": 59,
+        "reference": 153,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19368,8 +16449,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 126,
-        "reference": 194,
-        "source": 59,
+        "reference": 154,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19385,8 +16466,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 126,
-        "reference": 195,
-        "source": 58,
+        "reference": 155,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19402,8 +16483,8 @@ package TimerGeometry {
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 124,
-        "reference": 46,
-        "source": 55,
+        "reference": 37,
+        "source": 54,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19419,8 +16500,8 @@ package TimerGeometry {
         "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 124,
-        "reference": 200,
-        "source": 131,
+        "reference": 156,
+        "source": 126,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19436,8 +16517,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 130,
-        "reference": 201,
-        "source": 134,
+        "reference": 157,
+        "source": 129,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19453,8 +16534,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 131,
-        "reference": 202,
-        "source": 134,
+        "reference": 158,
+        "source": 129,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19470,8 +16551,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 131,
-        "reference": 203,
-        "source": 133,
+        "reference": 159,
+        "source": 128,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19499,8 +16580,8 @@ package TimerGeometry {
         "name": "output",
         "notationRole": "usage",
         "owner": 123,
-        "reference": 68,
-        "source": 127,
+        "reference": 58,
+        "source": 122,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19508,7 +16589,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "ButtonInputPort",
-              "reference": 50
+              "reference": 40
             }
           ]
         }
@@ -19522,8 +16603,8 @@ package TimerGeometry {
         "name": "stopPressed",
         "notationRole": "reference-usage",
         "owner": 134,
-        "reference": 55,
-        "source": 66,
+        "reference": 45,
+        "source": 64,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19531,7 +16612,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19545,8 +16626,8 @@ package TimerGeometry {
         "name": "resetPressed",
         "notationRole": "reference-usage",
         "owner": 134,
-        "reference": 53,
-        "source": 68,
+        "reference": 43,
+        "source": 66,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19554,7 +16635,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19568,8 +16649,8 @@ package TimerGeometry {
         "name": "startPressed",
         "notationRole": "reference-usage",
         "owner": 134,
-        "reference": 54,
-        "source": 64,
+        "reference": 44,
+        "source": 62,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19577,7 +16658,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19591,8 +16672,8 @@ package TimerGeometry {
         "name": "decrementPressed",
         "notationRole": "reference-usage",
         "owner": 134,
-        "reference": 51,
-        "source": 72,
+        "reference": 41,
+        "source": 70,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19600,7 +16681,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19614,8 +16695,8 @@ package TimerGeometry {
         "name": "incrementPressed",
         "notationRole": "reference-usage",
         "owner": 134,
-        "reference": 52,
-        "source": 70,
+        "reference": 42,
+        "source": 68,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19623,7 +16704,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 146
+              "reference": 113
             }
           ]
         }
@@ -19654,8 +16735,8 @@ package TimerGeometry {
         "name": "display",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 121,
-        "source": 145,
+        "reference": 106,
+        "source": 140,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19663,7 +16744,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Display",
-              "reference": 87
+              "reference": 74
             }
           ]
         }
@@ -19685,8 +16766,8 @@ package TimerGeometry {
         "name": "cmd",
         "notationRole": "usage",
         "owner": 140,
-        "reference": 88,
-        "source": 117,
+        "reference": 75,
+        "source": 112,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19694,7 +16775,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "DisplayCommandPort",
-              "reference": 58
+              "reference": 48
             }
           ]
         }
@@ -19708,8 +16789,8 @@ package TimerGeometry {
         "name": "displayValue",
         "notationRole": "reference-usage",
         "owner": 141,
-        "reference": 59,
-        "source": 75,
+        "reference": 49,
+        "source": 72,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19717,7 +16798,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 148
+              "reference": 115
             }
           ]
         }
@@ -19747,8 +16828,8 @@ package TimerGeometry {
         "name": "pwr",
         "notationRole": "usage",
         "owner": 140,
-        "reference": 91,
-        "source": 121,
+        "reference": 78,
+        "source": 116,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19756,7 +16837,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BatteryOutlet",
-              "reference": 42
+              "reference": 34
             }
           ]
         }
@@ -19770,8 +16851,8 @@ package TimerGeometry {
         "name": "voltage",
         "notationRole": "usage",
         "owner": 143,
-        "reference": 47,
-        "source": 57,
+        "reference": 38,
+        "source": 56,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19787,8 +16868,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 144,
-        "reference": 193,
-        "source": 59,
+        "reference": 153,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19804,8 +16885,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 145,
-        "reference": 194,
-        "source": 59,
+        "reference": 154,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19821,8 +16902,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 145,
-        "reference": 195,
-        "source": 58,
+        "reference": 155,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19838,8 +16919,8 @@ package TimerGeometry {
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 143,
-        "reference": 46,
-        "source": 55,
+        "reference": 37,
+        "source": 54,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19855,8 +16936,8 @@ package TimerGeometry {
         "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 143,
-        "reference": 212,
-        "source": 123,
+        "reference": 168,
+        "source": 118,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19872,8 +16953,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 149,
-        "reference": 213,
-        "source": 126,
+        "reference": 169,
+        "source": 121,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19889,8 +16970,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 150,
-        "reference": 214,
-        "source": 126,
+        "reference": 170,
+        "source": 121,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19906,8 +16987,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 150,
-        "reference": 215,
-        "source": 125,
+        "reference": 171,
+        "source": 120,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19931,8 +17012,8 @@ package TimerGeometry {
         "name": "lcdIn",
         "notationRole": "usage",
         "owner": 140,
-        "reference": 90,
-        "source": 119,
+        "reference": 77,
+        "source": 114,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19940,7 +17021,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "LcdSegmentDrivePort",
-              "reference": 60
+              "reference": 50
             }
           ]
         }
@@ -19954,8 +17035,8 @@ package TimerGeometry {
         "name": "comSegDrive",
         "notationRole": "reference-usage",
         "owner": 153,
-        "reference": 61,
-        "source": 78,
+        "reference": 51,
+        "source": 74,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19963,7 +17044,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 148
+              "reference": 115
             }
           ]
         }
@@ -19977,8 +17058,8 @@ package TimerGeometry {
         "name": "format",
         "notationRole": "usage",
         "owner": 140,
-        "reference": 89,
-        "source": 115,
+        "reference": 76,
+        "source": 110,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -19986,7 +17067,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 148
+              "reference": 115
             }
           ]
         }
@@ -20015,8 +17096,8 @@ package TimerGeometry {
         "name": "buzzer",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 101,
-        "source": 179,
+        "reference": 87,
+        "source": 174,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20024,7 +17105,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Buzzer",
-              "reference": 73
+              "reference": 62
             }
           ]
         }
@@ -20054,8 +17135,8 @@ package TimerGeometry {
         "name": "pwr",
         "notationRole": "usage",
         "owner": 156,
-        "reference": 75,
-        "source": 137,
+        "reference": 64,
+        "source": 132,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20063,7 +17144,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BatteryOutlet",
-              "reference": 42
+              "reference": 34
             }
           ]
         }
@@ -20077,8 +17158,8 @@ package TimerGeometry {
         "name": "voltage",
         "notationRole": "usage",
         "owner": 157,
-        "reference": 47,
-        "source": 57,
+        "reference": 38,
+        "source": 56,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20094,8 +17175,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 158,
-        "reference": 193,
-        "source": 59,
+        "reference": 153,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20111,8 +17192,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 159,
-        "reference": 194,
-        "source": 59,
+        "reference": 154,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20128,8 +17209,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 159,
-        "reference": 195,
-        "source": 58,
+        "reference": 155,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20145,8 +17226,8 @@ package TimerGeometry {
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 157,
-        "reference": 46,
-        "source": 55,
+        "reference": 37,
+        "source": 54,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20162,8 +17243,8 @@ package TimerGeometry {
         "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 157,
-        "reference": 204,
-        "source": 139,
+        "reference": 160,
+        "source": 134,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20179,8 +17260,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 163,
-        "reference": 205,
-        "source": 142,
+        "reference": 161,
+        "source": 137,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20196,8 +17277,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 164,
-        "reference": 206,
-        "source": 142,
+        "reference": 162,
+        "source": 137,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20213,8 +17294,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 164,
-        "reference": 207,
-        "source": 141,
+        "reference": 163,
+        "source": 136,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20230,8 +17311,8 @@ package TimerGeometry {
         "name": "duration",
         "notationRole": "usage",
         "owner": 156,
-        "reference": 74,
-        "source": 135,
+        "reference": 63,
+        "source": 130,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20239,7 +17320,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "DurationValue",
-              "reference": 131
+              "reference": 108
             }
           ]
         }
@@ -20270,8 +17351,8 @@ package TimerGeometry {
         "name": "battery",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 100,
-        "source": 177,
+        "reference": 86,
+        "source": 172,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20279,7 +17360,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Battery",
-              "reference": 62
+              "reference": 52
             }
           ]
         }
@@ -20303,8 +17384,8 @@ package TimerGeometry {
         "name": "powerOut",
         "notationRole": "usage",
         "owner": 168,
-        "reference": 65,
-        "source": 169,
+        "reference": 55,
+        "source": 164,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20312,7 +17393,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "BatteryOutlet",
-              "reference": 42
+              "reference": 34
             }
           ]
         }
@@ -20326,8 +17407,8 @@ package TimerGeometry {
         "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 169,
-        "reference": 43,
-        "source": 60,
+        "reference": 35,
+        "source": 59,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20343,8 +17424,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 170,
-        "reference": 190,
-        "source": 62,
+        "reference": 150,
+        "source": 61,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20360,8 +17441,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 171,
-        "reference": 191,
-        "source": 62,
+        "reference": 151,
+        "source": 61,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20377,8 +17458,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 171,
-        "reference": 192,
-        "source": 61,
+        "reference": 152,
+        "source": 60,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20394,8 +17475,8 @@ package TimerGeometry {
         "name": "voltage",
         "notationRole": "usage",
         "owner": 169,
-        "reference": 47,
-        "source": 57,
+        "reference": 38,
+        "source": 56,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20411,8 +17492,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 174,
-        "reference": 193,
-        "source": 59,
+        "reference": 153,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20428,8 +17509,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 175,
-        "reference": 194,
-        "source": 59,
+        "reference": 154,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20445,8 +17526,8 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 175,
-        "reference": 195,
-        "source": 58,
+        "reference": 155,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20462,8 +17543,8 @@ package TimerGeometry {
         "name": "power",
         "notationRole": "reference-usage",
         "owner": 169,
-        "reference": 46,
-        "source": 55,
+        "reference": 37,
+        "source": 54,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20479,8 +17560,8 @@ package TimerGeometry {
         "name": "nominalVoltage",
         "notationRole": "usage",
         "owner": 168,
-        "reference": 64,
-        "source": 165,
+        "reference": 54,
+        "source": 160,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20488,7 +17569,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "ElectricPotentialDifferenceValue",
-              "reference": 133
+              "reference": 110
             }
           ]
         }
@@ -20502,8 +17583,8 @@ package TimerGeometry {
         "name": "runtimeEstimate",
         "notationRole": "usage",
         "owner": 168,
-        "reference": 66,
-        "source": 167,
+        "reference": 56,
+        "source": 162,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20511,7 +17592,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "DurationValue",
-              "reference": 131
+              "reference": 108
             }
           ]
         }
@@ -20525,8 +17606,8 @@ package TimerGeometry {
         "name": "capacity",
         "notationRole": "usage",
         "owner": 168,
-        "reference": 63,
-        "source": 163,
+        "reference": 53,
+        "source": 158,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20534,7 +17615,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "ElectricChargeValue",
-              "reference": 132
+              "reference": 109
             }
           ]
         }
@@ -20557,8 +17638,8 @@ package TimerGeometry {
         "name": "housing",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 102,
-        "source": 181,
+        "reference": 88,
+        "source": 176,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20566,7 +17647,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Housing",
-              "reference": 95
+              "reference": 81
             }
           ]
         }
@@ -20580,8 +17661,8 @@ package TimerGeometry {
         "name": "frontCover",
         "notationRole": "usage",
         "owner": 182,
-        "reference": 97,
-        "source": 171,
+        "reference": 83,
+        "source": 166,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20589,7 +17670,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Cover",
-              "reference": 86
+              "reference": 73
             }
           ]
         }
@@ -20603,8 +17684,8 @@ package TimerGeometry {
         "name": "backCover",
         "notationRole": "usage",
         "owner": 182,
-        "reference": 96,
-        "source": 173,
+        "reference": 82,
+        "source": 168,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -20612,7 +17693,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Cover",
-              "reference": 86
+              "reference": 73
             }
           ]
         }
@@ -20623,293 +17704,62 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 240,
+        "reference": 194,
         "source": 0,
         "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 239,
-        "source": 0,
-        "target": {
-          "reference": 141,
+          "reference": 84,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 176,
+        "navigation": 171,
         "provenance": "authored",
-        "reference": 858,
+        "reference": 443,
         "source": 6,
         "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 855,
-        "source": 6,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 856,
-        "source": 6,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 857,
-        "source": 6,
-        "target": {
-          "reference": 98,
+          "reference": 102,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 144,
+        "navigation": 139,
         "provenance": "authored",
-        "reference": 988,
+        "reference": 511,
         "source": 34,
         "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 985,
-        "source": 34,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 986,
-        "source": 34,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 987,
-        "source": 34,
-        "target": {
-          "reference": 117,
+          "reference": 90,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 98,
+        "navigation": 93,
         "provenance": "authored",
-        "reference": 896,
+        "reference": 461,
         "source": 100,
         "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 897,
-        "source": 100,
-        "target": {
-          "reference": 189,
+          "reference": 34,
           "status": "resolved"
         }
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 893,
-        "source": 100,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 894,
-        "source": 100,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 895,
-        "source": 100,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 56,
+        "navigation": 55,
         "provenance": "authored",
-        "reference": 523,
+        "reference": 311,
         "source": 105,
         "target": {
-          "reference": 134,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 530,
-        "source": 105,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 544,
-        "source": 101,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 545,
-        "source": 101,
-        "target": {
-          "node": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 558,
-        "source": 101,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 579,
-        "source": 102,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 586,
-        "source": 102,
-        "target": {
-          "reference": 42,
+          "reference": 111,
           "status": "resolved"
         }
       },
       {
         "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 593,
-        "source": 103,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 600,
-        "source": 103,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 614,
-        "source": 103,
-        "target": {
-          "node": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 601,
-        "source": 104,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 100,
+        "navigation": 95,
         "provenance": "authored",
-        "reference": 899,
+        "reference": 463,
         "source": 106,
         "target": {
           "node": 13,
@@ -20917,189 +17767,13 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 900,
-        "source": 106,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 901,
-        "source": 106,
-        "target": {
-          "node": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 904,
-        "source": 107,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 905,
-        "source": 107,
-        "target": {
-          "node": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 906,
-        "source": 108,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 907,
-        "source": 108,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 909,
-        "source": 108,
-        "target": {
-          "node": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 908,
-        "source": 109,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 90,
+        "navigation": 85,
         "provenance": "authored",
-        "reference": 867,
+        "reference": 449,
         "source": 110,
         "target": {
-          "reference": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 868,
-        "source": 110,
-        "target": {
-          "reference": 196,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 864,
-        "source": 110,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 865,
-        "source": 110,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 866,
-        "source": 110,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 67,
-        "provenance": "authored",
-        "reference": 639,
-        "source": 111,
-        "target": {
-          "reference": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 637,
-        "source": 111,
-        "target": {
-          "reference": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 69,
-        "provenance": "authored",
-        "reference": 631,
-        "source": 112,
-        "target": {
-          "reference": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 629,
-        "source": 112,
-        "target": {
-          "reference": 50,
+          "reference": 40,
           "status": "resolved"
         }
       },
@@ -21107,43 +17781,32 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 65,
         "provenance": "authored",
-        "reference": 635,
-        "source": 113,
+        "reference": 347,
+        "source": 111,
         "target": {
-          "reference": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 633,
-        "source": 113,
-        "target": {
-          "reference": 50,
+          "reference": 113,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 73,
+        "navigation": 67,
         "provenance": "authored",
-        "reference": 623,
-        "source": 114,
+        "reference": 343,
+        "source": 112,
         "target": {
-          "reference": 146,
+          "reference": 113,
           "status": "resolved"
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 621,
-        "source": 114,
+        "kind": "typing",
+        "navigation": 63,
+        "provenance": "authored",
+        "reference": 345,
+        "source": 113,
         "target": {
-          "reference": 50,
+          "reference": 113,
           "status": "resolved"
         }
       },
@@ -21151,19 +17814,30 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 71,
         "provenance": "authored",
-        "reference": 627,
-        "source": 115,
+        "reference": 339,
+        "source": 114,
         "target": {
-          "reference": 146,
+          "reference": 113,
           "status": "resolved"
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 625,
+        "kind": "typing",
+        "navigation": 69,
+        "provenance": "authored",
+        "reference": 341,
         "source": 115,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 89,
+        "provenance": "authored",
+        "reference": 457,
+        "source": 116,
         "target": {
           "reference": 50,
           "status": "resolved"
@@ -21171,309 +17845,89 @@ package TimerGeometry {
       },
       {
         "kind": "typing",
-        "navigation": 94,
+        "navigation": 75,
         "provenance": "authored",
-        "reference": 889,
-        "source": 116,
-        "target": {
-          "reference": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 886,
-        "source": 116,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 887,
-        "source": 116,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 888,
-        "source": 116,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 79,
-        "provenance": "authored",
-        "reference": 651,
+        "reference": 353,
         "source": 117,
         "target": {
-          "reference": 148,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 649,
-        "source": 117,
-        "target": {
-          "reference": 60,
+          "reference": 115,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 96,
+        "navigation": 91,
         "provenance": "authored",
-        "reference": 873,
+        "reference": 451,
         "source": 118,
         "target": {
-          "reference": 56,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 870,
-        "source": 118,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 871,
-        "source": 118,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 872,
-        "source": 118,
-        "target": {
-          "reference": 104,
+          "reference": 46,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 82,
+        "navigation": 77,
         "provenance": "authored",
-        "reference": 643,
+        "reference": 349,
         "source": 119,
         "target": {
-          "reference": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 641,
-        "source": 119,
-        "target": {
-          "reference": 56,
+          "reference": 113,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 92,
+        "navigation": 87,
         "provenance": "authored",
-        "reference": 881,
+        "reference": 454,
         "source": 98,
         "target": {
-          "reference": 58,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 878,
-        "source": 98,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 879,
-        "source": 98,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 880,
-        "source": 98,
-        "target": {
-          "reference": 104,
+          "reference": 48,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 76,
+        "navigation": 73,
         "provenance": "authored",
-        "reference": 647,
+        "reference": 351,
         "source": 99,
         "target": {
-          "reference": 148,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 645,
-        "source": 99,
-        "target": {
-          "reference": 58,
+          "reference": 115,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 88,
+        "navigation": 83,
         "provenance": "authored",
-        "reference": 912,
+        "reference": 466,
         "source": 121,
         "target": {
-          "reference": 147,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 910,
-        "source": 121,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 911,
-        "source": 121,
-        "target": {
-          "reference": 104,
+          "reference": 114,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 86,
+        "navigation": 81,
         "provenance": "authored",
-        "reference": 884,
+        "reference": 455,
         "source": 122,
         "target": {
-          "reference": 147,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 882,
-        "source": 122,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 883,
-        "source": 122,
-        "target": {
-          "reference": 104,
+          "reference": 114,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 104,
+        "navigation": 99,
         "provenance": "authored",
-        "reference": 930,
+        "reference": 481,
         "source": 35,
         "target": {
           "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 927,
-        "source": 35,
-        "target": {
-          "reference": 139,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 928,
-        "source": 35,
-        "target": {
-          "reference": 154,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 929,
-        "source": 35,
-        "target": {
-          "reference": 104,
           "status": "resolved"
         }
       },
@@ -21481,7 +17935,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 293,
+        "reference": 217,
         "source": 94,
         "target": {
           "reference": 5,
@@ -21489,54 +17943,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 283,
-        "source": 94,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 284,
-        "source": 94,
-        "target": {
-          "reference": 150,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 285,
-        "source": 94,
-        "target": {
-          "reference": 154,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 292,
-        "source": 94,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 329,
+        "reference": 233,
         "source": 95,
         "target": {
           "reference": 7,
@@ -21544,54 +17954,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 321,
-        "source": 95,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 322,
-        "source": 95,
-        "target": {
-          "reference": 150,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 323,
-        "source": 95,
-        "target": {
-          "reference": 154,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 328,
-        "source": 95,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "initialState",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 242,
+        "reference": 196,
         "source": 92,
         "target": {
           "node": 94,
@@ -21599,32 +17965,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 244,
-        "source": 92,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 247,
-        "source": 92,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 282,
+        "reference": 210,
         "source": 96,
         "target": {
           "reference": 4,
@@ -21632,54 +17976,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 276,
-        "source": 96,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 277,
-        "source": 96,
-        "target": {
-          "reference": 150,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 278,
-        "source": 96,
-        "target": {
-          "reference": 154,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 281,
-        "source": 96,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 338,
+        "reference": 238,
         "source": 97,
         "target": {
           "reference": 9,
@@ -21687,131 +17987,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 330,
-        "source": 97,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 331,
-        "source": 97,
-        "target": {
-          "reference": 150,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 332,
-        "source": 97,
-        "target": {
-          "reference": 154,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 337,
-        "source": 97,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 243,
-        "source": 93,
-        "target": {
-          "reference": 149,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 245,
-        "source": 93,
-        "target": {
-          "reference": 125,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 246,
-        "source": 93,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 248,
-        "source": 93,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 425,
-        "source": 85,
-        "target": {
-          "reference": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 426,
-        "source": 85,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 427,
-        "source": 85,
-        "target": {
-          "reference": 151,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 428,
+        "reference": 277,
         "source": 85,
         "target": {
           "node": 97,
@@ -21822,7 +18001,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 33,
         "provenance": "authored",
-        "reference": 429,
+        "reference": 278,
         "source": 85,
         "target": {
           "node": 95,
@@ -21833,7 +18012,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 430,
+        "reference": 279,
         "source": 85,
         "target": {
           "reference": 11,
@@ -21841,109 +18020,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 431,
-        "source": 85,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 441,
-        "source": 91,
-        "target": {
-          "node": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 433,
-        "source": 91,
-        "target": {
-          "reference": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 434,
-        "source": 91,
-        "target": {
-          "reference": 153,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 442,
-        "source": 91,
-        "target": {
-          "node": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 435,
-        "source": 91,
-        "target": {
-          "reference": 152,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 436,
-        "source": 91,
-        "target": {
-          "node": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 443,
-        "source": 91,
-        "target": {
-          "node": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 437,
-        "source": 86,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 439,
+        "reference": 281,
         "source": 86,
         "target": {
           "node": 97,
@@ -21954,7 +18034,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 33,
         "provenance": "authored",
-        "reference": 440,
+        "reference": 282,
         "source": 86,
         "target": {
           "node": 95,
@@ -21962,87 +18042,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 438,
-        "source": 87,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 444,
-        "source": 87,
-        "target": {
-          "node": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 445,
-        "source": 88,
-        "target": {
-          "reference": 229,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 446,
-        "source": 88,
-        "target": {
-          "node": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 344,
-        "source": 36,
-        "target": {
-          "reference": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 345,
-        "source": 36,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 346,
-        "source": 36,
-        "target": {
-          "reference": 151,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 36,
         "provenance": "authored",
-        "reference": 347,
+        "reference": 244,
         "source": 36,
         "target": {
           "node": 97,
@@ -22053,7 +18056,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 38,
         "provenance": "authored",
-        "reference": 348,
+        "reference": 245,
         "source": 36,
         "target": {
           "node": 96,
@@ -22064,7 +18067,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 37,
         "provenance": "authored",
-        "reference": 349,
+        "reference": 246,
         "source": 36,
         "target": {
           "reference": 2,
@@ -22072,109 +18075,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 350,
-        "source": 36,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 360,
-        "source": 42,
-        "target": {
-          "node": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 352,
-        "source": 42,
-        "target": {
-          "reference": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 353,
-        "source": 42,
-        "target": {
-          "reference": 153,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 361,
-        "source": 42,
-        "target": {
-          "node": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 354,
-        "source": 42,
-        "target": {
-          "reference": 152,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 355,
-        "source": 42,
-        "target": {
-          "node": 39,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 362,
-        "source": 42,
-        "target": {
-          "node": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 356,
-        "source": 37,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 36,
         "provenance": "authored",
-        "reference": 358,
+        "reference": 248,
         "source": 37,
         "target": {
           "node": 97,
@@ -22185,7 +18089,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 38,
         "provenance": "authored",
-        "reference": 359,
+        "reference": 249,
         "source": 37,
         "target": {
           "node": 96,
@@ -22193,87 +18097,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 357,
-        "source": 38,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 363,
-        "source": 38,
-        "target": {
-          "node": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 364,
-        "source": 39,
-        "target": {
-          "reference": 229,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 365,
-        "source": 39,
-        "target": {
-          "node": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 452,
-        "source": 43,
-        "target": {
-          "reference": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 453,
-        "source": 43,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 454,
-        "source": 43,
-        "target": {
-          "reference": 151,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 455,
+        "reference": 288,
         "source": 43,
         "target": {
           "node": 94,
@@ -22284,7 +18111,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 456,
+        "reference": 289,
         "source": 43,
         "target": {
           "node": 97,
@@ -22295,7 +18122,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 457,
+        "reference": 290,
         "source": 43,
         "target": {
           "reference": 10,
@@ -22303,109 +18130,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 458,
-        "source": 43,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 468,
-        "source": 49,
-        "target": {
-          "node": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 460,
-        "source": 49,
-        "target": {
-          "reference": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 461,
-        "source": 49,
-        "target": {
-          "reference": 153,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 469,
-        "source": 49,
-        "target": {
-          "node": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 462,
-        "source": 49,
-        "target": {
-          "reference": 152,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 463,
-        "source": 49,
-        "target": {
-          "node": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 470,
-        "source": 49,
-        "target": {
-          "node": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 464,
-        "source": 44,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 466,
+        "reference": 292,
         "source": 44,
         "target": {
           "node": 94,
@@ -22416,7 +18144,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 467,
+        "reference": 293,
         "source": 44,
         "target": {
           "node": 97,
@@ -22424,87 +18152,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 465,
-        "source": 45,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 471,
-        "source": 45,
-        "target": {
-          "node": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 472,
-        "source": 46,
-        "target": {
-          "reference": 229,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 473,
-        "source": 46,
-        "target": {
-          "node": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 254,
-        "source": 50,
-        "target": {
-          "reference": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 255,
-        "source": 50,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 256,
-        "source": 50,
-        "target": {
-          "reference": 151,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 26,
         "provenance": "authored",
-        "reference": 257,
+        "reference": 202,
         "source": 50,
         "target": {
           "node": 94,
@@ -22515,7 +18166,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 258,
+        "reference": 203,
         "source": 50,
         "target": {
           "node": 94,
@@ -22526,7 +18177,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 259,
+        "reference": 204,
         "source": 50,
         "target": {
           "reference": 3,
@@ -22534,109 +18185,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 260,
-        "source": 50,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 270,
-        "source": 56,
-        "target": {
-          "node": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 262,
-        "source": 56,
-        "target": {
-          "reference": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 263,
-        "source": 56,
-        "target": {
-          "reference": 153,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 271,
-        "source": 56,
-        "target": {
-          "node": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 264,
-        "source": 56,
-        "target": {
-          "reference": 152,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 265,
-        "source": 56,
-        "target": {
-          "node": 53,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 272,
-        "source": 56,
-        "target": {
-          "node": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 266,
-        "source": 51,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 26,
         "provenance": "authored",
-        "reference": 268,
+        "reference": 206,
         "source": 51,
         "target": {
           "node": 94,
@@ -22647,7 +18199,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 269,
+        "reference": 207,
         "source": 51,
         "target": {
           "node": 94,
@@ -22655,87 +18207,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 267,
-        "source": 52,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 273,
-        "source": 52,
-        "target": {
-          "node": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 274,
-        "source": 53,
-        "target": {
-          "reference": 229,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 275,
-        "source": 53,
-        "target": {
-          "node": 52,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 299,
-        "source": 57,
-        "target": {
-          "reference": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 300,
-        "source": 57,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 301,
-        "source": 57,
-        "target": {
-          "reference": 151,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 302,
+        "reference": 223,
         "source": 57,
         "target": {
           "node": 94,
@@ -22746,7 +18221,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 303,
+        "reference": 224,
         "source": 57,
         "target": {
           "node": 94,
@@ -22757,7 +18232,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 304,
+        "reference": 225,
         "source": 57,
         "target": {
           "reference": 6,
@@ -22765,109 +18240,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 305,
-        "source": 57,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 315,
-        "source": 63,
-        "target": {
-          "node": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 307,
-        "source": 63,
-        "target": {
-          "reference": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 308,
-        "source": 63,
-        "target": {
-          "reference": 153,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 316,
-        "source": 63,
-        "target": {
-          "node": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 309,
-        "source": 63,
-        "target": {
-          "reference": 152,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 310,
-        "source": 63,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 317,
-        "source": 63,
-        "target": {
-          "node": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 311,
-        "source": 58,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 313,
+        "reference": 227,
         "source": 58,
         "target": {
           "node": 94,
@@ -22878,7 +18254,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 314,
+        "reference": 228,
         "source": 58,
         "target": {
           "node": 94,
@@ -22886,87 +18262,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 312,
-        "source": 59,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 318,
-        "source": 59,
-        "target": {
-          "node": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 319,
-        "source": 60,
-        "target": {
-          "reference": 229,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 320,
-        "source": 60,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 479,
-        "source": 64,
-        "target": {
-          "reference": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 480,
-        "source": 64,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 481,
-        "source": 64,
-        "target": {
-          "reference": 151,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 41,
         "provenance": "authored",
-        "reference": 482,
+        "reference": 299,
         "source": 64,
         "target": {
           "node": 95,
@@ -22977,7 +18276,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 43,
         "provenance": "authored",
-        "reference": 483,
+        "reference": 300,
         "source": 64,
         "target": {
           "node": 97,
@@ -22988,7 +18287,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 42,
         "provenance": "authored",
-        "reference": 484,
+        "reference": 301,
         "source": 64,
         "target": {
           "reference": 10,
@@ -22996,109 +18295,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 485,
-        "source": 64,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 495,
-        "source": 70,
-        "target": {
-          "node": 64,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 487,
-        "source": 70,
-        "target": {
-          "reference": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 488,
-        "source": 70,
-        "target": {
-          "reference": 153,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 496,
-        "source": 70,
-        "target": {
-          "node": 64,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 489,
-        "source": 70,
-        "target": {
-          "reference": 152,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 490,
-        "source": 70,
-        "target": {
-          "node": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 497,
-        "source": 70,
-        "target": {
-          "node": 64,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 491,
-        "source": 65,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 41,
         "provenance": "authored",
-        "reference": 493,
+        "reference": 303,
         "source": 65,
         "target": {
           "node": 95,
@@ -23109,7 +18309,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 43,
         "provenance": "authored",
-        "reference": 494,
+        "reference": 304,
         "source": 65,
         "target": {
           "node": 97,
@@ -23117,87 +18317,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 492,
-        "source": 66,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 498,
-        "source": 66,
-        "target": {
-          "node": 64,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 499,
-        "source": 67,
-        "target": {
-          "reference": 229,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 500,
-        "source": 67,
-        "target": {
-          "node": 66,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 398,
-        "source": 71,
-        "target": {
-          "reference": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 399,
-        "source": 71,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 400,
-        "source": 71,
-        "target": {
-          "reference": 151,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 46,
         "provenance": "authored",
-        "reference": 401,
+        "reference": 266,
         "source": 71,
         "target": {
           "node": 95,
@@ -23208,7 +18331,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 48,
         "provenance": "authored",
-        "reference": 402,
+        "reference": 267,
         "source": 71,
         "target": {
           "node": 94,
@@ -23219,7 +18342,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 47,
         "provenance": "authored",
-        "reference": 403,
+        "reference": 268,
         "source": 71,
         "target": {
           "reference": 8,
@@ -23227,109 +18350,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 404,
-        "source": 71,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 414,
-        "source": 77,
-        "target": {
-          "node": 71,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 406,
-        "source": 77,
-        "target": {
-          "reference": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 407,
-        "source": 77,
-        "target": {
-          "reference": 153,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 415,
-        "source": 77,
-        "target": {
-          "node": 71,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 408,
-        "source": 77,
-        "target": {
-          "reference": 152,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 409,
-        "source": 77,
-        "target": {
-          "node": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 416,
-        "source": 77,
-        "target": {
-          "node": 71,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 410,
-        "source": 72,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 46,
         "provenance": "authored",
-        "reference": 412,
+        "reference": 270,
         "source": 72,
         "target": {
           "node": 95,
@@ -23340,7 +18364,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 48,
         "provenance": "authored",
-        "reference": 413,
+        "reference": 271,
         "source": 72,
         "target": {
           "node": 94,
@@ -23348,87 +18372,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 411,
-        "source": 73,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 417,
-        "source": 73,
-        "target": {
-          "node": 71,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 418,
-        "source": 74,
-        "target": {
-          "reference": 229,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 419,
-        "source": 74,
-        "target": {
-          "node": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 371,
-        "source": 78,
-        "target": {
-          "reference": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 372,
-        "source": 78,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 373,
-        "source": 78,
-        "target": {
-          "reference": 151,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionSource",
         "navigation": 51,
         "provenance": "authored",
-        "reference": 374,
+        "reference": 255,
         "source": 78,
         "target": {
           "node": 96,
@@ -23439,7 +18386,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 53,
         "provenance": "authored",
-        "reference": 375,
+        "reference": 256,
         "source": 78,
         "target": {
           "node": 94,
@@ -23450,7 +18397,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 52,
         "provenance": "authored",
-        "reference": 376,
+        "reference": 257,
         "source": 78,
         "target": {
           "reference": 8,
@@ -23458,109 +18405,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 377,
-        "source": 78,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 387,
-        "source": 84,
-        "target": {
-          "node": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 379,
-        "source": 84,
-        "target": {
-          "reference": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 380,
-        "source": 84,
-        "target": {
-          "reference": 153,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 388,
-        "source": 84,
-        "target": {
-          "node": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 381,
-        "source": 84,
-        "target": {
-          "reference": 152,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 382,
-        "source": 84,
-        "target": {
-          "node": 81,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 389,
-        "source": 84,
-        "target": {
-          "node": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 383,
-        "source": 79,
-        "target": {
-          "reference": 138,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 51,
         "provenance": "authored",
-        "reference": 385,
+        "reference": 259,
         "source": 79,
         "target": {
           "node": 96,
@@ -23571,7 +18419,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 53,
         "provenance": "authored",
-        "reference": 386,
+        "reference": 260,
         "source": 79,
         "target": {
           "node": 94,
@@ -23579,87 +18427,21 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 384,
-        "source": 80,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 390,
-        "source": 80,
-        "target": {
-          "node": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 391,
-        "source": 81,
-        "target": {
-          "reference": 229,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 392,
-        "source": 81,
-        "target": {
-          "node": 80,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 84,
+        "navigation": 79,
         "provenance": "authored",
-        "reference": 876,
+        "reference": 452,
         "source": 120,
         "target": {
-          "reference": 135,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 874,
-        "source": 120,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 875,
-        "source": 120,
-        "target": {
-          "reference": 104,
+          "reference": 112,
           "status": "resolved"
         }
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 152,
+        "navigation": 147,
         "provenance": "authored",
-        "reference": 931,
+        "reference": 482,
         "source": 7,
         "target": {
           "node": 134,
@@ -23668,9 +18450,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 153,
+        "navigation": 148,
         "provenance": "authored",
-        "reference": 932,
+        "reference": 483,
         "source": 7,
         "target": {
           "node": 110,
@@ -23678,54 +18460,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 939,
-        "source": 7,
-        "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 940,
-        "source": 7,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 941,
-        "source": 7,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 951,
-        "source": 7,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
-        "navigation": 155,
+        "navigation": 150,
         "provenance": "authored",
-        "reference": 933,
+        "reference": 484,
         "source": 8,
         "target": {
           "node": 98,
@@ -23734,9 +18472,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 156,
+        "navigation": 151,
         "provenance": "authored",
-        "reference": 934,
+        "reference": 485,
         "source": 8,
         "target": {
           "node": 141,
@@ -23744,54 +18482,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 942,
-        "source": 8,
-        "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 943,
-        "source": 8,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 944,
-        "source": 8,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 952,
-        "source": 8,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
-        "navigation": 158,
+        "navigation": 153,
         "provenance": "authored",
-        "reference": 935,
+        "reference": 486,
         "source": 9,
         "target": {
           "node": 116,
@@ -23800,9 +18494,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 159,
+        "navigation": 154,
         "provenance": "authored",
-        "reference": 936,
+        "reference": 487,
         "source": 9,
         "target": {
           "node": 153,
@@ -23810,54 +18504,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 945,
-        "source": 9,
-        "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 946,
-        "source": 9,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 947,
-        "source": 9,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 953,
-        "source": 9,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
-        "navigation": 161,
+        "navigation": 156,
         "provenance": "authored",
-        "reference": 937,
+        "reference": 488,
         "source": 10,
         "target": {
           "node": 118,
@@ -23866,9 +18516,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 162,
+        "navigation": 157,
         "provenance": "authored",
-        "reference": 938,
+        "reference": 489,
         "source": 10,
         "target": {
           "node": 32,
@@ -23876,274 +18526,43 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 948,
-        "source": 10,
+        "kind": "typing",
+        "navigation": 143,
+        "provenance": "authored",
+        "reference": 492,
+        "source": 123,
         "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 949,
-        "source": 10,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 950,
-        "source": 10,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 954,
-        "source": 10,
-        "target": {
-          "reference": 117,
+          "reference": 57,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 148,
+        "navigation": 125,
         "provenance": "authored",
-        "reference": 960,
-        "source": 123,
+        "reference": 371,
+        "source": 124,
         "target": {
-          "reference": 67,
+          "reference": 34,
           "status": "resolved"
         }
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 957,
-        "source": 123,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 958,
-        "source": 123,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 959,
-        "source": 123,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 130,
+        "navigation": 55,
         "provenance": "authored",
-        "reference": 684,
-        "source": 124,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 685,
-        "source": 124,
-        "target": {
-          "reference": 189,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 681,
-        "source": 124,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 682,
-        "source": 124,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 683,
-        "source": 124,
-        "target": {
-          "reference": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 56,
-        "provenance": "authored",
-        "reference": 524,
+        "reference": 312,
         "source": 129,
         "target": {
-          "reference": 134,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 531,
-        "source": 129,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 546,
-        "source": 125,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 547,
-        "source": 125,
-        "target": {
-          "node": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 559,
-        "source": 125,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 580,
-        "source": 126,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 587,
-        "source": 126,
-        "target": {
-          "reference": 42,
+          "reference": 111,
           "status": "resolved"
         }
       },
       {
         "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 594,
-        "source": 127,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 602,
-        "source": 127,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 615,
-        "source": 127,
-        "target": {
-          "node": 126,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 603,
-        "source": 128,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 132,
+        "navigation": 127,
         "provenance": "authored",
-        "reference": 687,
+        "reference": 373,
         "source": 130,
         "target": {
           "node": 13,
@@ -24151,178 +18570,13 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 688,
-        "source": 130,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 689,
-        "source": 130,
-        "target": {
-          "node": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 692,
-        "source": 131,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 693,
-        "source": 131,
-        "target": {
-          "node": 124,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 694,
-        "source": 132,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 695,
-        "source": 132,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 697,
-        "source": 132,
-        "target": {
-          "node": 131,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 696,
-        "source": 133,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 128,
+        "navigation": 123,
         "provenance": "authored",
-        "reference": 677,
+        "reference": 367,
         "source": 134,
         "target": {
-          "reference": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 674,
-        "source": 134,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 675,
-        "source": 134,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 676,
-        "source": 134,
-        "target": {
-          "reference": 67,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 67,
-        "provenance": "authored",
-        "reference": 640,
-        "source": 135,
-        "target": {
-          "reference": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 638,
-        "source": 135,
-        "target": {
-          "reference": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 69,
-        "provenance": "authored",
-        "reference": 632,
-        "source": 136,
-        "target": {
-          "reference": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 630,
-        "source": 136,
-        "target": {
-          "reference": 50,
+          "reference": 40,
           "status": "resolved"
         }
       },
@@ -24330,43 +18584,32 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 65,
         "provenance": "authored",
-        "reference": 636,
-        "source": 137,
+        "reference": 348,
+        "source": 135,
         "target": {
-          "reference": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 634,
-        "source": 137,
-        "target": {
-          "reference": 50,
+          "reference": 113,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 73,
+        "navigation": 67,
         "provenance": "authored",
-        "reference": 624,
-        "source": 138,
+        "reference": 344,
+        "source": 136,
         "target": {
-          "reference": 146,
+          "reference": 113,
           "status": "resolved"
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 622,
-        "source": 138,
+        "kind": "typing",
+        "navigation": 63,
+        "provenance": "authored",
+        "reference": 346,
+        "source": 137,
         "target": {
-          "reference": 50,
+          "reference": 113,
           "status": "resolved"
         }
       },
@@ -24374,19 +18617,96 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 71,
         "provenance": "authored",
-        "reference": 628,
-        "source": 139,
+        "reference": 340,
+        "source": 138,
         "target": {
-          "reference": 146,
+          "reference": 113,
           "status": "resolved"
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 626,
+        "kind": "typing",
+        "navigation": 69,
+        "provenance": "authored",
+        "reference": 342,
         "source": 139,
+        "target": {
+          "reference": 113,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 141,
+        "provenance": "authored",
+        "reference": 501,
+        "source": 140,
+        "target": {
+          "reference": 74,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 113,
+        "provenance": "authored",
+        "reference": 400,
+        "source": 141,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 73,
+        "provenance": "authored",
+        "reference": 352,
+        "source": 142,
+        "target": {
+          "reference": 115,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 117,
+        "provenance": "authored",
+        "reference": 407,
+        "source": 143,
+        "target": {
+          "reference": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": 55,
+        "provenance": "authored",
+        "reference": 313,
+        "source": 148,
+        "target": {
+          "reference": 111,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 119,
+        "provenance": "authored",
+        "reference": 409,
+        "source": 149,
+        "target": {
+          "node": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 115,
+        "provenance": "authored",
+        "reference": 403,
+        "source": 153,
         "target": {
           "reference": 50,
           "status": "resolved"
@@ -24394,735 +18714,64 @@ package TimerGeometry {
       },
       {
         "kind": "typing",
-        "navigation": 146,
+        "navigation": 75,
         "provenance": "authored",
-        "reference": 975,
-        "source": 140,
-        "target": {
-          "reference": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 972,
-        "source": 140,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 973,
-        "source": 140,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 974,
-        "source": 140,
-        "target": {
-          "reference": 117,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 118,
-        "provenance": "authored",
-        "reference": 758,
-        "source": 141,
-        "target": {
-          "reference": 58,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 759,
-        "source": 141,
-        "target": {
-          "reference": 198,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 755,
-        "source": 141,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 756,
-        "source": 141,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 757,
-        "source": 141,
-        "target": {
-          "reference": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 76,
-        "provenance": "authored",
-        "reference": 648,
-        "source": 142,
-        "target": {
-          "reference": 148,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 646,
-        "source": 142,
-        "target": {
-          "reference": 58,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 122,
-        "provenance": "authored",
-        "reference": 775,
-        "source": 143,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 776,
-        "source": 143,
-        "target": {
-          "reference": 189,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 772,
-        "source": 143,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 773,
-        "source": 143,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 774,
-        "source": 143,
-        "target": {
-          "reference": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 56,
-        "provenance": "authored",
-        "reference": 525,
-        "source": 148,
-        "target": {
-          "reference": 134,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 532,
-        "source": 148,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 548,
-        "source": 144,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 549,
-        "source": 144,
-        "target": {
-          "node": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 560,
-        "source": 144,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 581,
-        "source": 145,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 588,
-        "source": 145,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 595,
-        "source": 146,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 604,
-        "source": 146,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 616,
-        "source": 146,
-        "target": {
-          "node": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 605,
-        "source": 147,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 124,
-        "provenance": "authored",
-        "reference": 778,
-        "source": 149,
-        "target": {
-          "node": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 779,
-        "source": 149,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 780,
-        "source": 149,
-        "target": {
-          "node": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 783,
-        "source": 150,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 784,
-        "source": 150,
-        "target": {
-          "node": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 785,
-        "source": 151,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 786,
-        "source": 151,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 788,
-        "source": 151,
-        "target": {
-          "node": 150,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 787,
-        "source": 152,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 120,
-        "provenance": "authored",
-        "reference": 767,
-        "source": 153,
-        "target": {
-          "reference": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 768,
-        "source": 153,
-        "target": {
-          "reference": 199,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 764,
-        "source": 153,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 765,
-        "source": 153,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 766,
-        "source": 153,
-        "target": {
-          "reference": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 79,
-        "provenance": "authored",
-        "reference": 652,
+        "reference": 354,
         "source": 154,
         "target": {
-          "reference": 148,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 650,
-        "source": 154,
-        "target": {
-          "reference": 60,
+          "reference": 115,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 116,
+        "navigation": 111,
         "provenance": "authored",
-        "reference": 762,
+        "reference": 401,
         "source": 155,
         "target": {
-          "reference": 148,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 760,
-        "source": 155,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 761,
-        "source": 155,
-        "target": {
-          "reference": 87,
+          "reference": 115,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 150,
+        "navigation": 145,
         "provenance": "authored",
-        "reference": 967,
+        "reference": 496,
         "source": 11,
         "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 964,
-        "source": 11,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 965,
-        "source": 11,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 966,
-        "source": 11,
-        "target": {
-          "reference": 117,
+          "reference": 67,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 108,
+        "navigation": 103,
         "provenance": "authored",
-        "reference": 740,
+        "reference": 394,
         "source": 22,
         "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 741,
-        "source": 22,
-        "target": {
-          "reference": 189,
+          "reference": 34,
           "status": "resolved"
         }
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 737,
-        "source": 22,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 738,
-        "source": 22,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 739,
-        "source": 22,
-        "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 56,
+        "navigation": 55,
         "provenance": "authored",
-        "reference": 526,
+        "reference": 314,
         "source": 27,
         "target": {
-          "reference": 134,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 533,
-        "source": 27,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 550,
-        "source": 23,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 551,
-        "source": 23,
-        "target": {
-          "node": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 561,
-        "source": 23,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 582,
-        "source": 24,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 589,
-        "source": 24,
-        "target": {
-          "reference": 42,
+          "reference": 111,
           "status": "resolved"
         }
       },
       {
         "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 596,
-        "source": 25,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 606,
-        "source": 25,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 617,
-        "source": 25,
-        "target": {
-          "node": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 607,
-        "source": 26,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 110,
+        "navigation": 105,
         "provenance": "authored",
-        "reference": 743,
+        "reference": 396,
         "source": 28,
         "target": {
           "node": 13,
@@ -25130,648 +18779,87 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 744,
-        "source": 28,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 745,
-        "source": 28,
-        "target": {
-          "node": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 748,
-        "source": 29,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 749,
-        "source": 29,
-        "target": {
-          "node": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 750,
-        "source": 30,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 751,
-        "source": 30,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 753,
-        "source": 30,
-        "target": {
-          "node": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 752,
-        "source": 31,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 106,
+        "navigation": 101,
         "provenance": "authored",
-        "reference": 732,
+        "reference": 390,
         "source": 32,
         "target": {
-          "reference": 56,
+          "reference": 46,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 733,
-        "source": 32,
-        "target": {
-          "reference": 197,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 729,
-        "source": 32,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 730,
-        "source": 32,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 731,
-        "source": 32,
-        "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 82,
+        "navigation": 77,
         "provenance": "authored",
-        "reference": 644,
+        "reference": 350,
         "source": 33,
         "target": {
-          "reference": 146,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 642,
-        "source": 33,
-        "target": {
-          "reference": 56,
+          "reference": 113,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 114,
+        "navigation": 109,
         "provenance": "authored",
-        "reference": 727,
+        "reference": 388,
         "source": 12,
         "target": {
-          "reference": 42,
+          "reference": 34,
           "status": "resolved"
         }
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 724,
-        "source": 12,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 725,
-        "source": 12,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 726,
-        "source": 12,
-        "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 56,
+        "navigation": 55,
         "provenance": "authored",
-        "reference": 527,
+        "reference": 315,
         "source": 21,
         "target": {
-          "reference": 134,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 534,
-        "source": 21,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 552,
-        "source": 17,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 553,
-        "source": 17,
-        "target": {
-          "node": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 562,
-        "source": 17,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 583,
-        "source": 18,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 590,
-        "source": 18,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 597,
-        "source": 19,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 608,
-        "source": 19,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 618,
-        "source": 19,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 609,
-        "source": 20,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 503,
-        "source": 13,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 505,
-        "source": 13,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 511,
-        "source": 14,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 513,
-        "source": 14,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 515,
-        "source": 15,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 517,
-        "source": 15,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 521,
-        "source": 15,
-        "target": {
-          "node": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 518,
-        "source": 16,
-        "target": {
-          "reference": 144,
+          "reference": 111,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 180,
+        "navigation": 175,
         "provenance": "authored",
-        "reference": 840,
+        "reference": 431,
         "source": 156,
         "target": {
-          "reference": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 837,
-        "source": 156,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 838,
-        "source": 156,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 839,
-        "source": 156,
-        "target": {
-          "reference": 98,
+          "reference": 62,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 138,
+        "navigation": 133,
         "provenance": "authored",
-        "reference": 707,
+        "reference": 380,
         "source": 157,
         "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 708,
-        "source": 157,
-        "target": {
-          "reference": 189,
+          "reference": 34,
           "status": "resolved"
         }
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 704,
-        "source": 157,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 705,
-        "source": 157,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 706,
-        "source": 157,
-        "target": {
-          "reference": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 56,
+        "navigation": 55,
         "provenance": "authored",
-        "reference": 528,
+        "reference": 316,
         "source": 162,
         "target": {
-          "reference": 134,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 535,
-        "source": 162,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 554,
-        "source": 158,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 555,
-        "source": 158,
-        "target": {
-          "node": 160,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 563,
-        "source": 158,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 584,
-        "source": 159,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 591,
-        "source": 159,
-        "target": {
-          "reference": 42,
+          "reference": 111,
           "status": "resolved"
         }
       },
       {
         "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 598,
-        "source": 160,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 610,
-        "source": 160,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 619,
-        "source": 160,
-        "target": {
-          "node": 159,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 611,
-        "source": 161,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 140,
+        "navigation": 135,
         "provenance": "authored",
-        "reference": 710,
+        "reference": 382,
         "source": 163,
         "target": {
           "candidates": [
@@ -25782,131 +18870,21 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 711,
-        "source": 163,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 712,
-        "source": 163,
-        "target": {
-          "node": 157,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 715,
-        "source": 164,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 716,
-        "source": 164,
-        "target": {
-          "node": 157,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 717,
-        "source": 165,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 718,
-        "source": 165,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 720,
-        "source": 165,
-        "target": {
-          "node": 164,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 719,
-        "source": 166,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 136,
+        "navigation": 131,
         "provenance": "authored",
-        "reference": 700,
+        "reference": 376,
         "source": 167,
         "target": {
-          "reference": 131,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 698,
-        "source": 167,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 699,
-        "source": 167,
-        "target": {
-          "reference": 73,
+          "reference": 108,
           "status": "resolved"
         }
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 184,
+        "navigation": 179,
         "provenance": "authored",
-        "reference": 797,
+        "reference": 414,
         "source": 1,
         "target": {
           "node": 169,
@@ -25915,9 +18893,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 185,
+        "navigation": 180,
         "provenance": "authored",
-        "reference": 798,
+        "reference": 415,
         "source": 1,
         "target": {
           "node": 100,
@@ -25925,54 +18903,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 807,
-        "source": 1,
-        "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 808,
-        "source": 1,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 809,
-        "source": 1,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 822,
-        "source": 1,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
-        "navigation": 187,
+        "navigation": 182,
         "provenance": "authored",
-        "reference": 799,
+        "reference": 416,
         "source": 2,
         "target": {
           "node": 169,
@@ -25981,9 +18915,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 188,
+        "navigation": 183,
         "provenance": "authored",
-        "reference": 800,
+        "reference": 417,
         "source": 2,
         "target": {
           "node": 143,
@@ -25991,54 +18925,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 810,
-        "source": 2,
-        "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 811,
-        "source": 2,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 812,
-        "source": 2,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 823,
-        "source": 2,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
-        "navigation": 190,
+        "navigation": 185,
         "provenance": "authored",
-        "reference": 801,
+        "reference": 418,
         "source": 3,
         "target": {
           "node": 169,
@@ -26047,9 +18937,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 191,
+        "navigation": 186,
         "provenance": "authored",
-        "reference": 802,
+        "reference": 419,
         "source": 3,
         "target": {
           "node": 124,
@@ -26057,54 +18947,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 813,
-        "source": 3,
-        "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 814,
-        "source": 3,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 815,
-        "source": 3,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 824,
-        "source": 3,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
-        "navigation": 193,
+        "navigation": 188,
         "provenance": "authored",
-        "reference": 803,
+        "reference": 420,
         "source": 4,
         "target": {
           "node": 169,
@@ -26113,9 +18959,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 194,
+        "navigation": 189,
         "provenance": "authored",
-        "reference": 804,
+        "reference": 421,
         "source": 4,
         "target": {
           "node": 22,
@@ -26123,54 +18969,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 816,
-        "source": 4,
-        "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 817,
-        "source": 4,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 818,
-        "source": 4,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 825,
-        "source": 4,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
-        "navigation": 196,
+        "navigation": 191,
         "provenance": "authored",
-        "reference": 805,
+        "reference": 422,
         "source": 5,
         "target": {
           "node": 12,
@@ -26179,9 +18981,9 @@ package TimerGeometry {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 197,
+        "navigation": 192,
         "provenance": "authored",
-        "reference": 806,
+        "reference": 423,
         "source": 5,
         "target": {
           "node": 157,
@@ -26189,574 +18991,101 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 819,
-        "source": 5,
+        "kind": "typing",
+        "navigation": 173,
+        "provenance": "authored",
+        "reference": 428,
+        "source": 168,
         "target": {
-          "reference": 130,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 820,
-        "source": 5,
-        "target": {
-          "reference": 129,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 821,
-        "source": 5,
-        "target": {
-          "reference": 137,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 826,
-        "source": 5,
-        "target": {
-          "reference": 98,
+          "reference": 52,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 178,
+        "navigation": 165,
         "provenance": "authored",
-        "reference": 834,
-        "source": 168,
+        "reference": 360,
+        "source": 169,
         "target": {
-          "reference": 62,
+          "reference": 34,
           "status": "resolved"
         }
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 831,
-        "source": 168,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 832,
-        "source": 168,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 833,
-        "source": 168,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 170,
+        "navigation": 55,
         "provenance": "authored",
-        "reference": 665,
-        "source": 169,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 662,
-        "source": 169,
-        "target": {
-          "reference": 140,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 663,
-        "source": 169,
-        "target": {
-          "reference": 145,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 664,
-        "source": 169,
-        "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 56,
-        "provenance": "authored",
-        "reference": 529,
+        "reference": 317,
         "source": 178,
         "target": {
-          "reference": 134,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 536,
-        "source": 178,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 556,
-        "source": 174,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 557,
-        "source": 174,
-        "target": {
-          "node": 176,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 564,
-        "source": 174,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 585,
-        "source": 175,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 592,
-        "source": 175,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 599,
-        "source": 176,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 612,
-        "source": 176,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 620,
-        "source": 176,
-        "target": {
-          "node": 175,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 613,
-        "source": 177,
-        "target": {
-          "reference": 144,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 504,
-        "source": 170,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 506,
-        "source": 170,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 512,
-        "source": 171,
-        "target": {
-          "reference": 143,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 514,
-        "source": 171,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 516,
-        "source": 172,
-        "target": {
-          "reference": 142,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 519,
-        "source": 172,
-        "target": {
-          "reference": 128,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 522,
-        "source": 172,
-        "target": {
-          "node": 171,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 520,
-        "source": 173,
-        "target": {
-          "reference": 144,
+          "reference": 111,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 164,
+        "navigation": 159,
         "provenance": "authored",
-        "reference": 655,
+        "reference": 355,
         "source": 181,
         "target": {
-          "reference": 132,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 653,
-        "source": 181,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 654,
-        "source": 181,
-        "target": {
-          "reference": 62,
+          "reference": 109,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 166,
+        "navigation": 161,
         "provenance": "authored",
-        "reference": 658,
+        "reference": 356,
         "source": 179,
         "target": {
-          "reference": 133,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 656,
-        "source": 179,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 657,
-        "source": 179,
-        "target": {
-          "reference": 62,
+          "reference": 110,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 168,
+        "navigation": 163,
         "provenance": "authored",
-        "reference": 668,
+        "reference": 361,
         "source": 180,
         "target": {
-          "reference": 131,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 666,
-        "source": 180,
-        "target": {
-          "reference": 127,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 667,
-        "source": 180,
-        "target": {
-          "reference": 62,
+          "reference": 108,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 182,
+        "navigation": 177,
         "provenance": "authored",
-        "reference": 846,
+        "reference": 434,
         "source": 182,
         "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 843,
-        "source": 182,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 844,
-        "source": 182,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 845,
-        "source": 182,
-        "target": {
-          "reference": 98,
+          "reference": 81,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 174,
+        "navigation": 169,
         "provenance": "authored",
-        "reference": 792,
+        "reference": 412,
         "source": 184,
         "target": {
-          "reference": 86,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 789,
-        "source": 184,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 790,
-        "source": 184,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 791,
-        "source": 184,
-        "target": {
-          "reference": 95,
+          "reference": 73,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 172,
+        "navigation": 167,
         "provenance": "authored",
-        "reference": 796,
+        "reference": 413,
         "source": 183,
         "target": {
-          "reference": 86,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 793,
-        "source": 183,
-        "target": {
-          "reference": 136,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 794,
-        "source": 183,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 795,
-        "source": 183,
-        "target": {
-          "reference": 95,
+          "reference": 73,
           "status": "resolved"
         }
       }

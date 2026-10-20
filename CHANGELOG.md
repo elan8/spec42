@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Smaller diagram products (schema 6).** A diagram product now carries only authored
+  relationships. The library-implied subsetting, type featuring and redefinitions of every
+  projected element, and the references, sources and library documents they pulled in, were most
+  of its bytes, and no drawing read them; they remain available through the semantic query. The
+  language server also sends products as compact JSON. Together, a product the editor receives is
+  about a third of its previous size (35% across the example and robot-vacuum views), so large
+  views stay well clear of the editor's 16 MiB limit, and a view that still exceeds it is
+  reported with its size and element counts. `spec42 diagram --view … --stats` shows where a
+  product's bytes go. Consumers must accept `schemaVersion` 6; field names and shapes are
+  unchanged, and `spec42 diagram --format json` still writes pretty-printed JSON.
+
 - **Bounded concurrent publication checks.** Snapshot runs time out with phase, active-fixture
   and thread-state evidence. A repeatable stress runner exercises snapshot and LSP integration
   workloads together, preserves individual logs and kills timed-out process trees.

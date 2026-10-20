@@ -657,40 +657,15 @@ package InheritedViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:895a2a44a4a42cba0cc4115325e288c05792ec3ef394bf4dc5fc9d8c090224f0",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/interfaces.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
-    {
-      "document": 0,
-      "range": [
-        2,
-        4,
-        2,
-        20
-      ]
-    },
     {
       "document": 0,
       "range": [
@@ -921,58 +896,6 @@ package InheritedViews {
       "qualifiedName": "InheritedViews::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Interfaces::BinaryInterface::source"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Interfaces::BinaryInterface::target"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Interfaces::binaryInterfaces"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Interfaces::interfaces"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "InheritedViews::Signal",
-      "source": 0,
-      "sourceDomain": "workspace"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -988,12 +911,6 @@ package InheritedViews {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
       "source": 0
     },
     {
@@ -1022,30 +939,6 @@ package InheritedViews {
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 20,
       "relationshipKind": "typing",
       "source": 1
@@ -1054,24 +947,6 @@ package InheritedViews {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "noncomposite-membership",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
@@ -1088,45 +963,9 @@ package InheritedViews {
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "typing",
       "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "redefinition",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
     },
     {
       "kind": "relationship",
@@ -1136,51 +975,9 @@ package InheritedViews {
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "redefinition",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
       "ordinal": 29,
       "relationshipKind": "typing",
       "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "typing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
     },
     {
       "kind": "relationship",
@@ -1190,32 +987,8 @@ package InheritedViews {
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typing",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "connection",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
       "source": 10
     },
     {
@@ -1229,7 +1002,7 @@ package InheritedViews {
     "reference": 12,
     "kind": "interconnection-view",
     "name": "selected",
-    "source": 18
+    "source": 17
   },
   "completeness": {
     "status": "complete",
@@ -1239,73 +1012,73 @@ package InheritedViews {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 10,
+        "navigation": 9,
         "origin": 1,
         "provenance": "authored",
-        "reference": 23,
+        "reference": 13,
         "source": 0,
         "target": 1
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 5,
+        "navigation": 4,
         "origin": 2,
         "provenance": "implied",
-        "reference": 41,
+        "reference": 23,
         "source": 1,
         "target": 2
       },
       {
         "kind": "containment",
-        "navigation": 12,
+        "navigation": 11,
         "origin": 3,
         "provenance": "authored",
-        "reference": 24,
+        "reference": 14,
         "source": 0,
         "target": 3
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 7,
+        "navigation": 6,
         "origin": 4,
         "provenance": "implied",
-        "reference": 36,
+        "reference": 21,
         "source": 3,
         "target": 4
       },
       {
         "kind": "containment",
-        "navigation": 14,
+        "navigation": 13,
         "origin": 5,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 15,
         "source": 0,
         "target": 5
       },
       {
         "kind": "connector",
-        "navigation": 16,
+        "navigation": 15,
         "origin": 5,
         "provenance": "authored",
-        "reference": 60,
+        "reference": 28,
         "source": 2,
         "target": 4
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 1,
+        "navigation": 0,
         "origin": 6,
         "provenance": "implied",
-        "reference": 29,
+        "reference": 18,
         "source": 5,
         "target": 6
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 3,
+        "navigation": 2,
         "origin": 7,
         "provenance": "implied",
-        "reference": 30,
+        "reference": 19,
         "source": 5,
         "target": 7
       }
@@ -1355,7 +1128,7 @@ package InheritedViews {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 9,
+        "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1380,7 +1153,7 @@ package InheritedViews {
         "notationRole": "usage",
         "owner": 0,
         "reference": 3,
-        "source": 10,
+        "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1403,7 +1176,7 @@ package InheritedViews {
         "notationRole": "usage",
         "owner": 1,
         "reference": 10,
-        "source": 5,
+        "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1434,7 +1207,7 @@ package InheritedViews {
         "notationRole": "usage",
         "owner": 0,
         "reference": 2,
-        "source": 12,
+        "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1457,7 +1230,7 @@ package InheritedViews {
         "notationRole": "usage",
         "owner": 3,
         "reference": 8,
-        "source": 7,
+        "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1489,7 +1262,7 @@ package InheritedViews {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 14,
+        "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1512,7 +1285,7 @@ package InheritedViews {
         "notationRole": "usage",
         "owner": 5,
         "reference": 5,
-        "source": 1,
+        "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1535,7 +1308,7 @@ package InheritedViews {
         "notationRole": "usage",
         "owner": 5,
         "reference": 6,
-        "source": 3,
+        "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1551,21 +1324,10 @@ package InheritedViews {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 0,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 11,
+        "navigation": 10,
         "provenance": "authored",
-        "reference": 45,
+        "reference": 24,
         "source": 1,
         "target": {
           "reference": 9,
@@ -1573,43 +1335,10 @@ package InheritedViews {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 42,
-        "source": 1,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 43,
-        "source": 1,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 6,
+        "navigation": 5,
         "provenance": "authored",
-        "reference": 64,
+        "reference": 29,
         "source": 2,
         "target": {
           "reference": 11,
@@ -1617,43 +1346,10 @@ package InheritedViews {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 61,
-        "source": 2,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 62,
-        "source": 2,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 63,
-        "source": 2,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 13,
+        "navigation": 12,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 22,
         "source": 3,
         "target": {
           "reference": 7,
@@ -1661,98 +1357,21 @@ package InheritedViews {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 3,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 38,
-        "source": 3,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 39,
-        "source": 3,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 8,
+        "navigation": 7,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 27,
         "source": 4,
         "target": {
           "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 59,
-        "source": 4,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 55,
-        "source": 4,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 4,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 57,
-        "source": 4,
-        "target": {
-          "reference": 7,
           "status": "resolved"
         }
       },
       {
         "kind": "connectorEnd",
-        "navigation": 16,
+        "navigation": 15,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 16,
         "source": 5,
         "target": {
           "node": 2,
@@ -1761,9 +1380,9 @@ package InheritedViews {
       },
       {
         "kind": "connectorEnd",
-        "navigation": 17,
+        "navigation": 16,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 17,
         "source": 5,
         "target": {
           "node": 4,
@@ -1772,9 +1391,9 @@ package InheritedViews {
       },
       {
         "kind": "typing",
-        "navigation": 15,
+        "navigation": 14,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 20,
         "source": 5,
         "target": {
           "reference": 4,
@@ -1782,54 +1401,10 @@ package InheritedViews {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 5,
-        "target": {
-          "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 5,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 33,
-        "source": 5,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 34,
-        "source": 5,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 2,
+        "navigation": 1,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 25,
         "source": 6,
         "target": {
           "reference": 11,
@@ -1837,90 +1412,13 @@ package InheritedViews {
         }
       },
       {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 46,
-        "source": 6,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 47,
-        "source": 6,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 48,
-        "source": 6,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 4,
+        "navigation": 3,
         "provenance": "authored",
-        "reference": 53,
+        "reference": 26,
         "source": 7,
         "target": {
           "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 54,
-        "source": 7,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 50,
-        "source": 7,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 51,
-        "source": 7,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 52,
-        "source": 7,
-        "target": {
-          "reference": 4,
           "status": "resolved"
         }
       }

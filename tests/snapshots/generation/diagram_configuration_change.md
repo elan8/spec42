@@ -379,20 +379,12 @@ package ScenarioViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:1a194e0ac9df39ea2974b9c48e7016c36d607bdb4cec651cdc766f827e72cc8a",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_configuration_change.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/actions.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -569,21 +561,6 @@ package ScenarioViews {
       "qualifiedName": "Scenarios::configurationChange::reviewCompatibility"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::Action::subactions"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::actions"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::happensBeforeLinks"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Scenarios::configurationChange",
@@ -648,30 +625,6 @@ package ScenarioViews {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "succession",
       "source": 2
@@ -708,57 +661,9 @@ package ScenarioViews {
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "succession",
       "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "subsetting",
-      "source": 4
     },
     {
       "kind": "relationship",
@@ -768,50 +673,8 @@ package ScenarioViews {
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "succession",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
       "source": 6
     }
   ],
@@ -832,7 +695,7 @@ package ScenarioViews {
         "navigation": 5,
         "origin": 1,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 10,
         "source": 0,
         "target": 1
       },
@@ -841,7 +704,7 @@ package ScenarioViews {
         "navigation": 6,
         "origin": 1,
         "provenance": "implied",
-        "reference": 35,
+        "reference": 23,
         "source": 4,
         "target": 6
       },
@@ -850,7 +713,7 @@ package ScenarioViews {
         "navigation": 8,
         "origin": 2,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 11,
         "source": 0,
         "target": 2
       },
@@ -859,7 +722,7 @@ package ScenarioViews {
         "navigation": 9,
         "origin": 2,
         "provenance": "implied",
-        "reference": 46,
+        "reference": 25,
         "source": 6,
         "target": 7
       },
@@ -868,7 +731,7 @@ package ScenarioViews {
         "navigation": 11,
         "origin": 3,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 12,
         "source": 0,
         "target": 3
       },
@@ -877,7 +740,7 @@ package ScenarioViews {
         "navigation": 12,
         "origin": 3,
         "provenance": "implied",
-        "reference": 39,
+        "reference": 24,
         "source": 7,
         "target": 5
       },
@@ -886,7 +749,7 @@ package ScenarioViews {
         "navigation": 3,
         "origin": 7,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 13,
         "source": 0,
         "target": 7
       },
@@ -895,7 +758,7 @@ package ScenarioViews {
         "navigation": 1,
         "origin": 4,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 14,
         "source": 0,
         "target": 4
       },
@@ -904,7 +767,7 @@ package ScenarioViews {
         "navigation": 4,
         "origin": 5,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 15,
         "source": 0,
         "target": 5
       },
@@ -913,7 +776,7 @@ package ScenarioViews {
         "navigation": 2,
         "origin": 6,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 16,
         "source": 0,
         "target": 6
       }
@@ -970,7 +833,7 @@ package ScenarioViews {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 10,
+        "reference": 7,
         "source": 5,
         "stateSubaction": null,
         "successionGuard": null,
@@ -987,7 +850,7 @@ package ScenarioViews {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 11,
+        "reference": 8,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1004,7 +867,7 @@ package ScenarioViews {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 12,
+        "reference": 9,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1083,32 +946,10 @@ package ScenarioViews {
     ],
     "relationships": [
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
-        "source": 0,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 21,
-        "source": 1,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 24,
+        "reference": 17,
         "source": 1,
         "target": {
           "node": 4,
@@ -1119,7 +960,7 @@ package ScenarioViews {
         "kind": "succession",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 18,
         "source": 1,
         "target": {
           "node": 6,
@@ -1127,32 +968,10 @@ package ScenarioViews {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 30,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 22,
-        "source": 2,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 19,
         "source": 2,
         "target": {
           "node": 6,
@@ -1163,7 +982,7 @@ package ScenarioViews {
         "kind": "succession",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 20,
         "source": 2,
         "target": {
           "node": 7,
@@ -1171,32 +990,10 @@ package ScenarioViews {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
-        "source": 3,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 21,
         "source": 3,
         "target": {
           "node": 7,
@@ -1207,153 +1004,10 @@ package ScenarioViews {
         "kind": "succession",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 22,
         "source": 3,
         "target": {
           "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 3,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 7,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 38,
-        "source": 7,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 40,
-        "source": 7,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 33,
-        "source": 4,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 34,
-        "source": 4,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 4,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 41,
-        "source": 5,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 42,
-        "source": 5,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 43,
-        "source": 5,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 6,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 45,
-        "source": 6,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 47,
-        "source": 6,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

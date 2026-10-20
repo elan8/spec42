@@ -247,20 +247,12 @@ package Filters {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:477c64951d2be136e9e5362ff02390c69a54d32d8015799890d2babf1224f841",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -323,49 +315,10 @@ package Filters {
       "qualifiedName": "Filters::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
     },
     {
       "kind": "relationship",
@@ -391,7 +344,7 @@ package Filters {
         "navigation": 1,
         "origin": 1,
         "provenance": "authored",
-        "reference": 7,
+        "reference": 4,
         "source": 0,
         "target": 1
       }
@@ -460,57 +413,13 @@ package Filters {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 8,
-        "source": 0,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 5,
         "source": 1,
         "target": {
           "reference": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 9,
-        "source": 1,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 10,
-        "source": 1,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 11,
-        "source": 1,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

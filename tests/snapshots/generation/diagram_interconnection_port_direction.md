@@ -333,32 +333,15 @@ package PortDirectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:2cca878f99b34044cc5e4d6e7fa4adc007e6adb1aa957fbdbd36280425685243",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_port_direction.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
-    {
-      "document": 0,
-      "range": [
-        2,
-        4,
-        2,
-        20
-      ]
-    },
     {
       "document": 0,
       "range": [
@@ -510,28 +493,6 @@ package PortDirectionExample {
       "qualifiedName": "PortDirectionExample::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "PortDirectionExample::Signal",
-      "source": 0,
-      "sourceDomain": "workspace"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "noncomposite-membership",
@@ -560,54 +521,12 @@ package PortDirectionExample {
       "ordinal": 4,
       "relationshipKind": "noncomposite-membership",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "typing",
       "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
     },
     {
       "kind": "relationship",
@@ -617,75 +536,15 @@ package PortDirectionExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "typing",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
       "ordinal": 18,
       "relationshipKind": "typing",
       "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
     },
     {
       "kind": "relationship",
@@ -698,7 +557,7 @@ package PortDirectionExample {
     "reference": 7,
     "kind": "interconnection-view",
     "name": "selected",
-    "source": 12
+    "source": 11
   },
   "completeness": {
     "status": "complete",
@@ -708,46 +567,46 @@ package PortDirectionExample {
     "edges": [
       {
         "kind": "noncomposite-membership",
-        "navigation": 6,
+        "navigation": 5,
         "origin": 1,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 8,
         "source": 0,
         "target": 1
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 8,
+        "navigation": 7,
         "origin": 2,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 9,
         "source": 0,
         "target": 2
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 2,
+        "navigation": 1,
         "origin": 3,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 10,
         "source": 0,
         "target": 3
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 10,
+        "navigation": 9,
         "origin": 4,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 11,
         "source": 0,
         "target": 4
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 4,
+        "navigation": 3,
         "origin": 5,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 12,
         "source": 0,
         "target": 5
       }
@@ -792,7 +651,7 @@ package PortDirectionExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 1,
+        "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -809,7 +668,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 6,
+        "source": 5,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -832,7 +691,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 5,
-        "source": 8,
+        "source": 7,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -855,7 +714,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 2,
-        "source": 2,
+        "source": 1,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -878,7 +737,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 3,
-        "source": 10,
+        "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -901,7 +760,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 4,
-        "source": 4,
+        "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -917,65 +776,21 @@ package PortDirectionExample {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
+        "kind": "typing",
+        "navigation": 6,
+        "provenance": "authored",
+        "reference": 13,
+        "source": 1,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 8,
+        "provenance": "authored",
         "reference": 17,
-        "source": 0,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 7,
-        "provenance": "authored",
-        "reference": 21,
-        "source": 1,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 1,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 1,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 38,
         "source": 2,
         "target": {
           "reference": 6,
@@ -983,43 +798,10 @@ package PortDirectionExample {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 35,
-        "source": 2,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 2,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 3,
+        "navigation": 2,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 14,
         "source": 3,
         "target": {
           "reference": 6,
@@ -1027,43 +809,10 @@ package PortDirectionExample {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 22,
-        "source": 3,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
-        "source": 3,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 3,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 11,
+        "navigation": 10,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 15,
         "source": 4,
         "target": {
           "reference": 6,
@@ -1072,89 +821,12 @@ package PortDirectionExample {
       },
       {
         "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 30,
-        "source": 4,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 4,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 4,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 28,
-        "source": 4,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 5,
+        "navigation": 4,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 16,
         "source": 5,
         "target": {
           "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 5,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 5,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 33,
-        "source": 5,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

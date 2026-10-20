@@ -614,40 +614,15 @@ package Feed {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:d2709a026c75f64a73e176a5b49cf6694762cc4292cc689f2a5307141a4f5d33",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/connections.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
-    {
-      "document": 0,
-      "range": [
-        3,
-        4,
-        3,
-        51
-      ]
-    },
     {
       "document": 0,
       "range": [
@@ -897,66 +872,11 @@ package Feed {
       "qualifiedName": "Feed::system::source"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::binaryConnections"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Connections::connections"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "Feed::Supply",
-      "source": 0,
-      "sourceDomain": "workspace"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "Feed::system",
-      "source": 16,
+      "source": 15,
       "sourceDomain": "workspace"
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
     },
     {
       "kind": "relationship",
@@ -966,51 +886,9 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "typing",
       "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
     },
     {
       "kind": "relationship",
@@ -1020,45 +898,9 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
       "ordinal": 26,
       "relationshipKind": "typing",
       "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
     },
     {
       "kind": "relationship",
@@ -1086,12 +928,6 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
       "ordinal": 30,
       "relationshipKind": "memberAccessOperand",
       "source": 12
@@ -1104,30 +940,6 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "noncomposite-membership",
       "source": 13
@@ -1136,24 +948,6 @@ package Feed {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "noncomposite-membership",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
       "source": 13
     },
     {
@@ -1182,24 +976,6 @@ package Feed {
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
       "ordinal": 14,
       "relationshipKind": "typing",
       "source": 14
@@ -1209,7 +985,7 @@ package Feed {
     "reference": 10,
     "kind": "interconnection-view",
     "name": "links",
-    "source": 19
+    "source": 18
   },
   "completeness": {
     "status": "incomplete",
@@ -1224,73 +1000,73 @@ package Feed {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 14,
+        "navigation": 13,
         "origin": 2,
         "provenance": "authored",
-        "reference": 44,
+        "reference": 21,
         "source": 0,
         "target": 2
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 7,
+        "navigation": 6,
         "origin": 3,
         "provenance": "implied",
-        "reference": 54,
+        "reference": 26,
         "source": 2,
         "target": 3
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 9,
+        "navigation": 8,
         "origin": 4,
         "provenance": "implied",
-        "reference": 55,
+        "reference": 27,
         "source": 2,
         "target": 4
       },
       {
         "kind": "containment",
-        "navigation": 12,
+        "navigation": 11,
         "origin": 5,
         "provenance": "authored",
-        "reference": 45,
+        "reference": 22,
         "source": 0,
         "target": 5
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 5,
+        "navigation": 4,
         "origin": 6,
         "provenance": "implied",
-        "reference": 60,
+        "reference": 29,
         "source": 5,
         "target": 6
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 1,
+        "navigation": 0,
         "origin": 7,
         "provenance": "implied",
-        "reference": 61,
+        "reference": 30,
         "source": 5,
         "target": 7
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 3,
+        "navigation": 2,
         "origin": 8,
         "provenance": "implied",
-        "reference": 62,
+        "reference": 31,
         "source": 5,
         "target": 8
       },
       {
         "kind": "containment",
-        "navigation": 16,
+        "navigation": 15,
         "origin": 1,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 23,
         "source": 0,
         "target": 1
       }
@@ -1343,7 +1119,7 @@ package Feed {
         "notationRole": "usage",
         "owner": null,
         "reference": 11,
-        "source": 11,
+        "source": 10,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1359,8 +1135,8 @@ package Feed {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 22,
-        "source": 16,
+        "reference": 15,
+        "source": 15,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1386,7 +1162,7 @@ package Feed {
         "notationRole": "usage",
         "owner": 0,
         "reference": 13,
-        "source": 14,
+        "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1409,7 +1185,7 @@ package Feed {
         "notationRole": "usage",
         "owner": 2,
         "reference": 2,
-        "source": 7,
+        "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1432,7 +1208,7 @@ package Feed {
         "notationRole": "usage",
         "owner": 2,
         "reference": 3,
-        "source": 9,
+        "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1465,7 +1241,7 @@ package Feed {
         "notationRole": "usage",
         "owner": 0,
         "reference": 14,
-        "source": 12,
+        "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1488,7 +1264,7 @@ package Feed {
         "notationRole": "usage",
         "owner": 5,
         "reference": 8,
-        "source": 5,
+        "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1511,7 +1287,7 @@ package Feed {
         "notationRole": "usage",
         "owner": 5,
         "reference": 6,
-        "source": 1,
+        "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1534,7 +1310,7 @@ package Feed {
         "notationRole": "usage",
         "owner": 5,
         "reference": 7,
-        "source": 3,
+        "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1550,154 +1326,11 @@ package Feed {
     ],
     "relationships": [
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 47,
-        "source": 0,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 15,
+        "navigation": 14,
         "provenance": "authored",
-        "reference": 59,
-        "source": 2,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 2,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 57,
-        "source": 2,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 58,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 8,
-        "provenance": "authored",
-        "reference": 26,
-        "source": 3,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 3,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
-        "source": 3,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 3,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 25,
-        "source": 3,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 10,
-        "provenance": "authored",
-        "reference": 31,
-        "source": 4,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 28,
-        "source": 4,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 29,
-        "source": 4,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 30,
-        "source": 4,
+        "source": 2,
         "target": {
           "reference": 1,
           "status": "resolved"
@@ -1705,9 +1338,31 @@ package Feed {
       },
       {
         "kind": "typing",
-        "navigation": 13,
+        "navigation": 7,
         "provenance": "authored",
-        "reference": 66,
+        "reference": 16,
+        "source": 3,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 9,
+        "provenance": "authored",
+        "reference": 17,
+        "source": 4,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 12,
+        "provenance": "authored",
+        "reference": 32,
         "source": 5,
         "target": {
           "reference": 5,
@@ -1715,43 +1370,10 @@ package Feed {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 63,
-        "source": 5,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 64,
-        "source": 5,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 65,
-        "source": 5,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 6,
+        "navigation": 5,
         "provenance": "authored",
-        "reference": 43,
+        "reference": 20,
         "source": 6,
         "target": {
           "reference": 4,
@@ -1759,43 +1381,10 @@ package Feed {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 40,
-        "source": 6,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 41,
-        "source": 6,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 42,
-        "source": 6,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 2,
+        "navigation": 1,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 18,
         "source": 7,
         "target": {
           "reference": 9,
@@ -1803,43 +1392,10 @@ package Feed {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 7,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 33,
-        "source": 7,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 34,
-        "source": 7,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
-        "navigation": 4,
+        "navigation": 3,
         "provenance": "authored",
-        "reference": 39,
+        "reference": 19,
         "source": 8,
         "target": {
           "reference": 0,
@@ -1847,43 +1403,10 @@ package Feed {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 8,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 8,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 38,
-        "source": 8,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
-        "navigation": 17,
+        "navigation": 16,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 24,
         "source": 1,
         "target": {
           "status": "unresolved"
@@ -1891,56 +1414,12 @@ package Feed {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 18,
+        "navigation": 17,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 25,
         "source": 1,
         "target": {
           "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 50,
-        "source": 1,
-        "target": {
-          "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 51,
-        "source": 1,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 52,
-        "source": 1,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
-        "source": 1,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

@@ -470,9 +470,9 @@ fn interconnection_golden_payload() -> serde_json::Value {
     })
 }
 
-fn schema5_sequence_payload() -> serde_json::Value {
+fn schema6_sequence_payload() -> serde_json::Value {
     json!({
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -508,8 +508,8 @@ fn schema5_sequence_payload() -> serde_json::Value {
 }
 
 #[test]
-fn sequence_schema5_draw_input_carries_the_scene_lifelines() {
-    let input = draw_input_from_payload(&schema5_sequence_payload()).unwrap();
+fn sequence_schema6_draw_input_carries_the_scene_lifelines() {
+    let input = draw_input_from_payload(&schema6_sequence_payload()).unwrap();
     assert_eq!(input["view"], "sequence-view");
     assert_eq!(
         input["meta"]["sequenceDiagram"]["lifelines"][0]["name"],
@@ -522,8 +522,8 @@ fn sequence_schema5_draw_input_carries_the_scene_lifelines() {
 }
 
 #[test]
-fn sequence_schema5_svg_has_lifelines_and_message() {
-    let svg = render_svg_from_payload(&schema5_sequence_payload(), 1280.0, 900.0).unwrap();
+fn sequence_schema6_svg_has_lifelines_and_message() {
+    let svg = render_svg_from_payload(&schema6_sequence_payload(), 1280.0, 900.0).unwrap();
     assert!(svg.contains("sequence-lifeline"), "{svg}");
     assert!(svg.contains("client"), "{svg}");
     assert!(svg.contains("request"), "{svg}");
@@ -648,12 +648,12 @@ fn grid_and_geometry_views_render() {
     assert!(geometry.contains("2d orthographic preview"), "{geometry}");
 }
 
-fn schema5_state_transition_payload(
+fn schema6_state_transition_payload(
     vertices: Vec<serde_json::Value>,
     transitions: Vec<serde_json::Value>,
 ) -> serde_json::Value {
     json!({
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -675,9 +675,9 @@ fn schema5_state_transition_payload(
 }
 
 #[test]
-fn schema5_state_transition_out_of_range_endpoint_is_an_error() {
+fn schema6_state_transition_out_of_range_endpoint_is_an_error() {
     let err = render_svg_from_payload(
-        &schema5_state_transition_payload(
+        &schema6_state_transition_payload(
             vec![],
             vec![json!({ "source": 0, "target": 0, "label": "go" })],
         ),
@@ -697,9 +697,9 @@ fn schema5_state_transition_out_of_range_endpoint_is_an_error() {
 }
 
 #[test]
-fn schema5_state_transition_missing_endpoint_is_an_error() {
+fn schema6_state_transition_missing_endpoint_is_an_error() {
     let err = render_svg_from_payload(
-        &schema5_state_transition_payload(
+        &schema6_state_transition_payload(
             vec![json!({ "id": "idle", "label": "idle", "kind": "state" })],
             vec![json!({ "target": 0, "label": "go" })],
         ),
@@ -719,9 +719,9 @@ fn schema5_state_transition_missing_endpoint_is_an_error() {
 }
 
 #[test]
-fn schema5_state_transition_non_numeric_endpoint_is_an_error() {
+fn schema6_state_transition_non_numeric_endpoint_is_an_error() {
     let err = render_svg_from_payload(
-        &schema5_state_transition_payload(
+        &schema6_state_transition_payload(
             vec![json!({ "id": "idle", "label": "idle", "kind": "state" })],
             vec![json!({ "source": "idle", "target": 0, "label": "go" })],
         ),
@@ -1100,7 +1100,7 @@ fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
 
     let payload = json!({
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],

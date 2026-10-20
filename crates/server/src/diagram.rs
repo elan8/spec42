@@ -56,9 +56,13 @@ pub fn run_diagram(cli: &Cli, args: &DiagramArgs) -> Result<ExitCode, String> {
                 .map_err(|error| format!("`{view}` could not be projected: {error}"))?;
             let product = diagram_product::diagram_product_json(&projection)?;
             let product = String::from_utf8(product).expect("serde_json writes UTF-8");
-            match args.format {
-                DiagramFormat::Json => product,
-                DiagramFormat::Svg => render_nested_svg(&product, args.depth)?,
+            if args.stats {
+                product_stats(&product)?
+            } else {
+                match args.format {
+                    DiagramFormat::Json => product,
+                    DiagramFormat::Svg => render_nested_svg(&product, args.depth)?,
+                }
             }
         }
     };
@@ -68,6 +72,80 @@ pub fn run_diagram(cli: &Cli, args: &DiagramArgs) -> Result<ExitCode, String> {
         None => print!("{output}"),
     }
     Ok(ExitCode::SUCCESS)
+}
+
+/// Where a diagram product's bytes go. Sizes are of compact JSON, the form the language server
+/// sends; the pretty form is what `--format json` writes.
+fn product_stats(product: &str) -> Result<String, String> {
+    use std::collections::BTreeMap;
+    use std::fmt::Write as _;
+
+    let value: serde_json::Value =
+        serde_json::from_str(product).map_err(|error| format!("invalid product: {error}"))?;
+    let compact = |value: &serde_json::Value| serde_json::to_string(value).map_or(0, |s| s.len());
+    let count = |value: &serde_json::Value| value.as_array().map_or(0, Vec::len);
+    let sized = |object: &serde_json::Value| {
+        let mut entries = object
+            .as_object()
+            .into_iter()
+            .flatten()
+            .map(|(key, value)| (key.clone(), compact(value), count(value)))
+            .collect::<Vec<_>>();
+        entries.sort_by(|left, right| right.1.cmp(&left.1).then_with(|| left.0.cmp(&right.0)));
+        entries
+    };
+    let mut out = String::new();
+    let _ = writeln!(out, "schemaVersion: {}", value["schemaVersion"]);
+    let _ = writeln!(out, "pretty bytes:  {}", product.len());
+    let _ = writeln!(out, "compact bytes: {}", compact(&value));
+    for (title, object) in [("sections", &value), ("projection", &value["projection"])] {
+        let _ = writeln!(out, "\n{title}:");
+        for (key, bytes, items) in sized(object) {
+            let items = if items > 0 {
+                format!("{items:>8} items")
+            } else {
+                String::new()
+            };
+            let _ = writeln!(out, "  {key:<16} {bytes:>12} bytes {items}");
+        }
+    }
+    let mut tally = |title: &str, keys: Vec<String>| {
+        let mut counts = BTreeMap::<String, usize>::new();
+        for key in keys {
+            *counts.entry(key).or_default() += 1;
+        }
+        let mut counts = counts.into_iter().collect::<Vec<_>>();
+        counts.sort_by(|left, right| right.1.cmp(&left.1).then_with(|| left.0.cmp(&right.0)));
+        let _ = writeln!(out, "\n{title}:");
+        for (key, n) in counts {
+            let _ = writeln!(out, "  {n:>8}  {key}");
+        }
+    };
+    let field =
+        |item: &serde_json::Value, name: &str| item[name].as_str().unwrap_or("-").to_owned();
+    let items = |value: &serde_json::Value| value.as_array().cloned().unwrap_or_default();
+    tally(
+        "relationships by provenance and kind",
+        items(&value["projection"]["relationships"])
+            .iter()
+            .map(|item| format!("{} {}", field(item, "provenance"), field(item, "kind")))
+            .collect(),
+    );
+    tally(
+        "nodes by metaclass",
+        items(&value["projection"]["nodes"])
+            .iter()
+            .map(|item| field(item, "metaclass"))
+            .collect(),
+    );
+    tally(
+        "documents by source domain",
+        items(&value["documents"])
+            .iter()
+            .map(|item| field(item, "sourceDomain"))
+            .collect(),
+    );
+    Ok(out)
 }
 
 fn qualified_name(view: &DiagramViewSummary) -> String {

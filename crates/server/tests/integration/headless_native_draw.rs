@@ -2,9 +2,9 @@
 
 use spec42::headless_renderer::render_native_svg;
 
-fn schema5_sequence_payload() -> String {
+fn schema6_sequence_payload() -> String {
     serde_json::json!({
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -78,7 +78,7 @@ fn schema5_sequence_payload() -> String {
 
 #[test]
 fn native_sequence_svg_has_lifelines_and_the_authored_message() {
-    let svg = render_native_svg(&schema5_sequence_payload())
+    let svg = render_native_svg(&schema6_sequence_payload())
         .unwrap_or_else(|err| panic!("native sequence export failed: {err}"));
     assert!(svg.contains("sequence-lifeline"), "sequence SVG:\n{svg}");
     assert!(svg.contains("client"), "sequence SVG:\n{svg}");

@@ -8,7 +8,7 @@ fn payload(direction: Value, conjugated: bool, typed: bool) -> Value {
         json!({ "status": "absent", "types": [] })
     };
     json!({
-        "schemaVersion": 5,
+        "schemaVersion": 6,
         "documents": [{ "uri": "file:///notation.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name", "qualifiedName": "P" }],

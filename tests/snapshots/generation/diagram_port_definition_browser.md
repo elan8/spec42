@@ -113,16 +113,12 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:2aca90c6608c5d679f0661640593a74642ea6d46f0e0295c4f896145193dd1a9",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_port_definition_browser.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -163,17 +159,7 @@ package M {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "M::P::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "M::g"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::Port"
     },
     {
       "kind": "source-anchor",
@@ -187,22 +173,10 @@ package M {
       "ordinal": 0,
       "relationshipKind": "containment",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "conjugation",
-      "source": 1
     }
   ],
   "selectedView": {
-    "reference": 2,
+    "reference": 1,
     "kind": "browser-view",
     "name": "g",
     "source": 2
@@ -218,7 +192,7 @@ package M {
         "navigation": 0,
         "origin": 1,
         "provenance": "authored",
-        "reference": 5,
+        "reference": 3,
         "source": 0,
         "target": 1
       }
@@ -259,7 +233,7 @@ package M {
         "name": "~P",
         "notationRole": "definition",
         "owner": 0,
-        "reference": 4,
+        "reference": 2,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
@@ -268,30 +242,7 @@ package M {
         }
       }
     ],
-    "relationships": [
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 6,
-        "source": 0,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "conjugation",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 7,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      }
-    ],
+    "relationships": [],
     "scene": {
       "kind": "browser"
     }

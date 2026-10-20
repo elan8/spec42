@@ -1,4 +1,4 @@
-//! The schema-5 JSON wire contract. The Rust writer validates against these types before
+//! The schema-6 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -7,7 +7,7 @@ use ts_rs::TS;
 #[derive(Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct DiagramProduct {
-    #[ts(type = "5")]
+    #[ts(type = "6")]
     pub schema_version: u32,
     pub model_digest: String,
     pub documents: Vec<DiagramDocument>,

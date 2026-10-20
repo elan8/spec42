@@ -291,7 +291,7 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:f74c32f4bc89e383c50e4199d769627ee295b270ae0629a88db866ee3cf23470",
   "documents": [
     {
@@ -399,11 +399,6 @@ package Model {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Model::Assembly"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Model::Assembly::"
     },
     {
@@ -447,89 +442,59 @@ package Model {
       "kind": "relationship",
       "ordinal": 8,
       "relationshipKind": "memberAccessOperand",
-      "source": 1
+      "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "memberAccessOperand",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
+      "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "noncomposite-membership",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "typing",
-      "source": 2
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "noncomposite-membership",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
+      "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "typing",
-      "source": 3
+      "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "connection",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "typing",
-      "source": 6
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "typing",
-      "source": 6
+      "source": 5
     }
   ],
   "selectedView": {
-    "reference": 4,
+    "reference": 3,
     "kind": "interconnection-view",
     "name": "selected",
     "source": 7
@@ -545,7 +510,7 @@ package Model {
         "navigation": 8,
         "origin": 2,
         "provenance": "implied",
-        "reference": 12,
+        "reference": 10,
         "source": 1,
         "target": 2
       },
@@ -554,7 +519,7 @@ package Model {
         "navigation": 8,
         "origin": 4,
         "provenance": "implied",
-        "reference": 15,
+        "reference": 12,
         "source": 3,
         "target": 4
       },
@@ -563,7 +528,7 @@ package Model {
         "navigation": 5,
         "origin": 0,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 14,
         "source": 2,
         "target": 4
       }
@@ -596,7 +561,7 @@ package Model {
         "name": null,
         "notationRole": "usage",
         "owner": null,
-        "reference": 8,
+        "reference": 7,
         "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
@@ -621,7 +586,7 @@ package Model {
         "name": "left",
         "notationRole": "usage",
         "owner": null,
-        "reference": 2,
+        "reference": 1,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
@@ -630,7 +595,7 @@ package Model {
           "types": [
             {
               "label": "Sensor",
-              "reference": 5
+              "reference": 4
             }
           ]
         }
@@ -644,7 +609,7 @@ package Model {
         "name": "data",
         "notationRole": "usage",
         "owner": 1,
-        "reference": 6,
+        "reference": 5,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -653,7 +618,7 @@ package Model {
           "types": [
             {
               "label": "Signal",
-              "reference": 7
+              "reference": 6
             }
           ]
         }
@@ -675,7 +640,7 @@ package Model {
         "name": "right",
         "notationRole": "usage",
         "owner": null,
-        "reference": 3,
+        "reference": 2,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -684,7 +649,7 @@ package Model {
           "types": [
             {
               "label": "Sensor",
-              "reference": 5
+              "reference": 4
             }
           ]
         }
@@ -698,7 +663,7 @@ package Model {
         "name": "data",
         "notationRole": "usage",
         "owner": 3,
-        "reference": 6,
+        "reference": 5,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -707,7 +672,7 @@ package Model {
           "types": [
             {
               "label": "Signal",
-              "reference": 7
+              "reference": 6
             }
           ]
         }
@@ -718,21 +683,10 @@ package Model {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 11,
         "source": 1,
         "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 13,
-        "source": 1,
-        "target": {
-          "reference": 0,
+          "reference": 4,
           "status": "resolved"
         }
       },
@@ -740,21 +694,10 @@ package Model {
         "kind": "typing",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 15,
         "source": 2,
         "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 2,
-        "target": {
-          "reference": 5,
+          "reference": 6,
           "status": "resolved"
         }
       },
@@ -762,21 +705,10 @@ package Model {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 13,
         "source": 3,
         "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 3,
-        "target": {
-          "reference": 0,
+          "reference": 4,
           "status": "resolved"
         }
       },
@@ -784,21 +716,10 @@ package Model {
         "kind": "typing",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 16,
         "source": 4,
         "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
-        "source": 4,
-        "target": {
-          "reference": 5,
+          "reference": 6,
           "status": "resolved"
         }
       },
@@ -806,7 +727,7 @@ package Model {
         "kind": "memberAccessOperand",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 9,
+        "reference": 8,
         "source": 0,
         "target": {
           "node": 2,
@@ -817,21 +738,10 @@ package Model {
         "kind": "memberAccessOperand",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 10,
+        "reference": 9,
         "source": 0,
         "target": {
           "node": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 11,
-        "source": 0,
-        "target": {
-          "reference": 0,
           "status": "resolved"
         }
       }

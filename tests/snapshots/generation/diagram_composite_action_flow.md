@@ -325,20 +325,12 @@ package Shop {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:0d8712dfd443c0b8cbe2494000b33487d48498afef9dcf94776e0d54371d04be",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/actions.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -493,26 +485,6 @@ package Shop {
       "qualifiedName": "Shop::fulfilment"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::Action"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::Action::subactions"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Actions::actions"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::happensBeforeLinks"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Shop::Fulfil",
@@ -546,18 +518,6 @@ package Shop {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "succession",
       "source": 1
@@ -566,12 +526,6 @@ package Shop {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "succession",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
       "source": 1
     },
     {
@@ -594,33 +548,9 @@ package Shop {
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "succession",
       "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 3
     },
     {
       "kind": "relationship",
@@ -636,69 +566,9 @@ package Shop {
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "succession",
       "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
     }
   ],
   "selectedView": {
@@ -718,7 +588,7 @@ package Shop {
         "navigation": 8,
         "origin": 1,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 10,
         "source": 0,
         "target": 1
       },
@@ -727,7 +597,7 @@ package Shop {
         "navigation": 9,
         "origin": 1,
         "provenance": "implied",
-        "reference": 27,
+        "reference": 18,
         "source": 3,
         "target": 2
       },
@@ -736,7 +606,7 @@ package Shop {
         "navigation": 7,
         "origin": 2,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 11,
         "source": 0,
         "target": 2
       },
@@ -745,7 +615,7 @@ package Shop {
         "navigation": 1,
         "origin": 3,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 12,
         "source": 0,
         "target": 3
       },
@@ -754,7 +624,7 @@ package Shop {
         "navigation": 4,
         "origin": 4,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 15,
         "source": 3,
         "target": 4
       },
@@ -763,7 +633,7 @@ package Shop {
         "navigation": 5,
         "origin": 4,
         "provenance": "implied",
-        "reference": 38,
+        "reference": 21,
         "source": 6,
         "target": 5
       },
@@ -772,7 +642,7 @@ package Shop {
         "navigation": 3,
         "origin": 5,
         "provenance": "authored",
-        "reference": 23,
+        "reference": 16,
         "source": 3,
         "target": 5
       },
@@ -781,7 +651,7 @@ package Shop {
         "navigation": 2,
         "origin": 6,
         "provenance": "authored",
-        "reference": 24,
+        "reference": 17,
         "source": 3,
         "target": 6
       }
@@ -836,7 +706,7 @@ package Shop {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 12,
+        "reference": 8,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -896,7 +766,7 @@ package Shop {
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
-        "reference": 13,
+        "reference": 9,
         "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
@@ -941,32 +811,10 @@ package Shop {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 17,
-        "source": 0,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 1,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 13,
         "source": 1,
         "target": {
           "node": 3,
@@ -977,7 +825,7 @@ package Shop {
         "kind": "succession",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 20,
+        "reference": 14,
         "source": 1,
         "target": {
           "node": 2,
@@ -985,98 +833,10 @@ package Shop {
         }
       },
       {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 21,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 40,
-        "source": 2,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 41,
-        "source": 2,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 42,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 25,
-        "source": 3,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 3,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 28,
-        "source": 3,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 29,
-        "source": 4,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 19,
         "source": 4,
         "target": {
           "node": 6,
@@ -1087,87 +847,10 @@ package Shop {
         "kind": "succession",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 20,
         "source": 4,
         "target": {
           "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 4,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 33,
-        "source": 5,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 34,
-        "source": 5,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 35,
-        "source": 5,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 6,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 6,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 39,
-        "source": 6,
-        "target": {
-          "node": 3,
           "status": "resolved"
         }
       }

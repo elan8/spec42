@@ -129,13 +129,17 @@ fn diagram_views_returns_the_webshop_catalog_over_the_lsp() {
         diagram["result"]["modelDigest"], response["result"]["modelDigest"],
         "LSP response: {diagram}"
     );
-    let product: serde_json::Value = serde_json::from_str(
-        diagram["result"]["productJson"]
-            .as_str()
-            .unwrap_or_else(|| panic!("product JSON: {diagram}")),
-    )
-    .expect("the product is JSON");
-    assert_eq!(product["schemaVersion"], 5);
+    let product_json = diagram["result"]["productJson"]
+        .as_str()
+        .unwrap_or_else(|| panic!("product JSON: {diagram}"));
+    // Indentation was about 40% of every product the editor received.
+    assert!(
+        !product_json.contains('\n'),
+        "the editor receives the compact product"
+    );
+    let product: serde_json::Value =
+        serde_json::from_str(product_json).expect("the product is JSON");
+    assert_eq!(product["schemaVersion"], 6);
     assert_eq!(product["selectedView"]["name"], "checkoutPipeline");
     assert_eq!(product["modelDigest"], response["result"]["modelDigest"]);
 

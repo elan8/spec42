@@ -389,24 +389,12 @@ package GeneralSubsetting {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:2abdffc1e457d565d2b0c57dbc24e67b7b7881a6ca5b8f902e64333b6f6795e8",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_authored_subsetting.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -584,26 +572,6 @@ package GeneralSubsetting {
       "qualifiedName": "GeneralSubsetting::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -614,30 +582,6 @@ package GeneralSubsetting {
       "ordinal": 2,
       "relationshipKind": "containment",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
     },
     {
       "kind": "relationship",
@@ -665,44 +609,8 @@ package GeneralSubsetting {
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
@@ -731,12 +639,6 @@ package GeneralSubsetting {
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "specializes",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "redefinition",
       "source": 4
@@ -745,24 +647,6 @@ package GeneralSubsetting {
       "kind": "relationship",
       "ordinal": 19,
       "relationshipKind": "redefinition",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "typeFeaturing",
       "source": 4
     },
     {
@@ -776,24 +660,6 @@ package GeneralSubsetting {
       "ordinal": 11,
       "relationshipKind": "specializes",
       "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "specializes",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 7
     }
   ],
   "selectedView": {
@@ -813,7 +679,7 @@ package GeneralSubsetting {
         "navigation": 4,
         "origin": 6,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 9,
         "source": 5,
         "target": 6
       },
@@ -822,7 +688,7 @@ package GeneralSubsetting {
         "navigation": 5,
         "origin": 6,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 11,
         "source": 6,
         "target": 8
       },
@@ -831,7 +697,7 @@ package GeneralSubsetting {
         "navigation": 6,
         "origin": 7,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 10,
         "source": 5,
         "target": 7
       },
@@ -840,7 +706,7 @@ package GeneralSubsetting {
         "navigation": 7,
         "origin": 7,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 13,
         "source": 7,
         "target": 6
       },
@@ -849,7 +715,7 @@ package GeneralSubsetting {
         "navigation": 2,
         "origin": 8,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 22,
         "source": 8,
         "target": 4
       },
@@ -858,7 +724,7 @@ package GeneralSubsetting {
         "navigation": 9,
         "origin": 1,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 18,
         "source": 1,
         "target": 5
       },
@@ -867,7 +733,7 @@ package GeneralSubsetting {
         "navigation": 6,
         "origin": 3,
         "provenance": "implied",
-        "reference": 30,
+        "reference": 16,
         "source": 1,
         "target": 3
       },
@@ -876,7 +742,7 @@ package GeneralSubsetting {
         "navigation": 7,
         "origin": 3,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 14,
         "source": 3,
         "target": 6
       },
@@ -885,7 +751,7 @@ package GeneralSubsetting {
         "navigation": 10,
         "origin": 2,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 17,
         "source": 1,
         "target": 2
       },
@@ -894,7 +760,7 @@ package GeneralSubsetting {
         "navigation": 11,
         "origin": 2,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 20,
         "source": 2,
         "target": 6
       }
@@ -1103,43 +969,10 @@ package GeneralSubsetting {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 43,
-        "source": 4,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 0,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 15,
-        "source": 5,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 20,
+        "reference": 12,
         "source": 6,
         "target": {
           "node": 8,
@@ -1148,42 +981,9 @@ package GeneralSubsetting {
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 6,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 17,
-        "source": 6,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 6,
-        "target": {
-          "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 14,
         "source": 7,
         "target": {
           "node": 6,
@@ -1191,43 +991,10 @@ package GeneralSubsetting {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
-        "source": 7,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 7,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 28,
-        "source": 7,
-        "target": {
-          "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "specializes",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 41,
+        "reference": 23,
         "source": 8,
         "target": {
           "node": 4,
@@ -1236,34 +1003,12 @@ package GeneralSubsetting {
       },
       {
         "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 42,
-        "source": 8,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 19,
         "source": 1,
         "target": {
           "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 34,
-        "source": 1,
-        "target": {
-          "reference": 11,
           "status": "resolved"
         }
       },
@@ -1271,43 +1016,10 @@ package GeneralSubsetting {
         "kind": "subsetting",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 15,
         "source": 3,
         "target": {
           "node": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 3,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 3,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 29,
-        "source": 3,
-        "target": {
-          "node": 5,
           "status": "resolved"
         }
       },
@@ -1315,43 +1027,10 @@ package GeneralSubsetting {
         "kind": "redefinition",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 36,
+        "reference": 21,
         "source": 2,
         "target": {
           "node": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 2,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 38,
-        "source": 2,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 39,
-        "source": 2,
-        "target": {
-          "node": 1,
           "status": "resolved"
         }
       }

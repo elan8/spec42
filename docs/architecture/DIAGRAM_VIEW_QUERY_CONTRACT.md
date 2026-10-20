@@ -15,7 +15,7 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
 never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 5
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 6
 is the sole renderer product for this contract.
 
 Projected element `name` is the publication's canonical effective name (SysML 7.6.5), so an
@@ -35,7 +35,7 @@ negation preserves unresolved, ambiguous and unsupported predicate outcomes.
 
 | View | Authoritative semantic inputs | Projection |
 | --- | --- | --- |
-| General | Resolved exposed roots; owned declarations; containment; published relationships and authored FeatureTyping; relationship provenance; source locations | Exposed roots plus their owned semantic scope as typed nodes; containment edges; and, between two projected elements, an edge for each authored subclassification, subsetting, redefinition, or feature typing (SysML 8.2.3.6). Implied library subsetting stays a relationship-only fact; an unresolved, ambiguous, or out-of-view end yields no edge |
+| General | Resolved exposed roots; owned declarations; containment; published relationships and authored FeatureTyping; relationship provenance; source locations | Exposed roots plus their owned semantic scope as typed nodes; containment edges; and, between two projected elements, an edge for each authored subclassification, subsetting, redefinition, or feature typing (SysML 8.2.3.6). Implied library subsetting is a query-only fact, not part of the product; an unresolved, ambiguous, or out-of-view end yields no edge |
 | Interconnection | Exposed parts; ports; nested ownership; connector declarations and resolved connector ends; authored direction/conjugation when published; the direction a port's directed features give it (`featureDirection`), derived and kept apart from the authored one; provenance | Nested part nodes with ports on the node boundary and connector edges (SysML 8.2.3.11). Ports and connector usages are not peer boxes. Missing or unsupported connector ends/direction remain typed incomplete facts |
 | Action flow | Exposed action definitions/usages and control nodes; resolved successions/flows, including the source the lowering settles for a `then` shorthand (SysML 7.17.4); the inherited `start`/`done` where a succession begins or ends at them; directed features (parameters) with their authored direction; the guard of a conditional succession as written, or `else` (`successionGuard`); effects when published | Action/control nodes, start and done nodes, parameters on the boundary of their action, and ordered flow edges. A consumer does not work out the source of a `then` from member order. Unsupported guards or effects are explicit reasons |
 | State transition | Exposed state definitions; states and the states they own; final nodes; initial/succession and transition endpoints; trigger/guard/effect facts; the entry, do and exit action of a state with its role (`stateSubaction`); provenance | State/control nodes, a state's nested states inside it, its state actions, and transition edges with typed trigger, guard, effect, source, and completeness |
@@ -75,6 +75,14 @@ diagnostics are canonically ordered before indexes are assigned. `selectedView` 
 and source indexes, kind, and name; every projected fact retains a typed public reference and
 provenance through the normalized tables.
 
+The product's `relationships` are the projection's **authored** relationships. A projection also
+publishes the relationships the library implies for each element (`Parts::parts` subsetting, type
+featuring, inherited redefinitions); those stay available through the semantic query and
+inspection, but the product leaves them out. No drawing reads them, and with the references,
+sources and library documents they pulled in they were most of every product's bytes (schema 6;
+see the CHANGELOG). The language server sends the product as compact JSON; `spec42 diagram
+--format json` and checked-in products are pretty-printed. Both are the same JSON value.
+
 Graph endpoints and view-specific metadata use node or relationship indexes rather than repeating
 qualified names. The renderer expands those local joins once into layout keys such as `n:17`; this
 is presentation adaptation, not semantic reconstruction. A future incremental product must use a
@@ -89,7 +97,7 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-5 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
+The schema-6 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
 discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.
 
@@ -98,9 +106,9 @@ shape. The Rust publisher validates every product against this contract before r
 import these generated declarations. `scripts/minici.sh lint` runs the generator in check mode and
 fails when the Rust contract and checked-in TypeScript files differ.
 
-This is a compile-time consumer migration for schema version 5 and does not change its JSON field
-names or golden products. The renderer's legacy pre-schema-5 adapters remain boundary-only
-compatibility code. A future incompatible wire change must increment `schemaVersion`, regenerate
+Schema 6 keeps the schema-5 field names and shapes; it changes what `relationships` contains (see
+above), and a schema-5 product is no longer accepted. The renderer's legacy pre-schema-5 adapters
+remain boundary-only compatibility code. A future incompatible wire change must increment `schemaVersion`, regenerate
 the bindings, update the checked-in product corpus, and migrate consumers in the same change.
 
 ## Root-view framing

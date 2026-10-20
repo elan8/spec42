@@ -294,32 +294,12 @@ package SequenceUnresolved {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:4b801f15c918daa66be1e735d939eab799878f74930ae00bb163c8eb039f0370",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unresolved_endpoint.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/base.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/flows.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/transfers.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -424,11 +404,6 @@ package SequenceUnresolved {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "SequenceUnresolved::Interaction::delivery::::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "SequenceUnresolved::Interaction::receiver"
     },
     {
@@ -450,61 +425,6 @@ package SequenceUnresolved {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "SequenceUnresolved::selected"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Base::things"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Flows::flows"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Flows::messages"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::occurrences"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::Transfer::source::sourceOutput"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::Transfer::target::targetInput"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::flowTransfers"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::transfers"
     },
     {
       "kind": "source-anchor",
@@ -550,12 +470,6 @@ package SequenceUnresolved {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
       "source": 0
     },
     {
@@ -584,42 +498,6 @@ package SequenceUnresolved {
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "containment",
       "source": 2
@@ -632,127 +510,19 @@ package SequenceUnresolved {
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "redefinition",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "redefinition",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 8,
       "relationshipKind": "containment",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
+      "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
+      "source": 5
     }
   ],
   "selectedView": {
-    "reference": 8,
+    "reference": 7,
     "kind": "sequence-view",
     "name": "selected",
     "source": 8
@@ -773,7 +543,7 @@ package SequenceUnresolved {
         "navigation": 1,
         "origin": 6,
         "provenance": "authored",
-        "reference": 24,
+        "reference": 12,
         "source": 0,
         "target": 6
       },
@@ -782,7 +552,7 @@ package SequenceUnresolved {
         "navigation": 2,
         "origin": 7,
         "provenance": "authored",
-        "reference": 54,
+        "reference": 22,
         "source": 6,
         "target": 7
       },
@@ -791,7 +561,7 @@ package SequenceUnresolved {
         "navigation": 5,
         "origin": 1,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 13,
         "source": 0,
         "target": 1
       },
@@ -800,7 +570,7 @@ package SequenceUnresolved {
         "navigation": 6,
         "origin": 2,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 15,
         "source": 1,
         "target": 2
       },
@@ -809,7 +579,7 @@ package SequenceUnresolved {
         "navigation": 6,
         "origin": 3,
         "provenance": "authored",
-        "reference": 38,
+        "reference": 19,
         "source": 2,
         "target": 3
       },
@@ -818,7 +588,7 @@ package SequenceUnresolved {
         "navigation": 7,
         "origin": 4,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 16,
         "source": 1,
         "target": 4
       },
@@ -827,7 +597,7 @@ package SequenceUnresolved {
         "navigation": 7,
         "origin": 5,
         "provenance": "authored",
-        "reference": 39,
+        "reference": 20,
         "source": 4,
         "target": 5
       },
@@ -836,7 +606,7 @@ package SequenceUnresolved {
         "navigation": 3,
         "origin": 8,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 14,
         "source": 0,
         "target": 8
       },
@@ -845,7 +615,7 @@ package SequenceUnresolved {
         "navigation": 4,
         "origin": 9,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 21,
         "source": 8,
         "target": 9
       }
@@ -923,7 +693,7 @@ package SequenceUnresolved {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 20,
+        "reference": 8,
         "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
@@ -940,7 +710,7 @@ package SequenceUnresolved {
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
-        "reference": 22,
+        "reference": 10,
         "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
@@ -957,7 +727,7 @@ package SequenceUnresolved {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 21,
+        "reference": 9,
         "source": 7,
         "stateSubaction": null,
         "successionGuard": null,
@@ -974,7 +744,7 @@ package SequenceUnresolved {
         "name": null,
         "notationRole": "unsupported",
         "owner": 4,
-        "reference": 23,
+        "reference": 11,
         "source": 7,
         "stateSubaction": null,
         "successionGuard": null,
@@ -999,7 +769,7 @@ package SequenceUnresolved {
         "name": "sender",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 6,
+        "reference": 5,
         "source": 1,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1016,7 +786,7 @@ package SequenceUnresolved {
         "name": "sent",
         "notationRole": "usage",
         "owner": 6,
-        "reference": 7,
+        "reference": 6,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1041,7 +811,7 @@ package SequenceUnresolved {
         "name": "receiver",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 4,
+        "reference": 3,
         "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1058,7 +828,7 @@ package SequenceUnresolved {
         "name": "received",
         "notationRole": "usage",
         "owner": 8,
-        "reference": 5,
+        "reference": 4,
         "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1069,76 +839,10 @@ package SequenceUnresolved {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 0,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 55,
-        "source": 6,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 6,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 57,
-        "source": 6,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 58,
-        "source": 7,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 59,
-        "source": 7,
-        "target": {
-          "node": 6,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "flowSource",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 17,
         "source": 1,
         "target": {
           "node": 7,
@@ -1149,219 +853,10 @@ package SequenceUnresolved {
         "kind": "flowTarget",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 18,
         "source": 1,
         "target": {
           "status": "unresolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 1,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 33,
-        "source": 1,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 34,
-        "source": 1,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 35,
-        "source": 1,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 1,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 40,
-        "source": 2,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 42,
-        "source": 3,
-        "target": {
-          "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 3,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 46,
-        "source": 3,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 41,
-        "source": 4,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 43,
-        "source": 5,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 45,
-        "source": 5,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 47,
-        "source": 5,
-        "target": {
-          "node": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 49,
-        "source": 8,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 50,
-        "source": 8,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 51,
-        "source": 8,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 52,
-        "source": 9,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
-        "source": 9,
-        "target": {
-          "node": 8,
-          "status": "resolved"
         }
       }
     ],

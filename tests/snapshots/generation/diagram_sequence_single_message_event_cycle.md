@@ -356,32 +356,12 @@ package SingleCycle {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:8bf1f9fdf8b96f102b4fa1efeed31dbbfb17d9b86669d0874951bdc7c9ea1a00",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_single_message_event_cycle.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/base.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/flows.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/transfers.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -541,11 +521,6 @@ package SingleCycle {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "SingleCycle::Scenario::only::::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "SingleCycle::Scenario::p"
     },
     {
@@ -567,66 +542,6 @@ package SingleCycle {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "SingleCycle::seq"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Base::things"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Flows::flows"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Flows::messages"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::happensBeforeLinks"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::occurrences"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::Transfer::source::sourceOutput"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::Transfer::target::targetInput"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::flowTransfers"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Transfers::transfers"
     },
     {
       "kind": "source-anchor",
@@ -689,18 +604,6 @@ package SingleCycle {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 30,
       "relationshipKind": "succession",
       "source": 2
@@ -709,12 +612,6 @@ package SingleCycle {
       "kind": "relationship",
       "ordinal": 31,
       "relationshipKind": "succession",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
@@ -743,42 +640,6 @@ package SingleCycle {
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "containment",
       "source": 4
@@ -791,151 +652,43 @@ package SingleCycle {
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "redefinition",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "redefinition",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "typing",
-      "source": 6
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "flow",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
+      "source": 6
     },
     {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "typing",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 9
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 11,
       "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
+      "source": 8
     }
   ],
   "selectedView": {
-    "reference": 10,
+    "reference": 9,
     "kind": "sequence-view",
     "name": "seq",
     "source": 13
@@ -955,7 +708,7 @@ package SingleCycle {
         "navigation": 1,
         "origin": 7,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 15,
         "source": 0,
         "target": 7
       },
@@ -964,7 +717,7 @@ package SingleCycle {
         "navigation": 3,
         "origin": 8,
         "provenance": "authored",
-        "reference": 57,
+        "reference": 27,
         "source": 7,
         "target": 8
       },
@@ -973,7 +726,7 @@ package SingleCycle {
         "navigation": 4,
         "origin": 9,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 16,
         "source": 0,
         "target": 9
       },
@@ -982,7 +735,7 @@ package SingleCycle {
         "navigation": 6,
         "origin": 10,
         "provenance": "authored",
-        "reference": 65,
+        "reference": 30,
         "source": 9,
         "target": 10
       },
@@ -991,7 +744,7 @@ package SingleCycle {
         "navigation": 7,
         "origin": 2,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 17,
         "source": 0,
         "target": 2
       },
@@ -1000,7 +753,7 @@ package SingleCycle {
         "navigation": 8,
         "origin": 2,
         "provenance": "implied",
-        "reference": 62,
+        "reference": 29,
         "source": 8,
         "target": 10
       },
@@ -1009,7 +762,7 @@ package SingleCycle {
         "navigation": 8,
         "origin": 3,
         "provenance": "authored",
-        "reference": 37,
+        "reference": 21,
         "source": 2,
         "target": 3
       },
@@ -1018,7 +771,7 @@ package SingleCycle {
         "navigation": 8,
         "origin": 4,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 25,
         "source": 3,
         "target": 4
       },
@@ -1027,7 +780,7 @@ package SingleCycle {
         "navigation": 9,
         "origin": 5,
         "provenance": "authored",
-        "reference": 38,
+        "reference": 22,
         "source": 2,
         "target": 5
       },
@@ -1036,7 +789,7 @@ package SingleCycle {
         "navigation": 9,
         "origin": 6,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 26,
         "source": 5,
         "target": 6
       },
@@ -1045,7 +798,7 @@ package SingleCycle {
         "navigation": 10,
         "origin": 1,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 18,
         "source": 0,
         "target": 1
       },
@@ -1054,7 +807,7 @@ package SingleCycle {
         "navigation": 11,
         "origin": 1,
         "provenance": "implied",
-        "reference": 71,
+        "reference": 32,
         "source": 10,
         "target": 8
       }
@@ -1115,7 +868,7 @@ package SingleCycle {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 23,
+        "reference": 10,
         "source": 10,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1149,7 +902,7 @@ package SingleCycle {
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
-        "reference": 24,
+        "reference": 11,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1166,7 +919,7 @@ package SingleCycle {
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
-        "reference": 26,
+        "reference": 13,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1183,7 +936,7 @@ package SingleCycle {
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
-        "reference": 25,
+        "reference": 12,
         "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1200,7 +953,7 @@ package SingleCycle {
         "name": null,
         "notationRole": "unsupported",
         "owner": 5,
-        "reference": 27,
+        "reference": 14,
         "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1225,7 +978,7 @@ package SingleCycle {
         "name": "p",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 6,
+        "reference": 5,
         "source": 1,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1248,7 +1001,7 @@ package SingleCycle {
         "name": "sendEvent",
         "notationRole": "usage",
         "owner": 7,
-        "reference": 7,
+        "reference": 6,
         "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1273,7 +1026,7 @@ package SingleCycle {
         "name": "q",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 8,
+        "reference": 7,
         "source": 4,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1296,7 +1049,7 @@ package SingleCycle {
         "name": "receiveEvent",
         "notationRole": "usage",
         "owner": 9,
-        "reference": 9,
+        "reference": 8,
         "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1307,79 +1060,13 @@ package SingleCycle {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 0,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 61,
+        "reference": 28,
         "source": 7,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 58,
-        "source": 7,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 59,
-        "source": 7,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 60,
-        "source": 7,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 63,
-        "source": 8,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 64,
-        "source": 8,
-        "target": {
-          "node": 7,
           "status": "resolved"
         }
       },
@@ -1387,7 +1074,7 @@ package SingleCycle {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 69,
+        "reference": 31,
         "source": 9,
         "target": {
           "reference": 0,
@@ -1395,65 +1082,10 @@ package SingleCycle {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 66,
-        "source": 9,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 67,
-        "source": 9,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 68,
-        "source": 9,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 70,
-        "source": 10,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 72,
-        "source": 10,
-        "target": {
-          "node": 9,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "flowSource",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 39,
+        "reference": 23,
         "source": 2,
         "target": {
           "node": 8,
@@ -1464,7 +1096,7 @@ package SingleCycle {
         "kind": "flowTarget",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 24,
         "source": 2,
         "target": {
           "node": 10,
@@ -1472,175 +1104,10 @@ package SingleCycle {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 41,
-        "source": 2,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 42,
-        "source": 2,
-        "target": {
-          "reference": 12,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 43,
-        "source": 2,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 2,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 45,
-        "source": 2,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 46,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 49,
-        "source": 3,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 51,
-        "source": 4,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
-        "source": 4,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 55,
-        "source": 4,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 50,
-        "source": 5,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 52,
-        "source": 6,
-        "target": {
-          "reference": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 54,
-        "source": 6,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 6,
-        "target": {
-          "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 33,
-        "source": 1,
-        "target": {
-          "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 19,
         "source": 1,
         "target": {
           "node": 10,
@@ -1651,21 +1118,10 @@ package SingleCycle {
         "kind": "succession",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 20,
         "source": 1,
         "target": {
           "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 1,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       }

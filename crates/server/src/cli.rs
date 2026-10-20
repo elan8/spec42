@@ -128,7 +128,7 @@ pub struct DiagramArgs {
     /// such as `views/Views.sysml`, for a qualified name declared in more than one document.
     #[arg(long = "document", requires = "view")]
     pub document: Option<String>,
-    /// `svg` renders the view; `json` writes its diagram product (schema 5), or lists the views
+    /// `svg` renders the view; `json` writes its diagram product, or lists the views
     /// as JSON when no view is given.
     #[arg(long = "format", value_enum, default_value_t = DiagramFormat::Svg)]
     pub format: DiagramFormat,
@@ -139,6 +139,10 @@ pub struct DiagramArgs {
     /// Write to this file instead of standard output.
     #[arg(long = "output", short = 'o')]
     pub output: Option<PathBuf>,
+    /// With `--view`: report the size of the view's diagram product instead of rendering it --
+    /// bytes per section, element counts, and relationships by provenance and kind.
+    #[arg(long = "stats", requires = "view")]
+    pub stats: bool,
 }
 
 fn parse_depth(value: &str) -> Result<diagram_draw::Nesting, String> {

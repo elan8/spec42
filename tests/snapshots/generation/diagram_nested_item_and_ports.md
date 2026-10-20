@@ -694,32 +694,12 @@ package NestedOwners {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:1a54ecda53ee22b69a435048bebac1462d4dadbb026481ecff5e1fdd4640dc8f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/items.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/links.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/ports.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -1074,51 +1054,6 @@ package NestedOwners {
       "qualifiedName": "NestedOwners::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Items::Item::subparts"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Items::items"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Links::selfLinks"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part::ownedPorts"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::Port::subports"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::ports"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "BindingConnectorAsUsage",
       "ownerQualifiedName": "NestedOwners::Assembly",
@@ -1157,12 +1092,6 @@ package NestedOwners {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "memberAccessOperand",
       "source": 1
@@ -1175,18 +1104,6 @@ package NestedOwners {
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "containment",
       "source": 2
@@ -1195,24 +1112,6 @@ package NestedOwners {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "containment",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
@@ -1231,24 +1130,6 @@ package NestedOwners {
       "kind": "relationship",
       "ordinal": 14,
       "relationshipKind": "noncomposite-membership",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "typeFeaturing",
       "source": 3
     },
     {
@@ -1271,24 +1152,6 @@ package NestedOwners {
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
       "ordinal": 27,
       "relationshipKind": "typing",
       "source": 4
@@ -1301,63 +1164,9 @@ package NestedOwners {
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "typing",
       "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
     },
     {
       "kind": "relationship",
@@ -1379,18 +1188,6 @@ package NestedOwners {
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
       "ordinal": 49,
       "relationshipKind": "typing",
       "source": 9
@@ -1399,54 +1196,6 @@ package NestedOwners {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "connection",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "typeFeaturing",
       "source": 11
     },
     {
@@ -1460,54 +1209,6 @@ package NestedOwners {
       "ordinal": 31,
       "relationshipKind": "typing",
       "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
     },
     {
       "kind": "relationship",
@@ -1529,18 +1230,6 @@ package NestedOwners {
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
       "ordinal": 56,
       "relationshipKind": "typing",
       "source": 14
@@ -1553,45 +1242,9 @@ package NestedOwners {
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 48,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
       "ordinal": 45,
       "relationshipKind": "typing",
       "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "subsetting",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "typeFeaturing",
-      "source": 19
     },
     {
       "kind": "relationship",
@@ -1617,7 +1270,7 @@ package NestedOwners {
         "navigation": 23,
         "origin": 1,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 24,
         "source": 0,
         "target": 1
       },
@@ -1626,7 +1279,7 @@ package NestedOwners {
         "navigation": 24,
         "origin": 1,
         "provenance": "authored",
-        "reference": 76,
+        "reference": 44,
         "source": 11,
         "target": 9
       },
@@ -1635,7 +1288,7 @@ package NestedOwners {
         "navigation": 19,
         "origin": 8,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 22,
         "source": 0,
         "target": 8
       },
@@ -1644,7 +1297,7 @@ package NestedOwners {
         "navigation": 8,
         "origin": 9,
         "provenance": "implied",
-        "reference": 59,
+        "reference": 38,
         "source": 8,
         "target": 9
       },
@@ -1653,7 +1306,7 @@ package NestedOwners {
         "navigation": 15,
         "origin": 10,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 25,
         "source": 0,
         "target": 10
       },
@@ -1662,7 +1315,7 @@ package NestedOwners {
         "navigation": 4,
         "origin": 11,
         "provenance": "implied",
-        "reference": 41,
+        "reference": 29,
         "source": 10,
         "target": 11
       },
@@ -1671,7 +1324,7 @@ package NestedOwners {
         "navigation": 6,
         "origin": 12,
         "provenance": "implied",
-        "reference": 42,
+        "reference": 30,
         "source": 10,
         "target": 12
       },
@@ -1680,7 +1333,7 @@ package NestedOwners {
         "navigation": 17,
         "origin": 13,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 26,
         "source": 0,
         "target": 13
       },
@@ -1689,7 +1342,7 @@ package NestedOwners {
         "navigation": 4,
         "origin": 14,
         "provenance": "implied",
-        "reference": 53,
+        "reference": 35,
         "source": 13,
         "target": 14
       },
@@ -1698,7 +1351,7 @@ package NestedOwners {
         "navigation": 6,
         "origin": 15,
         "provenance": "implied",
-        "reference": 54,
+        "reference": 36,
         "source": 13,
         "target": 15
       },
@@ -1707,7 +1360,7 @@ package NestedOwners {
         "navigation": 21,
         "origin": 2,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 23,
         "source": 0,
         "target": 2
       },
@@ -1716,7 +1369,7 @@ package NestedOwners {
         "navigation": 10,
         "origin": 5,
         "provenance": "implied",
-        "reference": 47,
+        "reference": 32,
         "source": 2,
         "target": 5
       },
@@ -1725,7 +1378,7 @@ package NestedOwners {
         "navigation": 2,
         "origin": 6,
         "provenance": "implied",
-        "reference": 101,
+        "reference": 51,
         "source": 5,
         "target": 6
       },
@@ -1734,7 +1387,7 @@ package NestedOwners {
         "navigation": 0,
         "origin": 7,
         "provenance": "implied",
-        "reference": 72,
+        "reference": 42,
         "source": 6,
         "target": 7
       },
@@ -1743,7 +1396,7 @@ package NestedOwners {
         "navigation": 12,
         "origin": 3,
         "provenance": "implied",
-        "reference": 48,
+        "reference": 33,
         "source": 2,
         "target": 3
       },
@@ -1752,7 +1405,7 @@ package NestedOwners {
         "navigation": 0,
         "origin": 4,
         "provenance": "implied",
-        "reference": 97,
+        "reference": 49,
         "source": 3,
         "target": 4
       }
@@ -1832,7 +1485,7 @@ package NestedOwners {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 30,
+        "reference": 21,
         "source": 23,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2230,21 +1883,10 @@ package NestedOwners {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 36,
-        "source": 0,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "memberAccessOperand",
         "navigation": 24,
         "provenance": "authored",
-        "reference": 37,
+        "reference": 27,
         "source": 1,
         "target": {
           "node": 11,
@@ -2255,7 +1897,7 @@ package NestedOwners {
         "kind": "memberAccessOperand",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 38,
+        "reference": 28,
         "source": 1,
         "target": {
           "node": 9,
@@ -2263,68 +1905,13 @@ package NestedOwners {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 39,
-        "source": 1,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 40,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 63,
+        "reference": 39,
         "source": 8,
         "target": {
           "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 60,
-        "source": 8,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 61,
-        "source": 8,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 62,
-        "source": 8,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -2332,43 +1919,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 109,
+        "reference": 53,
         "source": 9,
         "target": {
           "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 106,
-        "source": 9,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 107,
-        "source": 9,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 108,
-        "source": 9,
-        "target": {
-          "reference": 18,
           "status": "resolved"
         }
       },
@@ -2376,43 +1930,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 31,
         "source": 10,
         "target": {
           "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 43,
-        "source": 10,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 10,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 45,
-        "source": 10,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -2420,54 +1941,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 85,
+        "reference": 45,
         "source": 11,
         "target": {
           "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 77,
-        "source": 11,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 78,
-        "source": 11,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 79,
-        "source": 11,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 83,
-        "source": 11,
-        "target": {
-          "reference": 10,
           "status": "resolved"
         }
       },
@@ -2475,54 +1952,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 95,
+        "reference": 47,
         "source": 12,
         "target": {
           "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 87,
-        "source": 12,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 88,
-        "source": 12,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 89,
-        "source": 12,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 93,
-        "source": 12,
-        "target": {
-          "reference": 10,
           "status": "resolved"
         }
       },
@@ -2530,43 +1963,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 37,
         "source": 13,
         "target": {
           "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 55,
-        "source": 13,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 13,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 57,
-        "source": 13,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -2574,54 +1974,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 86,
+        "reference": 46,
         "source": 14,
         "target": {
           "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 80,
-        "source": 14,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 81,
-        "source": 14,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 82,
-        "source": 14,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 84,
-        "source": 14,
-        "target": {
-          "reference": 10,
           "status": "resolved"
         }
       },
@@ -2629,7 +1985,7 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 96,
+        "reference": 48,
         "source": 15,
         "target": {
           "reference": 16,
@@ -2637,90 +1993,13 @@ package NestedOwners {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 90,
-        "source": 15,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 91,
-        "source": 15,
-        "target": {
-          "reference": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 92,
-        "source": 15,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 94,
-        "source": 15,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 52,
+        "reference": 34,
         "source": 2,
         "target": {
           "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 49,
-        "source": 2,
-        "target": {
-          "reference": 24,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 50,
-        "source": 2,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 51,
-        "source": 2,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -2728,43 +2007,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 105,
+        "reference": 52,
         "source": 5,
         "target": {
           "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 102,
-        "source": 5,
-        "target": {
-          "reference": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 103,
-        "source": 5,
-        "target": {
-          "reference": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 104,
-        "source": 5,
-        "target": {
-          "reference": 13,
           "status": "resolved"
         }
       },
@@ -2772,32 +2018,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 75,
+        "reference": 43,
         "source": 6,
         "target": {
           "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 73,
-        "source": 6,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 74,
-        "source": 6,
-        "target": {
-          "reference": 8,
           "status": "resolved"
         }
       },
@@ -2805,43 +2029,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 70,
+        "reference": 40,
         "source": 7,
         "target": {
           "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 64,
-        "source": 7,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 65,
-        "source": 7,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 68,
-        "source": 7,
-        "target": {
-          "reference": 6,
           "status": "resolved"
         }
       },
@@ -2849,32 +2040,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 100,
+        "reference": 50,
         "source": 3,
         "target": {
           "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 98,
-        "source": 3,
-        "target": {
-          "reference": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 99,
-        "source": 3,
-        "target": {
-          "reference": 13,
           "status": "resolved"
         }
       },
@@ -2882,43 +2051,10 @@ package NestedOwners {
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 71,
+        "reference": 41,
         "source": 4,
         "target": {
           "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 66,
-        "source": 4,
-        "target": {
-          "reference": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 67,
-        "source": 4,
-        "target": {
-          "reference": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 69,
-        "source": 4,
-        "target": {
-          "reference": 6,
           "status": "resolved"
         }
       }

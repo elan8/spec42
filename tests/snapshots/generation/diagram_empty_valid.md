@@ -116,7 +116,7 @@ package EmptyExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:deb8297fad52b822c65729540725032af6ccd8761528b2d0d0790988180107b6",
   "documents": [
     {

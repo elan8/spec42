@@ -265,24 +265,12 @@ package ProvenanceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:c136d09375a74020f98a76967103b1242dcaf22c5881c25e16f0df252fcadbc4",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_relationship_provenance.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/base.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/performances.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -330,15 +318,6 @@ package ProvenanceExample {
         4,
         17
       ]
-    },
-    {
-      "document": 3,
-      "range": [
-        137,
-        2,
-        137,
-        22
-      ]
     }
   ],
   "references": [
@@ -346,11 +325,6 @@ package ProvenanceExample {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "ProvenanceExample::Base"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
-      "qualifiedName": "ProvenanceExample::Base::mass"
     },
     {
       "document": 0,
@@ -370,32 +344,7 @@ package ProvenanceExample {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "ProvenanceExample::Child::mass::::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "ProvenanceExample::selected"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Base::dataValues"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Base::things"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Performances::literalIntegerEvaluations"
     },
     {
       "kind": "source-anchor",
@@ -412,99 +361,32 @@ package ProvenanceExample {
       "sourceDomain": "workspace"
     },
     {
-      "kind": "source-anchor",
-      "metaclass": "ReferenceUsage",
-      "ownerQualifiedName": "Performances::LiteralIntegerEvaluation",
-      "source": 5,
-      "sourceDomain": "standard-library"
-    },
-    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "noncomposite-membership",
-      "source": 2
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "specializes",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "specializes",
-      "source": 2
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "containment",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "redefinition",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "typeFeaturing",
-      "source": 3
+      "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "containment",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "redefinition",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
+      "source": 3
     }
   ],
   "selectedView": {
-    "reference": 6,
+    "reference": 4,
     "kind": "general-view",
     "name": "selected",
     "source": 4
@@ -520,7 +402,7 @@ package ProvenanceExample {
         "navigation": 2,
         "origin": 1,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 7,
         "source": 0,
         "target": 1
       },
@@ -529,7 +411,7 @@ package ProvenanceExample {
         "navigation": 3,
         "origin": 2,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 9,
         "source": 1,
         "target": 2
       },
@@ -538,7 +420,7 @@ package ProvenanceExample {
         "navigation": 3,
         "origin": 3,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 10,
         "source": 2,
         "target": 3
       }
@@ -570,7 +452,7 @@ package ProvenanceExample {
         "name": "Child",
         "notationRole": "definition",
         "owner": null,
-        "reference": 2,
+        "reference": 1,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
@@ -587,7 +469,7 @@ package ProvenanceExample {
         "name": "mass",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 3,
+        "reference": 2,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -604,7 +486,7 @@ package ProvenanceExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 11,
+        "reference": 5,
         "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
@@ -621,7 +503,7 @@ package ProvenanceExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
-        "reference": 12,
+        "reference": 6,
         "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
@@ -635,120 +517,10 @@ package ProvenanceExample {
         "kind": "specializes",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 8,
         "source": 0,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 0,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 18,
-        "source": 1,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 1,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
-        "source": 1,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 21,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
-        "source": 2,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 25,
-        "source": 3,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 3,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 3,
-        "target": {
-          "node": 2,
           "status": "resolved"
         }
       }

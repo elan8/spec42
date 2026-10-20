@@ -262,16 +262,12 @@ package Trace {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:48f305f8b915add009c44d5aade7acad810e5d6af3f4736abe2886cdf41c1850",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_nary_dependency.md",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -389,11 +385,6 @@ package Trace {
       "qualifiedName": "Trace::selected"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "Dependency",
       "ownerQualifiedName": "Trace",
@@ -435,24 +426,6 @@ package Trace {
       "ordinal": 1,
       "relationshipKind": "dependency",
       "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 4
     }
   ],
   "selectedView": {
@@ -472,7 +445,7 @@ package Trace {
         "navigation": 4,
         "origin": 0,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 11,
         "source": 1,
         "target": 2
       },
@@ -481,7 +454,7 @@ package Trace {
         "navigation": 4,
         "origin": 0,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 12,
         "source": 1,
         "target": 3
       }
@@ -509,7 +482,7 @@ package Trace {
         "name": null,
         "notationRole": "usage",
         "owner": null,
-        "reference": 7,
+        "reference": 6,
         "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
@@ -574,7 +547,7 @@ package Trace {
         "kind": "dependencyClient",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 8,
+        "reference": 7,
         "source": 0,
         "target": {
           "reference": 1,
@@ -585,7 +558,7 @@ package Trace {
         "kind": "dependencyClient",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 9,
+        "reference": 8,
         "source": 0,
         "target": {
           "node": 1,
@@ -596,7 +569,7 @@ package Trace {
         "kind": "dependencySupplier",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 10,
+        "reference": 9,
         "source": 0,
         "target": {
           "node": 2,
@@ -607,43 +580,10 @@ package Trace {
         "kind": "dependencySupplier",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 11,
+        "reference": 10,
         "source": 0,
         "target": {
           "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 14,
-        "source": 1,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 15,
-        "source": 2,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 3,
-        "target": {
-          "reference": 6,
           "status": "resolved"
         }
       }

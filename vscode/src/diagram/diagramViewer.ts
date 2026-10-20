@@ -215,7 +215,8 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       await vscode.window.showInformationMessage("Generate a Spec42 diagram before copying its JSON.");
       return;
     }
-    await vscode.env.clipboard.writeText(this.lastArtifact.productJson);
+    // The server sends compact JSON; indent the copy for the person reading it.
+    await vscode.env.clipboard.writeText(`${JSON.stringify(this.lastArtifact.product, null, 2)}\n`);
     await vscode.window.showInformationMessage("Copied the generated diagram JSON.");
   }
 
@@ -678,7 +679,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
 
 function emptyProduct(): DiagramProduct {
   return {
-    schemaVersion: 5,
+    schemaVersion: 6,
     modelDigest: "",
     documents: [],
     sources: [],

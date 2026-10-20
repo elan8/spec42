@@ -539,24 +539,12 @@ package RedefinedParts {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "modelDigest": "blake3:a67f9d1a597e5c2f800de937d643799e1e0d5cfbe23d2810fb984ccb1b44bb1d",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/parts.md",
-      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -777,26 +765,6 @@ package RedefinedParts {
       "qualifiedName": "RedefinedParts::links"
     },
     {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::parts"
-    },
-    {
       "kind": "source-anchor",
       "metaclass": "PartUsage",
       "ownerQualifiedName": "RedefinedParts::Derived",
@@ -825,44 +793,8 @@ package RedefinedParts {
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "redefinition",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "typeFeaturing",
       "source": 4
     },
     {
@@ -873,24 +805,6 @@ package RedefinedParts {
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
       "source": 7
@@ -915,30 +829,6 @@ package RedefinedParts {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "typing",
       "source": 8
@@ -951,24 +841,6 @@ package RedefinedParts {
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "typing",
       "source": 9
@@ -977,24 +849,6 @@ package RedefinedParts {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "subsetting",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "subsetting",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "typeFeaturing",
       "source": 10
     },
     {
@@ -1007,24 +861,6 @@ package RedefinedParts {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "containment",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "subsetting",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typeFeaturing",
       "source": 11
     },
     {
@@ -1051,7 +887,7 @@ package RedefinedParts {
         "navigation": 13,
         "origin": 1,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 20,
         "source": 0,
         "target": 1
       },
@@ -1060,7 +896,7 @@ package RedefinedParts {
         "navigation": 9,
         "origin": 4,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 21,
         "source": 0,
         "target": 4
       },
@@ -1069,7 +905,7 @@ package RedefinedParts {
         "navigation": 2,
         "origin": 5,
         "provenance": "implied",
-        "reference": 42,
+        "reference": 25,
         "source": 4,
         "target": 5
       },
@@ -1078,7 +914,7 @@ package RedefinedParts {
         "navigation": 11,
         "origin": 6,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 22,
         "source": 0,
         "target": 6
       },
@@ -1087,7 +923,7 @@ package RedefinedParts {
         "navigation": 4,
         "origin": 7,
         "provenance": "implied",
-        "reference": 47,
+        "reference": 27,
         "source": 6,
         "target": 7
       },
@@ -1096,7 +932,7 @@ package RedefinedParts {
         "navigation": 7,
         "origin": 2,
         "provenance": "authored",
-        "reference": 36,
+        "reference": 23,
         "source": 0,
         "target": 2
       },
@@ -1105,7 +941,7 @@ package RedefinedParts {
         "navigation": 0,
         "origin": 3,
         "provenance": "implied",
-        "reference": 52,
+        "reference": 29,
         "source": 2,
         "target": 3
       }
@@ -1166,7 +1002,7 @@ package RedefinedParts {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 20,
+        "reference": 16,
         "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1220,7 +1056,7 @@ package RedefinedParts {
         "name": "component",
         "notationRole": "usage",
         "owner": 2,
-        "reference": 18,
+        "reference": 14,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1268,7 +1104,7 @@ package RedefinedParts {
         "name": "component",
         "notationRole": "usage",
         "owner": 4,
-        "reference": 19,
+        "reference": 15,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1327,21 +1163,10 @@ package RedefinedParts {
     ],
     "relationships": [
       {
-        "kind": "specializes",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 37,
-        "source": 0,
-        "target": {
-          "reference": 16,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 41,
+        "reference": 24,
         "source": 1,
         "target": {
           "reference": 12,
@@ -1349,79 +1174,13 @@ package RedefinedParts {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 38,
-        "source": 1,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 39,
-        "source": 1,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 40,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 26,
         "source": 4,
         "target": {
           "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 43,
-        "source": 4,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 4,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 45,
-        "source": 4,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -1429,7 +1188,7 @@ package RedefinedParts {
         "kind": "redefinition",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 18,
         "source": 5,
         "target": {
           "node": 3,
@@ -1437,79 +1196,13 @@ package RedefinedParts {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 5,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 5,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 28,
-        "source": 5,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typing",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 28,
         "source": 6,
         "target": {
           "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 48,
-        "source": 6,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 49,
-        "source": 6,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 50,
-        "source": 6,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -1517,43 +1210,10 @@ package RedefinedParts {
         "kind": "redefinition",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 19,
         "source": 7,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 30,
-        "source": 7,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 7,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 7,
-        "target": {
-          "reference": 5,
           "status": "resolved"
         }
       },
@@ -1561,43 +1221,10 @@ package RedefinedParts {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 56,
+        "reference": 30,
         "source": 2,
         "target": {
           "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
-        "source": 2,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 54,
-        "source": 2,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 55,
-        "source": 2,
-        "target": {
-          "node": 0,
           "status": "resolved"
         }
       },
@@ -1605,43 +1232,10 @@ package RedefinedParts {
         "kind": "redefinition",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 17,
         "source": 3,
         "target": {
           "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 22,
-        "source": 3,
-        "target": {
-          "reference": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
-        "source": 3,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 3,
-        "target": {
-          "reference": 1,
           "status": "resolved"
         }
       }
