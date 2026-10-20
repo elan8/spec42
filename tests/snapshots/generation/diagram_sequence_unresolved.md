@@ -165,15 +165,15 @@ package SequenceNegative {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceNegative::selected"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Expose",
-      "ownerQualifiedName": "SequenceNegative::selected",
       "source": 1,
+      "ownerQualifiedName": "SequenceNegative::selected",
+      "metaclass": "Expose",
       "sourceDomain": "workspace"
     }
   ],
@@ -193,15 +193,15 @@ package SequenceNegative {
     ]
   },
   "projection": {
-    "edges": [],
-    "exposedRoots": [],
     "kind": "sequence-view",
-    "metadata": {
-      "messages": [],
-      "participants": []
-    },
+    "exposedRoots": [],
     "nodes": [],
     "relationships": [],
+    "edges": [],
+    "metadata": {
+      "participants": [],
+      "messages": []
+    },
     "scene": {
       "kind": "sequence",
       "lifelines": [],

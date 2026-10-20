@@ -979,491 +979,491 @@ package Seq {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::A"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::B"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::C"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::P"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Q"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::R"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::ackMsg"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::ackMsg::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::p"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::p::r3"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::p::s1"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::pressMsg"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::pressMsg::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::q"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::q::r1"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::q::s2"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::q::s3"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::r"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::r::r2"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::telemetryMsg"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::Scenario::telemetryMsg::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Seq::seq"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "Seq::Scenario",
       "source": 25,
+      "ownerQualifiedName": "Seq::Scenario",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Seq::Scenario::ackMsg",
       "source": 15,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "Seq::Scenario::ackMsg",
-      "source": 16,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Seq::Scenario::ackMsg::",
+      "source": 16,
+      "ownerQualifiedName": "Seq::Scenario::ackMsg",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 15,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "Seq::Scenario::ackMsg::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 16,
+      "ownerQualifiedName": "Seq::Scenario::ackMsg::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Seq::Scenario::pressMsg",
       "source": 19,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "Seq::Scenario::pressMsg",
-      "source": 20,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Seq::Scenario::pressMsg::",
+      "source": 20,
+      "ownerQualifiedName": "Seq::Scenario::pressMsg",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 19,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "Seq::Scenario::pressMsg::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 20,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Seq::Scenario::telemetryMsg",
-      "source": 23,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Seq::Scenario::telemetryMsg",
-      "source": 24,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
+      "ownerQualifiedName": "Seq::Scenario::pressMsg::",
       "metaclass": "Feature",
-      "ownerQualifiedName": "Seq::Scenario::telemetryMsg::",
-      "source": 23,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Seq::Scenario::telemetryMsg::",
+      "source": 23,
+      "ownerQualifiedName": "Seq::Scenario::telemetryMsg",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 24,
+      "ownerQualifiedName": "Seq::Scenario::telemetryMsg",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 23,
+      "ownerQualifiedName": "Seq::Scenario::telemetryMsg::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 24,
+      "ownerQualifiedName": "Seq::Scenario::telemetryMsg::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 6,
       "relationshipKind": "containment",
-      "source": 6
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "source": 6,
       "relationshipKind": "containment",
-      "source": 6
+      "ordinal": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "source": 6,
       "relationshipKind": "containment",
-      "source": 6
+      "ordinal": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "source": 6,
       "relationshipKind": "containment",
-      "source": 6
+      "ordinal": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "source": 6,
       "relationshipKind": "containment",
-      "source": 6
+      "ordinal": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "source": 6,
       "relationshipKind": "containment",
-      "source": 6
+      "ordinal": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "source": 6,
       "relationshipKind": "containment",
-      "source": 6
+      "ordinal": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "source": 7,
       "relationshipKind": "succession",
-      "source": 7
+      "ordinal": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "source": 7,
       "relationshipKind": "succession",
-      "source": 7
+      "ordinal": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "source": 8,
       "relationshipKind": "flowPayloadType",
-      "source": 8
+      "ordinal": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "source": 8,
       "relationshipKind": "flowSource",
-      "source": 8
+      "ordinal": 30
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "source": 8,
       "relationshipKind": "flowTarget",
-      "source": 8
+      "ordinal": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "source": 9,
       "relationshipKind": "containment",
-      "source": 9
+      "ordinal": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "source": 9,
       "relationshipKind": "containment",
-      "source": 9
+      "ordinal": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 10,
       "relationshipKind": "typing",
-      "source": 10
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "source": 12,
       "relationshipKind": "flow",
-      "source": 12
+      "ordinal": 21
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 12,
       "relationshipKind": "succession",
-      "source": 12
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "source": 13,
       "relationshipKind": "containment",
-      "source": 13
+      "ordinal": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "source": 13,
       "relationshipKind": "containment",
-      "source": 13
+      "ordinal": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "source": 13,
       "relationshipKind": "flowPayloadType",
-      "source": 13
+      "ordinal": 46
     },
     {
       "kind": "relationship",
-      "ordinal": 47,
+      "source": 13,
       "relationshipKind": "flowSource",
-      "source": 13
+      "ordinal": 47
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "source": 13,
       "relationshipKind": "flowTarget",
-      "source": 13
+      "ordinal": 48
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "source": 14,
       "relationshipKind": "containment",
-      "source": 14
+      "ordinal": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "source": 14,
       "relationshipKind": "containment",
-      "source": 14
+      "ordinal": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "source": 15,
       "relationshipKind": "containment",
-      "source": 15
+      "ordinal": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 15,
       "relationshipKind": "containment",
-      "source": 15
+      "ordinal": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "source": 15,
       "relationshipKind": "containment",
-      "source": 15
+      "ordinal": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "source": 15,
       "relationshipKind": "typing",
-      "source": 15
+      "ordinal": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "source": 16,
       "relationshipKind": "succession",
-      "source": 16
+      "ordinal": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "source": 17,
       "relationshipKind": "flow",
-      "source": 17
+      "ordinal": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "source": 17,
       "relationshipKind": "succession",
-      "source": 17
+      "ordinal": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "source": 17,
       "relationshipKind": "succession",
-      "source": 17
+      "ordinal": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "source": 18,
       "relationshipKind": "flow",
-      "source": 18
+      "ordinal": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "source": 19,
       "relationshipKind": "containment",
-      "source": 19
+      "ordinal": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "source": 19,
       "relationshipKind": "typing",
-      "source": 19
+      "ordinal": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 30
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "source": 21,
       "relationshipKind": "flowPayloadType",
-      "source": 21
+      "ordinal": 63
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "source": 21,
       "relationshipKind": "flowSource",
-      "source": 21
+      "ordinal": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
+      "source": 21,
       "relationshipKind": "flowTarget",
-      "source": 21
+      "ordinal": 65
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "source": 22,
       "relationshipKind": "containment",
-      "source": 22
+      "ordinal": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "source": 22,
       "relationshipKind": "containment",
-      "source": 22
+      "ordinal": 31
     }
   ],
   "selectedView": {
@@ -1481,976 +1481,976 @@ package Seq {
     ]
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 17,
-        "provenance": "authored",
-        "reference": 37,
-        "source": 0,
-        "target": 17
-      },
-      {
-        "kind": "containment",
-        "navigation": 4,
-        "origin": 18,
-        "provenance": "authored",
-        "reference": 53,
-        "source": 17,
-        "target": 18
-      },
-      {
-        "kind": "succession",
-        "navigation": 4,
-        "origin": 18,
-        "provenance": "authored",
-        "reference": 57,
-        "source": 19,
-        "target": 18
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 19,
-        "provenance": "authored",
-        "reference": 54,
-        "source": 17,
-        "target": 19
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 20,
-        "provenance": "authored",
-        "reference": 38,
-        "source": 0,
-        "target": 20
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
-        "origin": 21,
-        "provenance": "authored",
-        "reference": 65,
-        "source": 20,
-        "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 8,
-        "origin": 22,
-        "provenance": "authored",
-        "reference": 66,
-        "source": 20,
-        "target": 22
-      },
-      {
-        "kind": "succession",
-        "navigation": 8,
-        "origin": 22,
-        "provenance": "authored",
-        "reference": 69,
-        "source": 21,
-        "target": 22
-      },
-      {
-        "kind": "containment",
-        "navigation": 9,
-        "origin": 23,
-        "provenance": "authored",
-        "reference": 67,
-        "source": 20,
-        "target": 23
-      },
-      {
-        "kind": "succession",
-        "navigation": 9,
-        "origin": 23,
-        "provenance": "authored",
-        "reference": 71,
-        "source": 22,
-        "target": 23
-      },
-      {
-        "kind": "containment",
-        "navigation": 10,
-        "origin": 24,
-        "provenance": "authored",
-        "reference": 39,
-        "source": 0,
-        "target": 24
-      },
-      {
-        "kind": "containment",
-        "navigation": 12,
-        "origin": 25,
-        "provenance": "authored",
-        "reference": 74,
-        "source": 24,
-        "target": 25
-      },
-      {
-        "kind": "containment",
-        "navigation": 25,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 40,
-        "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "succession",
-        "navigation": 26,
-        "origin": 1,
-        "provenance": "implied",
-        "reference": 72,
-        "source": 22,
-        "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 13,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 41,
-        "source": 0,
-        "target": 7
-      },
-      {
-        "kind": "flow",
-        "navigation": 14,
-        "origin": 7,
-        "provenance": "implied",
-        "reference": 73,
-        "source": 23,
-        "target": 18
-      },
-      {
-        "kind": "containment",
-        "navigation": 15,
-        "origin": 8,
-        "provenance": "authored",
-        "reference": 46,
-        "source": 7,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 15,
-        "origin": 9,
-        "provenance": "authored",
-        "reference": 51,
-        "source": 8,
-        "target": 9
-      },
-      {
-        "kind": "containment",
-        "navigation": 16,
-        "origin": 10,
-        "provenance": "authored",
-        "reference": 47,
-        "source": 7,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 16,
-        "origin": 11,
-        "provenance": "authored",
-        "reference": 52,
-        "source": 10,
-        "target": 11
-      },
-      {
-        "kind": "containment",
-        "navigation": 17,
-        "origin": 12,
-        "provenance": "authored",
-        "reference": 42,
-        "source": 0,
-        "target": 12
-      },
-      {
-        "kind": "flow",
-        "navigation": 18,
-        "origin": 12,
-        "provenance": "implied",
-        "reference": 56,
-        "source": 19,
-        "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "origin": 13,
-        "provenance": "authored",
-        "reference": 58,
-        "source": 12,
-        "target": 13
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "origin": 14,
-        "provenance": "authored",
-        "reference": 63,
-        "source": 13,
-        "target": 14
-      },
-      {
-        "kind": "containment",
-        "navigation": 20,
-        "origin": 15,
-        "provenance": "authored",
-        "reference": 59,
-        "source": 12,
-        "target": 15
-      },
-      {
-        "kind": "containment",
-        "navigation": 20,
-        "origin": 16,
-        "provenance": "authored",
-        "reference": 64,
-        "source": 15,
-        "target": 16
-      },
-      {
-        "kind": "containment",
-        "navigation": 21,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 43,
-        "source": 0,
-        "target": 2
-      },
-      {
-        "kind": "flow",
-        "navigation": 22,
-        "origin": 2,
-        "provenance": "implied",
-        "reference": 70,
-        "source": 22,
-        "target": 25
-      },
-      {
-        "kind": "containment",
-        "navigation": 23,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 76,
-        "source": 2,
-        "target": 3
-      },
-      {
-        "kind": "containment",
-        "navigation": 23,
-        "origin": 4,
-        "provenance": "authored",
-        "reference": 81,
-        "source": 3,
-        "target": 4
-      },
-      {
-        "kind": "containment",
-        "navigation": 24,
-        "origin": 5,
-        "provenance": "authored",
-        "reference": 77,
-        "source": 2,
-        "target": 5
-      },
-      {
-        "kind": "containment",
-        "navigation": 24,
-        "origin": 6,
-        "provenance": "authored",
-        "reference": 82,
-        "source": 5,
-        "target": 6
-      }
-    ],
+    "kind": "sequence-view",
     "exposedRoots": [
       0
     ],
-    "kind": "sequence-view",
-    "metadata": {
-      "messages": [
-        2,
-        7,
-        12
-      ],
-      "participants": [
-        17,
-        20,
-        24
-      ]
-    },
     "nodes": [
       {
+        "reference": 6,
+        "metaclass": "OccurrenceDefinition",
+        "notationRole": "definition",
+        "name": "Scenario",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
         "compartments": [
           {
             "kind": "parts",
+            "provenance": "direct",
             "members": [
               17,
               20,
               24
-            ],
-            "provenance": "direct"
+            ]
           },
           {
             "kind": "connections",
+            "provenance": "direct",
             "members": [
               2,
               7,
               12
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceDefinition",
-        "name": "Scenario",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 6,
-        "source": 0,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 24,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 25,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "telemetryMsg",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 21,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "telemetryMsg",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 21,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 2,
         "reference": 33,
-        "source": 23,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 3,
-        "reference": 35,
-        "source": 23,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 2,
+        "source": 23,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 35,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 3,
+        "source": 23,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 34,
-        "source": 24,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 2,
+        "source": 24,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 5,
         "reference": 36,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 5,
         "source": 24,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "ackMsg",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 8,
-        "source": 13,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 7,
-        "reference": 25,
-        "source": 15,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 8,
-        "reference": 27,
-        "source": 15,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 7,
-        "reference": 26,
-        "source": 16,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 10,
-        "reference": 28,
-        "source": 16,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowUsage",
-        "name": "pressMsg",
         "notationRole": "usage",
+        "name": "ackMsg",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 0,
+        "source": 13,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 25,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 7,
+        "source": 15,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 27,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 8,
+        "source": 15,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 26,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 7,
+        "source": 16,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 28,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 10,
+        "source": 16,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 13,
-        "source": 17,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 12,
-        "reference": 29,
-        "source": 19,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 13,
-        "reference": 31,
-        "source": 19,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 12,
-        "reference": 30,
-        "source": 20,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 15,
-        "reference": 32,
-        "source": 20,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "occurrences",
-            "members": [
-              18,
-              19
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "p",
+        "metaclass": "FlowUsage",
         "notationRole": "usage",
+        "name": "pressMsg",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 0,
-        "reference": 10,
-        "source": 1,
+        "source": 17,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 29,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 12,
+        "source": 19,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 31,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 13,
+        "source": 19,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 30,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 12,
+        "source": 20,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 32,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 15,
+        "source": 20,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 10,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "p",
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "P",
-              "reference": 3
+              "reference": 3,
+              "label": "P"
             }
           ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "r3",
-        "notationRole": "usage",
-        "owner": 17,
-        "reference": 11,
-        "source": 4,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "s1",
-        "notationRole": "usage",
-        "owner": 17,
-        "reference": 12,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        },
+        "owner": 0,
+        "source": 1,
         "compartments": [
           {
             "kind": "occurrences",
+            "provenance": "direct",
+            "members": [
+              18,
+              19
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 11,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "r3",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 17,
+        "source": 4,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 12,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "s1",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 17,
+        "source": 3,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 15,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "q",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 4,
+              "label": "Q"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 5,
+        "compartments": [
+          {
+            "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               21,
               22,
               23
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "q",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 15,
-        "source": 5,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 16,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "r1",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 20,
+        "source": 7,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 17,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "s2",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 20,
+        "source": 8,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 18,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "s3",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 20,
+        "source": 9,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 19,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "r",
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "Q",
-              "reference": 4
+              "reference": 5,
+              "label": "R"
             }
           ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "r1",
-        "notationRole": "usage",
-        "owner": 20,
-        "reference": 16,
-        "source": 7,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "s2",
-        "notationRole": "usage",
-        "owner": 20,
-        "reference": 17,
-        "source": 8,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "s3",
-        "notationRole": "usage",
-        "owner": 20,
-        "reference": 18,
-        "source": 9,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        },
+        "owner": 0,
+        "source": 10,
         "compartments": [
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               25
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "r",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 19,
-        "source": 10,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "R",
-              "reference": 5
-            }
-          ]
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "r2",
-        "notationRole": "usage",
-        "owner": 24,
         "reference": 20,
-        "source": 12,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "r2",
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 24,
+        "source": 12,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       }
     ],
     "relationships": [
       {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
         "reference": 55,
         "source": 17,
+        "kind": "typing",
         "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 3
+        },
+        "provenance": "authored",
+        "navigation": 2
       },
       {
-        "kind": "typing",
-        "navigation": 6,
-        "provenance": "authored",
         "reference": 68,
         "source": 20,
+        "kind": "typing",
         "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 4
+        },
+        "provenance": "authored",
+        "navigation": 6
       },
       {
-        "kind": "typing",
-        "navigation": 11,
-        "provenance": "authored",
         "reference": 75,
         "source": 24,
+        "kind": "typing",
         "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 5
+        },
+        "provenance": "authored",
+        "navigation": 11
       },
       {
-        "kind": "succession",
-        "navigation": 26,
-        "provenance": "authored",
         "reference": 44,
         "source": 1,
+        "kind": "succession",
         "target": {
-          "node": 22,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 22
+        },
+        "provenance": "authored",
+        "navigation": 26
       },
       {
-        "kind": "succession",
-        "navigation": 27,
-        "provenance": "authored",
         "reference": 45,
         "source": 1,
+        "kind": "succession",
         "target": {
-          "node": 21,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 21
+        },
+        "provenance": "authored",
+        "navigation": 27
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 14,
-        "provenance": "authored",
         "reference": 48,
         "source": 7,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 2,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 2
+        },
+        "provenance": "authored",
+        "navigation": 14
       },
       {
-        "kind": "flowSource",
-        "navigation": 15,
-        "provenance": "authored",
         "reference": 49,
         "source": 7,
+        "kind": "flowSource",
         "target": {
-          "node": 23,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 23
+        },
+        "provenance": "authored",
+        "navigation": 15
       },
       {
-        "kind": "flowTarget",
-        "navigation": 16,
-        "provenance": "authored",
         "reference": 50,
         "source": 7,
+        "kind": "flowTarget",
         "target": {
-          "node": 18,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 18
+        },
+        "provenance": "authored",
+        "navigation": 16
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 18,
-        "provenance": "authored",
         "reference": 60,
         "source": 12,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 0
+        },
+        "provenance": "authored",
+        "navigation": 18
       },
       {
-        "kind": "flowSource",
-        "navigation": 19,
-        "provenance": "authored",
         "reference": 61,
         "source": 12,
+        "kind": "flowSource",
         "target": {
-          "node": 19,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 19
+        },
+        "provenance": "authored",
+        "navigation": 19
       },
       {
-        "kind": "flowTarget",
-        "navigation": 20,
-        "provenance": "authored",
         "reference": 62,
         "source": 12,
+        "kind": "flowTarget",
         "target": {
-          "node": 21,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 21
+        },
+        "provenance": "authored",
+        "navigation": 20
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 22,
-        "provenance": "authored",
         "reference": 78,
         "source": 2,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 1
+        },
+        "provenance": "authored",
+        "navigation": 22
       },
       {
-        "kind": "flowSource",
-        "navigation": 23,
-        "provenance": "authored",
         "reference": 79,
         "source": 2,
+        "kind": "flowSource",
         "target": {
-          "node": 22,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 22
+        },
+        "provenance": "authored",
+        "navigation": 23
       },
       {
-        "kind": "flowTarget",
-        "navigation": 24,
-        "provenance": "authored",
         "reference": 80,
         "source": 2,
+        "kind": "flowTarget",
         "target": {
-          "node": 25,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 25
+        },
+        "provenance": "authored",
+        "navigation": 24
       }
     ],
+    "edges": [
+      {
+        "reference": 37,
+        "source": 0,
+        "target": 17,
+        "origin": 17,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 1
+      },
+      {
+        "reference": 53,
+        "source": 17,
+        "target": 18,
+        "origin": 18,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 4
+      },
+      {
+        "reference": 57,
+        "source": 19,
+        "target": 18,
+        "origin": 18,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 4
+      },
+      {
+        "reference": 54,
+        "source": 17,
+        "target": 19,
+        "origin": 19,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 3
+      },
+      {
+        "reference": 38,
+        "source": 0,
+        "target": 20,
+        "origin": 20,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 65,
+        "source": 20,
+        "target": 21,
+        "origin": 21,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 66,
+        "source": 20,
+        "target": 22,
+        "origin": 22,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 8
+      },
+      {
+        "reference": 69,
+        "source": 21,
+        "target": 22,
+        "origin": 22,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 8
+      },
+      {
+        "reference": 67,
+        "source": 20,
+        "target": 23,
+        "origin": 23,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 9
+      },
+      {
+        "reference": 71,
+        "source": 22,
+        "target": 23,
+        "origin": 23,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 9
+      },
+      {
+        "reference": 39,
+        "source": 0,
+        "target": 24,
+        "origin": 24,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 10
+      },
+      {
+        "reference": 74,
+        "source": 24,
+        "target": 25,
+        "origin": 25,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 12
+      },
+      {
+        "reference": 40,
+        "source": 0,
+        "target": 1,
+        "origin": 1,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 25
+      },
+      {
+        "reference": 72,
+        "source": 22,
+        "target": 21,
+        "origin": 1,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 26
+      },
+      {
+        "reference": 41,
+        "source": 0,
+        "target": 7,
+        "origin": 7,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 13
+      },
+      {
+        "reference": 73,
+        "source": 23,
+        "target": 18,
+        "origin": 7,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 14
+      },
+      {
+        "reference": 46,
+        "source": 7,
+        "target": 8,
+        "origin": 8,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 15
+      },
+      {
+        "reference": 51,
+        "source": 8,
+        "target": 9,
+        "origin": 9,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 15
+      },
+      {
+        "reference": 47,
+        "source": 7,
+        "target": 10,
+        "origin": 10,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 16
+      },
+      {
+        "reference": 52,
+        "source": 10,
+        "target": 11,
+        "origin": 11,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 16
+      },
+      {
+        "reference": 42,
+        "source": 0,
+        "target": 12,
+        "origin": 12,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 17
+      },
+      {
+        "reference": 56,
+        "source": 19,
+        "target": 21,
+        "origin": 12,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 18
+      },
+      {
+        "reference": 58,
+        "source": 12,
+        "target": 13,
+        "origin": 13,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 19
+      },
+      {
+        "reference": 63,
+        "source": 13,
+        "target": 14,
+        "origin": 14,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 19
+      },
+      {
+        "reference": 59,
+        "source": 12,
+        "target": 15,
+        "origin": 15,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 20
+      },
+      {
+        "reference": 64,
+        "source": 15,
+        "target": 16,
+        "origin": 16,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 20
+      },
+      {
+        "reference": 43,
+        "source": 0,
+        "target": 2,
+        "origin": 2,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 21
+      },
+      {
+        "reference": 70,
+        "source": 22,
+        "target": 25,
+        "origin": 2,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 22
+      },
+      {
+        "reference": 76,
+        "source": 2,
+        "target": 3,
+        "origin": 3,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 23
+      },
+      {
+        "reference": 81,
+        "source": 3,
+        "target": 4,
+        "origin": 4,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 23
+      },
+      {
+        "reference": 77,
+        "source": 2,
+        "target": 5,
+        "origin": 5,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 24
+      },
+      {
+        "reference": 82,
+        "source": 5,
+        "target": 6,
+        "origin": 6,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 24
+      }
+    ],
+    "metadata": {
+      "participants": [
+        17,
+        20,
+        24
+      ],
+      "messages": [
+        2,
+        7,
+        12
+      ]
+    },
     "scene": {
       "kind": "sequence",
       "lifelines": [
@@ -2460,55 +2460,55 @@ package Seq {
       ],
       "messages": [
         {
-          "label": "telemetryMsg",
-          "navigation": 21,
           "node": 2,
+          "label": "telemetryMsg",
+          "source": {
+            "status": "resolved",
+            "lifeline": 20
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 24
+          },
           "order": {
             "status": "cyclic"
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 20,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 24,
-            "status": "resolved"
-          }
+          "navigation": 21
         },
         {
-          "label": "ackMsg",
-          "navigation": 13,
           "node": 7,
+          "label": "ackMsg",
+          "source": {
+            "status": "resolved",
+            "lifeline": 20
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 17
+          },
           "order": {
             "status": "cyclic"
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 20,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 17,
-            "status": "resolved"
-          }
+          "navigation": 13
         },
         {
-          "label": "pressMsg",
-          "navigation": 17,
           "node": 12,
+          "label": "pressMsg",
+          "source": {
+            "status": "resolved",
+            "lifeline": 17
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 20
+          },
           "order": {
             "status": "cyclic"
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 17,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 20,
-            "status": "resolved"
-          }
+          "navigation": 17
         }
       ]
     }

@@ -761,107 +761,107 @@ package Deployment {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Deployment::Processor"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Deployment::System::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Deployment::System::cpu"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Deployment::Task"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Deployment::Tasks::workerA"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Deployment::Tasks::workerB"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Deployment::selected"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "AllocationUsage",
-      "ownerQualifiedName": "Deployment::System",
       "source": 6,
+      "ownerQualifiedName": "Deployment::System",
+      "metaclass": "AllocationUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "AllocationUsage",
-      "ownerQualifiedName": "Deployment::System",
       "source": 9,
+      "ownerQualifiedName": "Deployment::System",
+      "metaclass": "AllocationUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 1,
       "relationshipKind": "allocateSource",
-      "source": 1
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "source": 1,
       "relationshipKind": "allocateSource",
-      "source": 1
+      "ordinal": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 1,
       "relationshipKind": "allocateTarget",
-      "source": 1
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 1,
       "relationshipKind": "allocateTarget",
-      "source": 1
+      "ordinal": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "source": 2,
       "relationshipKind": "typing",
-      "source": 2
+      "ordinal": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 4,
       "relationshipKind": "allocate",
-      "source": 4
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "source": 4,
       "relationshipKind": "typing",
-      "source": 4
+      "ordinal": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 5,
       "relationshipKind": "allocate",
-      "source": 5
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "source": 5,
       "relationshipKind": "typing",
-      "source": 5
+      "ordinal": 18
     }
   ],
   "selectedView": {
@@ -875,32 +875,216 @@ package Deployment {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "allocate",
-        "navigation": 7,
-        "origin": 3,
-        "provenance": "implied",
-        "reference": 14,
-        "source": 0,
-        "target": 2
-      },
-      {
-        "kind": "allocate",
-        "navigation": 10,
-        "origin": 4,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 1,
-        "target": 2
-      }
-    ],
+    "kind": "general-view",
     "exposedRoots": [
       0,
       1,
       2
     ],
-    "kind": "general-view",
+    "nodes": [
+      {
+        "reference": 4,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "workerA",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 3,
+              "label": "Task"
+            }
+          ]
+        },
+        "owner": null,
+        "source": 0,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "workerB",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 3,
+              "label": "Task"
+            }
+          ]
+        },
+        "owner": null,
+        "source": 2,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 2,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "cpu",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 0,
+              "label": "Processor"
+            }
+          ]
+        },
+        "owner": null,
+        "source": 4,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 7,
+        "metaclass": "AllocationUsage",
+        "notationRole": "usage",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 6,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 8,
+        "metaclass": "AllocationUsage",
+        "notationRole": "usage",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 9,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      }
+    ],
+    "relationships": [
+      {
+        "reference": 9,
+        "source": 3,
+        "kind": "allocateSource",
+        "target": {
+          "status": "resolved",
+          "node": 0
+        },
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 11,
+        "source": 3,
+        "kind": "allocateTarget",
+        "target": {
+          "status": "resolved",
+          "node": 2
+        },
+        "provenance": "authored",
+        "navigation": 8
+      },
+      {
+        "reference": 10,
+        "source": 4,
+        "kind": "allocateSource",
+        "target": {
+          "status": "resolved",
+          "node": 1
+        },
+        "provenance": "authored",
+        "navigation": 10
+      },
+      {
+        "reference": 12,
+        "source": 4,
+        "kind": "allocateTarget",
+        "target": {
+          "status": "resolved",
+          "node": 2
+        },
+        "provenance": "authored",
+        "navigation": 11
+      },
+      {
+        "reference": 13,
+        "source": 2,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 0
+        },
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 15,
+        "source": 0,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 3
+        },
+        "provenance": "authored",
+        "navigation": 1
+      },
+      {
+        "reference": 17,
+        "source": 1,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 3
+        },
+        "provenance": "authored",
+        "navigation": 3
+      }
+    ],
+    "edges": [
+      {
+        "reference": 14,
+        "source": 0,
+        "target": 2,
+        "origin": 3,
+        "kind": "allocate",
+        "provenance": "implied",
+        "navigation": 7
+      },
+      {
+        "reference": 16,
+        "source": 1,
+        "target": 2,
+        "origin": 4,
+        "kind": "allocate",
+        "provenance": "implied",
+        "navigation": 10
+      }
+    ],
     "metadata": {
       "roots": [
         0,
@@ -908,190 +1092,6 @@ package Deployment {
         2
       ]
     },
-    "nodes": [
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "workerA",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 4,
-        "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Task",
-              "reference": 3
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "workerB",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 5,
-        "source": 2,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Task",
-              "reference": 3
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "cpu",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 2,
-        "source": 4,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Processor",
-              "reference": 0
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AllocationUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 7,
-        "source": 6,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AllocationUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 8,
-        "source": 9,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      }
-    ],
-    "relationships": [
-      {
-        "kind": "allocateSource",
-        "navigation": 7,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 3,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "allocateTarget",
-        "navigation": 8,
-        "provenance": "authored",
-        "reference": 11,
-        "source": 3,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "allocateSource",
-        "navigation": 10,
-        "provenance": "authored",
-        "reference": 10,
-        "source": 4,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "allocateTarget",
-        "navigation": 11,
-        "provenance": "authored",
-        "reference": 12,
-        "source": 4,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 5,
-        "provenance": "authored",
-        "reference": 13,
-        "source": 2,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 1,
-        "provenance": "authored",
-        "reference": 15,
-        "source": 0,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 3,
-        "provenance": "authored",
-        "reference": 17,
-        "source": 1,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      }
-    ],
     "scene": {
       "kind": "general"
     }

@@ -291,72 +291,72 @@ package ActionFlowExample {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ActionFlowExample::Process"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ActionFlowExample::Process::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ActionFlowExample::Process::execute"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ActionFlowExample::Process::prepare"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ActionFlowExample::selected"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "ActionFlowExample::Process",
       "source": 3,
+      "ownerQualifiedName": "ActionFlowExample::Process",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 1,
       "relationshipKind": "succession",
-      "source": 1
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 1,
       "relationshipKind": "succession",
-      "source": 1
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 3,
       "relationshipKind": "succession",
-      "source": 3
+      "ordinal": 1
     }
   ],
   "selectedView": {
@@ -370,48 +370,151 @@ package ActionFlowExample {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 6,
-        "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "succession",
-        "navigation": 4,
-        "origin": 1,
-        "provenance": "implied",
-        "reference": 11,
-        "source": 3,
-        "target": 2
-      },
-      {
-        "kind": "containment",
-        "navigation": 2,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 7,
-        "source": 0,
-        "target": 2
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 8,
-        "source": 0,
-        "target": 3
-      }
-    ],
+    "kind": "action-flow-view",
     "exposedRoots": [
       0
     ],
-    "kind": "action-flow-view",
+    "nodes": [
+      {
+        "reference": 0,
+        "metaclass": "ActionDefinition",
+        "notationRole": "definition",
+        "name": "Process",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
+        "compartments": [
+          {
+            "kind": "actions",
+            "provenance": "direct",
+            "members": [
+              2,
+              3
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 3,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 2,
+        "metaclass": "ActionUsage",
+        "notationRole": "usage",
+        "name": "execute",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 2,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 3,
+        "metaclass": "ActionUsage",
+        "notationRole": "usage",
+        "name": "prepare",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      }
+    ],
+    "relationships": [
+      {
+        "reference": 9,
+        "source": 1,
+        "kind": "succession",
+        "target": {
+          "status": "resolved",
+          "node": 3
+        },
+        "provenance": "authored",
+        "navigation": 4
+      },
+      {
+        "reference": 10,
+        "source": 1,
+        "kind": "succession",
+        "target": {
+          "status": "resolved",
+          "node": 2
+        },
+        "provenance": "authored",
+        "navigation": 5
+      }
+    ],
+    "edges": [
+      {
+        "reference": 6,
+        "source": 0,
+        "target": 1,
+        "origin": 1,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 3
+      },
+      {
+        "reference": 11,
+        "source": 3,
+        "target": 2,
+        "origin": 1,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 4
+      },
+      {
+        "reference": 7,
+        "source": 0,
+        "target": 2,
+        "origin": 2,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 2
+      },
+      {
+        "reference": 8,
+        "source": 0,
+        "target": 3,
+        "origin": 3,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 1
+      }
+    ],
     "metadata": {
       "actions": [
         0,
@@ -420,109 +523,6 @@ package ActionFlowExample {
       ],
       "controlNodes": []
     },
-    "nodes": [
-      {
-        "compartments": [
-          {
-            "kind": "actions",
-            "members": [
-              2,
-              3
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "ActionDefinition",
-        "name": "Process",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 0,
-        "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
-        "reference": 5,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "ActionUsage",
-        "name": "execute",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 2,
-        "source": 2,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "ActionUsage",
-        "name": "prepare",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 3,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      }
-    ],
-    "relationships": [
-      {
-        "kind": "succession",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 1,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 5,
-        "provenance": "authored",
-        "reference": 10,
-        "source": 1,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      }
-    ],
     "scene": {
       "kind": "action-flow"
     }

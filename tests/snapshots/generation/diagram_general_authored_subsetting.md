@@ -527,139 +527,139 @@ package GeneralSubsetting {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::Chassis"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::Chassis::frontWheel"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::Chassis::spareWheel"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::RacingChassis"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::RacingChassis::frontWheel"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::RoadWheel"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::Wheel"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::bareModule"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeneralSubsetting::selected"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 1,
       "relationshipKind": "typing",
-      "source": 1
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 1,
       "relationshipKind": "typing",
-      "source": 1
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 2,
       "relationshipKind": "subsetting",
-      "source": 2
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "source": 2,
       "relationshipKind": "subsetting",
-      "source": 2
+      "ordinal": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "source": 2,
       "relationshipKind": "subsetting",
-      "source": 2
+      "ordinal": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "source": 3,
       "relationshipKind": "specializes",
-      "source": 3
+      "ordinal": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "source": 3,
       "relationshipKind": "specializes",
-      "source": 3
+      "ordinal": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "source": 4,
       "relationshipKind": "redefinition",
-      "source": 4
+      "ordinal": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "source": 4,
       "relationshipKind": "redefinition",
-      "source": 4
+      "ordinal": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "source": 5,
       "relationshipKind": "specializes",
-      "source": 5
+      "ordinal": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "source": 5,
       "relationshipKind": "specializes",
-      "source": 5
+      "ordinal": 11
     }
   ],
   "selectedView": {
@@ -673,98 +673,7 @@ package GeneralSubsetting {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 4,
-        "origin": 6,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 5,
-        "target": 6
-      },
-      {
-        "kind": "typing",
-        "navigation": 5,
-        "origin": 6,
-        "provenance": "authored",
-        "reference": 11,
-        "source": 6,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 6,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 10,
-        "source": 5,
-        "target": 7
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 7,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 13,
-        "source": 7,
-        "target": 6
-      },
-      {
-        "kind": "specializes",
-        "navigation": 2,
-        "origin": 8,
-        "provenance": "authored",
-        "reference": 22,
-        "source": 8,
-        "target": 4
-      },
-      {
-        "kind": "specializes",
-        "navigation": 9,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 18,
-        "source": 1,
-        "target": 5
-      },
-      {
-        "kind": "containment",
-        "navigation": 6,
-        "origin": 3,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 1,
-        "target": 3
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 7,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 14,
-        "source": 3,
-        "target": 6
-      },
-      {
-        "kind": "containment",
-        "navigation": 10,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 17,
-        "source": 1,
-        "target": 2
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 11,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 20,
-        "source": 2,
-        "target": 6
-      }
-    ],
+    "kind": "general-view",
     "exposedRoots": [
       0,
       1,
@@ -772,7 +681,351 @@ package GeneralSubsetting {
       5,
       8
     ],
-    "kind": "general-view",
+    "nodes": [
+      {
+        "reference": 7,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "bareModule",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 12,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 3,
+        "metaclass": "PartDefinition",
+        "notationRole": "definition",
+        "name": "RacingChassis",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 8,
+        "compartments": [
+          {
+            "kind": "parts",
+            "provenance": "direct",
+            "members": [
+              2
+            ]
+          },
+          {
+            "kind": "parts",
+            "provenance": "inherited",
+            "members": [
+              3
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 4,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "frontWheel",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 1,
+        "source": 10,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 2,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "spareWheel",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 1,
+        "source": 6,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 6,
+        "metaclass": "PartDefinition",
+        "notationRole": "definition",
+        "name": "Wheel",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 0,
+        "metaclass": "PartDefinition",
+        "notationRole": "definition",
+        "name": "Chassis",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 3,
+        "compartments": [
+          {
+            "kind": "parts",
+            "provenance": "direct",
+            "members": [
+              6,
+              7
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 1,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "frontWheel",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 5,
+              "label": "RoadWheel"
+            }
+          ]
+        },
+        "owner": 5,
+        "source": 4,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 2,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "spareWheel",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 5,
+        "source": 6,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "PartDefinition",
+        "notationRole": "definition",
+        "name": "RoadWheel",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      }
+    ],
+    "relationships": [
+      {
+        "reference": 12,
+        "source": 6,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "node": 8
+        },
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 14,
+        "source": 7,
+        "kind": "subsetting",
+        "target": {
+          "status": "resolved",
+          "node": 6
+        },
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 23,
+        "source": 8,
+        "kind": "specializes",
+        "target": {
+          "status": "resolved",
+          "node": 4
+        },
+        "provenance": "authored",
+        "navigation": 2
+      },
+      {
+        "reference": 19,
+        "source": 1,
+        "kind": "specializes",
+        "target": {
+          "status": "resolved",
+          "node": 5
+        },
+        "provenance": "authored",
+        "navigation": 9
+      },
+      {
+        "reference": 15,
+        "source": 3,
+        "kind": "subsetting",
+        "target": {
+          "status": "resolved",
+          "node": 6
+        },
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 21,
+        "source": 2,
+        "kind": "redefinition",
+        "target": {
+          "status": "resolved",
+          "node": 6
+        },
+        "provenance": "authored",
+        "navigation": 11
+      }
+    ],
+    "edges": [
+      {
+        "reference": 9,
+        "source": 5,
+        "target": 6,
+        "origin": 6,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 4
+      },
+      {
+        "reference": 11,
+        "source": 6,
+        "target": 8,
+        "origin": 6,
+        "kind": "typing",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 10,
+        "source": 5,
+        "target": 7,
+        "origin": 7,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 6
+      },
+      {
+        "reference": 13,
+        "source": 7,
+        "target": 6,
+        "origin": 7,
+        "kind": "subsetting",
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 22,
+        "source": 8,
+        "target": 4,
+        "origin": 8,
+        "kind": "specializes",
+        "provenance": "authored",
+        "navigation": 2
+      },
+      {
+        "reference": 18,
+        "source": 1,
+        "target": 5,
+        "origin": 1,
+        "kind": "specializes",
+        "provenance": "authored",
+        "navigation": 9
+      },
+      {
+        "reference": 16,
+        "source": 1,
+        "target": 3,
+        "origin": 3,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 6
+      },
+      {
+        "reference": 14,
+        "source": 3,
+        "target": 6,
+        "origin": 3,
+        "kind": "subsetting",
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 17,
+        "source": 1,
+        "target": 2,
+        "origin": 2,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 10
+      },
+      {
+        "reference": 20,
+        "source": 2,
+        "target": 6,
+        "origin": 2,
+        "kind": "redefinition",
+        "provenance": "authored",
+        "navigation": 11
+      }
+    ],
     "metadata": {
       "roots": [
         0,
@@ -782,259 +1035,6 @@ package GeneralSubsetting {
         8
       ]
     },
-    "nodes": [
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "bareModule",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 7,
-        "source": 12,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "parts",
-            "members": [
-              2
-            ],
-            "provenance": "direct"
-          },
-          {
-            "kind": "parts",
-            "members": [
-              3
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartDefinition",
-        "name": "RacingChassis",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 3,
-        "source": 8,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "frontWheel",
-        "notationRole": "usage",
-        "owner": 1,
-        "reference": 4,
-        "source": 10,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "spareWheel",
-        "notationRole": "usage",
-        "owner": 1,
-        "reference": 2,
-        "source": 6,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartDefinition",
-        "name": "Wheel",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 6,
-        "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "parts",
-            "members": [
-              6,
-              7
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartDefinition",
-        "name": "Chassis",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 0,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "frontWheel",
-        "notationRole": "usage",
-        "owner": 5,
-        "reference": 1,
-        "source": 4,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "RoadWheel",
-              "reference": 5
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "spareWheel",
-        "notationRole": "usage",
-        "owner": 5,
-        "reference": 2,
-        "source": 6,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartDefinition",
-        "name": "RoadWheel",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 5,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      }
-    ],
-    "relationships": [
-      {
-        "kind": "typing",
-        "navigation": 5,
-        "provenance": "authored",
-        "reference": 12,
-        "source": 6,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 7,
-        "provenance": "authored",
-        "reference": 14,
-        "source": 7,
-        "target": {
-          "node": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 23,
-        "source": 8,
-        "target": {
-          "node": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "specializes",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 19,
-        "source": 1,
-        "target": {
-          "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": 7,
-        "provenance": "authored",
-        "reference": 15,
-        "source": 3,
-        "target": {
-          "node": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 11,
-        "provenance": "authored",
-        "reference": 21,
-        "source": 2,
-        "target": {
-          "node": 6,
-          "status": "resolved"
-        }
-      }
-    ],
     "scene": {
       "kind": "general"
     }

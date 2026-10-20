@@ -355,77 +355,77 @@ package Trace {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Trace::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Trace::a"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Trace::b"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Trace::c"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Trace::d"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Trace::selected"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Dependency",
-      "ownerQualifiedName": "Trace",
       "source": 3,
+      "ownerQualifiedName": "Trace",
+      "metaclass": "Dependency",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 0,
       "relationshipKind": "dependencyClient",
-      "source": 0
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 0,
       "relationshipKind": "dependencyClient",
-      "source": 0
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 0,
       "relationshipKind": "dependencySupplier",
-      "source": 0
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 0,
       "relationshipKind": "dependencySupplier",
-      "source": 0
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 2,
       "relationshipKind": "dependency",
-      "source": 2
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 2,
       "relationshipKind": "dependency",
-      "source": 2
+      "ordinal": 1
     }
   ],
   "selectedView": {
@@ -439,32 +439,148 @@ package Trace {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "dependency",
-        "navigation": 4,
-        "origin": 0,
-        "provenance": "authored",
-        "reference": 11,
-        "source": 1,
-        "target": 2
-      },
-      {
-        "kind": "dependency",
-        "navigation": 4,
-        "origin": 0,
-        "provenance": "authored",
-        "reference": 12,
-        "source": 1,
-        "target": 3
-      }
-    ],
+    "kind": "general-view",
     "exposedRoots": [
       1,
       2,
       3
     ],
-    "kind": "general-view",
+    "nodes": [
+      {
+        "reference": 6,
+        "metaclass": "Dependency",
+        "notationRole": "usage",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 3,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 2,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "b",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 3,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "c",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 4,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "d",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 2,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      }
+    ],
+    "relationships": [
+      {
+        "reference": 7,
+        "source": 0,
+        "kind": "dependencyClient",
+        "target": {
+          "status": "resolved",
+          "reference": 1
+        },
+        "provenance": "authored",
+        "navigation": 4
+      },
+      {
+        "reference": 8,
+        "source": 0,
+        "kind": "dependencyClient",
+        "target": {
+          "status": "resolved",
+          "node": 1
+        },
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 9,
+        "source": 0,
+        "kind": "dependencySupplier",
+        "target": {
+          "status": "resolved",
+          "node": 2
+        },
+        "provenance": "authored",
+        "navigation": 6
+      },
+      {
+        "reference": 10,
+        "source": 0,
+        "kind": "dependencySupplier",
+        "target": {
+          "status": "resolved",
+          "node": 3
+        },
+        "provenance": "authored",
+        "navigation": 7
+      }
+    ],
+    "edges": [
+      {
+        "reference": 11,
+        "source": 1,
+        "target": 2,
+        "origin": 0,
+        "kind": "dependency",
+        "provenance": "authored",
+        "navigation": 4
+      },
+      {
+        "reference": 12,
+        "source": 1,
+        "target": 3,
+        "origin": 0,
+        "kind": "dependency",
+        "provenance": "authored",
+        "navigation": 4
+      }
+    ],
     "metadata": {
       "roots": [
         1,
@@ -472,122 +588,6 @@ package Trace {
         3
       ]
     },
-    "nodes": [
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Dependency",
-        "name": null,
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 6,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "b",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 2,
-        "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "c",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 3,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "d",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 4,
-        "source": 2,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      }
-    ],
-    "relationships": [
-      {
-        "kind": "dependencyClient",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 7,
-        "source": 0,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "dependencyClient",
-        "navigation": 5,
-        "provenance": "authored",
-        "reference": 8,
-        "source": 0,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "dependencySupplier",
-        "navigation": 6,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 0,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "dependencySupplier",
-        "navigation": 7,
-        "provenance": "authored",
-        "reference": 10,
-        "source": 0,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      }
-    ],
     "scene": {
       "kind": "general"
     }

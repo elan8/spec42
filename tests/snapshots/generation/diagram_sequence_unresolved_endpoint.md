@@ -387,138 +387,138 @@ package SequenceUnresolved {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceUnresolved::Interaction"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceUnresolved::Interaction::delivery"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceUnresolved::Interaction::delivery::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceUnresolved::Interaction::receiver"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceUnresolved::Interaction::receiver::received"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceUnresolved::Interaction::sender"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceUnresolved::Interaction::sender::sent"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "SequenceUnresolved::selected"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "SequenceUnresolved::Interaction::delivery",
       "source": 6,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "SequenceUnresolved::Interaction::delivery",
-      "source": 7,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "SequenceUnresolved::Interaction::delivery::",
+      "source": 7,
+      "ownerQualifiedName": "SequenceUnresolved::Interaction::delivery",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 6,
+      "ownerQualifiedName": "SequenceUnresolved::Interaction::delivery::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "SequenceUnresolved::Interaction::delivery::",
       "source": 7,
+      "ownerQualifiedName": "SequenceUnresolved::Interaction::delivery::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 1,
       "relationshipKind": "containment",
-      "source": 1
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "source": 1,
       "relationshipKind": "containment",
-      "source": 1
+      "ordinal": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 1,
       "relationshipKind": "flowSource",
-      "source": 1
+      "ordinal": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "source": 1,
       "relationshipKind": "flowTarget",
-      "source": 1
+      "ordinal": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "source": 2,
       "relationshipKind": "containment",
-      "source": 2
+      "ordinal": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 2,
       "relationshipKind": "containment",
-      "source": 2
+      "ordinal": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 5,
       "relationshipKind": "containment",
-      "source": 5
+      "ordinal": 1
     }
   ],
   "selectedView": {
@@ -537,329 +537,329 @@ package SequenceUnresolved {
     ]
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 6,
-        "provenance": "authored",
-        "reference": 12,
-        "source": 0,
-        "target": 6
-      },
-      {
-        "kind": "containment",
-        "navigation": 2,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 22,
-        "source": 6,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 13,
-        "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "containment",
-        "navigation": 6,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 15,
-        "source": 1,
-        "target": 2
-      },
-      {
-        "kind": "containment",
-        "navigation": 6,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 19,
-        "source": 2,
-        "target": 3
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
-        "origin": 4,
-        "provenance": "authored",
-        "reference": 16,
-        "source": 1,
-        "target": 4
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
-        "origin": 5,
-        "provenance": "authored",
-        "reference": 20,
-        "source": 4,
-        "target": 5
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 8,
-        "provenance": "authored",
-        "reference": 14,
-        "source": 0,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 4,
-        "origin": 9,
-        "provenance": "authored",
-        "reference": 21,
-        "source": 8,
-        "target": 9
-      }
-    ],
+    "kind": "sequence-view",
     "exposedRoots": [
       0
     ],
-    "kind": "sequence-view",
-    "metadata": {
-      "messages": [
-        1
-      ],
-      "participants": [
-        6,
-        8
-      ]
-    },
     "nodes": [
       {
+        "reference": 0,
+        "metaclass": "OccurrenceDefinition",
+        "notationRole": "definition",
+        "name": "Interaction",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
         "compartments": [
           {
             "kind": "parts",
+            "provenance": "direct",
             "members": [
               6,
               8
-            ],
-            "provenance": "direct"
+            ]
           },
           {
             "kind": "connections",
+            "provenance": "direct",
             "members": [
               1
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceDefinition",
-        "name": "Interaction",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 0,
-        "source": 0,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "delivery",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 1,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "delivery",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 5,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 1,
         "reference": 8,
-        "source": 6,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 2,
-        "reference": 10,
-        "source": 6,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 1,
-        "reference": 9,
-        "source": 7,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        "source": 6,
         "compartments": [],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 4,
-        "reference": 11,
-        "source": 7,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
+        "reference": 10,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 2,
+        "source": 6,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 9,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 1,
+        "source": 7,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 11,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 4,
+        "source": 7,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "sender",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 1,
         "compartments": [
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               7
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "sender",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 5,
-        "source": 1,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "sent",
-        "notationRole": "usage",
-        "owner": 6,
         "reference": 6,
-        "source": 2,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "sent",
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 6,
+        "source": 2,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
+        "reference": 3,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "receiver",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 3,
         "compartments": [
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               9
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "receiver",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 3,
-        "source": 3,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "received",
-        "notationRole": "usage",
-        "owner": 8,
         "reference": 4,
-        "source": 4,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "received",
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 8,
+        "source": 4,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       }
     ],
     "relationships": [
       {
-        "kind": "flowSource",
-        "navigation": 6,
-        "provenance": "authored",
         "reference": 17,
         "source": 1,
+        "kind": "flowSource",
         "target": {
-          "node": 7,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 7
+        },
+        "provenance": "authored",
+        "navigation": 6
       },
       {
-        "kind": "flowTarget",
-        "navigation": 7,
-        "provenance": "authored",
         "reference": 18,
         "source": 1,
+        "kind": "flowTarget",
         "target": {
           "status": "unresolved"
-        }
+        },
+        "provenance": "authored",
+        "navigation": 7
       }
     ],
+    "edges": [
+      {
+        "reference": 12,
+        "source": 0,
+        "target": 6,
+        "origin": 6,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 1
+      },
+      {
+        "reference": 22,
+        "source": 6,
+        "target": 7,
+        "origin": 7,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 2
+      },
+      {
+        "reference": 13,
+        "source": 0,
+        "target": 1,
+        "origin": 1,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 15,
+        "source": 1,
+        "target": 2,
+        "origin": 2,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 6
+      },
+      {
+        "reference": 19,
+        "source": 2,
+        "target": 3,
+        "origin": 3,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 6
+      },
+      {
+        "reference": 16,
+        "source": 1,
+        "target": 4,
+        "origin": 4,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 20,
+        "source": 4,
+        "target": 5,
+        "origin": 5,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 14,
+        "source": 0,
+        "target": 8,
+        "origin": 8,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 3
+      },
+      {
+        "reference": 21,
+        "source": 8,
+        "target": 9,
+        "origin": 9,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 4
+      }
+    ],
+    "metadata": {
+      "participants": [
+        6,
+        8
+      ],
+      "messages": [
+        1
+      ]
+    },
     "scene": {
       "kind": "sequence",
       "lifelines": [
@@ -868,21 +868,21 @@ package SequenceUnresolved {
       ],
       "messages": [
         {
-          "label": "delivery",
-          "navigation": 5,
           "node": 1,
+          "label": "delivery",
+          "source": {
+            "status": "resolved",
+            "lifeline": 6
+          },
+          "target": {
+            "status": "unresolved"
+          },
           "order": {
             "status": "resolved",
             "value": 1
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 6,
-            "status": "resolved"
-          },
-          "target": {
-            "status": "unresolved"
-          }
+          "navigation": 5
         }
       ]
     }

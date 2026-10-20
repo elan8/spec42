@@ -322,67 +322,67 @@ package ProvenanceExample {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ProvenanceExample::Base"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ProvenanceExample::Child"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ProvenanceExample::Child::mass"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ProvenanceExample::Child::mass::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "ProvenanceExample::selected"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "LiteralInteger",
-      "ownerQualifiedName": "ProvenanceExample::Child::mass",
       "source": 3,
+      "ownerQualifiedName": "ProvenanceExample::Child::mass",
+      "metaclass": "LiteralInteger",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "ProvenanceExample::Child::mass::",
       "source": 3,
+      "ownerQualifiedName": "ProvenanceExample::Child::mass::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 1,
       "relationshipKind": "noncomposite-membership",
-      "source": 1
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 1,
       "relationshipKind": "specializes",
-      "source": 1
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 2,
       "relationshipKind": "containment",
-      "source": 2
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 2
     }
   ],
   "selectedView": {
@@ -396,135 +396,135 @@ package ProvenanceExample {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 2,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 7,
-        "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 1,
-        "target": 2
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 10,
-        "source": 2,
-        "target": 3
-      }
-    ],
+    "kind": "general-view",
     "exposedRoots": [
       0
     ],
-    "kind": "general-view",
+    "nodes": [
+      {
+        "reference": 1,
+        "metaclass": "PartDefinition",
+        "notationRole": "definition",
+        "name": "Child",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
+        "compartments": [
+          {
+            "kind": "attributes",
+            "provenance": "direct",
+            "members": [
+              1
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 2,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "mass",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 2,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "LiteralInteger",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 1,
+        "source": 3,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 6,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 2,
+        "source": 3,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      }
+    ],
+    "relationships": [
+      {
+        "reference": 8,
+        "source": 0,
+        "kind": "specializes",
+        "target": {
+          "status": "resolved",
+          "reference": 0
+        },
+        "provenance": "authored",
+        "navigation": 1
+      }
+    ],
+    "edges": [
+      {
+        "reference": 7,
+        "source": 0,
+        "target": 1,
+        "origin": 1,
+        "kind": "noncomposite-membership",
+        "provenance": "authored",
+        "navigation": 2
+      },
+      {
+        "reference": 9,
+        "source": 1,
+        "target": 2,
+        "origin": 2,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 3
+      },
+      {
+        "reference": 10,
+        "source": 2,
+        "target": 3,
+        "origin": 3,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 3
+      }
+    ],
     "metadata": {
       "roots": [
         0
       ]
     },
-    "nodes": [
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              1
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartDefinition",
-        "name": "Child",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 1,
-        "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "mass",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 2,
-        "source": 2,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralInteger",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 1,
-        "reference": 5,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 2,
-        "reference": 6,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      }
-    ],
-    "relationships": [
-      {
-        "kind": "specializes",
-        "navigation": 1,
-        "provenance": "authored",
-        "reference": 8,
-        "source": 0,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      }
-    ],
     "scene": {
       "kind": "general"
     }

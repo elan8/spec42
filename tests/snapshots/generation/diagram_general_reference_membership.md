@@ -397,98 +397,98 @@ package Membership {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Membership::Socket"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Membership::Vehicle"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Membership::Vehicle::borrowed"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Membership::Vehicle::forwarded"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Membership::Vehicle::owned"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Membership::Vehicle::socket"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Membership::Wheel"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Membership::selected"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 1,
       "relationshipKind": "containment",
-      "source": 1
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 1,
       "relationshipKind": "noncomposite-membership",
-      "source": 1
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 1,
       "relationshipKind": "noncomposite-membership",
-      "source": 1
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 1,
       "relationshipKind": "noncomposite-membership",
-      "source": 1
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "source": 2,
       "relationshipKind": "typing",
-      "source": 2
+      "ordinal": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "source": 3,
       "relationshipKind": "reference-subsetting",
-      "source": 3
+      "ordinal": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "source": 3,
       "relationshipKind": "referenceSubsetting",
-      "source": 3
+      "ordinal": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 4,
       "relationshipKind": "typing",
-      "source": 4
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "source": 5,
       "relationshipKind": "typing",
-      "source": 5
+      "ordinal": 5
     }
   ],
   "selectedView": {
@@ -502,230 +502,230 @@ package Membership {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 8,
-        "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 3,
-        "origin": 4,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 0,
-        "target": 4
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 5,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 10,
-        "source": 0,
-        "target": 2
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 7,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 11,
-        "source": 0,
-        "target": 3
-      },
-      {
-        "kind": "reference-subsetting",
-        "navigation": 8,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 13,
-        "source": 3,
-        "target": 1
-      }
-    ],
+    "kind": "general-view",
     "exposedRoots": [
       0
     ],
-    "kind": "general-view",
+    "nodes": [
+      {
+        "reference": 1,
+        "metaclass": "PartDefinition",
+        "notationRole": "definition",
+        "name": "Vehicle",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
+        "compartments": [
+          {
+            "kind": "parts",
+            "provenance": "direct",
+            "members": [
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "kind": "ports",
+            "provenance": "direct",
+            "members": [
+              4
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 4,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "owned",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 6,
+              "label": "Wheel"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 2,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "borrowed",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 6,
+              "label": "Wheel"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 5,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 3,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "forwarded",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 7,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "socket",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 0,
+              "label": "Socket"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 3,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      }
+    ],
+    "relationships": [
+      {
+        "reference": 15,
+        "source": 1,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 6
+        },
+        "provenance": "authored",
+        "navigation": 2
+      },
+      {
+        "reference": 16,
+        "source": 4,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 0
+        },
+        "provenance": "authored",
+        "navigation": 4
+      },
+      {
+        "reference": 12,
+        "source": 2,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 6
+        },
+        "provenance": "authored",
+        "navigation": 6
+      },
+      {
+        "reference": 14,
+        "source": 3,
+        "kind": "referenceSubsetting",
+        "target": {
+          "status": "resolved",
+          "node": 1
+        },
+        "provenance": "authored",
+        "navigation": 8
+      }
+    ],
+    "edges": [
+      {
+        "reference": 8,
+        "source": 0,
+        "target": 1,
+        "origin": 1,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 1
+      },
+      {
+        "reference": 9,
+        "source": 0,
+        "target": 4,
+        "origin": 4,
+        "kind": "noncomposite-membership",
+        "provenance": "authored",
+        "navigation": 3
+      },
+      {
+        "reference": 10,
+        "source": 0,
+        "target": 2,
+        "origin": 2,
+        "kind": "noncomposite-membership",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 11,
+        "source": 0,
+        "target": 3,
+        "origin": 3,
+        "kind": "noncomposite-membership",
+        "provenance": "authored",
+        "navigation": 7
+      },
+      {
+        "reference": 13,
+        "source": 3,
+        "target": 1,
+        "origin": 3,
+        "kind": "reference-subsetting",
+        "provenance": "authored",
+        "navigation": 8
+      }
+    ],
     "metadata": {
       "roots": [
         0
       ]
     },
-    "nodes": [
-      {
-        "compartments": [
-          {
-            "kind": "parts",
-            "members": [
-              1,
-              2,
-              3
-            ],
-            "provenance": "direct"
-          },
-          {
-            "kind": "ports",
-            "members": [
-              4
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartDefinition",
-        "name": "Vehicle",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 1,
-        "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "owned",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 4,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Wheel",
-              "reference": 6
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "borrowed",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 2,
-        "source": 5,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Wheel",
-              "reference": 6
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "forwarded",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 3,
-        "source": 7,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "socket",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 5,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Socket",
-              "reference": 0
-            }
-          ]
-        }
-      }
-    ],
-    "relationships": [
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 15,
-        "source": 1,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 16,
-        "source": 4,
-        "target": {
-          "reference": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 6,
-        "provenance": "authored",
-        "reference": 12,
-        "source": 2,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "referenceSubsetting",
-        "navigation": 8,
-        "provenance": "authored",
-        "reference": 14,
-        "source": 3,
-        "target": {
-          "node": 1,
-          "status": "resolved"
-        }
-      }
-    ],
     "scene": {
       "kind": "general"
     }

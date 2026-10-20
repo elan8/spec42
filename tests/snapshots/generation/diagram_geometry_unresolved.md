@@ -165,15 +165,15 @@ package GeometryNegative {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "GeometryNegative::selected"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Expose",
-      "ownerQualifiedName": "GeometryNegative::selected",
       "source": 1,
+      "ownerQualifiedName": "GeometryNegative::selected",
+      "metaclass": "Expose",
       "sourceDomain": "workspace"
     }
   ],
@@ -193,15 +193,15 @@ package GeometryNegative {
     ]
   },
   "projection": {
-    "edges": [],
-    "exposedRoots": [],
     "kind": "geometry-view",
+    "exposedRoots": [],
+    "nodes": [],
+    "relationships": [],
+    "edges": [],
     "metadata": {
       "elements": [],
       "primitives": []
     },
-    "nodes": [],
-    "relationships": [],
     "scene": {
       "kind": "geometry"
     }

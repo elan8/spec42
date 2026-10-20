@@ -1346,8 +1346,21 @@ fn exact_binding_connector_check(
     }
 }
 
+/// Well-formed pinned bodies whose library anchor is misspelled, so no library feature exists:
+/// - `checkJoinNodeSpecialization` names `Actions::Action::join`; its own documentation, SysML
+///   9.2.10 and the specialization table name `Actions::Action::joins`, the Systems Model Library
+///   declares only `joins`, and the Pilot specializes `joins`.
+/// - `checkControlNodeSpecialization` names `Action::Action::controls` (documented as
+///   `Actions::Action::control`); the library declares `Actions::Action::controls`, which every
+///   concrete control node already specializes through `forks`, `joins`, `merges` or `decisions`.
+///
+/// Enforcing a literal body would flag every such node, so each is a `normative_specification_gap`
+/// in `tests/snapshots/issues.toml` instead of a contract.
+const MISSPELLED_LIBRARY_ANCHORS: &[&str] = &["Actions::Action::join", "Action::Action::controls"];
+
 fn exact_library_specialization_anchor(body: &str) -> Option<String> {
     exact_library_anchor(body, "specializesFromLibrary('")
+        .filter(|anchor| !MISSPELLED_LIBRARY_ANCHORS.contains(&anchor.as_str()))
 }
 
 fn exact_library_redefinition_anchor(body: &str) -> Option<String> {

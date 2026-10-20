@@ -374,7 +374,9 @@ mod tests {
 
     #[test]
     fn generated_unconditional_library_specialization_table_covers_all_manifest_check_rules() {
-        assert_eq!(generated_library_specialization_rule_count(), 85);
+        // checkJoinNodeSpecialization and checkControlNodeSpecialization name library features
+        // that do not exist; they are normative specification gaps, not contracts.
+        assert_eq!(generated_library_specialization_rule_count(), 83);
         assert_eq!(
             generated_conditional_library_specialization_rule_count(),
             59
@@ -385,7 +387,7 @@ mod tests {
             .collect::<std::collections::BTreeSet<_>>();
         assert_eq!(
             unique_rules.len(),
-            85,
+            83,
             "rule IDs must remain unique map keys"
         );
         assert!(GENERATED_LIBRARY_SPECIALIZATION_RULES.iter().all(|rule| {
@@ -422,7 +424,8 @@ mod tests {
         // contains no library declarations. That makes every missing prerequisite explicit, and
         // catches a manifest/generator change that adds a rule without publication coverage.
         let anchors = library_specialization_anchors(&storage_with_one_filter());
-        assert_eq!(anchors.by_rule.len(), 152);
+        // 152 pinned rules less the two misspelled-anchor normative specification gaps.
+        assert_eq!(anchors.by_rule.len(), 150);
         let individual_multiplicity_rule = crate::resolve::implied::specialization_check_rule(
             crate::specialization_query::SpecializationCheckKind::OccurrenceDefinitionMultiplicity,
         )

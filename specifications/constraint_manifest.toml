@@ -3246,9 +3246,6 @@ family = "check"
 clause = "8.3.17.11"
 rule_id = "sysml-2.0:8.3.17.11:checkJoinNodeSpecialization"
 
-[specifications.constraints.specializes_from_library]
-anchor = "Actions::Action::join"
-
 [[specifications.constraints]]
 package = "Systems::Actions"
 metaclass = "JoinNode"
@@ -3805,9 +3802,6 @@ constraint = "checkControlNodeSpecialization"
 family = "check"
 clause = "8.3.17.6"
 rule_id = "sysml-2.0:8.3.17.6:checkControlNodeSpecialization"
-
-[specifications.constraints.specializes_from_library]
-anchor = "Action::Action::controls"
 
 [[specifications.constraints]]
 package = "Systems::Actions"

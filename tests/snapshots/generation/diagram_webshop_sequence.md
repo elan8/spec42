@@ -12558,2258 +12558,2258 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Views::checkoutFlow"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::ApiGateway"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::ApiGateway::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::ApiGateway::::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::ApiGateway::catalogApiOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::ApiGateway::checkoutApiOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::ApiGateway::publicCatalogIn"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::ApiGateway::publicCheckoutIn"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::apiGateway"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::apiGateway::forwardSent"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeForwarded"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeReceived"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::apiGateway::submitReceived"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutService"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeReturned"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeSent"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutService::forwardReceived"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutService::orderCreatedSent"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutService::outcomeSent"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutService::reserveReturned"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutService::reserveSent"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::inventoryService"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::inventoryService::reserveAnswered"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::inventoryService::reserveReceived"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::ordersEventsTopic"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::ordersEventsTopic::orderCreatedReceived"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::paymentsService"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::paymentsService::authorizeAnswered"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::paymentsService::authorizeReceived"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::storefront"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::storefront::outcomeReceived"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::storefront::submitSent"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutOutcome"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutRequest"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutService"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutService::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutService::::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutService::apiIn"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutService::inventoryApiOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutService::orderEventsOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutService::ordersDbOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::CheckoutService::paymentsApiOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::HttpService::serviceName"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::InventoryService"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::InventoryService::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::InventoryService::::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::InventoryService::apiIn"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::InventoryService::inventoryDbOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::InventoryService::orderEventsIn"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::InventoryService::reservationEventsOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::KafkaTopic::channelName"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::KafkaTopic::partitions"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::KafkaTopic::retention"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::OrderCreatedEvent"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::OrdersEventsTopic"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::OrdersEventsTopic::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::OrdersEventsTopic::::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::OrdersEventsTopic::topicEgress"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::OrdersEventsTopic::topicIngress"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::PaymentAuthorization"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::PaymentResult"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::PaymentsService"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::PaymentsService::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::PaymentsService::::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::PaymentsService::apiIn"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::PaymentsService::paymentsDbOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::PaymentsService::providerOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::SoftwareModule::moduleName"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::StockReservation"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::Storefront"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::Storefront::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::Storefront::::"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::Storefront::catalogApiOut"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "WebShopArchitecture::Storefront::checkoutApiOut"
     },
     {
-      "document": 2,
       "kind": "qualified-name",
+      "document": 2,
       "qualifiedName": "ScalarValues::String"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "AttributeUsage",
-      "ownerQualifiedName": "WebShopArchitecture::ApiGateway",
       "source": 8,
+      "ownerQualifiedName": "WebShopArchitecture::ApiGateway",
+      "metaclass": "AttributeUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "LiteralString",
+      "source": 10,
       "ownerQualifiedName": "WebShopArchitecture::ApiGateway::",
-      "source": 10,
+      "metaclass": "LiteralString",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
+      "source": 10,
       "ownerQualifiedName": "WebShopArchitecture::ApiGateway::::",
-      "source": 10,
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Documentation",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
       "source": 48,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "Documentation",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
       "source": 115,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
       "source": 118,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
       "source": 121,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
       "source": 124,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
       "source": 127,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
       "source": 130,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
       "source": 133,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "SuccessionAsUsage",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 136,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment",
       "source": 89,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment",
-      "source": 90,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment::",
+      "source": 90,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 89,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 90,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted",
       "source": 109,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted",
-      "source": 110,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted::",
+      "source": 110,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 109,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 110,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome",
       "source": 113,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome",
-      "source": 114,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome::",
+      "source": 114,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 113,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 114,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout",
       "source": 85,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout",
-      "source": 86,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout::",
+      "source": 86,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 85,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 86,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved",
       "source": 93,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved",
-      "source": 94,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved::",
+      "source": 94,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 93,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 94,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated",
       "source": 105,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated",
-      "source": 106,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated::",
+      "source": 106,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 105,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 106,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock",
       "source": 97,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock",
-      "source": 98,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock::",
+      "source": 98,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 97,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 98,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved",
       "source": 101,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved",
-      "source": 102,
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved::",
+      "source": 102,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved",
+      "metaclass": "FlowEnd",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 101,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 102,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout",
-      "source": 81,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout",
-      "source": 82,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved::",
       "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout::",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 81,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout",
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout::",
       "source": 82,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout",
+      "metaclass": "FlowEnd",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "AttributeUsage",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutService",
+      "source": 81,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 82,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 15,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutService",
+      "metaclass": "AttributeUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "LiteralString",
+      "source": 17,
       "ownerQualifiedName": "WebShopArchitecture::CheckoutService::",
-      "source": 17,
+      "metaclass": "LiteralString",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
+      "source": 17,
       "ownerQualifiedName": "WebShopArchitecture::CheckoutService::::",
-      "source": 17,
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "AttributeUsage",
-      "ownerQualifiedName": "WebShopArchitecture::InventoryService",
       "source": 29,
+      "ownerQualifiedName": "WebShopArchitecture::InventoryService",
+      "metaclass": "AttributeUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "LiteralString",
+      "source": 31,
       "ownerQualifiedName": "WebShopArchitecture::InventoryService::",
-      "source": 31,
+      "metaclass": "LiteralString",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "Feature",
+      "source": 31,
       "ownerQualifiedName": "WebShopArchitecture::InventoryService::::",
-      "source": 31,
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "AttributeUsage",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
       "source": 36,
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
+      "metaclass": "AttributeUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "AttributeUsage",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
       "source": 39,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "AttributeUsage",
       "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
+      "metaclass": "AttributeUsage",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 42,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
-      "source": 38,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
-      "source": 41,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
-      "source": 44,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
-      "source": 38,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
-      "source": 41,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
-      "source": 44,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
       "metaclass": "AttributeUsage",
-      "ownerQualifiedName": "WebShopArchitecture::PaymentsService",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 38,
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
+      "metaclass": "LiteralString",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 41,
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
+      "metaclass": "LiteralString",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 44,
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
+      "metaclass": "LiteralString",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 38,
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 41,
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 44,
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
+      "metaclass": "Feature",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 23,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::PaymentsService::",
-      "source": 25,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::PaymentsService::::",
-      "source": 25,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
+      "ownerQualifiedName": "WebShopArchitecture::PaymentsService",
       "metaclass": "AttributeUsage",
-      "ownerQualifiedName": "WebShopArchitecture::Storefront",
-      "source": 3,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
+      "source": 25,
+      "ownerQualifiedName": "WebShopArchitecture::PaymentsService::",
       "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::Storefront::",
-      "source": 5,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
+      "source": 25,
+      "ownerQualifiedName": "WebShopArchitecture::PaymentsService::::",
       "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::Storefront::::",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 3,
+      "ownerQualifiedName": "WebShopArchitecture::Storefront",
+      "metaclass": "AttributeUsage",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "source": 5,
+      "ownerQualifiedName": "WebShopArchitecture::Storefront::",
+      "metaclass": "LiteralString",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 5,
+      "ownerQualifiedName": "WebShopArchitecture::Storefront::::",
+      "metaclass": "Feature",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "source": 2,
       "relationshipKind": "containment",
-      "source": 2
+      "ordinal": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "source": 2,
       "relationshipKind": "redefinition",
-      "source": 2
+      "ordinal": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 42,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 42
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 48
     },
     {
       "kind": "relationship",
-      "ordinal": 54,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 54
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 60
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 66
     },
     {
       "kind": "relationship",
-      "ordinal": 72,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 78,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 78
     },
     {
       "kind": "relationship",
-      "ordinal": 101,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 101
     },
     {
       "kind": "relationship",
-      "ordinal": 112,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 112
     },
     {
       "kind": "relationship",
-      "ordinal": 118,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 118
     },
     {
       "kind": "relationship",
-      "ordinal": 124,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 124
     },
     {
       "kind": "relationship",
-      "ordinal": 136,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 136
     },
     {
       "kind": "relationship",
-      "ordinal": 149,
+      "source": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "ordinal": 149
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 30
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "source": 9,
       "relationshipKind": "succession",
-      "source": 9
+      "ordinal": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 21
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "source": 10,
       "relationshipKind": "containment",
-      "source": 10
+      "ordinal": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
+      "source": 10,
       "relationshipKind": "typing",
-      "source": 10
+      "ordinal": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 67,
+      "source": 11,
       "relationshipKind": "flow",
-      "source": 11
+      "ordinal": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "source": 11,
       "relationshipKind": "succession",
-      "source": 11
+      "ordinal": 30
     },
     {
       "kind": "relationship",
-      "ordinal": 61,
+      "source": 12,
       "relationshipKind": "flow",
-      "source": 12
+      "ordinal": 61
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
+      "source": 13,
       "relationshipKind": "succession",
-      "source": 13
+      "ordinal": 32
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "source": 14,
       "relationshipKind": "succession",
-      "source": 14
+      "ordinal": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 114,
+      "source": 15,
       "relationshipKind": "containment",
-      "source": 15
+      "ordinal": 114
     },
     {
       "kind": "relationship",
-      "ordinal": 116,
+      "source": 15,
       "relationshipKind": "containment",
-      "source": 15
+      "ordinal": 116
     },
     {
       "kind": "relationship",
-      "ordinal": 264,
+      "source": 15,
       "relationshipKind": "flowPayloadType",
-      "source": 15
+      "ordinal": 264
     },
     {
       "kind": "relationship",
-      "ordinal": 265,
+      "source": 15,
       "relationshipKind": "flowSource",
-      "source": 15
+      "ordinal": 265
     },
     {
       "kind": "relationship",
-      "ordinal": 266,
+      "source": 15,
       "relationshipKind": "flowTarget",
-      "source": 15
+      "ordinal": 266
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "source": 15,
       "relationshipKind": "succession",
-      "source": 15
+      "ordinal": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 115,
+      "source": 16,
       "relationshipKind": "containment",
-      "source": 16
+      "ordinal": 115
     },
     {
       "kind": "relationship",
-      "ordinal": 117,
+      "source": 16,
       "relationshipKind": "containment",
-      "source": 16
+      "ordinal": 117
     },
     {
       "kind": "relationship",
-      "ordinal": 120,
+      "source": 17,
       "relationshipKind": "containment",
-      "source": 17
+      "ordinal": 120
     },
     {
       "kind": "relationship",
-      "ordinal": 122,
+      "source": 17,
       "relationshipKind": "containment",
-      "source": 17
+      "ordinal": 122
     },
     {
       "kind": "relationship",
-      "ordinal": 281,
+      "source": 17,
       "relationshipKind": "flowPayloadType",
-      "source": 17
+      "ordinal": 281
     },
     {
       "kind": "relationship",
-      "ordinal": 282,
+      "source": 17,
       "relationshipKind": "flowSource",
-      "source": 17
+      "ordinal": 282
     },
     {
       "kind": "relationship",
-      "ordinal": 283,
+      "source": 17,
       "relationshipKind": "flowTarget",
-      "source": 17
+      "ordinal": 283
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "source": 17,
       "relationshipKind": "succession",
-      "source": 17
+      "ordinal": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 121,
+      "source": 18,
       "relationshipKind": "containment",
-      "source": 18
+      "ordinal": 121
     },
     {
       "kind": "relationship",
-      "ordinal": 123,
+      "source": 18,
       "relationshipKind": "containment",
-      "source": 18
+      "ordinal": 123
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
+      "source": 19,
       "relationshipKind": "containment",
-      "source": 19
+      "ordinal": 62
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "source": 19,
       "relationshipKind": "containment",
-      "source": 19
+      "ordinal": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 141,
+      "source": 19,
       "relationshipKind": "flowPayloadType",
-      "source": 19
+      "ordinal": 141
     },
     {
       "kind": "relationship",
-      "ordinal": 142,
+      "source": 19,
       "relationshipKind": "flowSource",
-      "source": 19
+      "ordinal": 142
     },
     {
       "kind": "relationship",
-      "ordinal": 143,
+      "source": 19,
       "relationshipKind": "flowTarget",
-      "source": 19
+      "ordinal": 143
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "source": 20,
       "relationshipKind": "containment",
-      "source": 20
+      "ordinal": 63
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
+      "source": 20,
       "relationshipKind": "containment",
-      "source": 20
+      "ordinal": 65
     },
     {
       "kind": "relationship",
-      "ordinal": 79,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 79
     },
     {
       "kind": "relationship",
-      "ordinal": 82,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 82
     },
     {
       "kind": "relationship",
-      "ordinal": 83,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 83
     },
     {
       "kind": "relationship",
-      "ordinal": 84,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 84
     },
     {
       "kind": "relationship",
-      "ordinal": 85,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 85
     },
     {
       "kind": "relationship",
-      "ordinal": 86,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 87,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 87
     },
     {
       "kind": "relationship",
-      "ordinal": 88,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 88
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 90
     },
     {
       "kind": "relationship",
-      "ordinal": 92,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 92
     },
     {
       "kind": "relationship",
-      "ordinal": 94,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 94
     },
     {
       "kind": "relationship",
-      "ordinal": 95,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 95
     },
     {
       "kind": "relationship",
-      "ordinal": 97,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 97
     },
     {
       "kind": "relationship",
-      "ordinal": 99,
+      "source": 21,
       "relationshipKind": "containment",
-      "source": 21
+      "ordinal": 99
     },
     {
       "kind": "relationship",
-      "ordinal": 192,
+      "source": 21,
       "relationshipKind": "typing",
-      "source": 21
+      "ordinal": 192
     },
     {
       "kind": "relationship",
-      "ordinal": 91,
+      "source": 22,
       "relationshipKind": "succession",
-      "source": 22
+      "ordinal": 91
     },
     {
       "kind": "relationship",
-      "ordinal": 113,
+      "source": 23,
       "relationshipKind": "flow",
-      "source": 23
+      "ordinal": 113
     },
     {
       "kind": "relationship",
-      "ordinal": 100,
+      "source": 23,
       "relationshipKind": "succession",
-      "source": 23
+      "ordinal": 100
     },
     {
       "kind": "relationship",
-      "ordinal": 93,
+      "source": 24,
       "relationshipKind": "succession",
-      "source": 24
+      "ordinal": 93
     },
     {
       "kind": "relationship",
-      "ordinal": 150,
+      "source": 25,
       "relationshipKind": "flow",
-      "source": 25
+      "ordinal": 150
     },
     {
       "kind": "relationship",
-      "ordinal": 89,
+      "source": 25,
       "relationshipKind": "succession",
-      "source": 25
+      "ordinal": 89
     },
     {
       "kind": "relationship",
-      "ordinal": 119,
+      "source": 26,
       "relationshipKind": "flow",
-      "source": 26
+      "ordinal": 119
     },
     {
       "kind": "relationship",
-      "ordinal": 98,
+      "source": 27,
       "relationshipKind": "succession",
-      "source": 27
+      "ordinal": 98
     },
     {
       "kind": "relationship",
-      "ordinal": 43,
+      "source": 28,
       "relationshipKind": "flow",
-      "source": 28
+      "ordinal": 43
     },
     {
       "kind": "relationship",
-      "ordinal": 96,
+      "source": 28,
       "relationshipKind": "succession",
-      "source": 28
+      "ordinal": 96
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "source": 29,
       "relationshipKind": "containment",
-      "source": 29
+      "ordinal": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 70,
+      "source": 29,
       "relationshipKind": "containment",
-      "source": 29
+      "ordinal": 70
     },
     {
       "kind": "relationship",
-      "ordinal": 158,
+      "source": 29,
       "relationshipKind": "flowPayloadType",
-      "source": 29
+      "ordinal": 158
     },
     {
       "kind": "relationship",
-      "ordinal": 159,
+      "source": 29,
       "relationshipKind": "flowSource",
-      "source": 29
+      "ordinal": 159
     },
     {
       "kind": "relationship",
-      "ordinal": 160,
+      "source": 29,
       "relationshipKind": "flowTarget",
-      "source": 29
+      "ordinal": 160
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 29,
       "relationshipKind": "succession",
-      "source": 29
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 69,
+      "source": 30,
       "relationshipKind": "containment",
-      "source": 30
+      "ordinal": 69
     },
     {
       "kind": "relationship",
-      "ordinal": 71,
+      "source": 30,
       "relationshipKind": "containment",
-      "source": 30
+      "ordinal": 71
     },
     {
       "kind": "relationship",
-      "ordinal": 125,
+      "source": 31,
       "relationshipKind": "containment",
-      "source": 31
+      "ordinal": 125
     },
     {
       "kind": "relationship",
-      "ordinal": 128,
+      "source": 31,
       "relationshipKind": "containment",
-      "source": 31
+      "ordinal": 128
     },
     {
       "kind": "relationship",
-      "ordinal": 129,
+      "source": 31,
       "relationshipKind": "containment",
-      "source": 31
+      "ordinal": 129
     },
     {
       "kind": "relationship",
-      "ordinal": 130,
+      "source": 31,
       "relationshipKind": "containment",
-      "source": 31
+      "ordinal": 130
     },
     {
       "kind": "relationship",
-      "ordinal": 131,
+      "source": 31,
       "relationshipKind": "containment",
-      "source": 31
+      "ordinal": 131
     },
     {
       "kind": "relationship",
-      "ordinal": 132,
+      "source": 31,
       "relationshipKind": "containment",
-      "source": 31
+      "ordinal": 132
     },
     {
       "kind": "relationship",
-      "ordinal": 133,
+      "source": 31,
       "relationshipKind": "containment",
-      "source": 31
+      "ordinal": 133
     },
     {
       "kind": "relationship",
-      "ordinal": 135,
+      "source": 31,
       "relationshipKind": "containment",
-      "source": 31
+      "ordinal": 135
     },
     {
       "kind": "relationship",
-      "ordinal": 298,
+      "source": 31,
       "relationshipKind": "typing",
-      "source": 31
+      "ordinal": 298
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
+      "source": 32,
       "relationshipKind": "flow",
-      "source": 32
+      "ordinal": 49
     },
     {
       "kind": "relationship",
-      "ordinal": 134,
+      "source": 33,
       "relationshipKind": "succession",
-      "source": 33
+      "ordinal": 134
     },
     {
       "kind": "relationship",
-      "ordinal": 137,
+      "source": 34,
       "relationshipKind": "containment",
-      "source": 34
+      "ordinal": 137
     },
     {
       "kind": "relationship",
-      "ordinal": 140,
+      "source": 34,
       "relationshipKind": "containment",
-      "source": 34
+      "ordinal": 140
     },
     {
       "kind": "relationship",
-      "ordinal": 143,
+      "source": 34,
       "relationshipKind": "containment",
-      "source": 34
+      "ordinal": 143
     },
     {
       "kind": "relationship",
-      "ordinal": 146,
+      "source": 34,
       "relationshipKind": "containment",
-      "source": 34
+      "ordinal": 146
     },
     {
       "kind": "relationship",
-      "ordinal": 147,
+      "source": 34,
       "relationshipKind": "containment",
-      "source": 34
+      "ordinal": 147
     },
     {
       "kind": "relationship",
-      "ordinal": 148,
+      "source": 34,
       "relationshipKind": "containment",
-      "source": 34
+      "ordinal": 148
     },
     {
       "kind": "relationship",
-      "ordinal": 329,
+      "source": 34,
       "relationshipKind": "typing",
-      "source": 34
+      "ordinal": 329
     },
     {
       "kind": "relationship",
-      "ordinal": 74,
+      "source": 36,
       "relationshipKind": "containment",
-      "source": 36
+      "ordinal": 74
     },
     {
       "kind": "relationship",
-      "ordinal": 76,
+      "source": 36,
       "relationshipKind": "containment",
-      "source": 36
+      "ordinal": 76
     },
     {
       "kind": "relationship",
-      "ordinal": 175,
+      "source": 36,
       "relationshipKind": "flowPayloadType",
-      "source": 36
+      "ordinal": 175
     },
     {
       "kind": "relationship",
-      "ordinal": 176,
+      "source": 36,
       "relationshipKind": "flowSource",
-      "source": 36
+      "ordinal": 176
     },
     {
       "kind": "relationship",
-      "ordinal": 177,
+      "source": 36,
       "relationshipKind": "flowTarget",
-      "source": 36
+      "ordinal": 177
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "source": 36,
       "relationshipKind": "succession",
-      "source": 36
+      "ordinal": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 75,
+      "source": 37,
       "relationshipKind": "containment",
-      "source": 37
+      "ordinal": 75
     },
     {
       "kind": "relationship",
-      "ordinal": 77,
+      "source": 37,
       "relationshipKind": "containment",
-      "source": 37
+      "ordinal": 77
     },
     {
       "kind": "relationship",
-      "ordinal": 102,
+      "source": 38,
       "relationshipKind": "containment",
-      "source": 38
+      "ordinal": 102
     },
     {
       "kind": "relationship",
-      "ordinal": 105,
+      "source": 38,
       "relationshipKind": "containment",
-      "source": 38
+      "ordinal": 105
     },
     {
       "kind": "relationship",
-      "ordinal": 106,
+      "source": 38,
       "relationshipKind": "containment",
-      "source": 38
+      "ordinal": 106
     },
     {
       "kind": "relationship",
-      "ordinal": 107,
+      "source": 38,
       "relationshipKind": "containment",
-      "source": 38
+      "ordinal": 107
     },
     {
       "kind": "relationship",
-      "ordinal": 108,
+      "source": 38,
       "relationshipKind": "containment",
-      "source": 38
+      "ordinal": 108
     },
     {
       "kind": "relationship",
-      "ordinal": 109,
+      "source": 38,
       "relationshipKind": "containment",
-      "source": 38
+      "ordinal": 109
     },
     {
       "kind": "relationship",
-      "ordinal": 111,
+      "source": 38,
       "relationshipKind": "containment",
-      "source": 38
+      "ordinal": 111
     },
     {
       "kind": "relationship",
-      "ordinal": 236,
+      "source": 38,
       "relationshipKind": "typing",
-      "source": 38
+      "ordinal": 236
     },
     {
       "kind": "relationship",
-      "ordinal": 73,
+      "source": 39,
       "relationshipKind": "flow",
-      "source": 39
+      "ordinal": 73
     },
     {
       "kind": "relationship",
-      "ordinal": 110,
+      "source": 40,
       "relationshipKind": "succession",
-      "source": 40
+      "ordinal": 110
     },
     {
       "kind": "relationship",
-      "ordinal": 151,
+      "source": 41,
       "relationshipKind": "containment",
-      "source": 41
+      "ordinal": 151
     },
     {
       "kind": "relationship",
-      "ordinal": 153,
+      "source": 41,
       "relationshipKind": "containment",
-      "source": 41
+      "ordinal": 153
     },
     {
       "kind": "relationship",
-      "ordinal": 365,
+      "source": 41,
       "relationshipKind": "flowPayloadType",
-      "source": 41
+      "ordinal": 365
     },
     {
       "kind": "relationship",
-      "ordinal": 366,
+      "source": 41,
       "relationshipKind": "flowSource",
-      "source": 41
+      "ordinal": 366
     },
     {
       "kind": "relationship",
-      "ordinal": 367,
+      "source": 41,
       "relationshipKind": "flowTarget",
-      "source": 41
+      "ordinal": 367
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "source": 41,
       "relationshipKind": "succession",
-      "source": 41
+      "ordinal": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 152,
+      "source": 42,
       "relationshipKind": "containment",
-      "source": 42
+      "ordinal": 152
     },
     {
       "kind": "relationship",
-      "ordinal": 154,
+      "source": 42,
       "relationshipKind": "containment",
-      "source": 42
+      "ordinal": 154
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "source": 43,
       "relationshipKind": "containment",
-      "source": 43
+      "ordinal": 44
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "source": 43,
       "relationshipKind": "containment",
-      "source": 43
+      "ordinal": 46
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
+      "source": 43,
       "relationshipKind": "flowPayloadType",
-      "source": 43
+      "ordinal": 90
     },
     {
       "kind": "relationship",
-      "ordinal": 91,
+      "source": 43,
       "relationshipKind": "flowSource",
-      "source": 43
+      "ordinal": 91
     },
     {
       "kind": "relationship",
-      "ordinal": 92,
+      "source": 43,
       "relationshipKind": "flowTarget",
-      "source": 43
+      "ordinal": 92
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "source": 43,
       "relationshipKind": "succession",
-      "source": 43
+      "ordinal": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 45,
+      "source": 44,
       "relationshipKind": "containment",
-      "source": 44
+      "ordinal": 45
     },
     {
       "kind": "relationship",
-      "ordinal": 47,
+      "source": 44,
       "relationshipKind": "containment",
-      "source": 44
+      "ordinal": 47
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "source": 45,
       "relationshipKind": "containment",
-      "source": 45
+      "ordinal": 50
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
+      "source": 45,
       "relationshipKind": "containment",
-      "source": 45
+      "ordinal": 52
     },
     {
       "kind": "relationship",
-      "ordinal": 107,
+      "source": 45,
       "relationshipKind": "flowPayloadType",
-      "source": 45
+      "ordinal": 107
     },
     {
       "kind": "relationship",
-      "ordinal": 108,
+      "source": 45,
       "relationshipKind": "flowSource",
-      "source": 45
+      "ordinal": 108
     },
     {
       "kind": "relationship",
-      "ordinal": 109,
+      "source": 45,
       "relationshipKind": "flowTarget",
-      "source": 45
+      "ordinal": 109
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "source": 45,
       "relationshipKind": "succession",
-      "source": 45
+      "ordinal": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
+      "source": 46,
       "relationshipKind": "containment",
-      "source": 46
+      "ordinal": 51
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "source": 46,
       "relationshipKind": "containment",
-      "source": 46
+      "ordinal": 53
     },
     {
       "kind": "relationship",
-      "ordinal": 34,
+      "source": 47,
       "relationshipKind": "containment",
-      "source": 47
+      "ordinal": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "source": 47,
       "relationshipKind": "containment",
-      "source": 47
+      "ordinal": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 38,
+      "source": 47,
       "relationshipKind": "containment",
-      "source": 47
+      "ordinal": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
+      "source": 47,
       "relationshipKind": "containment",
-      "source": 47
+      "ordinal": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
+      "source": 47,
       "relationshipKind": "containment",
-      "source": 47
+      "ordinal": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "source": 47,
       "relationshipKind": "typing",
-      "source": 47
+      "ordinal": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 55,
+      "source": 49,
       "relationshipKind": "flow",
-      "source": 49
+      "ordinal": 55
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
+      "source": 49,
       "relationshipKind": "succession",
-      "source": 49
+      "ordinal": 41
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "source": 50,
       "relationshipKind": "containment",
-      "source": 50
+      "ordinal": 56
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "source": 50,
       "relationshipKind": "containment",
-      "source": 50
+      "ordinal": 58
     },
     {
       "kind": "relationship",
-      "ordinal": 124,
+      "source": 50,
       "relationshipKind": "flowPayloadType",
-      "source": 50
+      "ordinal": 124
     },
     {
       "kind": "relationship",
-      "ordinal": 125,
+      "source": 50,
       "relationshipKind": "flowSource",
-      "source": 50
+      "ordinal": 125
     },
     {
       "kind": "relationship",
-      "ordinal": 126,
+      "source": 50,
       "relationshipKind": "flowTarget",
-      "source": 50
+      "ordinal": 126
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 50,
       "relationshipKind": "succession",
-      "source": 50
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "source": 51,
       "relationshipKind": "containment",
-      "source": 51
+      "ordinal": 57
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "source": 51,
       "relationshipKind": "containment",
-      "source": 51
+      "ordinal": 59
     },
     {
       "kind": "relationship",
-      "ordinal": 80,
+      "source": 55,
       "relationshipKind": "containment",
-      "source": 55
+      "ordinal": 80
     },
     {
       "kind": "relationship",
-      "ordinal": 196,
+      "source": 55,
       "relationshipKind": "redefinition",
-      "source": 55
+      "ordinal": 196
     },
     {
       "kind": "relationship",
-      "ordinal": 81,
+      "source": 56,
       "relationshipKind": "containment",
-      "source": 56
+      "ordinal": 81
     },
     {
       "kind": "relationship",
-      "ordinal": 126,
+      "source": 64,
       "relationshipKind": "containment",
-      "source": 64
+      "ordinal": 126
     },
     {
       "kind": "relationship",
-      "ordinal": 302,
+      "source": 64,
       "relationshipKind": "redefinition",
-      "source": 64
+      "ordinal": 302
     },
     {
       "kind": "relationship",
-      "ordinal": 127,
+      "source": 65,
       "relationshipKind": "containment",
-      "source": 65
+      "ordinal": 127
     },
     {
       "kind": "relationship",
-      "ordinal": 138,
+      "source": 75,
       "relationshipKind": "containment",
-      "source": 75
+      "ordinal": 138
     },
     {
       "kind": "relationship",
-      "ordinal": 141,
+      "source": 75,
       "relationshipKind": "containment",
-      "source": 75
+      "ordinal": 141
     },
     {
       "kind": "relationship",
-      "ordinal": 144,
+      "source": 75,
       "relationshipKind": "containment",
-      "source": 75
+      "ordinal": 144
     },
     {
       "kind": "relationship",
-      "ordinal": 333,
+      "source": 75,
       "relationshipKind": "redefinition",
-      "source": 75
+      "ordinal": 333
     },
     {
       "kind": "relationship",
-      "ordinal": 341,
+      "source": 75,
       "relationshipKind": "redefinition",
-      "source": 75
+      "ordinal": 341
     },
     {
       "kind": "relationship",
-      "ordinal": 349,
+      "source": 75,
       "relationshipKind": "redefinition",
-      "source": 75
+      "ordinal": 349
     },
     {
       "kind": "relationship",
-      "ordinal": 139,
+      "source": 76,
       "relationshipKind": "containment",
-      "source": 76
+      "ordinal": 139
     },
     {
       "kind": "relationship",
-      "ordinal": 142,
+      "source": 76,
       "relationshipKind": "containment",
-      "source": 76
+      "ordinal": 142
     },
     {
       "kind": "relationship",
-      "ordinal": 145,
+      "source": 76,
       "relationshipKind": "containment",
-      "source": 76
+      "ordinal": 145
     },
     {
       "kind": "relationship",
-      "ordinal": 103,
+      "source": 82,
       "relationshipKind": "containment",
-      "source": 82
+      "ordinal": 103
     },
     {
       "kind": "relationship",
-      "ordinal": 240,
+      "source": 82,
       "relationshipKind": "redefinition",
-      "source": 82
+      "ordinal": 240
     },
     {
       "kind": "relationship",
-      "ordinal": 104,
+      "source": 83,
       "relationshipKind": "containment",
-      "source": 83
+      "ordinal": 104
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "source": 87,
       "relationshipKind": "typing",
-      "source": 87
+      "ordinal": 57
     },
     {
       "kind": "relationship",
-      "ordinal": 210,
+      "source": 87,
       "relationshipKind": "typing",
-      "source": 87
+      "ordinal": 210
     },
     {
       "kind": "relationship",
-      "ordinal": 257,
+      "source": 87,
       "relationshipKind": "typing",
-      "source": 87
+      "ordinal": 257
     },
     {
       "kind": "relationship",
-      "ordinal": 313,
+      "source": 87,
       "relationshipKind": "typing",
-      "source": 87
+      "ordinal": 313
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
+      "source": 90,
       "relationshipKind": "containment",
-      "source": 90
+      "ordinal": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 72,
+      "source": 90,
       "relationshipKind": "redefinition",
-      "source": 90
+      "ordinal": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "source": 91,
       "relationshipKind": "containment",
-      "source": 91
+      "ordinal": 36
     }
   ],
   "selectedView": {
@@ -14823,1433 +14823,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 115,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 167,
-        "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "succession",
-        "navigation": 116,
-        "origin": 1,
-        "provenance": "implied",
-        "reference": 352,
-        "source": 20,
-        "target": 30
-      },
-      {
-        "kind": "containment",
-        "navigation": 118,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 168,
-        "source": 0,
-        "target": 2
-      },
-      {
-        "kind": "succession",
-        "navigation": 119,
-        "origin": 2,
-        "provenance": "implied",
-        "reference": 276,
-        "source": 30,
-        "target": 40
-      },
-      {
-        "kind": "containment",
-        "navigation": 121,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 169,
-        "source": 0,
-        "target": 3
-      },
-      {
-        "kind": "succession",
-        "navigation": 122,
-        "origin": 3,
-        "provenance": "implied",
-        "reference": 228,
-        "source": 40,
-        "target": 35
-      },
-      {
-        "kind": "containment",
-        "navigation": 124,
-        "origin": 4,
-        "provenance": "authored",
-        "reference": 170,
-        "source": 0,
-        "target": 4
-      },
-      {
-        "kind": "succession",
-        "navigation": 125,
-        "origin": 4,
-        "provenance": "implied",
-        "reference": 302,
-        "source": 35,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 127,
-        "origin": 5,
-        "provenance": "authored",
-        "reference": 171,
-        "source": 0,
-        "target": 5
-      },
-      {
-        "kind": "succession",
-        "navigation": 128,
-        "origin": 5,
-        "provenance": "implied",
-        "reference": 328,
-        "source": 10,
-        "target": 15
-      },
-      {
-        "kind": "containment",
-        "navigation": 130,
-        "origin": 6,
-        "provenance": "authored",
-        "reference": 172,
-        "source": 0,
-        "target": 6
-      },
-      {
-        "kind": "succession",
-        "navigation": 131,
-        "origin": 6,
-        "provenance": "implied",
-        "reference": 336,
-        "source": 15,
-        "target": 50
-      },
-      {
-        "kind": "containment",
-        "navigation": 133,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 173,
-        "source": 0,
-        "target": 7
-      },
-      {
-        "kind": "succession",
-        "navigation": 134,
-        "origin": 7,
-        "provenance": "implied",
-        "reference": 320,
-        "source": 50,
-        "target": 45
-      },
-      {
-        "kind": "containment",
-        "navigation": 136,
-        "origin": 8,
-        "provenance": "authored",
-        "reference": 174,
-        "source": 0,
-        "target": 8
-      },
-      {
-        "kind": "succession",
-        "navigation": 137,
-        "origin": 8,
-        "provenance": "implied",
-        "reference": 236,
-        "source": 45,
-        "target": 25
-      },
-      {
-        "kind": "containment",
-        "navigation": 48,
-        "origin": 9,
-        "provenance": "authored",
-        "reference": 175,
-        "source": 0,
-        "target": 9
-      },
-      {
-        "kind": "containment",
-        "navigation": 53,
-        "origin": 55,
-        "provenance": "authored",
-        "reference": 176,
-        "source": 0,
-        "target": 55
-      },
-      {
-        "kind": "containment",
-        "navigation": 8,
-        "origin": 64,
-        "provenance": "implied",
-        "reference": 207,
-        "source": 55,
-        "target": 64
-      },
-      {
-        "kind": "containment",
-        "navigation": 10,
-        "origin": 65,
-        "provenance": "authored",
-        "reference": 164,
-        "source": 64,
-        "target": 65
-      },
-      {
-        "kind": "containment",
-        "navigation": 10,
-        "origin": 66,
-        "provenance": "authored",
-        "reference": 166,
-        "source": 65,
-        "target": 66
-      },
-      {
-        "kind": "containment",
-        "navigation": 14,
-        "origin": 60,
-        "provenance": "implied",
-        "reference": 208,
-        "source": 55,
-        "target": 60
-      },
-      {
-        "kind": "containment",
-        "navigation": 13,
-        "origin": 61,
-        "provenance": "implied",
-        "reference": 209,
-        "source": 55,
-        "target": 61
-      },
-      {
-        "kind": "containment",
-        "navigation": 12,
-        "origin": 62,
-        "provenance": "implied",
-        "reference": 210,
-        "source": 55,
-        "target": 62
-      },
-      {
-        "kind": "containment",
-        "navigation": 11,
-        "origin": 63,
-        "provenance": "implied",
-        "reference": 211,
-        "source": 55,
-        "target": 63
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 67,
-        "provenance": "implied",
-        "reference": 212,
-        "source": 55,
-        "target": 67
-      },
-      {
-        "kind": "containment",
-        "navigation": 56,
-        "origin": 56,
-        "provenance": "authored",
-        "reference": 213,
-        "source": 55,
-        "target": 56
-      },
-      {
-        "kind": "succession",
-        "navigation": 56,
-        "origin": 56,
-        "provenance": "authored",
-        "reference": 222,
-        "source": 57,
-        "target": 56
-      },
-      {
-        "kind": "containment",
-        "navigation": 55,
-        "origin": 57,
-        "provenance": "authored",
-        "reference": 214,
-        "source": 55,
-        "target": 57
-      },
-      {
-        "kind": "containment",
-        "navigation": 57,
-        "origin": 58,
-        "provenance": "authored",
-        "reference": 215,
-        "source": 55,
-        "target": 58
-      },
-      {
-        "kind": "succession",
-        "navigation": 57,
-        "origin": 58,
-        "provenance": "authored",
-        "reference": 219,
-        "source": 56,
-        "target": 58
-      },
-      {
-        "kind": "containment",
-        "navigation": 58,
-        "origin": 59,
-        "provenance": "authored",
-        "reference": 216,
-        "source": 55,
-        "target": 59
-      },
-      {
-        "kind": "succession",
-        "navigation": 58,
-        "origin": 59,
-        "provenance": "authored",
-        "reference": 221,
-        "source": 58,
-        "target": 59
-      },
-      {
-        "kind": "containment",
-        "navigation": 49,
-        "origin": 68,
-        "provenance": "authored",
-        "reference": 177,
-        "source": 0,
-        "target": 68
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 73,
-        "provenance": "implied",
-        "reference": 339,
-        "source": 68,
-        "target": 73
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 74,
-        "provenance": "authored",
-        "reference": 377,
-        "source": 73,
-        "target": 74
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 75,
-        "provenance": "authored",
-        "reference": 379,
-        "source": 74,
-        "target": 75
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
-        "origin": 71,
-        "provenance": "implied",
-        "reference": 340,
-        "source": 68,
-        "target": 71
-      },
-      {
-        "kind": "containment",
-        "navigation": 6,
-        "origin": 72,
-        "provenance": "implied",
-        "reference": 341,
-        "source": 68,
-        "target": 72
-      },
-      {
-        "kind": "containment",
-        "navigation": 51,
-        "origin": 69,
-        "provenance": "authored",
-        "reference": 342,
-        "source": 68,
-        "target": 69
-      },
-      {
-        "kind": "containment",
-        "navigation": 52,
-        "origin": 70,
-        "provenance": "authored",
-        "reference": 343,
-        "source": 68,
-        "target": 70
-      },
-      {
-        "kind": "succession",
-        "navigation": 52,
-        "origin": 70,
-        "provenance": "authored",
-        "reference": 346,
-        "source": 69,
-        "target": 70
-      },
-      {
-        "kind": "containment",
-        "navigation": 95,
-        "origin": 10,
-        "provenance": "authored",
-        "reference": 178,
-        "source": 0,
-        "target": 10
-      },
-      {
-        "kind": "flow",
-        "navigation": 96,
-        "origin": 10,
-        "provenance": "implied",
-        "reference": 269,
-        "source": 78,
-        "target": 105
-      },
-      {
-        "kind": "containment",
-        "navigation": 97,
-        "origin": 11,
-        "provenance": "authored",
-        "reference": 323,
-        "source": 10,
-        "target": 11
-      },
-      {
-        "kind": "containment",
-        "navigation": 97,
-        "origin": 12,
-        "provenance": "authored",
-        "reference": 329,
-        "source": 11,
-        "target": 12
-      },
-      {
-        "kind": "containment",
-        "navigation": 98,
-        "origin": 13,
-        "provenance": "authored",
-        "reference": 324,
-        "source": 10,
-        "target": 13
-      },
-      {
-        "kind": "containment",
-        "navigation": 98,
-        "origin": 14,
-        "provenance": "authored",
-        "reference": 330,
-        "source": 13,
-        "target": 14
-      },
-      {
-        "kind": "containment",
-        "navigation": 99,
-        "origin": 15,
-        "provenance": "authored",
-        "reference": 179,
-        "source": 0,
-        "target": 15
-      },
-      {
-        "kind": "flow",
-        "navigation": 100,
-        "origin": 15,
-        "provenance": "implied",
-        "reference": 288,
-        "source": 104,
-        "target": 81
-      },
-      {
-        "kind": "containment",
-        "navigation": 101,
-        "origin": 16,
-        "provenance": "authored",
-        "reference": 331,
-        "source": 15,
-        "target": 16
-      },
-      {
-        "kind": "containment",
-        "navigation": 101,
-        "origin": 17,
-        "provenance": "authored",
-        "reference": 337,
-        "source": 16,
-        "target": 17
-      },
-      {
-        "kind": "containment",
-        "navigation": 102,
-        "origin": 18,
-        "provenance": "authored",
-        "reference": 332,
-        "source": 15,
-        "target": 18
-      },
-      {
-        "kind": "containment",
-        "navigation": 102,
-        "origin": 19,
-        "provenance": "authored",
-        "reference": 338,
-        "source": 18,
-        "target": 19
-      },
-      {
-        "kind": "containment",
-        "navigation": 79,
-        "origin": 20,
-        "provenance": "authored",
-        "reference": 180,
-        "source": 0,
-        "target": 20
-      },
-      {
-        "kind": "flow",
-        "navigation": 80,
-        "origin": 20,
-        "provenance": "implied",
-        "reference": 345,
-        "source": 69,
-        "target": 57
-      },
-      {
-        "kind": "containment",
-        "navigation": 81,
-        "origin": 21,
-        "provenance": "authored",
-        "reference": 347,
-        "source": 20,
-        "target": 21
-      },
-      {
-        "kind": "containment",
-        "navigation": 81,
-        "origin": 22,
-        "provenance": "authored",
-        "reference": 353,
-        "source": 21,
-        "target": 22
-      },
-      {
-        "kind": "containment",
-        "navigation": 82,
-        "origin": 23,
-        "provenance": "authored",
-        "reference": 348,
-        "source": 20,
-        "target": 23
-      },
-      {
-        "kind": "containment",
-        "navigation": 82,
-        "origin": 24,
-        "provenance": "authored",
-        "reference": 354,
-        "source": 23,
-        "target": 24
-      },
-      {
-        "kind": "containment",
-        "navigation": 111,
-        "origin": 25,
-        "provenance": "authored",
-        "reference": 181,
-        "source": 0,
-        "target": 25
-      },
-      {
-        "kind": "flow",
-        "navigation": 112,
-        "origin": 25,
-        "provenance": "implied",
-        "reference": 220,
-        "source": 59,
-        "target": 70
-      },
-      {
-        "kind": "containment",
-        "navigation": 113,
-        "origin": 26,
-        "provenance": "authored",
-        "reference": 239,
-        "source": 25,
-        "target": 26
-      },
-      {
-        "kind": "containment",
-        "navigation": 113,
-        "origin": 27,
-        "provenance": "authored",
-        "reference": 244,
-        "source": 26,
-        "target": 27
-      },
-      {
-        "kind": "containment",
-        "navigation": 114,
-        "origin": 28,
-        "provenance": "authored",
-        "reference": 240,
-        "source": 25,
-        "target": 28
-      },
-      {
-        "kind": "containment",
-        "navigation": 114,
-        "origin": 29,
-        "provenance": "authored",
-        "reference": 245,
-        "source": 28,
-        "target": 29
-      },
-      {
-        "kind": "containment",
-        "navigation": 83,
-        "origin": 30,
-        "provenance": "authored",
-        "reference": 182,
-        "source": 0,
-        "target": 30
-      },
-      {
-        "kind": "flow",
-        "navigation": 84,
-        "origin": 30,
-        "provenance": "implied",
-        "reference": 218,
-        "source": 56,
-        "target": 80
-      },
-      {
-        "kind": "containment",
-        "navigation": 85,
-        "origin": 31,
-        "provenance": "authored",
-        "reference": 271,
-        "source": 30,
-        "target": 31
-      },
-      {
-        "kind": "containment",
-        "navigation": 85,
-        "origin": 32,
-        "provenance": "authored",
-        "reference": 277,
-        "source": 31,
-        "target": 32
-      },
-      {
-        "kind": "containment",
-        "navigation": 86,
-        "origin": 33,
-        "provenance": "authored",
-        "reference": 272,
-        "source": 30,
-        "target": 33
-      },
-      {
-        "kind": "containment",
-        "navigation": 86,
-        "origin": 34,
-        "provenance": "authored",
-        "reference": 278,
-        "source": 33,
-        "target": 34
-      },
-      {
-        "kind": "containment",
-        "navigation": 91,
-        "origin": 35,
-        "provenance": "authored",
-        "reference": 183,
-        "source": 0,
-        "target": 35
-      },
-      {
-        "kind": "flow",
-        "navigation": 92,
-        "origin": 35,
-        "provenance": "implied",
-        "reference": 313,
-        "source": 94,
-        "target": 83
-      },
-      {
-        "kind": "containment",
-        "navigation": 93,
-        "origin": 36,
-        "provenance": "authored",
-        "reference": 297,
-        "source": 35,
-        "target": 36
-      },
-      {
-        "kind": "containment",
-        "navigation": 93,
-        "origin": 37,
-        "provenance": "authored",
-        "reference": 303,
-        "source": 36,
-        "target": 37
-      },
-      {
-        "kind": "containment",
-        "navigation": 94,
-        "origin": 38,
-        "provenance": "authored",
-        "reference": 298,
-        "source": 35,
-        "target": 38
-      },
-      {
-        "kind": "containment",
-        "navigation": 94,
-        "origin": 39,
-        "provenance": "authored",
-        "reference": 304,
-        "source": 38,
-        "target": 39
-      },
-      {
-        "kind": "containment",
-        "navigation": 59,
-        "origin": 76,
-        "provenance": "authored",
-        "reference": 184,
-        "source": 0,
-        "target": 76
-      },
-      {
-        "kind": "containment",
-        "navigation": 15,
-        "origin": 90,
-        "provenance": "implied",
-        "reference": 246,
-        "source": 76,
-        "target": 90
-      },
-      {
-        "kind": "containment",
-        "navigation": 17,
-        "origin": 91,
-        "provenance": "authored",
-        "reference": 355,
-        "source": 90,
-        "target": 91
-      },
-      {
-        "kind": "containment",
-        "navigation": 17,
-        "origin": 92,
-        "provenance": "authored",
-        "reference": 357,
-        "source": 91,
-        "target": 92
-      },
-      {
-        "kind": "containment",
-        "navigation": 18,
-        "origin": 89,
-        "provenance": "implied",
-        "reference": 247,
-        "source": 76,
-        "target": 89
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "origin": 85,
-        "provenance": "implied",
-        "reference": 248,
-        "source": 76,
-        "target": 85
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 84,
-        "provenance": "implied",
-        "reference": 249,
-        "source": 76,
-        "target": 84
-      },
-      {
-        "kind": "containment",
-        "navigation": 22,
-        "origin": 86,
-        "provenance": "implied",
-        "reference": 250,
-        "source": 76,
-        "target": 86
-      },
-      {
-        "kind": "containment",
-        "navigation": 20,
-        "origin": 87,
-        "provenance": "implied",
-        "reference": 251,
-        "source": 76,
-        "target": 87
-      },
-      {
-        "kind": "containment",
-        "navigation": 21,
-        "origin": 88,
-        "provenance": "implied",
-        "reference": 252,
-        "source": 76,
-        "target": 88
-      },
-      {
-        "kind": "containment",
-        "navigation": 67,
-        "origin": 77,
-        "provenance": "authored",
-        "reference": 253,
-        "source": 76,
-        "target": 77
-      },
-      {
-        "kind": "succession",
-        "navigation": 67,
-        "origin": 77,
-        "provenance": "authored",
-        "reference": 266,
-        "source": 82,
-        "target": 77
-      },
-      {
-        "kind": "containment",
-        "navigation": 64,
-        "origin": 78,
-        "provenance": "authored",
-        "reference": 254,
-        "source": 76,
-        "target": 78
-      },
-      {
-        "kind": "succession",
-        "navigation": 64,
-        "origin": 78,
-        "provenance": "authored",
-        "reference": 261,
-        "source": 83,
-        "target": 78
-      },
-      {
-        "kind": "containment",
-        "navigation": 62,
-        "origin": 79,
-        "provenance": "authored",
-        "reference": 255,
-        "source": 76,
-        "target": 79
-      },
-      {
-        "kind": "succession",
-        "navigation": 62,
-        "origin": 79,
-        "provenance": "authored",
-        "reference": 264,
-        "source": 80,
-        "target": 79
-      },
-      {
-        "kind": "containment",
-        "navigation": 61,
-        "origin": 80,
-        "provenance": "authored",
-        "reference": 256,
-        "source": 76,
-        "target": 80
-      },
-      {
-        "kind": "containment",
-        "navigation": 65,
-        "origin": 81,
-        "provenance": "authored",
-        "reference": 257,
-        "source": 76,
-        "target": 81
-      },
-      {
-        "kind": "succession",
-        "navigation": 65,
-        "origin": 81,
-        "provenance": "authored",
-        "reference": 270,
-        "source": 78,
-        "target": 81
-      },
-      {
-        "kind": "containment",
-        "navigation": 66,
-        "origin": 82,
-        "provenance": "authored",
-        "reference": 258,
-        "source": 76,
-        "target": 82
-      },
-      {
-        "kind": "succession",
-        "navigation": 66,
-        "origin": 82,
-        "provenance": "authored",
-        "reference": 268,
-        "source": 81,
-        "target": 82
-      },
-      {
-        "kind": "containment",
-        "navigation": 63,
-        "origin": 83,
-        "provenance": "authored",
-        "reference": 259,
-        "source": 76,
-        "target": 83
-      },
-      {
-        "kind": "succession",
-        "navigation": 63,
-        "origin": 83,
-        "provenance": "authored",
-        "reference": 263,
-        "source": 79,
-        "target": 83
-      },
-      {
-        "kind": "containment",
-        "navigation": 68,
-        "origin": 93,
-        "provenance": "authored",
-        "reference": 185,
-        "source": 0,
-        "target": 93
-      },
-      {
-        "kind": "containment",
-        "navigation": 23,
-        "origin": 100,
-        "provenance": "implied",
-        "reference": 305,
-        "source": 93,
-        "target": 100
-      },
-      {
-        "kind": "containment",
-        "navigation": 25,
-        "origin": 101,
-        "provenance": "authored",
-        "reference": 370,
-        "source": 100,
-        "target": 101
-      },
-      {
-        "kind": "containment",
-        "navigation": 25,
-        "origin": 102,
-        "provenance": "authored",
-        "reference": 372,
-        "source": 101,
-        "target": 102
-      },
-      {
-        "kind": "containment",
-        "navigation": 26,
-        "origin": 99,
-        "provenance": "implied",
-        "reference": 306,
-        "source": 93,
-        "target": 99
-      },
-      {
-        "kind": "containment",
-        "navigation": 28,
-        "origin": 97,
-        "provenance": "implied",
-        "reference": 307,
-        "source": 93,
-        "target": 97
-      },
-      {
-        "kind": "containment",
-        "navigation": 27,
-        "origin": 98,
-        "provenance": "implied",
-        "reference": 308,
-        "source": 93,
-        "target": 98
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 96,
-        "provenance": "implied",
-        "reference": 309,
-        "source": 93,
-        "target": 96
-      },
-      {
-        "kind": "containment",
-        "navigation": 71,
-        "origin": 94,
-        "provenance": "authored",
-        "reference": 310,
-        "source": 93,
-        "target": 94
-      },
-      {
-        "kind": "succession",
-        "navigation": 71,
-        "origin": 94,
-        "provenance": "authored",
-        "reference": 314,
-        "source": 95,
-        "target": 94
-      },
-      {
-        "kind": "containment",
-        "navigation": 70,
-        "origin": 95,
-        "provenance": "authored",
-        "reference": 311,
-        "source": 93,
-        "target": 95
-      },
-      {
-        "kind": "containment",
-        "navigation": 87,
-        "origin": 40,
-        "provenance": "authored",
-        "reference": 186,
-        "source": 0,
-        "target": 40
-      },
-      {
-        "kind": "flow",
-        "navigation": 88,
-        "origin": 40,
-        "provenance": "implied",
-        "reference": 262,
-        "source": 79,
-        "target": 95
-      },
-      {
-        "kind": "containment",
-        "navigation": 89,
-        "origin": 41,
-        "provenance": "authored",
-        "reference": 223,
-        "source": 40,
-        "target": 41
-      },
-      {
-        "kind": "containment",
-        "navigation": 89,
-        "origin": 42,
-        "provenance": "authored",
-        "reference": 229,
-        "source": 41,
-        "target": 42
-      },
-      {
-        "kind": "containment",
-        "navigation": 90,
-        "origin": 43,
-        "provenance": "authored",
-        "reference": 224,
-        "source": 40,
-        "target": 43
-      },
-      {
-        "kind": "containment",
-        "navigation": 90,
-        "origin": 44,
-        "provenance": "authored",
-        "reference": 230,
-        "source": 43,
-        "target": 44
-      },
-      {
-        "kind": "containment",
-        "navigation": 107,
-        "origin": 45,
-        "provenance": "authored",
-        "reference": 187,
-        "source": 0,
-        "target": 45
-      },
-      {
-        "kind": "flow",
-        "navigation": 108,
-        "origin": 45,
-        "provenance": "implied",
-        "reference": 267,
-        "source": 77,
-        "target": 58
-      },
-      {
-        "kind": "containment",
-        "navigation": 109,
-        "origin": 46,
-        "provenance": "authored",
-        "reference": 231,
-        "source": 45,
-        "target": 46
-      },
-      {
-        "kind": "containment",
-        "navigation": 109,
-        "origin": 47,
-        "provenance": "authored",
-        "reference": 237,
-        "source": 46,
-        "target": 47
-      },
-      {
-        "kind": "containment",
-        "navigation": 110,
-        "origin": 48,
-        "provenance": "authored",
-        "reference": 232,
-        "source": 45,
-        "target": 48
-      },
-      {
-        "kind": "containment",
-        "navigation": 110,
-        "origin": 49,
-        "provenance": "authored",
-        "reference": 238,
-        "source": 48,
-        "target": 49
-      },
-      {
-        "kind": "containment",
-        "navigation": 72,
-        "origin": 103,
-        "provenance": "authored",
-        "reference": 188,
-        "source": 0,
-        "target": 103
-      },
-      {
-        "kind": "containment",
-        "navigation": 29,
-        "origin": 111,
-        "provenance": "implied",
-        "reference": 279,
-        "source": 103,
-        "target": 111
-      },
-      {
-        "kind": "containment",
-        "navigation": 31,
-        "origin": 112,
-        "provenance": "authored",
-        "reference": 358,
-        "source": 111,
-        "target": 112
-      },
-      {
-        "kind": "containment",
-        "navigation": 31,
-        "origin": 113,
-        "provenance": "authored",
-        "reference": 360,
-        "source": 112,
-        "target": 113
-      },
-      {
-        "kind": "containment",
-        "navigation": 32,
-        "origin": 110,
-        "provenance": "implied",
-        "reference": 280,
-        "source": 103,
-        "target": 110
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 106,
-        "provenance": "implied",
-        "reference": 281,
-        "source": 103,
-        "target": 106
-      },
-      {
-        "kind": "containment",
-        "navigation": 34,
-        "origin": 107,
-        "provenance": "implied",
-        "reference": 282,
-        "source": 103,
-        "target": 107
-      },
-      {
-        "kind": "containment",
-        "navigation": 33,
-        "origin": 108,
-        "provenance": "implied",
-        "reference": 283,
-        "source": 103,
-        "target": 108
-      },
-      {
-        "kind": "containment",
-        "navigation": 35,
-        "origin": 109,
-        "provenance": "implied",
-        "reference": 284,
-        "source": 103,
-        "target": 109
-      },
-      {
-        "kind": "containment",
-        "navigation": 75,
-        "origin": 104,
-        "provenance": "authored",
-        "reference": 285,
-        "source": 103,
-        "target": 104
-      },
-      {
-        "kind": "succession",
-        "navigation": 75,
-        "origin": 104,
-        "provenance": "authored",
-        "reference": 289,
-        "source": 105,
-        "target": 104
-      },
-      {
-        "kind": "containment",
-        "navigation": 74,
-        "origin": 105,
-        "provenance": "authored",
-        "reference": 286,
-        "source": 103,
-        "target": 105
-      },
-      {
-        "kind": "containment",
-        "navigation": 76,
-        "origin": 114,
-        "provenance": "authored",
-        "reference": 189,
-        "source": 0,
-        "target": 114
-      },
-      {
-        "kind": "containment",
-        "navigation": 36,
-        "origin": 118,
-        "provenance": "implied",
-        "reference": 290,
-        "source": 114,
-        "target": 118
-      },
-      {
-        "kind": "containment",
-        "navigation": 38,
-        "origin": 119,
-        "provenance": "authored",
-        "reference": 361,
-        "source": 118,
-        "target": 119
-      },
-      {
-        "kind": "containment",
-        "navigation": 38,
-        "origin": 120,
-        "provenance": "authored",
-        "reference": 367,
-        "source": 119,
-        "target": 120
-      },
-      {
-        "kind": "containment",
-        "navigation": 39,
-        "origin": 121,
-        "provenance": "implied",
-        "reference": 291,
-        "source": 114,
-        "target": 121
-      },
-      {
-        "kind": "containment",
-        "navigation": 41,
-        "origin": 122,
-        "provenance": "authored",
-        "reference": 362,
-        "source": 121,
-        "target": 122
-      },
-      {
-        "kind": "containment",
-        "navigation": 41,
-        "origin": 123,
-        "provenance": "authored",
-        "reference": 368,
-        "source": 122,
-        "target": 123
-      },
-      {
-        "kind": "containment",
-        "navigation": 42,
-        "origin": 124,
-        "provenance": "implied",
-        "reference": 292,
-        "source": 114,
-        "target": 124
-      },
-      {
-        "kind": "containment",
-        "navigation": 44,
-        "origin": 125,
-        "provenance": "authored",
-        "reference": 363,
-        "source": 124,
-        "target": 125
-      },
-      {
-        "kind": "containment",
-        "navigation": 44,
-        "origin": 126,
-        "provenance": "authored",
-        "reference": 369,
-        "source": 125,
-        "target": 126
-      },
-      {
-        "kind": "containment",
-        "navigation": 46,
-        "origin": 116,
-        "provenance": "implied",
-        "reference": 293,
-        "source": 114,
-        "target": 116
-      },
-      {
-        "kind": "containment",
-        "navigation": 45,
-        "origin": 117,
-        "provenance": "implied",
-        "reference": 294,
-        "source": 114,
-        "target": 117
-      },
-      {
-        "kind": "containment",
-        "navigation": 78,
-        "origin": 115,
-        "provenance": "authored",
-        "reference": 295,
-        "source": 114,
-        "target": 115
-      },
-      {
-        "kind": "containment",
-        "navigation": 103,
-        "origin": 50,
-        "provenance": "authored",
-        "reference": 190,
-        "source": 0,
-        "target": 50
-      },
-      {
-        "kind": "flow",
-        "navigation": 104,
-        "origin": 50,
-        "provenance": "implied",
-        "reference": 265,
-        "source": 82,
-        "target": 115
-      },
-      {
-        "kind": "containment",
-        "navigation": 105,
-        "origin": 51,
-        "provenance": "authored",
-        "reference": 315,
-        "source": 50,
-        "target": 51
-      },
-      {
-        "kind": "containment",
-        "navigation": 105,
-        "origin": 52,
-        "provenance": "authored",
-        "reference": 321,
-        "source": 51,
-        "target": 52
-      },
-      {
-        "kind": "containment",
-        "navigation": 106,
-        "origin": 53,
-        "provenance": "authored",
-        "reference": 316,
-        "source": 50,
-        "target": 53
-      },
-      {
-        "kind": "containment",
-        "navigation": 106,
-        "origin": 54,
-        "provenance": "authored",
-        "reference": 322,
-        "source": 53,
-        "target": 54
-      }
-    ],
+    "kind": "sequence-view",
     "exposedRoots": [
       0
     ],
-    "kind": "sequence-view",
-    "metadata": {
-      "messages": [
-        10,
-        15,
-        20,
-        25,
-        30,
-        35,
-        40,
-        45,
-        50
-      ],
-      "participants": [
-        55,
-        68,
-        76,
-        93,
-        103,
-        114
-      ]
-    },
     "nodes": [
       {
+        "reference": 8,
+        "metaclass": "OccurrenceDefinition",
+        "notationRole": "definition",
+        "name": "CheckoutFlow",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 47,
         "compartments": [
           {
             "kind": "parts",
+            "provenance": "direct",
             "members": [
               55,
               68,
@@ -16257,11 +14849,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
               93,
               103,
               114
-            ],
-            "provenance": "direct"
+            ]
           },
           {
             "kind": "connections",
+            "provenance": "direct",
             "members": [
               10,
               15,
@@ -16272,1394 +14864,1400 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
               40,
               45,
               50
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceDefinition",
-        "name": "CheckoutFlow",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 8,
-        "source": 47,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 99,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 115,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 100,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 118,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 101,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 121,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 102,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 124,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 103,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 127,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 104,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 130,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 105,
-        "source": 133,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 0,
+        "source": 133,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 106,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 136,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Documentation",
-        "name": null,
-        "notationRole": "annotation",
-        "owner": 0,
         "reference": 98,
+        "metaclass": "Documentation",
+        "notationRole": "annotation",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 48,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "reserveStock",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 43,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "reserveStock",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 95,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 10,
         "reference": 131,
-        "source": 97,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 11,
-        "reference": 133,
-        "source": 97,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 10,
+        "source": 97,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 133,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 11,
+        "source": 97,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 132,
-        "source": 98,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 10,
+        "source": 98,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 13,
         "reference": 134,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 13,
         "source": 98,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "stockReserved",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 45,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "stockReserved",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 99,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 15,
         "reference": 135,
-        "source": 101,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 16,
-        "reference": 137,
-        "source": 101,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 15,
+        "source": 101,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 137,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 16,
+        "source": 101,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 136,
-        "source": 102,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 15,
+        "source": 102,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 18,
         "reference": 138,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 18,
         "source": 102,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "submitCheckout",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 50,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "submitCheckout",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 79,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 20,
         "reference": 139,
-        "source": 81,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 21,
-        "reference": 141,
-        "source": 81,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 20,
+        "source": 81,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 141,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 21,
+        "source": 81,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 140,
-        "source": 82,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 20,
+        "source": 82,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 23,
         "reference": 142,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 23,
         "source": 82,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "checkoutOutcome",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 19,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "checkoutOutcome",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 111,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 25,
         "reference": 115,
-        "source": 113,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 26,
-        "reference": 117,
-        "source": 113,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 25,
+        "source": 113,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 117,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 26,
+        "source": 113,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 116,
-        "source": 114,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 25,
+        "source": 114,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 28,
         "reference": 118,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 28,
         "source": 114,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "forwardCheckout",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 29,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "forwardCheckout",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 83,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 30,
         "reference": 119,
-        "source": 85,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 31,
-        "reference": 121,
-        "source": 85,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 30,
+        "source": 85,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 121,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 31,
+        "source": 85,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 120,
-        "source": 86,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 30,
+        "source": 86,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 33,
         "reference": 122,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 33,
         "source": 86,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "paymentApproved",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 36,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "paymentApproved",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 91,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 35,
         "reference": 123,
-        "source": 93,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 36,
-        "reference": 125,
-        "source": 93,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 35,
+        "source": 93,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 125,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 36,
+        "source": 93,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 124,
-        "source": 94,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 35,
+        "source": 94,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 38,
         "reference": 126,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 38,
         "source": 94,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "authorizePayment",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 15,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "authorizePayment",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 87,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 40,
         "reference": 107,
-        "source": 89,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 41,
-        "reference": 109,
-        "source": 89,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 40,
+        "source": 89,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 109,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 41,
+        "source": 89,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 108,
-        "source": 90,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 40,
+        "source": 90,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 43,
         "reference": 110,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 43,
         "source": 90,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "checkoutAccepted",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 17,
-        "source": 107,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 45,
-        "reference": 111,
-        "source": 109,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 46,
-        "reference": 113,
-        "source": 109,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 45,
-        "reference": 112,
-        "source": 110,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 48,
-        "reference": 114,
-        "source": 110,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowUsage",
-        "name": "publishOrderCreated",
         "notationRole": "usage",
+        "name": "checkoutAccepted",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 0,
+        "source": 107,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 111,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 45,
+        "source": 109,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 113,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 46,
+        "source": 109,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 112,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 45,
+        "source": 110,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 114,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 48,
+        "source": 110,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 41,
+        "metaclass": "FlowUsage",
+        "notationRole": "usage",
+        "name": "publishOrderCreated",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
         "source": 103,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 50,
         "reference": 127,
-        "source": 105,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 51,
-        "reference": 129,
-        "source": 105,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "FlowEnd",
-        "name": null,
         "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
         "owner": 50,
-        "reference": 128,
-        "source": 106,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        "source": 105,
         "compartments": [],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 53,
-        "reference": 130,
-        "source": 106,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
+        "reference": 129,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 51,
+        "source": 105,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 128,
+        "metaclass": "FlowEnd",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 50,
+        "source": 106,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 130,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 53,
+        "source": 106,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 10,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "apiGateway",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 1,
+              "label": "ApiGateway"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 53,
         "compartments": [
           {
             "kind": "attributes",
+            "provenance": "inherited",
             "members": [
               64,
               67
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "ports",
+            "provenance": "inherited",
             "members": [
               60,
               61,
               62,
               63
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               56,
               57,
               58,
               59
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "apiGateway",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 10,
-        "source": 53,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "ApiGateway",
-              "reference": 1
-            }
-          ]
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "forwardSent",
-        "notationRole": "usage",
-        "owner": 55,
         "reference": 11,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "forwardSent",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 55,
         "source": 56,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "submitReceived",
-        "notationRole": "usage",
-        "owner": 55,
         "reference": 14,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "submitReceived",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 55,
         "source": 55,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "outcomeReceived",
-        "notationRole": "usage",
-        "owner": 55,
         "reference": 13,
-        "source": 57,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "OccurrenceUsage",
-        "name": "outcomeForwarded",
         "notationRole": "usage",
+        "name": "outcomeReceived",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 55,
+        "source": 57,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 12,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "outcomeForwarded",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 55,
         "source": 58,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "catalogApiOut",
-        "notationRole": "usage",
-        "owner": 55,
         "reference": 4,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "catalogApiOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 55,
         "source": 14,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "checkoutApiOut",
-        "notationRole": "usage",
-        "owner": 55,
         "reference": 5,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "checkoutApiOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 55,
         "source": 13,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "publicCatalogIn",
-        "notationRole": "usage",
-        "owner": 55,
         "reference": 6,
-        "source": 12,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "publicCheckoutIn",
         "notationRole": "usage",
+        "name": "publicCatalogIn",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 55,
+        "source": 12,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 7,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "publicCheckoutIn",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 55,
         "source": 11,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "serviceName",
-        "notationRole": "usage",
-        "owner": 55,
         "reference": 95,
-        "source": 8,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 64,
-        "reference": 96,
-        "source": 10,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 65,
-        "reference": 97,
-        "source": 10,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": "moduleName",
         "notationRole": "usage",
+        "name": "serviceName",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 55,
-        "reference": 87,
-        "source": 1,
+        "source": 8,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 96,
+        "metaclass": "LiteralString",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 64,
+        "source": 10,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 97,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 65,
+        "source": 10,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 87,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "moduleName",
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "String",
-              "reference": 94
+              "reference": 94,
+              "label": "String"
             }
           ]
-        }
+        },
+        "owner": 55,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
+        "reference": 47,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "storefront",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 89,
+              "label": "Storefront"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 49,
         "compartments": [
           {
             "kind": "attributes",
+            "provenance": "inherited",
             "members": [
               73
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "ports",
+            "provenance": "inherited",
             "members": [
               71,
               72
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               69,
               70
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "storefront",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 47,
-        "source": 49,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 49,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "submitSent",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 68,
+        "source": 51,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 48,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "outcomeReceived",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 68,
+        "source": 52,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 92,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "catalogApiOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 68,
+        "source": 7,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 93,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "checkoutApiOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 68,
+        "source": 6,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 161,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "moduleName",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 68,
+        "source": 3,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 162,
+        "metaclass": "LiteralString",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 73,
+        "source": 5,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 163,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 74,
+        "source": 5,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 21,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "checkoutService",
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "Storefront",
-              "reference": 89
+              "reference": 54,
+              "label": "CheckoutService"
             }
           ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "submitSent",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 49,
-        "source": 51,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "outcomeReceived",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 48,
-        "source": 52,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "catalogApiOut",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 92,
-        "source": 7,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "checkoutApiOut",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 93,
-        "source": 6,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "moduleName",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 161,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 73,
-        "reference": 162,
-        "source": 5,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 74,
-        "reference": 163,
-        "source": 5,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        },
+        "owner": 0,
+        "source": 59,
         "compartments": [
           {
             "kind": "attributes",
+            "provenance": "inherited",
             "members": [
               84,
               90
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "ports",
+            "provenance": "inherited",
             "members": [
               85,
               86,
               87,
               88,
               89
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               77,
               78,
@@ -17668,1674 +16266,3076 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
               81,
               82,
               83
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "checkoutService",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 21,
-        "source": 59,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "CheckoutService",
-              "reference": 54
-            }
-          ]
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "outcomeSent",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 26,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "outcomeSent",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
         "source": 67,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "reserveSent",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 28,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "reserveSent",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
         "source": 64,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "authorizeSent",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 23,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "authorizeSent",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
         "source": 62,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "forwardReceived",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 24,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "forwardReceived",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
         "source": 61,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "reserveReturned",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 27,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "reserveReturned",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
         "source": 65,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "orderCreatedSent",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 25,
-        "source": 66,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "OccurrenceUsage",
-        "name": "authorizeReturned",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 22,
-        "source": 63,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "name": "orderCreatedSent",
         "typing": {
           "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "moduleName",
-        "notationRole": "usage",
+        },
         "owner": 76,
-        "reference": 87,
-        "source": 1,
+        "source": 66,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 22,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "authorizeReturned",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
+        "source": 63,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 87,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "moduleName",
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "String",
-              "reference": 94
+              "reference": 94,
+              "label": "String"
             }
           ]
-        }
+        },
+        "owner": 76,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "ordersDbOut",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 60,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "ordersDbOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
         "source": 19,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "orderEventsOut",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 59,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "orderEventsOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
         "source": 22,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "paymentsApiOut",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 61,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "paymentsApiOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
         "source": 20,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "inventoryApiOut",
-        "notationRole": "usage",
-        "owner": 76,
         "reference": 58,
-        "source": 21,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "apiIn",
         "notationRole": "usage",
+        "name": "inventoryApiOut",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 76,
+        "source": 21,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 57,
-        "source": 18,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "serviceName",
+        "metaclass": "PortUsage",
         "notationRole": "usage",
+        "name": "apiIn",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 76,
-        "reference": 143,
-        "source": 15,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        "source": 18,
         "compartments": [],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 90,
-        "reference": 144,
-        "source": 17,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
         "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 91,
-        "reference": 145,
-        "source": 17,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
+        "reference": 143,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "serviceName",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 76,
+        "source": 15,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 144,
+        "metaclass": "LiteralString",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 90,
+        "source": 17,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 145,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 91,
+        "source": 17,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 38,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "paymentsService",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 81,
+              "label": "PaymentsService"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 68,
         "compartments": [
           {
             "kind": "attributes",
+            "provenance": "inherited",
             "members": [
               96,
               100
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "ports",
+            "provenance": "inherited",
             "members": [
               97,
               98,
               99
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               94,
               95
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "paymentsService",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 38,
-        "source": 68,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "PaymentsService",
-              "reference": 81
-            }
-          ]
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "authorizeAnswered",
-        "notationRole": "usage",
-        "owner": 93,
         "reference": 39,
-        "source": 71,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "OccurrenceUsage",
-        "name": "authorizeReceived",
         "notationRole": "usage",
-        "owner": 93,
-        "reference": 40,
-        "source": 70,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "name": "authorizeAnswered",
         "typing": {
           "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "moduleName",
-        "notationRole": "usage",
+        },
         "owner": 93,
-        "reference": 87,
-        "source": 1,
+        "source": 71,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 40,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "authorizeReceived",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 93,
+        "source": 70,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 87,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "moduleName",
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "String",
-              "reference": 94
+              "reference": 94,
+              "label": "String"
             }
           ]
-        }
+        },
+        "owner": 93,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "providerOut",
-        "notationRole": "usage",
-        "owner": 93,
         "reference": 86,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "providerOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 93,
         "source": 28,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "paymentsDbOut",
-        "notationRole": "usage",
-        "owner": 93,
         "reference": 85,
-        "source": 27,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "apiIn",
         "notationRole": "usage",
+        "name": "paymentsDbOut",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 93,
+        "source": 27,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 84,
-        "source": 26,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "serviceName",
+        "metaclass": "PortUsage",
         "notationRole": "usage",
+        "name": "apiIn",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 93,
-        "reference": 158,
-        "source": 23,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        "source": 26,
         "compartments": [],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 100,
-        "reference": 159,
-        "source": 25,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
         "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 101,
-        "reference": 160,
-        "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
+        "reference": 158,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "serviceName",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 93,
+        "source": 23,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 159,
+        "metaclass": "LiteralString",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 100,
+        "source": 25,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 160,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 101,
+        "source": 25,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 31,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "inventoryService",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 63,
+              "label": "InventoryService"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 72,
         "compartments": [
           {
             "kind": "attributes",
+            "provenance": "inherited",
             "members": [
               106,
               111
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "ports",
+            "provenance": "inherited",
             "members": [
               107,
               108,
               109,
               110
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               104,
               105
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "inventoryService",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 31,
-        "source": 72,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "InventoryService",
-              "reference": 63
-            }
-          ]
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "reserveAnswered",
-        "notationRole": "usage",
-        "owner": 103,
         "reference": 32,
-        "source": 75,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "OccurrenceUsage",
-        "name": "reserveReceived",
         "notationRole": "usage",
-        "owner": 103,
-        "reference": 33,
-        "source": 74,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "name": "reserveAnswered",
         "typing": {
           "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "moduleName",
-        "notationRole": "usage",
+        },
         "owner": 103,
-        "reference": 87,
-        "source": 1,
+        "source": 75,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 33,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "reserveReceived",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 103,
+        "source": 74,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 87,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "moduleName",
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "String",
-              "reference": 94
+              "reference": 94,
+              "label": "String"
             }
           ]
-        }
+        },
+        "owner": 103,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "orderEventsIn",
-        "notationRole": "usage",
-        "owner": 103,
         "reference": 68,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "orderEventsIn",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 103,
         "source": 34,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "inventoryDbOut",
-        "notationRole": "usage",
-        "owner": 103,
         "reference": 67,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "inventoryDbOut",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 103,
         "source": 33,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "reservationEventsOut",
-        "notationRole": "usage",
-        "owner": 103,
         "reference": 69,
-        "source": 35,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "apiIn",
         "notationRole": "usage",
+        "name": "reservationEventsOut",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 103,
+        "source": 35,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 66,
-        "source": 32,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "serviceName",
+        "metaclass": "PortUsage",
         "notationRole": "usage",
+        "name": "apiIn",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 103,
-        "reference": 146,
-        "source": 29,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        "source": 32,
         "compartments": [],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 111,
-        "reference": 147,
-        "source": 31,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
         "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 112,
-        "reference": 148,
-        "source": 31,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
+        "reference": 146,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "serviceName",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 103,
+        "source": 29,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 147,
+        "metaclass": "LiteralString",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 111,
+        "source": 31,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 148,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 112,
+        "source": 31,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 34,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "ordersEventsTopic",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 74,
+              "label": "OrdersEventsTopic"
+            }
+          ]
+        },
+        "owner": 0,
+        "source": 76,
         "compartments": [
           {
             "kind": "attributes",
+            "provenance": "inherited",
             "members": [
               118,
               121,
               124
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "ports",
+            "provenance": "inherited",
             "members": [
               116,
               117
-            ],
-            "provenance": "inherited"
+            ]
           },
           {
             "kind": "occurrences",
+            "provenance": "direct",
             "members": [
               115
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "ordersEventsTopic",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 34,
-        "source": 76,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "OrdersEventsTopic",
-              "reference": 74
-            }
-          ]
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "orderCreatedReceived",
-        "notationRole": "usage",
-        "owner": 114,
         "reference": 35,
+        "metaclass": "OccurrenceUsage",
+        "notationRole": "usage",
+        "name": "orderCreatedReceived",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 114,
         "source": 78,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "topicEgress",
-        "notationRole": "usage",
-        "owner": 114,
         "reference": 77,
-        "source": 46,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "topicIngress",
         "notationRole": "usage",
+        "name": "topicEgress",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 114,
+        "source": 46,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
         "reference": 78,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "topicIngress",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 114,
         "source": 45,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "channelName",
-        "notationRole": "usage",
-        "owner": 114,
         "reference": 149,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "channelName",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 114,
         "source": 36,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 118,
         "reference": 152,
-        "source": 38,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "LiteralString",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 118,
+        "source": 38,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 119,
         "reference": 155,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 119,
         "source": 38,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "retention",
-        "notationRole": "usage",
-        "owner": 114,
         "reference": 150,
-        "source": 39,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 121,
-        "reference": 153,
-        "source": 41,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 122,
-        "reference": 156,
-        "source": 41,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": "partitions",
         "notationRole": "usage",
+        "name": "retention",
+        "typing": {
+          "status": "absent"
+        },
         "owner": 114,
-        "reference": 151,
-        "source": 42,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
+        "source": 39,
         "compartments": [],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 124,
-        "reference": 154,
-        "source": 44,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
+        "reference": 153,
+        "metaclass": "LiteralString",
         "notationRole": "unsupported",
-        "owner": 125,
-        "reference": 157,
-        "source": 44,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 121,
+        "source": 41,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 156,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 122,
+        "source": 41,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 151,
+        "metaclass": "AttributeUsage",
+        "notationRole": "usage",
+        "name": "partitions",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 114,
+        "source": 42,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 154,
+        "metaclass": "LiteralString",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 124,
+        "source": 44,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 157,
+        "metaclass": "Feature",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 125,
+        "source": 44,
+        "compartments": [],
+        "direction": "out",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       }
     ],
     "relationships": [
       {
-        "kind": "succession",
-        "navigation": 116,
-        "provenance": "authored",
         "reference": 191,
         "source": 1,
+        "kind": "succession",
         "target": {
-          "node": 20,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 20
+        },
+        "provenance": "authored",
+        "navigation": 116
       },
       {
-        "kind": "succession",
-        "navigation": 117,
-        "provenance": "authored",
         "reference": 192,
         "source": 1,
+        "kind": "succession",
         "target": {
-          "node": 30,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 30
+        },
+        "provenance": "authored",
+        "navigation": 117
       },
       {
-        "kind": "succession",
-        "navigation": 119,
-        "provenance": "authored",
         "reference": 193,
         "source": 2,
+        "kind": "succession",
         "target": {
-          "node": 30,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 30
+        },
+        "provenance": "authored",
+        "navigation": 119
       },
       {
-        "kind": "succession",
-        "navigation": 120,
-        "provenance": "authored",
         "reference": 194,
         "source": 2,
+        "kind": "succession",
         "target": {
-          "node": 40,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 40
+        },
+        "provenance": "authored",
+        "navigation": 120
       },
       {
-        "kind": "succession",
-        "navigation": 122,
-        "provenance": "authored",
         "reference": 195,
         "source": 3,
+        "kind": "succession",
         "target": {
-          "node": 40,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 40
+        },
+        "provenance": "authored",
+        "navigation": 122
       },
       {
-        "kind": "succession",
-        "navigation": 123,
-        "provenance": "authored",
         "reference": 196,
         "source": 3,
+        "kind": "succession",
         "target": {
-          "node": 35,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 35
+        },
+        "provenance": "authored",
+        "navigation": 123
       },
       {
-        "kind": "succession",
-        "navigation": 125,
-        "provenance": "authored",
         "reference": 197,
         "source": 4,
+        "kind": "succession",
         "target": {
-          "node": 35,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 35
+        },
+        "provenance": "authored",
+        "navigation": 125
       },
       {
-        "kind": "succession",
-        "navigation": 126,
-        "provenance": "authored",
         "reference": 198,
         "source": 4,
+        "kind": "succession",
         "target": {
-          "node": 10,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 10
+        },
+        "provenance": "authored",
+        "navigation": 126
       },
       {
-        "kind": "succession",
-        "navigation": 128,
-        "provenance": "authored",
         "reference": 199,
         "source": 5,
+        "kind": "succession",
         "target": {
-          "node": 10,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 10
+        },
+        "provenance": "authored",
+        "navigation": 128
       },
       {
-        "kind": "succession",
-        "navigation": 129,
-        "provenance": "authored",
         "reference": 200,
         "source": 5,
+        "kind": "succession",
         "target": {
-          "node": 15,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 15
+        },
+        "provenance": "authored",
+        "navigation": 129
       },
       {
-        "kind": "succession",
-        "navigation": 131,
-        "provenance": "authored",
         "reference": 201,
         "source": 6,
+        "kind": "succession",
         "target": {
-          "node": 15,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 15
+        },
+        "provenance": "authored",
+        "navigation": 131
       },
       {
-        "kind": "succession",
-        "navigation": 132,
-        "provenance": "authored",
         "reference": 202,
         "source": 6,
+        "kind": "succession",
         "target": {
-          "node": 50,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 50
+        },
+        "provenance": "authored",
+        "navigation": 132
       },
       {
-        "kind": "succession",
-        "navigation": 134,
-        "provenance": "authored",
         "reference": 203,
         "source": 7,
+        "kind": "succession",
         "target": {
-          "node": 50,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 50
+        },
+        "provenance": "authored",
+        "navigation": 134
       },
       {
-        "kind": "succession",
-        "navigation": 135,
-        "provenance": "authored",
         "reference": 204,
         "source": 7,
+        "kind": "succession",
         "target": {
-          "node": 45,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 45
+        },
+        "provenance": "authored",
+        "navigation": 135
       },
       {
-        "kind": "succession",
-        "navigation": 137,
-        "provenance": "authored",
         "reference": 205,
         "source": 8,
+        "kind": "succession",
         "target": {
-          "node": 45,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 45
+        },
+        "provenance": "authored",
+        "navigation": 137
       },
       {
-        "kind": "succession",
-        "navigation": 138,
-        "provenance": "authored",
         "reference": 206,
         "source": 8,
+        "kind": "succession",
         "target": {
-          "node": 25,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 25
+        },
+        "provenance": "authored",
+        "navigation": 138
       },
       {
-        "kind": "typing",
-        "navigation": 54,
-        "provenance": "authored",
         "reference": 217,
         "source": 55,
+        "kind": "typing",
         "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 1
+        },
+        "provenance": "authored",
+        "navigation": 54
       },
       {
-        "kind": "redefinition",
-        "navigation": 9,
-        "provenance": "authored",
         "reference": 165,
         "source": 64,
+        "kind": "redefinition",
         "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 62
+        },
+        "provenance": "authored",
+        "navigation": 9
       },
       {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
         "reference": 373,
         "source": 67,
+        "kind": "typing",
         "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 94
+        },
+        "provenance": "authored",
+        "navigation": 2
       },
       {
-        "kind": "typing",
-        "navigation": 50,
-        "provenance": "authored",
         "reference": 344,
         "source": 68,
+        "kind": "typing",
         "target": {
-          "reference": 89,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 89
+        },
+        "provenance": "authored",
+        "navigation": 50
       },
       {
-        "kind": "redefinition",
-        "navigation": 4,
-        "provenance": "authored",
         "reference": 378,
         "source": 73,
+        "kind": "redefinition",
         "target": {
+          "status": "ambiguous",
           "candidates": [
             67,
             84,
             96,
             106
-          ],
-          "status": "ambiguous"
-        }
+          ]
+        },
+        "provenance": "authored",
+        "navigation": 4
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 96,
-        "provenance": "authored",
         "reference": 325,
         "source": 10,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 88
+        },
+        "provenance": "authored",
+        "navigation": 96
       },
       {
-        "kind": "flowSource",
-        "navigation": 97,
-        "provenance": "authored",
         "reference": 326,
         "source": 10,
+        "kind": "flowSource",
         "target": {
-          "node": 78,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 78
+        },
+        "provenance": "authored",
+        "navigation": 97
       },
       {
-        "kind": "flowTarget",
-        "navigation": 98,
-        "provenance": "authored",
         "reference": 327,
         "source": 10,
+        "kind": "flowTarget",
         "target": {
-          "node": 105,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 105
+        },
+        "provenance": "authored",
+        "navigation": 98
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 100,
-        "provenance": "authored",
         "reference": 333,
         "source": 15,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 88
+        },
+        "provenance": "authored",
+        "navigation": 100
       },
       {
-        "kind": "flowSource",
-        "navigation": 101,
-        "provenance": "authored",
         "reference": 334,
         "source": 15,
+        "kind": "flowSource",
         "target": {
-          "node": 104,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 104
+        },
+        "provenance": "authored",
+        "navigation": 101
       },
       {
-        "kind": "flowTarget",
-        "navigation": 102,
-        "provenance": "authored",
         "reference": 335,
         "source": 15,
+        "kind": "flowTarget",
         "target": {
-          "node": 81,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 81
+        },
+        "provenance": "authored",
+        "navigation": 102
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 80,
-        "provenance": "authored",
         "reference": 349,
         "source": 20,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 53,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 53
+        },
+        "provenance": "authored",
+        "navigation": 80
       },
       {
-        "kind": "flowSource",
-        "navigation": 81,
-        "provenance": "authored",
         "reference": 350,
         "source": 20,
+        "kind": "flowSource",
         "target": {
-          "node": 69,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 69
+        },
+        "provenance": "authored",
+        "navigation": 81
       },
       {
-        "kind": "flowTarget",
-        "navigation": 82,
-        "provenance": "authored",
         "reference": 351,
         "source": 20,
+        "kind": "flowTarget",
         "target": {
-          "node": 57,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 57
+        },
+        "provenance": "authored",
+        "navigation": 82
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 112,
-        "provenance": "authored",
         "reference": 241,
         "source": 25,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 52,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 52
+        },
+        "provenance": "authored",
+        "navigation": 112
       },
       {
-        "kind": "flowSource",
-        "navigation": 113,
-        "provenance": "authored",
         "reference": 242,
         "source": 25,
+        "kind": "flowSource",
         "target": {
-          "node": 59,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 59
+        },
+        "provenance": "authored",
+        "navigation": 113
       },
       {
-        "kind": "flowTarget",
-        "navigation": 114,
-        "provenance": "authored",
         "reference": 243,
         "source": 25,
+        "kind": "flowTarget",
         "target": {
-          "node": 70,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 70
+        },
+        "provenance": "authored",
+        "navigation": 114
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 84,
-        "provenance": "authored",
         "reference": 273,
         "source": 30,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 53,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 53
+        },
+        "provenance": "authored",
+        "navigation": 84
       },
       {
-        "kind": "flowSource",
-        "navigation": 85,
-        "provenance": "authored",
         "reference": 274,
         "source": 30,
+        "kind": "flowSource",
         "target": {
-          "node": 56,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 56
+        },
+        "provenance": "authored",
+        "navigation": 85
       },
       {
-        "kind": "flowTarget",
-        "navigation": 86,
-        "provenance": "authored",
         "reference": 275,
         "source": 30,
+        "kind": "flowTarget",
         "target": {
-          "node": 80,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 80
+        },
+        "provenance": "authored",
+        "navigation": 86
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 92,
-        "provenance": "authored",
         "reference": 299,
         "source": 35,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 80,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 80
+        },
+        "provenance": "authored",
+        "navigation": 92
       },
       {
-        "kind": "flowSource",
-        "navigation": 93,
-        "provenance": "authored",
         "reference": 300,
         "source": 35,
+        "kind": "flowSource",
         "target": {
-          "node": 94,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 94
+        },
+        "provenance": "authored",
+        "navigation": 93
       },
       {
-        "kind": "flowTarget",
-        "navigation": 94,
-        "provenance": "authored",
         "reference": 301,
         "source": 35,
+        "kind": "flowTarget",
         "target": {
-          "node": 83,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 83
+        },
+        "provenance": "authored",
+        "navigation": 94
       },
       {
-        "kind": "typing",
-        "navigation": 60,
-        "provenance": "authored",
         "reference": 260,
         "source": 76,
+        "kind": "typing",
         "target": {
-          "reference": 54,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 54
+        },
+        "provenance": "authored",
+        "navigation": 60
       },
       {
-        "kind": "redefinition",
-        "navigation": 16,
-        "provenance": "authored",
         "reference": 356,
         "source": 90,
+        "kind": "redefinition",
         "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 62
+        },
+        "provenance": "authored",
+        "navigation": 16
       },
       {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
         "reference": 374,
         "source": 84,
+        "kind": "typing",
         "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 94
+        },
+        "provenance": "authored",
+        "navigation": 2
       },
       {
-        "kind": "typing",
-        "navigation": 69,
-        "provenance": "authored",
         "reference": 312,
         "source": 93,
+        "kind": "typing",
         "target": {
-          "reference": 81,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 81
+        },
+        "provenance": "authored",
+        "navigation": 69
       },
       {
-        "kind": "redefinition",
-        "navigation": 24,
-        "provenance": "authored",
         "reference": 371,
         "source": 100,
+        "kind": "redefinition",
         "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 62
+        },
+        "provenance": "authored",
+        "navigation": 24
       },
       {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
         "reference": 375,
         "source": 96,
+        "kind": "typing",
         "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 94
+        },
+        "provenance": "authored",
+        "navigation": 2
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 88,
-        "provenance": "authored",
         "reference": 225,
         "source": 40,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 79
+        },
+        "provenance": "authored",
+        "navigation": 88
       },
       {
-        "kind": "flowSource",
-        "navigation": 89,
-        "provenance": "authored",
         "reference": 226,
         "source": 40,
+        "kind": "flowSource",
         "target": {
-          "node": 79,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 79
+        },
+        "provenance": "authored",
+        "navigation": 89
       },
       {
-        "kind": "flowTarget",
-        "navigation": 90,
-        "provenance": "authored",
         "reference": 227,
         "source": 40,
+        "kind": "flowTarget",
         "target": {
-          "node": 95,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 95
+        },
+        "provenance": "authored",
+        "navigation": 90
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 108,
-        "provenance": "authored",
         "reference": 233,
         "source": 45,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 52,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 52
+        },
+        "provenance": "authored",
+        "navigation": 108
       },
       {
-        "kind": "flowSource",
-        "navigation": 109,
-        "provenance": "authored",
         "reference": 234,
         "source": 45,
+        "kind": "flowSource",
         "target": {
-          "node": 77,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 77
+        },
+        "provenance": "authored",
+        "navigation": 109
       },
       {
-        "kind": "flowTarget",
-        "navigation": 110,
-        "provenance": "authored",
         "reference": 235,
         "source": 45,
+        "kind": "flowTarget",
         "target": {
-          "node": 58,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 58
+        },
+        "provenance": "authored",
+        "navigation": 110
       },
       {
-        "kind": "typing",
-        "navigation": 73,
-        "provenance": "authored",
         "reference": 287,
         "source": 103,
+        "kind": "typing",
         "target": {
-          "reference": 63,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 63
+        },
+        "provenance": "authored",
+        "navigation": 73
       },
       {
-        "kind": "redefinition",
-        "navigation": 30,
-        "provenance": "authored",
         "reference": 359,
         "source": 111,
+        "kind": "redefinition",
         "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 62
+        },
+        "provenance": "authored",
+        "navigation": 30
       },
       {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
         "reference": 376,
         "source": 106,
+        "kind": "typing",
         "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 94
+        },
+        "provenance": "authored",
+        "navigation": 2
       },
       {
-        "kind": "typing",
-        "navigation": 77,
-        "provenance": "authored",
         "reference": 296,
         "source": 114,
+        "kind": "typing",
         "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 74
+        },
+        "provenance": "authored",
+        "navigation": 77
       },
       {
-        "kind": "redefinition",
-        "navigation": 37,
-        "provenance": "authored",
         "reference": 364,
         "source": 118,
+        "kind": "redefinition",
         "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 70
+        },
+        "provenance": "authored",
+        "navigation": 37
       },
       {
-        "kind": "redefinition",
-        "navigation": 40,
-        "provenance": "authored",
         "reference": 365,
         "source": 121,
+        "kind": "redefinition",
         "target": {
-          "reference": 72,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 72
+        },
+        "provenance": "authored",
+        "navigation": 40
       },
       {
-        "kind": "redefinition",
-        "navigation": 43,
-        "provenance": "authored",
         "reference": 366,
         "source": 124,
+        "kind": "redefinition",
         "target": {
-          "reference": 71,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 71
+        },
+        "provenance": "authored",
+        "navigation": 43
       },
       {
-        "kind": "flowPayloadType",
-        "navigation": 104,
-        "provenance": "authored",
         "reference": 317,
         "source": 50,
+        "kind": "flowPayloadType",
         "target": {
-          "reference": 73,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 73
+        },
+        "provenance": "authored",
+        "navigation": 104
       },
       {
-        "kind": "flowSource",
-        "navigation": 105,
-        "provenance": "authored",
         "reference": 318,
         "source": 50,
+        "kind": "flowSource",
         "target": {
-          "node": 82,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 82
+        },
+        "provenance": "authored",
+        "navigation": 105
       },
       {
-        "kind": "flowTarget",
-        "navigation": 106,
-        "provenance": "authored",
         "reference": 319,
         "source": 50,
+        "kind": "flowTarget",
         "target": {
-          "node": 115,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 115
+        },
+        "provenance": "authored",
+        "navigation": 106
       }
     ],
+    "edges": [
+      {
+        "reference": 167,
+        "source": 0,
+        "target": 1,
+        "origin": 1,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 115
+      },
+      {
+        "reference": 352,
+        "source": 20,
+        "target": 30,
+        "origin": 1,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 116
+      },
+      {
+        "reference": 168,
+        "source": 0,
+        "target": 2,
+        "origin": 2,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 118
+      },
+      {
+        "reference": 276,
+        "source": 30,
+        "target": 40,
+        "origin": 2,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 119
+      },
+      {
+        "reference": 169,
+        "source": 0,
+        "target": 3,
+        "origin": 3,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 121
+      },
+      {
+        "reference": 228,
+        "source": 40,
+        "target": 35,
+        "origin": 3,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 122
+      },
+      {
+        "reference": 170,
+        "source": 0,
+        "target": 4,
+        "origin": 4,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 124
+      },
+      {
+        "reference": 302,
+        "source": 35,
+        "target": 10,
+        "origin": 4,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 125
+      },
+      {
+        "reference": 171,
+        "source": 0,
+        "target": 5,
+        "origin": 5,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 127
+      },
+      {
+        "reference": 328,
+        "source": 10,
+        "target": 15,
+        "origin": 5,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 128
+      },
+      {
+        "reference": 172,
+        "source": 0,
+        "target": 6,
+        "origin": 6,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 130
+      },
+      {
+        "reference": 336,
+        "source": 15,
+        "target": 50,
+        "origin": 6,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 131
+      },
+      {
+        "reference": 173,
+        "source": 0,
+        "target": 7,
+        "origin": 7,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 133
+      },
+      {
+        "reference": 320,
+        "source": 50,
+        "target": 45,
+        "origin": 7,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 134
+      },
+      {
+        "reference": 174,
+        "source": 0,
+        "target": 8,
+        "origin": 8,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 136
+      },
+      {
+        "reference": 236,
+        "source": 45,
+        "target": 25,
+        "origin": 8,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 137
+      },
+      {
+        "reference": 175,
+        "source": 0,
+        "target": 9,
+        "origin": 9,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 48
+      },
+      {
+        "reference": 176,
+        "source": 0,
+        "target": 55,
+        "origin": 55,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 53
+      },
+      {
+        "reference": 207,
+        "source": 55,
+        "target": 64,
+        "origin": 64,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 8
+      },
+      {
+        "reference": 164,
+        "source": 64,
+        "target": 65,
+        "origin": 65,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 10
+      },
+      {
+        "reference": 166,
+        "source": 65,
+        "target": 66,
+        "origin": 66,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 10
+      },
+      {
+        "reference": 208,
+        "source": 55,
+        "target": 60,
+        "origin": 60,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 14
+      },
+      {
+        "reference": 209,
+        "source": 55,
+        "target": 61,
+        "origin": 61,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 13
+      },
+      {
+        "reference": 210,
+        "source": 55,
+        "target": 62,
+        "origin": 62,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 12
+      },
+      {
+        "reference": 211,
+        "source": 55,
+        "target": 63,
+        "origin": 63,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 11
+      },
+      {
+        "reference": 212,
+        "source": 55,
+        "target": 67,
+        "origin": 67,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 1
+      },
+      {
+        "reference": 213,
+        "source": 55,
+        "target": 56,
+        "origin": 56,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 56
+      },
+      {
+        "reference": 222,
+        "source": 57,
+        "target": 56,
+        "origin": 56,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 56
+      },
+      {
+        "reference": 214,
+        "source": 55,
+        "target": 57,
+        "origin": 57,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 55
+      },
+      {
+        "reference": 215,
+        "source": 55,
+        "target": 58,
+        "origin": 58,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 57
+      },
+      {
+        "reference": 219,
+        "source": 56,
+        "target": 58,
+        "origin": 58,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 57
+      },
+      {
+        "reference": 216,
+        "source": 55,
+        "target": 59,
+        "origin": 59,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 58
+      },
+      {
+        "reference": 221,
+        "source": 58,
+        "target": 59,
+        "origin": 59,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 58
+      },
+      {
+        "reference": 177,
+        "source": 0,
+        "target": 68,
+        "origin": 68,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 49
+      },
+      {
+        "reference": 339,
+        "source": 68,
+        "target": 73,
+        "origin": 73,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 3
+      },
+      {
+        "reference": 377,
+        "source": 73,
+        "target": 74,
+        "origin": 74,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 379,
+        "source": 74,
+        "target": 75,
+        "origin": 75,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 340,
+        "source": 68,
+        "target": 71,
+        "origin": 71,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 7
+      },
+      {
+        "reference": 341,
+        "source": 68,
+        "target": 72,
+        "origin": 72,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 6
+      },
+      {
+        "reference": 342,
+        "source": 68,
+        "target": 69,
+        "origin": 69,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 51
+      },
+      {
+        "reference": 343,
+        "source": 68,
+        "target": 70,
+        "origin": 70,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 52
+      },
+      {
+        "reference": 346,
+        "source": 69,
+        "target": 70,
+        "origin": 70,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 52
+      },
+      {
+        "reference": 178,
+        "source": 0,
+        "target": 10,
+        "origin": 10,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 95
+      },
+      {
+        "reference": 269,
+        "source": 78,
+        "target": 105,
+        "origin": 10,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 96
+      },
+      {
+        "reference": 323,
+        "source": 10,
+        "target": 11,
+        "origin": 11,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 97
+      },
+      {
+        "reference": 329,
+        "source": 11,
+        "target": 12,
+        "origin": 12,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 97
+      },
+      {
+        "reference": 324,
+        "source": 10,
+        "target": 13,
+        "origin": 13,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 98
+      },
+      {
+        "reference": 330,
+        "source": 13,
+        "target": 14,
+        "origin": 14,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 98
+      },
+      {
+        "reference": 179,
+        "source": 0,
+        "target": 15,
+        "origin": 15,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 99
+      },
+      {
+        "reference": 288,
+        "source": 104,
+        "target": 81,
+        "origin": 15,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 100
+      },
+      {
+        "reference": 331,
+        "source": 15,
+        "target": 16,
+        "origin": 16,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 101
+      },
+      {
+        "reference": 337,
+        "source": 16,
+        "target": 17,
+        "origin": 17,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 101
+      },
+      {
+        "reference": 332,
+        "source": 15,
+        "target": 18,
+        "origin": 18,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 102
+      },
+      {
+        "reference": 338,
+        "source": 18,
+        "target": 19,
+        "origin": 19,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 102
+      },
+      {
+        "reference": 180,
+        "source": 0,
+        "target": 20,
+        "origin": 20,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 79
+      },
+      {
+        "reference": 345,
+        "source": 69,
+        "target": 57,
+        "origin": 20,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 80
+      },
+      {
+        "reference": 347,
+        "source": 20,
+        "target": 21,
+        "origin": 21,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 81
+      },
+      {
+        "reference": 353,
+        "source": 21,
+        "target": 22,
+        "origin": 22,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 81
+      },
+      {
+        "reference": 348,
+        "source": 20,
+        "target": 23,
+        "origin": 23,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 82
+      },
+      {
+        "reference": 354,
+        "source": 23,
+        "target": 24,
+        "origin": 24,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 82
+      },
+      {
+        "reference": 181,
+        "source": 0,
+        "target": 25,
+        "origin": 25,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 111
+      },
+      {
+        "reference": 220,
+        "source": 59,
+        "target": 70,
+        "origin": 25,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 112
+      },
+      {
+        "reference": 239,
+        "source": 25,
+        "target": 26,
+        "origin": 26,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 113
+      },
+      {
+        "reference": 244,
+        "source": 26,
+        "target": 27,
+        "origin": 27,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 113
+      },
+      {
+        "reference": 240,
+        "source": 25,
+        "target": 28,
+        "origin": 28,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 114
+      },
+      {
+        "reference": 245,
+        "source": 28,
+        "target": 29,
+        "origin": 29,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 114
+      },
+      {
+        "reference": 182,
+        "source": 0,
+        "target": 30,
+        "origin": 30,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 83
+      },
+      {
+        "reference": 218,
+        "source": 56,
+        "target": 80,
+        "origin": 30,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 84
+      },
+      {
+        "reference": 271,
+        "source": 30,
+        "target": 31,
+        "origin": 31,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 85
+      },
+      {
+        "reference": 277,
+        "source": 31,
+        "target": 32,
+        "origin": 32,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 85
+      },
+      {
+        "reference": 272,
+        "source": 30,
+        "target": 33,
+        "origin": 33,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 86
+      },
+      {
+        "reference": 278,
+        "source": 33,
+        "target": 34,
+        "origin": 34,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 86
+      },
+      {
+        "reference": 183,
+        "source": 0,
+        "target": 35,
+        "origin": 35,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 91
+      },
+      {
+        "reference": 313,
+        "source": 94,
+        "target": 83,
+        "origin": 35,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 92
+      },
+      {
+        "reference": 297,
+        "source": 35,
+        "target": 36,
+        "origin": 36,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 93
+      },
+      {
+        "reference": 303,
+        "source": 36,
+        "target": 37,
+        "origin": 37,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 93
+      },
+      {
+        "reference": 298,
+        "source": 35,
+        "target": 38,
+        "origin": 38,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 94
+      },
+      {
+        "reference": 304,
+        "source": 38,
+        "target": 39,
+        "origin": 39,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 94
+      },
+      {
+        "reference": 184,
+        "source": 0,
+        "target": 76,
+        "origin": 76,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 59
+      },
+      {
+        "reference": 246,
+        "source": 76,
+        "target": 90,
+        "origin": 90,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 15
+      },
+      {
+        "reference": 355,
+        "source": 90,
+        "target": 91,
+        "origin": 91,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 17
+      },
+      {
+        "reference": 357,
+        "source": 91,
+        "target": 92,
+        "origin": 92,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 17
+      },
+      {
+        "reference": 247,
+        "source": 76,
+        "target": 89,
+        "origin": 89,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 18
+      },
+      {
+        "reference": 248,
+        "source": 76,
+        "target": 85,
+        "origin": 85,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 19
+      },
+      {
+        "reference": 249,
+        "source": 76,
+        "target": 84,
+        "origin": 84,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 1
+      },
+      {
+        "reference": 250,
+        "source": 76,
+        "target": 86,
+        "origin": 86,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 22
+      },
+      {
+        "reference": 251,
+        "source": 76,
+        "target": 87,
+        "origin": 87,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 20
+      },
+      {
+        "reference": 252,
+        "source": 76,
+        "target": 88,
+        "origin": 88,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 21
+      },
+      {
+        "reference": 253,
+        "source": 76,
+        "target": 77,
+        "origin": 77,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 67
+      },
+      {
+        "reference": 266,
+        "source": 82,
+        "target": 77,
+        "origin": 77,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 67
+      },
+      {
+        "reference": 254,
+        "source": 76,
+        "target": 78,
+        "origin": 78,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 64
+      },
+      {
+        "reference": 261,
+        "source": 83,
+        "target": 78,
+        "origin": 78,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 64
+      },
+      {
+        "reference": 255,
+        "source": 76,
+        "target": 79,
+        "origin": 79,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 62
+      },
+      {
+        "reference": 264,
+        "source": 80,
+        "target": 79,
+        "origin": 79,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 62
+      },
+      {
+        "reference": 256,
+        "source": 76,
+        "target": 80,
+        "origin": 80,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 61
+      },
+      {
+        "reference": 257,
+        "source": 76,
+        "target": 81,
+        "origin": 81,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 65
+      },
+      {
+        "reference": 270,
+        "source": 78,
+        "target": 81,
+        "origin": 81,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 65
+      },
+      {
+        "reference": 258,
+        "source": 76,
+        "target": 82,
+        "origin": 82,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 66
+      },
+      {
+        "reference": 268,
+        "source": 81,
+        "target": 82,
+        "origin": 82,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 66
+      },
+      {
+        "reference": 259,
+        "source": 76,
+        "target": 83,
+        "origin": 83,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 63
+      },
+      {
+        "reference": 263,
+        "source": 79,
+        "target": 83,
+        "origin": 83,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 63
+      },
+      {
+        "reference": 185,
+        "source": 0,
+        "target": 93,
+        "origin": 93,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 68
+      },
+      {
+        "reference": 305,
+        "source": 93,
+        "target": 100,
+        "origin": 100,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 23
+      },
+      {
+        "reference": 370,
+        "source": 100,
+        "target": 101,
+        "origin": 101,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 25
+      },
+      {
+        "reference": 372,
+        "source": 101,
+        "target": 102,
+        "origin": 102,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 25
+      },
+      {
+        "reference": 306,
+        "source": 93,
+        "target": 99,
+        "origin": 99,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 26
+      },
+      {
+        "reference": 307,
+        "source": 93,
+        "target": 97,
+        "origin": 97,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 28
+      },
+      {
+        "reference": 308,
+        "source": 93,
+        "target": 98,
+        "origin": 98,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 27
+      },
+      {
+        "reference": 309,
+        "source": 93,
+        "target": 96,
+        "origin": 96,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 1
+      },
+      {
+        "reference": 310,
+        "source": 93,
+        "target": 94,
+        "origin": 94,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 71
+      },
+      {
+        "reference": 314,
+        "source": 95,
+        "target": 94,
+        "origin": 94,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 71
+      },
+      {
+        "reference": 311,
+        "source": 93,
+        "target": 95,
+        "origin": 95,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 70
+      },
+      {
+        "reference": 186,
+        "source": 0,
+        "target": 40,
+        "origin": 40,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 87
+      },
+      {
+        "reference": 262,
+        "source": 79,
+        "target": 95,
+        "origin": 40,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 88
+      },
+      {
+        "reference": 223,
+        "source": 40,
+        "target": 41,
+        "origin": 41,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 89
+      },
+      {
+        "reference": 229,
+        "source": 41,
+        "target": 42,
+        "origin": 42,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 89
+      },
+      {
+        "reference": 224,
+        "source": 40,
+        "target": 43,
+        "origin": 43,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 90
+      },
+      {
+        "reference": 230,
+        "source": 43,
+        "target": 44,
+        "origin": 44,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 90
+      },
+      {
+        "reference": 187,
+        "source": 0,
+        "target": 45,
+        "origin": 45,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 107
+      },
+      {
+        "reference": 267,
+        "source": 77,
+        "target": 58,
+        "origin": 45,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 108
+      },
+      {
+        "reference": 231,
+        "source": 45,
+        "target": 46,
+        "origin": 46,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 109
+      },
+      {
+        "reference": 237,
+        "source": 46,
+        "target": 47,
+        "origin": 47,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 109
+      },
+      {
+        "reference": 232,
+        "source": 45,
+        "target": 48,
+        "origin": 48,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 110
+      },
+      {
+        "reference": 238,
+        "source": 48,
+        "target": 49,
+        "origin": 49,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 110
+      },
+      {
+        "reference": 188,
+        "source": 0,
+        "target": 103,
+        "origin": 103,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 72
+      },
+      {
+        "reference": 279,
+        "source": 103,
+        "target": 111,
+        "origin": 111,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 29
+      },
+      {
+        "reference": 358,
+        "source": 111,
+        "target": 112,
+        "origin": 112,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 31
+      },
+      {
+        "reference": 360,
+        "source": 112,
+        "target": 113,
+        "origin": 113,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 31
+      },
+      {
+        "reference": 280,
+        "source": 103,
+        "target": 110,
+        "origin": 110,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 32
+      },
+      {
+        "reference": 281,
+        "source": 103,
+        "target": 106,
+        "origin": 106,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 1
+      },
+      {
+        "reference": 282,
+        "source": 103,
+        "target": 107,
+        "origin": 107,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 34
+      },
+      {
+        "reference": 283,
+        "source": 103,
+        "target": 108,
+        "origin": 108,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 33
+      },
+      {
+        "reference": 284,
+        "source": 103,
+        "target": 109,
+        "origin": 109,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 35
+      },
+      {
+        "reference": 285,
+        "source": 103,
+        "target": 104,
+        "origin": 104,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 75
+      },
+      {
+        "reference": 289,
+        "source": 105,
+        "target": 104,
+        "origin": 104,
+        "kind": "succession",
+        "provenance": "authored",
+        "navigation": 75
+      },
+      {
+        "reference": 286,
+        "source": 103,
+        "target": 105,
+        "origin": 105,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 74
+      },
+      {
+        "reference": 189,
+        "source": 0,
+        "target": 114,
+        "origin": 114,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 76
+      },
+      {
+        "reference": 290,
+        "source": 114,
+        "target": 118,
+        "origin": 118,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 36
+      },
+      {
+        "reference": 361,
+        "source": 118,
+        "target": 119,
+        "origin": 119,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 38
+      },
+      {
+        "reference": 367,
+        "source": 119,
+        "target": 120,
+        "origin": 120,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 38
+      },
+      {
+        "reference": 291,
+        "source": 114,
+        "target": 121,
+        "origin": 121,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 39
+      },
+      {
+        "reference": 362,
+        "source": 121,
+        "target": 122,
+        "origin": 122,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 41
+      },
+      {
+        "reference": 368,
+        "source": 122,
+        "target": 123,
+        "origin": 123,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 41
+      },
+      {
+        "reference": 292,
+        "source": 114,
+        "target": 124,
+        "origin": 124,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 42
+      },
+      {
+        "reference": 363,
+        "source": 124,
+        "target": 125,
+        "origin": 125,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 44
+      },
+      {
+        "reference": 369,
+        "source": 125,
+        "target": 126,
+        "origin": 126,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 44
+      },
+      {
+        "reference": 293,
+        "source": 114,
+        "target": 116,
+        "origin": 116,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 46
+      },
+      {
+        "reference": 294,
+        "source": 114,
+        "target": 117,
+        "origin": 117,
+        "kind": "containment",
+        "provenance": "implied",
+        "navigation": 45
+      },
+      {
+        "reference": 295,
+        "source": 114,
+        "target": 115,
+        "origin": 115,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 78
+      },
+      {
+        "reference": 190,
+        "source": 0,
+        "target": 50,
+        "origin": 50,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 103
+      },
+      {
+        "reference": 265,
+        "source": 82,
+        "target": 115,
+        "origin": 50,
+        "kind": "flow",
+        "provenance": "implied",
+        "navigation": 104
+      },
+      {
+        "reference": 315,
+        "source": 50,
+        "target": 51,
+        "origin": 51,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 105
+      },
+      {
+        "reference": 321,
+        "source": 51,
+        "target": 52,
+        "origin": 52,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 105
+      },
+      {
+        "reference": 316,
+        "source": 50,
+        "target": 53,
+        "origin": 53,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 106
+      },
+      {
+        "reference": 322,
+        "source": 53,
+        "target": 54,
+        "origin": 54,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 106
+      }
+    ],
+    "metadata": {
+      "participants": [
+        55,
+        68,
+        76,
+        93,
+        103,
+        114
+      ],
+      "messages": [
+        10,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40,
+        45,
+        50
+      ]
+    },
     "scene": {
       "kind": "sequence",
       "lifelines": [
@@ -19348,166 +19348,166 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       ],
       "messages": [
         {
-          "label": "reserveStock",
-          "navigation": 95,
           "node": 10,
+          "label": "reserveStock",
+          "source": {
+            "status": "resolved",
+            "lifeline": 76
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 103
+          },
           "order": {
             "status": "resolved",
             "value": 5
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 76,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 103,
-            "status": "resolved"
-          }
+          "navigation": 95
         },
         {
-          "label": "stockReserved",
-          "navigation": 99,
           "node": 15,
+          "label": "stockReserved",
+          "source": {
+            "status": "resolved",
+            "lifeline": 103
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 76
+          },
           "order": {
             "status": "resolved",
             "value": 6
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 103,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 76,
-            "status": "resolved"
-          }
+          "navigation": 99
         },
         {
-          "label": "submitCheckout",
-          "navigation": 79,
           "node": 20,
+          "label": "submitCheckout",
+          "source": {
+            "status": "resolved",
+            "lifeline": 68
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 55
+          },
           "order": {
             "status": "resolved",
             "value": 1
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 68,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 55,
-            "status": "resolved"
-          }
+          "navigation": 79
         },
         {
-          "label": "checkoutOutcome",
-          "navigation": 111,
           "node": 25,
+          "label": "checkoutOutcome",
+          "source": {
+            "status": "resolved",
+            "lifeline": 55
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 68
+          },
           "order": {
             "status": "resolved",
             "value": 9
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 55,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 68,
-            "status": "resolved"
-          }
+          "navigation": 111
         },
         {
-          "label": "forwardCheckout",
-          "navigation": 83,
           "node": 30,
+          "label": "forwardCheckout",
+          "source": {
+            "status": "resolved",
+            "lifeline": 55
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 76
+          },
           "order": {
             "status": "resolved",
             "value": 2
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 55,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 76,
-            "status": "resolved"
-          }
+          "navigation": 83
         },
         {
-          "label": "paymentApproved",
-          "navigation": 91,
           "node": 35,
+          "label": "paymentApproved",
+          "source": {
+            "status": "resolved",
+            "lifeline": 93
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 76
+          },
           "order": {
             "status": "resolved",
             "value": 4
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 93,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 76,
-            "status": "resolved"
-          }
+          "navigation": 91
         },
         {
-          "label": "authorizePayment",
-          "navigation": 87,
           "node": 40,
+          "label": "authorizePayment",
+          "source": {
+            "status": "resolved",
+            "lifeline": 76
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 93
+          },
           "order": {
             "status": "resolved",
             "value": 3
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 76,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 93,
-            "status": "resolved"
-          }
+          "navigation": 87
         },
         {
-          "label": "checkoutAccepted",
-          "navigation": 107,
           "node": 45,
+          "label": "checkoutAccepted",
+          "source": {
+            "status": "resolved",
+            "lifeline": 76
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 55
+          },
           "order": {
             "status": "resolved",
             "value": 8
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 76,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 55,
-            "status": "resolved"
-          }
+          "navigation": 107
         },
         {
-          "label": "publishOrderCreated",
-          "navigation": 103,
           "node": 50,
+          "label": "publishOrderCreated",
+          "source": {
+            "status": "resolved",
+            "lifeline": 76
+          },
+          "target": {
+            "status": "resolved",
+            "lifeline": 114
+          },
           "order": {
             "status": "resolved",
             "value": 7
           },
           "provenance": "authored",
-          "source": {
-            "lifeline": 76,
-            "status": "resolved"
-          },
-          "target": {
-            "lifeline": 114,
-            "status": "resolved"
-          }
+          "navigation": 103
         }
       ]
     }

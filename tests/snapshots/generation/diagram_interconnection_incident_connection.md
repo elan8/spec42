@@ -397,100 +397,100 @@ package Model {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Model::Assembly::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Model::Assembly::left"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Model::Assembly::right"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "Model::selected"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "Vendor::Sensor"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "Vendor::Sensor::data"
     },
     {
-      "document": 1,
       "kind": "qualified-name",
+      "document": 1,
       "qualifiedName": "Vendor::Signal"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "ConnectionUsage",
-      "ownerQualifiedName": "Model::Assembly",
       "source": 4,
+      "ownerQualifiedName": "Model::Assembly",
+      "metaclass": "ConnectionUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "source": 0,
       "relationshipKind": "memberAccessOperand",
-      "source": 0
+      "ordinal": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "source": 0,
       "relationshipKind": "memberAccessOperand",
-      "source": 0
+      "ordinal": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 1,
       "relationshipKind": "noncomposite-membership",
-      "source": 1
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 1,
       "relationshipKind": "typing",
-      "source": 1
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 2,
       "relationshipKind": "noncomposite-membership",
-      "source": 2
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "source": 2,
       "relationshipKind": "typing",
-      "source": 2
+      "ordinal": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 5,
       "relationshipKind": "connection",
-      "source": 5
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 5,
       "relationshipKind": "typing",
-      "source": 5
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 5,
       "relationshipKind": "typing",
-      "source": 5
+      "ordinal": 6
     }
   ],
   "selectedView": {
@@ -504,44 +504,236 @@ package Model {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 8,
-        "origin": 2,
-        "provenance": "implied",
-        "reference": 10,
-        "source": 1,
-        "target": 2
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 8,
-        "origin": 4,
-        "provenance": "implied",
-        "reference": 12,
-        "source": 3,
-        "target": 4
-      },
-      {
-        "kind": "connector",
-        "navigation": 5,
-        "origin": 0,
-        "provenance": "authored",
-        "reference": 14,
-        "source": 2,
-        "target": 4
-      }
-    ],
+    "kind": "interconnection-view",
     "exposedRoots": [
       1,
       3
     ],
-    "kind": "interconnection-view",
+    "nodes": [
+      {
+        "reference": 7,
+        "metaclass": "ConnectionUsage",
+        "notationRole": "usage",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 4,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 1,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "left",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 4,
+              "label": "Sensor"
+            }
+          ]
+        },
+        "owner": null,
+        "source": 0,
+        "compartments": [
+          {
+            "kind": "ports",
+            "provenance": "inherited",
+            "members": [
+              2
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "data",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 6,
+              "label": "Signal"
+            }
+          ]
+        },
+        "owner": 1,
+        "source": 8,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 2,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "right",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 4,
+              "label": "Sensor"
+            }
+          ]
+        },
+        "owner": null,
+        "source": 2,
+        "compartments": [
+          {
+            "kind": "ports",
+            "provenance": "inherited",
+            "members": [
+              4
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "PortUsage",
+        "notationRole": "usage",
+        "name": "data",
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "reference": 6,
+              "label": "Signal"
+            }
+          ]
+        },
+        "owner": 3,
+        "source": 8,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      }
+    ],
+    "relationships": [
+      {
+        "reference": 11,
+        "source": 1,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 4
+        },
+        "provenance": "authored",
+        "navigation": 1
+      },
+      {
+        "reference": 15,
+        "source": 2,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 6
+        },
+        "provenance": "authored",
+        "navigation": 9
+      },
+      {
+        "reference": 13,
+        "source": 3,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 4
+        },
+        "provenance": "authored",
+        "navigation": 3
+      },
+      {
+        "reference": 16,
+        "source": 4,
+        "kind": "typing",
+        "target": {
+          "status": "resolved",
+          "reference": 6
+        },
+        "provenance": "authored",
+        "navigation": 9
+      },
+      {
+        "reference": 8,
+        "source": 0,
+        "kind": "memberAccessOperand",
+        "target": {
+          "status": "resolved",
+          "node": 2
+        },
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 9,
+        "source": 0,
+        "kind": "memberAccessOperand",
+        "target": {
+          "status": "resolved",
+          "node": 4
+        },
+        "provenance": "authored",
+        "navigation": 6
+      }
+    ],
+    "edges": [
+      {
+        "reference": 10,
+        "source": 1,
+        "target": 2,
+        "origin": 2,
+        "kind": "noncomposite-membership",
+        "provenance": "implied",
+        "navigation": 8
+      },
+      {
+        "reference": 12,
+        "source": 3,
+        "target": 4,
+        "origin": 4,
+        "kind": "noncomposite-membership",
+        "provenance": "implied",
+        "navigation": 8
+      },
+      {
+        "reference": 14,
+        "source": 2,
+        "target": 4,
+        "origin": 0,
+        "kind": "connector",
+        "provenance": "authored",
+        "navigation": 5
+      }
+    ],
     "metadata": {
-      "connectors": [
-        0
-      ],
       "parts": [
         1,
         3
@@ -549,203 +741,11 @@ package Model {
       "ports": [
         2,
         4
+      ],
+      "connectors": [
+        0
       ]
     },
-    "nodes": [
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "ConnectionUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 7,
-        "source": 4,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "ports",
-            "members": [
-              2
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "left",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 1,
-        "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Sensor",
-              "reference": 4
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "data",
-        "notationRole": "usage",
-        "owner": 1,
-        "reference": 5,
-        "source": 8,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Signal",
-              "reference": 6
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "ports",
-            "members": [
-              4
-            ],
-            "provenance": "inherited"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "right",
-        "notationRole": "usage",
-        "owner": null,
-        "reference": 2,
-        "source": 2,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Sensor",
-              "reference": 4
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "data",
-        "notationRole": "usage",
-        "owner": 3,
-        "reference": 5,
-        "source": 8,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Signal",
-              "reference": 6
-            }
-          ]
-        }
-      }
-    ],
-    "relationships": [
-      {
-        "kind": "typing",
-        "navigation": 1,
-        "provenance": "authored",
-        "reference": 11,
-        "source": 1,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 15,
-        "source": 2,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 3,
-        "provenance": "authored",
-        "reference": 13,
-        "source": 3,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 16,
-        "source": 4,
-        "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 5,
-        "provenance": "authored",
-        "reference": 8,
-        "source": 0,
-        "target": {
-          "node": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 6,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 0,
-        "target": {
-          "node": 4,
-          "status": "resolved"
-        }
-      }
-    ],
     "scene": {
       "kind": "interconnection"
     }

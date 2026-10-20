@@ -211,8 +211,8 @@ package EmptySelection {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "EmptySelection::selected"
     }
   ],
@@ -227,16 +227,16 @@ package EmptySelection {
     "reasons": []
   },
   "projection": {
-    "edges": [],
-    "exposedRoots": [],
     "kind": "interconnection-view",
-    "metadata": {
-      "connectors": [],
-      "parts": [],
-      "ports": []
-    },
+    "exposedRoots": [],
     "nodes": [],
     "relationships": [],
+    "edges": [],
+    "metadata": {
+      "parts": [],
+      "ports": [],
+      "connectors": []
+    },
     "scene": {
       "kind": "interconnection"
     }

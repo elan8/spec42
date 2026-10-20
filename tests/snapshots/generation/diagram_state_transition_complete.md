@@ -567,193 +567,193 @@ package StateExample {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StateExample::Machine"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StateExample::Machine::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StateExample::Machine::done"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StateExample::Machine::finish"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StateExample::Machine::finish::"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StateExample::Machine::idle"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StateExample::Start"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StateExample::selected"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "StateExample::Machine",
       "source": 1,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "AcceptActionUsage",
-      "ownerQualifiedName": "StateExample::Machine::finish",
-      "source": 5,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ReferenceUsage",
-      "ownerQualifiedName": "StateExample::Machine::finish",
-      "source": 5,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
+      "ownerQualifiedName": "StateExample::Machine",
       "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "StateExample::Machine::finish",
-      "source": 5,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "ReferenceUsage",
-      "ownerQualifiedName": "StateExample::Machine::finish::",
       "source": 5,
+      "ownerQualifiedName": "StateExample::Machine::finish",
+      "metaclass": "AcceptActionUsage",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 5,
+      "ownerQualifiedName": "StateExample::Machine::finish",
+      "metaclass": "ReferenceUsage",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 5,
+      "ownerQualifiedName": "StateExample::Machine::finish",
+      "metaclass": "SuccessionAsUsage",
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "source": 5,
+      "ownerQualifiedName": "StateExample::Machine::finish::",
+      "metaclass": "ReferenceUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "source": 1,
       "relationshipKind": "initialState",
-      "source": 1
+      "ordinal": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "source": 1,
       "relationshipKind": "initialState",
-      "source": 1
+      "ordinal": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "source": 3,
       "relationshipKind": "containment",
-      "source": 3
+      "ordinal": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "source": 3,
       "relationshipKind": "transitionSource",
-      "source": 3
+      "ordinal": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "source": 3,
       "relationshipKind": "transitionTarget",
-      "source": 3
+      "ordinal": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "source": 3,
       "relationshipKind": "transitionTrigger",
-      "source": 3
+      "ordinal": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "source": 4,
       "relationshipKind": "containment",
-      "source": 4
+      "ordinal": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "source": 4,
       "relationshipKind": "succession",
-      "source": 4
+      "ordinal": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
+      "source": 4,
       "relationshipKind": "succession",
-      "source": 4
+      "ordinal": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "source": 5,
       "relationshipKind": "succession",
-      "source": 5
+      "ordinal": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "source": 5,
       "relationshipKind": "transition",
-      "source": 5
+      "ordinal": 5
     }
   ],
   "selectedView": {
@@ -767,499 +767,499 @@ package StateExample {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 10,
-        "provenance": "authored",
-        "reference": 13,
-        "source": 0,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 9,
-        "provenance": "authored",
-        "reference": 14,
-        "source": 0,
-        "target": 9
-      },
-      {
-        "kind": "initial-state",
-        "navigation": 2,
-        "origin": 9,
-        "provenance": "authored",
-        "reference": 17,
-        "source": 9,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 4,
-        "origin": 8,
-        "provenance": "authored",
-        "reference": 15,
-        "source": 0,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 6,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 16,
-        "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "transition",
-        "navigation": 7,
-        "origin": 1,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 10,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 19,
-        "source": 1,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 20,
-        "source": 1,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 21,
-        "source": 1,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 22,
-        "source": 1,
-        "target": 2
-      },
-      {
-        "kind": "succession",
-        "navigation": 7,
-        "origin": 2,
-        "provenance": "implied",
-        "reference": 30,
-        "source": 10,
-        "target": 8
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 23,
-        "source": 1,
-        "target": 3
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 4,
-        "provenance": "authored",
-        "reference": 27,
-        "source": 3,
-        "target": 4
-      }
-    ],
+    "kind": "state-transition-view",
     "exposedRoots": [
       0
     ],
-    "kind": "state-transition-view",
-    "metadata": {
-      "finalNodes": [
-        8
-      ],
-      "initialNodes": [
-        9
-      ],
-      "states": [
-        0,
-        10
-      ]
-    },
     "nodes": [
       {
+        "reference": 0,
+        "metaclass": "StateDefinition",
+        "notationRole": "definition",
+        "name": "Machine",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
         "compartments": [
           {
             "kind": "states",
+            "provenance": "direct",
             "members": [
               8,
               10
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "StateDefinition",
-        "name": "Machine",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 0,
-        "source": 0,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
+        "reference": 3,
+        "metaclass": "TransitionUsage",
+        "notationRole": "usage",
+        "name": "finish",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 6,
         "compartments": [
           {
             "kind": "attributes",
+            "provenance": "direct",
             "members": [
               7,
               7,
               7
-            ],
-            "provenance": "direct"
+            ]
           },
           {
             "kind": "actions",
+            "provenance": "direct",
             "members": [
               3
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "TransitionUsage",
-        "name": "finish",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 3,
-        "source": 6,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 1,
         "reference": 11,
-        "source": 5,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 1,
+        "source": 5,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
+        "reference": 9,
+        "metaclass": "AcceptActionUsage",
+        "notationRole": "usage",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 1,
+        "source": 5,
         "compartments": [
           {
             "kind": "attributes",
+            "provenance": "direct",
             "members": [
               4
-            ],
-            "provenance": "direct"
+            ]
           }
         ],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "AcceptActionUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 1,
-        "reference": 9,
-        "source": 5,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "inout",
-        "featureDirection": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 3,
         "reference": 12,
-        "source": 5,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "metaclass": "ReferenceUsage",
+        "notationRole": "reference-usage",
+        "name": null,
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 3,
+        "source": 5,
+        "compartments": [],
+        "direction": "inout",
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       },
       {
+        "reference": 10,
+        "metaclass": "ReferenceUsage",
+        "notationRole": "reference-usage",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 1,
+        "source": 5,
         "compartments": [],
-        "conjugated": false,
         "direction": null,
-        "featureDirection": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 1,
-        "reference": 10,
-        "source": 5,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
+        "reference": 10,
+        "metaclass": "ReferenceUsage",
+        "notationRole": "reference-usage",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 1,
+        "source": 5,
         "compartments": [],
-        "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 1,
-        "reference": 10,
-        "source": 5,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
+        "reference": 10,
+        "metaclass": "ReferenceUsage",
+        "notationRole": "reference-usage",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 1,
+        "source": 5,
         "compartments": [],
-        "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 1,
-        "reference": 10,
-        "source": 5,
+        "conjugated": false,
         "stateSubaction": null,
         "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
+        "featureDirection": null
       },
       {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FinalState",
-        "name": "done",
-        "notationRole": "usage",
-        "owner": 0,
         "reference": 2,
-        "source": 4,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
-        "reference": 8,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "StateUsage",
-        "name": "idle",
+        "metaclass": "FinalState",
         "notationRole": "usage",
-        "owner": 0,
-        "reference": 5,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
+        "name": "done",
         "typing": {
           "status": "absent"
-        }
+        },
+        "owner": 0,
+        "source": 4,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 8,
+        "metaclass": "SuccessionAsUsage",
+        "notationRole": "unsupported",
+        "name": null,
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 5,
+        "metaclass": "StateUsage",
+        "notationRole": "usage",
+        "name": "idle",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 3,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
       }
     ],
     "relationships": [
       {
-        "kind": "initialState",
-        "navigation": 2,
-        "provenance": "authored",
         "reference": 18,
         "source": 9,
+        "kind": "initialState",
         "target": {
-          "node": 10,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 10
+        },
+        "provenance": "authored",
+        "navigation": 2
       },
       {
-        "kind": "transitionSource",
-        "navigation": 7,
-        "provenance": "authored",
         "reference": 24,
         "source": 1,
+        "kind": "transitionSource",
         "target": {
-          "node": 10,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 10
+        },
+        "provenance": "authored",
+        "navigation": 7
       },
       {
-        "kind": "transitionTarget",
-        "navigation": 9,
-        "provenance": "authored",
         "reference": 25,
         "source": 1,
+        "kind": "transitionTarget",
         "target": {
-          "node": 8,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 8
+        },
+        "provenance": "authored",
+        "navigation": 9
       },
       {
-        "kind": "transitionTrigger",
-        "navigation": 8,
-        "provenance": "authored",
         "reference": 26,
         "source": 1,
+        "kind": "transitionTrigger",
         "target": {
-          "reference": 6,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "reference": 6
+        },
+        "provenance": "authored",
+        "navigation": 8
       },
       {
-        "kind": "succession",
-        "navigation": 7,
-        "provenance": "authored",
         "reference": 28,
         "source": 2,
+        "kind": "succession",
         "target": {
-          "node": 10,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 10
+        },
+        "provenance": "authored",
+        "navigation": 7
       },
       {
-        "kind": "succession",
-        "navigation": 9,
-        "provenance": "authored",
         "reference": 29,
         "source": 2,
+        "kind": "succession",
         "target": {
-          "node": 8,
-          "status": "resolved"
-        }
+          "status": "resolved",
+          "node": 8
+        },
+        "provenance": "authored",
+        "navigation": 9
       }
     ],
+    "edges": [
+      {
+        "reference": 13,
+        "source": 0,
+        "target": 10,
+        "origin": 10,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 3
+      },
+      {
+        "reference": 14,
+        "source": 0,
+        "target": 9,
+        "origin": 9,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 1
+      },
+      {
+        "reference": 17,
+        "source": 9,
+        "target": 10,
+        "origin": 9,
+        "kind": "initial-state",
+        "provenance": "authored",
+        "navigation": 2
+      },
+      {
+        "reference": 15,
+        "source": 0,
+        "target": 8,
+        "origin": 8,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 4
+      },
+      {
+        "reference": 16,
+        "source": 0,
+        "target": 1,
+        "origin": 1,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 6
+      },
+      {
+        "reference": 31,
+        "source": 10,
+        "target": 8,
+        "origin": 1,
+        "kind": "transition",
+        "provenance": "implied",
+        "navigation": 7
+      },
+      {
+        "reference": 19,
+        "source": 1,
+        "target": 7,
+        "origin": 7,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 20,
+        "source": 1,
+        "target": 7,
+        "origin": 7,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 21,
+        "source": 1,
+        "target": 7,
+        "origin": 7,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 22,
+        "source": 1,
+        "target": 2,
+        "origin": 2,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 30,
+        "source": 10,
+        "target": 8,
+        "origin": 2,
+        "kind": "succession",
+        "provenance": "implied",
+        "navigation": 7
+      },
+      {
+        "reference": 23,
+        "source": 1,
+        "target": 3,
+        "origin": 3,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      },
+      {
+        "reference": 27,
+        "source": 3,
+        "target": 4,
+        "origin": 4,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 5
+      }
+    ],
+    "metadata": {
+      "states": [
+        0,
+        10
+      ],
+      "initialNodes": [
+        9
+      ],
+      "finalNodes": [
+        8
+      ]
+    },
     "scene": {
+      "kind": "state-transition",
       "frame": {
         "id": "state-machine",
         "label": "Machine",
         "navigation": 0
       },
-      "kind": "state-transition",
-      "transitions": [
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "transition-0",
-          "label": null,
-          "navigation": 2,
-          "provenance": "authored",
-          "source": 1,
-          "target": 2,
-          "trigger": {
-            "status": "absent"
-          }
-        },
-        {
-          "effect": {
-            "status": "absent"
-          },
-          "guard": {
-            "status": "absent"
-          },
-          "id": "transition-1",
-          "label": "finish",
-          "navigation": 7,
-          "provenance": "implied",
-          "source": 2,
-          "target": 0,
-          "trigger": {
-            "label": "Start",
-            "navigation": 8,
-            "status": "accept",
-            "target": {
-              "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:08:item-defn5:Start1:0",
-              "label": "Start"
-            }
-          }
-        }
-      ],
       "vertices": [
         {
           "id": "state-0",
-          "kind": "final",
           "label": "done",
+          "kind": "final",
           "navigation": 4
         },
         {
           "id": "state-1",
-          "kind": "initial",
           "label": "",
+          "kind": "initial",
           "navigation": 1
         },
         {
           "id": "state-2",
-          "kind": "state",
           "label": "idle",
+          "kind": "state",
           "navigation": 3
+        }
+      ],
+      "transitions": [
+        {
+          "id": "transition-0",
+          "label": null,
+          "source": 1,
+          "target": 2,
+          "trigger": {
+            "status": "absent"
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "effect": {
+            "status": "absent"
+          },
+          "provenance": "authored",
+          "navigation": 2
+        },
+        {
+          "id": "transition-1",
+          "label": "finish",
+          "source": 2,
+          "target": 0,
+          "trigger": {
+            "status": "accept",
+            "label": "Start",
+            "target": {
+              "id": "element/v154:memory://snapshot/diagram_state_transition_complete.md7:packagen12:StateExample1:08:item-defn5:Start1:0",
+              "label": "Start"
+            },
+            "navigation": 8
+          },
+          "guard": {
+            "status": "absent"
+          },
+          "effect": {
+            "status": "absent"
+          },
+          "provenance": "implied",
+          "navigation": 7
         }
       ]
     }

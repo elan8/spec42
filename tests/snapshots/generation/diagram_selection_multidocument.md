@@ -292,25 +292,25 @@ package BehaviorModel {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StructureModel::SelectedRoot"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StructureModel::SelectedRoot::included"
     },
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "StructureModel::selected"
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "source": 0,
       "relationshipKind": "containment",
-      "source": 0
+      "ordinal": 0
     }
   ],
   "selectedView": {
@@ -324,71 +324,71 @@ package BehaviorModel {
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 3,
-        "source": 0,
-        "target": 1
-      }
-    ],
+    "kind": "general-view",
     "exposedRoots": [
       0
     ],
-    "kind": "general-view",
+    "nodes": [
+      {
+        "reference": 0,
+        "metaclass": "PartDefinition",
+        "notationRole": "definition",
+        "name": "SelectedRoot",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": null,
+        "source": 0,
+        "compartments": [
+          {
+            "kind": "parts",
+            "provenance": "direct",
+            "members": [
+              1
+            ]
+          }
+        ],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      },
+      {
+        "reference": 1,
+        "metaclass": "PartUsage",
+        "notationRole": "usage",
+        "name": "included",
+        "typing": {
+          "status": "absent"
+        },
+        "owner": 0,
+        "source": 1,
+        "compartments": [],
+        "direction": null,
+        "conjugated": false,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "featureDirection": null
+      }
+    ],
+    "relationships": [],
+    "edges": [
+      {
+        "reference": 3,
+        "source": 0,
+        "target": 1,
+        "origin": 1,
+        "kind": "containment",
+        "provenance": "authored",
+        "navigation": 1
+      }
+    ],
     "metadata": {
       "roots": [
         0
       ]
     },
-    "nodes": [
-      {
-        "compartments": [
-          {
-            "kind": "parts",
-            "members": [
-              1
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartDefinition",
-        "name": "SelectedRoot",
-        "notationRole": "definition",
-        "owner": null,
-        "reference": 0,
-        "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "included",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 1,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      }
-    ],
-    "relationships": [],
     "scene": {
       "kind": "general"
     }

@@ -137,8 +137,8 @@ package EmptyExample {
   ],
   "references": [
     {
-      "document": 0,
       "kind": "qualified-name",
+      "document": 0,
       "qualifiedName": "EmptyExample::selected"
     }
   ],
@@ -153,14 +153,14 @@ package EmptyExample {
     "reasons": []
   },
   "projection": {
-    "edges": [],
-    "exposedRoots": [],
     "kind": "browser-view",
+    "exposedRoots": [],
+    "nodes": [],
+    "relationships": [],
+    "edges": [],
     "metadata": {
       "roots": []
     },
-    "nodes": [],
-    "relationships": [],
     "scene": {
       "kind": "browser"
     }

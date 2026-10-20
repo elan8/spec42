@@ -119,3 +119,15 @@ id = "lowering-gap-instantiation-argument-values"
 kind = "lowering_gap"
 owner = "spec42-semantic"
 summary = "An invocation or constructor mints one argument Feature per authored argument, redefining the instantiated type's parameter, but the argument's value Expression is not lowered as that feature's FeatureValue, so deriveInvocationExpressionArgument and deriveConstructorExpressionArgument (the values of the features redefining the instantiated type's inputs or features) have no value to read."
+
+[[issue]]
+id = "normative-specification-gap-join-node-specialization-anchor"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned SysML XMI body for checkJoinNodeSpecialization is specializesFromLibrary('Actions::Action::join') (SHA-256 7c22a6a592bb2778417bd7ce5cf5d58a123f48b63d7d5c072f5683b97a05d41d), but the rule's own documentation, 9.2.10.2.4 and the specialization table name Actions::Action::joins, the Systems Model Library declares only joins, and the Pilot specializes Actions::Action::joins. Enforcing the literal body flagged every join node with missing_library_anchor; no contract applies until OMG corrects the body."
+
+[[issue]]
+id = "normative-specification-gap-control-node-specialization-anchor"
+kind = "normative_specification_gap"
+owner = "omg-specification"
+summary = "Pinned SysML XMI body for checkControlNodeSpecialization is specializesFromLibrary('Action::Action::controls') (SHA-256 993827514573994eb52938e6c98cbea2e9c3d02dcf31694c8cd6846e6f437e0f), and its documentation names Actions::Action::control. The Systems Model Library declares Actions::Action::controls, which every concrete control node specializes through forks, joins, merges or decisions; the Pilot has no separate ControlNode rule. Enforcing the literal body flagged every control node with missing_library_anchor; no contract applies until OMG corrects the body."
