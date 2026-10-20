@@ -199,6 +199,43 @@ fn a_sequence_view_projects_lifelines_messages_and_their_order() {
             assert!(svg.contains(label), "the SVG contains {label}: {svg}");
         }
         assert!(!svg.contains("NaN"), "the SVG has finite geometry: {svg}");
+
+        // Lifelines stand in the order the scenario declares them (storefront, apiGateway,
+        // checkoutService), not in semantic-ID (alphabetical) order.
+        let nodes = product["projection"]["nodes"].as_array().expect("nodes");
+        let lifeline_names = scene["lifelines"]
+            .as_array()
+            .expect("lifelines")
+            .iter()
+            .map(|index| nodes[index.as_u64().expect("node index") as usize]["name"].clone())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            lifeline_names,
+            ["storefront", "apiGateway", "checkoutService"],
+            "lifelines keep their authored order"
+        );
+        let column = |name: &str| {
+            svg.find(&format!(">{name}<"))
+                .unwrap_or_else(|| panic!("{name}"))
+        };
+        assert!(
+            column("storefront") < column("apiGateway")
+                && column("apiGateway") < column("checkoutService"),
+            "the SVG draws the lifelines in authored order"
+        );
+        // SysML 8.2.3.25: a lifeline shows its type, and a typed message the item it carries.
+        assert!(
+            svg.contains(": Storefront"),
+            "the lifeline is labelled with its type: {svg}"
+        );
+        assert!(
+            svg.contains("submitCheckout : CheckoutRequest"),
+            "the typed message is labelled with its payload: {svg}"
+        );
+        assert!(
+            svg.contains(">forwardCheckout<"),
+            "an untyped message keeps its plain name: {svg}"
+        );
     });
 }
 

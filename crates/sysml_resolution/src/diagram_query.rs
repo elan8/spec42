@@ -1937,7 +1937,10 @@ fn sequence_scene(
             .as_ref()
             .is_some_and(|owner| roots.contains(&owner.semantic_id()))
     };
-    let lifelines = elements
+    // A sequence view owns a stronger order than semantic-ID order: lifelines stand in the
+    // order the scenario declares its participants, so messages read the way they were written
+    // rather than across an alphabetical column order.
+    let mut lifeline_elements = elements
         .iter()
         .filter(is_direct_member)
         .filter(|element| {
@@ -1946,6 +1949,10 @@ fn sequence_scene(
                 ElementKind::PartUsage | ElementKind::PortUsage
             )
         })
+        .collect::<Vec<_>>();
+    lifeline_elements.sort_by_key(|element| (element.source.document, element.source.range));
+    let lifelines = lifeline_elements
+        .into_iter()
         .map(|element| element.occurrence_id.clone())
         .collect::<Vec<_>>();
     let lifeline_set = lifelines.iter().cloned().collect::<BTreeSet<_>>();

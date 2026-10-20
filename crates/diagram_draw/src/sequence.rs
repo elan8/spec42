@@ -24,6 +24,18 @@ const MESSAGE_GAP: f64 = 44.0;
 const MESSAGE_LABEL_CHARACTER: f64 = 5.8;
 const LIFELINE_BOX_WIDTH: f64 = 132.0;
 const LIFELINE_BOX_HEIGHT: f64 = 38.0;
+/// The longest message label drawn: a name and the item it carries (`assignCar : CarAssignment`).
+const MESSAGE_LABEL_MAX: usize = 40;
+
+/// SysML 8.2.3.25: a message is labelled with its name and, when typed, the item it carries.
+fn message_label(message: &Value) -> String {
+    let name = as_str(get(message, "name").or_else(|| get(message, "label")), "");
+    match get(message, "payloadName").and_then(Value::as_str) {
+        Some(item) if !item.is_empty() && !name.is_empty() => format!("{name} : {item}"),
+        Some(item) if !item.is_empty() => item.to_owned(),
+        _ => name,
+    }
+}
 
 fn as_object(value: &Value) -> Option<&serde_json::Map<String, Value>> {
     value.as_object()
@@ -126,8 +138,8 @@ fn lifeline_gap(lifelines: &[Value], messages: &[Value]) -> f64 {
     };
     let mut gap: f64 = LIFELINE_BOX_WIDTH + 16.0;
     for message in messages {
-        let label = as_str(get(message, "name").or_else(|| get(message, "label")), "");
-        let characters = label.encode_utf16().count().min(28) as f64;
+        let label = message_label(message);
+        let characters = label.encode_utf16().count().min(MESSAGE_LABEL_MAX) as f64;
         let (Some(source), Some(target)) = (
             end(message, ["source", "from", "sourceId"]),
             end(message, ["target", "to", "targetId"]),
@@ -216,6 +228,10 @@ pub fn render_sequence_view(
             ),
             18,
         );
+        let type_name = get(lifeline, "typeName")
+            .and_then(Value::as_str)
+            .filter(|name| !name.is_empty())
+            .map(|name| truncate_label(&format!(": {name}"), 22));
         let prepared_node: Option<&PreparedNode> = find_prepared_lifeline(prepared, lifeline);
         let mut group = Element::new("g").attr("class", "sequence-lifeline").attr(
             "data-node-id",
@@ -246,21 +262,37 @@ pub fn render_sequence_view(
             .child(
                 Element::new("text")
                     .attr_f("x", x)
-                    .attr_f("y", HEADER_Y + 24.0)
+                    .attr_f(
+                        "y",
+                        HEADER_Y + if type_name.is_some() { 17.0 } else { 24.0 },
+                    )
                     .attr("text-anchor", "middle")
                     .style("font-size", "11px")
                     .style("fill", theme.text_primary)
                     .text(label),
-            )
-            .child(
-                Element::new("line")
-                    .attr_f("x1", x)
-                    .attr_f("y1", LIFELINE_TOP)
-                    .attr_f("x2", x)
-                    .attr_f("y2", lifeline_bottom)
-                    .style("stroke", theme.node_border)
-                    .style("stroke-dasharray", "6,4"),
             );
+        // SysML 8.2.3.25: the lifeline names its occurrence and, below it, the occurrence's type.
+        let group = match type_name {
+            Some(type_name) => group.child(
+                Element::new("text")
+                    .attr_f("x", x)
+                    .attr_f("y", HEADER_Y + 31.0)
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "10px")
+                    .style("fill", theme.text_secondary)
+                    .text(type_name),
+            ),
+            None => group,
+        };
+        let group = group.child(
+            Element::new("line")
+                .attr_f("x1", x)
+                .attr_f("y1", LIFELINE_TOP)
+                .attr_f("x2", x)
+                .attr_f("y2", lifeline_bottom)
+                .style("stroke", theme.node_border)
+                .style("stroke-dasharray", "6,4"),
+        );
         lifeline_layer = lifeline_layer.child(group);
     }
     root = root.child(lifeline_layer);
@@ -351,10 +383,7 @@ pub fn render_sequence_view(
                 source_x, y, target_x, y, &edge_id, None,
             ));
         }
-        let label = truncate_label(
-            &as_str(get(message, "name").or_else(|| get(message, "label")), ""),
-            28,
-        );
+        let label = truncate_label(&message_label(message), MESSAGE_LABEL_MAX);
         if !label.is_empty() {
             message_layer = message_layer.child(
                 Element::new("text")
@@ -363,6 +392,11 @@ pub fn render_sequence_view(
                     .attr("text-anchor", "middle")
                     .style("font-size", "10px")
                     .style("fill", theme.text_secondary)
+                    // A halo keeps the label readable where it crosses another lifeline.
+                    .attr("paint-order", "stroke fill")
+                    .attr("stroke", theme.canvas_background)
+                    .attr("stroke-width", "4")
+                    .attr("stroke-linejoin", "round")
                     .text(label),
             );
         }
