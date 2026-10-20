@@ -165,15 +165,15 @@ package BrowserNegative {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "BrowserNegative::selected"
     },
     {
       "kind": "source-anchor",
-      "source": 1,
-      "ownerQualifiedName": "BrowserNegative::selected",
       "metaclass": "Expose",
+      "ownerQualifiedName": "BrowserNegative::selected",
+      "source": 1,
       "sourceDomain": "workspace"
     }
   ],
@@ -193,14 +193,14 @@ package BrowserNegative {
     ]
   },
   "projection": {
-    "kind": "browser-view",
-    "exposedRoots": [],
-    "nodes": [],
-    "relationships": [],
     "edges": [],
+    "exposedRoots": [],
+    "kind": "browser-view",
     "metadata": {
       "roots": []
     },
+    "nodes": [],
+    "relationships": [],
     "scene": {
       "kind": "browser"
     }

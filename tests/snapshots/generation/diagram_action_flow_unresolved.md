@@ -163,15 +163,15 @@ package ActionNegative {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "ActionNegative::selected"
     },
     {
       "kind": "source-anchor",
-      "source": 1,
-      "ownerQualifiedName": "ActionNegative::selected",
       "metaclass": "Expose",
+      "ownerQualifiedName": "ActionNegative::selected",
+      "source": 1,
       "sourceDomain": "workspace"
     }
   ],
@@ -191,15 +191,15 @@ package ActionNegative {
     ]
   },
   "projection": {
-    "kind": "action-flow-view",
-    "exposedRoots": [],
-    "nodes": [],
-    "relationships": [],
     "edges": [],
+    "exposedRoots": [],
+    "kind": "action-flow-view",
     "metadata": {
       "actions": [],
       "controlNodes": []
     },
+    "nodes": [],
+    "relationships": [],
     "scene": {
       "kind": "action-flow"
     }

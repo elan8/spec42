@@ -216,36 +216,36 @@ package GridExample {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "GridExample::TableRoot"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "GridExample::TableRoot::first"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "GridExample::TableRoot::second"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "GridExample::selected"
     },
     {
       "kind": "relationship",
-      "source": 0,
+      "ordinal": 0,
       "relationshipKind": "containment",
-      "ordinal": 0
+      "source": 0
     },
     {
       "kind": "relationship",
-      "source": 0,
+      "ordinal": 1,
       "relationshipKind": "containment",
-      "ordinal": 1
+      "source": 0
     }
   ],
   "selectedView": {
@@ -259,106 +259,106 @@ package GridExample {
     "reasons": []
   },
   "projection": {
-    "kind": "grid-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 1,
+        "provenance": "authored",
+        "reference": 4,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 2,
+        "origin": 2,
+        "provenance": "authored",
+        "reference": 5,
+        "source": 0,
+        "target": 2
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 0,
-        "metaclass": "PartDefinition",
-        "notationRole": "definition",
-        "name": "TableRoot",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 0,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "direct",
-            "members": [
-              1,
-              2
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 1,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "first",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 1,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 2,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "second",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 2,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [],
-    "edges": [
-      {
-        "reference": 4,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 1
-      },
-      {
-        "reference": 5,
-        "source": 0,
-        "target": 2,
-        "origin": 2,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 2
-      }
-    ],
+    "kind": "grid-view",
     "metadata": {
-      "rows": [
-        0,
-        1,
-        2
-      ],
+      "cells": [],
       "columns": [
         "specializes",
         "subsetting",
         "typeFeaturing"
       ],
-      "cells": []
+      "rows": [
+        0,
+        1,
+        2
+      ]
     },
+    "nodes": [
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1,
+              2
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartDefinition",
+        "name": "TableRoot",
+        "notationRole": "definition",
+        "owner": null,
+        "reference": 0,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "first",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 1,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "second",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 2,
+        "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      }
+    ],
+    "relationships": [],
     "scene": {
       "kind": "grid"
     }

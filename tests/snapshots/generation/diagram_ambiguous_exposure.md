@@ -187,15 +187,15 @@ package AmbiguousExample {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "AmbiguousExample::selected"
     },
     {
       "kind": "source-anchor",
-      "source": 1,
-      "ownerQualifiedName": "AmbiguousExample::selected",
       "metaclass": "Expose",
+      "ownerQualifiedName": "AmbiguousExample::selected",
+      "source": 1,
       "sourceDomain": "workspace"
     }
   ],
@@ -215,14 +215,14 @@ package AmbiguousExample {
     ]
   },
   "projection": {
-    "kind": "general-view",
-    "exposedRoots": [],
-    "nodes": [],
-    "relationships": [],
     "edges": [],
+    "exposedRoots": [],
+    "kind": "general-view",
     "metadata": {
       "roots": []
     },
+    "nodes": [],
+    "relationships": [],
     "scene": {
       "kind": "general"
     }

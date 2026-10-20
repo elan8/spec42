@@ -165,15 +165,15 @@ package GridNegative {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "GridNegative::selected"
     },
     {
       "kind": "source-anchor",
-      "source": 1,
-      "ownerQualifiedName": "GridNegative::selected",
       "metaclass": "Expose",
+      "ownerQualifiedName": "GridNegative::selected",
+      "source": 1,
       "sourceDomain": "workspace"
     }
   ],
@@ -193,16 +193,16 @@ package GridNegative {
     ]
   },
   "projection": {
-    "kind": "grid-view",
+    "edges": [],
     "exposedRoots": [],
+    "kind": "grid-view",
+    "metadata": {
+      "cells": [],
+      "columns": [],
+      "rows": []
+    },
     "nodes": [],
     "relationships": [],
-    "edges": [],
-    "metadata": {
-      "rows": [],
-      "columns": [],
-      "cells": []
-    },
     "scene": {
       "kind": "grid"
     }

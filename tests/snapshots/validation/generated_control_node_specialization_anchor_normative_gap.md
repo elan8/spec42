@@ -30,11 +30,20 @@ package ControlNodeAnchorNormativeGap {
     }
 }
 ~~~
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/generated_control_node_specialization_anchor_normative_gap.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "ControlNodeAnchorNormativeGap::Choose::choice") (target "Actions::Action::decisions") (provenance implied) (outcome resolved))
-  (relationship (kind specialization) (source "ControlNodeAnchorNormativeGap::Choose::rejoin") (target "Actions::Action::merges") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source "ControlNodeAnchorNormativeGap::Choose::choice") (target "Actions::Action::controls") (provenance implied) (outcome resolved))
+  (relationship (kind subsetting) (source "ControlNodeAnchorNormativeGap::Choose::rejoin") (target "Actions::Action::controls") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

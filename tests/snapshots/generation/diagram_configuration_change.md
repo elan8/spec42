@@ -526,156 +526,156 @@ package ScenarioViews {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "ScenarioViews::configurationChange"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Scenarios::configurationChange"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Scenarios::configurationChange::"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Scenarios::configurationChange::authenticate"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Scenarios::configurationChange::commit"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Scenarios::configurationChange::proveRestart"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Scenarios::configurationChange::reviewCompatibility"
     },
     {
       "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Scenarios::configurationChange",
       "source": 5,
-      "ownerQualifiedName": "Scenarios::configurationChange",
-      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Scenarios::configurationChange",
       "source": 8,
-      "ownerQualifiedName": "Scenarios::configurationChange",
-      "metaclass": "SuccessionAsUsage",
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "source": 11,
-      "ownerQualifiedName": "Scenarios::configurationChange",
       "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Scenarios::configurationChange",
+      "source": 11,
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 0,
       "relationshipKind": "containment",
-      "ordinal": 0
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 2,
       "relationshipKind": "containment",
-      "ordinal": 2
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 4,
       "relationshipKind": "containment",
-      "ordinal": 4
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 6,
       "relationshipKind": "containment",
-      "ordinal": 6
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 7,
       "relationshipKind": "containment",
-      "ordinal": 7
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 8,
       "relationshipKind": "containment",
-      "ordinal": 8
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 9,
       "relationshipKind": "containment",
-      "ordinal": 9
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 2,
+      "ordinal": 2,
       "relationshipKind": "succession",
-      "ordinal": 2
+      "source": 2
     },
     {
       "kind": "relationship",
-      "source": 2,
+      "ordinal": 3,
       "relationshipKind": "succession",
-      "ordinal": 3
+      "source": 2
     },
     {
       "kind": "relationship",
-      "source": 2,
+      "ordinal": 6,
       "relationshipKind": "succession",
-      "ordinal": 6
+      "source": 2
     },
     {
       "kind": "relationship",
-      "source": 2,
+      "ordinal": 7,
       "relationshipKind": "succession",
-      "ordinal": 7
+      "source": 2
     },
     {
       "kind": "relationship",
-      "source": 2,
+      "ordinal": 10,
       "relationshipKind": "succession",
-      "ordinal": 10
+      "source": 2
     },
     {
       "kind": "relationship",
-      "source": 2,
+      "ordinal": 11,
       "relationshipKind": "succession",
-      "ordinal": 11
+      "source": 2
     },
     {
       "kind": "relationship",
-      "source": 3,
+      "ordinal": 1,
       "relationshipKind": "succession",
-      "ordinal": 1
+      "source": 3
     },
     {
       "kind": "relationship",
-      "source": 4,
+      "ordinal": 5,
       "relationshipKind": "succession",
-      "ordinal": 5
+      "source": 4
     },
     {
       "kind": "relationship",
-      "source": 6,
+      "ordinal": 3,
       "relationshipKind": "succession",
-      "ordinal": 3
+      "source": 6
     }
   ],
   "selectedView": {
@@ -689,319 +689,102 @@ package ScenarioViews {
     "reasons": []
   },
   "projection": {
-    "kind": "action-flow-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 1,
+        "provenance": "authored",
+        "reference": 10,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "succession",
+        "navigation": 6,
+        "origin": 1,
+        "provenance": "implied",
+        "reference": 23,
+        "source": 4,
+        "target": 6
+      },
+      {
+        "kind": "containment",
+        "navigation": 8,
+        "origin": 2,
+        "provenance": "authored",
+        "reference": 11,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "succession",
+        "navigation": 9,
+        "origin": 2,
+        "provenance": "implied",
+        "reference": 25,
+        "source": 6,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "origin": 3,
+        "provenance": "authored",
+        "reference": 12,
+        "source": 0,
+        "target": 3
+      },
+      {
+        "kind": "succession",
+        "navigation": 12,
+        "origin": 3,
+        "provenance": "implied",
+        "reference": 24,
+        "source": 7,
+        "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 3,
+        "origin": 7,
+        "provenance": "authored",
+        "reference": 13,
+        "source": 0,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 4,
+        "provenance": "authored",
+        "reference": 14,
+        "source": 0,
+        "target": 4
+      },
+      {
+        "kind": "containment",
+        "navigation": 4,
+        "origin": 5,
+        "provenance": "authored",
+        "reference": 15,
+        "source": 0,
+        "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 2,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 16,
+        "source": 0,
+        "target": 6
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 1,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "configurationChange",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 0,
-        "compartments": [
-          {
-            "kind": "actions",
-            "provenance": "direct",
-            "members": [
-              4,
-              5,
-              6,
-              7
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 7,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 5,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 8,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 8,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 9,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 11,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 3,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "authenticate",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 1,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 5,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "proveRestart",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 4,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 6,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "reviewCompatibility",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 2,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 4,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "commit",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 3,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [
-      {
-        "reference": 17,
-        "source": 1,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 4
-        },
-        "provenance": "authored",
-        "navigation": 6
-      },
-      {
-        "reference": 18,
-        "source": 1,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 6
-        },
-        "provenance": "authored",
-        "navigation": 7
-      },
-      {
-        "reference": 19,
-        "source": 2,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 6
-        },
-        "provenance": "authored",
-        "navigation": 9
-      },
-      {
-        "reference": 20,
-        "source": 2,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 7
-        },
-        "provenance": "authored",
-        "navigation": 10
-      },
-      {
-        "reference": 21,
-        "source": 3,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 7
-        },
-        "provenance": "authored",
-        "navigation": 12
-      },
-      {
-        "reference": 22,
-        "source": 3,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 5
-        },
-        "provenance": "authored",
-        "navigation": 13
-      }
-    ],
-    "edges": [
-      {
-        "reference": 10,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 5
-      },
-      {
-        "reference": 23,
-        "source": 4,
-        "target": 6,
-        "origin": 1,
-        "kind": "succession",
-        "provenance": "implied",
-        "navigation": 6
-      },
-      {
-        "reference": 11,
-        "source": 0,
-        "target": 2,
-        "origin": 2,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 8
-      },
-      {
-        "reference": 25,
-        "source": 6,
-        "target": 7,
-        "origin": 2,
-        "kind": "succession",
-        "provenance": "implied",
-        "navigation": 9
-      },
-      {
-        "reference": 12,
-        "source": 0,
-        "target": 3,
-        "origin": 3,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 11
-      },
-      {
-        "reference": 24,
-        "source": 7,
-        "target": 5,
-        "origin": 3,
-        "kind": "succession",
-        "provenance": "implied",
-        "navigation": 12
-      },
-      {
-        "reference": 13,
-        "source": 0,
-        "target": 7,
-        "origin": 7,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 3
-      },
-      {
-        "reference": 14,
-        "source": 0,
-        "target": 4,
-        "origin": 4,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 1
-      },
-      {
-        "reference": 15,
-        "source": 0,
-        "target": 5,
-        "origin": 5,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 4
-      },
-      {
-        "reference": 16,
-        "source": 0,
-        "target": 6,
-        "origin": 6,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 2
-      }
-    ],
+    "kind": "action-flow-view",
     "metadata": {
       "actions": [
         0,
@@ -1012,6 +795,223 @@ package ScenarioViews {
       ],
       "controlNodes": []
     },
+    "nodes": [
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "configurationChange",
+        "notationRole": "usage",
+        "owner": null,
+        "reference": 1,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 7,
+        "source": 5,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 8,
+        "source": 8,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 9,
+        "source": 11,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "authenticate",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 3,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "proveRestart",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 5,
+        "source": 4,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "reviewCompatibility",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 6,
+        "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "commit",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 4,
+        "source": 3,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "kind": "succession",
+        "navigation": 6,
+        "provenance": "authored",
+        "reference": 17,
+        "source": 1,
+        "target": {
+          "node": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 7,
+        "provenance": "authored",
+        "reference": 18,
+        "source": 1,
+        "target": {
+          "node": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 9,
+        "provenance": "authored",
+        "reference": 19,
+        "source": 2,
+        "target": {
+          "node": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 10,
+        "provenance": "authored",
+        "reference": 20,
+        "source": 2,
+        "target": {
+          "node": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 12,
+        "provenance": "authored",
+        "reference": 21,
+        "source": 3,
+        "target": {
+          "node": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 13,
+        "provenance": "authored",
+        "reference": 22,
+        "source": 3,
+        "target": {
+          "node": 5,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "action-flow"
     }

@@ -306,36 +306,36 @@ package Garage {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Garage::Car"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Garage::Car::engine"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Garage::Car::wheel"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Garage::both"
     },
     {
       "kind": "relationship",
-      "source": 0,
+      "ordinal": 0,
       "relationshipKind": "containment",
-      "ordinal": 0
+      "source": 0
     },
     {
       "kind": "relationship",
-      "source": 0,
+      "ordinal": 1,
       "relationshipKind": "containment",
-      "ordinal": 1
+      "source": 0
     }
   ],
   "selectedView": {
@@ -349,102 +349,102 @@ package Garage {
     "reasons": []
   },
   "projection": {
-    "kind": "interconnection-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 2,
+        "provenance": "authored",
+        "reference": 4,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 2,
+        "origin": 1,
+        "provenance": "authored",
+        "reference": 5,
+        "source": 0,
+        "target": 1
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 0,
-        "metaclass": "PartDefinition",
-        "notationRole": "definition",
-        "name": "Car",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 0,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "direct",
-            "members": [
-              1,
-              2
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 2,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "wheel",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 2,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 1,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "engine",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 1,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [],
-    "edges": [
-      {
-        "reference": 4,
-        "source": 0,
-        "target": 2,
-        "origin": 2,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 1
-      },
-      {
-        "reference": 5,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 2
-      }
-    ],
+    "kind": "interconnection-view",
     "metadata": {
+      "connectors": [],
       "parts": [
         0,
         1,
         2
       ],
-      "ports": [],
-      "connectors": []
+      "ports": []
     },
+    "nodes": [
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1,
+              2
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartDefinition",
+        "name": "Car",
+        "notationRole": "definition",
+        "owner": null,
+        "reference": 0,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "wheel",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 2,
+        "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "engine",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 1,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      }
+    ],
+    "relationships": [],
     "scene": {
       "kind": "interconnection"
     }

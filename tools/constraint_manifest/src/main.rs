@@ -2153,6 +2153,22 @@ mod tests {
     }
 
     #[test]
+    fn misspelled_pinned_library_anchors_stay_gaps_without_rewriting_the_body() {
+        for anchor in ["Actions::Action::join", "Action::Action::controls"] {
+            assert_eq!(
+                exact_library_specialization_anchor(&format!("specializesFromLibrary('{anchor}')")),
+                None
+            );
+        }
+        for anchor in ["Actions::Action::joins", "Actions::Action::controls"] {
+            assert_eq!(
+                exact_library_specialization_anchor(&format!("specializesFromLibrary('{anchor}')")),
+                Some(anchor.to_owned())
+            );
+        }
+    }
+
+    #[test]
     fn conditional_library_specialization_contracts_are_closed_exact_ocl_shapes() {
         assert_eq!(
             exact_conditional_library_specialization(

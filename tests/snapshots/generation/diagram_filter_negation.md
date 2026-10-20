@@ -295,36 +295,36 @@ package Filters {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Filters::Assembly"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Filters::Assembly::child"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Filters::Component"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Filters::selected"
     },
     {
       "kind": "relationship",
-      "source": 0,
+      "ordinal": 0,
       "relationshipKind": "containment",
-      "ordinal": 0
+      "source": 0
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 1,
       "relationshipKind": "typing",
-      "ordinal": 1
+      "source": 1
     }
   ],
   "selectedView": {
@@ -338,92 +338,92 @@ package Filters {
     "reasons": []
   },
   "projection": {
-    "kind": "interconnection-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 1,
+        "provenance": "authored",
+        "reference": 4,
+        "source": 0,
+        "target": 1
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 0,
-        "metaclass": "PartDefinition",
-        "notationRole": "definition",
-        "name": "Assembly",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 0,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "direct",
-            "members": [
-              1
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 1,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "child",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 2,
-              "label": "Component"
-            }
-          ]
-        },
-        "owner": 0,
-        "source": 1,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [
-      {
-        "reference": 5,
-        "source": 1,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 2
-        },
-        "provenance": "authored",
-        "navigation": 2
-      }
-    ],
-    "edges": [
-      {
-        "reference": 4,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 1
-      }
-    ],
+    "kind": "interconnection-view",
     "metadata": {
+      "connectors": [],
       "parts": [
         0,
         1
       ],
-      "ports": [],
-      "connectors": []
+      "ports": []
     },
+    "nodes": [
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartDefinition",
+        "name": "Assembly",
+        "notationRole": "definition",
+        "owner": null,
+        "reference": 0,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "child",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 1,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Component",
+              "reference": 2
+            }
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 5,
+        "source": 1,
+        "target": {
+          "reference": 2,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "interconnection"
     }

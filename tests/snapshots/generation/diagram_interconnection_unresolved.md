@@ -165,15 +165,15 @@ package InterconnectionNegative {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "InterconnectionNegative::selected"
     },
     {
       "kind": "source-anchor",
-      "source": 1,
-      "ownerQualifiedName": "InterconnectionNegative::selected",
       "metaclass": "Expose",
+      "ownerQualifiedName": "InterconnectionNegative::selected",
+      "source": 1,
       "sourceDomain": "workspace"
     }
   ],
@@ -193,16 +193,16 @@ package InterconnectionNegative {
     ]
   },
   "projection": {
-    "kind": "interconnection-view",
+    "edges": [],
     "exposedRoots": [],
+    "kind": "interconnection-view",
+    "metadata": {
+      "connectors": [],
+      "parts": [],
+      "ports": []
+    },
     "nodes": [],
     "relationships": [],
-    "edges": [],
-    "metadata": {
-      "parts": [],
-      "ports": [],
-      "connectors": []
-    },
     "scene": {
       "kind": "interconnection"
     }

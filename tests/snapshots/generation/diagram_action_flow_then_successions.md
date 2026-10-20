@@ -1306,561 +1306,561 @@ package Flow {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Order"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Paid"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::::"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::choice"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::finish"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::joined"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::left"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::left::order"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::prepare"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::prepare::order"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::right"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::split"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::Process::waitForPayment"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "Flow::process"
     },
     {
-      "kind": "qualified-name",
       "document": 1,
+      "kind": "qualified-name",
       "qualifiedName": "Actions::Action"
     },
     {
-      "kind": "qualified-name",
       "document": 1,
+      "kind": "qualified-name",
       "qualifiedName": "Actions::Action::done"
     },
     {
-      "kind": "qualified-name",
       "document": 1,
+      "kind": "qualified-name",
       "qualifiedName": "Actions::Action::start"
     },
     {
-      "kind": "qualified-name",
       "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "Occurrences::Occurrence::endShot"
     },
     {
-      "kind": "qualified-name",
       "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "Occurrences::Occurrence::startShot"
     },
     {
       "kind": "source-anchor",
-      "source": 31,
-      "ownerQualifiedName": "Flow::Process",
       "metaclass": "AcceptActionUsage",
+      "ownerQualifiedName": "Flow::Process",
+      "source": 31,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "source": 9,
-      "ownerQualifiedName": "Flow::Process",
       "metaclass": "FlowUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 12,
       "ownerQualifiedName": "Flow::Process",
-      "metaclass": "SuccessionAsUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 14,
-      "ownerQualifiedName": "Flow::Process",
-      "metaclass": "SuccessionAsUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 17,
-      "ownerQualifiedName": "Flow::Process",
-      "metaclass": "SuccessionAsUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 19,
-      "ownerQualifiedName": "Flow::Process",
-      "metaclass": "SuccessionAsUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 21,
-      "ownerQualifiedName": "Flow::Process",
-      "metaclass": "SuccessionAsUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 24,
-      "ownerQualifiedName": "Flow::Process",
-      "metaclass": "SuccessionAsUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 33,
-      "ownerQualifiedName": "Flow::Process",
-      "metaclass": "SuccessionAsUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 35,
-      "ownerQualifiedName": "Flow::Process",
-      "metaclass": "SuccessionAsUsage",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 10,
-      "ownerQualifiedName": "Flow::Process::",
-      "metaclass": "FlowEnd",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 11,
-      "ownerQualifiedName": "Flow::Process::",
-      "metaclass": "FlowEnd",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 10,
-      "ownerQualifiedName": "Flow::Process::::",
-      "metaclass": "Feature",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "source": 11,
-      "ownerQualifiedName": "Flow::Process::::",
-      "metaclass": "Feature",
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 0
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 1
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 3
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 5
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 7
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 9
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 10
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 12
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 13
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 15
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 16
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 18
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 20
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 22
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 24
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 26
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 28
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 30
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 31
-    },
-    {
-      "kind": "relationship",
-      "source": 2,
-      "relationshipKind": "containment",
-      "ordinal": 32
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "acceptPayloadType",
-      "ordinal": 30
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "containment",
-      "ordinal": 34
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "containment",
-      "ordinal": 36
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "flowSource",
-      "ordinal": 71
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "flowTarget",
-      "ordinal": 72
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "succession",
-      "ordinal": 2
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "succession",
-      "ordinal": 5
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "succession",
-      "ordinal": 6
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "succession",
-      "ordinal": 9
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "succession",
-      "ordinal": 10
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "succession",
-      "ordinal": 13
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "succession",
-      "ordinal": 14
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "succession",
-      "ordinal": 27
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "thenTarget",
-      "ordinal": 46
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "thenTarget",
-      "ordinal": 49
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "thenTarget",
-      "ordinal": 52
-    },
-    {
-      "kind": "relationship",
-      "source": 3,
-      "relationshipKind": "thenTarget",
-      "ordinal": 55
-    },
-    {
-      "kind": "relationship",
-      "source": 4,
-      "relationshipKind": "containment",
-      "ordinal": 35
-    },
-    {
-      "kind": "relationship",
-      "source": 4,
-      "relationshipKind": "containment",
-      "ordinal": 37
-    },
-    {
-      "kind": "relationship",
-      "source": 5,
-      "relationshipKind": "succession",
-      "ordinal": 29
-    },
-    {
-      "kind": "relationship",
-      "source": 6,
-      "relationshipKind": "succession",
-      "ordinal": 6
-    },
-    {
-      "kind": "relationship",
-      "source": 7,
-      "relationshipKind": "succession",
-      "ordinal": 17
-    },
-    {
-      "kind": "relationship",
-      "source": 8,
-      "relationshipKind": "containment",
-      "ordinal": 11
-    },
-    {
-      "kind": "relationship",
-      "source": 8,
-      "relationshipKind": "succession",
-      "ordinal": 2
-    },
-    {
-      "kind": "relationship",
       "source": 9,
-      "relationshipKind": "typing",
-      "ordinal": 24
+      "sourceDomain": "workspace"
     },
     {
-      "kind": "relationship",
-      "source": 10,
-      "relationshipKind": "containment",
-      "ordinal": 19
-    },
-    {
-      "kind": "relationship",
-      "source": 11,
-      "relationshipKind": "flow",
-      "ordinal": 33
-    },
-    {
-      "kind": "relationship",
-      "source": 11,
-      "relationshipKind": "typing",
-      "ordinal": 42
-    },
-    {
-      "kind": "relationship",
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Process",
       "source": 12,
-      "relationshipKind": "succession",
-      "ordinal": 4
+      "sourceDomain": "workspace"
     },
     {
-      "kind": "relationship",
-      "source": 13,
-      "relationshipKind": "succession",
-      "ordinal": 23
-    },
-    {
-      "kind": "relationship",
-      "source": 13,
-      "relationshipKind": "succession",
-      "ordinal": 25
-    },
-    {
-      "kind": "relationship",
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Process",
       "source": 14,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Process",
+      "source": 17,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Process",
+      "source": 19,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Process",
+      "source": 21,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Process",
+      "source": 24,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Process",
+      "source": 33,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Process",
+      "source": 35,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "Flow::Process::",
+      "source": 10,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "Flow::Process::",
+      "source": 11,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "Flow::Process::::",
+      "source": 10,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "Flow::Process::::",
+      "source": 11,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
       "relationshipKind": "acceptPayloadType",
-      "ordinal": 57
+      "source": 3
     },
     {
       "kind": "relationship",
-      "source": 14,
+      "ordinal": 34,
+      "relationshipKind": "containment",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "containment",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 71,
+      "relationshipKind": "flowSource",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 72,
+      "relationshipKind": "flowTarget",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
       "relationshipKind": "succession",
-      "ordinal": 14
+      "source": 3
     },
     {
       "kind": "relationship",
-      "source": 17,
-      "relationshipKind": "redefinition",
-      "ordinal": 62
+      "ordinal": 5,
+      "relationshipKind": "succession",
+      "source": 3
     },
     {
       "kind": "relationship",
-      "source": 17,
+      "ordinal": 6,
+      "relationshipKind": "succession",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "succession",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "succession",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "succession",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "succession",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "succession",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 46,
+      "relationshipKind": "thenTarget",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "thenTarget",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "thenTarget",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "thenTarget",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "containment",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
+      "relationshipKind": "containment",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "succession",
+      "source": 5
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "succession",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "succession",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "containment",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
       "relationshipKind": "typing",
-      "ordinal": 61
+      "source": 9
     },
     {
       "kind": "relationship",
-      "source": 18,
-      "relationshipKind": "redefinition",
-      "ordinal": 67
+      "ordinal": 19,
+      "relationshipKind": "containment",
+      "source": 10
     },
     {
       "kind": "relationship",
-      "source": 18,
-      "relationshipKind": "succession",
-      "ordinal": 8
+      "ordinal": 33,
+      "relationshipKind": "flow",
+      "source": 11
     },
     {
       "kind": "relationship",
-      "source": 18,
-      "relationshipKind": "succession",
-      "ordinal": 21
-    },
-    {
-      "kind": "relationship",
-      "source": 18,
+      "ordinal": 42,
       "relationshipKind": "typing",
-      "ordinal": 66
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "succession",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "succession",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "succession",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "acceptPayloadType",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "succession",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
+      "relationshipKind": "redefinition",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 61,
+      "relationshipKind": "typing",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 67,
+      "relationshipKind": "redefinition",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "succession",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "succession",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 66,
+      "relationshipKind": "typing",
+      "source": 18
     }
   ],
   "selectedView": {
@@ -1874,1116 +1874,354 @@ package Flow {
     "reasons": []
   },
   "projection": {
-    "kind": "action-flow-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 12,
+        "origin": 1,
+        "provenance": "authored",
+        "reference": 35,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 21,
+        "origin": 2,
+        "provenance": "authored",
+        "reference": 36,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "succession",
+        "navigation": 22,
+        "origin": 2,
+        "provenance": "implied",
+        "reference": 78,
+        "source": 18,
+        "target": 17
+      },
+      {
+        "kind": "containment",
+        "navigation": 24,
+        "origin": 3,
+        "provenance": "authored",
+        "reference": 37,
+        "source": 0,
+        "target": 3
+      },
+      {
+        "kind": "succession",
+        "navigation": 25,
+        "origin": 3,
+        "provenance": "implied",
+        "reference": 83,
+        "source": 20,
+        "target": 17
+      },
+      {
+        "kind": "containment",
+        "navigation": 35,
+        "origin": 4,
+        "provenance": "authored",
+        "reference": 38,
+        "source": 0,
+        "target": 4
+      },
+      {
+        "kind": "succession",
+        "navigation": 36,
+        "origin": 4,
+        "provenance": "implied",
+        "reference": 75,
+        "source": 21,
+        "target": 25
+      },
+      {
+        "kind": "containment",
+        "navigation": 16,
+        "origin": 16,
+        "provenance": "authored",
+        "reference": 39,
+        "source": 0,
+        "target": 16
+      },
+      {
+        "kind": "succession",
+        "navigation": 16,
+        "origin": 16,
+        "provenance": "authored",
+        "reference": 91,
+        "source": 26,
+        "target": 16
+      },
+      {
+        "kind": "containment",
+        "navigation": 27,
+        "origin": 17,
+        "provenance": "authored",
+        "reference": 40,
+        "source": 0,
+        "target": 17
+      },
+      {
+        "kind": "containment",
+        "navigation": 4,
+        "origin": 18,
+        "provenance": "authored",
+        "reference": 41,
+        "source": 0,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 19,
+        "provenance": "authored",
+        "reference": 77,
+        "source": 18,
+        "target": 19
+      },
+      {
+        "kind": "containment",
+        "navigation": 7,
+        "origin": 20,
+        "provenance": "authored",
+        "reference": 42,
+        "source": 0,
+        "target": 20
+      },
+      {
+        "kind": "containment",
+        "navigation": 31,
+        "origin": 5,
+        "provenance": "authored",
+        "reference": 43,
+        "source": 0,
+        "target": 5
+      },
+      {
+        "kind": "succession",
+        "navigation": 31,
+        "origin": 5,
+        "provenance": "authored",
+        "reference": 87,
+        "source": 6,
+        "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 8,
+        "origin": 21,
+        "provenance": "authored",
+        "reference": 44,
+        "source": 0,
+        "target": 21
+      },
+      {
+        "kind": "containment",
+        "navigation": 28,
+        "origin": 24,
+        "provenance": "authored",
+        "reference": 45,
+        "source": 0,
+        "target": 24
+      },
+      {
+        "kind": "succession",
+        "navigation": 28,
+        "origin": 24,
+        "provenance": "authored",
+        "reference": 76,
+        "source": 17,
+        "target": 24
+      },
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 22,
+        "provenance": "authored",
+        "reference": 46,
+        "source": 0,
+        "target": 22
+      },
+      {
+        "kind": "containment",
+        "navigation": 2,
+        "origin": 23,
+        "provenance": "authored",
+        "reference": 80,
+        "source": 22,
+        "target": 23
+      },
+      {
+        "kind": "containment",
+        "navigation": 14,
+        "origin": 7,
+        "provenance": "authored",
+        "reference": 47,
+        "source": 0,
+        "target": 7
+      },
+      {
+        "kind": "succession",
+        "navigation": 14,
+        "origin": 7,
+        "provenance": "authored",
+        "reference": 92,
+        "source": 26,
+        "target": 22
+      },
+      {
+        "kind": "containment",
+        "navigation": 17,
+        "origin": 8,
+        "provenance": "authored",
+        "reference": 48,
+        "source": 0,
+        "target": 8
+      },
+      {
+        "kind": "succession",
+        "navigation": 17,
+        "origin": 8,
+        "provenance": "authored",
+        "reference": 84,
+        "source": 16,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 19,
+        "origin": 9,
+        "provenance": "authored",
+        "reference": 49,
+        "source": 0,
+        "target": 9
+      },
+      {
+        "kind": "succession",
+        "navigation": 19,
+        "origin": 9,
+        "provenance": "authored",
+        "reference": 85,
+        "source": 16,
+        "target": 20
+      },
+      {
+        "kind": "containment",
+        "navigation": 33,
+        "origin": 10,
+        "provenance": "authored",
+        "reference": 50,
+        "source": 0,
+        "target": 10
+      },
+      {
+        "kind": "succession",
+        "navigation": 33,
+        "origin": 10,
+        "provenance": "authored",
+        "reference": 67,
+        "source": 5,
+        "target": 21
+      },
+      {
+        "kind": "containment",
+        "navigation": 29,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 51,
+        "source": 0,
+        "target": 6
+      },
+      {
+        "kind": "succession",
+        "navigation": 29,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 74,
+        "source": 24,
+        "target": 6
+      },
+      {
+        "kind": "containment",
+        "navigation": 42,
+        "origin": 25,
+        "provenance": "implied",
+        "reference": 52,
+        "source": 0,
+        "target": 25
+      },
+      {
+        "kind": "containment",
+        "navigation": 39,
+        "origin": 26,
+        "provenance": "implied",
+        "reference": 53,
+        "source": 0,
+        "target": 26
+      },
+      {
+        "kind": "containment",
+        "navigation": 9,
+        "origin": 11,
+        "provenance": "authored",
+        "reference": 54,
+        "source": 0,
+        "target": 11
+      },
+      {
+        "kind": "flow",
+        "navigation": 10,
+        "origin": 11,
+        "provenance": "implied",
+        "reference": 81,
+        "source": 23,
+        "target": 19
+      },
+      {
+        "kind": "containment",
+        "navigation": 10,
+        "origin": 12,
+        "provenance": "authored",
+        "reference": 56,
+        "source": 11,
+        "target": 12
+      },
+      {
+        "kind": "containment",
+        "navigation": 10,
+        "origin": 13,
+        "provenance": "authored",
+        "reference": 72,
+        "source": 12,
+        "target": 13
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "origin": 14,
+        "provenance": "authored",
+        "reference": 57,
+        "source": 11,
+        "target": 14
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "origin": 15,
+        "provenance": "authored",
+        "reference": 73,
+        "source": 14,
+        "target": 15
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 2,
-        "metaclass": "ActionDefinition",
-        "notationRole": "definition",
-        "name": "Process",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 0,
-        "compartments": [
-          {
-            "kind": "actions",
-            "provenance": "direct",
-            "members": [
-              5,
-              6,
-              18,
-              20,
-              21,
-              22
-            ]
-          },
-          {
-            "kind": "actions",
-            "provenance": "inherited",
-            "members": [
-              25,
-              26
-            ]
-          },
-          {
-            "kind": "connections",
-            "provenance": "direct",
-            "members": [
-              11
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 23,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 12,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 27,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 21,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 28,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 24,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 30,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 35,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 21,
-        "metaclass": "AcceptActionUsage",
-        "notationRole": "usage",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 31,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 14,
-        "metaclass": "AcceptActionUsage",
-        "notationRole": "usage",
-        "name": "waitForPayment",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 29,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 24,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 14,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 25,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 17,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 26,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 19,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 29,
-        "metaclass": "SuccessionAsUsage",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 33,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 22,
-        "metaclass": "FlowUsage",
-        "notationRole": "usage",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 9,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 31,
-        "metaclass": "FlowEnd",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 11,
-        "source": 10,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 33,
-        "metaclass": "Feature",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 12,
-        "source": 10,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 32,
-        "metaclass": "FlowEnd",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 11,
-        "source": 11,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 34,
-        "metaclass": "Feature",
-        "notationRole": "unsupported",
-        "name": null,
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 14,
-        "source": 11,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 13,
-        "metaclass": "ForkNode",
-        "notationRole": "usage",
-        "name": "split",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 16,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 7,
-        "metaclass": "JoinNode",
-        "notationRole": "usage",
-        "name": "joined",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 27,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 8,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "left",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 4,
-        "compartments": [
-          {
-            "kind": "items",
-            "provenance": "direct",
-            "members": [
-              19
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 9,
-        "metaclass": "ItemUsage",
-        "notationRole": "usage",
-        "name": "order",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 0,
-              "label": "Order"
-            }
-          ]
-        },
-        "owner": 18,
-        "source": 5,
-        "compartments": [],
-        "direction": "in",
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 12,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "right",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 7,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 6,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "finish",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 8,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 10,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "prepare",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 1,
-        "compartments": [
-          {
-            "kind": "items",
-            "provenance": "direct",
-            "members": [
-              23
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 11,
-        "metaclass": "ItemUsage",
-        "notationRole": "usage",
-        "name": "order",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 0,
-              "label": "Order"
-            }
-          ]
-        },
-        "owner": 22,
-        "source": 2,
-        "compartments": [],
-        "direction": "out",
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 5,
-        "metaclass": "DecisionNode",
-        "notationRole": "usage",
-        "name": "choice",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 28,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 17,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "done",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 16,
-              "label": "Action"
-            }
-          ]
-        },
-        "owner": 0,
-        "source": 42,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 18,
-        "metaclass": "ActionUsage",
-        "notationRole": "usage",
-        "name": "start",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 16,
-              "label": "Action"
-            }
-          ]
-        },
-        "owner": 0,
-        "source": 39,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [
-      {
-        "reference": 60,
-        "source": 1,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 26
-        },
-        "provenance": "authored",
-        "navigation": 13
-      },
-      {
-        "reference": 61,
-        "source": 2,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 18
-        },
-        "provenance": "authored",
-        "navigation": 22
-      },
-      {
-        "reference": 62,
-        "source": 2,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 17
-        },
-        "provenance": "authored",
-        "navigation": 23
-      },
-      {
-        "reference": 63,
-        "source": 3,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 20
-        },
-        "provenance": "authored",
-        "navigation": 25
-      },
-      {
-        "reference": 64,
-        "source": 3,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 17
-        },
-        "provenance": "authored",
-        "navigation": 26
-      },
-      {
-        "reference": 65,
-        "source": 4,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 21
-        },
-        "provenance": "authored",
-        "navigation": 36
-      },
-      {
-        "reference": 66,
-        "source": 4,
-        "kind": "succession",
-        "target": {
-          "status": "resolved",
-          "node": 25
-        },
-        "provenance": "authored",
-        "navigation": 37
-      },
-      {
-        "reference": 79,
-        "source": 19,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 0
-        },
-        "provenance": "authored",
-        "navigation": 6
-      },
-      {
-        "reference": 55,
-        "source": 5,
-        "kind": "acceptPayloadType",
-        "target": {
-          "status": "resolved",
-          "reference": 1
-        },
-        "provenance": "authored",
-        "navigation": 32
-      },
-      {
-        "reference": 82,
-        "source": 23,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 0
-        },
-        "provenance": "authored",
-        "navigation": 3
-      },
-      {
-        "reference": 68,
-        "source": 7,
-        "kind": "thenTarget",
-        "target": {
-          "status": "resolved",
-          "node": 22
-        },
-        "provenance": "authored",
-        "navigation": 15
-      },
-      {
-        "reference": 69,
-        "source": 8,
-        "kind": "thenTarget",
-        "target": {
-          "status": "resolved",
-          "node": 18
-        },
-        "provenance": "authored",
-        "navigation": 18
-      },
-      {
-        "reference": 70,
-        "source": 9,
-        "kind": "thenTarget",
-        "target": {
-          "status": "resolved",
-          "node": 20
-        },
-        "provenance": "authored",
-        "navigation": 20
-      },
-      {
-        "reference": 71,
-        "source": 10,
-        "kind": "thenTarget",
-        "target": {
-          "status": "resolved",
-          "node": 21
-        },
-        "provenance": "authored",
-        "navigation": 34
-      },
-      {
-        "reference": 86,
-        "source": 6,
-        "kind": "acceptPayloadType",
-        "target": {
-          "status": "resolved",
-          "reference": 1
-        },
-        "provenance": "authored",
-        "navigation": 30
-      },
-      {
-        "reference": 89,
-        "source": 25,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 16
-        },
-        "provenance": "authored",
-        "navigation": 43
-      },
-      {
-        "reference": 88,
-        "source": 25,
-        "kind": "redefinition",
-        "target": {
-          "status": "resolved",
-          "reference": 19
-        },
-        "provenance": "authored",
-        "navigation": 44
-      },
-      {
-        "reference": 93,
-        "source": 26,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 16
-        },
-        "provenance": "authored",
-        "navigation": 40
-      },
-      {
-        "reference": 90,
-        "source": 26,
-        "kind": "redefinition",
-        "target": {
-          "status": "resolved",
-          "reference": 20
-        },
-        "provenance": "authored",
-        "navigation": 41
-      },
-      {
-        "reference": 58,
-        "source": 11,
-        "kind": "flowSource",
-        "target": {
-          "status": "resolved",
-          "node": 23
-        },
-        "provenance": "authored",
-        "navigation": 10
-      },
-      {
-        "reference": 59,
-        "source": 11,
-        "kind": "flowTarget",
-        "target": {
-          "status": "resolved",
-          "node": 19
-        },
-        "provenance": "authored",
-        "navigation": 11
-      }
-    ],
-    "edges": [
-      {
-        "reference": 35,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 12
-      },
-      {
-        "reference": 36,
-        "source": 0,
-        "target": 2,
-        "origin": 2,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 21
-      },
-      {
-        "reference": 78,
-        "source": 18,
-        "target": 17,
-        "origin": 2,
-        "kind": "succession",
-        "provenance": "implied",
-        "navigation": 22
-      },
-      {
-        "reference": 37,
-        "source": 0,
-        "target": 3,
-        "origin": 3,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 24
-      },
-      {
-        "reference": 83,
-        "source": 20,
-        "target": 17,
-        "origin": 3,
-        "kind": "succession",
-        "provenance": "implied",
-        "navigation": 25
-      },
-      {
-        "reference": 38,
-        "source": 0,
-        "target": 4,
-        "origin": 4,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 35
-      },
-      {
-        "reference": 75,
-        "source": 21,
-        "target": 25,
-        "origin": 4,
-        "kind": "succession",
-        "provenance": "implied",
-        "navigation": 36
-      },
-      {
-        "reference": 39,
-        "source": 0,
-        "target": 16,
-        "origin": 16,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 16
-      },
-      {
-        "reference": 91,
-        "source": 26,
-        "target": 16,
-        "origin": 16,
-        "kind": "succession",
-        "provenance": "authored",
-        "navigation": 16
-      },
-      {
-        "reference": 40,
-        "source": 0,
-        "target": 17,
-        "origin": 17,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 27
-      },
-      {
-        "reference": 41,
-        "source": 0,
-        "target": 18,
-        "origin": 18,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 4
-      },
-      {
-        "reference": 77,
-        "source": 18,
-        "target": 19,
-        "origin": 19,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 5
-      },
-      {
-        "reference": 42,
-        "source": 0,
-        "target": 20,
-        "origin": 20,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 7
-      },
-      {
-        "reference": 43,
-        "source": 0,
-        "target": 5,
-        "origin": 5,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 31
-      },
-      {
-        "reference": 87,
-        "source": 6,
-        "target": 5,
-        "origin": 5,
-        "kind": "succession",
-        "provenance": "authored",
-        "navigation": 31
-      },
-      {
-        "reference": 44,
-        "source": 0,
-        "target": 21,
-        "origin": 21,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 8
-      },
-      {
-        "reference": 45,
-        "source": 0,
-        "target": 24,
-        "origin": 24,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 28
-      },
-      {
-        "reference": 76,
-        "source": 17,
-        "target": 24,
-        "origin": 24,
-        "kind": "succession",
-        "provenance": "authored",
-        "navigation": 28
-      },
-      {
-        "reference": 46,
-        "source": 0,
-        "target": 22,
-        "origin": 22,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 1
-      },
-      {
-        "reference": 80,
-        "source": 22,
-        "target": 23,
-        "origin": 23,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 2
-      },
-      {
-        "reference": 47,
-        "source": 0,
-        "target": 7,
-        "origin": 7,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 14
-      },
-      {
-        "reference": 92,
-        "source": 26,
-        "target": 22,
-        "origin": 7,
-        "kind": "succession",
-        "provenance": "authored",
-        "navigation": 14
-      },
-      {
-        "reference": 48,
-        "source": 0,
-        "target": 8,
-        "origin": 8,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 17
-      },
-      {
-        "reference": 84,
-        "source": 16,
-        "target": 18,
-        "origin": 8,
-        "kind": "succession",
-        "provenance": "authored",
-        "navigation": 17
-      },
-      {
-        "reference": 49,
-        "source": 0,
-        "target": 9,
-        "origin": 9,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 19
-      },
-      {
-        "reference": 85,
-        "source": 16,
-        "target": 20,
-        "origin": 9,
-        "kind": "succession",
-        "provenance": "authored",
-        "navigation": 19
-      },
-      {
-        "reference": 50,
-        "source": 0,
-        "target": 10,
-        "origin": 10,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 33
-      },
-      {
-        "reference": 67,
-        "source": 5,
-        "target": 21,
-        "origin": 10,
-        "kind": "succession",
-        "provenance": "authored",
-        "navigation": 33
-      },
-      {
-        "reference": 51,
-        "source": 0,
-        "target": 6,
-        "origin": 6,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 29
-      },
-      {
-        "reference": 74,
-        "source": 24,
-        "target": 6,
-        "origin": 6,
-        "kind": "succession",
-        "provenance": "authored",
-        "navigation": 29
-      },
-      {
-        "reference": 52,
-        "source": 0,
-        "target": 25,
-        "origin": 25,
-        "kind": "containment",
-        "provenance": "implied",
-        "navigation": 42
-      },
-      {
-        "reference": 53,
-        "source": 0,
-        "target": 26,
-        "origin": 26,
-        "kind": "containment",
-        "provenance": "implied",
-        "navigation": 39
-      },
-      {
-        "reference": 54,
-        "source": 0,
-        "target": 11,
-        "origin": 11,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 9
-      },
-      {
-        "reference": 81,
-        "source": 23,
-        "target": 19,
-        "origin": 11,
-        "kind": "flow",
-        "provenance": "implied",
-        "navigation": 10
-      },
-      {
-        "reference": 56,
-        "source": 11,
-        "target": 12,
-        "origin": 12,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 10
-      },
-      {
-        "reference": 72,
-        "source": 12,
-        "target": 13,
-        "origin": 13,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 10
-      },
-      {
-        "reference": 57,
-        "source": 11,
-        "target": 14,
-        "origin": 14,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 11
-      },
-      {
-        "reference": 73,
-        "source": 14,
-        "target": 15,
-        "origin": 15,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 11
-      }
-    ],
+    "kind": "action-flow-view",
     "metadata": {
       "actions": [
         0,
@@ -3002,6 +2240,768 @@ package Flow {
         24
       ]
     },
+    "nodes": [
+      {
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              5,
+              6,
+              18,
+              20,
+              21,
+              22
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "actions",
+            "members": [
+              25,
+              26
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              11
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionDefinition",
+        "name": "Process",
+        "notationRole": "definition",
+        "owner": null,
+        "reference": 2,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 23,
+        "source": 12,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 27,
+        "source": 21,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 28,
+        "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 30,
+        "source": 35,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 21,
+        "source": 31,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "AcceptActionUsage",
+        "name": "waitForPayment",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 14,
+        "source": 29,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 24,
+        "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 25,
+        "source": 17,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 26,
+        "source": 19,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 29,
+        "source": 33,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 22,
+        "source": 9,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 11,
+        "reference": 31,
+        "source": 10,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 12,
+        "reference": 33,
+        "source": 10,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 11,
+        "reference": 32,
+        "source": 11,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 14,
+        "reference": 34,
+        "source": 11,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ForkNode",
+        "name": "split",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 13,
+        "source": 16,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "JoinNode",
+        "name": "joined",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 7,
+        "source": 27,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "items",
+            "members": [
+              19
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "left",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 8,
+        "source": 4,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": "in",
+        "featureDirection": null,
+        "metaclass": "ItemUsage",
+        "name": "order",
+        "notationRole": "usage",
+        "owner": 18,
+        "reference": 9,
+        "source": 5,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Order",
+              "reference": 0
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "right",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 12,
+        "source": 7,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "finish",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 6,
+        "source": 8,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "items",
+            "members": [
+              23
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "prepare",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 10,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": "out",
+        "featureDirection": null,
+        "metaclass": "ItemUsage",
+        "name": "order",
+        "notationRole": "usage",
+        "owner": 22,
+        "reference": 11,
+        "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Order",
+              "reference": 0
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "DecisionNode",
+        "name": "choice",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 5,
+        "source": 28,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "done",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 17,
+        "source": 42,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Action",
+              "reference": 16
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "name": "start",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 18,
+        "source": 39,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Action",
+              "reference": 16
+            }
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "kind": "succession",
+        "navigation": 13,
+        "provenance": "authored",
+        "reference": 60,
+        "source": 1,
+        "target": {
+          "node": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 22,
+        "provenance": "authored",
+        "reference": 61,
+        "source": 2,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 23,
+        "provenance": "authored",
+        "reference": 62,
+        "source": 2,
+        "target": {
+          "node": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 25,
+        "provenance": "authored",
+        "reference": 63,
+        "source": 3,
+        "target": {
+          "node": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 26,
+        "provenance": "authored",
+        "reference": 64,
+        "source": 3,
+        "target": {
+          "node": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 36,
+        "provenance": "authored",
+        "reference": 65,
+        "source": 4,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 37,
+        "provenance": "authored",
+        "reference": 66,
+        "source": 4,
+        "target": {
+          "node": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 6,
+        "provenance": "authored",
+        "reference": 79,
+        "source": 19,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "acceptPayloadType",
+        "navigation": 32,
+        "provenance": "authored",
+        "reference": 55,
+        "source": 5,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 3,
+        "provenance": "authored",
+        "reference": 82,
+        "source": 23,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "thenTarget",
+        "navigation": 15,
+        "provenance": "authored",
+        "reference": 68,
+        "source": 7,
+        "target": {
+          "node": 22,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "thenTarget",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 69,
+        "source": 8,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "thenTarget",
+        "navigation": 20,
+        "provenance": "authored",
+        "reference": 70,
+        "source": 9,
+        "target": {
+          "node": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "thenTarget",
+        "navigation": 34,
+        "provenance": "authored",
+        "reference": 71,
+        "source": 10,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "acceptPayloadType",
+        "navigation": 30,
+        "provenance": "authored",
+        "reference": 86,
+        "source": 6,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 43,
+        "provenance": "authored",
+        "reference": 89,
+        "source": 25,
+        "target": {
+          "reference": 16,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 44,
+        "provenance": "authored",
+        "reference": 88,
+        "source": 25,
+        "target": {
+          "reference": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 40,
+        "provenance": "authored",
+        "reference": 93,
+        "source": 26,
+        "target": {
+          "reference": 16,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 41,
+        "provenance": "authored",
+        "reference": 90,
+        "source": 26,
+        "target": {
+          "reference": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 10,
+        "provenance": "authored",
+        "reference": 58,
+        "source": 11,
+        "target": {
+          "node": 23,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 11,
+        "provenance": "authored",
+        "reference": 59,
+        "source": 11,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "action-flow"
     }

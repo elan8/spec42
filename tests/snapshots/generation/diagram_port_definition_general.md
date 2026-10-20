@@ -152,27 +152,27 @@ package M {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "M::P"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "M::g"
     },
     {
       "kind": "source-anchor",
-      "source": 0,
-      "ownerQualifiedName": "M::P",
       "metaclass": "ConjugatedPortDefinition",
+      "ownerQualifiedName": "M::P",
+      "source": 0,
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "source": 0,
+      "ordinal": 0,
       "relationshipKind": "containment",
-      "ordinal": 0
+      "source": 0
     }
   ],
   "selectedView": {
@@ -186,63 +186,63 @@ package M {
     "reasons": []
   },
   "projection": {
-    "kind": "general-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 0,
+        "origin": 1,
+        "provenance": "authored",
+        "reference": 3,
+        "source": 0,
+        "target": 1
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 0,
-        "metaclass": "PortDefinition",
-        "notationRole": "definition",
-        "name": "P",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 1,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 2,
-        "metaclass": "ConjugatedPortDefinition",
-        "notationRole": "definition",
-        "name": "~P",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 0,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [],
-    "edges": [
-      {
-        "reference": 3,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 0
-      }
-    ],
+    "kind": "general-view",
     "metadata": {
       "roots": [
         0
       ]
     },
+    "nodes": [
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortDefinition",
+        "name": "P",
+        "notationRole": "definition",
+        "owner": null,
+        "reference": 0,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConjugatedPortDefinition",
+        "name": "~P",
+        "notationRole": "definition",
+        "owner": 0,
+        "reference": 2,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      }
+    ],
+    "relationships": [],
     "scene": {
       "kind": "general"
     }

@@ -158,15 +158,15 @@ package StateNegative {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "StateNegative::selected"
     },
     {
       "kind": "source-anchor",
-      "source": 1,
-      "ownerQualifiedName": "StateNegative::selected",
       "metaclass": "Expose",
+      "ownerQualifiedName": "StateNegative::selected",
+      "source": 1,
       "sourceDomain": "workspace"
     }
   ],
@@ -186,21 +186,21 @@ package StateNegative {
     ]
   },
   "projection": {
-    "kind": "state-transition-view",
+    "edges": [],
     "exposedRoots": [],
+    "kind": "state-transition-view",
+    "metadata": {
+      "finalNodes": [],
+      "initialNodes": [],
+      "states": []
+    },
     "nodes": [],
     "relationships": [],
-    "edges": [],
-    "metadata": {
-      "states": [],
-      "initialNodes": [],
-      "finalNodes": []
-    },
     "scene": {
-      "kind": "state-transition",
       "frame": null,
-      "vertices": [],
-      "transitions": []
+      "kind": "state-transition",
+      "transitions": [],
+      "vertices": []
     }
   }
 }

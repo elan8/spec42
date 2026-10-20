@@ -695,179 +695,179 @@ package RedefinedParts {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::Base::component"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::Derived"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::Derived::"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::Further"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::Further::"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::Renamed"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::Renamed::replacement"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::System"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::System::"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::System::further"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::System::renamed"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::System::specialized"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::Unit"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RedefinedParts::links"
     },
     {
       "kind": "source-anchor",
-      "source": 0,
+      "metaclass": "PartUsage",
       "ownerQualifiedName": "RedefinedParts::Derived",
-      "metaclass": "PartUsage",
+      "source": 0,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "source": 2,
+      "metaclass": "PartUsage",
       "ownerQualifiedName": "RedefinedParts::Further",
-      "metaclass": "PartUsage",
+      "source": 2,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "source": 13,
-      "ownerQualifiedName": "RedefinedParts::System",
       "metaclass": "PartUsage",
+      "ownerQualifiedName": "RedefinedParts::System",
+      "source": 13,
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
-      "source": 2,
+      "ordinal": 25,
       "relationshipKind": "redefinition",
-      "ordinal": 25
+      "source": 2
     },
     {
       "kind": "relationship",
-      "source": 4,
+      "ordinal": 9,
       "relationshipKind": "redefinition",
-      "ordinal": 9
+      "source": 4
     },
     {
       "kind": "relationship",
-      "source": 6,
+      "ordinal": 17,
       "relationshipKind": "redefinition",
-      "ordinal": 17
+      "source": 6
     },
     {
       "kind": "relationship",
-      "source": 7,
+      "ordinal": 0,
       "relationshipKind": "containment",
-      "ordinal": 0
+      "source": 7
     },
     {
       "kind": "relationship",
-      "source": 7,
+      "ordinal": 1,
       "relationshipKind": "containment",
-      "ordinal": 1
+      "source": 7
     },
     {
       "kind": "relationship",
-      "source": 7,
+      "ordinal": 3,
       "relationshipKind": "containment",
-      "ordinal": 3
+      "source": 7
     },
     {
       "kind": "relationship",
-      "source": 7,
+      "ordinal": 5,
       "relationshipKind": "containment",
-      "ordinal": 5
+      "source": 7
     },
     {
       "kind": "relationship",
-      "source": 8,
+      "ordinal": 1,
       "relationshipKind": "typing",
-      "ordinal": 1
+      "source": 8
     },
     {
       "kind": "relationship",
-      "source": 9,
+      "ordinal": 2,
       "relationshipKind": "containment",
-      "ordinal": 2
+      "source": 9
     },
     {
       "kind": "relationship",
-      "source": 9,
+      "ordinal": 5,
       "relationshipKind": "typing",
-      "ordinal": 5
+      "source": 9
     },
     {
       "kind": "relationship",
-      "source": 10,
+      "ordinal": 4,
       "relationshipKind": "containment",
-      "ordinal": 4
+      "source": 10
     },
     {
       "kind": "relationship",
-      "source": 10,
+      "ordinal": 13,
       "relationshipKind": "typing",
-      "ordinal": 13
+      "source": 10
     },
     {
       "kind": "relationship",
-      "source": 11,
+      "ordinal": 6,
       "relationshipKind": "containment",
-      "ordinal": 6
+      "source": 11
     },
     {
       "kind": "relationship",
-      "source": 11,
+      "ordinal": 21,
       "relationshipKind": "typing",
-      "ordinal": 21
+      "source": 11
     }
   ],
   "selectedView": {
@@ -881,352 +881,77 @@ package RedefinedParts {
     "reasons": []
   },
   "projection": {
-    "kind": "interconnection-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 13,
+        "origin": 1,
+        "provenance": "authored",
+        "reference": 20,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 9,
+        "origin": 4,
+        "provenance": "authored",
+        "reference": 21,
+        "source": 0,
+        "target": 4
+      },
+      {
+        "kind": "containment",
+        "navigation": 2,
+        "origin": 5,
+        "provenance": "implied",
+        "reference": 25,
+        "source": 4,
+        "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 22,
+        "source": 0,
+        "target": 6
+      },
+      {
+        "kind": "containment",
+        "navigation": 4,
+        "origin": 7,
+        "provenance": "implied",
+        "reference": 27,
+        "source": 6,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 7,
+        "origin": 2,
+        "provenance": "authored",
+        "reference": 23,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 0,
+        "origin": 3,
+        "provenance": "implied",
+        "reference": 29,
+        "source": 2,
+        "target": 3
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 7,
-        "metaclass": "PartDefinition",
-        "notationRole": "definition",
-        "name": "System",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 6,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "direct",
-            "members": [
-              1,
-              2,
-              4,
-              6
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 16,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 12,
-              "label": "Unit"
-            }
-          ]
-        },
-        "owner": 0,
-        "source": 13,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 11,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "specialized",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 1,
-              "label": "Derived"
-            }
-          ]
-        },
-        "owner": 0,
-        "source": 7,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "inherited",
-            "members": [
-              3
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 14,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "component",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 2,
-        "source": 0,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 9,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "further",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 3,
-              "label": "Further"
-            }
-          ]
-        },
-        "owner": 0,
-        "source": 9,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "inherited",
-            "members": [
-              5
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 15,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "component",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 4,
-        "source": 2,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 10,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "renamed",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 5,
-              "label": "Renamed"
-            }
-          ]
-        },
-        "owner": 0,
-        "source": 11,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "inherited",
-            "members": [
-              7
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 6,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "replacement",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 6,
-        "source": 4,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [
-      {
-        "reference": 24,
-        "source": 1,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 12
-        },
-        "provenance": "authored",
-        "navigation": 14
-      },
-      {
-        "reference": 26,
-        "source": 4,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 3
-        },
-        "provenance": "authored",
-        "navigation": 10
-      },
-      {
-        "reference": 18,
-        "source": 5,
-        "kind": "redefinition",
-        "target": {
-          "status": "resolved",
-          "node": 3
-        },
-        "provenance": "authored",
-        "navigation": 3
-      },
-      {
-        "reference": 28,
-        "source": 6,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 5
-        },
-        "provenance": "authored",
-        "navigation": 12
-      },
-      {
-        "reference": 19,
-        "source": 7,
-        "kind": "redefinition",
-        "target": {
-          "status": "resolved",
-          "reference": 0
-        },
-        "provenance": "authored",
-        "navigation": 5
-      },
-      {
-        "reference": 30,
-        "source": 2,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 1
-        },
-        "provenance": "authored",
-        "navigation": 8
-      },
-      {
-        "reference": 17,
-        "source": 3,
-        "kind": "redefinition",
-        "target": {
-          "status": "resolved",
-          "reference": 0
-        },
-        "provenance": "authored",
-        "navigation": 1
-      }
-    ],
-    "edges": [
-      {
-        "reference": 20,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 13
-      },
-      {
-        "reference": 21,
-        "source": 0,
-        "target": 4,
-        "origin": 4,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 9
-      },
-      {
-        "reference": 25,
-        "source": 4,
-        "target": 5,
-        "origin": 5,
-        "kind": "containment",
-        "provenance": "implied",
-        "navigation": 2
-      },
-      {
-        "reference": 22,
-        "source": 0,
-        "target": 6,
-        "origin": 6,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 11
-      },
-      {
-        "reference": 27,
-        "source": 6,
-        "target": 7,
-        "origin": 7,
-        "kind": "containment",
-        "provenance": "implied",
-        "navigation": 4
-      },
-      {
-        "reference": 23,
-        "source": 0,
-        "target": 2,
-        "origin": 2,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 7
-      },
-      {
-        "reference": 29,
-        "source": 2,
-        "target": 3,
-        "origin": 3,
-        "kind": "containment",
-        "provenance": "implied",
-        "navigation": 0
-      }
-    ],
+    "kind": "interconnection-view",
     "metadata": {
+      "connectors": [],
       "parts": [
         0,
         1,
@@ -1237,9 +962,284 @@ package RedefinedParts {
         6,
         7
       ],
-      "ports": [],
-      "connectors": []
+      "ports": []
     },
+    "nodes": [
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1,
+              2,
+              4,
+              6
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartDefinition",
+        "name": "System",
+        "notationRole": "definition",
+        "owner": null,
+        "reference": 7,
+        "source": 6,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 16,
+        "source": 13,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Unit",
+              "reference": 12
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              3
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "specialized",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 11,
+        "source": 7,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Derived",
+              "reference": 1
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "component",
+        "notationRole": "usage",
+        "owner": 2,
+        "reference": 14,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              5
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "further",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 9,
+        "source": 9,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Further",
+              "reference": 3
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "component",
+        "notationRole": "usage",
+        "owner": 4,
+        "reference": 15,
+        "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              7
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "renamed",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 10,
+        "source": 11,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Renamed",
+              "reference": 5
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "replacement",
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 6,
+        "source": 4,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "kind": "typing",
+        "navigation": 14,
+        "provenance": "authored",
+        "reference": 24,
+        "source": 1,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 10,
+        "provenance": "authored",
+        "reference": 26,
+        "source": 4,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 3,
+        "provenance": "authored",
+        "reference": 18,
+        "source": 5,
+        "target": {
+          "node": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 12,
+        "provenance": "authored",
+        "reference": 28,
+        "source": 6,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 5,
+        "provenance": "authored",
+        "reference": 19,
+        "source": 7,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 8,
+        "provenance": "authored",
+        "reference": 30,
+        "source": 2,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 1,
+        "provenance": "authored",
+        "reference": 17,
+        "source": 3,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "interconnection"
     }

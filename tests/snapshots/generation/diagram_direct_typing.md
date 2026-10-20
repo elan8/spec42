@@ -295,58 +295,58 @@ package DirectTypingExample {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "DirectTypingExample::Assembly"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "DirectTypingExample::Assembly::typedChild"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "DirectTypingExample::Assembly::untypedChild"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "DirectTypingExample::Board"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "DirectTypingExample::root"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "DirectTypingExample::selected"
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 2,
       "relationshipKind": "typing",
-      "ordinal": 2
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 4,
+      "ordinal": 0,
       "relationshipKind": "containment",
-      "ordinal": 0
+      "source": 4
     },
     {
       "kind": "relationship",
-      "source": 4,
+      "ordinal": 1,
       "relationshipKind": "containment",
-      "ordinal": 1
+      "source": 4
     },
     {
       "kind": "relationship",
-      "source": 4,
+      "ordinal": 0,
       "relationshipKind": "typing",
-      "ordinal": 0
+      "source": 4
     }
   ],
   "selectedView": {
@@ -360,133 +360,133 @@ package DirectTypingExample {
     "reasons": []
   },
   "projection": {
-    "kind": "general-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 0,
+        "origin": 1,
+        "provenance": "implied",
+        "reference": 7,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 2,
+        "origin": 2,
+        "provenance": "implied",
+        "reference": 8,
+        "source": 0,
+        "target": 2
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 4,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "root",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 0,
-              "label": "Assembly"
-            }
-          ]
-        },
-        "owner": null,
-        "source": 3,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "inherited",
-            "members": [
-              1,
-              2
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 1,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "typedChild",
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "reference": 3,
-              "label": "Board"
-            }
-          ]
-        },
-        "owner": 0,
-        "source": 0,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 2,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "untypedChild",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 2,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [
-      {
-        "reference": 9,
-        "source": 0,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 0
-        },
-        "provenance": "authored",
-        "navigation": 4
-      },
-      {
-        "reference": 6,
-        "source": 1,
-        "kind": "typing",
-        "target": {
-          "status": "resolved",
-          "reference": 3
-        },
-        "provenance": "authored",
-        "navigation": 1
-      }
-    ],
-    "edges": [
-      {
-        "reference": 7,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "implied",
-        "navigation": 0
-      },
-      {
-        "reference": 8,
-        "source": 0,
-        "target": 2,
-        "origin": 2,
-        "kind": "containment",
-        "provenance": "implied",
-        "navigation": 2
-      }
-    ],
+    "kind": "general-view",
     "metadata": {
       "roots": [
         0
       ]
     },
+    "nodes": [
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1,
+              2
+            ],
+            "provenance": "inherited"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "root",
+        "notationRole": "usage",
+        "owner": null,
+        "reference": 4,
+        "source": 3,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Assembly",
+              "reference": 0
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "typedChild",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 1,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Board",
+              "reference": 3
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "untypedChild",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 2,
+        "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "kind": "typing",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 9,
+        "source": 0,
+        "target": {
+          "reference": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 1,
+        "provenance": "authored",
+        "reference": 6,
+        "source": 1,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      }
+    ],
     "scene": {
       "kind": "general"
     }

@@ -150,13 +150,13 @@ package GeometryExample {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "GeometryExample::Shape"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "GeometryExample::selected"
     }
   ],
@@ -175,37 +175,37 @@ package GeometryExample {
     ]
   },
   "projection": {
-    "kind": "geometry-view",
+    "edges": [],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 0,
-        "metaclass": "PartDefinition",
-        "notationRole": "definition",
-        "name": "Shape",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 0,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [],
-    "edges": [],
+    "kind": "geometry-view",
     "metadata": {
       "elements": [
         0
       ],
       "primitives": []
     },
+    "nodes": [
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartDefinition",
+        "name": "Shape",
+        "notationRole": "definition",
+        "owner": null,
+        "reference": 0,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      }
+    ],
+    "relationships": [],
     "scene": {
       "kind": "geometry"
     }

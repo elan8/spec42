@@ -28,10 +28,19 @@ package JoinNodeAnchorNormativeGap {
     }
 }
 ~~~
+# EXPECTED DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/generated_join_node_specialization_anchor_normative_gap.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "JoinNodeAnchorNormativeGap::Parallel::split") (target "Actions::Action::forks") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source "JoinNodeAnchorNormativeGap::Parallel::joined") (target "Actions::Action::joins") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

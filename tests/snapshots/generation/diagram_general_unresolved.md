@@ -165,15 +165,15 @@ package GeneralNegative {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "GeneralNegative::selected"
     },
     {
       "kind": "source-anchor",
-      "source": 1,
-      "ownerQualifiedName": "GeneralNegative::selected",
       "metaclass": "Expose",
+      "ownerQualifiedName": "GeneralNegative::selected",
+      "source": 1,
       "sourceDomain": "workspace"
     }
   ],
@@ -193,14 +193,14 @@ package GeneralNegative {
     ]
   },
   "projection": {
-    "kind": "general-view",
-    "exposedRoots": [],
-    "nodes": [],
-    "relationships": [],
     "edges": [],
+    "exposedRoots": [],
+    "kind": "general-view",
     "metadata": {
       "roots": []
     },
+    "nodes": [],
+    "relationships": [],
     "scene": {
       "kind": "general"
     }

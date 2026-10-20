@@ -262,47 +262,47 @@ package RecursiveExample {
   ],
   "references": [
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RecursiveExample::tree"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RecursiveExample::vehicle"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RecursiveExample::vehicle::engine"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RecursiveExample::vehicle::engine::cylinder"
     },
     {
-      "kind": "qualified-name",
       "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "RecursiveExample::vehicle::wheel"
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 0,
       "relationshipKind": "containment",
-      "ordinal": 0
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 1,
+      "ordinal": 1,
       "relationshipKind": "containment",
-      "ordinal": 1
+      "source": 1
     },
     {
       "kind": "relationship",
-      "source": 2,
+      "ordinal": 2,
       "relationshipKind": "containment",
-      "ordinal": 2
+      "source": 2
     }
   ],
   "selectedView": {
@@ -316,132 +316,132 @@ package RecursiveExample {
     "reasons": []
   },
   "projection": {
-    "kind": "general-view",
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 3,
+        "origin": 1,
+        "provenance": "authored",
+        "reference": 5,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 2,
+        "provenance": "authored",
+        "reference": 6,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 2,
+        "origin": 3,
+        "provenance": "authored",
+        "reference": 7,
+        "source": 2,
+        "target": 3
+      }
+    ],
     "exposedRoots": [
       0
     ],
-    "nodes": [
-      {
-        "reference": 1,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "vehicle",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": null,
-        "source": 0,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "direct",
-            "members": [
-              1,
-              2
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 4,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "wheel",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 3,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 2,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "engine",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 0,
-        "source": 1,
-        "compartments": [
-          {
-            "kind": "parts",
-            "provenance": "direct",
-            "members": [
-              3
-            ]
-          }
-        ],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      },
-      {
-        "reference": 3,
-        "metaclass": "PartUsage",
-        "notationRole": "usage",
-        "name": "cylinder",
-        "typing": {
-          "status": "absent"
-        },
-        "owner": 2,
-        "source": 2,
-        "compartments": [],
-        "direction": null,
-        "conjugated": false,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "featureDirection": null
-      }
-    ],
-    "relationships": [],
-    "edges": [
-      {
-        "reference": 5,
-        "source": 0,
-        "target": 1,
-        "origin": 1,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 3
-      },
-      {
-        "reference": 6,
-        "source": 0,
-        "target": 2,
-        "origin": 2,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 1
-      },
-      {
-        "reference": 7,
-        "source": 2,
-        "target": 3,
-        "origin": 3,
-        "kind": "containment",
-        "provenance": "authored",
-        "navigation": 2
-      }
-    ],
+    "kind": "general-view",
     "metadata": {
       "roots": [
         0
       ]
     },
+    "nodes": [
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1,
+              2
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "vehicle",
+        "notationRole": "usage",
+        "owner": null,
+        "reference": 1,
+        "source": 0,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "wheel",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 4,
+        "source": 3,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              3
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "engine",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 2,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "cylinder",
+        "notationRole": "usage",
+        "owner": 2,
+        "reference": 3,
+        "source": 2,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      }
+    ],
+    "relationships": [],
     "scene": {
       "kind": "general"
     }
