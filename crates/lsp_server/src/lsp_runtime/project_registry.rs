@@ -465,9 +465,9 @@ fn boundary_root_for_uri(uri: &Url, workspace_roots: &[Url]) -> Option<PathBuf> 
     if let Some(boundary) = project_boundary_for_uri(uri, workspace_roots) {
         let path = uri.to_file_path().ok()?;
         if sysml_query::source::is_sysml_like(&path) {
-            match project_source_selected(uri, workspace_roots) {
-                Ok(false) => return None,
-                _ => {} // Admission owns configuration-error reporting; never hide that state.
+            // Admission owns configuration-error reporting; never hide that state.
+            if let Ok(false) = project_source_selected(uri, workspace_roots) {
+                return None;
             }
         }
         return Some(boundary.project_root().to_path_buf());
