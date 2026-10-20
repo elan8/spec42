@@ -93,7 +93,7 @@ pub fn render_svg_from_json_with_theme(
         .is_some_and(Vec::is_empty)
     {
         let title = prepared.get("title").and_then(Value::as_str).unwrap_or("");
-        let root = crate::svg::Element::new("g")
+        let empty_state = crate::svg::Element::new("g")
             .attr("class", "viz-empty-state")
             .child(
                 crate::svg::Element::new("text")
@@ -111,12 +111,23 @@ pub fn render_svg_from_json_with_theme(
                     .attr("fill", theme.text_secondary)
                     .text("Check the view's exposes and filters."),
             );
+        // An empty view is still the view: its «view» frame encloses the explanation
+        // (SysML v2 §§8.2.3.1, 8.2.3.26).
+        let (frame, (left, top, right, bottom)) = crate::view_frame::view_frame(
+            if title.is_empty() { "View" } else { title },
+            (0.0, 0.0, 320.0, 64.0),
+            theme,
+        );
+        let root = crate::svg::Element::new("g")
+            .attr("class", "viz-root")
+            .child(frame)
+            .child(empty_state);
         return Ok(crate::render_svg_document(
             theme,
             width,
             height,
             title,
-            (0.0, 0.0, 320.0, 64.0),
+            (left, top, right - left, bottom - top),
             None,
             root,
         ));
