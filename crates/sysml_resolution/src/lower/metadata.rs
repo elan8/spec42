@@ -191,6 +191,9 @@ impl SemanticModelBuilder {
         };
         for element in elements {
             match &element.value {
+                MetadataBodyElement::ExtendedDefinition(node) => {
+                    self.lower_extended_definition(document, Some(owner), node)?;
+                }
                 MetadataBodyElement::Error(error) => {
                     self.push_recovery(document, error.span);
                 }

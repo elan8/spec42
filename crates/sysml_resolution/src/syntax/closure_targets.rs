@@ -440,10 +440,7 @@ pub(crate) fn walk_item_usage_type_refs(
     item_usage: &ItemUsage,
     out: &mut RefSink,
 ) {
-    push_optional_type_reference(
-        reference_text(document, item_usage.type_name).as_deref(),
-        out,
-    );
+    push_optional_typing_reference(document, item_usage.typing.as_deref(), out);
     walk_attribute_body_type_refs(document, &item_usage.body, out);
 }
 

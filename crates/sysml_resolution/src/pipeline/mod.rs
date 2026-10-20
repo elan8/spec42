@@ -29,11 +29,7 @@ pub(crate) struct OwnedSourceRecord {
     pub(crate) syntax: Option<Arc<crate::syntax::SyntaxAuthority>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum CoordinatorError {
-    DuplicateSourceIdentity,
-    ConstructionFailed,
-}
+pub(crate) type CoordinatorError = crate::BuildFailure;
 
 /// A library that has already been parsed and solved, ready to be reused by later publications.
 ///
@@ -157,15 +153,25 @@ impl SemanticModelBuildCoordinator {
         // product a value the memo can key by content digest; the ordered splice is what keeps
         // every dense identity exactly where an undivided lowering would have put it.
         let generation = memo.map(LoweringMemo::begin);
-        let products = lower_documents(&documents, memo, generation, schedule)?;
+        let document_identities: Vec<_> = builder
+            .documents
+            .iter()
+            .map(|document| document.identity.as_ref())
+            .collect();
+        let products =
+            lower_documents(&documents, &document_identities, memo, generation, schedule)?;
         // Counted facts, not timers: which documents this build lowered and which it took from
         // the memo. A wall-clock threshold cannot state "this edit lowered exactly one document".
         let documents_reused = products.iter().filter(|(_, reused)| *reused).count();
         let documents_lowered = products.len() - documents_reused;
         for ((document, _, _, _), (lowered, _)) in documents.iter().zip(products.iter()) {
-            builder
-                .splice(*document, lowered)
-                .map_err(|_| CoordinatorError::ConstructionFailed)?;
+            builder.splice(*document, lowered).map_err(|error| {
+                CoordinatorError::construction(
+                    crate::ConstructionPhase::Splicing,
+                    [builder.documents[document.index()].identity.as_ref()],
+                    error,
+                )
+            })?;
         }
         drop(products);
         if let (Some(memo), Some(generation)) = (memo, generation) {
@@ -181,8 +187,7 @@ impl SemanticModelBuildCoordinator {
             standard_library_availability,
             library.map(|library| &library.settled),
             reported,
-        )
-        .map_err(|_| CoordinatorError::ConstructionFailed)?;
+        )?;
         let resolution = resolution_started.elapsed();
         Ok((
             model,
@@ -208,7 +213,15 @@ impl SemanticModelBuildCoordinator {
         let (tree, errors) = match source.payload {
             crate::SourcePayload::Parsed(parsed) => {
                 if parsed.language() != source.language {
-                    return Err(CoordinatorError::ConstructionFailed);
+                    return Err(CoordinatorError::construction(
+                        crate::ConstructionPhase::SourceAdmission,
+                        [source.identity.as_ref()],
+                        format_args!(
+                            "parsed source language {:?} differs from admitted language {:?}",
+                            parsed.language(),
+                            source.language
+                        ),
+                    ));
                 }
                 parsed_here = false;
                 parsed.admission_parts()
@@ -255,11 +268,12 @@ fn lower_documents(
         ContentDigest,
         Arc<ParsedDocument>,
     )],
+    document_identities: &[&str],
     memo: Option<&LoweringMemo>,
     generation: Option<crate::lower::memo::MemoGeneration>,
     schedule: BuildSchedule,
 ) -> Result<Vec<(Arc<LoweredDocument>, bool)>, CoordinatorError> {
-    let lower_one = |(_, language, digest, parsed): &(
+    let lower_one = |(document, language, digest, parsed): &(
         DocumentIdx,
         SourceLanguage,
         ContentDigest,
@@ -270,7 +284,13 @@ fn lower_documents(
             _ => crate::lower::document::lower_document(Arc::clone(parsed), *language)
                 .map(|lowered| (Arc::new(lowered), false)),
         }
-        .map_err(|_| CoordinatorError::ConstructionFailed)
+        .map_err(|error| {
+            CoordinatorError::construction(
+                crate::ConstructionPhase::Lowering,
+                [document_identities[document.index()]],
+                error,
+            )
+        })
     };
     match schedule {
         BuildSchedule::Sequential => documents.iter().map(lower_one).collect(),

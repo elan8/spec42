@@ -422,7 +422,7 @@ fn outline_symbol_from_element(
         PBE::ItemUsage(p) => Some(SyntaxOutlineNode {
             name: declaration_name_text(document, p.name).unwrap_or_default(),
             kind: SyntaxOutlineKind::ItemUsage,
-            typed_by: super::closure_targets::reference_text(document, p.type_name),
+            typed_by: super::closure_targets::typing_target_display(document, p.typing.as_deref()),
             range,
             selection_range: range,
             ..SyntaxOutlineNode::bare(range)
@@ -566,7 +566,7 @@ fn outline_symbol_from_element(
         PBE::RequirementUsage(p) => Some(SyntaxOutlineNode {
             name: declaration_name_text(document, p.name).unwrap_or_default(),
             kind: SyntaxOutlineKind::RequirementUsage,
-            typed_by: super::closure_targets::reference_text(document, p.type_name),
+            typed_by: super::closure_targets::typing_target_display(document, p.typing.as_deref()),
             range,
             selection_range: range,
             ..SyntaxOutlineNode::bare(range)
@@ -589,7 +589,7 @@ fn outline_symbol_from_element(
             name: declaration_name_text(document, p.name).unwrap_or_default(),
             short_name: declaration_name_text(document, p.short_name),
             kind: SyntaxOutlineKind::AnalysisUsage,
-            typed_by: super::closure_targets::reference_text(document, p.type_name),
+            typed_by: super::closure_targets::typing_target_display(document, p.typing.as_deref()),
             range,
             selection_range: range,
             ..SyntaxOutlineNode::bare(range)
@@ -598,7 +598,7 @@ fn outline_symbol_from_element(
             name: declaration_name_text(document, p.name).unwrap_or_default(),
             short_name: declaration_name_text(document, p.short_name),
             kind: SyntaxOutlineKind::VerificationUsage,
-            typed_by: super::closure_targets::reference_text(document, p.type_name),
+            typed_by: super::closure_targets::typing_target_display(document, p.typing.as_deref()),
             range,
             selection_range: range,
             ..SyntaxOutlineNode::bare(range)

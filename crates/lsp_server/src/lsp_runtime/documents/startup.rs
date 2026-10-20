@@ -9,8 +9,11 @@ pub(crate) async fn initialize(
 ) -> tower_lsp::jsonrpc::Result<InitializeResult> {
     let initialize_start = Instant::now();
     let roots = workspace_roots_from_initialize(&params);
-    let client_library_paths =
-        util::parse_library_paths_from_value(params.initialization_options.as_ref());
+    let library_path_base = roots.first().and_then(|root| root.to_file_path().ok());
+    let client_library_paths = util::parse_library_paths_with_base(
+        params.initialization_options.as_ref(),
+        library_path_base.as_deref(),
+    );
     let library_paths = util::merge_host_and_client_library_paths(
         &config.default_library_paths,
         client_library_paths,
@@ -46,6 +49,7 @@ pub(crate) async fn initialize(
     }
     runtime_config
         .set(RuntimeConfig {
+            library_path_base,
             startup_trace_id: startup_trace_id.clone(),
             code_lens_enabled,
             perf_logging_enabled,
