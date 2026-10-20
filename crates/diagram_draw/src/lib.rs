@@ -211,25 +211,32 @@ pub fn render_general_view_svg(
     }
     root = root.child(nodes::draw_nodes(&graph.nodes, theme));
 
+    let bounds = bounds_with_routes(
+        content_bounds(&graph.nodes),
+        graph.edges.iter().flat_map(|edge| {
+            edge.layout.iter().flat_map(|layout| {
+                layout.sections.first().into_iter().flat_map(|section| {
+                    section
+                        .start_point
+                        .into_iter()
+                        .chain(section.bend_points.iter().copied())
+                        .chain(section.end_point)
+                })
+            })
+        }),
+    );
+    let (root, (left, top, right, bottom)) = view_frame::enclose(
+        root,
+        &graph.title,
+        (bounds.0, bounds.1, bounds.0 + bounds.2, bounds.1 + bounds.3),
+        theme,
+    );
     render_svg_document(
         theme,
         width,
         height,
         &graph.title,
-        bounds_with_routes(
-            content_bounds(&graph.nodes),
-            graph.edges.iter().flat_map(|edge| {
-                edge.layout.iter().flat_map(|layout| {
-                    layout.sections.first().into_iter().flat_map(|section| {
-                        section
-                            .start_point
-                            .into_iter()
-                            .chain(section.bend_points.iter().copied())
-                            .chain(section.end_point)
-                    })
-                })
-            }),
-        ),
+        (left, top, right - left, bottom - top),
         graph
             .edges
             .iter()
@@ -393,13 +400,8 @@ pub fn render_action_flow_view_svg(
     )
 }
 
-/// Port of the Interconnection-View branch of `renderVisualization`'s call site in `renderer.ts`:
-/// `shouldDrawIbdViewFrame` -> `drawIbdViewFrame` -> `drawInterconnectionContainers` -> `drawNodes`
-/// -> `drawEdges` -> `drawInterconnectionPortOverlays` (frame/containers/nodes/edges/overlays --
-/// the opposite node/edge order from General View, confirmed from source, not a mistake). Bounds
-/// for both `drawIbdViewFrame` and the final `viewBox` come from the *same* `content_bounds` used
-/// by General View (`contentBounds` in `render/export.ts` only ever imports the general 200/70
-/// node-size defaults, regardless of view).
+/// Draw the interconnection content inside the same root-view frame as other standard views.
+/// Ports, labels, containers and routed edges contribute to the enclosing frame bounds.
 pub fn render_interconnection_view_svg(
     graph: &InterconnectionViewGraph,
     theme: &Theme,
@@ -428,41 +430,6 @@ pub fn render_interconnection_view_svg(
         .collect();
 
     let mut root = Element::new("g").attr("class", "viz-root");
-    let mut view_frame_bounds = None;
-    if ibd_containers::should_draw_ibd_view_frame(&graph.nodes) {
-        let selected_root = graph
-            .meta
-            .get("selectedRoot")
-            .and_then(serde_json::Value::as_str)
-            .unwrap_or("");
-        let multiple_roots = graph
-            .meta
-            .get("rootCandidates")
-            .and_then(serde_json::Value::as_array)
-            .is_some_and(|roots| roots.len() > 1);
-        let label = if multiple_roots {
-            &graph.title
-        } else if graph.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true)) {
-            graph
-                .nodes
-                .iter()
-                .find(|node| node.id == selected_root)
-                .map(|node| node.label.as_str())
-                .filter(|label| !label.is_empty())
-                .unwrap_or(&graph.title)
-        } else if selected_root.is_empty() {
-            &graph.title
-        } else {
-            selected_root
-        };
-        if let Some(frame) = ibd_containers::draw_ibd_view_frame(label, bounds, theme) {
-            if graph.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true)) {
-                view_frame_bounds = Some(ibd_containers::ibd_view_frame_bounds(bounds));
-            }
-            root = root.child(frame);
-        }
-    }
-
     if let Some(containers_layer) = ibd_containers::draw_interconnection_containers(
         &graph.meta,
         &graph.nodes,
@@ -494,15 +461,6 @@ pub fn render_interconnection_view_svg(
         root = root.child(overlay);
     }
 
-    let (background_width, background_height) =
-        if graph.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true)) {
-            (
-                width.max(bounds.0 + bounds.2 + 40.0),
-                height.max(bounds.1 + bounds.3 + 40.0),
-            )
-        } else {
-            (width, height)
-        };
     // Ports and their labels lie outside the parts, so the figure is larger than its parts.
     let mut extent = (bounds.0, bounds.1, bounds.0 + bounds.2, bounds.1 + bounds.3);
     let mut include = |left: f64, top: f64, right: f64, bottom: f64| {
@@ -513,9 +471,6 @@ pub fn render_interconnection_view_svg(
             extent.3.max(bottom),
         );
     };
-    if let Some((x, y, width, height)) = view_frame_bounds {
-        include(x, y, x + width, y + height);
-    }
     for node in graph
         .interconnection_layout
         .iter()
@@ -530,18 +485,25 @@ pub fn render_interconnection_view_svg(
             }
         }
     }
+    let bounds = bounds_with_routes(
+        (extent.0, extent.1, extent.2 - extent.0, extent.3 - extent.1),
+        graph
+            .edges
+            .iter()
+            .flat_map(|edge| ibd_edges::route_points_for_edge(edge, &layout_edges_by_id)),
+    );
+    let (root, (left, top, right, bottom)) = view_frame::enclose(
+        root,
+        &graph.title,
+        (bounds.0, bounds.1, bounds.0 + bounds.2, bounds.1 + bounds.3),
+        theme,
+    );
     render_svg_document(
         theme,
-        background_width,
-        background_height,
+        width,
+        height,
         &graph.title,
-        bounds_with_routes(
-            (extent.0, extent.1, extent.2 - extent.0, extent.3 - extent.1),
-            graph
-                .edges
-                .iter()
-                .flat_map(|edge| ibd_edges::route_points_for_edge(edge, &layout_edges_by_id)),
-        ),
+        (left, top, right - left, bottom - top),
         None,
         root,
     )

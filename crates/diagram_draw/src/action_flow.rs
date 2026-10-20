@@ -533,17 +533,7 @@ pub fn render_action_flow_view(
             content.3 = content.3.max(lane.max_y + 20.0);
         }
     }
-    // SysML v2 §§8.2.3.1, 8.2.3.26: the view frame is distinct from action containers.
-    let (frame, extent) = crate::view_frame::view_frame(
-        if prepared.title.is_empty() {
-            "Action Flow"
-        } else {
-            &prepared.title
-        },
-        content,
-        theme,
-    );
-    let mut root = Element::new("g").attr("class", "viz-root").child(frame);
+    let mut root = Element::new("g").attr("class", "viz-root");
 
     let mut lane_layer = Element::new("g").attr("class", "activity-swim-lanes");
     if lane_extents.len() > 1 {
@@ -747,7 +737,16 @@ pub fn render_action_flow_view(
     root = root.insert_before_child("activity-flows", lane_layer);
     root = root.child(node_layer);
 
-    (root, extent)
+    crate::view_frame::enclose(
+        root,
+        if prepared.title.is_empty() {
+            "Action Flow"
+        } else {
+            &prepared.title
+        },
+        content,
+        theme,
+    )
 }
 
 /// Port of `addActionFlowMarkers`.

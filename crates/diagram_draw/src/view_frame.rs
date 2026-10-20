@@ -15,6 +15,7 @@ pub fn view_frame(
     content: (f64, f64, f64, f64),
     theme: &Theme,
 ) -> (Element, (f64, f64, f64, f64)) {
+    let view_name = title;
     let title = format!("«view» {title}");
     let tab_width = crate::svg::estimated_text_width(&title, 12.0) + 24.0;
     let min_x = content.0 - VIEW_FRAME_PADDING;
@@ -33,6 +34,7 @@ pub fn view_frame(
     );
     let frame = Element::new("g")
         .attr("class", "view-frame")
+        .attr("data-view-name", view_name)
         .style("pointer-events", "none")
         .child(
             Element::new("rect")
@@ -64,4 +66,16 @@ pub fn view_frame(
                 .text(title),
         );
     (frame, (min_x, min_y, max_x, max_y))
+}
+
+/// Enclose the completed drawing, including text, containers and boundary decorations.
+pub(crate) fn enclose(
+    root: Element,
+    title: &str,
+    content: (f64, f64, f64, f64),
+    theme: &Theme,
+) -> (Element, (f64, f64, f64, f64)) {
+    let content = root.decorated_extent(content);
+    let (frame, extent) = view_frame(title, content, theme);
+    (root.prepend_child(frame), extent)
 }
