@@ -13,10 +13,28 @@ corrected_anchor = "Performances::Performance::subperformances"
 issue = "kerml11_205"
 
 [[library_anchor_corrections]]
+rule_id = "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization"
+source_anchor = "Items::Item::subitem"
+corrected_anchor = "Items::Item::subitems"
+issue = "sysml_library_subitems"
+
+[[library_anchor_corrections]]
 rule_id = "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization"
 source_anchor = "Connections::BinaryConnections"
 corrected_anchor = "Connections::BinaryConnection"
 issue = "sysml21_348"
+
+[[library_anchor_corrections]]
+rule_id = "sysml-2.0:8.3.17.11:checkJoinNodeSpecialization"
+source_anchor = "Actions::Action::join"
+corrected_anchor = "Actions::Action::joins"
+issue = "sysml_library_joins"
+
+[[library_anchor_corrections]]
+rule_id = "sysml-2.0:8.3.17.6:checkControlNodeSpecialization"
+source_anchor = "Action::Action::controls"
+corrected_anchor = "Actions::Action::controls"
+issue = "sysml_library_controls"
 
 [[library_anchor_corrections]]
 rule_id = "sysml-2.0:8.3.26.8:checkViewpointDefinitionSpecialization"
@@ -29,12 +47,6 @@ rule_id = "sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization"
 source_anchor = "Views::viewpoints"
 corrected_anchor = "Views::viewpointChecks"
 issue = "sysml21_301"
-
-[[library_anchor_corrections]]
-rule_id = "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization"
-source_anchor = "Items::Item::subitem"
-corrected_anchor = "Items::Item::subitems"
-issue = "sysml_library_subitems"
 
 [[specifications]]
 name = "KerML"

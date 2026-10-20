@@ -1,12 +1,11 @@
 # META
 ~~~ini
-description=The viewpoint specialization anchors resolve through the SYSML21-301 correction (Views::ViewpointCheck / Views::viewpointChecks); the join-node anchor stays blocked until the canonical library publishes Actions::Action::join
+description=The viewpoint specialization anchors resolve through the SYSML21-301 correction (Views::ViewpointCheck / Views::viewpointChecks), and the join-node anchor through the library correction to Actions::Action::joins
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
-blocked_by=library-gap-join-node-specialization-anchor
 rule_id=sysml-2.0:8.3.26.8:checkViewpointDefinitionSpecialization
 rule_id=sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization
 rule_id=sysml-2.0:8.3.17.11:checkJoinNodeSpecialization
@@ -26,19 +25,13 @@ package GeneratedViewpointAnchors {
 (fixture-semantics
   (relationship (kind specialization) (source "GeneratedViewpointAnchors::ViewpointDefinition") (target "Views::ViewpointCheck") (provenance implied) (outcome resolved))
   (relationship (kind subsetting) (source "GeneratedViewpointAnchors::ViewpointUsage") (target "Views::viewpointChecks") (provenance implied) (outcome resolved))
-  (relationship (kind specialization) (source "GeneratedViewpointAnchors::Act::Join") (target "Actions::Action::join") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source "GeneratedViewpointAnchors::Act::Join") (target "Actions::Action::joins") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_library_anchor")
-        (source "semantic")
-        (range (start 3 21) (end 3 31))
-      )
     )
   )
 )
@@ -58,8 +51,8 @@ package GeneratedViewpointAnchors {
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::Act"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::Act::Join"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::joins"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::Act::Join"))) (target (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::Act"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::Act::Join"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::ViewpointDefinition"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::ViewpointCheck"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::ViewpointUsage"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::viewpointChecks"))) (provenance implied))
   )
@@ -78,14 +71,34 @@ package GeneratedViewpointAnchors {
     )
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::Act::Join")))
       (featured-by (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::Act")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::ControlAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::controls"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::JoinAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::joins"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::controls")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::joins")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::ControlAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::JoinAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::ViewpointDefinition")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
