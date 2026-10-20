@@ -443,7 +443,17 @@ pub fn render_interconnection_view_svg(
         nodes::draw_ibd_nodes(&graph.nodes, theme, graph.interconnection_layout.as_ref());
     root = root.child(viz_nodes);
 
-    for edge_layer in ibd_edges::draw_ibd_edges(&graph.edges, &nodes_by_id, layout_edges, theme) {
+    for edge_layer in ibd_edges::draw_ibd_edges(
+        &graph.edges,
+        &nodes_by_id,
+        layout_edges,
+        graph
+            .interconnection_layout
+            .as_ref()
+            .map(|layout| layout.nodes.as_slice())
+            .unwrap_or(&[]),
+        theme,
+    ) {
         root = root.child(edge_layer);
     }
 

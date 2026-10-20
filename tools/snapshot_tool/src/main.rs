@@ -10,6 +10,8 @@
 //! references resolve against them while the owned projections keep reporting only the fixture's
 //! own authored documents.
 
+mod watchdog;
+
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::fmt::Write as _;
 use std::fs;
@@ -67,6 +69,9 @@ struct Cli {
     /// Restrict the operation to one path relative to --root (or an explicit path).
     #[arg(long, global = true)]
     fixture: Option<PathBuf>,
+    /// Wall-clock budget for the complete operation; timeout prints active workers and exits 124.
+    #[arg(long, default_value = "600", global = true)]
+    timeout_seconds: std::num::NonZeroU64,
 }
 
 #[derive(Debug, Subcommand)]
@@ -2653,7 +2658,10 @@ fn validate_registry_references(registry: &IssueRegistry, paths: &[PathBuf]) -> 
 
 fn main() -> Result<(), String> {
     let cli = Cli::parse();
+    let watchdog =
+        watchdog::Watchdog::start(std::time::Duration::from_secs(cli.timeout_seconds.get()), 0);
     let paths = snapshot_paths(&cli.root, cli.fixture.as_deref())?;
+    watchdog.total(paths.len());
     if paths.is_empty() {
         return Err(format!(
             "no Markdown snapshots found under {}",
@@ -2663,6 +2671,7 @@ fn main() -> Result<(), String> {
     let registry = IssueRegistry::load(&cli.root)?;
     let registry_paths = snapshot_paths(&cli.root, None)?;
     validate_registry_references(&registry, &registry_paths)?;
+    watchdog.stage(watchdog::Stage::LibraryAdmission);
     let libraries = LibraryCorpus::new(cli.root.clone());
     let manifest_path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../..")
@@ -2679,15 +2688,20 @@ fn main() -> Result<(), String> {
         .stack_size(16 * 1024 * 1024)
         .build()
         .map_err(|error| format!("snapshot fixture worker pool failed: {error}"))?;
+    watchdog.stage(watchdog::Stage::Evaluation);
     let mut results: Vec<_> = fixture_pool.install(|| {
         paths
             .par_iter()
-            .map(|path| FixtureWorkResult {
-                path: path.clone(),
-                result: evaluate_fixture(path, &libraries, &registry, semantic_manifest),
+            .map(|path| {
+                let _active = watchdog.fixture(path);
+                FixtureWorkResult {
+                    path: path.clone(),
+                    result: evaluate_fixture(path, &libraries, &registry, semantic_manifest),
+                }
             })
             .collect()
     });
+    watchdog.stage(watchdog::Stage::Publication);
     sort_work_results(&mut results);
 
     let mut expectation_failures = Vec::new();

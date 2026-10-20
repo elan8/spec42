@@ -160,7 +160,7 @@ pub use view_query::{ViewExposedElements, ViewExposureObstacle};
 
 use model::resolver::ResolvedSemanticModel;
 use pipeline::schedule::BuildSchedule;
-use pipeline::{CoordinatorError, OwnedSourceRecord, SemanticModelBuildCoordinator};
+use pipeline::{OwnedSourceRecord, SemanticModelBuildCoordinator};
 
 /// Owner-measured elapsed times for the stable publication barriers.
 ///
@@ -518,10 +518,7 @@ pub(crate) fn build_library_stratum_memoized(
         .map(|source| source.identity.clone())
         .collect();
     let (published, _, sources) = build_parts(request)?;
-    let prepared = published
-        .model
-        .prepared_library(sources)
-        .map_err(|_| BuildFailure::ConstructionFailed)?;
+    let prepared = published.model.prepared_library(sources)?;
     Ok(LibraryStratum {
         prepared,
         manifest_entries,
@@ -669,17 +666,70 @@ impl BuildRequest {
     }
 }
 
+/// The owner phase that rejected a semantic build.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ConstructionPhase {
+    SourceAdmission,
+    Lowering,
+    Splicing,
+    Resolution,
+    Indexing,
+    Diagnostics,
+    LibrarySeed,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BuildFailure {
     DuplicateSourceIdentity,
-    ConstructionFailed,
+    ConstructionFailed {
+        phase: ConstructionPhase,
+        /// The failed source when known; otherwise the model-wide phase's input documents.
+        documents: Box<[Box<str>]>,
+        cause: String,
+    },
+}
+
+impl BuildFailure {
+    pub(crate) fn construction(
+        phase: ConstructionPhase,
+        documents: impl IntoIterator<Item = impl AsRef<str>>,
+        cause: impl fmt::Debug,
+    ) -> Self {
+        Self::ConstructionFailed {
+            phase,
+            documents: documents
+                .into_iter()
+                .map(|uri| uri.as_ref().into())
+                .collect(),
+            cause: format!("{cause:?}"),
+        }
+    }
 }
 
 impl fmt::Display for BuildFailure {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
+        match self {
+            Self::DuplicateSourceIdentity => formatter.write_str("DuplicateSourceIdentity"),
+            Self::ConstructionFailed {
+                phase,
+                documents,
+                cause,
+            } => {
+                // A model-wide phase names every input, standard library included; a message for
+                // a person shows the first few and counts the rest.
+                let shown = &documents[..documents.len().min(BUILD_FAILURE_DOCUMENTS_SHOWN)];
+                write!(formatter, "{phase:?} failed for documents {shown:?}")?;
+                if documents.len() > shown.len() {
+                    write!(formatter, " and {} more", documents.len() - shown.len())?;
+                }
+                write!(formatter, ": {cause}")
+            }
+        }
     }
 }
+
+/// How many failed documents a [`BuildFailure`] message names before counting the rest.
+const BUILD_FAILURE_DOCUMENTS_SHOWN: usize = 3;
 
 impl std::error::Error for BuildFailure {}
 
@@ -754,11 +804,7 @@ fn build_parts(
             request.library.as_deref().map(|library| &library.prepared),
             &request.reported,
             request.lowering.as_deref(),
-        )
-        .map_err(|error| match error {
-            CoordinatorError::DuplicateSourceIdentity => BuildFailure::DuplicateSourceIdentity,
-            CoordinatorError::ConstructionFailed => BuildFailure::ConstructionFailed,
-        })?;
+        )?;
     Ok((
         PublishedResolution {
             identity: request.identity,
@@ -1996,7 +2042,7 @@ mod parsed_admission_tests {
             BuildRequest::new(vec![mismatched], ConstructionSchedule::Sequential, "test").unwrap();
         assert!(matches!(
             build_measured(request),
-            Err(BuildFailure::ConstructionFailed)
+            Err(BuildFailure::ConstructionFailed { .. })
         ));
     }
 

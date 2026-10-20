@@ -374,14 +374,14 @@ package ConnectorIncomplete {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
+      "ordinal": 1,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "containment",
+      "ordinal": 0,
+      "relationshipKind": "noncomposite-membership",
       "source": 0
     },
     {
@@ -463,11 +463,11 @@ package ConnectorIncomplete {
   "projection": {
     "edges": [
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 1,
         "origin": 2,
         "provenance": "authored",
-        "reference": 11,
+        "reference": 12,
         "source": 0,
         "target": 2
       },
@@ -476,7 +476,7 @@ package ConnectorIncomplete {
         "navigation": 2,
         "origin": 1,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 11,
         "source": 0,
         "target": 1
       }

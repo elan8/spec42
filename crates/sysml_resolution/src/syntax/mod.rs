@@ -118,6 +118,37 @@ mod tests {
     }
 
     #[test]
+    fn parser_284_typing_lists_and_state_action_bodies_keep_token_roles() {
+        let source = "package P {\n  part def Container {\n    item cargo : A, B;\n  }\n  state def S {\n    entry action named : A, B {\n      item inner : A, B;\n    }\n  }\n}";
+        let parsed = parse(source);
+        assert!(parsed.is_clean());
+        let roles = parsed.token_roles();
+        for line in [2, 5, 6] {
+            let actual: Vec<_> = roles
+                .iter()
+                .filter(|(range, role)| range.start_line == line && *role == SyntaxRole::Type)
+                .map(|(range, _)| (range.start_character, range.end_character))
+                .collect();
+            let text = source.lines().nth(line as usize).unwrap();
+            let expected: Vec<_> = ["A", "B"]
+                .into_iter()
+                .map(|name| {
+                    let start = text.find(name).unwrap() as u32;
+                    (start, start + 1)
+                })
+                .collect();
+            assert_eq!(actual, expected, "typing tokens on line {line}");
+        }
+        let named = source.lines().nth(5).unwrap().find("named").unwrap() as u32;
+        assert!(roles
+            .iter()
+            .any(|(range, role)| *role == SyntaxRole::Function
+                && range.start_line == 5
+                && range.start_character == named
+                && range.end_character == named + 5));
+    }
+
+    #[test]
     fn file_imports_publish_the_literal_and_its_exact_range() {
         let parsed = parse("private import 'file:///tmp/model.sysml';\n");
         let imports = parsed.imports();

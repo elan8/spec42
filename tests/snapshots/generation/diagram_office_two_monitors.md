@@ -1570,13 +1570,13 @@ package Office {
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 12
     },
     {
@@ -1606,13 +1606,13 @@ package Office {
     {
       "kind": "relationship",
       "ordinal": 12,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 13,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 13
     },
     {
@@ -1642,13 +1642,13 @@ package Office {
     {
       "kind": "relationship",
       "ordinal": 15,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 16,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 14
     },
     {
@@ -1678,7 +1678,7 @@ package Office {
     {
       "kind": "relationship",
       "ordinal": 4,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 15
     },
     {
@@ -1728,7 +1728,7 @@ package Office {
         "target": 4
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 4,
         "origin": 5,
         "provenance": "implied",
@@ -1737,7 +1737,7 @@ package Office {
         "target": 5
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 2,
         "origin": 6,
         "provenance": "implied",
@@ -1755,7 +1755,7 @@ package Office {
         "target": 7
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 10,
         "origin": 8,
         "provenance": "implied",
@@ -1827,7 +1827,7 @@ package Office {
         "target": 9
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 8,
         "origin": 10,
         "provenance": "implied",
@@ -1836,7 +1836,7 @@ package Office {
         "target": 10
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 6,
         "origin": 11,
         "provenance": "implied",
@@ -1854,7 +1854,7 @@ package Office {
         "target": 12
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 8,
         "origin": 13,
         "provenance": "implied",
@@ -1863,7 +1863,7 @@ package Office {
         "target": 13
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 6,
         "origin": 14,
         "provenance": "implied",
