@@ -1283,7 +1283,7 @@ impl SemanticModelBuilder {
     }
 
     /// The guard of a conditional succession as it is written, with its white space collapsed.
-    fn guard_text(&self, document: DocumentIdx, guard: &Node<Expression>) -> Box<str> {
+    pub(super) fn guard_text(&self, document: DocumentIdx, guard: &Node<Expression>) -> Box<str> {
         let source = self.documents[document.index()].parsed.source.as_str();
         source
             .get(guard.span.offset..guard.span.offset + guard.span.len)

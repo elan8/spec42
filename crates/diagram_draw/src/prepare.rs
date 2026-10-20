@@ -3147,20 +3147,19 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
             let trigger = trigger_label(field(transition, "trigger"));
             let guard = feature_label(field(transition, "guard"));
             let effect = feature_label(field(transition, "effect"));
-            let mut parts = Vec::new();
-            if !trigger.is_empty() {
-                parts.push(trigger.clone());
-            }
+            // SysML 8.2.3.18: `trigger [guard] / effect`; only the effect follows a slash.
+            let mut condition = trigger.clone();
             if !guard.is_empty() {
-                parts.push(format!("[{guard}]"));
+                if !condition.is_empty() {
+                    condition.push(' ');
+                }
+                condition.push_str(&format!("[{guard}]"));
             }
-            if !effect.is_empty() {
-                parts.push(effect.clone());
-            }
-            let label = if parts.is_empty() {
-                as_string(field(transition, "label"), "")
-            } else {
-                parts.join(" / ")
+            let label = match (condition.is_empty(), effect.is_empty()) {
+                (true, true) => as_string(field(transition, "label"), ""),
+                (false, true) => condition,
+                (true, false) => format!("/ {effect}"),
+                (false, false) => format!("{condition} / {effect}"),
             };
             edges.push(json!({
                 "id": format!("transition:{index}"),
