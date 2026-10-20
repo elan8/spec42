@@ -9,7 +9,7 @@ use tower_lsp::lsp_types::Url;
 use crate::session::state::ServerState;
 use crate::session::WorkspaceHandle;
 
-use super::lifecycle::project_boundary_for_uri;
+use super::lifecycle::{project_boundary_for_uri, project_source_selected};
 
 /// Owns the independent semantic publication for every editor-visible SysML project.
 ///
@@ -465,8 +465,8 @@ fn boundary_root_for_uri(uri: &Url, workspace_roots: &[Url]) -> Option<PathBuf> 
     if let Some(boundary) = project_boundary_for_uri(uri, workspace_roots) {
         let path = uri.to_file_path().ok()?;
         if sysml_query::source::is_sysml_like(&path) {
-            match sysml_query::source::ProjectSourceScope::load(boundary.project_root()) {
-                Ok(scope) if !scope.includes(&path) => return None,
+            match project_source_selected(uri, workspace_roots) {
+                Ok(false) => return None,
                 _ => {} // Admission owns configuration-error reporting; never hide that state.
             }
         }
@@ -482,6 +482,41 @@ fn boundary_root_for_uri(uri: &Url, workspace_roots: &[Url]) -> Option<PathBuf> 
 mod tests {
     use super::*;
     use std::fs;
+
+    #[tokio::test]
+    async fn installed_manifests_cannot_create_workspace_sessions_but_keep_library_provenance() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path();
+        let library = root.join(".sysand/lib/types");
+        fs::create_dir_all(&library).unwrap();
+        fs::write(root.join("Model.sysml"), "package Model;").unwrap();
+        fs::write(
+            library.join(".project.json"),
+            r#"{"name":"Types","version":"1.0.0"}"#,
+        )
+        .unwrap();
+        fs::write(library.join("Types.sysml"), "package Types;").unwrap();
+        let model_uri = Url::from_file_path(root.join("Model.sysml")).unwrap();
+        let library_uri = Url::from_file_path(library.join("Types.sysml")).unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(
+                vec![Url::from_directory_path(root).unwrap()],
+                vec![library_root_url(&library).unwrap()],
+                Vec::new(),
+            )
+            .await;
+        assert_eq!(registry.handles().len(), 1);
+        assert!(registry.handle_for_uri(&library_uri).await.is_none());
+        assert_eq!(registry.handles().len(), 1);
+        assert!(registry
+            .query_handle_for_uri(&library_uri, Some(&model_uri))
+            .is_ok());
+    }
 
     #[tokio::test]
     async fn source_scope_applies_to_open_watch_and_query_routing_after_rediscovery() {

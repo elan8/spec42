@@ -10,7 +10,7 @@
 //! which re-exports these types for the query facade.
 
 mod project_scope;
-pub use project_scope::{ProjectSourceScope, PROJECT_CONFIG_FILE};
+pub use project_scope::{workspace_source_selected, ProjectSourceScope, PROJECT_CONFIG_FILE};
 
 use std::fmt;
 use std::fs;
@@ -761,12 +761,7 @@ impl SourceAuthority {
             }
             let walker = FilesystemProvider::new(vec![path.clone()], SourceKind::Workspace)
                 .with_ignore_rules(false);
-            let scope = ProjectSourceScope::load(&path)?;
-            files.extend(walker.walk(&path).into_iter().filter(|file| {
-                scope.includes(file)
-                    && discover_project_boundary(file, &path)
-                        .is_none_or(|boundary| boundary.project_root() == path)
-            }));
+            files.extend(walker.walk(&path));
         }
         if files.is_empty() {
             return Err(SourceError::NoSourcesFound);

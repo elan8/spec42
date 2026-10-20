@@ -15,6 +15,37 @@ fn normalized_path(path: &Path) -> PathBuf {
 
 pub const PROJECT_CONFIG_FILE: &str = "syside.toml";
 
+/// Project source admission inside an editor discovery ceiling. Installed projects may own
+/// `.project.json` manifests, but do not become workspace projects when their files are opened.
+pub fn workspace_source_selected(source: &Path, ceiling: &Path) -> Result<bool, SourceError> {
+    let source = normalized_path(source);
+    let ceiling = normalized_path(ceiling);
+    let Some(boundary) = crate::discover_project_boundary(&source, &ceiling) else {
+        return Ok(false);
+    };
+    if !ProjectSourceScope::load(boundary.project_root())?.includes(&source) {
+        return Ok(false);
+    }
+    for ancestor in boundary
+        .project_root()
+        .parent()
+        .into_iter()
+        .flat_map(Path::ancestors)
+    {
+        let ancestor = normalized_path(ancestor);
+        if !ancestor.starts_with(&ceiling) {
+            break;
+        }
+        if ancestor == ceiling || ancestor.join(crate::PROJECT_MANIFEST_FILE).is_file() {
+            let scope = ProjectSourceScope::load(&ancestor)?;
+            if source.starts_with(normalized_path(scope.sysand_dir())) {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
+}
+
 #[derive(Default, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 struct SourceConfig {
@@ -237,5 +268,58 @@ mod tests {
                 std::fs::canonicalize(temp.path().join("child")).unwrap(),
             ]
         );
+    }
+
+    #[test]
+    fn explicit_discovery_keeps_library_collections_while_project_admission_is_scoped() {
+        let temp = tempfile::tempdir().unwrap();
+        for directory in ["a", "b"] {
+            std::fs::create_dir(temp.path().join(directory)).unwrap();
+            std::fs::write(temp.path().join(directory).join(".project.json"), "{}").unwrap();
+            std::fs::write(
+                temp.path().join(directory).join("Model.sysml"),
+                "package Model;",
+            )
+            .unwrap();
+        }
+        std::fs::write(temp.path().join(PROJECT_CONFIG_FILE), "include = []").unwrap();
+        let source = SourceAuthority::new();
+        assert_eq!(
+            source.discover(&[temp.path().to_path_buf()]).unwrap().len(),
+            2
+        );
+        let report =
+            FilesystemProvider::new(vec![temp.path().to_path_buf()], SourceKind::Workspace)
+                .within_project_boundary(true)
+                .load(&source)
+                .unwrap();
+        assert!(report.documents.is_empty());
+    }
+
+    #[test]
+    fn opening_a_manifest_inside_an_installed_environment_does_not_create_workspace_membership() {
+        let temp = tempfile::tempdir().unwrap();
+        for directory in ["", "child", "installed/types"] {
+            std::fs::create_dir_all(temp.path().join(directory)).unwrap();
+            std::fs::write(temp.path().join(directory).join(".project.json"), "{}").unwrap();
+            std::fs::write(
+                temp.path().join(directory).join("Model.sysml"),
+                "package Model;",
+            )
+            .unwrap();
+        }
+        std::fs::write(
+            temp.path().join(PROJECT_CONFIG_FILE),
+            "sysand-dir = 'installed'",
+        )
+        .unwrap();
+        assert!(
+            workspace_source_selected(&temp.path().join("child/Model.sysml"), temp.path()).unwrap()
+        );
+        assert!(!workspace_source_selected(
+            &temp.path().join("installed/types/Model.sysml"),
+            temp.path()
+        )
+        .unwrap());
     }
 }
