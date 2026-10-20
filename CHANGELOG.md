@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Generator runtime security.** Upgrade Wasmtime to 48.0.7, addressing
+  RUSTSEC-2026-0378 and RUSTSEC-2026-0379.
+
 - **Project source scope and installed Sysand dependencies.** CLI and VS Code share project-root
   `syside.toml` source selection and load locked dependencies from Sysand environment metadata,
   with explicit errors for missing, stale, or unsupported installations and no implicit downloads.
