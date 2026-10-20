@@ -214,6 +214,23 @@ fn detail_items(attributes: &BTreeMap<String, Value>, key: &str) -> Vec<DetailIt
         .collect()
 }
 
+/// Format supplied feature facts without deriving a direction from its type. A port's
+/// feature direction describes arrows in an interconnection view, not an authored prefix.
+fn feature_name(name: &str, direction: Option<&str>) -> String {
+    match direction {
+        Some(direction @ ("in" | "out" | "inout")) => format!("{direction} {name}"),
+        _ => name.to_string(),
+    }
+}
+
+fn feature_type_name(name: &str, conjugated: bool) -> String {
+    if conjugated && !name.is_empty() {
+        format!("~{name}")
+    } else {
+        name.to_string()
+    }
+}
+
 /// Port of `collectCompartments` in `sysml-node-builder.ts` (the `{label, kind, attributes}`
 /// overload `drawNodes` falls back to when a node has no precomputed `compartments`).
 pub fn collect_compartments(
@@ -225,7 +242,13 @@ pub fn collect_compartments(
         .or_else(|| attr_str(attributes, "partType"))
         .or_else(|| attr_str(attributes, "type"))
         .or_else(|| attr_str(attributes, "typedBy"))
-        .or_else(|| attr_str(attributes, "typing"));
+        .or_else(|| attr_str(attributes, "typing"))
+        .map(|name| {
+            feature_type_name(
+                &name,
+                attributes.get("conjugated") == Some(&Value::Bool(true)),
+            )
+        });
 
     let direct_attributes = detail_items(attributes, "generalViewDirectAttributes");
     let direct_parts = detail_items(attributes, "generalViewDirectParts");
@@ -268,8 +291,18 @@ pub fn collect_compartments(
                         .and_then(|r| r.get("typeName"))
                         .and_then(Value::as_str)
                         .unwrap_or("");
+                    let name = feature_name(
+                        name,
+                        record
+                            .and_then(|r| r.get("direction"))
+                            .and_then(Value::as_str),
+                    );
+                    let type_name = feature_type_name(
+                        type_name,
+                        record.and_then(|r| r.get("conjugated")) == Some(&Value::Bool(true)),
+                    );
                     let display_text = if type_name.is_empty() {
-                        name.to_string()
+                        name
                     } else {
                         format!("{name} : {type_name}")
                     };
@@ -356,11 +389,10 @@ pub fn collect_compartments(
         } else {
             kind.to_string()
         },
-        name: if label.is_empty() {
-            "Unnamed".to_string()
-        } else {
-            label.to_string()
-        },
+        name: feature_name(
+            if label.is_empty() { "Unnamed" } else { label },
+            attributes.get("direction").and_then(Value::as_str),
+        ),
         typed_by_name,
         attributes: if !direct_attributes.is_empty() {
             direct_attributes

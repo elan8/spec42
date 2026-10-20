@@ -452,3 +452,28 @@ For the lighter Extension Development Host workflow:
 3. Press F5 to launch the Extension Development Host.
 4. Open a folder containing `.sysml` or `.kerml` files.
 5. Use Feature Inspector, hover, definition, references, and `spec42 check` to compare editor and CLI behavior.
+
+## Concurrent publication stress
+
+Build the real workloads explicitly, then repeat the full snapshot corpus and full LSP integration
+suite together. The runner performs no builds or downloads. Cargo's JSON output identifies the
+integration executable without guessing a hashed filename:
+
+```sh
+cargo build --release -p spec42-snapshot
+cargo test -p lsp_server --test lsp_integration --no-run --message-format=json > target/lsp-test-artifacts.json
+python3 scripts/stress-publication.py --lsp-artifacts target/lsp-test-artifacts.json --repetitions 25 --jobs 2 --cpu-workers 2
+```
+
+`--cpu-workers` adds independent busy processes; use the local CPU count to reproduce full CPU
+contention. Each workload has a 900-second outer budget by default. The snapshot operation gets a
+30-second shorter budget so its active-fixture dump reaches the log before outer termination. The
+LSP harness additionally ends each stalled server after 300 seconds and reports its thread states
+and stderr. A timeout ends the owned process tree, returns a failure and retains the diagnostic log.
+`target/publication-stress/summary.json` records the commit, workload, concurrency, repetitions,
+budgets, exit codes, durations and per-run log paths. Any failed repetition makes the command fail.
+
+The required **Rust tests (pinned SysML release)** job reads the repository and tag from
+`config/standard-library.json`, checks out that exact release and runs
+`lsp_workspace_scan_sysml_release`. Its result participates in **Rust core checks**; missing release
+input is a gate failure rather than a skipped test.

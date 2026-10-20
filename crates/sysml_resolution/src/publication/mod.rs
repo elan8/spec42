@@ -34,6 +34,7 @@ pub enum PublicationFailureStage {
     RequestConstruction,
     ModelConstruction,
     ConstructionWorker,
+    PublicationAdmission,
 }
 
 /// A typed failure from the sole publication construction path.
@@ -57,6 +58,14 @@ impl PublicationBuildFailure {
             stage,
             message: error.to_string(),
         }
+    }
+
+    /// A completed model must belong to the exact request admitted by the session.
+    pub fn admission_identity_mismatch() -> Self {
+        Self::at(
+            PublicationFailureStage::PublicationAdmission,
+            "finished model identity differs from the admitted build request",
+        )
     }
 
     /// Construction worker failed before it could return its typed semantic result.

@@ -85,17 +85,30 @@ pub fn uri_under_any_library(uri: &Url, library_paths: &[Url]) -> bool {
 
 /// Parse library paths from LSP config (initialization_options or didChangeConfiguration settings).
 pub fn parse_library_paths_from_value(value: Option<&serde_json::Value>) -> Vec<Url> {
+    parse_library_paths_with_base(value, None)
+}
+
+/// Relative client paths use the original first editor workspace folder on every configuration revision.
+/// Canonical identity and filesystem alias handling remain owned by the source authority.
+pub(crate) fn parse_library_paths_with_base(
+    value: Option<&serde_json::Value>,
+    base: Option<&std::path::Path>,
+) -> Vec<Url> {
     value
         .and_then(|opts| opts.get("libraryPaths"))
-        .and_then(|v| v.as_array())
-        .map(|arr| {
-            arr.iter()
-                .filter_map(|s| s.as_str())
-                .filter_map(|path_str| {
-                    let path = std::path::PathBuf::from(path_str);
-                    Url::from_file_path(path)
-                        .ok()
-                        .map(|u| normalize_file_uri(&u))
+        .and_then(|paths| paths.as_array())
+        .map(|paths| {
+            paths
+                .iter()
+                .filter_map(|value| value.as_str())
+                .filter_map(|text| {
+                    let path = PathBuf::from(text);
+                    let path = if path.is_absolute() {
+                        path
+                    } else {
+                        base?.join(path)
+                    };
+                    sysml_query::source::path_to_file_url(&path).ok()
                 })
                 .collect()
         })
@@ -231,6 +244,29 @@ mod tests {
         parse_semantic_tokens_debug_from_value, untyped_part_usage_diagnostics,
     };
     use tower_lsp::lsp_types::{Position, Range};
+
+    #[test]
+    fn relative_library_paths_use_the_declared_workspace_base_and_canonical_identity() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path().canonicalize().unwrap();
+        let library = root.join("libs");
+        std::fs::create_dir(&library).unwrap();
+        let expected = sysml_query::source::path_to_file_url(&library).unwrap();
+        for spelling in [
+            library.to_string_lossy().into_owned(),
+            "libs".into(),
+            "libs/../libs/".into(),
+        ] {
+            let settings = serde_json::json!({"libraryPaths":[spelling]});
+            assert_eq!(
+                super::parse_library_paths_with_base(Some(&settings), Some(&root)),
+                std::slice::from_ref(&expected)
+            );
+        }
+        let relative = serde_json::json!({"libraryPaths":["libs"]});
+        assert!(super::parse_library_paths_from_value(Some(&relative)).is_empty(),
+            "relative paths without an editor root must not acquire the server working directory's identity");
+    }
 
     #[cfg(unix)]
     #[test]

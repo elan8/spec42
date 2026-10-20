@@ -47,144 +47,152 @@ impl<D> SemanticModel<D> {
         // derived, and the reason a library's own documents could not be.
         let declarations_by_document = self.declarations_by_document()?;
         for document_index in self.reported_document_indices(reported) {
-            let document = &self.storage.documents[document_index];
             let document_id = DocumentIdx(document_index as u32);
-            let first = diagnostics.len();
+            // Preserve the source context of failures from every descendant diagnostic check.
+            (|| -> Result<(), ResolutionError> {
+                let document = &self.storage.documents[document_index];
+                let first = diagnostics.len();
 
-            for error in sources.parse_errors(document_id) {
-                let parsed = sources
-                    .parsed(document_id)
-                    .ok_or(ResolutionError::InvalidStorage)?;
-                let range =
-                    parse_error_range(parsed, error).ok_or(ResolutionError::InvalidStorage)?;
-                diagnostics.push(Diagnostic {
-                    payload: None,
-                    // The parser owns both the code and the sentence; neither is re-derived here.
-                    message: error.message.as_str().into(),
-                    subject: None,
-                    code: DiagnosticCode::Parser {
-                        code: match error.code.as_deref() {
-                            Some(code) => code.into(),
-                            None => UNCODED_PARSE_ERROR.into(),
-                        },
-                        category: parser_diagnostic_category(error.category),
-                    },
-                    severity: match error.severity {
-                        Some(sysml_v2_parser::DiagnosticSeverity::Warning) => {
-                            DiagnosticSeverity::Warning
-                        }
-                        Some(sysml_v2_parser::DiagnosticSeverity::Error) | None => {
-                            DiagnosticSeverity::Error
-                        }
-                    },
-                    origin: DiagnosticOrigin::Parser,
-                    location: DiagnosticLocation {
-                        document: document.identity.clone(),
-                        range,
-                    },
-                    related: Box::default(),
-                });
-            }
-
-            for record in self
-                .storage
-                .unsupported
-                .iter()
-                .filter(|record| record.document == document_id)
-            {
-                let code = unsupported_construct_code(record.family);
-                diagnostics.push(Diagnostic {
-                    payload: None,
-                    message: code.describe().into(),
-                    subject: None,
-                    code,
-                    severity: DiagnosticSeverity::Warning,
-                    origin: DiagnosticOrigin::Semantic,
-                    location: DiagnosticLocation {
-                        document: document.identity.clone(),
-                        range: document_range(&self.storage, document_id, &record.span)?,
-                    },
-                    related: Box::default(),
-                });
-            }
-
-            for (index, reference) in self.storage.references.iter().enumerate() {
-                let source = self
-                    .storage
-                    .declaration(reference.source)
-                    .ok_or(ResolutionError::InvalidStorage)?;
-                if source.document != document_id {
-                    continue;
-                }
-                let reference_id = AuthoredReferenceId::from_index(index)
-                    .map_err(|_| ResolutionError::Capacity)?;
-                let status = self
-                    .resolution
-                    .outcome(reference_id)
-                    .ok_or(ResolutionError::InvalidStorage)?;
-                let Some((severity, code)) = reference_diagnostic(reference.kind, status) else {
-                    continue;
-                };
-                let mut related = Vec::new();
-                if let ResolutionStatus::Ambiguous(candidates) = status {
-                    // Every candidate, in the resolver's canonical candidate order: choosing one
-                    // would settle an ambiguity the publication deliberately left open.
-                    for target in self.resolution.ambiguous_candidates(candidates) {
-                        related
-                            .push(self.related_declaration(*target, RELATED_AMBIGUOUS_CANDIDATE)?);
-                    }
-                }
-                diagnostics.push(Diagnostic {
-                    payload: (code.category() == sysml_contract::DiagnosticCategory::Unresolved)
-                        .then(
-                            || crate::diagnostics::DiagnosticPayload::UnresolvedReference {
-                                authored_target: self
-                                    .authored_path(reference.path)
-                                    .into_boxed_str(),
+                for error in sources.parse_errors(document_id) {
+                    let parsed = sources
+                        .parsed(document_id)
+                        .ok_or(ResolutionError::InvalidStorage)?;
+                    let range =
+                        parse_error_range(parsed, error).ok_or(ResolutionError::InvalidStorage)?;
+                    diagnostics.push(Diagnostic {
+                        payload: None,
+                        // The parser owns both the code and the sentence; neither is re-derived here.
+                        message: error.message.as_str().into(),
+                        subject: None,
+                        code: DiagnosticCode::Parser {
+                            code: match error.code.as_deref() {
+                                Some(code) => code.into(),
+                                None => UNCODED_PARSE_ERROR.into(),
                             },
-                        ),
-                    message: code.describe().into(),
-                    subject: self.symbol_id(reference.source),
-                    code,
-                    severity,
-                    origin: DiagnosticOrigin::Semantic,
-                    location: DiagnosticLocation {
-                        document: document.identity.clone(),
-                        range: document_range(&self.storage, document_id, &reference.span)?,
-                    },
-                    related: related.into_boxed_slice(),
+                            category: parser_diagnostic_category(error.category),
+                        },
+                        severity: match error.severity {
+                            Some(sysml_v2_parser::DiagnosticSeverity::Warning) => {
+                                DiagnosticSeverity::Warning
+                            }
+                            Some(sysml_v2_parser::DiagnosticSeverity::Error) | None => {
+                                DiagnosticSeverity::Error
+                            }
+                        },
+                        origin: DiagnosticOrigin::Parser,
+                        location: DiagnosticLocation {
+                            document: document.identity.clone(),
+                            range,
+                        },
+                        related: Box::default(),
+                    });
+                }
+
+                for record in self
+                    .storage
+                    .unsupported
+                    .iter()
+                    .filter(|record| record.document == document_id)
+                {
+                    let code = unsupported_construct_code(record.family);
+                    diagnostics.push(Diagnostic {
+                        payload: None,
+                        message: code.describe().into(),
+                        subject: None,
+                        code,
+                        severity: DiagnosticSeverity::Warning,
+                        origin: DiagnosticOrigin::Semantic,
+                        location: DiagnosticLocation {
+                            document: document.identity.clone(),
+                            range: document_range(&self.storage, document_id, &record.span)?,
+                        },
+                        related: Box::default(),
+                    });
+                }
+
+                for (index, reference) in self.storage.references.iter().enumerate() {
+                    let source = self
+                        .storage
+                        .declaration(reference.source)
+                        .ok_or(ResolutionError::InvalidStorage)?;
+                    if source.document != document_id {
+                        continue;
+                    }
+                    let reference_id = AuthoredReferenceId::from_index(index)
+                        .map_err(|_| ResolutionError::Capacity)?;
+                    let status = self
+                        .resolution
+                        .outcome(reference_id)
+                        .ok_or(ResolutionError::InvalidStorage)?;
+                    let Some((severity, code)) = reference_diagnostic(reference.kind, status)
+                    else {
+                        continue;
+                    };
+                    let mut related = Vec::new();
+                    if let ResolutionStatus::Ambiguous(candidates) = status {
+                        // Every candidate, in the resolver's canonical candidate order: choosing one
+                        // would settle an ambiguity the publication deliberately left open.
+                        for target in self.resolution.ambiguous_candidates(candidates) {
+                            related.push(
+                                self.related_declaration(*target, RELATED_AMBIGUOUS_CANDIDATE)?,
+                            );
+                        }
+                    }
+                    diagnostics.push(Diagnostic {
+                        payload: (code.category()
+                            == sysml_contract::DiagnosticCategory::Unresolved)
+                            .then(
+                                || crate::diagnostics::DiagnosticPayload::UnresolvedReference {
+                                    authored_target: self
+                                        .authored_path(reference.path)
+                                        .into_boxed_str(),
+                                },
+                            ),
+                        message: code.describe().into(),
+                        subject: self.symbol_id(reference.source),
+                        code,
+                        severity,
+                        origin: DiagnosticOrigin::Semantic,
+                        location: DiagnosticLocation {
+                            document: document.identity.clone(),
+                            range: document_range(&self.storage, document_id, &reference.span)?,
+                        },
+                        related: related.into_boxed_slice(),
+                    });
+                }
+
+                let declared = declarations_by_document
+                    .get(document_index)
+                    .map(Vec::as_slice)
+                    .unwrap_or_default();
+                self.collect_conformance(document_id, declared, &mut diagnostics)?;
+                self.collect_structural_conformance(document_id, declared, &mut diagnostics)?;
+                self.collect_expression_conformance(document_id, declared, &mut diagnostics)?;
+                self.collect_host_conformance(document_id, declared, &mut diagnostics)?;
+                self.collect_library_context(
+                    document_id,
+                    first,
+                    standard_library_availability,
+                    &mut diagnostics,
+                )?;
+
+                // Ordering is owned here so no consumer has to sort, and so the order cannot vary with
+                // which storage collection a diagnostic happened to come from. The sort is stable, so
+                // parser, unsupported-construct, and reference diagnostics that share a range keep the
+                // order they were derived in.
+                diagnostics[first..].sort_by(|left, right| {
+                    left.location
+                        .range
+                        .cmp(&right.location.range)
+                        .then_with(|| left.code.as_str().cmp(right.code.as_str()))
                 });
-            }
-
-            let declared = declarations_by_document
-                .get(document_index)
-                .map(Vec::as_slice)
-                .unwrap_or_default();
-            self.collect_conformance(document_id, declared, &mut diagnostics)?;
-            self.collect_structural_conformance(document_id, declared, &mut diagnostics)?;
-            self.collect_expression_conformance(document_id, declared, &mut diagnostics)?;
-            self.collect_host_conformance(document_id, declared, &mut diagnostics)?;
-            self.collect_library_context(
-                document_id,
-                first,
-                standard_library_availability,
-                &mut diagnostics,
-            )?;
-
-            // Ordering is owned here so no consumer has to sort, and so the order cannot vary with
-            // which storage collection a diagnostic happened to come from. The sort is stable, so
-            // parser, unsupported-construct, and reference diagnostics that share a range keep the
-            // order they were derived in.
-            diagnostics[first..].sort_by(|left, right| {
-                left.location
-                    .range
-                    .cmp(&right.location.range)
-                    .then_with(|| left.code.as_str().cmp(right.code.as_str()))
-            });
-            by_document[document_index] = (
-                u32::try_from(first).map_err(|_| ResolutionError::Capacity)?,
-                u32::try_from(diagnostics.len()).map_err(|_| ResolutionError::Capacity)?,
-            );
+                by_document[document_index] = (
+                    u32::try_from(first).map_err(|_| ResolutionError::Capacity)?,
+                    u32::try_from(diagnostics.len()).map_err(|_| ResolutionError::Capacity)?,
+                );
+                Ok(())
+            })()
+            .map_err(|error| error.in_document(document_id))?;
         }
         Ok((
             diagnostics.into_boxed_slice(),

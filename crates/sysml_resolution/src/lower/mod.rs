@@ -3348,10 +3348,8 @@ impl SemanticModelBuilder {
     /// Lowers a `#<keyword>+ def <Name> ...` short-form definition (BNF ExtendedDefinition),
     /// mirroring `lower_package`: ownership, membership, an optional `:>` specialization
     /// relationship, and owned members through the same `lower_package_body` walker `body:
-    /// PackageBody` shares with an ordinary `package { ... }`. `ExtendedDefinition` has no
-    /// `Membership` node of its own (unlike `Package`, which also lowers with a synthesized
-    /// `Owning`/`Default` membership for the same reason -- see `lower_package`), so membership is
-    /// synthesized identically. Prefix keywords annotate this declaration just as they do a
+    /// PackageBody` shares with an ordinary `package { ... }`. Its membership retains authored
+    /// visibility. Prefix keywords annotate this declaration just as they do a
     /// language-keyword-led definition (SysML 7.27.4).
     pub(crate) fn lower_extended_definition(
         &mut self,
@@ -3382,8 +3380,11 @@ impl SemanticModelBuilder {
         self.push_membership(
             declaration,
             MembershipKind::Owning,
-            Visibility::Default,
-            node.span,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span,
         )?;
         // The keywords belong to this declaration's own header, so they bind directly rather than
         // through the body-level prefix buffer a preceding sibling tag may still occupy.
@@ -3503,8 +3504,8 @@ impl SemanticModelBuilder {
 
     /// Shared implementation behind `lower_typing_relationship`, with two extra flags.
     ///
-    /// `variation` is set only by `lower_part_usage` (when its prefix's variance slot is
-    /// `DefinitionPrefix::Variation`), mirroring the `conjugated` flag convention on a port's
+    /// `variation` is set only by the occurrence-prefixed part, item and view usages (when the
+    /// prefix's variance slot is `DefinitionPrefix::Variation`), mirroring the `conjugated` flag convention on a port's
     /// typing target. `direction` is set only by `lower_kerml_feature_member`, whose node absorbed
     /// the directed kinded parameter (`in expr p : Boolean`) upstream: that declaration's typing
     /// reference has always carried its direction, so it keeps doing so now that the declaration
@@ -3597,6 +3598,27 @@ impl SemanticModelBuilder {
             VariantUsageForm::Typed(typed) => {
                 let direct_owner = Some(owner);
                 match typed {
+                    VariantTypedUsage::CaseUsage(node) => {
+                        self.lower_case_usage(document, direct_owner, node)
+                    }
+                    VariantTypedUsage::AnalysisCaseUsage(node) => {
+                        self.lower_analysis_case_usage(document, direct_owner, node)
+                    }
+                    VariantTypedUsage::VerificationCaseUsage(node) => {
+                        self.lower_verification_case_usage(document, direct_owner, node)
+                    }
+                    VariantTypedUsage::UseCaseUsage(node) => {
+                        self.lower_use_case_usage(document, direct_owner, node)
+                    }
+                    VariantTypedUsage::State(node) => {
+                        self.lower_state_usage(document, direct_owner, node)
+                    }
+                    VariantTypedUsage::Calculation(node) => {
+                        self.lower_calc_usage(document, direct_owner, node)
+                    }
+                    VariantTypedUsage::Constraint(node) => {
+                        self.lower_constraint_usage(document, direct_owner, node)
+                    }
                     VariantTypedUsage::Perform(perform) => {
                         self.lower_perform(document, direct_owner, perform.as_ref())
                     }
