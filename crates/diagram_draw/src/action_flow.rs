@@ -461,20 +461,6 @@ pub fn render_action_flow_view(
         == "horizontal";
     let typed_projection = prepared.meta.get("typedProjection") == Some(&Value::Bool(true));
 
-    // SysML 8.2.3.5: the view is drawn in a frame that carries its name. A fork's name is
-    // written below its bar, so the content reaches one line further down.
-    let content = crate::behavior_common::content_extent(layout);
-    let (frame, extent) = crate::behavior_common::view_frame(
-        if prepared.title.is_empty() {
-            "Action Flow"
-        } else {
-            &prepared.title
-        },
-        (content.0, content.1, content.2, content.3 + 20.0),
-        theme,
-    );
-    let mut root = Element::new("g").attr("class", "viz-root").child(frame);
-
     let mut lane_extents: Vec<(String, LaneExtent)> = Vec::new();
     for node in &prepared.nodes {
         let Some(position) = layout.positions.get(&node.id) else {
@@ -509,6 +495,56 @@ pub fn render_action_flow_view(
             )),
         }
     }
+    // Include decorations outside node rectangles before enclosing the root view.
+    let mut content = crate::behavior_common::content_extent(layout);
+    for node in &prepared.nodes {
+        let Some(position) = layout.positions.get(&node.id) else {
+            continue;
+        };
+        for (side, items) in [
+            (
+                "input",
+                attr_array(&node.attributes, "inputs", "inputParameters"),
+            ),
+            (
+                "output",
+                attr_array(&node.attributes, "outputs", "outputParameters"),
+            ),
+        ] {
+            for (index, item) in items.iter().enumerate() {
+                let width = parameter_name(item).chars().count() as f64 * 8.0 + 9.0;
+                if side == "input" {
+                    content.0 = content.0.min(position.x - width);
+                } else {
+                    content.2 = content.2.max(position.x + position.width + width);
+                }
+                content.3 = content.3.max(position.y + 25.0 + index as f64 * 14.0);
+            }
+        }
+        if activity_node_kind(node).contains("fork") || activity_node_kind(node).contains("join") {
+            content.3 = content.3.max(position.y + position.height + 20.0);
+        }
+    }
+    if lane_extents.len() > 1 {
+        for (_, lane) in &lane_extents {
+            content.0 = content.0.min(lane.min_x - 24.0);
+            content.1 = content.1.min(lane.min_y - 36.0);
+            content.2 = content.2.max(lane.max_x + 24.0);
+            content.3 = content.3.max(lane.max_y + 20.0);
+        }
+    }
+    // SysML v2 §§8.2.3.1, 8.2.3.26: the view frame is distinct from action containers.
+    let (frame, extent) = crate::view_frame::view_frame(
+        if prepared.title.is_empty() {
+            "Action Flow"
+        } else {
+            &prepared.title
+        },
+        content,
+        theme,
+    );
+    let mut root = Element::new("g").attr("class", "viz-root").child(frame);
+
     let mut lane_layer = Element::new("g").attr("class", "activity-swim-lanes");
     if lane_extents.len() > 1 {
         for (lane, extent) in &lane_extents {

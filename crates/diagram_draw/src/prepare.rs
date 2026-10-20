@@ -3154,16 +3154,8 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 },
             }));
         }
-        let title = {
-            let label = as_string(field(frame, "label"), "");
-            if label.is_empty() {
-                selected_name.to_string()
-            } else {
-                label
-            }
-        };
         return Some(Ok(json!({
-            "title": title,
+            "title": selected_name,
             "view": selected_kind,
             "nodes": nodes,
             "edges": edges,

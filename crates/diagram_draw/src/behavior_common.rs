@@ -8,8 +8,7 @@ use std::collections::BTreeMap;
 use serde::Deserialize;
 use serde_json::Value;
 
-use crate::svg::{format_number as n, Element};
-use crate::theme::Theme;
+use crate::svg::format_number as n;
 use crate::types::{EdgeSection, Point};
 
 #[derive(Debug, Deserialize)]
@@ -132,67 +131,8 @@ pub fn content_extent(layout: &BehaviorLayoutResult) -> (f64, f64, f64, f64) {
     extent.unwrap_or_default()
 }
 
-const VIEW_FRAME_PADDING: f64 = 16.0;
-const VIEW_FRAME_TAB_HEIGHT: f64 = 22.0;
-const VIEW_FRAME_TAB_CUT: f64 = 8.0;
-
-/// The frame of a view (SysML 8.2.3.5): a rectangle around the content with the view's name in
-/// a compartment in its upper left corner. Returns the frame and the extent it covers, as
-/// `{min_x, min_y, max_x, max_y}`.
-pub fn view_frame(
-    title: &str,
-    content: (f64, f64, f64, f64),
-    theme: &Theme,
-) -> (Element, (f64, f64, f64, f64)) {
-    let tab_width = title.encode_utf16().count() as f64 * 7.2 + 24.0;
-    let min_x = content.0 - VIEW_FRAME_PADDING;
-    let min_y = content.1 - VIEW_FRAME_PADDING - VIEW_FRAME_TAB_HEIGHT;
-    let max_x = (content.2 + VIEW_FRAME_PADDING).max(min_x + tab_width + VIEW_FRAME_PADDING);
-    let max_y = content.3 + VIEW_FRAME_PADDING;
-    let tab = format!(
-        "M{},{} H{} V{} L{},{} H{}",
-        n(min_x),
-        n(min_y),
-        n(min_x + tab_width),
-        n(min_y + VIEW_FRAME_TAB_HEIGHT - VIEW_FRAME_TAB_CUT),
-        n(min_x + tab_width - VIEW_FRAME_TAB_CUT),
-        n(min_y + VIEW_FRAME_TAB_HEIGHT),
-        n(min_x),
-    );
-    let frame = Element::new("g")
-        .attr("class", "view-frame")
-        .style("pointer-events", "none")
-        .child(
-            Element::new("rect")
-                .attr("class", "view-frame-border")
-                .attr_f("x", min_x)
-                .attr_f("y", min_y)
-                .attr_f("width", max_x - min_x)
-                .attr_f("height", max_y - min_y)
-                .style("fill", "none")
-                .style("stroke", theme.node_border)
-                .style("stroke-width", "1px"),
-        )
-        .child(
-            Element::new("path")
-                .attr("class", "view-frame-name-compartment")
-                .attr("d", tab)
-                .style("fill", theme.panel_background)
-                .style("stroke", theme.node_border)
-                .style("stroke-width", "1px"),
-        )
-        .child(
-            Element::new("text")
-                .attr("class", "view-frame-name")
-                .attr_f("x", min_x + 10.0)
-                .attr_f("y", min_y + VIEW_FRAME_TAB_HEIGHT - 7.0)
-                .style("font-size", "12px")
-                .style("font-weight", "700")
-                .style("fill", theme.text_primary)
-                .text(title),
-        );
-    (frame, (min_x, min_y, max_x, max_y))
-}
+// Kept as a public re-export for callers of the original behavior helper.
+pub use crate::view_frame::view_frame;
 
 /// Port of `pathFromSections`.
 pub fn path_from_sections(sections: Option<&[EdgeSection]>) -> Option<String> {

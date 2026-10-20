@@ -36,6 +36,7 @@ mod sysml_node;
 pub mod theme;
 mod tooltip;
 pub mod types;
+pub mod view_frame;
 pub mod xml;
 
 use std::collections::HashMap;
