@@ -665,7 +665,16 @@ impl PublishedResolution {
                 .get(&owner_occurrence)
                 .expect("queued diagram occurrence must exist")
                 .0;
-            let mut children = resolved_values(self.effective_features(owner)).to_vec();
+            // A browser view is the ownership tree of its exposed scope: an element's owned
+            // members only. The other views present usages in context, so they also expand the
+            // features a usage has through its types (a part typed by a controller shows the
+            // controller's ports and exhibited states); a browser repeating every type's members
+            // under every usage was thousands of nodes for a modest package.
+            let mut children = if view_entry.kind == DiagramViewKind::Browser {
+                Vec::new()
+            } else {
+                resolved_values(self.effective_features(owner)).to_vec()
+            };
             children.extend(
                 direct_children
                     .get(&owner)
@@ -713,6 +722,16 @@ impl PublishedResolution {
                 if !workspace.contains(&child.identity)
                     && !library_ends.contains(&child.identity)
                     && !inherited_port
+                {
+                    continue;
+                }
+                // Lowering structure is not part of the browsed model: the ends a `flow` declares
+                // for its endpoints, the anonymous features under them, and value expressions,
+                // which the attribute that owns them already presents.
+                if view_entry.kind == DiagramViewKind::Browser
+                    && (child.kind == ElementKind::FlowEnd
+                        || child.kind.conforms_to(ElementKind::Expression)
+                        || (child.kind == ElementKind::Feature && child.name.is_none()))
                 {
                     continue;
                 }
@@ -898,6 +917,11 @@ impl PublishedResolution {
                 }
             })
             .collect::<Vec<_>>();
+        // A browser presents the model as it is written: siblings in declaration order, not
+        // semantic-ID order. Owners are referenced by occurrence identity, so the order is free.
+        if view_entry.kind == DiagramViewKind::Browser {
+            elements.sort_by_key(|element| (element.source.document, element.source.range));
+        }
         // SysML 8.2.3.11: an Interconnection View shows parts and ports as nodes and connection
         // usages as edges. Attributes, expressions, actions, states, and the rest are not peer
         // boxes here. Keep the connector usages (they are edge origins, filtered out of the node

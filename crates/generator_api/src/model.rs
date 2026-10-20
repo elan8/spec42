@@ -2078,8 +2078,14 @@ fn diagram_metadata(
                 _ => Vec::new(),
             },
         },
+        // The roots in element order, which a browser projection gives in declaration order.
         DiagramViewKind::BrowserView => DiagramViewMetadata::Browser {
-            roots: roots.to_vec(),
+            roots: elements
+                .iter()
+                .map(|element| &element.occurrence)
+                .filter(|occurrence| roots.contains(occurrence))
+                .cloned()
+                .collect(),
         },
         DiagramViewKind::GridView => DiagramViewMetadata::Grid {
             rows: elements
