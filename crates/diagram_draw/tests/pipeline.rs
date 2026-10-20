@@ -18,6 +18,27 @@ fn generated_diagram(snapshot: &str) -> serde_json::Value {
 }
 
 #[test]
+fn a_filtered_empty_view_explains_the_selection_in_the_svg() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_filtered_empty.md"
+    ));
+    let svg = render_svg_from_payload(&payload, 800.0, 600.0).expect("valid empty view");
+    assert!(svg.contains("No elements to display."));
+    assert!(
+        svg.contains("Check the view&apos;s exposes and filters.")
+            || svg.contains("Check the view's exposes and filters.")
+    );
+    assert!(svg.contains("viz-empty-state"));
+    // Empty-state presentation must not hide validation errors.
+    assert!(diagram_draw::render_svg_from_json(
+        &json!({ "view": "unknown-view", "nodes": [], "edges": [] }),
+        800.0,
+        600.0,
+    )
+    .is_err());
+}
+
+#[test]
 fn webshop_action_flow_draws_actions_and_successions() {
     let payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_webshop_action_flow.md"

@@ -77,7 +77,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::StopPressed"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "Top-level: Idle, Running, Paused, Expired. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default) (role entry)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "idle")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "idle")) (transitionTrigger (reference "DecrementPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "idle")) (succession (reference "idle")))))
@@ -7020,7 +7020,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "sourceDomain": "workspace"
     },
     {
+      "uri": "memory://snapshot/sysml.library/connections.md",
+      "sourceDomain": "standard-library"
+    },
+    {
       "uri": "memory://snapshot/sysml.library/objects.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
       "sourceDomain": "standard-library"
     },
     {
@@ -7423,6 +7431,114 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 2,
       "range": [
+        56,
+        2,
+        56,
+        41
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        56,
+        10,
+        56,
+        24
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        56,
+        28,
+        56,
+        40
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        57,
+        2,
+        57,
+        40
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        57,
+        10,
+        57,
+        24
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        57,
+        28,
+        57,
+        39
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        58,
+        2,
+        58,
+        40
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        58,
+        10,
+        58,
+        22
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        58,
+        26,
+        58,
+        39
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        59,
+        2,
+        59,
+        47
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        59,
+        10,
+        59,
+        23
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        59,
+        27,
+        59,
+        46
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
         67,
         7,
         67,
@@ -7544,6 +7660,141 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         17,
         85,
         24
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        87,
+        2,
+        87,
+        42
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        87,
+        10,
+        87,
+        26
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        87,
+        30,
+        87,
+        41
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        88,
+        2,
+        88,
+        46
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        88,
+        10,
+        88,
+        26
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        88,
+        30,
+        88,
+        45
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        89,
+        2,
+        89,
+        46
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        89,
+        10,
+        89,
+        26
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        89,
+        30,
+        89,
+        45
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        90,
+        2,
+        90,
+        53
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        90,
+        10,
+        90,
+        26
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        90,
+        30,
+        90,
+        52
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        91,
+        2,
+        91,
+        54
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        91,
+        10,
+        91,
+        39
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        91,
+        43,
+        91,
+        53
       ]
     },
     {
@@ -7690,6 +7941,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 2,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::KitchenTimer::"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::KitchenTimer::battery"
     },
     {
@@ -7745,6 +8001,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 2,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::PCB::"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::PCB::buttons"
     },
     {
@@ -7770,20 +8031,35 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 4,
       "kind": "qualified-name",
-      "qualifiedName": "Objects::Object::subobjects"
+      "qualifiedName": "Connections::binaryConnections"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "Connections::connections"
     },
     {
       "document": 5,
+      "kind": "qualified-name",
+      "qualifiedName": "Objects::Object::subobjects"
+    },
+    {
+      "document": 6,
+      "kind": "qualified-name",
+      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
+    },
+    {
+      "document": 7,
       "kind": "qualified-name",
       "qualifiedName": "Parts::Part::ownedPorts"
     },
     {
-      "document": 5,
+      "document": 7,
       "kind": "qualified-name",
       "qualifiedName": "Parts::parts"
     },
     {
-      "document": 6,
+      "document": 8,
       "kind": "qualified-name",
       "qualifiedName": "Ports::ports"
     },
@@ -7823,20 +8099,71 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "sourceDomain": "workspace"
     },
     {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 69,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 72,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 75,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 78,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 81,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::PCB",
+      "source": 43,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::PCB",
+      "source": 46,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::PCB",
+      "source": 49,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::PCB",
+      "source": 52,
+      "sourceDomain": "workspace"
+    },
+    {
       "kind": "relationship",
       "ordinal": 0,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
       "relationshipKind": "containment",
       "source": 0
     },
@@ -7848,705 +8175,1011 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "typing",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 96,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 97,
-      "relationshipKind": "subsetting",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 98,
-      "relationshipKind": "typeFeaturing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 95,
-      "relationshipKind": "typing",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "subsetting",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "typeFeaturing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "typing",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "subsetting",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "subsetting",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "typeFeaturing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "typing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "typing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 88,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 89,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 90,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 86,
-      "relationshipKind": "typing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 87,
-      "relationshipKind": "typing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 78,
-      "relationshipKind": "typing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "typing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "typing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "typeFeaturing",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "typing",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 69,
-      "relationshipKind": "typing",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "subsetting",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "subsetting",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "typeFeaturing",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "typing",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 50,
-      "relationshipKind": "typing",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "subsetting",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "subsetting",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "typeFeaturing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "typing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "typing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 56,
-      "relationshipKind": "subsetting",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "subsetting",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "typeFeaturing",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "typing",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "typing",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 104,
-      "relationshipKind": "subsetting",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 105,
-      "relationshipKind": "subsetting",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 106,
-      "relationshipKind": "typeFeaturing",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 103,
-      "relationshipKind": "typing",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 108,
-      "relationshipKind": "subsetting",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 109,
-      "relationshipKind": "subsetting",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 110,
-      "relationshipKind": "typeFeaturing",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 107,
-      "relationshipKind": "typing",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "noncomposite-membership",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 92,
-      "relationshipKind": "subsetting",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 93,
-      "relationshipKind": "subsetting",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 94,
-      "relationshipKind": "typeFeaturing",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 91,
-      "relationshipKind": "typing",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "noncomposite-membership",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "subsetting",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "subsetting",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "typeFeaturing",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "typing",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "containment",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
       "ordinal": 24,
       "relationshipKind": "containment",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 100,
-      "relationshipKind": "subsetting",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 101,
-      "relationshipKind": "subsetting",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 102,
-      "relationshipKind": "typeFeaturing",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 99,
-      "relationshipKind": "typing",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "containment",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "containment",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "containment",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "containment",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "typeFeaturing",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "typing",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "subsetting",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "typeFeaturing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "typing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "typing",
-      "source": 31
+      "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 25,
-      "relationshipKind": "subsetting",
-      "source": 32
+      "relationshipKind": "containment",
+      "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 26,
-      "relationshipKind": "subsetting",
-      "source": 32
+      "relationshipKind": "containment",
+      "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 27,
-      "relationshipKind": "typeFeaturing",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "typing",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "subsetting",
-      "source": 33
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "subsetting",
-      "source": 33
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "typeFeaturing",
-      "source": 33
+      "relationshipKind": "containment",
+      "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 28,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "subsetting",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
       "relationshipKind": "typing",
-      "source": 33
+      "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "ordinal": 150,
       "relationshipKind": "subsetting",
-      "source": 34
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "ordinal": 151,
       "relationshipKind": "subsetting",
-      "source": 34
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 152,
       "relationshipKind": "typeFeaturing",
-      "source": 34
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 149,
       "relationshipKind": "typing",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "subsetting",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "subsetting",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "typing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "noncomposite-membership",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "noncomposite-membership",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "subsetting",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "subsetting",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "typeFeaturing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "typing",
-      "source": 37
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "noncomposite-membership",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "noncomposite-membership",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "noncomposite-membership",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "subsetting",
-      "source": 38
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 66,
       "relationshipKind": "subsetting",
-      "source": 38
+      "source": 9
     },
     {
       "kind": "relationship",
       "ordinal": 67,
+      "relationshipKind": "subsetting",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
+      "relationshipKind": "typeFeaturing",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
+      "relationshipKind": "typing",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 64,
+      "relationshipKind": "typeFeaturing",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "typing",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 61,
+      "relationshipKind": "typing",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 112,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 113,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 114,
+      "relationshipKind": "typeFeaturing",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 110,
+      "relationshipKind": "typing",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 111,
+      "relationshipKind": "typing",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 103,
+      "relationshipKind": "subsetting",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 104,
+      "relationshipKind": "subsetting",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 105,
+      "relationshipKind": "typeFeaturing",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 102,
+      "relationshipKind": "typing",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 99,
+      "relationshipKind": "subsetting",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 100,
+      "relationshipKind": "subsetting",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 101,
+      "relationshipKind": "typeFeaturing",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 97,
+      "relationshipKind": "typing",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 98,
+      "relationshipKind": "typing",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 94,
+      "relationshipKind": "subsetting",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 95,
+      "relationshipKind": "subsetting",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 96,
+      "relationshipKind": "typeFeaturing",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 92,
+      "relationshipKind": "typing",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 93,
+      "relationshipKind": "typing",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 75,
+      "relationshipKind": "subsetting",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
+      "relationshipKind": "subsetting",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 77,
+      "relationshipKind": "typeFeaturing",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 73,
+      "relationshipKind": "typing",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 74,
+      "relationshipKind": "typing",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 85,
+      "relationshipKind": "subsetting",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 86,
+      "relationshipKind": "subsetting",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 87,
+      "relationshipKind": "typeFeaturing",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "typing",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 84,
+      "relationshipKind": "typing",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 80,
+      "relationshipKind": "subsetting",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
+      "relationshipKind": "subsetting",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "typeFeaturing",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 78,
+      "relationshipKind": "typing",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 79,
+      "relationshipKind": "typing",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 158,
+      "relationshipKind": "subsetting",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 159,
+      "relationshipKind": "subsetting",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 160,
+      "relationshipKind": "typeFeaturing",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 157,
+      "relationshipKind": "typing",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 162,
+      "relationshipKind": "subsetting",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 163,
+      "relationshipKind": "subsetting",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 164,
+      "relationshipKind": "typeFeaturing",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 161,
+      "relationshipKind": "typing",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 115,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 116,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 121,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 122,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 127,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 128,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 133,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 134,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 139,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 140,
+      "relationshipKind": "memberAccessOperand",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 117,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 118,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 119,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 123,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 124,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 125,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 129,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 130,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 131,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 135,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 136,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 137,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 141,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 142,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 143,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 120,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 126,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 132,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 138,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 144,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "noncomposite-membership",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 146,
+      "relationshipKind": "subsetting",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 147,
+      "relationshipKind": "subsetting",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 148,
+      "relationshipKind": "typeFeaturing",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 145,
+      "relationshipKind": "typing",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "noncomposite-membership",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 107,
+      "relationshipKind": "subsetting",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 108,
+      "relationshipKind": "subsetting",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 109,
+      "relationshipKind": "typeFeaturing",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 106,
+      "relationshipKind": "typing",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
+      "relationshipKind": "containment",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "containment",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 154,
+      "relationshipKind": "subsetting",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 155,
+      "relationshipKind": "subsetting",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 156,
+      "relationshipKind": "typeFeaturing",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 153,
+      "relationshipKind": "typing",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "subsetting",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "subsetting",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "typeFeaturing",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "typing",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "subsetting",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "subsetting",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "typeFeaturing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "typing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "typing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "subsetting",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "subsetting",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "typeFeaturing",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "typing",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "subsetting",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "subsetting",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "typeFeaturing",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "typing",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "typing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
+      "relationshipKind": "subsetting",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "subsetting",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "typeFeaturing",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "typing",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "typing",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
+      "relationshipKind": "memberAccessOperand",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "memberAccessOperand",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 38,
+      "relationshipKind": "memberAccessOperand",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
+      "relationshipKind": "memberAccessOperand",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "memberAccessOperand",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "memberAccessOperand",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 50,
+      "relationshipKind": "memberAccessOperand",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "memberAccessOperand",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 34,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 42,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 46,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
       "relationshipKind": "typeFeaturing",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "typing",
+      "ordinal": 43,
+      "relationshipKind": "typeFeaturing",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "noncomposite-membership",
-      "source": 39
+      "ordinal": 49,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
     },
     {
       "kind": "relationship",
@@ -8562,88 +9195,172 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "ordinal": 57,
       "relationshipKind": "subsetting",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 47,
+      "ordinal": 58,
       "relationshipKind": "subsetting",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 59,
       "relationshipKind": "typeFeaturing",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 45,
+      "ordinal": 56,
       "relationshipKind": "typing",
       "source": 39
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "noncomposite-membership",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "noncomposite-membership",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "noncomposite-membership",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 89,
+      "relationshipKind": "subsetting",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 90,
+      "relationshipKind": "subsetting",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 91,
+      "relationshipKind": "typeFeaturing",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 88,
+      "relationshipKind": "typing",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "noncomposite-membership",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "noncomposite-membership",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "noncomposite-membership",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 70,
+      "relationshipKind": "subsetting",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 71,
+      "relationshipKind": "subsetting",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 72,
+      "relationshipKind": "typeFeaturing",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "typing",
+      "source": 41
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "noncomposite-membership",
-      "source": 40
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "noncomposite-membership",
-      "source": 40
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "noncomposite-membership",
-      "source": 40
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "noncomposite-membership",
-      "source": 40
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "noncomposite-membership",
-      "source": 40
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "subsetting",
-      "source": 40
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 8,
       "relationshipKind": "subsetting",
-      "source": 40
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 9,
       "relationshipKind": "typeFeaturing",
-      "source": 40
+      "source": 42
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "typing",
-      "source": 40
+      "source": 42
     }
   ],
   "selectedView": {
-    "reference": 41,
+    "reference": 43,
     "kind": "general-view",
     "name": "structure",
-    "source": 57
+    "source": 84
   },
   "completeness": {
     "status": "complete",
@@ -8653,228 +9370,309 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "edges": [
       {
         "kind": "containment",
-        "navigation": 49,
-        "origin": 1,
+        "navigation": 61,
+        "origin": 6,
         "provenance": "implied",
-        "reference": 51,
+        "reference": 65,
         "source": 0,
-        "target": 1
+        "target": 6
       },
       {
         "kind": "containment",
         "navigation": 35,
-        "origin": 6,
-        "provenance": "implied",
-        "reference": 128,
-        "source": 1,
-        "target": 6
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 15,
-        "origin": 8,
-        "provenance": "implied",
-        "reference": 178,
-        "source": 6,
-        "target": 8
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 7,
-        "origin": 9,
-        "provenance": "implied",
-        "reference": 179,
-        "source": 6,
-        "target": 9
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 11,
-        "origin": 10,
-        "provenance": "implied",
-        "reference": 180,
-        "source": 6,
-        "target": 10
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 13,
-        "origin": 11,
-        "provenance": "implied",
-        "reference": 181,
-        "source": 6,
-        "target": 11
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 9,
-        "origin": 7,
-        "provenance": "implied",
-        "reference": 182,
-        "source": 6,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 39,
-        "origin": 12,
-        "provenance": "implied",
-        "reference": 129,
-        "source": 1,
-        "target": 12
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 31,
-        "origin": 13,
-        "provenance": "implied",
-        "reference": 158,
-        "source": 12,
-        "target": 13
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 29,
-        "origin": 14,
-        "provenance": "implied",
-        "reference": 159,
-        "source": 12,
-        "target": 14
-      },
-      {
-        "kind": "containment",
-        "navigation": 37,
         "origin": 15,
         "provenance": "implied",
-        "reference": 130,
-        "source": 1,
+        "reference": 177,
+        "source": 6,
         "target": 15
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 23,
-        "origin": 16,
-        "provenance": "implied",
-        "reference": 171,
-        "source": 15,
-        "target": 16
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 27,
+        "navigation": 15,
         "origin": 17,
         "provenance": "implied",
-        "reference": 172,
+        "reference": 255,
         "source": 15,
         "target": 17
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 25,
+        "navigation": 7,
         "origin": 18,
         "provenance": "implied",
-        "reference": 173,
+        "reference": 256,
         "source": 15,
         "target": 18
       },
       {
-        "kind": "containment",
-        "navigation": 41,
-        "origin": 2,
-        "provenance": "implied",
-        "reference": 131,
-        "source": 1,
-        "target": 2
-      },
-      {
         "kind": "noncomposite-membership",
-        "navigation": 19,
-        "origin": 4,
-        "provenance": "implied",
-        "reference": 164,
-        "source": 2,
-        "target": 4
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 17,
-        "origin": 5,
-        "provenance": "implied",
-        "reference": 165,
-        "source": 2,
-        "target": 5
-      },
-      {
-        "kind": "noncomposite-membership",
-        "navigation": 21,
-        "origin": 3,
-        "provenance": "implied",
-        "reference": 166,
-        "source": 2,
-        "target": 3
-      },
-      {
-        "kind": "containment",
-        "navigation": 53,
+        "navigation": 11,
         "origin": 19,
         "provenance": "implied",
-        "reference": 52,
-        "source": 0,
+        "reference": 257,
+        "source": 15,
         "target": 19
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 33,
+        "navigation": 13,
         "origin": 20,
         "provenance": "implied",
-        "reference": 117,
-        "source": 19,
+        "reference": 258,
+        "source": 15,
         "target": 20
       },
       {
+        "kind": "noncomposite-membership",
+        "navigation": 9,
+        "origin": 16,
+        "provenance": "implied",
+        "reference": 259,
+        "source": 15,
+        "target": 16
+      },
+      {
         "kind": "containment",
-        "navigation": 51,
+        "navigation": 43,
+        "origin": 7,
+        "provenance": "implied",
+        "reference": 178,
+        "source": 6,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 46,
+        "origin": 8,
+        "provenance": "implied",
+        "reference": 179,
+        "source": 6,
+        "target": 8
+      },
+      {
+        "kind": "containment",
+        "navigation": 49,
+        "origin": 9,
+        "provenance": "implied",
+        "reference": 180,
+        "source": 6,
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 52,
+        "origin": 10,
+        "provenance": "implied",
+        "reference": 181,
+        "source": 6,
+        "target": 10
+      },
+      {
+        "kind": "containment",
+        "navigation": 39,
         "origin": 21,
         "provenance": "implied",
-        "reference": 53,
-        "source": 0,
+        "reference": 182,
+        "source": 6,
         "target": 21
       },
       {
         "kind": "noncomposite-membership",
-        "navigation": 43,
+        "navigation": 31,
         "origin": 22,
         "provenance": "implied",
-        "reference": 112,
+        "reference": 235,
         "source": 21,
         "target": 22
       },
       {
-        "kind": "containment",
-        "navigation": 55,
+        "kind": "noncomposite-membership",
+        "navigation": 29,
         "origin": 23,
         "provenance": "implied",
-        "reference": 54,
-        "source": 0,
+        "reference": 236,
+        "source": 21,
         "target": 23
       },
       {
         "kind": "containment",
-        "navigation": 47,
+        "navigation": 37,
+        "origin": 24,
+        "provenance": "implied",
+        "reference": 183,
+        "source": 6,
+        "target": 24
+      },
+      {
+        "kind": "noncomposite-membership",
+        "navigation": 23,
         "origin": 25,
         "provenance": "implied",
-        "reference": 122,
-        "source": 23,
+        "reference": 248,
+        "source": 24,
         "target": 25
       },
       {
-        "kind": "containment",
-        "navigation": 45,
-        "origin": 24,
+        "kind": "noncomposite-membership",
+        "navigation": 27,
+        "origin": 26,
         "provenance": "implied",
-        "reference": 123,
-        "source": 23,
-        "target": 24
+        "reference": 249,
+        "source": 24,
+        "target": 26
+      },
+      {
+        "kind": "noncomposite-membership",
+        "navigation": 25,
+        "origin": 27,
+        "provenance": "implied",
+        "reference": 250,
+        "source": 24,
+        "target": 27
+      },
+      {
+        "kind": "containment",
+        "navigation": 41,
+        "origin": 11,
+        "provenance": "implied",
+        "reference": 184,
+        "source": 6,
+        "target": 11
+      },
+      {
+        "kind": "noncomposite-membership",
+        "navigation": 19,
+        "origin": 13,
+        "provenance": "implied",
+        "reference": 241,
+        "source": 11,
+        "target": 13
+      },
+      {
+        "kind": "noncomposite-membership",
+        "navigation": 17,
+        "origin": 14,
+        "provenance": "implied",
+        "reference": 242,
+        "source": 11,
+        "target": 14
+      },
+      {
+        "kind": "noncomposite-membership",
+        "navigation": 21,
+        "origin": 12,
+        "provenance": "implied",
+        "reference": 243,
+        "source": 11,
+        "target": 12
+      },
+      {
+        "kind": "containment",
+        "navigation": 65,
+        "origin": 28,
+        "provenance": "implied",
+        "reference": 66,
+        "source": 0,
+        "target": 28
+      },
+      {
+        "kind": "noncomposite-membership",
+        "navigation": 33,
+        "origin": 29,
+        "provenance": "implied",
+        "reference": 166,
+        "source": 28,
+        "target": 29
+      },
+      {
+        "kind": "containment",
+        "navigation": 69,
+        "origin": 1,
+        "provenance": "implied",
+        "reference": 67,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 72,
+        "origin": 2,
+        "provenance": "implied",
+        "reference": 68,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 75,
+        "origin": 3,
+        "provenance": "implied",
+        "reference": 69,
+        "source": 0,
+        "target": 3
+      },
+      {
+        "kind": "containment",
+        "navigation": 78,
+        "origin": 4,
+        "provenance": "implied",
+        "reference": 70,
+        "source": 0,
+        "target": 4
+      },
+      {
+        "kind": "containment",
+        "navigation": 81,
+        "origin": 5,
+        "provenance": "implied",
+        "reference": 71,
+        "source": 0,
+        "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 63,
+        "origin": 30,
+        "provenance": "implied",
+        "reference": 72,
+        "source": 0,
+        "target": 30
+      },
+      {
+        "kind": "noncomposite-membership",
+        "navigation": 55,
+        "origin": 31,
+        "provenance": "implied",
+        "reference": 161,
+        "source": 30,
+        "target": 31
+      },
+      {
+        "kind": "containment",
+        "navigation": 67,
+        "origin": 32,
+        "provenance": "implied",
+        "reference": 73,
+        "source": 0,
+        "target": 32
+      },
+      {
+        "kind": "containment",
+        "navigation": 59,
+        "origin": 34,
+        "provenance": "implied",
+        "reference": 171,
+        "source": 32,
+        "target": 34
+      },
+      {
+        "kind": "containment",
+        "navigation": 57,
+        "origin": 33,
+        "provenance": "implied",
+        "reference": 172,
+        "source": 32,
+        "target": 33
       }
     ],
     "exposedRoots": [
@@ -8892,10 +9690,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "parts",
             "members": [
+              6,
+              28,
+              30,
+              32
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
               1,
-              19,
-              21,
-              23
+              2,
+              3,
+              4,
+              5
             ],
             "provenance": "inherited"
           }
@@ -8922,14 +9731,109 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 56,
+        "source": 69,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 57,
+        "source": 72,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 58,
+        "source": 75,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 59,
+        "source": 78,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 60,
+        "source": 81,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
         "compartments": [
           {
             "kind": "parts",
             "members": [
-              2,
-              6,
-              12,
-              15
+              11,
+              15,
+              21,
+              24
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              7,
+              8,
+              9,
+              10
             ],
             "provenance": "inherited"
           }
@@ -8941,8 +9845,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "pcb",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 29,
-        "source": 49,
+        "reference": 30,
+        "source": 61,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -8950,9 +9854,77 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "PCB",
-              "reference": 36
+              "reference": 37
             }
           ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 61,
+        "source": 43,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 62,
+        "source": 46,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 63,
+        "source": 49,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 6,
+        "reference": 64,
+        "source": 52,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
         }
       },
       {
@@ -8960,9 +9932,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "ports",
             "members": [
-              3,
-              4,
-              5
+              12,
+              13,
+              14
             ],
             "provenance": "inherited"
           }
@@ -8973,8 +9945,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PartUsage",
         "name": "buzzerDriver",
         "notationRole": "usage",
-        "owner": 1,
-        "reference": 38,
+        "owner": 6,
+        "reference": 40,
         "source": 41,
         "stateSubaction": null,
         "successionGuard": null,
@@ -8996,7 +9968,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "buzzerPwrOut",
         "notationRole": "usage",
-        "owner": 2,
+        "owner": 11,
         "reference": 14,
         "source": 21,
         "stateSubaction": null,
@@ -9019,7 +9991,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "pwrIn",
         "notationRole": "usage",
-        "owner": 2,
+        "owner": 11,
         "reference": 16,
         "source": 19,
         "stateSubaction": null,
@@ -9042,7 +10014,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "ctrlIn",
         "notationRole": "usage",
-        "owner": 2,
+        "owner": 11,
         "reference": 15,
         "source": 17,
         "stateSubaction": null,
@@ -9062,11 +10034,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "ports",
             "members": [
-              7,
-              8,
-              9,
-              10,
-              11
+              16,
+              17,
+              18,
+              19,
+              20
             ],
             "provenance": "inherited"
           }
@@ -9077,8 +10049,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PartUsage",
         "name": "mcu",
         "notationRole": "usage",
-        "owner": 1,
-        "reference": 40,
+        "owner": 6,
+        "reference": 42,
         "source": 35,
         "stateSubaction": null,
         "successionGuard": null,
@@ -9087,7 +10059,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "MCU",
-              "reference": 30
+              "reference": 31
             }
           ]
         }
@@ -9100,8 +10072,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "displayOut",
         "notationRole": "usage",
-        "owner": 6,
-        "reference": 33,
+        "owner": 15,
+        "reference": 34,
         "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
@@ -9123,8 +10095,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
-        "owner": 6,
-        "reference": 35,
+        "owner": 15,
+        "reference": 36,
         "source": 15,
         "stateSubaction": null,
         "successionGuard": null,
@@ -9146,8 +10118,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "buttonIn",
         "notationRole": "usage",
-        "owner": 6,
-        "reference": 31,
+        "owner": 15,
+        "reference": 32,
         "source": 7,
         "stateSubaction": null,
         "successionGuard": null,
@@ -9169,8 +10141,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "lcdDrive",
         "notationRole": "usage",
-        "owner": 6,
-        "reference": 34,
+        "owner": 15,
+        "reference": 35,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -9192,8 +10164,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "buzzerOut",
         "notationRole": "usage",
-        "owner": 6,
-        "reference": 32,
+        "owner": 15,
+        "reference": 33,
         "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
@@ -9212,8 +10184,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "ports",
             "members": [
-              13,
-              14
+              22,
+              23
             ],
             "provenance": "inherited"
           }
@@ -9224,8 +10196,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PartUsage",
         "name": "buttons",
         "notationRole": "usage",
-        "owner": 1,
-        "reference": 37,
+        "owner": 6,
+        "reference": 39,
         "source": 39,
         "stateSubaction": null,
         "successionGuard": null,
@@ -9247,7 +10219,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
-        "owner": 12,
+        "owner": 21,
         "reference": 10,
         "source": 31,
         "stateSubaction": null,
@@ -9270,7 +10242,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "output",
         "notationRole": "usage",
-        "owner": 12,
+        "owner": 21,
         "reference": 9,
         "source": 29,
         "stateSubaction": null,
@@ -9290,9 +10262,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "ports",
             "members": [
-              16,
-              17,
-              18
+              25,
+              26,
+              27
             ],
             "provenance": "inherited"
           }
@@ -9303,8 +10275,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PartUsage",
         "name": "display",
         "notationRole": "usage",
-        "owner": 1,
-        "reference": 39,
+        "owner": 6,
+        "reference": 41,
         "source": 37,
         "stateSubaction": null,
         "successionGuard": null,
@@ -9326,7 +10298,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "cmd",
         "notationRole": "usage",
-        "owner": 15,
+        "owner": 24,
         "reference": 19,
         "source": 23,
         "stateSubaction": null,
@@ -9349,7 +10321,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
-        "owner": 15,
+        "owner": 24,
         "reference": 21,
         "source": 27,
         "stateSubaction": null,
@@ -9372,7 +10344,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "lcdIn",
         "notationRole": "usage",
-        "owner": 15,
+        "owner": 24,
         "reference": 20,
         "source": 25,
         "stateSubaction": null,
@@ -9392,7 +10364,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "ports",
             "members": [
-              20
+              29
             ],
             "provenance": "inherited"
           }
@@ -9404,8 +10376,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "buzzer",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 27,
-        "source": 53,
+        "reference": 28,
+        "source": 65,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -9426,7 +10398,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
-        "owner": 19,
+        "owner": 28,
         "reference": 12,
         "source": 33,
         "stateSubaction": null,
@@ -9446,7 +10418,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "ports",
             "members": [
-              22
+              31
             ],
             "provenance": "inherited"
           }
@@ -9458,8 +10430,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "battery",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 26,
-        "source": 51,
+        "reference": 27,
+        "source": 63,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -9480,9 +10452,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "powerOut",
         "notationRole": "usage",
-        "owner": 21,
+        "owner": 30,
         "reference": 7,
-        "source": 43,
+        "source": 55,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -9500,8 +10472,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "parts",
             "members": [
-              24,
-              25
+              33,
+              34
             ],
             "provenance": "inherited"
           }
@@ -9513,8 +10485,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "housing",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 28,
-        "source": 55,
+        "reference": 29,
+        "source": 67,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -9535,9 +10507,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PartUsage",
         "name": "frontCover",
         "notationRole": "usage",
-        "owner": 23,
+        "owner": 32,
         "reference": 24,
-        "source": 45,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -9558,9 +10530,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PartUsage",
         "name": "backCover",
         "notationRole": "usage",
-        "owner": 23,
+        "owner": 32,
         "reference": 23,
-        "source": 47,
+        "source": 59,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -9579,7 +10551,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 56,
+        "reference": 75,
         "source": 0,
         "target": {
           "reference": 25,
@@ -9590,21 +10562,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 55,
+        "reference": 74,
         "source": 0,
         "target": {
-          "reference": 44,
+          "reference": 49,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 50,
+        "navigation": 62,
         "provenance": "authored",
-        "reference": 135,
-        "source": 1,
+        "reference": 188,
+        "source": 6,
         "target": {
-          "reference": 36,
+          "reference": 37,
           "status": "resolved"
         }
       },
@@ -9612,10 +10584,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 132,
-        "source": 1,
+        "reference": 185,
+        "source": 6,
         "target": {
-          "reference": 42,
+          "reference": 46,
           "status": "resolved"
         }
       },
@@ -9623,10 +10595,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 133,
-        "source": 1,
+        "reference": 186,
+        "source": 6,
         "target": {
-          "reference": 44,
+          "reference": 49,
           "status": "resolved"
         }
       },
@@ -9634,8 +10606,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 134,
-        "source": 1,
+        "reference": 187,
+        "source": 6,
         "target": {
           "reference": 25,
           "status": "resolved"
@@ -9645,10 +10617,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 36,
         "provenance": "authored",
-        "reference": 186,
-        "source": 6,
+        "reference": 263,
+        "source": 15,
         "target": {
-          "reference": 30,
+          "reference": 31,
           "status": "resolved"
         }
       },
@@ -9656,52 +10628,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 183,
-        "source": 6,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 184,
-        "source": 6,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 185,
-        "source": 6,
-        "target": {
-          "reference": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 156,
-        "source": 8,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 157,
-        "source": 8,
+        "reference": 260,
+        "source": 15,
         "target": {
           "reference": 46,
           "status": "resolved"
@@ -9711,21 +10639,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 153,
-        "source": 8,
+        "reference": 261,
+        "source": 15,
         "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 154,
-        "source": 8,
-        "target": {
-          "reference": 45,
+          "reference": 49,
           "status": "resolved"
         }
       },
@@ -9733,10 +10650,65 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 155,
-        "source": 8,
+        "reference": 262,
+        "source": 15,
         "target": {
-          "reference": 30,
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 16,
+        "provenance": "authored",
+        "reference": 209,
+        "source": 17,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 210,
+        "source": 17,
+        "target": {
+          "reference": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 206,
+        "source": 17,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 207,
+        "source": 17,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 208,
+        "source": 17,
+        "target": {
+          "reference": 31,
           "status": "resolved"
         }
       },
@@ -9744,8 +10716,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 139,
-        "source": 9,
+        "reference": 192,
+        "source": 18,
         "target": {
           "reference": 2,
           "status": "resolved"
@@ -9755,10 +10727,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 140,
-        "source": 9,
+        "reference": 193,
+        "source": 18,
         "target": {
-          "reference": 47,
+          "reference": 52,
           "status": "resolved"
         }
       },
@@ -9766,10 +10738,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 136,
-        "source": 9,
+        "reference": 189,
+        "source": 18,
         "target": {
-          "reference": 43,
+          "reference": 48,
           "status": "resolved"
         }
       },
@@ -9777,10 +10749,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 137,
-        "source": 9,
+        "reference": 190,
+        "source": 18,
         "target": {
-          "reference": 45,
+          "reference": 50,
           "status": "resolved"
         }
       },
@@ -9788,10 +10760,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 138,
-        "source": 9,
+        "reference": 191,
+        "source": 18,
         "target": {
-          "reference": 30,
+          "reference": 31,
           "status": "resolved"
         }
       },
@@ -9799,8 +10771,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 152,
-        "source": 10,
+        "reference": 205,
+        "source": 19,
         "target": {
           "reference": 5,
           "status": "resolved"
@@ -9810,10 +10782,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 149,
-        "source": 10,
+        "reference": 202,
+        "source": 19,
         "target": {
-          "reference": 43,
+          "reference": 48,
           "status": "resolved"
         }
       },
@@ -9821,10 +10793,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 150,
-        "source": 10,
+        "reference": 203,
+        "source": 19,
         "target": {
-          "reference": 45,
+          "reference": 50,
           "status": "resolved"
         }
       },
@@ -9832,10 +10804,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 151,
-        "source": 10,
+        "reference": 204,
+        "source": 19,
         "target": {
-          "reference": 30,
+          "reference": 31,
           "status": "resolved"
         }
       },
@@ -9843,8 +10815,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 144,
-        "source": 11,
+        "reference": 197,
+        "source": 20,
         "target": {
           "reference": 3,
           "status": "resolved"
@@ -9854,10 +10826,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 141,
-        "source": 11,
+        "reference": 194,
+        "source": 20,
         "target": {
-          "reference": 43,
+          "reference": 48,
           "status": "resolved"
         }
       },
@@ -9865,10 +10837,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 142,
-        "source": 11,
+        "reference": 195,
+        "source": 20,
         "target": {
-          "reference": 45,
+          "reference": 50,
           "status": "resolved"
         }
       },
@@ -9876,10 +10848,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 143,
-        "source": 11,
+        "reference": 196,
+        "source": 20,
         "target": {
-          "reference": 30,
+          "reference": 31,
           "status": "resolved"
         }
       },
@@ -9887,8 +10859,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 148,
-        "source": 7,
+        "reference": 201,
+        "source": 16,
         "target": {
           "reference": 4,
           "status": "resolved"
@@ -9898,10 +10870,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 145,
-        "source": 7,
+        "reference": 198,
+        "source": 16,
         "target": {
-          "reference": 43,
+          "reference": 48,
           "status": "resolved"
         }
       },
@@ -9909,10 +10881,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 146,
-        "source": 7,
+        "reference": 199,
+        "source": 16,
         "target": {
-          "reference": 45,
+          "reference": 50,
           "status": "resolved"
         }
       },
@@ -9920,10 +10892,274 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 147,
+        "reference": 200,
+        "source": 16,
+        "target": {
+          "reference": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 44,
+        "provenance": "authored",
+        "reference": 211,
         "source": 7,
         "target": {
-          "reference": 30,
+          "node": 23,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 45,
+        "provenance": "authored",
+        "reference": 212,
+        "source": 7,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 219,
+        "source": 7,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 220,
+        "source": 7,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 221,
+        "source": 7,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 231,
+        "source": 7,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 47,
+        "provenance": "authored",
+        "reference": 213,
+        "source": 8,
+        "target": {
+          "node": 16,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 48,
+        "provenance": "authored",
+        "reference": 214,
+        "source": 8,
+        "target": {
+          "node": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 222,
+        "source": 8,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 223,
+        "source": 8,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 224,
+        "source": 8,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 232,
+        "source": 8,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 50,
+        "provenance": "authored",
+        "reference": 215,
+        "source": 9,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 51,
+        "provenance": "authored",
+        "reference": 216,
+        "source": 9,
+        "target": {
+          "node": 27,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 225,
+        "source": 9,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 226,
+        "source": 9,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 227,
+        "source": 9,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 233,
+        "source": 9,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 53,
+        "provenance": "authored",
+        "reference": 217,
+        "source": 10,
+        "target": {
+          "node": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 54,
+        "provenance": "authored",
+        "reference": 218,
+        "source": 10,
+        "target": {
+          "node": 14,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 228,
+        "source": 10,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 229,
+        "source": 10,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 230,
+        "source": 10,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 234,
+        "source": 10,
+        "target": {
+          "reference": 37,
           "status": "resolved"
         }
       },
@@ -9931,8 +11167,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 163,
-        "source": 12,
+        "reference": 240,
+        "source": 21,
         "target": {
           "reference": 8,
           "status": "resolved"
@@ -9942,10 +11178,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 160,
-        "source": 12,
+        "reference": 237,
+        "source": 21,
         "target": {
-          "reference": 42,
+          "reference": 46,
           "status": "resolved"
         }
       },
@@ -9953,10 +11189,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 161,
-        "source": 12,
+        "reference": 238,
+        "source": 21,
         "target": {
-          "reference": 44,
+          "reference": 49,
           "status": "resolved"
         }
       },
@@ -9964,10 +11200,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 162,
-        "source": 12,
+        "reference": 239,
+        "source": 21,
         "target": {
-          "reference": 36,
+          "reference": 37,
           "status": "resolved"
         }
       },
@@ -9975,360 +11211,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 68,
-        "source": 13,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 69,
-        "source": 13,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 65,
-        "source": 13,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 66,
-        "source": 13,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 67,
-        "source": 13,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 30,
-        "provenance": "authored",
-        "reference": 64,
-        "source": 14,
-        "target": {
-          "reference": 2,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 61,
-        "source": 14,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 62,
-        "source": 14,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 63,
-        "source": 14,
-        "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 38,
-        "provenance": "authored",
-        "reference": 177,
-        "source": 15,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 174,
-        "source": 15,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 175,
-        "source": 15,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 176,
-        "source": 15,
-        "target": {
-          "reference": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 92,
-        "source": 16,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 93,
-        "source": 16,
-        "target": {
-          "reference": 49,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 89,
-        "source": 16,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 90,
-        "source": 16,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 91,
-        "source": 16,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 28,
-        "provenance": "authored",
-        "reference": 102,
-        "source": 17,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 103,
-        "source": 17,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 99,
-        "source": 17,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 100,
-        "source": 17,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 101,
-        "source": 17,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 97,
-        "source": 18,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 98,
-        "source": 18,
-        "target": {
-          "reference": 50,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 94,
-        "source": 18,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 95,
-        "source": 18,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 96,
-        "source": 18,
-        "target": {
-          "reference": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 42,
-        "provenance": "authored",
-        "reference": 170,
-        "source": 2,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 167,
-        "source": 2,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 168,
-        "source": 2,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 169,
-        "source": 2,
-        "target": {
-          "reference": 36,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 20,
-        "provenance": "authored",
         "reference": 87,
-        "source": 4,
+        "source": 22,
         "target": {
           "reference": 1,
           "status": "resolved"
@@ -10339,9 +11223,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 88,
-        "source": 4,
+        "source": 22,
         "target": {
-          "reference": 46,
+          "reference": 51,
           "status": "resolved"
         }
       },
@@ -10350,51 +11234,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 84,
-        "source": 4,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 85,
-        "source": 4,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 86,
-        "source": 4,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 18,
-        "provenance": "authored",
-        "reference": 82,
-        "source": 5,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 83,
-        "source": 5,
+        "source": 22,
         "target": {
           "reference": 48,
           "status": "resolved"
@@ -10404,10 +11244,32 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 79,
-        "source": 5,
+        "reference": 85,
+        "source": 22,
         "target": {
-          "reference": 43,
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 86,
+        "source": 22,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 30,
+        "provenance": "authored",
+        "reference": 83,
+        "source": 23,
+        "target": {
+          "reference": 2,
           "status": "resolved"
         }
       },
@@ -10416,53 +11278,20 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 80,
-        "source": 5,
+        "source": 23,
         "target": {
-          "reference": 45,
+          "reference": 48,
           "status": "resolved"
         }
       },
       {
-        "kind": "typeFeaturing",
+        "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 81,
-        "source": 5,
+        "source": 23,
         "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 22,
-        "provenance": "authored",
-        "reference": 78,
-        "source": 3,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 75,
-        "source": 3,
-        "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 76,
-        "source": 3,
-        "target": {
-          "reference": 45,
+          "reference": 50,
           "status": "resolved"
         }
       },
@@ -10470,21 +11299,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 77,
-        "source": 3,
+        "reference": 82,
+        "source": 23,
         "target": {
-          "reference": 13,
+          "reference": 8,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 54,
+        "navigation": 38,
         "provenance": "authored",
-        "reference": 121,
-        "source": 19,
+        "reference": 254,
+        "source": 24,
         "target": {
-          "reference": 11,
+          "reference": 18,
           "status": "resolved"
         }
       },
@@ -10492,52 +11321,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 118,
-        "source": 19,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 119,
-        "source": 19,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 120,
-        "source": 19,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 34,
-        "provenance": "authored",
-        "reference": 73,
-        "source": 20,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 74,
-        "source": 20,
+        "reference": 251,
+        "source": 24,
         "target": {
           "reference": 46,
           "status": "resolved"
@@ -10547,21 +11332,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 70,
-        "source": 20,
+        "reference": 252,
+        "source": 24,
         "target": {
-          "reference": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 71,
-        "source": 20,
-        "target": {
-          "reference": 45,
+          "reference": 49,
           "status": "resolved"
         }
       },
@@ -10569,21 +11343,142 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 72,
-        "source": 20,
+        "reference": 253,
+        "source": 24,
         "target": {
-          "reference": 11,
+          "reference": 37,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 52,
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 111,
+        "source": 25,
+        "target": {
+          "reference": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 112,
+        "source": 25,
+        "target": {
+          "reference": 54,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 108,
+        "source": 25,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 109,
+        "source": 25,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 110,
+        "source": 25,
+        "target": {
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 28,
+        "provenance": "authored",
+        "reference": 121,
+        "source": 26,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 122,
+        "source": 26,
+        "target": {
+          "reference": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 118,
+        "source": 26,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 119,
+        "source": 26,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 120,
+        "source": 26,
+        "target": {
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 26,
         "provenance": "authored",
         "reference": 116,
-        "source": 21,
+        "source": 27,
         "target": {
-          "reference": 6,
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 117,
+        "source": 27,
+        "target": {
+          "reference": 55,
           "status": "resolved"
         }
       },
@@ -10592,9 +11487,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 113,
-        "source": 21,
+        "source": 27,
         "target": {
-          "reference": 42,
+          "reference": 48,
           "status": "resolved"
         }
       },
@@ -10603,9 +11498,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 114,
-        "source": 21,
+        "source": 27,
         "target": {
-          "reference": 44,
+          "reference": 50,
           "status": "resolved"
         }
       },
@@ -10614,18 +11509,172 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 115,
-        "source": 21,
+        "source": 27,
         "target": {
-          "reference": 25,
+          "reference": 18,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 44,
+        "navigation": 42,
         "provenance": "authored",
-        "reference": 60,
-        "source": 22,
+        "reference": 247,
+        "source": 11,
+        "target": {
+          "reference": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 244,
+        "source": 11,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 245,
+        "source": 11,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 246,
+        "source": 11,
+        "target": {
+          "reference": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 20,
+        "provenance": "authored",
+        "reference": 106,
+        "source": 13,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 107,
+        "source": 13,
+        "target": {
+          "reference": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 103,
+        "source": 13,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 104,
+        "source": 13,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 105,
+        "source": 13,
+        "target": {
+          "reference": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 101,
+        "source": 14,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 102,
+        "source": 14,
+        "target": {
+          "reference": 53,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 98,
+        "source": 14,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 99,
+        "source": 14,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 100,
+        "source": 14,
+        "target": {
+          "reference": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 22,
+        "provenance": "authored",
+        "reference": 97,
+        "source": 12,
         "target": {
           "reference": 1,
           "status": "resolved"
@@ -10635,10 +11684,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 57,
-        "source": 22,
+        "reference": 94,
+        "source": 12,
         "target": {
-          "reference": 43,
+          "reference": 48,
           "status": "resolved"
         }
       },
@@ -10646,10 +11695,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 58,
-        "source": 22,
+        "reference": 95,
+        "source": 12,
         "target": {
-          "reference": 45,
+          "reference": 50,
           "status": "resolved"
         }
       },
@@ -10657,10 +11706,483 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 59,
-        "source": 22,
+        "reference": 96,
+        "source": 12,
+        "target": {
+          "reference": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 66,
+        "provenance": "authored",
+        "reference": 170,
+        "source": 28,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 167,
+        "source": 28,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 168,
+        "source": 28,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 169,
+        "source": 28,
+        "target": {
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 34,
+        "provenance": "authored",
+        "reference": 92,
+        "source": 29,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 93,
+        "source": 29,
+        "target": {
+          "reference": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 89,
+        "source": 29,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 90,
+        "source": 29,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 91,
+        "source": 29,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 70,
+        "provenance": "authored",
+        "reference": 131,
+        "source": 1,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 71,
+        "provenance": "authored",
+        "reference": 132,
+        "source": 1,
+        "target": {
+          "node": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 141,
+        "source": 1,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 142,
+        "source": 1,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 143,
+        "source": 1,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 156,
+        "source": 1,
+        "target": {
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 73,
+        "provenance": "authored",
+        "reference": 133,
+        "source": 2,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 74,
+        "provenance": "authored",
+        "reference": 134,
+        "source": 2,
+        "target": {
+          "node": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 144,
+        "source": 2,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 145,
+        "source": 2,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 146,
+        "source": 2,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 157,
+        "source": 2,
+        "target": {
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 76,
+        "provenance": "authored",
+        "reference": 135,
+        "source": 3,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 77,
+        "provenance": "authored",
+        "reference": 136,
+        "source": 3,
+        "target": {
+          "node": 22,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 147,
+        "source": 3,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 148,
+        "source": 3,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 149,
+        "source": 3,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 158,
+        "source": 3,
+        "target": {
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 79,
+        "provenance": "authored",
+        "reference": 137,
+        "source": 4,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 80,
+        "provenance": "authored",
+        "reference": 138,
+        "source": 4,
+        "target": {
+          "node": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 150,
+        "source": 4,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 151,
+        "source": 4,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 152,
+        "source": 4,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 159,
+        "source": 4,
+        "target": {
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 82,
+        "provenance": "authored",
+        "reference": 139,
+        "source": 5,
+        "target": {
+          "node": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 83,
+        "provenance": "authored",
+        "reference": 140,
+        "source": 5,
+        "target": {
+          "node": 29,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 153,
+        "source": 5,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 154,
+        "source": 5,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 155,
+        "source": 5,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 160,
+        "source": 5,
+        "target": {
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 64,
+        "provenance": "authored",
+        "reference": 165,
+        "source": 30,
         "target": {
           "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 162,
+        "source": 30,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 163,
+        "source": 30,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 164,
+        "source": 30,
+        "target": {
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -10668,10 +12190,109 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 127,
-        "source": 23,
+        "reference": 79,
+        "source": 31,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 76,
+        "source": 31,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 77,
+        "source": 31,
+        "target": {
+          "reference": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 78,
+        "source": 31,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 68,
+        "provenance": "authored",
+        "reference": 176,
+        "source": 32,
         "target": {
           "reference": 22,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 173,
+        "source": 32,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 174,
+        "source": 32,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 175,
+        "source": 32,
+        "target": {
+          "reference": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 60,
+        "provenance": "authored",
+        "reference": 126,
+        "source": 34,
+        "target": {
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 123,
+        "source": 34,
+        "target": {
+          "reference": 46,
           "status": "resolved"
         }
       },
@@ -10680,73 +12301,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 124,
-        "source": 23,
+        "source": 34,
         "target": {
-          "reference": 42,
+          "reference": 49,
           "status": "resolved"
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
         "reference": 125,
-        "source": 23,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 126,
-        "source": 23,
-        "target": {
-          "reference": 25,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 48,
-        "provenance": "authored",
-        "reference": 107,
-        "source": 25,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 104,
-        "source": 25,
-        "target": {
-          "reference": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 105,
-        "source": 25,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 106,
-        "source": 25,
+        "source": 34,
         "target": {
           "reference": 22,
           "status": "resolved"
@@ -10754,10 +12320,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "typing",
-        "navigation": 46,
+        "navigation": 58,
         "provenance": "authored",
-        "reference": 111,
-        "source": 24,
+        "reference": 130,
+        "source": 33,
         "target": {
           "reference": 17,
           "status": "resolved"
@@ -10767,10 +12333,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 108,
-        "source": 24,
+        "reference": 127,
+        "source": 33,
         "target": {
-          "reference": 42,
+          "reference": 46,
           "status": "resolved"
         }
       },
@@ -10778,10 +12344,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 109,
-        "source": 24,
+        "reference": 128,
+        "source": 33,
         "target": {
-          "reference": 44,
+          "reference": 49,
           "status": "resolved"
         }
       },
@@ -10789,8 +12355,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 110,
-        "source": 24,
+        "reference": 129,
+        "source": 33,
         "target": {
           "reference": 22,
           "status": "resolved"

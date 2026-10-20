@@ -1433,6 +1433,7 @@ pub(crate) struct AuthoredFilterCondition {
 pub(crate) enum FilterPredicate {
     Boolean(bool),
     Metadata(u32),
+    Not(Box<FilterPredicate>),
     And(Box<FilterPredicate>, Box<FilterPredicate>),
     Or(Box<FilterPredicate>, Box<FilterPredicate>),
     Unsupported,

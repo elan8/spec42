@@ -64,6 +64,35 @@ jobs:
       - name: Mini CI (language-server tests)
         run: scripts/minici.sh tests-lsp
 
+  rust-tests-sysml-release:
+    name: Rust tests (pinned SysML release)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/prepare-rust-ci
+
+      - name: Read the authoritative SysML release pin
+        id: sysml-release
+        run: |
+          node --input-type=module -e 'import fs from "node:fs"; const pin = JSON.parse(fs.readFileSync("config/standard-library.json", "utf8")); fs.appendFileSync(process.env.GITHUB_OUTPUT, `repository=${pin.repo}\nref=${pin.version}\n`);'
+
+      - uses: actions/checkout@v6
+        with:
+          repository: ${{ steps.sysml-release.outputs.repository }}
+          ref: ${{ steps.sysml-release.outputs.ref }}
+          path: .cache/sysml-v2-release
+
+      - name: Require a semantic publication for the pinned release
+        env:
+          SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/.cache/sysml-v2-release
+          SPEC42_REQUIRE_SYSML_RELEASE: "1"
+          RUST_MIN_STACK: "16777216"
+        run: cargo test -p lsp_server --test lsp_integration lsp_workspace_scan_sysml_release -- --nocapture
+
   rust-tests-server:
     name: Rust tests (server)
     runs-on: ubuntu-24.04
@@ -126,6 +155,7 @@ jobs:
       - rust-lint
       - rust-tests-workspace
       - rust-tests-lsp
+      - rust-tests-sysml-release
       - rust-tests-server
       - rust-tests-generator
     runs-on: ubuntu-24.04
@@ -135,6 +165,7 @@ jobs:
           test "${{ needs.rust-lint.result }}" = success
           test "${{ needs.rust-tests-workspace.result }}" = success
           test "${{ needs.rust-tests-lsp.result }}" = success
+          test "${{ needs.rust-tests-sysml-release.result }}" = success
           test "${{ needs.rust-tests-server.result }}" = success
           test "${{ needs.rust-tests-generator.result }}" = success
 

@@ -72,6 +72,11 @@ cargo snapshot update --fixture resolution/imports.md
 cargo snapshot check --fixture resolution/imports.md
 ```
 
+Every operation has a 600-second wall-clock budget. Override it with `--timeout-seconds N` for
+larger or heavily contended workloads. A timeout exits 124 and prints the current stage, completed
+fixture count, active fixture paths and their durations, plus Linux thread wait states when available.
+The budget covers library admission and reporting as well as the parallel fixture batch.
+
 `check` never writes files. A stale fixture is a failure and the Markdown diff is the review
 surface. `update` is deliberately explicit so generated sections cannot change as a side effect of
 normal Rust test execution.

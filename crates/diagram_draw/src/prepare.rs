@@ -3239,6 +3239,8 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "owner": field(element, "owner"),
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
+                    "direction": field(element, "direction"),
+                    "conjugated": field(element, "conjugated"),
                     "referenceMembership": reference_membership,
                     "authoredReference": authored_reference,
                 },
@@ -3258,6 +3260,8 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                             "id": field(node, "id"),
                             "name": field(node, "label"),
                             "kind": field(node, "kind"),
+                            "direction": field(field(node, "attributes"), "direction"),
+                            "conjugated": field(field(node, "attributes"), "conjugated"),
                             "typeName": field(field(node, "attributes"), "typedByName")
                                 .as_str()
                                 .map(str::to_string),

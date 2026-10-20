@@ -106,6 +106,39 @@ fn push_view_typing_ranges(
     }
 }
 
+fn collect_extended_definition(
+    ctx: &RangeCtx<'_>,
+    node: &Node<sysml_v2_parser::ast::ExtendedDefinition>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out);
+    push_view_typing_ranges(ctx, node.specializes.as_deref(), out);
+    if let PackageBody::Brace { elements, .. } = &node.body {
+        for element in elements {
+            collect_semantic_ranges_package_body_element(ctx, element, out);
+        }
+    }
+}
+
+fn collect_extended_usage(
+    ctx: &RangeCtx<'_>,
+    node: &Node<sysml_v2_parser::ast::ExtendedUsage>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    push_identification_definition_spans(
+        &node.declaration.identification,
+        None,
+        SyntaxRole::Property,
+        out,
+    );
+    push_view_typing_ranges(ctx, node.declaration.typing.as_deref(), out);
+    if let PartUsageBody::Brace { elements, .. } = &node.body {
+        for element in elements {
+            collect_semantic_ranges_part_usage_body_element(ctx, element, out);
+        }
+    }
+}
+
 fn collect_semantic_ranges_view_def(
     ctx: &RangeCtx<'_>,
     node: &Node<sysml_v2_parser::ast::ViewDef>,
@@ -332,11 +365,12 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::RequirementUsage(ru_node) => {
+            push_view_typing_ranges(ctx, ru_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &ru_node.span,
                 ru_node.value.name,
-                ctx.type_text(ru_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -389,11 +423,12 @@ fn collect_semantic_ranges_package_body_element(
         }
         PBE::ViewUsage(vu_node) => collect_semantic_ranges_view_usage(ctx, vu_node, out),
         PBE::ViewpointUsage(vpu_node) => {
+            push_view_typing_ranges(ctx, vpu_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &vpu_node.span,
                 vpu_node.value.name,
-                ctx.type_text(vpu_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -473,24 +508,7 @@ fn collect_semantic_ranges_package_body_element(
             );
             collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
         }
-        PBE::FlowUsage(flow_node) => {
-            // Upstream's `FlowDeclaration` keeps the declaration-led alternative distinct from
-            // the endpoint-only shorthand, so a name/type is highlighted only when one is
-            // actually declared.
-            if let FlowDeclaration::Declared { declaration, .. } = &flow_node.value.declaration {
-                if let Some(name) = declaration.value.identification.name {
-                    push_usage_name_type_spans(
-                        ctx.source,
-                        &flow_node.span,
-                        name,
-                        ctx.typing_text(declaration.value.typing.as_deref()),
-                        None,
-                        out,
-                    );
-                }
-            }
-            collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
-        }
+        PBE::FlowUsage(flow_node) => collect_semantic_ranges_flow_usage(ctx, flow_node, out),
         PBE::AllocationDef(alloc_node) => {
             push_identification_definition_spans(
                 &alloc_node.value.identification,
@@ -668,22 +686,24 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::AllocationUsage(au_node) => {
+            push_view_typing_ranges(ctx, au_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &au_node.span,
                 au_node.value.name,
-                ctx.type_text(au_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
             collect_semantic_ranges_definition_body(ctx, &au_node.value.body, out);
         }
         PBE::ConcernUsage(cu_node) => {
+            push_view_typing_ranges(ctx, cu_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &cu_node.span,
                 cu_node.value.name,
-                ctx.type_text(cu_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -697,41 +717,45 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::UseCaseUsage(ucu_node) => {
+            push_view_typing_ranges(ctx, ucu_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &ucu_node.span,
                 ucu_node.value.name,
-                ctx.type_text(ucu_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
         }
         PBE::VerificationCaseUsage(vcu_node) => {
+            push_view_typing_ranges(ctx, vcu_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &vcu_node.span,
                 vcu_node.value.name,
-                ctx.type_text(vcu_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
         }
         PBE::CaseUsage(cu_node) => {
+            push_view_typing_ranges(ctx, cu_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &cu_node.span,
                 cu_node.value.name,
-                ctx.type_text(cu_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
         }
         PBE::AnalysisCaseUsage(acu_node) => {
+            push_view_typing_ranges(ctx, acu_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &acu_node.span,
                 acu_node.value.name,
-                ctx.type_text(acu_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -899,6 +923,10 @@ fn collect_semantic_ranges_attribute_body_element(
         AttributeBodyElement::OccurrenceUsage(_)
         | AttributeBodyElement::SuccessionUsage(_)
         | AttributeBodyElement::Connect(_) => {}
+        AttributeBodyElement::ExtendedDefinition(node) => {
+            collect_extended_definition(ctx, node, out)
+        }
+        AttributeBodyElement::ExtendedUsage(node) => collect_extended_usage(ctx, node, out),
         AttributeBodyElement::Error(_) => {}
         // `ref`/`ref part` members (validation `15_11`/`15_19`/`17a`/`17b`) -- same
         // collector every other body kind's `RefDecl` arm already uses.
@@ -1011,9 +1039,53 @@ fn collect_semantic_ranges_metadata_body(
                     SyntaxRole::Namespace,
                 ));
             }
+            MetadataBodyElement::ExtendedDefinition(node) => {
+                collect_extended_definition(ctx, node, out)
+            }
             MetadataBodyElement::Error(_) => {}
         }
     }
+}
+
+/// `flow`/`message`/`succession flow` usages: the declared name and typing targets, and each
+/// `of` payload's name and type -- at their own spans, never the whole statement, which would
+/// repaint the keywords. The endpoint-only shorthand (`flow a to b;`) declares nothing to mark.
+/// Endpoint feature chains stay unmarked, as for `connect`.
+fn collect_semantic_ranges_flow_usage(
+    ctx: &RangeCtx<'_>,
+    flow: &Node<sysml_v2_parser::ast::FlowUsage>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if let FlowDeclaration::Declared {
+        declaration,
+        payloads,
+        ..
+    } = &flow.value.declaration
+    {
+        push_identification_definition_spans(
+            &declaration.value.identification,
+            None,
+            SyntaxRole::Property,
+            out,
+        );
+        push_view_typing_ranges(ctx, declaration.value.typing.as_deref(), out);
+        for payload in payloads {
+            let feature = &payload.value.feature.value;
+            if let Some(name) = feature.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            if let Some(reference) = feature
+                .type_name
+                .and_then(|id| ctx.document.qualified_reference(id))
+            {
+                out.push((
+                    span_to_source_range(&reference.metadata.span),
+                    SyntaxRole::Type,
+                ));
+            }
+        }
+    }
+    collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
 }
 
 fn collect_semantic_ranges_payload_clause(
@@ -1096,6 +1168,55 @@ fn collect_semantic_ranges_transition(
     ));
 }
 
+fn collect_state_subaction(
+    ctx: &RangeCtx<'_>,
+    action: &sysml_v2_parser::ast::StateActionUsage,
+    body: &ActionDefBody,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    use sysml_v2_parser::ast::{PerformActionTarget, StateActionUsage};
+    let declaration = match action {
+        StateActionUsage::Empty => None,
+        StateActionUsage::Perform {
+            target: PerformActionTarget::Action(node),
+            ..
+        } => Some(node.as_ref()),
+        StateActionUsage::Perform {
+            target:
+                PerformActionTarget::Reference {
+                    action,
+                    specialization,
+                },
+            ..
+        } => {
+            if let Some(reference) = ctx.document.qualified_reference(*action) {
+                out.push((
+                    span_to_source_range(&reference.metadata.span),
+                    SyntaxRole::Function,
+                ));
+            }
+            specialization.as_deref()
+        }
+        StateActionUsage::Effect { declaration, .. } => declaration
+            .as_ref()
+            .and_then(|node| node.declaration.as_ref()),
+    };
+    if let Some(declaration) = declaration {
+        push_identification_definition_spans(
+            &declaration.identification,
+            None,
+            SyntaxRole::Function,
+            out,
+        );
+        push_view_typing_ranges(ctx, declaration.typing.as_deref(), out);
+    }
+    if let ActionDefBody::Brace { elements, .. } = body {
+        for element in elements {
+            collect_semantic_ranges_action_def_body_element(ctx, element, out);
+        }
+    }
+}
+
 fn collect_semantic_ranges_state_def_body_element(
     ctx: &RangeCtx<'_>,
     node: &sysml_v2_parser::Node<StateDefBodyElement>,
@@ -1103,6 +1224,11 @@ fn collect_semantic_ranges_state_def_body_element(
 ) {
     use StateDefBodyElement as SDBE;
     match &node.value {
+        SDBE::ExtendedDefinition(node) => collect_extended_definition(ctx, node, out),
+        SDBE::ExtendedUsage(node) => collect_extended_usage(ctx, node, out),
+        SDBE::VariantUsage(node) => {
+            out.push((span_to_source_range(&node.span), SyntaxRole::Property))
+        }
         SDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         SDBE::Transition(transition) => collect_semantic_ranges_transition(transition, out),
         SDBE::Then(then_stmt) => collect_semantic_ranges_then_stmt(ctx, &then_stmt.value, out),
@@ -1115,11 +1241,12 @@ fn collect_semantic_ranges_state_def_body_element(
         }
         SDBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         SDBE::RequirementUsage(ru_node) => {
+            push_view_typing_ranges(ctx, ru_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &ru_node.span,
                 ru_node.value.name,
-                ctx.type_text(ru_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -1132,15 +1259,16 @@ fn collect_semantic_ranges_state_def_body_element(
         SDBE::InOutDecl(in_out) => {
             out.push((span_to_source_range(&in_out.span), SyntaxRole::Property))
         }
-        SDBE::Entry(_) | SDBE::Do(_) | SDBE::Exit(_) | SDBE::Error(_) => {}
+        SDBE::Entry(node) => collect_state_subaction(ctx, &node.action, &node.body, out),
+        SDBE::Do(node) => collect_state_subaction(ctx, &node.action, &node.body, out),
+        SDBE::Exit(node) => collect_state_subaction(ctx, &node.action, &node.body, out),
+        SDBE::Error(_) => {}
         // Member kinds this collector assigns no token of their own.
         SDBE::AttributeUsage(_)
         | SDBE::ActionUsage(_)
         | SDBE::SuccessionUsage(_)
         | SDBE::PartUsage(_)
         | SDBE::ConstraintUsage(_)
-        | SDBE::FirstStmt(_)
-        | SDBE::ThenAction(_)
         | SDBE::AssertConstraint(_) => {}
     }
 }
@@ -1152,6 +1280,8 @@ fn collect_semantic_ranges_occurrence_body_element(
 ) {
     use OccurrenceBodyElement as OBE;
     match &node.value {
+        OBE::ExtendedDefinition(node) => collect_extended_definition(ctx, node, out),
+        OBE::ExtendedUsage(node) => collect_extended_usage(ctx, node, out),
         OBE::PortUsage(node) => collect_semantic_ranges_port_usage(node, out),
         OBE::DefaultReferenceUsage(node) => {
             if let Some(name) = node.value.name {
@@ -1203,10 +1333,7 @@ fn collect_semantic_ranges_occurrence_body_element(
                 }
             }
         }
-        OBE::FlowUsage(flow) => {
-            out.push((span_to_source_range(&flow.span), SyntaxRole::Property));
-            collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
-        }
+        OBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         OBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         // `end name : Type;` (or nested forms) inside allocation/connection-like definition
         // bodies -- same highlighting `CDBE::EndDecl`/`IDBE::EndDecl` already use.
@@ -1312,11 +1439,12 @@ fn collect_semantic_ranges_part_def_body_element(
             collect_semantic_ranges_attribute_body(ctx, &id_node.value.body, out);
         }
         PDBE::ItemUsage(item_node) => {
+            push_view_typing_ranges(ctx, item_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &item_node.span,
                 item_node.value.name,
-                ctx.type_text(item_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -1405,11 +1533,12 @@ fn collect_semantic_ranges_part_def_body_element(
         }
         PDBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         PDBE::RequirementUsage(ru_node) => {
+            push_view_typing_ranges(ctx, ru_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &ru_node.span,
                 ru_node.value.name,
-                ctx.type_text(ru_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -1422,10 +1551,7 @@ fn collect_semantic_ranges_part_def_body_element(
                 RequirementDefBody::Semicolon { .. } => {}
             }
         }
-        PDBE::FlowUsage(flow) => {
-            out.push((span_to_source_range(&flow.span), SyntaxRole::Property));
-            collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
-        }
+        PDBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         PDBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         PDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         PDBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
@@ -1487,6 +1613,7 @@ fn collect_semantic_ranges_part_usage_body_element(
         PUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         PUBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         PUBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
+        PUBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         _ => {}
     }
 }
@@ -1630,6 +1757,8 @@ fn collect_semantic_ranges_requirement_def_body_element(
 ) {
     use RequirementDefBodyElement as RDBE;
     match &node.value {
+        RDBE::ExtendedDefinition(node) => collect_extended_definition(ctx, node, out),
+        RDBE::ExtendedUsage(node) => collect_extended_usage(ctx, node, out),
         RDBE::DefaultReferenceUsage(node) => {
             if let Some(name) = node.value.name {
                 out.push((span_to_source_range(name.span()), SyntaxRole::Property));
@@ -1728,11 +1857,12 @@ fn collect_semantic_ranges_requirement_def_body_element(
             out.push((span_to_source_range(&actor.span), SyntaxRole::Property));
         }
         RDBE::RequirementUsage(requirement) => {
+            push_view_typing_ranges(ctx, requirement.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &requirement.span,
                 requirement.value.name,
-                ctx.type_text(requirement.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -1788,6 +1918,45 @@ fn collect_semantic_ranges_action_def_body_element(
 ) {
     use ActionDefBodyElement as ADBE;
     match &node.value {
+        ADBE::ExtendedDefinition(node) => collect_extended_definition(ctx, node, out),
+        ADBE::ExtendedUsage(node) => collect_extended_usage(ctx, node, out),
+        ADBE::PartDef(node) => {
+            push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out)
+        }
+        ADBE::ItemDef(node) => {
+            push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out)
+        }
+        ADBE::RenderingDef(node) => {
+            push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out)
+        }
+        ADBE::ViewpointDef(node) => {
+            push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out)
+        }
+        ADBE::ViewDef(node) => collect_semantic_ranges_view_def(ctx, node, out),
+        ADBE::CaseUsage(node) => {
+            if let Some(name) = node.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+        }
+        ADBE::AnalysisCaseUsage(node) => {
+            if let Some(name) = node.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+        }
+        ADBE::VerificationCaseUsage(node) => {
+            if let Some(name) = node.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+        }
+        ADBE::UseCaseUsage(node) => {
+            if let Some(name) = node.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+        }
         ADBE::InOutDecl(in_out) => {
             out.push((span_to_source_range(&in_out.span), SyntaxRole::Property))
         }
@@ -1821,11 +1990,11 @@ fn collect_semantic_ranges_action_def_body_element(
                 out,
             );
         }
+        ADBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         ADBE::Bind(_)
         | ADBE::GuardedSuccession(_)
         | ADBE::Import(_)
         | ADBE::VariantUsage(_)
-        | ADBE::FlowUsage(_)
         | ADBE::FirstStmt(_)
         | ADBE::MergeStmt(_)
         | ADBE::DecisionStmt(_)
@@ -1856,11 +2025,12 @@ fn collect_semantic_ranges_action_def_body_element(
             }
         }
         ADBE::ItemUsage(item_node) => {
+            push_view_typing_ranges(ctx, item_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &item_node.span,
                 item_node.value.name,
-                ctx.type_text(item_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );
@@ -1893,6 +2063,45 @@ fn collect_semantic_ranges_action_usage_body_element(
 ) {
     use sysml_v2_parser::ast::ActionUsageBodyElement as AUBE;
     match &node.value {
+        AUBE::ExtendedDefinition(node) => collect_extended_definition(ctx, node, out),
+        AUBE::ExtendedUsage(node) => collect_extended_usage(ctx, node, out),
+        AUBE::PartDef(node) => {
+            push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out)
+        }
+        AUBE::ItemDef(node) => {
+            push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out)
+        }
+        AUBE::RenderingDef(node) => {
+            push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out)
+        }
+        AUBE::ViewpointDef(node) => {
+            push_identification_definition_spans(&node.identification, None, SyntaxRole::Type, out)
+        }
+        AUBE::ViewDef(node) => collect_semantic_ranges_view_def(ctx, node, out),
+        AUBE::CaseUsage(node) => {
+            if let Some(name) = node.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+        }
+        AUBE::AnalysisCaseUsage(node) => {
+            if let Some(name) = node.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+        }
+        AUBE::VerificationCaseUsage(node) => {
+            if let Some(name) = node.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+        }
+        AUBE::UseCaseUsage(node) => {
+            if let Some(name) = node.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+        }
         AUBE::InOutDecl(in_out) => {
             out.push((span_to_source_range(&in_out.span), SyntaxRole::Property))
         }
@@ -1925,10 +2134,10 @@ fn collect_semantic_ranges_action_usage_body_element(
                 out,
             );
         }
+        AUBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         AUBE::GuardedSuccession(_)
         | AUBE::Bind(_)
         | AUBE::Import(_)
-        | AUBE::FlowUsage(_)
         | AUBE::FirstStmt(_)
         | AUBE::MergeStmt(_)
         | AUBE::DecisionStmt(_)
@@ -1959,11 +2168,12 @@ fn collect_semantic_ranges_action_usage_body_element(
             }
         }
         AUBE::ItemUsage(item_node) => {
+            push_view_typing_ranges(ctx, item_node.value.typing.as_deref(), out);
             push_usage_name_type_spans(
                 ctx.source,
                 &item_node.span,
                 item_node.value.name,
-                ctx.type_text(item_node.value.type_name),
+                None::<&str>,
                 None,
                 out,
             );

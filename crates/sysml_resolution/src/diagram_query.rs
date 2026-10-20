@@ -101,6 +101,8 @@ pub struct DiagramElement {
     pub semantic_id: SymbolId,
     pub reference: DiagramSemanticReference,
     pub kind: ElementKind,
+    /// KerML effectiveName for display, including an unnamed redefinition's inherited name.
+    /// Authored identification and naming provenance remain owned by the publication.
     pub name: Option<Box<str>>,
     /// Authored FeatureTyping for compact labels; not the effective-type closure.
     pub typing: DiagramElementTyping,
@@ -449,10 +451,34 @@ impl PublishedResolution {
             source: ElementSource::Workspace,
         })) {
             let types = resolved_values(self.direct_types(entry.identity));
-            for ty in types {
-                let Some(kind) = definitions.get(&ty.symbol).copied() else {
-                    continue;
-                };
+            let supertypes = |symbol| {
+                resolved_values(
+                    self.all_supertypes(symbol, crate::SpecializationScope::Subclassification),
+                )
+            };
+            // Each authored type contributes the most specific standard view definitions it
+            // conforms to. `StateTransitionView` and `ActionFlowView` specialize
+            // `InterconnectionView`; a view typed by one of them is that view, not also an
+            // interconnection view.
+            let kinds = types
+                .iter()
+                .flat_map(|ty| {
+                    let standard = std::iter::once(ty.symbol)
+                        .chain(supertypes(ty.symbol).iter().copied())
+                        .filter(|symbol| definitions.contains_key(symbol))
+                        .collect::<BTreeSet<_>>();
+                    standard
+                        .iter()
+                        .filter(|general| {
+                            !standard.iter().any(|specific| {
+                                specific != *general && supertypes(*specific).contains(general)
+                            })
+                        })
+                        .map(|definition| definitions[definition])
+                        .collect::<Vec<_>>()
+                })
+                .collect::<BTreeSet<_>>();
+            for kind in kinds {
                 catalog.push(DiagramViewCatalogEntry {
                     kind,
                     semantic_id: entry.identity,
@@ -846,7 +872,16 @@ impl PublishedResolution {
                             .unwrap_or_default(),
                     ),
                     kind: entry.kind,
-                    name: entry.name.clone(),
+                    // A declared name is its own effective name, so it survives an effective
+                    // identification the publication cannot answer.
+                    name: usable_value(self.effective_identification(entry.identity))
+                        .and_then(|identification| match identification.name {
+                            crate::EffectiveName::Resolved(name) => Some(name.into()),
+                            crate::EffectiveName::Absent
+                            | crate::EffectiveName::Unresolved
+                            | crate::EffectiveName::NonConverged => None,
+                        })
+                        .or_else(|| entry.name.clone()),
                     typing: diagram_element_typing(self.element_details(entry.identity)),
                     owner: owner.clone(),
                     source: entry.location,
