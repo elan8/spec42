@@ -3,6 +3,7 @@
 use crate::lower::facts::TransitionFeatureRole;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
+use crate::model::DocumentIdx;
 use crate::model::NameId;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::LibrarySpecializationAnchor;
@@ -14,6 +15,27 @@ use crate::resolve::names::InheritedNameIndex;
 pub(crate) enum ResolutionError {
     Capacity,
     InvalidStorage,
+    DocumentCapacity(DocumentIdx),
+    InvalidDocumentStorage(DocumentIdx),
+}
+
+impl ResolutionError {
+    pub(crate) fn in_document(self, document: DocumentIdx) -> Self {
+        match self {
+            Self::Capacity => Self::DocumentCapacity(document),
+            Self::InvalidStorage => Self::InvalidDocumentStorage(document),
+            Self::DocumentCapacity(_) | Self::InvalidDocumentStorage(_) => self,
+        }
+    }
+
+    pub(crate) fn document(self) -> Option<DocumentIdx> {
+        match self {
+            Self::DocumentCapacity(document) | Self::InvalidDocumentStorage(document) => {
+                Some(document)
+            }
+            Self::Capacity | Self::InvalidStorage => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Project analysis reliability.** Relative custom-library paths use the original first workspace
+  folder at startup and after configuration changes. Missing-file containment uses the same Windows
+  drive-letter identity as admitted library roots. Project diagnostic counts remain visible
+  while the server is rebuilding. A failed publication reports its phase and source identity, and
+  the editor warns when the previous analysis remains visible.
+
 - **Parser 0.58.0 / AST 284.** Retains all usage typing targets (except `occurrence` usages,
   which the parser still types with a single target), extended body members,
   nested action definitions and case usages, variants, and complete state-action declarations,
