@@ -388,7 +388,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::InventoryRejected"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::InventoryReserved"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (kind state-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default) (role entry)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "created")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (kind final-state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Created")))))
@@ -19533,7 +19533,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "serviceName",
         "notationRole": "usage",
         "owner": 55,
         "reference": 127,
@@ -19722,7 +19722,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "moduleName",
         "notationRole": "usage",
         "owner": 68,
         "reference": 193,
@@ -20056,7 +20056,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "serviceName",
         "notationRole": "usage",
         "owner": 76,
         "reference": 175,
@@ -20264,7 +20264,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "serviceName",
         "notationRole": "usage",
         "owner": 93,
         "reference": 190,
@@ -20490,7 +20490,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "serviceName",
         "notationRole": "usage",
         "owner": 103,
         "reference": 178,
@@ -20640,7 +20640,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "channelName",
         "notationRole": "usage",
         "owner": 114,
         "reference": 181,
@@ -20691,7 +20691,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "retention",
         "notationRole": "usage",
         "owner": 114,
         "reference": 182,
@@ -20742,7 +20742,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "partitions",
         "notationRole": "usage",
         "owner": 114,
         "reference": 183,

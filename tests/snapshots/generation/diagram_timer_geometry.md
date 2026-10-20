@@ -93,7 +93,7 @@ package TimerGeometry {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::StopPressed"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "Top-level: Idle, Running, Paused, Expired. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default) (role entry)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "idle")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "idle")) (transitionTrigger (reference "DecrementPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "idle")) (succession (reference "idle")))))
@@ -17195,7 +17195,7 @@ package TimerGeometry {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 22,
         "reference": 208,
@@ -18865,7 +18865,7 @@ package TimerGeometry {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 100,
         "reference": 221,
@@ -19416,7 +19416,7 @@ package TimerGeometry {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 124,
         "reference": 200,
@@ -19852,7 +19852,7 @@ package TimerGeometry {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 143,
         "reference": 212,
@@ -20159,7 +20159,7 @@ package TimerGeometry {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": null,
+        "name": "maxCurrent",
         "notationRole": "usage",
         "owner": 157,
         "reference": 204,

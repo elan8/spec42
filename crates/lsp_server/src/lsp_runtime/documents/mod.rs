@@ -59,6 +59,8 @@ async fn publish_semantic_change(
             merge_diagnostic_fanout(diagnostic_uris, diagnostic_fanout(&new, &changed_uri));
         publish_workspace_diagnostics(client, handle, runtime_config, Some(&diagnostic_uris)).await;
     }
+    // Also after a success: that clears the reported failure, so a recurrence is announced.
+    report_publication_failure(client, handle).await;
 }
 
 fn merge_diagnostic_fanout(mut old: Vec<Url>, new: Vec<Url>) -> Vec<Url> {
@@ -136,9 +138,28 @@ pub(crate) fn semantic_index_ready_notification(
 
 /// Sends the `spec42/semanticIndexReady` LSP notification to the client.
 /// The session must already be in `Ready` state before calling this.
+///
+/// Concurrent handlers may publish diagnostics as soon as the session is `Ready`, so nothing is
+/// awaited before the notification: the failure report follows it, keeping that window minimal.
 async fn send_semantic_ready_notification(client: &Client, handle: &WorkspaceHandle) {
     let params = semantic_index_ready_notification(&handle.snapshot());
     client.send_notification::<SemanticIndexReady>(params).await;
+    report_publication_failure(client, handle).await;
+}
+
+/// A retained publication must be visible as stale analysis, with the owning phase's cause.
+async fn report_publication_failure(client: &Client, handle: &WorkspaceHandle) {
+    if let Some(failure) = handle.unreported_publication_failure() {
+        client
+            .show_message(MessageType::ERROR, publication_failure_message(&failure))
+            .await;
+    }
+}
+
+fn publication_failure_message(
+    failure: &sysml_query::publication::PublicationBuildFailure,
+) -> String {
+    format!("Spec42 could not analyze the current project; the previous analysis remains visible. {failure}")
 }
 
 mod startup;
@@ -151,6 +172,15 @@ pub(crate) use sync::{
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn retained_publication_failure_message_exposes_the_cause() {
+        let failure = sysml_query::publication::PublicationBuildFailure::construction_worker(
+            "worker panicked",
+        );
+        assert_eq!(publication_failure_message(&failure),
+            "Spec42 could not analyze the current project; the previous analysis remains visible. ConstructionWorker: worker panicked");
+    }
 
     #[test]
     fn diagnostic_fanout_retains_old_dependants_and_adds_new_dependants() {

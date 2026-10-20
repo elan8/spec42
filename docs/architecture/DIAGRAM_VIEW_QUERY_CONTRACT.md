@@ -18,6 +18,12 @@ elements, relationships, typed view metadata, provenance, and typed incomplete r
 is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 5
 is the sole renderer product for this contract.
 
+Projected element `name` is the publication's canonical effective name (SysML 7.6.5), so an
+unnamed redefinition displays the name it inherits from its first redefined feature. This does
+not replace the syntax-owned authored identification or its naming provenance. An absent or
+unresolved effective name stays absent; consumers do not reconstruct it from qualified names,
+redefinition edges, source text, or product-local layout keys.
+
 A custom view definition inherits the most specific standard diagram kinds reachable through its
 canonical subclassification closure: `ActionFlowView` and `StateTransitionView` specialize
 `InterconnectionView`, so a view typed by either is not also an interconnection view. Multiple

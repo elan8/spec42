@@ -345,9 +345,12 @@ pub fn normalize_uri(uri: &Url) -> Url {
 ///
 /// This is lexical rather than filesystem-based so it also works for unsaved documents beneath
 /// a root that does not exist yet. A root matches itself and descendants, but never a sibling
-/// whose last common path segment merely starts with the same characters.
+/// whose last common path segment merely starts with the same characters. Windows file drive
+/// letters use the same lexical policy as admitted sources, even when neither path exists.
 pub fn uri_under_any(candidate: &Url, roots: &[Url]) -> bool {
+    let candidate = lowercase_drive_letter(candidate.clone());
     roots.iter().any(|root| {
+        let root = lowercase_drive_letter(root.clone());
         if candidate.scheme() != root.scheme()
             || candidate.username() != root.username()
             || candidate.password() != root.password()
@@ -393,6 +396,9 @@ pub fn path_to_file_url(path: &Path) -> Result<Url, SourceError> {
 }
 
 fn lowercase_drive_letter(url: Url) -> Url {
+    if url.scheme() != "file" {
+        return url;
+    }
     let path = url.path();
     let bytes = path.as_bytes();
     if bytes.len() >= 3 && bytes[0] == b'/' && bytes[1].is_ascii_uppercase() && bytes[2] == b':' {
@@ -959,10 +965,100 @@ mod tests {
     }
 
     #[test]
+    fn duplicate_library_contents_do_not_make_different_files_path_aliases() {
+        let directory = tempfile::tempdir().unwrap();
+        let first = directory.path().join("bundled.sysml");
+        let second = directory.path().join("checkout.sysml");
+        fs::write(&first, "package Same;").unwrap();
+        fs::write(&second, "package Same;").unwrap();
+        let authority = SourceAuthority::new();
+        let bundled = authority
+            .admit(
+                path_to_file_url(&first).unwrap().as_str(),
+                "package Same;",
+                SourceKind::Library,
+            )
+            .unwrap();
+        let checkout = authority
+            .admit(
+                path_to_file_url(&second).unwrap().as_str(),
+                "package Same;",
+                SourceKind::Workspace,
+            )
+            .unwrap();
+        assert_ne!(bundled.uri(), checkout.uri());
+        assert_eq!(bundled.digest(), checkout.digest());
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn windows_workspace_and_library_spellings_share_one_source_identity() {
+        let temp = tempfile::tempdir().unwrap();
+        let library = temp.path().join("Library Sources");
+        fs::create_dir(&library).unwrap();
+        let file = library.join("MixedCase.sysml");
+        fs::write(&file, "package Model;").unwrap();
+        let expected = path_to_file_url(&file).unwrap();
+        let root = path_to_file_url(&library).unwrap();
+        let drive = expected.path().as_bytes()[1] as char;
+        let encoded = expected.as_str().replacen(
+            &format!("file:///{drive}:"),
+            &format!("file:///{}%3A", drive.to_ascii_uppercase()),
+            1,
+        );
+        let aliases = [
+            Url::from_file_path(&file).unwrap(),
+            Url::parse(&encoded).unwrap(),
+            Url::from_file_path(file.to_string_lossy().to_uppercase()).unwrap(),
+            Url::from_file_path(PathBuf::from(file.to_string_lossy().replace('\\', "/"))).unwrap(),
+            Url::from_file_path(fs::canonicalize(&file).unwrap()).unwrap(),
+        ];
+        let authority = SourceAuthority::new();
+        for alias in aliases {
+            let normalized = normalize_uri(&alias);
+            assert_eq!(normalized, expected, "file alias {alias}");
+            assert!(uri_under_any(&normalized, std::slice::from_ref(&root)));
+            let workspace = authority
+                .admit(alias.as_str(), "package Model;", SourceKind::Workspace)
+                .unwrap();
+            let library = authority
+                .admit(expected.as_str(), "package Model;", SourceKind::Library)
+                .unwrap();
+            assert_eq!(workspace.uri(), library.uri());
+            assert_eq!(workspace.digest(), library.digest());
+        }
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn windows_junction_library_and_workspace_uris_share_one_identity() {
+        let temp = tempfile::tempdir().unwrap();
+        let real = temp.path().join("real");
+        let alias = temp.path().join("alias");
+        fs::create_dir(&real).unwrap();
+        fs::write(real.join("Model.sysml"), "package Model;").unwrap();
+        let output = std::process::Command::new("cmd")
+            .args(["/C", "mklink", "/J"])
+            .arg(&alias)
+            .arg(&real)
+            .output()
+            .expect("Windows junction creation");
+        assert!(
+            output.status.success(),
+            "junction creation: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let actual = normalize_uri(&Url::from_file_path(alias.join("Model.sysml")).unwrap());
+        let expected = path_to_file_url(&real.join("Model.sysml")).unwrap();
+        assert_eq!(actual, expected);
+        assert!(uri_under_any(&actual, &[path_to_file_url(&alias).unwrap()]));
+    }
+
+    #[test]
     fn nonexistent_file_uri_keeps_its_lexical_identity() {
         let temp = tempfile::tempdir().expect("tempdir");
         let uri = Url::from_file_path(temp.path().join("Unsaved.sysml")).unwrap();
-        assert_eq!(normalize_uri(&uri), uri);
+        assert_eq!(normalize_uri(&uri), lowercase_drive_letter(uri));
     }
 
     #[test]
@@ -974,6 +1070,21 @@ mod tests {
         assert!(uri_under_any(&root, std::slice::from_ref(&root)));
         assert!(uri_under_any(&child, std::slice::from_ref(&root)));
         assert!(!uri_under_any(&sibling_prefix, &[root]));
+    }
+
+    #[test]
+    fn containment_normalizes_file_drive_letters_without_changing_custom_paths() {
+        let root = Url::parse("file:///c:/future-library").unwrap();
+        let child = Url::parse("file:///C:/future-library/Model.sysml").unwrap();
+        assert!(uri_under_any(&child, std::slice::from_ref(&root)));
+        assert!(uri_under_any(
+            &root,
+            &[Url::parse("file:///C:/future-library").unwrap()]
+        ));
+        let root = Url::parse("memory:///c:/future-library").unwrap();
+        let child = Url::parse("memory:///C:/future-library/Model.sysml").unwrap();
+        assert!(!uri_under_any(&child, &[root]));
+        assert_eq!(normalize_uri(&child), child);
     }
 
     #[test]

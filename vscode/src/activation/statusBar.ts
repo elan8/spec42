@@ -83,8 +83,7 @@ export function updateStatusBar(context: vscode.ExtensionContext): void {
   const editor = vscode.window.activeTextEditor;
   const doc = editor?.document;
   const showHealthWithoutDoc = serverHealthState !== "ready";
-  const useWorkspaceDiagnostics =
-    hasWorkspaceFolder() && serverHealthState === "ready";
+  const useWorkspaceDiagnostics = hasWorkspaceFolder();
   if ((!doc || !isSysmlDoc(doc)) && !showHealthWithoutDoc && !useWorkspaceDiagnostics) {
     statusItem?.hide();
     return;

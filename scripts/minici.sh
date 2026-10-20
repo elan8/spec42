@@ -118,7 +118,7 @@ if wants lint; then
   fi
 
   step "Reference tooling"
-  python3 -m unittest tools/sysml_reference/test_tools.py
+  python3 -m unittest tools/sysml_reference/test_tools.py scripts/test_stress_publication.py
 fi
 
 if wants tests-workspace || wants tests-lsp || wants generator; then

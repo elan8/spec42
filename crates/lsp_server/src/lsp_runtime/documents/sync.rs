@@ -337,6 +337,7 @@ pub(crate) async fn did_change_watched_files(
     for msg in runtime_warnings {
         client.log_message(MessageType::WARNING, msg).await;
     }
+    report_publication_failure(client, handle).await;
     let diagnostics_start = Instant::now();
     if changed {
         let mut diagnostic_uris = event_uris
@@ -400,11 +401,16 @@ pub(crate) async fn did_change_configuration(
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeConfigurationParams,
 ) {
+    let library_path_base = runtime_config
+        .get()
+        .and_then(|config| config.library_path_base.as_deref());
     let client_library_paths = params
         .settings
         .get("spec42")
-        .map(|value| util::parse_library_paths_from_value(Some(value)))
-        .unwrap_or_else(|| util::parse_library_paths_from_value(Some(&params.settings)));
+        .map(|value| util::parse_library_paths_with_base(Some(value), library_path_base))
+        .unwrap_or_else(|| {
+            util::parse_library_paths_with_base(Some(&params.settings), library_path_base)
+        });
     let new_library_paths = util::merge_host_and_client_library_paths(
         &config.default_library_paths,
         client_library_paths,
