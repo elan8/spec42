@@ -47,6 +47,16 @@ fn truncate(value: &str, max: usize) -> String {
 /// Height of a container part's name header.
 pub(crate) const IBD_CONTAINER_HEADER_HEIGHT: f64 = 28.0;
 
+/// An item container must remain distinguishable from a part while sharing its nesting layout.
+pub(crate) fn ibd_container_label(kind: &str, label: &str) -> String {
+    match kind {
+        "item" | "item def" | "ref item" | "in item" | "out item" | "inout item" => {
+            format!("«{kind}» {label}")
+        }
+        _ => label.to_string(),
+    }
+}
+
 /// Whether an Interconnection View node is drawn as a container enclosing other parts.
 pub(crate) fn is_ibd_container(node: &LaidOutNode) -> bool {
     attr_bool(&node.attributes, "isSyntheticContainer")
@@ -161,7 +171,7 @@ pub fn render_ibd_node(
                 .attr_f("x", width / 2.0)
                 .attr_f("y", header_height / 2.0 + 4.0)
                 .attr("text-anchor", "middle")
-                .text(node.label.clone())
+                .text(ibd_container_label(&node.kind, &node.label))
                 .style("font-size", "11px")
                 .style("font-weight", "bold")
                 .style("fill", theme.text_primary),

@@ -83,6 +83,53 @@ pub fn render_svg_from_json_with_theme(
     width: f64,
     height: f64,
 ) -> Result<String, DrawError> {
+    // Validate the view-specific input before presenting an empty state: malformed or
+    // unsupported input must keep its error rather than becoming an apparently valid view.
+    let rendered = render_validated_svg(input, theme, width, height)?;
+    let prepared = input.get("prepared").unwrap_or(input);
+    if prepared
+        .get("nodes")
+        .and_then(Value::as_array)
+        .is_some_and(Vec::is_empty)
+    {
+        let title = prepared.get("title").and_then(Value::as_str).unwrap_or("");
+        let root = crate::svg::Element::new("g")
+            .attr("class", "viz-empty-state")
+            .child(
+                crate::svg::Element::new("text")
+                    .attr("x", "8")
+                    .attr("y", "24")
+                    .attr("font-size", "14")
+                    .attr("fill", theme.text_primary)
+                    .text("No elements to display."),
+            )
+            .child(
+                crate::svg::Element::new("text")
+                    .attr("x", "8")
+                    .attr("y", "48")
+                    .attr("font-size", "12")
+                    .attr("fill", theme.text_secondary)
+                    .text("Check the view's exposes and filters."),
+            );
+        return Ok(crate::render_svg_document(
+            theme,
+            width,
+            height,
+            title,
+            (0.0, 0.0, 320.0, 64.0),
+            None,
+            root,
+        ));
+    }
+    Ok(rendered)
+}
+
+fn render_validated_svg(
+    input: &Value,
+    theme: &Theme,
+    width: f64,
+    height: f64,
+) -> Result<String, DrawError> {
     if input.get("behaviorLayout").is_some() {
         let fixture: BehaviorDrawInput = decode(input, "action-flow/state-transition draw input")?;
         return match fixture.prepared.view.as_str() {

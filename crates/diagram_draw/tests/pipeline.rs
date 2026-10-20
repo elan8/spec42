@@ -18,6 +18,27 @@ fn generated_diagram(snapshot: &str) -> serde_json::Value {
 }
 
 #[test]
+fn a_filtered_empty_view_explains_the_selection_in_the_svg() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_filtered_empty.md"
+    ));
+    let svg = render_svg_from_payload(&payload, 800.0, 600.0).expect("valid empty view");
+    assert!(svg.contains("No elements to display."));
+    assert!(
+        svg.contains("Check the view&apos;s exposes and filters.")
+            || svg.contains("Check the view's exposes and filters.")
+    );
+    assert!(svg.contains("viz-empty-state"));
+    // Empty-state presentation must not hide validation errors.
+    assert!(diagram_draw::render_svg_from_json(
+        &json!({ "view": "unknown-view", "nodes": [], "edges": [] }),
+        800.0,
+        600.0,
+    )
+    .is_err());
+}
+
+#[test]
 fn webshop_action_flow_draws_actions_and_successions() {
     let payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_webshop_action_flow.md"
@@ -1194,4 +1215,124 @@ fn only_a_usage_declared_ref_is_drawn_as_a_reference() {
     assert_eq!(svg.matches("«ref part»").count(), 2, "{svg}");
     assert!(!svg.contains("«ref port»"), "{svg}");
     assert!(svg.contains("«port»"), "{svg}");
+}
+
+fn nested_ownership_payload() -> serde_json::Value {
+    generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_nested_item_and_ports.md"
+    ))
+}
+
+#[test]
+fn nested_parts_stay_inside_their_item_containers() {
+    let payload = nested_ownership_payload();
+    let input = draw_input_from_payload(&payload).expect("nested ownership lays out");
+    let nodes = input["nodes"].as_array().unwrap();
+    let label_of = |id: &serde_json::Value| {
+        nodes
+            .iter()
+            .find(|node| &node["id"] == id)
+            .map(|node| node["label"].as_str().unwrap())
+            .unwrap_or("-")
+    };
+    let mut ownership = nodes
+        .iter()
+        .map(|node| {
+            (
+                node["label"].as_str().unwrap(),
+                label_of(&node["attributes"]["containerId"]),
+            )
+        })
+        .collect::<Vec<_>>();
+    ownership.sort_unstable();
+    assert_eq!(
+        ownership,
+        [
+            ("Assembly", "-"),
+            ("carried", "destination"),
+            ("destination", "Assembly"),
+            ("inBox.box", "destination"),
+            ("slot", "carried"),
+            ("slot", "inBox.box"),
+            ("src", "Assembly"),
+        ]
+    );
+    for slot in nodes.iter().filter(|node| node["label"] == "slot") {
+        let owner = nodes
+            .iter()
+            .find(|node| node["id"] == slot["attributes"]["containerId"])
+            .unwrap();
+        for axis in ["x", "y"] {
+            assert!(slot[axis].as_f64().unwrap() >= owner[axis].as_f64().unwrap());
+        }
+        for (axis, extent) in [("x", "width"), ("y", "height")] {
+            assert!(
+                slot[axis].as_f64().unwrap() + slot[extent].as_f64().unwrap()
+                    <= owner[axis].as_f64().unwrap() + owner[extent].as_f64().unwrap()
+            );
+        }
+    }
+    let svg = render_svg_from_payload(&payload, 1000.0, 800.0).expect("draw nested items");
+    assert!(svg.contains("«inout item» inBox.box"));
+    assert!(svg.contains("«ref item» carried"));
+    // Closing their containing part hides the complete item subtree, never loose child boxes.
+    let closed = diagram_draw::pipeline::draw_input_from_payload_with_presentation(
+        &payload,
+        None,
+        diagram_draw::Nesting::Levels(1),
+    )
+    .expect("closed item subtree");
+    let mut labels = closed["nodes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|node| node["label"].as_str().unwrap())
+        .collect::<Vec<_>>();
+    labels.sort_unstable();
+    assert_eq!(labels, ["Assembly", "destination", "src"]);
+}
+
+#[test]
+fn bindings_to_nested_ports_keep_their_exact_boundary_anchors() {
+    let payload = nested_ownership_payload();
+    let input = draw_input_from_payload(&payload).expect("nested port binding lays out");
+    let root = input["nodes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|node| node["label"] == "Assembly")
+        .unwrap();
+    let ports = root["attributes"]["portDetails"].as_array().unwrap();
+    let mut names = ports
+        .iter()
+        .map(|port| port["name"].as_str().unwrap())
+        .collect::<Vec<_>>();
+    names.sort_unstable();
+    assert_eq!(
+        names,
+        ["bundle", "bundle.a", "bundle.b", "second", "second.a", "second.b"]
+    );
+    let nested = ports
+        .iter()
+        .find(|port| port["name"] == "bundle.a")
+        .unwrap();
+    let other = ports
+        .iter()
+        .find(|port| port["name"] == "second.a")
+        .unwrap();
+    assert_ne!(
+        nested["id"], other["id"],
+        "reused port definitions keep occurrence identities"
+    );
+    let edges = input["edges"].as_array().unwrap();
+    assert_eq!(edges.len(), 1);
+    assert_eq!(edges[0]["source"], root["id"]);
+    assert_eq!(edges[0]["attributes"]["sourcePortId"], nested["id"]);
+    let routes = input["interconnectionLayout"]["edges"].as_array().unwrap();
+    assert_eq!(routes.len(), 1);
+    assert!(routes[0]["routePoints"].as_array().unwrap().len() >= 2);
+    let svg = render_svg_from_payload(&payload, 1000.0, 800.0).expect("draw nested binding");
+    assert!(svg.contains("data-port-name=\"bundle.a\""));
+    assert!(svg.contains("data-port-name=\"bundle.b\""));
+    assert_eq!(svg.matches("class=\"ibd-connector ").count(), 1);
 }

@@ -1223,13 +1223,13 @@ package Feed {
     {
       "kind": "relationship",
       "ordinal": 9,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 10,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 13
     },
     {
@@ -1259,7 +1259,7 @@ package Feed {
     {
       "kind": "relationship",
       "ordinal": 7,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 14
     },
     {
@@ -1289,7 +1289,7 @@ package Feed {
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 15
     },
     {
@@ -1405,7 +1405,7 @@ package Feed {
         "target": 3
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 0,
         "origin": 4,
         "provenance": "implied",
@@ -1441,7 +1441,7 @@ package Feed {
         "target": 5
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 0,
         "origin": 6,
         "provenance": "implied",
@@ -1459,7 +1459,7 @@ package Feed {
         "target": 7
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 2,
         "origin": 8,
         "provenance": "implied",
@@ -1468,7 +1468,7 @@ package Feed {
         "target": 8
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 4,
         "origin": 9,
         "provenance": "implied",

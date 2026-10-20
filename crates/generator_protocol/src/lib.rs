@@ -860,6 +860,8 @@ pub struct DiagramElement {
     pub reference: DiagramSemanticReference,
     pub metaclass: Metaclass,
     pub notation_role: DiagramNotationRole,
+    /// Canonical effective name for display; authored names and their provenance remain in
+    /// the semantic publication. An unnamed redefinition can therefore have a display name.
     pub name: Option<String>,
     /// Authored FeatureTyping for compact labels; not the effective-type closure.
     pub typing: DiagramElementTyping,

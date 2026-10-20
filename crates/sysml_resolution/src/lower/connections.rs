@@ -71,6 +71,12 @@ impl SemanticModelBuilder {
         if let PortDefBody::Brace { elements, .. } = &node.value.body {
             for element in elements {
                 match &element.value {
+                    PortDefBodyElement::ExtendedDefinition(node) => {
+                        self.lower_extended_definition(document, Some(declaration), node)?;
+                    }
+                    PortDefBodyElement::ExtendedUsage(node) => {
+                        self.lower_extended_usage(document, Some(declaration), node)?;
+                    }
                     PortDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
                     }
@@ -210,6 +216,12 @@ impl SemanticModelBuilder {
         if let PortBody::Brace { elements, .. } = &node.value.body {
             for element in elements {
                 match &element.value {
+                    PortBodyElement::ExtendedDefinition(node) => {
+                        self.lower_extended_definition(document, Some(declaration), node)?;
+                    }
+                    PortBodyElement::ExtendedUsage(node) => {
+                        self.lower_extended_usage(document, Some(declaration), node)?;
+                    }
                     PortBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
                     }
@@ -417,6 +429,12 @@ impl SemanticModelBuilder {
         if let ConnectionDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    ConnectionDefBodyElement::ExtendedDefinition(node) => {
+                        self.lower_extended_definition(document, Some(declaration), node)?;
+                    }
+                    ConnectionDefBodyElement::ExtendedUsage(node) => {
+                        self.lower_extended_end_usage(document, declaration, node)?;
+                    }
                     ConnectionDefBodyElement::DefaultReferenceUsage(node) => self
                         .lower_default_reference_usage(
                             document,
@@ -820,6 +838,9 @@ impl SemanticModelBuilder {
         if let InterfaceDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    InterfaceDefBodyElement::ExtendedDefinition(node) => {
+                        self.lower_extended_definition(document, Some(declaration), node)?;
+                    }
                     InterfaceDefBodyElement::InterfaceUsage(node) => {
                         self.lower_interface_usage(document, Some(declaration), node)?
                     }
@@ -1013,6 +1034,9 @@ impl SemanticModelBuilder {
         }
         for element in body.members() {
             match &element.value {
+                InterfaceUsageBodyElement::ExtendedDefinition(node) => {
+                    self.lower_extended_definition(document, Some(declaration), node)?;
+                }
                 InterfaceUsageBodyElement::PartUsage(node) => {
                     self.lower_part_usage(document, Some(declaration), node)?;
                 }
@@ -1463,25 +1487,8 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        if let Some(target) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(target)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: target,
-                flags: RelationshipFlags {
-                    conjugated: node.value.type_is_conjugated,
-                    ..RelationshipFlags::default()
-                },
-                span,
-                import: None,
-            })?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
         }
         if let Some(relationship) = &node.value.subsets {
             self.lower_subsetting_relationship(document, declaration, relationship)?;

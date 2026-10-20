@@ -1463,7 +1463,7 @@ fn prepare_interconnection_scene(scene: &Value, visualization: &Value) -> Value 
             json!({
                 "id": node_id,
                 "label": as_string(field(node, "name"), ""),
-                "kind": "part",
+                "kind": as_string(field(node, "displayKind"), "part"),
                 "uri": field(node, "uri"),
                 "range": field(node, "range"),
                 "attributes": {
@@ -1474,7 +1474,8 @@ fn prepare_interconnection_scene(scene: &Value, visualization: &Value) -> Value 
                     "partType": field(node, "typeName"),
                     "ports": ports,
                     "portDetails": port_details,
-                    "notationRole": legacy_notation_role(&as_string(field(node, "kind"), "")),
+                    "notationRole": field(node, "notationRole").as_str()
+                        .unwrap_or_else(|| legacy_notation_role(&as_string(field(node, "kind"), ""))),
                     "sceneNodeId": field(node, "id"),
                 },
             })
@@ -1853,6 +1854,60 @@ fn interconnection_scene_from_typed_projection(
             }
         }
     }
+    let owner_of = |index: usize| -> Option<usize> {
+        let owner = field(raw_nodes.get(index)?, "owner").as_u64()? as usize;
+        (owner < raw_nodes.len()).then_some(owner)
+    };
+    // Item occurrences are real structural owners. Keep the item containers on the canonical
+    // path of a shown part, including an item reached through a boundary port.
+    let mut node_indexes = part_indexes.clone();
+    for &part in &part_indexes {
+        let mut owner = owner_of(part);
+        let mut seen = HashSet::new();
+        while let Some(index) = owner {
+            if !seen.insert(index) {
+                break;
+            }
+            if matches!(
+                field(&raw_nodes[index], "metaclass").as_str(),
+                Some("ItemUsage" | "ItemDefinition")
+            ) {
+                node_indexes.insert(index);
+            }
+            owner = owner_of(index);
+        }
+    }
+    // Ports remain boundary symbols rather than boxes. Adapt their supplied ownership path to
+    // the nearest drawn structural node and retain the intervening port names in the label.
+    let drawn_owner = |index: usize| -> Option<(usize, Vec<usize>)> {
+        let mut current = owner_of(index);
+        let mut through_ports = Vec::new();
+        let mut seen = HashSet::new();
+        while let Some(owner) = current {
+            if !seen.insert(owner) {
+                return None;
+            }
+            if node_indexes.contains(&owner) {
+                through_ports.reverse();
+                return Some((owner, through_ports));
+            }
+            if !port_indexes.contains(&owner) {
+                return None;
+            }
+            through_ports.push(owner);
+            current = owner_of(owner);
+        }
+        None
+    };
+    let display_name = |index: usize, ports: &[usize]| -> String {
+        ports
+            .iter()
+            .copied()
+            .chain(std::iter::once(index))
+            .map(|index| as_string(field(&raw_nodes[index], "name"), &format!("n:{index}")))
+            .collect::<Vec<_>>()
+            .join(".")
+    };
     let id_for = |index: usize| format!("n:{index}");
     let qualified_name = |index: usize| -> String {
         let element = &raw_nodes[index];
@@ -1909,27 +1964,52 @@ fn interconnection_scene_from_typed_projection(
             _ => "part",
         }
     };
-    let mut part_list: Vec<usize> = part_indexes.iter().copied().collect();
+    let mut part_list: Vec<usize> = node_indexes.iter().copied().collect();
     part_list.sort_unstable();
     let nodes: Vec<Value> = part_list
         .iter()
         .map(|&index| {
             let element = &raw_nodes[index];
-            let owner = field(element, "owner").as_u64().map(|i| i as usize);
-            let parent_id = owner.and_then(|owner| {
-                if part_indexes.contains(&owner) {
-                    Some(id_for(owner))
-                } else {
-                    None
-                }
+            let owner = drawn_owner(index);
+            let parent_id = owner.as_ref().map(|(owner, _)| id_for(*owner));
+            let ports = owner
+                .as_ref()
+                .map(|(_, ports)| ports.as_slice())
+                .unwrap_or_default();
+            let is_item = matches!(
+                field(element, "metaclass").as_str(),
+                Some("ItemUsage" | "ItemDefinition")
+            );
+            let reference_membership = edges.iter().any(|edge| {
+                field(edge, "kind") == "noncomposite-membership"
+                    && field(edge, "target").as_u64() == Some(index as u64)
             });
+            // Directed items carry their direction prefix. Other noncomposite structural
+            // nodes use reference notation, based on the supplied membership fact.
+            let notation_role = if reference_membership && field(element, "direction").is_null() {
+                "reference-usage".to_string()
+            } else {
+                as_string(field(element, "notationRole"), "unsupported")
+            };
             let (uri, range) = location(element);
             json!({
                 "id": id_for(index),
                 "semanticId": qualified_name(index),
                 "qualifiedName": qualified_name(index),
-                "name": as_string(field(element, "name"), &id_for(index)),
+                "name": display_name(index, ports),
                 "kind": scene_kind(element),
+                "displayKind": if is_item {
+                    let kind = match notation_role.as_str() {
+                        "definition" => "item def",
+                        "reference-usage" => "ref item",
+                        _ => "item",
+                    };
+                    match field(element, "direction").as_str() {
+                        Some(direction) => format!("{direction} {kind}"),
+                        None => kind.to_string(),
+                    }
+                } else { "part".to_string() },
+                "notationRole": notation_role,
                 "typeName": type_name(element),
                 "parentId": parent_id,
                 "uri": uri,
@@ -1943,16 +2023,13 @@ fn interconnection_scene_from_typed_projection(
         .iter()
         .filter_map(|&index| {
             let element = &raw_nodes[index];
-            let owner = field(element, "owner").as_u64().map(|i| i as usize)?;
-            if !part_indexes.contains(&owner) {
-                return None;
-            }
+            let (owner, through_ports) = drawn_owner(index)?;
             let (uri, range) = location(element);
             Some(json!({
                 "id": id_for(index),
                 "semanticId": qualified_name(index),
                 "ownerNodeId": id_for(owner),
-                "name": as_string(field(element, "name"), &id_for(index)),
+                "name": display_name(index, &through_ports),
                 "typeName": type_name(element),
                 // The arrow in a port's square shows the direction written on the port, or
                 // else the one its directed features give it (SysML 8.2.3.12).
@@ -2072,7 +2149,7 @@ fn interconnection_scene_from_typed_projection(
         .iter()
         .filter_map(|index| {
             let index = index.as_u64()? as usize;
-            if part_indexes.contains(&index) {
+            if node_indexes.contains(&index) {
                 Some(id_for(index))
             } else {
                 None
@@ -3154,6 +3231,8 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "owner": field(element, "owner"),
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
+                    "direction": field(element, "direction"),
+                    "conjugated": field(element, "conjugated"),
                     "referenceMembership": reference_membership,
                     "authoredReference": authored_reference,
                 },
@@ -3173,6 +3252,8 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                             "id": field(node, "id"),
                             "name": field(node, "label"),
                             "kind": field(node, "kind"),
+                            "direction": field(field(node, "attributes"), "direction"),
+                            "conjugated": field(field(node, "attributes"), "conjugated"),
                             "typeName": field(field(node, "attributes"), "typedByName")
                                 .as_str()
                                 .map(str::to_string),

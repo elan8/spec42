@@ -240,9 +240,16 @@ impl<D> SemanticModel<D> {
             .collect();
         Ok(crate::pipeline::PreparedLibrary {
             documents,
-            settled: self
-                .settled_library()
-                .map_err(|_| crate::pipeline::CoordinatorError::ConstructionFailed)?,
+            settled: self.settled_library().map_err(|error| {
+                crate::BuildFailure::construction(
+                    crate::ConstructionPhase::LibrarySeed,
+                    self.storage
+                        .documents
+                        .iter()
+                        .map(|document| document.identity.as_ref()),
+                    error,
+                )
+            })?,
         })
     }
 

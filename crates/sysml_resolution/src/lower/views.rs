@@ -86,6 +86,12 @@ impl SemanticModelBuilder {
         if let ViewDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    ViewDefBodyElement::ExtendedDefinition(node) => {
+                        self.lower_extended_definition(document, Some(declaration), node)?;
+                    }
+                    ViewDefBodyElement::ExtendedUsage(node) => {
+                        self.lower_extended_usage(document, Some(declaration), node)?;
+                    }
                     ViewDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
                     }
@@ -239,6 +245,12 @@ impl SemanticModelBuilder {
         if let ViewBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    ViewBodyElement::ExtendedDefinition(node) => {
+                        self.lower_extended_definition(document, Some(declaration), node)?;
+                    }
+                    ViewBodyElement::ExtendedUsage(node) => {
+                        self.lower_extended_usage(document, Some(declaration), node)?;
+                    }
                     ViewBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
                     }
@@ -437,22 +449,8 @@ impl SemanticModelBuilder {
             })?;
             self.declaration_facts[rendering.index()].view_rendering_reference = Some(reference);
         }
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: rendering,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, rendering, relationship)?;
         }
         for relationship in [&node.value.subsets, &node.value.redefines]
             .into_iter()
@@ -478,6 +476,12 @@ impl SemanticModelBuilder {
         if let RenderingUsageBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    RenderingUsageBodyElement::ExtendedDefinition(node) => {
+                        self.lower_extended_definition(document, Some(declaration), node)?;
+                    }
+                    RenderingUsageBodyElement::ExtendedUsage(node) => {
+                        self.lower_extended_usage(document, Some(declaration), node)?;
+                    }
                     RenderingUsageBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
                     }
@@ -545,6 +549,12 @@ impl SemanticModelBuilder {
         };
         for element in elements {
             match &element.value {
+                RenderingDefBodyElement::ExtendedDefinition(node) => {
+                    self.lower_extended_definition(document, Some(declaration), node)?;
+                }
+                RenderingDefBodyElement::ExtendedUsage(node) => {
+                    self.lower_extended_usage(document, Some(declaration), node)?;
+                }
                 RenderingDefBodyElement::Error(error) => {
                     self.push_recovery(document, error.span);
                 }

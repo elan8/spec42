@@ -18,6 +18,19 @@ elements, relationships, typed view metadata, provenance, and typed incomplete r
 is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 5
 is the sole renderer product for this contract.
 
+Projected element `name` is the publication's canonical effective name (SysML 7.6.5), so an
+unnamed redefinition displays the name it inherits from its first redefined feature. This does
+not replace the syntax-owned authored identification or its naming provenance. An absent or
+unresolved effective name stays absent; consumers do not reconstruct it from qualified names,
+redefinition edges, source text, or product-local layout keys.
+
+A custom view definition inherits the most specific standard diagram kinds reachable through its
+canonical subclassification closure: `ActionFlowView` and `StateTransitionView` specialize
+`InterconnectionView`, so a view typed by either is not also an interconnection view. Multiple
+paths to one kind yield one catalog entry. Effective view
+conditions include inherited conditions; metaclass tests include specializing kinds, and Boolean
+negation preserves unresolved, ambiguous and unsupported predicate outcomes.
+
 ## View inputs and projections
 
 | View | Authoritative semantic inputs | Projection |
@@ -37,6 +50,9 @@ Unresolved and ambiguous exposure, unsupported syntax or features, parser recove
 publication, absent authoritative geometry, and incomplete relationship endpoints are distinct
 typed reasons. An empty resolved exposure is a valid complete empty projection when the view kind
 permits it. Elements outside the transitive semantic scope of resolved exposures are never added.
+An empty drawing explains that no elements are selected and directs the reader to the view's
+exposes and filters. It does not turn an empty selection into an incomplete result or render
+elements excluded by the view's filters.
 
 Projection completeness is scoped to facts the selected query consumes. Publication-wide parser
 recovery or unsupported syntax is not itself a diagram reason: a selected exposure, required
@@ -63,6 +79,13 @@ Graph endpoints and view-specific metadata use node or relationship indexes rath
 qualified names. The renderer expands those local joins once into layout keys such as `n:17`; this
 is presentation adaptation, not semantic reconstruction. A future incremental product must use a
 base `modelDigest` and public semantic references, never indexes from an earlier product.
+
+Interconnection containment distinguishes noncomposite memberships just as General View does.
+The renderer keeps item occurrences that own shown parts as item containers, including items
+reached through boundary ports. A nested port uses its supplied identity and owner chain to attach
+to the nearest drawn structural node with a qualified boundary label. This display attachment
+does not change semantic ownership or connector endpoints. Closing a structural node hides its
+complete item/part subtree; a descendant never becomes a loose root because its owner is an item.
 
 ## Generated consumer contract
 

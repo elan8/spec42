@@ -1129,13 +1129,13 @@ package Feed {
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 13
     },
     {
@@ -1165,19 +1165,19 @@ package Feed {
     {
       "kind": "relationship",
       "ordinal": 4,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 5,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 6,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 14
     },
     {
@@ -1232,7 +1232,7 @@ package Feed {
         "target": 2
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 7,
         "origin": 3,
         "provenance": "implied",
@@ -1241,7 +1241,7 @@ package Feed {
         "target": 3
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 9,
         "origin": 4,
         "provenance": "implied",
@@ -1259,7 +1259,7 @@ package Feed {
         "target": 5
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 5,
         "origin": 6,
         "provenance": "implied",
@@ -1268,7 +1268,7 @@ package Feed {
         "target": 6
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 1,
         "origin": 7,
         "provenance": "implied",
@@ -1277,7 +1277,7 @@ package Feed {
         "target": 7
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 3,
         "origin": 8,
         "provenance": "implied",
