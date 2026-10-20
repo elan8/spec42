@@ -730,8 +730,7 @@ impl PublishedResolution {
                 // which the attribute that owns them already presents.
                 if view_entry.kind == DiagramViewKind::Browser
                     && (child.kind == ElementKind::FlowEnd
-                        || child.kind.conforms_to(ElementKind::Expression)
-                        || (child.kind == ElementKind::Feature && child.name.is_none()))
+                        || child.kind.conforms_to(ElementKind::Expression))
                 {
                     continue;
                 }
