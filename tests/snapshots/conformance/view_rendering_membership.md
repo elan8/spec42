@@ -27,18 +27,6 @@ package Views {
   (document "memory://snapshot/view_rendering_membership.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 7 4) (end 12 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 13 4) (end 13 35))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

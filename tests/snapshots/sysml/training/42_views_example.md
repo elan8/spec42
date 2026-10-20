@@ -113,12 +113,6 @@ package 'Views Example' {
         (range (start 17 10) (end 17 27))
       )
       (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 21 1) (end 32 2))
-      )
-      (diagnostic
         (severity warning)
         (code "view_expose_unresolved")
         (source "semantic")

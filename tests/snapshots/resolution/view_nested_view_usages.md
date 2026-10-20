@@ -53,24 +53,6 @@ package NestedViewCoverage {
   (document "memory://snapshot/view_nested_view_usages.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 13 4) (end 25 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 14 8) (end 16 9))
-      )
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 30 4) (end 39 5))
-      )
-      (diagnostic
         (severity warning)
         (code "cross_subsetting_crossing_feature_invalid")
         (source "semantic")

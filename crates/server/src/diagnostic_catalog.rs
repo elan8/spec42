@@ -1121,13 +1121,6 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
-        code: "view_expose_empty",
-        severity: "information",
-        meaning: "A view declares members but exposes nothing, so it renders nothing.",
-        typical_fix: "Add an `expose` member naming the elements the view should show.",
-        editor_quick_fixes: None,
-    },
-    DiagnosticCatalogEntry {
         code: "view_type_non_standard",
         severity: "warning",
         meaning: "This view is typed by a definition outside the SysML standard view catalog.",
@@ -1251,7 +1244,6 @@ const MODELING_GUIDANCE_CODES: &[&str] = &[
     "missing_library_context",
     "multiple_final_states",
     "untyped_part_usage",
-    "view_expose_empty",
 ];
 
 /// Whether a diagnostic code reflects a normative SysML constraint or modeling/tooling guidance.
