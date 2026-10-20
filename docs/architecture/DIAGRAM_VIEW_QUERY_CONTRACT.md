@@ -110,3 +110,21 @@ Schema 6 keeps the schema-5 field names and shapes; it changes what `relationshi
 above), and a schema-5 product is no longer accepted. The renderer's legacy pre-schema-5 adapters
 remain boundary-only compatibility code. A future incompatible wire change must increment `schemaVersion`, regenerate
 the bindings, update the checked-in product corpus, and migrate consumers in the same change.
+
+## Root-view framing
+
+The native renderer owns framing for General, Interconnection, Action Flow, State Transition,
+and Sequence. Each top-level drawing has exactly one rectangular view frame with the header
+`«view» <selected view name>`, following OMG SysML v2 formal/2026-03-02 §§8.2.3.1 and 8.2.3.26
+(`root-view = framed-view`). Frameless graphical compartments inside element symbols do not
+create additional root frames. Action (§8.2.3.17), state (§8.2.3.18), package and part boundaries
+remain semantic containers, even when their names equal the view name. An exposed machine's
+name is not the selected view's identity.
+
+Frame layout happens after content placement. Node and route extents plus the actual drawing's
+translated text, container rectangles, boundary ports and labels contribute to conservative
+frame bounds. The header has reserved space and is never truncated; viewer fit and SVG/PNG
+exports use the resulting bounds. Disclosure changes content visibility, not the view identity
+or the existence of the root frame. The presentation uses existing schema-5 product fields;
+there is no semantic selection, wire-schema or request-shape change. Browser, Grid and Geometry
+are outside this standard graphical framing policy.

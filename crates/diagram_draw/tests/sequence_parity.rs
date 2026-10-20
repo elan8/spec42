@@ -1,6 +1,5 @@
-//! spec42 #176 phase 2 acceptance test for sequence-view, mirroring `golden_parity.rs`'s
-//! full-tree byte-comparison approach: parse both the Rust output and a real TS/D3-rendered SVG of
-//! the identical fixture into trees and assert full structural equality.
+//! Sequence native SVG goldens: parsed-tree comparisons cover geometry, text and attributes.
+//! See fixtures/README.md for native regeneration and visual review.
 
 use std::path::Path;
 
@@ -39,8 +38,14 @@ fn a_single_lifeline_export_keeps_long_titles_inside_the_view_box() {
                 .iter()
                 .find(|node| node.attrs.get("class").map(String::as_str) == Some("viz-root"))
                 .unwrap();
-            let drawn_title = &content.children[0];
-            assert_eq!(drawn_title.text, title);
+            let frame = &content.children[0];
+            assert_eq!(frame.attrs["class"], "view-frame");
+            let drawn_title = frame
+                .children
+                .iter()
+                .find(|node| node.attrs.get("class").map(String::as_str) == Some("view-frame-name"))
+                .unwrap();
+            assert_eq!(drawn_title.text, format!("«view» {title}"));
             let title_x: f64 = drawn_title.attrs["x"].parse().unwrap();
             assert!(view_box[0] <= title_x);
             assert!(
@@ -53,7 +58,7 @@ fn a_single_lifeline_export_keeps_long_titles_inside_the_view_box() {
 }
 
 #[test]
-fn sequence_view_rendered_svg_matches_the_real_typescript_output() {
+fn sequence_view_rendered_svg_matches_the_native_golden() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let prepared_path = manifest_dir.join("tests/fixtures/sequence-view.prepared.json");
     let rendered_path = manifest_dir.join("tests/fixtures/sequence-view.rendered.svg");
@@ -71,6 +76,6 @@ fn sequence_view_rendered_svg_matches_the_real_typescript_output() {
     let actual_tree = xml::parse(&actual_svg);
     assert_eq!(
         actual_tree, expected_tree,
-        "Rust output:\n{actual_svg}\n\nReal TS/D3 output:\n{rendered_svg}"
+        "Rust output:\n{actual_svg}\n\nNative golden output:\n{rendered_svg}"
     );
 }
