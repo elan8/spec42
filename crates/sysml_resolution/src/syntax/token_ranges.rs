@@ -508,24 +508,7 @@ fn collect_semantic_ranges_package_body_element(
             );
             collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
         }
-        PBE::FlowUsage(flow_node) => {
-            // Upstream's `FlowDeclaration` keeps the declaration-led alternative distinct from
-            // the endpoint-only shorthand, so a name/type is highlighted only when one is
-            // actually declared.
-            if let FlowDeclaration::Declared { declaration, .. } = &flow_node.value.declaration {
-                if let Some(name) = declaration.value.identification.name {
-                    push_usage_name_type_spans(
-                        ctx.source,
-                        &flow_node.span,
-                        name,
-                        ctx.typing_text(declaration.value.typing.as_deref()),
-                        None,
-                        out,
-                    );
-                }
-            }
-            collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
-        }
+        PBE::FlowUsage(flow_node) => collect_semantic_ranges_flow_usage(ctx, flow_node, out),
         PBE::AllocationDef(alloc_node) => {
             push_identification_definition_spans(
                 &alloc_node.value.identification,
@@ -1064,6 +1047,47 @@ fn collect_semantic_ranges_metadata_body(
     }
 }
 
+/// `flow`/`message`/`succession flow` usages: the declared name and typing targets, and each
+/// `of` payload's name and type -- at their own spans, never the whole statement, which would
+/// repaint the keywords. The endpoint-only shorthand (`flow a to b;`) declares nothing to mark.
+/// Endpoint feature chains stay unmarked, as for `connect`.
+fn collect_semantic_ranges_flow_usage(
+    ctx: &RangeCtx<'_>,
+    flow: &Node<sysml_v2_parser::ast::FlowUsage>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if let FlowDeclaration::Declared {
+        declaration,
+        payloads,
+        ..
+    } = &flow.value.declaration
+    {
+        push_identification_definition_spans(
+            &declaration.value.identification,
+            None,
+            SyntaxRole::Property,
+            out,
+        );
+        push_view_typing_ranges(ctx, declaration.value.typing.as_deref(), out);
+        for payload in payloads {
+            let feature = &payload.value.feature.value;
+            if let Some(name) = feature.name {
+                out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+            }
+            if let Some(reference) = feature
+                .type_name
+                .and_then(|id| ctx.document.qualified_reference(id))
+            {
+                out.push((
+                    span_to_source_range(&reference.metadata.span),
+                    SyntaxRole::Type,
+                ));
+            }
+        }
+    }
+    collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
+}
+
 fn collect_semantic_ranges_payload_clause(
     clause: &PayloadClause,
     out: &mut Vec<(SyntaxRange, SyntaxRole)>,
@@ -1309,10 +1333,7 @@ fn collect_semantic_ranges_occurrence_body_element(
                 }
             }
         }
-        OBE::FlowUsage(flow) => {
-            out.push((span_to_source_range(&flow.span), SyntaxRole::Property));
-            collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
-        }
+        OBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         OBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         // `end name : Type;` (or nested forms) inside allocation/connection-like definition
         // bodies -- same highlighting `CDBE::EndDecl`/`IDBE::EndDecl` already use.
@@ -1530,10 +1551,7 @@ fn collect_semantic_ranges_part_def_body_element(
                 RequirementDefBody::Semicolon { .. } => {}
             }
         }
-        PDBE::FlowUsage(flow) => {
-            out.push((span_to_source_range(&flow.span), SyntaxRole::Property));
-            collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
-        }
+        PDBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         PDBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         PDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         PDBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
@@ -1595,6 +1613,7 @@ fn collect_semantic_ranges_part_usage_body_element(
         PUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         PUBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         PUBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
+        PUBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         _ => {}
     }
 }
@@ -1971,11 +1990,11 @@ fn collect_semantic_ranges_action_def_body_element(
                 out,
             );
         }
+        ADBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         ADBE::Bind(_)
         | ADBE::GuardedSuccession(_)
         | ADBE::Import(_)
         | ADBE::VariantUsage(_)
-        | ADBE::FlowUsage(_)
         | ADBE::FirstStmt(_)
         | ADBE::MergeStmt(_)
         | ADBE::DecisionStmt(_)
@@ -2115,10 +2134,10 @@ fn collect_semantic_ranges_action_usage_body_element(
                 out,
             );
         }
+        AUBE::FlowUsage(flow) => collect_semantic_ranges_flow_usage(ctx, flow, out),
         AUBE::GuardedSuccession(_)
         | AUBE::Bind(_)
         | AUBE::Import(_)
-        | AUBE::FlowUsage(_)
         | AUBE::FirstStmt(_)
         | AUBE::MergeStmt(_)
         | AUBE::DecisionStmt(_)

@@ -421,7 +421,7 @@ package Model {
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 2
     },
     {
@@ -433,7 +433,7 @@ package Model {
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 3
     },
     {
@@ -507,7 +507,7 @@ package Model {
         "target": 2
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 10,
         "origin": 3,
         "provenance": "implied",
@@ -525,7 +525,7 @@ package Model {
         "target": 4
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 10,
         "origin": 5,
         "provenance": "implied",

@@ -285,7 +285,7 @@ describe("shared prepareViewData", () => {
         { document: 0, range: [3, 0, 3, 12] },
       ],
       references: [{ kind: "qualified-name" }],
-      selectedView: { reference: 0, kind: "state-transition-view", name: "Timer", source: 0 },
+      selectedView: { reference: 0, kind: "state-transition-view", name: "LifecycleReview", source: 0 },
       completeness: { status: "complete", reasons: [] },
       projection: {
         kind: "state-transition-view",
@@ -318,6 +318,8 @@ describe("shared prepareViewData", () => {
         },
       },
     });
+    expect(prepared.title).toBe("LifecycleReview");
+    expect(prepared.meta.frame).toEqual({ id: "Timer", label: "Timer", navigation: 0 });
     expect(prepared.nodes.map((node) => [node.label, node.kind])).toEqual([
       ["", "initial"],
       ["idle", "state"],

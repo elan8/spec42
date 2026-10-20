@@ -17,7 +17,7 @@ struct Fixture {
 }
 
 #[test]
-fn action_flow_view_rendered_svg_matches_the_real_typescript_output() {
+fn action_flow_view_rendered_svg_matches_the_native_golden() {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let prepared_path = manifest_dir.join("tests/fixtures/action-flow-view.prepared.json");
     let rendered_path = manifest_dir.join("tests/fixtures/action-flow-view.rendered.svg");
@@ -40,6 +40,6 @@ fn action_flow_view_rendered_svg_matches_the_real_typescript_output() {
     let actual_tree = xml::parse(&actual_svg);
     assert_eq!(
         actual_tree, expected_tree,
-        "Rust output:\n{actual_svg}\n\nReal TS/D3 output:\n{rendered_svg}"
+        "Rust output:\n{actual_svg}\n\nNative golden output:\n{rendered_svg}"
     );
 }

@@ -230,7 +230,7 @@ package M {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConjugatedPortDefinition",
-        "name": null,
+        "name": "~P",
         "notationRole": "definition",
         "owner": 0,
         "reference": 2,
