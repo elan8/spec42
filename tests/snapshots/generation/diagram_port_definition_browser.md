@@ -190,20 +190,20 @@ package M {
       {
         "kind": "containment",
         "navigation": 0,
-        "origin": 1,
+        "origin": 0,
         "provenance": "authored",
         "reference": 3,
-        "source": 0,
-        "target": 1
+        "source": 1,
+        "target": 0
       }
     ],
     "exposedRoots": [
-      0
+      1
     ],
     "kind": "browser-view",
     "metadata": {
       "roots": [
-        0
+        1
       ]
     },
     "nodes": [
@@ -212,12 +212,12 @@ package M {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "PortDefinition",
-        "name": "P",
+        "metaclass": "ConjugatedPortDefinition",
+        "name": "~P",
         "notationRole": "definition",
-        "owner": null,
-        "reference": 0,
-        "source": 1,
+        "owner": 1,
+        "reference": 2,
+        "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -229,12 +229,12 @@ package M {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "ConjugatedPortDefinition",
-        "name": "~P",
+        "metaclass": "PortDefinition",
+        "name": "P",
         "notationRole": "definition",
-        "owner": 0,
-        "reference": 2,
-        "source": 0,
+        "owner": null,
+        "reference": 0,
+        "source": 1,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {

@@ -399,3 +399,93 @@ fn diagram_products_carry_only_authored_relationships_within_a_size_budget() {
         }
     });
 }
+
+/// A browser view is the ownership tree of its exposed scope. It used to expand every usage
+/// through its types, so a package of a few definitions repeated each type's members under every
+/// usage (a 230-line elevator package became 3,233 nodes).
+#[test]
+fn a_browser_view_is_the_ownership_tree_in_declaration_order() {
+    with_isolated_data_dir(|| {
+        let workspace = tempfile::tempdir().expect("workspace");
+        let source = workspace.path().join("Browse.sysml");
+        std::fs::write(
+            &source,
+            r#"package Browse {
+    private import StandardViewDefinitions::*;
+    private import ScalarValues::*;
+    package Model {
+        item def Signal;
+        port def Out { out signal : Signal; }
+        part def Zeta { port output : Out; attribute rating : Integer = 3; }
+        part def Alpha { port input : ~Out; }
+        part assembly {
+            part zeta : Zeta;
+            part alpha : Alpha;
+            connect zeta.output to alpha.input;
+            flow zeta.output.signal to alpha.input.signal;
+        }
+    }
+    view tree : BrowserView { expose Model::*; }
+}
+"#,
+        )
+        .expect("write model");
+        let cli = stdlib_cli();
+        let snapshot = load_snapshot_for_paths(&cli, &source, Some(workspace.path()), false)
+            .expect("the browser model publishes");
+        let publication = snapshot.published_model_arc();
+        let model = GeneratorModelView::new(
+            Arc::clone(&publication),
+            publication.publication().model_digest().to_string(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        )
+        .expect("complete generator model");
+        let views = model.diagram_views().expect("the view catalog lists");
+        let view = views
+            .iter()
+            .find(|view| view.kind == DiagramViewKind::BrowserView)
+            .unwrap_or_else(|| panic!("the model authors a BrowserView: {views:?}"));
+        let product: serde_json::Value =
+            serde_json::from_str(&native_product(&model, &view.handle)).expect("product JSON");
+        let nodes = product["projection"]["nodes"].as_array().expect("nodes");
+        let names = |owner: Option<&str>| {
+            nodes
+                .iter()
+                .filter(|node| match owner {
+                    None => node["owner"].is_null(),
+                    Some(owner) => node["owner"]
+                        .as_u64()
+                        .is_some_and(|index| nodes[index as usize]["name"] == owner),
+                })
+                .filter_map(|node| node["name"].as_str())
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(
+            names(None),
+            ["Signal", "Out", "Zeta", "Alpha", "assembly"],
+            "roots stand in declaration order"
+        );
+        assert_eq!(
+            names(Some("zeta")),
+            Vec::<&str>::new(),
+            "a usage does not repeat the members of its type"
+        );
+        assert_eq!(names(Some("Zeta")), ["output", "rating"]);
+        for node in nodes {
+            let metaclass = node["metaclass"].as_str().unwrap_or("");
+            assert!(
+                metaclass != "FlowEnd" && !metaclass.starts_with("Literal"),
+                "lowering structure is not browsed: {node}"
+            );
+        }
+        let roots = product["projection"]["metadata"]["roots"]
+            .as_array()
+            .expect("roots");
+        let root_names = roots
+            .iter()
+            .map(|index| nodes[index.as_u64().expect("index") as usize]["name"].clone())
+            .collect::<Vec<_>>();
+        assert_eq!(root_names, ["Signal", "Out", "Zeta", "Alpha", "assembly"]);
+    });
+}
