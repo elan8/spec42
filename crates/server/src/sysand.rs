@@ -1,4 +1,3 @@
-use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -26,14 +25,6 @@ pub fn detect_sysand_status() -> SysandStatus {
     detect_sysand_status_from(project_root.as_deref(), executable, version)
 }
 
-pub fn dependency_roots_from_status(status: &SysandStatus) -> Vec<PathBuf> {
-    status
-        .dependency_roots
-        .iter()
-        .map(PathBuf::from)
-        .collect::<Vec<_>>()
-}
-
 fn detect_sysand_status_from(
     project_root: Option<&Path>,
     executable: Option<PathBuf>,
@@ -42,7 +33,7 @@ fn detect_sysand_status_from(
     let mut warnings = Vec::new();
     if executable.is_none() {
         warnings.push(
-            "Sysand executable was not found on PATH; package dependencies are optional and were not resolved.".to_string(),
+            "Sysand executable was not found on PATH; existing installed dependencies can still be loaded, but package installation must be performed explicitly.".to_string(),
         );
     }
 
@@ -53,7 +44,23 @@ fn detect_sysand_status_from(
         .map(|root| lock_path(root).is_some())
         .unwrap_or(false);
     let dependency_roots = project_root
-        .map(discover_dependency_roots)
+        .map(
+            |root| match library_catalog::sysand::installed_manifest_candidates(root) {
+                Ok(candidates) => {
+                    let mut roots = candidates
+                        .into_iter()
+                        .flat_map(|candidate| candidate.package_roots)
+                        .collect::<Vec<_>>();
+                    roots.sort();
+                    roots.dedup();
+                    roots
+                }
+                Err(error) => {
+                    warnings.push(error);
+                    Vec::new()
+                }
+            },
+        )
         .unwrap_or_default();
 
     if project_root.is_none() {
@@ -113,86 +120,17 @@ fn discover_project_root_from(start: &Path) -> Option<PathBuf> {
 }
 
 fn manifest_path(root: &Path) -> Option<PathBuf> {
-    ["sysand.toml", "Sysand.toml", "kerml.toml", "Kerml.toml"]
+    [library_catalog::PROJECT_FILE]
         .iter()
         .map(|name| root.join(name))
         .find(|path| path.is_file())
 }
 
 fn lock_path(root: &Path) -> Option<PathBuf> {
-    ["sysand.lock", "Sysand.lock", "kerml.lock", "Kerml.lock"]
+    [library_catalog::sysand::SYSAND_LOCK_FILE]
         .iter()
         .map(|name| root.join(name))
         .find(|path| path.is_file())
-}
-
-fn discover_dependency_roots(root: &Path) -> Vec<PathBuf> {
-    let mut roots = Vec::new();
-    for candidate in [
-        root.join(".sysand").join("packages"),
-        root.join(".sysand").join("deps"),
-        root.join("sysand").join("packages"),
-        root.join("sysand").join("deps"),
-        root.join(".kerml").join("packages"),
-    ] {
-        roots.push(candidate);
-    }
-    if let Some(manifest) = manifest_path(root) {
-        roots.extend(parse_dependency_roots_from_toml(root, manifest.as_path()));
-    }
-    let mut seen = BTreeSet::new();
-    roots
-        .into_iter()
-        .map(|path| canonicalize_lossy(path.as_path()))
-        .filter(|path| seen.insert(path.display().to_string()))
-        .collect()
-}
-
-fn parse_dependency_roots_from_toml(root: &Path, manifest: &Path) -> Vec<PathBuf> {
-    let Ok(raw) = std::fs::read_to_string(manifest) else {
-        return Vec::new();
-    };
-    let Ok(value) = raw.parse::<toml::Value>() else {
-        return Vec::new();
-    };
-    let mut out = Vec::new();
-    collect_path_values(&value, &mut out);
-    out.into_iter()
-        .filter(|raw| {
-            let lower = raw.to_ascii_lowercase();
-            lower.contains("sysml")
-                || lower.contains("kerml")
-                || lower.contains("package")
-                || lower.contains("library")
-        })
-        .map(|raw| {
-            let path = PathBuf::from(raw);
-            if path.is_absolute() {
-                path
-            } else {
-                root.join(path)
-            }
-        })
-        .collect()
-}
-
-fn collect_path_values(value: &toml::Value, out: &mut Vec<String>) {
-    match value {
-        toml::Value::String(value) if value.contains('/') || value.contains('\\') => {
-            out.push(value.clone());
-        }
-        toml::Value::Array(values) => {
-            for value in values {
-                collect_path_values(value, out);
-            }
-        }
-        toml::Value::Table(values) => {
-            for value in values.values() {
-                collect_path_values(value, out);
-            }
-        }
-        _ => {}
-    }
 }
 
 fn find_sysand_executable() -> Option<PathBuf> {
@@ -236,131 +174,38 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
-    fn absent_sysand_reports_warning_without_failure() {
-        let status = detect_sysand_status_from(None, None, None);
-        assert!(!status.installed);
-        assert!(status.project_root.is_none());
-        assert!(status
-            .warnings
-            .iter()
-            .any(|warning| warning.contains("not found")));
-    }
-
-    #[test]
-    fn manifest_project_reports_dependency_roots() {
-        let temp = tempfile::tempdir().expect("temp dir");
-        let root = temp.path();
+    fn detects_current_manifest_and_lock_from_a_nested_directory() {
+        let temp = tempfile::tempdir().unwrap();
         std::fs::write(
-            root.join("sysand.toml"),
-            r#"
-                [dependencies]
-                local = "libraries/sysml"
-            "#,
+            temp.path().join(".project.json"),
+            r#"{"name":"demo","version":"1.0.0"}"#,
         )
-        .expect("write manifest");
-        let package_root = root.join(".sysand").join("packages");
-        std::fs::create_dir_all(&package_root).expect("create package root");
-
-        let status = detect_sysand_status_from(
-            Some(root),
-            Some(PathBuf::from("sysand")),
-            Some("sysand 0.test".to_string()),
+        .unwrap();
+        std::fs::write(temp.path().join("sysand-lock.toml"), "lock_version = '0.6'").unwrap();
+        let nested = temp.path().join("model");
+        std::fs::create_dir(&nested).unwrap();
+        assert_eq!(
+            discover_project_root_from(&nested),
+            Some(canonicalize_lossy(temp.path()))
         );
-
-        assert!(status.installed);
-        assert!(status.manifest_present);
-        assert!(status
-            .dependency_roots
-            .iter()
-            .any(|path| path.ends_with(".sysand\\packages") || path.ends_with(".sysand/packages")));
-        assert!(status
-            .dependency_roots
-            .iter()
-            .any(|path| path.ends_with("libraries\\sysml") || path.ends_with("libraries/sysml")));
-    }
-
-    #[test]
-    fn manifest_without_executable_reports_project_and_install_warning() {
-        let temp = tempfile::tempdir().expect("temp dir");
-        std::fs::write(
-            temp.path().join("sysand.toml"),
-            "[package]\nname = \"demo\"",
-        )
-        .expect("write manifest");
-
         let status = detect_sysand_status_from(Some(temp.path()), None, None);
-
-        assert!(!status.installed);
-        assert!(status.manifest_present);
-        assert!(status.project_root.is_some());
-        assert!(status
-            .warnings
-            .iter()
-            .any(|warning| warning.contains("not found")));
-    }
-
-    #[test]
-    fn missing_dependency_roots_are_reported_as_warnings() {
-        let temp = tempfile::tempdir().expect("temp dir");
-        std::fs::write(
-            temp.path().join("sysand.toml"),
-            r#"
-                [dependencies]
-                missing = "missing/library"
-            "#,
-        )
-        .expect("write manifest");
-
-        let status = detect_sysand_status_from(
-            Some(temp.path()),
-            Some(PathBuf::from("sysand")),
-            Some("sysand 0.test".to_string()),
-        );
-
-        assert!(status
-            .dependency_roots
-            .iter()
-            .any(|path| path.ends_with("missing\\library") || path.ends_with("missing/library")));
-        assert!(status
-            .warnings
-            .iter()
-            .any(|warning| warning.contains("listed but missing")));
-    }
-
-    #[test]
-    fn lock_file_presence_is_reported() {
-        let temp = tempfile::tempdir().expect("temp dir");
-        std::fs::write(
-            temp.path().join("sysand.toml"),
-            "[package]\nname = \"demo\"",
-        )
-        .expect("write manifest");
-        std::fs::write(temp.path().join("sysand.lock"), "# lock").expect("write lock");
-
-        let status = detect_sysand_status_from(
-            Some(temp.path()),
-            Some(PathBuf::from("sysand")),
-            Some("sysand 0.test".to_string()),
-        );
-
         assert!(status.manifest_present);
         assert!(status.lock_present);
+        assert!(status.dependency_roots.is_empty());
+        assert!(!status.warnings.is_empty());
     }
-
     #[test]
-    fn discovers_project_root_from_manifest_ancestor() {
-        let temp = tempfile::tempdir().expect("temp dir");
-        let nested = temp.path().join("a").join("b");
-        std::fs::create_dir_all(&nested).expect("create nested");
+    fn arbitrary_toml_paths_do_not_become_library_roots() {
+        let temp = tempfile::tempdir().unwrap();
         std::fs::write(
-            temp.path().join("Sysand.toml"),
-            "[package]\nname = \"demo\"",
+            temp.path().join("sysand.toml"),
+            "[dependencies]\nlocal = 'library/anything'",
         )
-        .expect("write manifest");
-
-        let found = discover_project_root_from(nested.as_path()).expect("project root");
-        assert_eq!(found, canonicalize_lossy(temp.path()));
+        .unwrap();
+        assert_eq!(discover_project_root_from(temp.path()), None);
+        assert!(detect_sysand_status_from(Some(temp.path()), None, None)
+            .dependency_roots
+            .is_empty());
     }
 }

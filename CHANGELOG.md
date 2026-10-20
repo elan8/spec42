@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Project source scope and installed Sysand dependencies.** CLI and VS Code share project-root
+  `syside.toml` source selection and load locked dependencies from Sysand environment metadata,
+  with explicit errors for missing, stale, or unsupported installations and no implicit downloads.
+
 - **Smaller diagram products (schema 6).** A diagram product now carries only authored
   relationships. The library-implied subsetting, type featuring and redefinitions of every
   projected element, and the references, sources and library documents they pulled in, were most

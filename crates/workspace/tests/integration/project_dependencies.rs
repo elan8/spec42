@@ -8,6 +8,76 @@ use workspace::{
 const SYSTEMS_RESOURCE: &str = "https://www.omg.org/spec/SysML/20250201/Systems-Library.kpar";
 const ANALYSIS_RESOURCE: &str = "https://www.omg.org/spec/SysML/20250201/Analysis-Library.kpar";
 
+#[test]
+fn installed_sysand_sources_and_source_scope_are_admitted_by_the_batch_loader() {
+    let temp = tempfile::tempdir().unwrap();
+    let root = temp.path();
+    std::fs::create_dir_all(root.join(".sysand/lib/types")).unwrap();
+    std::fs::create_dir(root.join("scratch")).unwrap();
+    std::fs::create_dir(root.join("model")).unwrap();
+    std::fs::write(
+        root.join("model/Model.sysml"),
+        "package Model { private import Types::*; part item : Item; }",
+    )
+    .unwrap();
+    std::fs::write(root.join("scratch/Draft.sysml"), "package Draft;").unwrap();
+    std::fs::write(root.join("syside.toml"), "exclude = ['scratch/**']").unwrap();
+    std::fs::write(
+        root.join(".sysand/lib/types/Types.sysml"),
+        "package Types { part def Item; }",
+    )
+    .unwrap();
+    std::fs::write(
+        root.join(".sysand/lib/types/.project.json"),
+        r#"{"name":"Types","version":"1.0.0"}"#,
+    )
+    .unwrap();
+    write_project(root, "https://example.test/types", "1.0.0");
+    std::fs::write(root.join("sysand-lock.toml"), "lock_version = '0.6'\n[[project]]\nname = 'Types'\nversion = '1.0.0'\nidentifiers = ['https://example.test/types']\n").unwrap();
+    std::fs::write(root.join(".sysand/env.toml"), "version = '0.2'\n[[project]]\nname = 'Types'\nversion = '1.0.0'\nidentifiers = ['https://example.test/types']\npath = 'lib/types'\n").unwrap();
+    let engine = EngineBuilder::default()
+        .cache_dir(root.join("cache"))
+        .no_stdlib(true)
+        .build()
+        .unwrap();
+    for target in [root.to_path_buf(), root.join("model/Model.sysml")] {
+        let provider = workspace::HostFilesystemProvider::from_paths(
+            &target,
+            None,
+            &[],
+            engine.services().clone(),
+        );
+        let snapshot = engine
+            .load_workspace(
+                provider,
+                WorkspaceLoadRequest::single_target(target)
+                    .with_validation_timing(ValidationTiming::Deferred),
+                HostContext::default(),
+            )
+            .unwrap();
+        assert_eq!(snapshot.workspace_root(), root.canonicalize().unwrap());
+        assert_eq!(
+            snapshot
+                .documents()
+                .iter()
+                .filter(|document| document.kind() == SourceKind::Workspace)
+                .count(),
+            1
+        );
+        assert_eq!(
+            snapshot
+                .documents()
+                .iter()
+                .filter(|document| document.kind() == SourceKind::Library)
+                .count(),
+            1
+        );
+        assert!(
+            matches!(&snapshot.project_dependencies()[0], ProjectDependencyResolution::Satisfied { selected_version, .. } if selected_version == "1.0.0")
+        );
+    }
+}
+
 fn first_model(root: &std::path::Path) -> std::path::PathBuf {
     let mut pending = vec![root.to_path_buf()];
     while let Some(directory) = pending.pop() {

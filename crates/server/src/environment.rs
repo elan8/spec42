@@ -9,7 +9,7 @@ use crate::stdlib::{
     managed_status, project_dirs, StandardLibraryConfig, StandardLibraryPaths,
     StandardLibraryStatus,
 };
-use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
+use crate::sysand::{detect_sysand_status, SysandStatus};
 use library_catalog::library::managed::{managed_status as kpar_managed_status, KparLibraryStatus};
 use library_catalog::{HostLibraryRequest, KparLibraryComponent};
 use workspace::{EngineBuilder, Spec42Engine};
@@ -126,7 +126,8 @@ fn resolve_environment_with_dirs(
     let standard_library = resolve_standard_library_config(cli, &explicit_config, &default_config);
 
     let sysand = detect_sysand_status();
-    let sysand_dependency_roots = dependency_roots_from_status(&sysand);
+    // Project dependencies are admitted per manifest by the shared loader.
+    let sysand_dependency_roots = Vec::new();
     let request = build_host_library_request(
         cli,
         &explicit_config,
@@ -192,8 +193,8 @@ fn build_engine_with_dirs(
     };
 
     let standard_library = resolve_standard_library_config(cli, &explicit_config, &default_config);
-    let sysand = detect_sysand_status();
-    let sysand_dependency_roots = dependency_roots_from_status(&sysand);
+    // Project dependencies are admitted per manifest by the shared loader.
+    let sysand_dependency_roots = Vec::new();
     let request = build_host_library_request(
         cli,
         &explicit_config,

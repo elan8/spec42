@@ -2233,10 +2233,13 @@ dependencies = [
 name = "sysml_source"
 version = "0.56.0"
 dependencies = [
+ "globset",
  "ignore",
+ "serde",
  "source_identity",
  "sysml_contract",
  "tempfile",
+ "toml 0.8.23",
  "url",
 ]
 
