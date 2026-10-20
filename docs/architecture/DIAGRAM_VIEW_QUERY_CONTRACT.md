@@ -24,6 +24,13 @@ not replace the syntax-owned authored identification or its naming provenance. A
 unresolved effective name stays absent; consumers do not reconstruct it from qualified names,
 redefinition edges, source text, or product-local layout keys.
 
+A custom view definition inherits the most specific standard diagram kinds reachable through its
+canonical subclassification closure: `ActionFlowView` and `StateTransitionView` specialize
+`InterconnectionView`, so a view typed by either is not also an interconnection view. Multiple
+paths to one kind yield one catalog entry. Effective view
+conditions include inherited conditions; metaclass tests include specializing kinds, and Boolean
+negation preserves unresolved, ambiguous and unsupported predicate outcomes.
+
 ## View inputs and projections
 
 | View | Authoritative semantic inputs | Projection |
@@ -43,6 +50,9 @@ Unresolved and ambiguous exposure, unsupported syntax or features, parser recove
 publication, absent authoritative geometry, and incomplete relationship endpoints are distinct
 typed reasons. An empty resolved exposure is a valid complete empty projection when the view kind
 permits it. Elements outside the transitive semantic scope of resolved exposures are never added.
+An empty drawing explains that no elements are selected and directs the reader to the view's
+exposes and filters. It does not turn an empty selection into an incomplete result or render
+elements excluded by the view's filters.
 
 Projection completeness is scoped to facts the selected query consumes. Publication-wide parser
 recovery or unsupported syntax is not itself a diagram reason: a selected exposure, required
