@@ -2266,7 +2266,14 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             field(attrs, "isSyntheticContainer") == &json!(true) || !children.is_empty();
         // A part is as wide as its name and its type need; both are written in full.
         let characters = |text: &str| text.encode_utf16().count() as f64;
-        let label_width = characters(&as_string(field(node, "label"), "")) * 6.8;
+        let label = as_string(field(node, "label"), "");
+        let container_label =
+            crate::ibd_node::ibd_container_label(&as_string(field(node, "kind"), ""), &label);
+        let label_width = characters(if is_container {
+            &container_label
+        } else {
+            &label
+        }) * 6.8;
         let type_width = (characters(&as_string(field(attrs, "partType"), "")) + 2.0) * 5.4;
         let base_width: f64 = if is_container { 220.0 } else { 132.0 };
         // The expand control sits left of the centred name, which keeps clear of it on both sides.

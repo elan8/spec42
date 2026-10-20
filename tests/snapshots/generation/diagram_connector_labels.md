@@ -1880,30 +1880,6 @@ package Links {
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
       "ordinal": 74,
       "relationshipKind": "memberAccessOperand",
       "source": 12
@@ -1924,6 +1900,30 @@ package Links {
       "kind": "relationship",
       "ordinal": 89,
       "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "noncomposite-membership",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "noncomposite-membership",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "noncomposite-membership",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "noncomposite-membership",
       "source": 12
     },
     {
@@ -2013,13 +2013,13 @@ package Links {
     {
       "kind": "relationship",
       "ordinal": 7,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 8,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 13
     },
     {
@@ -2049,13 +2049,13 @@ package Links {
     {
       "kind": "relationship",
       "ordinal": 10,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 14
     },
     {
       "kind": "relationship",
       "ordinal": 11,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 14
     },
     {
@@ -2085,13 +2085,13 @@ package Links {
     {
       "kind": "relationship",
       "ordinal": 13,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 14,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 15
     },
     {
@@ -2121,25 +2121,25 @@ package Links {
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "containment",
+      "relationshipKind": "memberAccessOperand",
       "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "containment",
+      "relationshipKind": "memberAccessOperand",
       "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "memberAccessOperand",
+      "relationshipKind": "noncomposite-membership",
       "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "memberAccessOperand",
+      "relationshipKind": "noncomposite-membership",
       "source": 16
     },
     {
@@ -2240,20 +2240,20 @@ package Links {
         "target": 17
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 0,
         "origin": 6,
         "provenance": "implied",
-        "reference": 137,
+        "reference": 139,
         "source": 5,
         "target": 6
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 2,
         "origin": 7,
         "provenance": "implied",
-        "reference": 138,
+        "reference": 140,
         "source": 5,
         "target": 7
       },
@@ -2285,7 +2285,7 @@ package Links {
         "target": 9
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 8,
         "origin": 10,
         "provenance": "implied",
@@ -2294,7 +2294,7 @@ package Links {
         "target": 10
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 10,
         "origin": 11,
         "provenance": "implied",
@@ -2312,7 +2312,7 @@ package Links {
         "target": 12
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 8,
         "origin": 13,
         "provenance": "implied",
@@ -2321,7 +2321,7 @@ package Links {
         "target": 13
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 10,
         "origin": 14,
         "provenance": "implied",
@@ -2339,7 +2339,7 @@ package Links {
         "target": 15
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 8,
         "origin": 16,
         "provenance": "implied",
@@ -2348,7 +2348,7 @@ package Links {
         "target": 16
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 10,
         "origin": 17,
         "provenance": "implied",
@@ -2375,20 +2375,20 @@ package Links {
         "target": 16
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 4,
         "origin": 19,
         "provenance": "implied",
-        "reference": 97,
+        "reference": 101,
         "source": 18,
         "target": 19
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 6,
         "origin": 20,
         "provenance": "implied",
-        "reference": 98,
+        "reference": 102,
         "source": 18,
         "target": 20
       },
@@ -2411,20 +2411,20 @@ package Links {
         "target": 14
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 0,
         "origin": 2,
         "provenance": "implied",
-        "reference": 99,
+        "reference": 103,
         "source": 1,
         "target": 2
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 2,
         "origin": 3,
         "provenance": "implied",
-        "reference": 100,
+        "reference": 104,
         "source": 1,
         "target": 3
       },
@@ -3054,7 +3054,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 139,
+        "reference": 137,
         "source": 5,
         "target": {
           "node": 14,
@@ -3065,7 +3065,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 140,
+        "reference": 138,
         "source": 5,
         "target": {
           "node": 17,
@@ -3846,7 +3846,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 24,
         "provenance": "authored",
-        "reference": 101,
+        "reference": 97,
         "source": 1,
         "target": {
           "node": 11,
@@ -3857,7 +3857,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 102,
+        "reference": 98,
         "source": 1,
         "target": {
           "node": 14,
@@ -4000,7 +4000,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 103,
+        "reference": 99,
         "source": 8,
         "target": {
           "node": 10,
@@ -4011,7 +4011,7 @@ package Links {
         "kind": "memberAccessOperand",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 104,
+        "reference": 100,
         "source": 8,
         "target": {
           "node": 13,

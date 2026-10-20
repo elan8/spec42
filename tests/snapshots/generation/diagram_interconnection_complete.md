@@ -589,19 +589,7 @@ package InterconnectionExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
       "relationshipKind": "containment",
       "source": 0
     },
@@ -615,6 +603,18 @@ package InterconnectionExample {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
+      "relationshipKind": "noncomposite-membership",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "noncomposite-membership",
       "source": 0
     },
     {
@@ -722,7 +722,7 @@ package InterconnectionExample {
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 3
     },
     {
@@ -799,11 +799,11 @@ package InterconnectionExample {
   "projection": {
     "edges": [
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 1,
         "origin": 5,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 19,
         "source": 0,
         "target": 5
       },
@@ -812,12 +812,12 @@ package InterconnectionExample {
         "navigation": 3,
         "origin": 3,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 16,
         "source": 0,
         "target": 3
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 4,
         "origin": 4,
         "provenance": "authored",
@@ -826,11 +826,11 @@ package InterconnectionExample {
         "target": 4
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 2,
         "origin": 6,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 20,
         "source": 0,
         "target": 6
       },
@@ -839,7 +839,7 @@ package InterconnectionExample {
         "navigation": 5,
         "origin": 1,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 17,
         "source": 0,
         "target": 1
       },
@@ -857,7 +857,7 @@ package InterconnectionExample {
         "navigation": 8,
         "origin": 2,
         "provenance": "authored",
-        "reference": 20,
+        "reference": 18,
         "source": 0,
         "target": 2
       },

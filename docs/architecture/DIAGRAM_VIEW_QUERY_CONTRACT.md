@@ -80,6 +80,13 @@ qualified names. The renderer expands those local joins once into layout keys su
 is presentation adaptation, not semantic reconstruction. A future incremental product must use a
 base `modelDigest` and public semantic references, never indexes from an earlier product.
 
+Interconnection containment distinguishes noncomposite memberships just as General View does.
+The renderer keeps item occurrences that own shown parts as item containers, including items
+reached through boundary ports. A nested port uses its supplied identity and owner chain to attach
+to the nearest drawn structural node with a qualified boundary label. This display attachment
+does not change semantic ownership or connector endpoints. Closing a structural node hides its
+complete item/part subtree; a descendant never becomes a loose root because its owner is an item.
+
 ## Generated consumer contract
 
 The schema-5 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a

@@ -534,31 +534,31 @@ package PortDirectionExample {
     {
       "kind": "relationship",
       "ordinal": 0,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 4,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 0
     },
     {
@@ -707,7 +707,7 @@ package PortDirectionExample {
   "projection": {
     "edges": [
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 6,
         "origin": 1,
         "provenance": "authored",
@@ -716,7 +716,7 @@ package PortDirectionExample {
         "target": 1
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 8,
         "origin": 2,
         "provenance": "authored",
@@ -725,7 +725,7 @@ package PortDirectionExample {
         "target": 2
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 2,
         "origin": 3,
         "provenance": "authored",
@@ -734,7 +734,7 @@ package PortDirectionExample {
         "target": 3
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 10,
         "origin": 4,
         "provenance": "authored",
@@ -743,7 +743,7 @@ package PortDirectionExample {
         "target": 4
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 4,
         "origin": 5,
         "provenance": "authored",

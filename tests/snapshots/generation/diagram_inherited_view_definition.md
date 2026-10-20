@@ -1011,13 +1011,13 @@ package InheritedViews {
     {
       "kind": "relationship",
       "ordinal": 6,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 7,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 1
     },
     {
@@ -1053,7 +1053,7 @@ package InheritedViews {
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 2
     },
     {
@@ -1083,7 +1083,7 @@ package InheritedViews {
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "containment",
+      "relationshipKind": "noncomposite-membership",
       "source": 3
     },
     {
@@ -1247,7 +1247,7 @@ package InheritedViews {
         "target": 1
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 5,
         "origin": 2,
         "provenance": "implied",
@@ -1265,7 +1265,7 @@ package InheritedViews {
         "target": 3
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 7,
         "origin": 4,
         "provenance": "implied",
@@ -1292,7 +1292,7 @@ package InheritedViews {
         "target": 4
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 1,
         "origin": 6,
         "provenance": "implied",
@@ -1301,7 +1301,7 @@ package InheritedViews {
         "target": 6
       },
       {
-        "kind": "containment",
+        "kind": "noncomposite-membership",
         "navigation": 3,
         "origin": 7,
         "provenance": "implied",
