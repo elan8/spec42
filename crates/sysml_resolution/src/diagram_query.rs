@@ -1905,11 +1905,26 @@ fn diagram_scene(
                         } else {
                             feature(DiagramRelationshipKind::TransitionTrigger)
                         },
-                        // No reference kind publishes a transition guard, so the guard slot is
-                        // always absent. The enum makes that explicit; the string form silently
-                        // looked for a name the authority never emits.
-                        guard: DiagramTransitionFeature::Absent,
-                        effect: feature(DiagramRelationshipKind::TransitionEffect),
+                        // A guard is an expression, not a reference: its text as written, with
+                        // the transition as its navigation target (SysML 8.2.3.18).
+                        guard: match &origin.succession_guard {
+                            Some(DiagramSuccessionGuard::Condition(text)) => {
+                                DiagramTransitionFeature::Resolved {
+                                    label: text.clone(),
+                                    target: origin.semantic_id,
+                                    source: origin.source,
+                                }
+                            }
+                            _ => DiagramTransitionFeature::Absent,
+                        },
+                        effect: match feature(DiagramRelationshipKind::TransitionEffect) {
+                            // `do action a : A` binds the type through the effect action the
+                            // transition owns, so the reference starts one level down.
+                            DiagramTransitionFeature::Absent => {
+                                transition_effect_of_owned_action(origin, relationships, entries)
+                            }
+                            effect => effect,
+                        },
                         provenance: edge.provenance,
                         source_location: edge.source_location.unwrap_or(origin.source),
                     })
@@ -2186,6 +2201,46 @@ fn canonical_sequence_order(
         }
     }
     order
+}
+
+/// The effect of a transition whose `do action a : A` binds `A` from the owned effect action.
+fn transition_effect_of_owned_action(
+    origin: &DiagramElement,
+    relationships: &[DiagramRelationship],
+    entries: &BTreeMap<SymbolId, SymbolEntry>,
+) -> DiagramTransitionFeature {
+    relationships
+        .iter()
+        .find(|relationship| {
+            relationship.kind == DiagramRelationshipKind::TransitionEffect
+                && relationship.source.semantic_path.len()
+                    == origin.occurrence_id.semantic_path.len() + 1
+                && relationship
+                    .source
+                    .semantic_path
+                    .starts_with(&origin.occurrence_id.semantic_path)
+        })
+        .map_or(DiagramTransitionFeature::Absent, |relationship| {
+            match &relationship.target {
+                DiagramRelationshipTarget::Resolved(target) => DiagramTransitionFeature::Resolved {
+                    // SysML 8.2.3.18 names the effect action; its type when it has no name.
+                    label: entries
+                        .get(&relationship.source.semantic_id())
+                        .and_then(|entry| entry.name.clone())
+                        .or_else(|| {
+                            entries
+                                .get(&target.semantic_id)
+                                .and_then(|entry| entry.name.clone())
+                        })
+                        .unwrap_or_default(),
+                    target: target.semantic_id,
+                    source: relationship.source_location.unwrap_or(origin.source),
+                },
+                DiagramRelationshipTarget::Unresolved => DiagramTransitionFeature::Unresolved,
+                DiagramRelationshipTarget::Ambiguous(_) => DiagramTransitionFeature::Ambiguous,
+                DiagramRelationshipTarget::Unsupported => DiagramTransitionFeature::Unsupported,
+            }
+        })
 }
 
 fn transition_feature(

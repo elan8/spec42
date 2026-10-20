@@ -623,6 +623,11 @@ impl SemanticModelBuilder {
         self.lower_transition_source_parameter(document, declaration, node.span)?;
         self.lower_transition_link(document, declaration, node.span)?;
         if let Some(guard) = &node.value.guard {
+            // The guard as written is what a state-transition view prints in its label; the
+            // expression below is what evaluation uses.
+            self.declaration_facts[declaration.index()].succession_guard = Some(
+                crate::lower::facts::SuccessionGuard::Condition(self.guard_text(document, guard)),
+            );
             let guard_expression = self.push_typed_declaration(
                 document,
                 Some(declaration),

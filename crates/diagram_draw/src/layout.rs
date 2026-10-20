@@ -1539,7 +1539,10 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
             label_box["layoutOptions"] = json!({
                 // The label of a shared line sits at its target, where the lines have joined.
                 "org.eclipse.elk.edgeLabels.placement": if group.is_some() { "HEAD" } else { "CENTER" },
-                "org.eclipse.elk.edgeLabels.inline": "false",
+                // A state machine's transitions run in parallel through long layers; a label
+                // beside its line is as close to the neighbouring line as to its own. Inline,
+                // the transition passes through its label, so no label can be misread.
+                "org.eclipse.elk.edgeLabels.inline": if matches!(mode, BehaviorMode::State) { "true" } else { "false" },
             });
             base["labels"] = json!([label_box]);
             base
