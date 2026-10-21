@@ -737,6 +737,7 @@ impl Backend {
                 publication,
                 &params.handle,
                 params.expected_model_digest.as_deref(),
+                &params.expanded,
             )
         })
         .await

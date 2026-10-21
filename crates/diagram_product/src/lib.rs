@@ -1,4 +1,4 @@
-//! The schema-6 diagram product: a typed diagram view projection
+//! The schema-7 diagram product: a typed diagram view projection
 //! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
 //! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
 //! once and referenced by index.
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 use spec42_generator_protocol as model;
 
 /// Version of the product format `diagram_draw` consumes.
-pub const SCHEMA_VERSION: u32 = 6;
+pub const SCHEMA_VERSION: u32 = 7;
 
 /// The file name under which generators publish the product.
 pub const ARTIFACT_PATH: &str = "diagram.json";
@@ -554,7 +554,22 @@ impl NormalizedProduct {
                 participants,
                 messages,
             } => json!({ "participants": nodes(participants)?, "messages": nodes(messages)? }),
-            model::DiagramViewMetadata::Browser { roots } => json!({ "roots": nodes(roots)? }),
+            model::DiagramViewMetadata::Browser { roots, rows } => json!({
+                "roots": nodes(roots)?,
+                "rows": rows.iter().map(|row| Ok(json!({
+                    "node": self.node(&row.occurrence)?,
+                    "key": row.key,
+                    "membership": match row.membership {
+                        model::DiagramMembership::Owned => "owned",
+                        model::DiagramMembership::Inherited => "inherited",
+                    },
+                    "members": match row.members {
+                        model::DiagramBrowserMembers::None => "none",
+                        model::DiagramBrowserMembers::Loaded => "loaded",
+                        model::DiagramBrowserMembers::Unloaded => "unloaded",
+                    },
+                }))).collect::<Result<Vec<Value>, String>>()?,
+            }),
             model::DiagramViewMetadata::Grid {
                 rows,
                 columns,
@@ -898,8 +913,12 @@ fn collect_metadata_references(
             .for_each(|value| collect_occurrence_references(values, value))
     };
     match metadata {
-        model::DiagramViewMetadata::General { roots }
-        | model::DiagramViewMetadata::Browser { roots } => add(roots),
+        model::DiagramViewMetadata::General { roots } => add(roots),
+        model::DiagramViewMetadata::Browser { roots, rows } => {
+            add(roots);
+            rows.iter()
+                .for_each(|row| collect_occurrence_references(values, &row.occurrence));
+        }
         model::DiagramViewMetadata::Interconnection {
             parts,
             ports,

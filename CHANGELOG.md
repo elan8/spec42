@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Browser views load branches on demand (schema 7).** A browser presents membership as SysML
+  9.2.20.2.2 describes it: owned members and, for a usage, the members it inherits, shown with the
+  `^` prefix. It projects the exposed roots and their members; expanding a row whose members are
+  not loaded asks the server for that branch (`spec42/diagram` `expanded`, by row key), so a large
+  package no longer becomes thousands of rows at once. `spec42 diagram --depth` opens browser
+  levels the same way. Consumers must accept `schemaVersion` 7 and the browser `metadata.rows`;
+  generator plugins must be rebuilt against the new ABI.
+
 - **Smaller diagram products (schema 6).** A diagram product now carries only authored
   relationships. The library-implied subsetting, type featuring and redefinitions of every
   projected element, and the references, sources and library documents they pulled in, were most

@@ -241,7 +241,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
         let product: serde_json::Value =
             serde_json::from_str(&run(Some(name), DiagramFormat::Json, "diagram.json"))
                 .expect("product JSON");
-        assert_eq!(product["schemaVersion"], 6);
+        assert_eq!(product["schemaVersion"], 7);
         assert_eq!(product["selectedView"]["kind"], "state-transition-view");
 
         let svg = run(Some(name), DiagramFormat::Svg, "diagram.svg");
@@ -380,7 +380,7 @@ fn diagram_products_carry_only_authored_relationships_within_a_size_budget() {
                 serde_json::from_slice::<serde_json::Value>(&pretty).expect("pretty JSON"),
                 "{example}/{view_name}: compact and pretty products differ only in layout"
             );
-            assert_eq!(product["schemaVersion"], 6);
+            assert_eq!(product["schemaVersion"], 7);
             let implied = product["projection"]["relationships"]
                 .as_array()
                 .expect("relationships")
@@ -400,11 +400,11 @@ fn diagram_products_carry_only_authored_relationships_within_a_size_budget() {
     });
 }
 
-/// A browser view is the ownership tree of its exposed scope. It used to expand every usage
-/// through its types, so a package of a few definitions repeated each type's members under every
-/// usage (a 230-line elevator package became 3,233 nodes).
+/// A browser view presents membership (SysML 9.2.20.2.2): owned members and, for a usage, the
+/// members it inherits from its types. It loads the exposed roots' members; deeper branches load
+/// when asked for by key, so a package does not become thousands of rows at once.
 #[test]
-fn a_browser_view_is_the_ownership_tree_in_declaration_order() {
+fn a_browser_view_loads_membership_branches_on_demand() {
     with_isolated_data_dir(|| {
         let workspace = tempfile::tempdir().expect("workspace");
         let source = workspace.path().join("Browse.sysml");
@@ -446,32 +446,71 @@ fn a_browser_view_is_the_ownership_tree_in_declaration_order() {
             .iter()
             .find(|view| view.kind == DiagramViewKind::BrowserView)
             .unwrap_or_else(|| panic!("the model authors a BrowserView: {views:?}"));
-        let product: serde_json::Value =
-            serde_json::from_str(&native_product(&model, &view.handle)).expect("product JSON");
-        let nodes = product["projection"]["nodes"].as_array().expect("nodes");
-        let names = |owner: Option<&str>| {
-            nodes
-                .iter()
-                .filter(|node| match owner {
-                    None => node["owner"].is_null(),
-                    Some(owner) => node["owner"]
-                        .as_u64()
-                        .is_some_and(|index| nodes[index as usize]["name"] == owner),
-                })
-                .filter_map(|node| node["name"].as_str())
-                .collect::<Vec<_>>()
+        let product = |expanded: &[String]| -> serde_json::Value {
+            let projection = model
+                .diagram_view_expanding(&view.handle, expanded)
+                .expect("the browser projects");
+            serde_json::from_slice(
+                &diagram_product::diagram_product_json(&projection).expect("product"),
+            )
+            .expect("product JSON")
         };
+        let row_of = |product: &serde_json::Value, parent: Option<&str>, name: &str| {
+            let nodes = product["projection"]["nodes"]
+                .as_array()
+                .expect("nodes")
+                .clone();
+            let index = nodes
+                .iter()
+                .position(|node| {
+                    node["name"] == name
+                        && match parent {
+                            None => node["owner"].is_null(),
+                            Some(parent) => node["owner"]
+                                .as_u64()
+                                .is_some_and(|owner| nodes[owner as usize]["name"] == parent),
+                        }
+                })
+                .unwrap_or_else(|| panic!("{parent:?}/{name} is a row"));
+            product["projection"]["metadata"]["rows"]
+                .as_array()
+                .expect("rows")
+                .iter()
+                .find(|row| row["node"] == index)
+                .cloned()
+                .expect("every node has a row")
+        };
+
+        let initial = product(&[]);
+        assert_eq!(initial["schemaVersion"], 7);
+        let nodes = initial["projection"]["nodes"].as_array().expect("nodes");
+        let root_names = initial["projection"]["metadata"]["roots"]
+            .as_array()
+            .expect("roots")
+            .iter()
+            .map(|index| nodes[index.as_u64().expect("index") as usize]["name"].clone())
+            .collect::<Vec<_>>();
         assert_eq!(
-            names(None),
+            root_names,
             ["Signal", "Out", "Zeta", "Alpha", "assembly"],
             "roots stand in declaration order"
         );
         assert_eq!(
-            names(Some("zeta")),
-            Vec::<&str>::new(),
-            "a usage does not repeat the members of its type"
+            row_of(&initial, Some("Zeta"), "output")["membership"],
+            "owned"
         );
-        assert_eq!(names(Some("Zeta")), ["output", "rating"]);
+        let zeta = row_of(&initial, Some("assembly"), "zeta");
+        assert_eq!(
+            zeta["members"], "unloaded",
+            "a nested branch waits to be opened"
+        );
+        assert!(
+            nodes.iter().all(|node| node["name"] != "rating"
+                || node["owner"]
+                    .as_u64()
+                    .is_some_and(|owner| nodes[owner as usize]["name"] == "Zeta")),
+            "the usage's inherited members are not loaded yet"
+        );
         for node in nodes {
             let metaclass = node["metaclass"].as_str().unwrap_or("");
             assert!(
@@ -479,13 +518,18 @@ fn a_browser_view_is_the_ownership_tree_in_declaration_order() {
                 "lowering structure is not browsed: {node}"
             );
         }
-        let roots = product["projection"]["metadata"]["roots"]
-            .as_array()
-            .expect("roots");
-        let root_names = roots
-            .iter()
-            .map(|index| nodes[index.as_u64().expect("index") as usize]["name"].clone())
-            .collect::<Vec<_>>();
-        assert_eq!(root_names, ["Signal", "Out", "Zeta", "Alpha", "assembly"]);
+
+        let opened = product(&[zeta["key"].as_str().expect("row key").to_owned()]);
+        assert_eq!(
+            row_of(&opened, Some("assembly"), "zeta")["members"],
+            "loaded"
+        );
+        for inherited in ["output", "rating"] {
+            assert_eq!(
+                row_of(&opened, Some("zeta"), inherited)["membership"],
+                "inherited",
+                "{inherited} is a member zeta has through Zeta"
+            );
+        }
     });
 }

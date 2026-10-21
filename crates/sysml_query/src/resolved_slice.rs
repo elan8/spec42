@@ -14,16 +14,17 @@ pub use sysml_resolution::{
     ConnectedElement, ConnectorEndpoint, ConnectorKind, DefinitionUsageDerivedKind,
     DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivationEndpoint,
     DerivationRelationship, DerivedElementOwner, Diagnostic, DiagnosticCategory, DiagnosticCode,
-    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramCompartment,
-    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind,
-    DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason,
-    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
-    DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
-    DiagramSequenceEndpoint, DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene,
-    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
-    DiagramStateVertexKind, DiagramSuccessionGuard, DiagramTransitionFeature,
-    DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection, DocumentId, DocumentToken,
-    Documentation, EffectiveType, EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
+    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramBrowserMembers,
+    DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance,
+    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
+    DiagramIncompleteReason, DiagramMembership, DiagramOccurrenceIdentity, DiagramRelationship,
+    DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
+    DiagramSemanticReference, DiagramSequenceEndpoint, DiagramSequenceMessage,
+    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
+    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
+    DiagramSuccessionGuard, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection, DocumentId, DocumentToken, Documentation, EffectiveType,
+    EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
     ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt, ElementEvaluation,
     ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
     ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
@@ -317,6 +318,17 @@ impl DiagramQueries<'_> {
         kind: DiagramViewKind,
     ) -> QueryOutcome<DiagramViewProjection> {
         self.model.diagram_view_of_kind(identity, kind)
+    }
+
+    /// The view, as `kind` when given, with the browser branches `expanded` names loaded; see
+    /// `PublishedResolution::diagram_view_expanding`.
+    pub fn view_expanding(
+        &self,
+        identity: SymbolId,
+        kind: Option<DiagramViewKind>,
+        expanded: &dyn Fn(&str) -> bool,
+    ) -> QueryOutcome<DiagramViewProjection> {
+        self.model.diagram_view_expanding(identity, kind, expanded)
     }
 
     /// The display name of one catalogued view, borrowed from the publication.

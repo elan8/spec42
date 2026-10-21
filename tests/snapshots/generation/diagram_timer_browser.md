@@ -6858,7 +6858,7 @@ package TimerBrowser {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:153bc865516fdf77530f107f987630df9f9d018fa3826ff704cff938bac559dc",
   "documents": [
     {
@@ -6901,6 +6901,213 @@ package TimerBrowser {
         11,
         34
       ]
+    },
+    {
+      "document": 2,
+      "range": [
+        82,
+        7,
+        82,
+        10
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        82,
+        13,
+        82,
+        16
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        83,
+        7,
+        83,
+        14
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        83,
+        17,
+        83,
+        24
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        84,
+        7,
+        84,
+        13
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        84,
+        16,
+        84,
+        22
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        85,
+        7,
+        85,
+        14
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        85,
+        17,
+        85,
+        24
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        87,
+        2,
+        87,
+        42
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        87,
+        10,
+        87,
+        26
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        87,
+        30,
+        87,
+        41
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        88,
+        2,
+        88,
+        46
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        88,
+        10,
+        88,
+        26
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        88,
+        30,
+        88,
+        45
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        89,
+        2,
+        89,
+        46
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        89,
+        10,
+        89,
+        26
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        89,
+        30,
+        89,
+        45
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        90,
+        2,
+        90,
+        53
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        90,
+        10,
+        90,
+        26
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        90,
+        30,
+        90,
+        52
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        91,
+        2,
+        91,
+        54
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        91,
+        10,
+        91,
+        39
+      ]
+    },
+    {
+      "document": 2,
+      "range": [
+        91,
+        43,
+        91,
+        53
+      ]
     }
   ],
   "references": [
@@ -6917,13 +7124,266 @@ package TimerBrowser {
     {
       "document": 2,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Battery"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Battery::powerOut"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::ButtonInterface::pwr"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Buzzer"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Buzzer::pwr"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::BuzzerDriver::buzzerPwrOut"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::BuzzerDriver::pwrIn"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Display::pwr"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::Housing"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerStructure::KitchenTimer"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::KitchenTimer::"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::KitchenTimer::battery"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::KitchenTimer::buzzer"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::KitchenTimer::housing"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::KitchenTimer::pcb"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::MCU::pwr"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerStructure::PCB"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 11,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 14,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 17,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 20,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "KitchenTimerStructure::KitchenTimer",
+      "source": 23,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 0,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "containment",
+      "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "typing",
       "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 34,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "memberAccessOperand",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
+      "relationshipKind": "typing",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "typing",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "typing",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "typing",
+      "source": 16
     }
   ],
   "selectedView": {
@@ -6937,7 +7397,89 @@ package TimerBrowser {
     "reasons": []
   },
   "projection": {
-    "edges": [],
+    "edges": [
+      {
+        "kind": "containment",
+        "navigation": 3,
+        "origin": 1,
+        "provenance": "implied",
+        "reference": 24,
+        "source": 0,
+        "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 7,
+        "origin": 3,
+        "provenance": "implied",
+        "reference": 25,
+        "source": 0,
+        "target": 3
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "origin": 5,
+        "provenance": "implied",
+        "reference": 26,
+        "source": 0,
+        "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 14,
+        "origin": 6,
+        "provenance": "implied",
+        "reference": 27,
+        "source": 0,
+        "target": 6
+      },
+      {
+        "kind": "containment",
+        "navigation": 17,
+        "origin": 7,
+        "provenance": "implied",
+        "reference": 28,
+        "source": 0,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 20,
+        "origin": 8,
+        "provenance": "implied",
+        "reference": 29,
+        "source": 0,
+        "target": 8
+      },
+      {
+        "kind": "containment",
+        "navigation": 23,
+        "origin": 9,
+        "provenance": "implied",
+        "reference": 30,
+        "source": 0,
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 2,
+        "provenance": "implied",
+        "reference": 31,
+        "source": 0,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 9,
+        "origin": 4,
+        "provenance": "implied",
+        "reference": 32,
+        "source": 0,
+        "target": 4
+      }
+    ],
     "exposedRoots": [
       0
     ],
@@ -6945,11 +7487,95 @@ package TimerBrowser {
     "metadata": {
       "roots": [
         0
+      ],
+      "rows": [
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0",
+          "members": "loaded",
+          "membership": "owned",
+          "node": 0
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0154:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:04:partn3:pcb1:0",
+          "members": "unloaded",
+          "membership": "inherited",
+          "node": 1
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0158:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:04:partn7:battery1:0",
+          "members": "unloaded",
+          "membership": "inherited",
+          "node": 2
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0157:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:04:partn6:buzzer1:0",
+          "members": "unloaded",
+          "membership": "inherited",
+          "node": 3
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0158:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:04:partn7:housing1:0",
+          "members": "unloaded",
+          "membership": "inherited",
+          "node": 4
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0158:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:012:bare-connecta1:0",
+          "members": "none",
+          "membership": "inherited",
+          "node": 5
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0158:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:012:bare-connecta1:1",
+          "members": "none",
+          "membership": "inherited",
+          "node": 6
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0158:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:012:bare-connecta1:2",
+          "members": "none",
+          "membership": "inherited",
+          "node": 7
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0158:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:012:bare-connecta1:3",
+          "members": "none",
+          "membership": "inherited",
+          "node": 8
+        },
+        {
+          "key": "118:element/v151:memory://snapshot/examples/timer/KitchenTimer.sysml7:packagen12:KitchenTimer1:04:partn13:timerInstance1:0158:element/v160:memory://snapshot/examples/timer/KitchenTimerStructure.sysml7:packagen21:KitchenTimerStructure1:08:part-defn12:KitchenTimer1:012:bare-connecta1:4",
+          "members": "none",
+          "membership": "inherited",
+          "node": 9
+        }
       ]
     },
     "nodes": [
       {
-        "compartments": [],
+        "compartments": [
+          {
+            "kind": "parts",
+            "members": [
+              1,
+              3,
+              2,
+              4
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "connections",
+            "members": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "provenance": "inherited"
+          }
+        ],
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
@@ -6966,9 +7592,186 @@ package TimerBrowser {
           "types": [
             {
               "label": "KitchenTimer",
+              "reference": 11
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "pcb",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 16,
+        "source": 3,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "PCB",
+              "reference": 18
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "battery",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 13,
+        "source": 5,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Battery",
               "reference": 2
             }
           ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "buzzer",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 14,
+        "source": 7,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Buzzer",
+              "reference": 5
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "name": "housing",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 15,
+        "source": 9,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Housing",
+              "reference": 10
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 19,
+        "source": 11,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 20,
+        "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 21,
+        "source": 17,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 22,
+        "source": 20,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ConnectionUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 23,
+        "source": 23,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
         }
       }
     ],
@@ -6977,10 +7780,164 @@ package TimerBrowser {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 3,
+        "reference": 33,
         "source": 0,
         "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 47,
+        "source": 1,
+        "target": {
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 8,
+        "provenance": "authored",
+        "reference": 45,
+        "source": 3,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 12,
+        "provenance": "authored",
+        "reference": 34,
+        "source": 5,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 13,
+        "provenance": "authored",
+        "reference": 35,
+        "source": 5,
+        "target": {
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 15,
+        "provenance": "authored",
+        "reference": 36,
+        "source": 6,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 16,
+        "provenance": "authored",
+        "reference": 37,
+        "source": 6,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 38,
+        "source": 7,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 19,
+        "provenance": "authored",
+        "reference": 39,
+        "source": 7,
+        "target": {
+          "reference": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 21,
+        "provenance": "authored",
+        "reference": 40,
+        "source": 8,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 22,
+        "provenance": "authored",
+        "reference": 41,
+        "source": 8,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 42,
+        "source": 9,
+        "target": {
+          "reference": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 25,
+        "provenance": "authored",
+        "reference": 43,
+        "source": 9,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 6,
+        "provenance": "authored",
+        "reference": 44,
+        "source": 2,
+        "target": {
           "reference": 2,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 10,
+        "provenance": "authored",
+        "reference": 46,
+        "source": 4,
+        "target": {
+          "reference": 10,
           "status": "resolved"
         }
       }

@@ -127,6 +127,32 @@ pub struct DiagramElement {
     /// typing applied. Derived from the port's own features and those of its definitions, and
     /// kept apart from the authored `direction`. `None` when it has no directed feature.
     pub feature_direction: Option<FeatureDirection>,
+    /// In a browser view: how this row is a member of its parent and whether its own members
+    /// are in the projection. `None` in every other view kind.
+    pub browser_row: Option<DiagramBrowserRow>,
+}
+
+/// How a browser row belongs to the row above it (SysML 9.2.20.2.2 presents membership, which
+/// for a type includes the members it inherits).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DiagramMembership {
+    Owned,
+    Inherited,
+}
+
+/// Whether a browser row's own members are in the projection. A browser loads its exposed roots
+/// and their members; further branches load when the client asks for them.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DiagramBrowserMembers {
+    None,
+    Loaded,
+    Unloaded,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct DiagramBrowserRow {
+    pub membership: DiagramMembership,
+    pub members: DiagramBrowserMembers,
 }
 
 /// When a conditional succession is taken (SysML 7.17.5).
@@ -504,7 +530,19 @@ impl PublishedResolution {
     /// standard view definition has one catalog entry per kind; `diagram_view_of_kind` projects a
     /// chosen one.
     pub fn diagram_view(&self, view: SymbolId) -> QueryOutcome<DiagramViewProjection> {
-        self.project_diagram_view(view, None)
+        self.project_diagram_view(view, None, &|_| false)
+    }
+
+    /// The projection of `view`, as the catalogued `kind` when one is given, with the browser
+    /// branches `expanded` names loaded. `expanded` is asked about the stable key of each
+    /// occurrence (see [`DiagramOccurrenceIdentity::stable_key`]); other view kinds ignore it.
+    pub fn diagram_view_expanding(
+        &self,
+        view: SymbolId,
+        kind: Option<DiagramViewKind>,
+        expanded: &dyn Fn(&str) -> bool,
+    ) -> QueryOutcome<DiagramViewProjection> {
+        self.project_diagram_view(view, kind, expanded)
     }
 
     /// The projection of `view` as the catalogued `kind`: `Unresolved` if `view` is not
@@ -514,13 +552,14 @@ impl PublishedResolution {
         view: SymbolId,
         kind: DiagramViewKind,
     ) -> QueryOutcome<DiagramViewProjection> {
-        self.project_diagram_view(view, Some(kind))
+        self.project_diagram_view(view, Some(kind), &|_| false)
     }
 
     fn project_diagram_view(
         &self,
         view: SymbolId,
         kind: Option<DiagramViewKind>,
+        expanded: &dyn Fn(&str) -> bool,
     ) -> QueryOutcome<DiagramViewProjection> {
         let catalog = match self.diagram_view_catalog().answer {
             QueryAnswer::Resolved(value) => value,
@@ -660,21 +699,20 @@ impl PublishedResolution {
             occurrences.insert(occurrence.clone(), (*root, None));
             queue.push_back(occurrence);
         }
+        let mut browser_members =
+            BTreeMap::<DiagramOccurrenceIdentity, DiagramBrowserMembers>::new();
+        let mut browser_membership =
+            BTreeMap::<DiagramOccurrenceIdentity, DiagramMembership>::new();
         while let Some(owner_occurrence) = queue.pop_front() {
             let owner = occurrences
                 .get(&owner_occurrence)
                 .expect("queued diagram occurrence must exist")
                 .0;
-            // A browser view is the ownership tree of its exposed scope: an element's owned
-            // members only. The other views present usages in context, so they also expand the
-            // features a usage has through its types (a part typed by a controller shows the
-            // controller's ports and exhibited states); a browser repeating every type's members
-            // under every usage was thousands of nodes for a modest package.
-            let mut children = if view_entry.kind == DiagramViewKind::Browser {
-                Vec::new()
-            } else {
-                resolved_values(self.effective_features(owner)).to_vec()
-            };
+            // Owned and inherited members: a usage also has the features of its types. A browser
+            // presents that membership hierarchy, but only as far as it has been opened -- every
+            // branch at once repeated each type's members under every usage, thousands of rows
+            // for a modest package.
+            let mut children = resolved_values(self.effective_features(owner)).to_vec();
             children.extend(
                 direct_children
                     .get(&owner)
@@ -696,6 +734,12 @@ impl PublishedResolution {
                 .iter()
                 .map(|child| child.identity)
                 .collect::<BTreeSet<_>>();
+            // A browser loads the members of its exposed roots and of the branches the client
+            // has opened; of any other row it only records that members are there to load.
+            let load_members = view_entry.kind != DiagramViewKind::Browser
+                || owner_occurrence.semantic_path.len() == 1
+                || expanded(owner_occurrence.stable_key());
+            let mut has_members = false;
             for child in &children {
                 // An inherited library port is still a port of this contextual part. Omitting
                 // it removes resolved connector endpoints (e.g. a purchased sensor's data). It
@@ -737,10 +781,24 @@ impl PublishedResolution {
                 if !self.diagram_candidate_selected(view, child.identity, &mut reasons) {
                     continue;
                 }
+                has_members = true;
+                if !load_members {
+                    continue;
+                }
                 let Some(token) = self.symbol_token(child.identity) else {
                     continue;
                 };
                 let occurrence = owner_occurrence.child(child.identity, token.as_str());
+                if view_entry.kind == DiagramViewKind::Browser {
+                    browser_membership.insert(
+                        occurrence.clone(),
+                        if child.owner == Some(owner) {
+                            DiagramMembership::Owned
+                        } else {
+                            DiagramMembership::Inherited
+                        },
+                    );
+                }
                 let inserted = occurrences
                     .insert(
                         occurrence.clone(),
@@ -752,6 +810,16 @@ impl PublishedResolution {
                 if inserted && !owner_occurrence.contains(child.identity) {
                     queue.push_back(occurrence);
                 }
+            }
+            if view_entry.kind == DiagramViewKind::Browser {
+                browser_members.insert(
+                    owner_occurrence.clone(),
+                    match (has_members, load_members) {
+                        (false, _) => DiagramBrowserMembers::None,
+                        (true, true) => DiagramBrowserMembers::Loaded,
+                        (true, false) => DiagramBrowserMembers::Unloaded,
+                    },
+                );
             }
         }
         let projected_roots = occurrences
@@ -913,6 +981,18 @@ impl PublishedResolution {
                     } else {
                         None
                     },
+                    browser_row: (view_entry.kind == DiagramViewKind::Browser).then(|| {
+                        DiagramBrowserRow {
+                            membership: browser_membership
+                                .get(occurrence_id)
+                                .copied()
+                                .unwrap_or(DiagramMembership::Owned),
+                            members: browser_members
+                                .get(occurrence_id)
+                                .copied()
+                                .unwrap_or(DiagramBrowserMembers::None),
+                        }
+                    }),
                 }
             })
             .collect::<Vec<_>>();

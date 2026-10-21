@@ -356,7 +356,7 @@ package SingleCycle {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:8bf1f9fdf8b96f102b4fa1efeed31dbbfb17d9b86669d0874951bdc7c9ea1a00",
   "documents": [
     {

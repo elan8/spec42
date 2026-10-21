@@ -113,7 +113,7 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:2aca90c6608c5d679f0661640593a74642ea6d46f0e0295c4f896145193dd1a9",
   "documents": [
     {
@@ -204,6 +204,20 @@ package M {
     "metadata": {
       "roots": [
         1
+      ],
+      "rows": [
+        {
+          "key": "98:element/v152:memory://snapshot/diagram_port_definition_browser.md7:packagen1:M1:08:port-defn1:P1:0124:element/v152:memory://snapshot/diagram_port_definition_browser.md7:packagen1:M1:08:port-defn1:P1:019:conjugated-port-defa1:0",
+          "members": "none",
+          "membership": "owned",
+          "node": 0
+        },
+        {
+          "key": "98:element/v152:memory://snapshot/diagram_port_definition_browser.md7:packagen1:M1:08:port-defn1:P1:0",
+          "members": "loaded",
+          "membership": "owned",
+          "node": 1
+        }
       ]
     },
     "nodes": [

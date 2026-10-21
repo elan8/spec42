@@ -168,7 +168,7 @@ package BrowserExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:b41f7e8427cb4edbf6d95d88197740368ea5da9eab81bbf56c047bfbc9a85aeb",
   "documents": [
     {
@@ -198,15 +198,6 @@ package BrowserExample {
     {
       "document": 0,
       "range": [
-        2,
-        39,
-        2,
-        43
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
         3,
         9,
         3,
@@ -228,11 +219,6 @@ package BrowserExample {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "BrowserExample::Root::branch::leaf"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "BrowserExample::selected"
     },
     {
@@ -240,19 +226,13 @@ package BrowserExample {
       "ordinal": 0,
       "relationshipKind": "containment",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "containment",
-      "source": 1
     }
   ],
   "selectedView": {
-    "reference": 3,
+    "reference": 2,
     "kind": "browser-view",
     "name": "selected",
-    "source": 3
+    "source": 2
   },
   "completeness": {
     "status": "complete",
@@ -265,18 +245,9 @@ package BrowserExample {
         "navigation": 1,
         "origin": 1,
         "provenance": "authored",
-        "reference": 4,
+        "reference": 3,
         "source": 0,
         "target": 1
-      },
-      {
-        "kind": "containment",
-        "navigation": 2,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 5,
-        "source": 1,
-        "target": 2
       }
     ],
     "exposedRoots": [
@@ -286,6 +257,20 @@ package BrowserExample {
     "metadata": {
       "roots": [
         0
+      ],
+      "rows": [
+        {
+          "key": "108:element/v145:memory://snapshot/diagram_browser_complete.md7:packagen14:BrowserExample1:08:part-defn4:Root1:0",
+          "members": "loaded",
+          "membership": "owned",
+          "node": 0
+        },
+        {
+          "key": "108:element/v145:memory://snapshot/diagram_browser_complete.md7:packagen14:BrowserExample1:08:part-defn4:Root1:0126:element/v145:memory://snapshot/diagram_browser_complete.md7:packagen14:BrowserExample1:08:part-defn4:Root1:04:partn6:branch1:0",
+          "members": "unloaded",
+          "membership": "owned",
+          "node": 1
+        }
       ]
     },
     "nodes": [
@@ -315,15 +300,7 @@ package BrowserExample {
         }
       },
       {
-        "compartments": [
-          {
-            "kind": "parts",
-            "members": [
-              2
-            ],
-            "provenance": "direct"
-          }
-        ],
+        "compartments": [],
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
@@ -333,23 +310,6 @@ package BrowserExample {
         "owner": 0,
         "reference": 1,
         "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "leaf",
-        "notationRole": "usage",
-        "owner": 1,
-        "reference": 2,
-        "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {

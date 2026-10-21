@@ -4,16 +4,16 @@ use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{
-    DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
-    DiagramEdgeKind, DiagramElement, DiagramEndpointOccurrence, DiagramIncompleteReason,
-    DiagramNotationRole, DiagramOccurrenceIdentity, DiagramRelationship,
-    DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
-    DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata, DiagramViewProjection,
-    DiagramViewSummary, ElementIdentity, ProjectionCompleteness, ProjectionFeature,
-    SequenceEndpoint, SequenceMessage, SequenceOrder, SequenceScene, SourceReference,
-    StateMachineIdentity, StateMachineSummary, StateTransitionEdge, StateTransitionNode,
-    StateTransitionNodeKind, StateTransitionScene, StateTransitionViewProjection,
-    StateTransitionViewSummary, TransitionTrigger,
+    DiagramBrowserMembers, DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind,
+    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership, DiagramNotationRole,
+    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
+    DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+    ElementIdentity, ProjectionCompleteness, ProjectionFeature, SequenceEndpoint, SequenceMessage,
+    SequenceOrder, SequenceScene, SourceReference, StateMachineIdentity, StateMachineSummary,
+    StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
+    StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
 };
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
@@ -841,6 +841,17 @@ impl GeneratorModelView {
     }
 
     pub fn diagram_view(&self, handle: &str) -> Result<DiagramViewProjection, ModelQueryError> {
+        self.diagram_view_expanding(handle, &[])
+    }
+
+    /// The projection of the catalog view `handle`, with the browser branches whose row keys are
+    /// in `expanded` loaded (keys as an earlier projection of the view published them). A browser
+    /// otherwise loads its exposed roots and their members only. Other view kinds ignore it.
+    pub fn diagram_view_expanding(
+        &self,
+        handle: &str,
+        expanded: &[String],
+    ) -> Result<DiagramViewProjection, ModelQueryError> {
         let identity = self.resolve_handle(handle)?;
         let kind = self
             .diagram_handle_kinds
@@ -848,15 +859,15 @@ impl GeneratorModelView {
             .expect("generator handle index poisoned")
             .get(handle)
             .copied();
+        let is_expanded = |key: &str| expanded.iter().any(|expanded| expanded == key);
         // A catalog handle projects its catalogued kind; any other view handle (a state-transition
         // view's, an element's) projects the view's first kind.
-        let projection = match kind {
-            Some(kind) => outcome(
-                self.model.diagrams().view_of_kind(identity, kind),
-                "diagram view",
-            )?,
-            None => outcome(self.model.diagrams().view(identity), "diagram view")?,
-        };
+        let projection = outcome(
+            self.model
+                .diagrams()
+                .view_expanding(identity, kind, &is_expanded),
+            "diagram view",
+        )?;
         let view = DiagramViewSummary {
             handle: handle.to_owned(),
             reference: self.diagram_reference(projection.view.semantic_id)?,
@@ -1312,7 +1323,44 @@ impl GeneratorModelView {
                 })
             }
         };
-        let metadata = diagram_metadata(view.kind, &roots, &elements, &relationships, &scene);
+        let browser_rows = projection
+            .elements
+            .iter()
+            .filter_map(|element| element.browser_row.map(|row| (element, row)))
+            .map(|(element, row)| {
+                Ok(DiagramBrowserRow {
+                    occurrence: self.diagram_occurrence(&element.occurrence_id)?,
+                    key: element.occurrence_id.stable_key().to_owned(),
+                    membership: match row.membership {
+                        sysml_query::resolved_slice::DiagramMembership::Owned => {
+                            DiagramMembership::Owned
+                        }
+                        sysml_query::resolved_slice::DiagramMembership::Inherited => {
+                            DiagramMembership::Inherited
+                        }
+                    },
+                    members: match row.members {
+                        sysml_query::resolved_slice::DiagramBrowserMembers::None => {
+                            DiagramBrowserMembers::None
+                        }
+                        sysml_query::resolved_slice::DiagramBrowserMembers::Loaded => {
+                            DiagramBrowserMembers::Loaded
+                        }
+                        sysml_query::resolved_slice::DiagramBrowserMembers::Unloaded => {
+                            DiagramBrowserMembers::Unloaded
+                        }
+                    },
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        let metadata = diagram_metadata(
+            view.kind,
+            &roots,
+            &elements,
+            &relationships,
+            &scene,
+            browser_rows,
+        );
         Ok(DiagramViewProjection {
             schema_version: 1,
             model_digest: self.model_digest.clone(),
@@ -1991,6 +2039,7 @@ fn diagram_metadata(
     elements: &[DiagramElement],
     relationships: &[DiagramRelationship],
     scene: &DiagramScene,
+    browser_rows: Vec<DiagramBrowserRow>,
 ) -> DiagramViewMetadata {
     let ids = |classes: &[Metaclass]| {
         elements
@@ -2086,6 +2135,7 @@ fn diagram_metadata(
                 .filter(|occurrence| roots.contains(occurrence))
                 .cloned()
                 .collect(),
+            rows: browser_rows,
         },
         DiagramViewKind::GridView => DiagramViewMetadata::Grid {
             rows: elements
