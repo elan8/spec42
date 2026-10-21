@@ -368,7 +368,7 @@ package InterconnectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:dface66026900a79323b21174b35e020a731624c8eccca5c8312aee2e4bcd680",
   "documents": [
     {

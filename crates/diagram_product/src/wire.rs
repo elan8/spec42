@@ -1,4 +1,4 @@
-//! The schema-6 JSON wire contract. The Rust writer validates against these types before
+//! The schema-7 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -348,20 +348,37 @@ pub struct SequenceMetadata {
     pub messages: Vec<usize>,
 }
 
+/// How a Grid View arranges its exposed elements (SysML v2 9.2.20.2.5).
 #[derive(Deserialize, TS)]
-#[serde(deny_unknown_fields)]
-pub struct GridMetadata {
-    pub rows: Vec<usize>,
-    pub columns: Vec<String>,
-    pub cells: Vec<GridCell>,
+#[serde(rename_all = "kebab-case")]
+pub enum GridLayout {
+    /// Rows are the source ends of the relationships between exposed elements, columns their
+    /// target ends, and each cell one relationship.
+    RelationshipMatrix,
+    /// One row for each exposed element; no relationship joins two of them.
+    ElementTable,
 }
 
 #[derive(Deserialize, TS)]
 #[serde(deny_unknown_fields)]
+pub struct GridMetadata {
+    pub layout: GridLayout,
+    /// Node indexes, in exposure order.
+    pub rows: Vec<usize>,
+    /// Node indexes, in exposure order; empty for an element table.
+    pub columns: Vec<usize>,
+    pub cells: Vec<GridCell>,
+}
+
+/// One cell of a relationship matrix: the relationship edge from the `row` node to the `column`
+/// node.
+#[derive(Deserialize, TS)]
+#[serde(deny_unknown_fields)]
 pub struct GridCell {
     pub row: usize,
-    pub column: String,
-    pub relationship: usize,
+    pub column: usize,
+    /// Index into the projection's edges.
+    pub edge: usize,
 }
 
 #[derive(Deserialize, TS)]

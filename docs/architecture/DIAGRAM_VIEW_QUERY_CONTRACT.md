@@ -15,7 +15,7 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
 never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 6
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 7
 is the sole renderer product for this contract.
 
 Projected element `name` is the publication's canonical effective name (SysML 7.6.5), so an
@@ -41,7 +41,7 @@ negation preserves unresolved, ambiguous and unsupported predicate outcomes.
 | State transition | Exposed state definitions; states and the states they own; final nodes; initial/succession and transition endpoints; trigger/guard/effect facts; the entry, do and exit action of a state with its role (`stateSubaction`); provenance | State/control nodes, a state's nested states inside it, its state actions, and transition edges with typed trigger, guard, effect, source, and completeness |
 | Sequence | Exposed participants/lifelines; authored sends/messages and resolved ends; authoritative ordering; activations/fragments only when published | Lifeline columns and message edges. No activation, fragment, or message order is fabricated |
 | Browser | Resolved exposure plus canonical membership/ownership facts and source identities | Collapsible ownership tree rooted only at exposed scope |
-| Grid | Explicit exposed row elements and published typed relationships suitable for selected matrix cells | Typed rows, columns, and cells. Labels never create a cell or column |
+| Grid | Explicit exposed elements; authored relationships between two exposed elements (allocation, dependency, binding, and the General View's specialization family), including relationship usages owned outside the exposed scope | SysML 9.2.20.2.5: a relationship matrix. Rows are the exposed elements at the source ends of those relationships, columns those at the target ends, both in declaration order, and each relationship is a cell naming its edge; an exposed element with no such relationship is neither. The members of exposed elements are not rows. Without any such relationship the grid is an element table with one row per exposed element. Labels never create a cell or column |
 | Geometry | Authored or evaluated geometry facts and their source/provenance | Provisional 2D primitives only for authoritative coordinates. Otherwise the exposed elements remain present with typed geometry incompleteness |
 
 ## Explicit degraded states
@@ -97,7 +97,7 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-6 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
+The schema-7 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
 discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.
 
@@ -106,8 +106,10 @@ shape. The Rust publisher validates every product against this contract before r
 import these generated declarations. `scripts/minici.sh lint` runs the generator in check mode and
 fails when the Rust contract and checked-in TypeScript files differ.
 
-Schema 6 keeps the schema-5 field names and shapes; it changes what `relationships` contains (see
-above), and a schema-5 product is no longer accepted. The renderer's legacy pre-schema-5 adapters
+Schema 6 kept the schema-5 field names and shapes and changed what `relationships` contains (see
+above). Schema 7 changes the grid metadata: a `layout` (`relationship-matrix` or `element-table`),
+node-index `columns`, and cells naming their row and column nodes and the `edge` they show. A
+product of an earlier schema is no longer accepted. The renderer's legacy pre-schema-5 adapters
 remain boundary-only compatibility code. A future incompatible wire change must increment `schemaVersion`, regenerate
 the bindings, update the checked-in product corpus, and migrate consumers in the same change.
 

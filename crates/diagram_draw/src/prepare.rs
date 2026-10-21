@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-6 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-7 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};
@@ -2704,53 +2704,69 @@ fn enrich_typed_catalog_product(selected_kind: &str, product: &mut Value) {
         }
         "grid-view" => {
             let nodes = as_array(field(product, "nodes")).to_vec();
+            let edges = as_array(field(product, "edges")).to_vec();
             let metadata = field(field(product, "meta"), "viewMetadata");
-            let grid_rows: Vec<usize> = as_array(field(metadata, "rows"))
-                .iter()
-                .filter_map(|value| value.as_u64().map(|index| index as usize))
-                .filter(|index| *index < nodes.len())
-                .collect();
-            let grid_columns: Vec<String> = as_array(field(metadata, "columns"))
-                .iter()
-                .map(|value| as_string(value, ""))
-                .filter(|value| !value.is_empty())
-                .collect();
-            let grid_relationships = as_array(field(metadata, "cells"));
-            let cells: Vec<Value> = grid_rows
-                .iter()
-                .map(|node_index| {
-                    let node = &nodes[*node_index];
-                    let mut cell = json!({
-                        "id": field(node, "id"),
-                        "name": field(node, "label"),
-                        "kind": field(node, "kind"),
-                    });
-                    for column in &grid_columns {
-                        let present = grid_relationships.iter().any(|entry| {
-                            entry.get("row").and_then(Value::as_u64) == Some(*node_index as u64)
-                                && as_string(field(entry, "column"), "") == *column
-                        });
-                        cell[format!("relationship:{column}")] =
-                            json!(if present { "✓" } else { "" });
-                    }
-                    cell
-                })
-                .collect();
-            let mut columns = vec![json!({
-                "key": "name",
-                "label": "Element",
-                "notationStatus": "normative",
-            })];
-            columns.extend(grid_columns.iter().map(|column| {
-                json!({
-                    "key": format!("relationship:{column}"),
-                    "label": column,
-                    "notationStatus": "normative",
-                })
-            }));
+            let indexes = |key: &str| -> Vec<usize> {
+                as_array(field(metadata, key))
+                    .iter()
+                    .filter_map(|value| value.as_u64().map(|index| index as usize))
+                    .filter(|index| *index < nodes.len())
+                    .collect()
+            };
+            let header = |index: &usize| json!({ "id": field(&nodes[*index], "id"), "label": field(&nodes[*index], "label") });
             let mut meta = as_object(field(product, "meta"));
-            meta.insert("cells".into(), Value::Array(cells));
-            meta.insert("columns".into(), Value::Array(columns));
+            if as_string(field(metadata, "layout"), "") == "relationship-matrix" {
+                // SysML v2 9.2.20.2.5: a relationship matrix. Each cell is a projected edge; its
+                // kind is the edge's.
+                let cells: Vec<Value> = as_array(field(metadata, "cells"))
+                    .iter()
+                    .filter_map(|cell| {
+                        let row = field(cell, "row").as_u64()? as usize;
+                        let column = field(cell, "column").as_u64()? as usize;
+                        let edge = edges.get(field(cell, "edge").as_u64()? as usize)?;
+                        Some(json!({
+                            "source": field(nodes.get(row)?, "id"),
+                            "target": field(nodes.get(column)?, "id"),
+                            "edgeId": field(edge, "id"),
+                            "kind": field(edge, "edgeKind"),
+                        }))
+                    })
+                    .collect();
+                meta.insert("relationshipMatrix".into(), json!(true));
+                meta.insert(
+                    "matrixRows".into(),
+                    json!(indexes("rows").iter().map(header).collect::<Vec<_>>()),
+                );
+                meta.insert(
+                    "matrixColumns".into(),
+                    json!(indexes("columns").iter().map(header).collect::<Vec<_>>()),
+                );
+                meta.insert("matrixCells".into(), Value::Array(cells));
+            } else {
+                // A table with one row for each exposed element.
+                let cells: Vec<Value> = indexes("rows")
+                    .iter()
+                    .map(|index| {
+                        let node = &nodes[*index];
+                        json!({
+                            "id": field(node, "id"),
+                            "name": field(node, "label"),
+                            "kind": field(node, "kind"),
+                            "type": field(field(node, "attributes"), "typedByName"),
+                        })
+                    })
+                    .collect();
+                let column = |key: &str, label: &str| json!({ "key": key, "label": label, "notationStatus": "normative" });
+                meta.insert("cells".into(), Value::Array(cells));
+                meta.insert(
+                    "columns".into(),
+                    json!([
+                        column("name", "Element"),
+                        column("kind", "Kind"),
+                        column("type", "Type")
+                    ]),
+                );
+            }
             meta.insert("provisional".into(), json!(false));
             product["meta"] = Value::Object(meta);
         }
@@ -2948,7 +2964,7 @@ fn prepare_typed_action_flow(
 }
 
 fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
-    if field(input, "schemaVersion").as_u64() != Some(6) {
+    if field(input, "schemaVersion").as_u64() != Some(7) {
         return None;
     }
     let selected = field(input, "selectedView");

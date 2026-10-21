@@ -472,7 +472,7 @@ fn interconnection_golden_payload() -> serde_json::Value {
 
 fn schema6_sequence_payload() -> serde_json::Value {
     json!({
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -653,7 +653,7 @@ fn schema6_state_transition_payload(
     transitions: Vec<serde_json::Value>,
 ) -> serde_json::Value {
     json!({
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -1100,7 +1100,7 @@ fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
 
     let payload = json!({
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -1338,4 +1338,54 @@ fn bindings_to_nested_ports_keep_their_exact_boundary_anchors() {
     assert!(svg.contains("data-port-name=\"bundle.a\""));
     assert!(svg.contains("data-port-name=\"bundle.b\""));
     assert_eq!(svg.matches("class=\"ibd-connector ").count(), 1);
+}
+
+/// The elements of `node`'s subtree whose `class` attribute is exactly `class`.
+fn grid_elements<'a>(
+    node: &'a diagram_draw::xml::XmlNode,
+    class: &str,
+    found: &mut Vec<&'a diagram_draw::xml::XmlNode>,
+) {
+    if node.attrs.get("class").map(String::as_str) == Some(class) {
+        found.push(node);
+    }
+    for child in &node.children {
+        grid_elements(child, class, found);
+    }
+}
+
+#[test]
+fn a_grid_view_draws_its_relationship_matrix() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_grid_relationship_matrix.md"
+    ));
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw grid view");
+    let tree = diagram_draw::xml::parse(&svg);
+    let names = |class: &str| {
+        let mut found = Vec::new();
+        grid_elements(&tree, class, &mut found);
+        found
+            .iter()
+            .map(|node| node.text.clone())
+            .collect::<Vec<_>>()
+    };
+    // SysML v2 9.2.20.2.5: rows are the source ends, columns the target ends, in declaration
+    // order; an exposed element without a relationship to another exposed element is neither.
+    assert_eq!(
+        names("grid-relationship-matrix-row"),
+        ["register", "dispatch", "report"]
+    );
+    assert_eq!(
+        names("grid-relationship-matrix-column"),
+        ["controller", "panel"]
+    );
+    let mut cells = Vec::new();
+    grid_elements(&tree, "grid-relationship-matrix-cell", &mut cells);
+    assert_eq!(cells.len(), 6);
+    // A cell holding a relationship names the edge it draws.
+    let filled = cells
+        .iter()
+        .filter(|cell| cell.attrs.contains_key("data-edge-ids"))
+        .count();
+    assert_eq!(filled, 4, "{svg}");
 }

@@ -6858,7 +6858,7 @@ package TimerBrowser {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:153bc865516fdf77530f107f987630df9f9d018fa3826ff704cff938bac559dc",
   "documents": [
     {

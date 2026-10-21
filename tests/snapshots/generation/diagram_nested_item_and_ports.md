@@ -694,7 +694,7 @@ package NestedOwners {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:1a54ecda53ee22b69a435048bebac1462d4dadbb026481ecff5e1fdd4640dc8f",
   "documents": [
     {

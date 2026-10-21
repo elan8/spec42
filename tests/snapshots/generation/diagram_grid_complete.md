@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Grid view projects typed rows and relationship columns
+description=A grid view whose exposed elements share no relationship is a table with one row per exposed element
 type=generate
 libraries=standard
 plugin=native:diagram
@@ -168,7 +168,7 @@ package GridExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:d689beee5ea85911c538d4b1ac2f3837bccac4b1ebab74844580930118384c4d",
   "documents": [
     {
@@ -184,24 +184,6 @@ package GridExample {
         13,
         2,
         22
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        2,
-        31,
-        2,
-        36
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        2,
-        44,
-        2,
-        50
       ]
     },
     {
@@ -223,91 +205,36 @@ package GridExample {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "GridExample::TableRoot::first"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
-      "qualifiedName": "GridExample::TableRoot::second"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "GridExample::selected"
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "containment",
-      "source": 0
     }
   ],
   "selectedView": {
-    "reference": 3,
+    "reference": 1,
     "kind": "grid-view",
     "name": "selected",
-    "source": 3
+    "source": 1
   },
   "completeness": {
     "status": "complete",
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 4,
-        "source": 0,
-        "target": 1
-      },
-      {
-        "kind": "containment",
-        "navigation": 2,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 5,
-        "source": 0,
-        "target": 2
-      }
-    ],
+    "edges": [],
     "exposedRoots": [
       0
     ],
     "kind": "grid-view",
     "metadata": {
       "cells": [],
-      "columns": [
-        "specializes",
-        "subsetting",
-        "typeFeaturing"
-      ],
+      "columns": [],
+      "layout": "element-table",
       "rows": [
-        0,
-        1,
-        2
+        0
       ]
     },
     "nodes": [
       {
-        "compartments": [
-          {
-            "kind": "parts",
-            "members": [
-              1,
-              2
-            ],
-            "provenance": "direct"
-          }
-        ],
+        "compartments": [],
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
@@ -317,40 +244,6 @@ package GridExample {
         "owner": null,
         "reference": 0,
         "source": 0,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "first",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 1,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "second",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 2,
-        "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {

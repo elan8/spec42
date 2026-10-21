@@ -284,7 +284,7 @@ package SequenceOutside {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:d053179afc6965e04b99b88b0fc5b2323ef2e8bbd845249a99b1961a2e81d9b0",
   "documents": [
     {

@@ -1312,7 +1312,8 @@ impl GeneratorModelView {
                 })
             }
         };
-        let metadata = diagram_metadata(view.kind, &roots, &elements, &relationships, &scene);
+        let metadata =
+            diagram_metadata(view.kind, &roots, &elements, &relationships, &edges, &scene);
         Ok(DiagramViewProjection {
             schema_version: 1,
             model_digest: self.model_digest.clone(),
@@ -1990,6 +1991,7 @@ fn diagram_metadata(
     roots: &[DiagramOccurrenceIdentity],
     elements: &[DiagramElement],
     relationships: &[DiagramRelationship],
+    edges: &[DiagramEdge],
     scene: &DiagramScene,
 ) -> DiagramViewMetadata {
     let ids = |classes: &[Metaclass]| {
@@ -2081,19 +2083,7 @@ fn diagram_metadata(
         DiagramViewKind::BrowserView => DiagramViewMetadata::Browser {
             roots: roots.to_vec(),
         },
-        DiagramViewKind::GridView => DiagramViewMetadata::Grid {
-            rows: elements
-                .iter()
-                .map(|element| element.occurrence.clone())
-                .collect(),
-            columns: relationships
-                .iter()
-                .map(|relationship| relationship.kind.clone())
-                .collect::<std::collections::BTreeSet<_>>()
-                .into_iter()
-                .collect(),
-            cells: Vec::new(),
-        },
+        DiagramViewKind::GridView => grid_metadata(roots, elements, edges),
         DiagramViewKind::GeometryView => DiagramViewMetadata::Geometry {
             elements: elements
                 .iter()
@@ -2101,6 +2091,80 @@ fn diagram_metadata(
                 .collect(),
             primitives: Vec::new(),
         },
+    }
+}
+
+/// A Grid View as a relationship matrix (SysML v2 9.2.20.2.5): the exposed elements at the
+/// source ends of the relationships between exposed elements are its rows, those at the target
+/// ends its columns, and each relationship a cell. An exposed element without such a
+/// relationship is in neither. Where no relationship joins two exposed elements, the grid is a
+/// table with one row for each exposed element. Rows and columns are in declaration order.
+fn grid_metadata(
+    roots: &[DiagramOccurrenceIdentity],
+    elements: &[DiagramElement],
+    edges: &[DiagramEdge],
+) -> DiagramViewMetadata {
+    use spec42_generator_protocol::{DiagramGridCell, DiagramGridLayout};
+    let declared = |occurrence: &DiagramOccurrenceIdentity| {
+        elements
+            .iter()
+            .find(|element| &element.occurrence == occurrence)
+            .map(|element| {
+                let range = &element.source.range;
+                (
+                    element.source.uri.clone(),
+                    range.start_line,
+                    range.start_character,
+                )
+            })
+    };
+    let mut roots = roots.to_vec();
+    roots.sort_by_cached_key(|root| declared(root));
+    let roots = roots.as_slice();
+    let relationships = edges
+        .iter()
+        .filter(|edge| matches!(edge.kind, DiagramEdgeKind::Relationship(_)))
+        .filter(|edge| roots.contains(&edge.source_occurrence))
+        .filter(|edge| roots.contains(&edge.target_occurrence))
+        .collect::<Vec<_>>();
+    if relationships.is_empty() {
+        // The elements that declare a relationship are drawn as cells, never as rows.
+        let origins = edges
+            .iter()
+            .filter(|edge| matches!(edge.kind, DiagramEdgeKind::Relationship(_)))
+            .map(|edge| &edge.origin_occurrence)
+            .collect::<Vec<_>>();
+        return DiagramViewMetadata::Grid {
+            layout: DiagramGridLayout::ElementTable,
+            rows: roots
+                .iter()
+                .filter(|root| !origins.contains(root))
+                .cloned()
+                .collect(),
+            columns: Vec::new(),
+            cells: Vec::new(),
+        };
+    }
+    let along = |end: fn(&DiagramEdge) -> &DiagramOccurrenceIdentity| {
+        roots
+            .iter()
+            .filter(|root| relationships.iter().any(|edge| end(edge) == *root))
+            .cloned()
+            .collect::<Vec<_>>()
+    };
+    DiagramViewMetadata::Grid {
+        layout: DiagramGridLayout::RelationshipMatrix,
+        rows: along(|edge| &edge.source_occurrence),
+        columns: along(|edge| &edge.target_occurrence),
+        cells: relationships
+            .iter()
+            .map(|edge| DiagramGridCell {
+                row: edge.source_occurrence.clone(),
+                column: edge.target_occurrence.clone(),
+                origin: edge.origin_occurrence.clone(),
+                kind: edge.kind.clone(),
+            })
+            .collect(),
     }
 }
 

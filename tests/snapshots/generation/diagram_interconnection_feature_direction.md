@@ -614,7 +614,7 @@ package Feed {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:d2709a026c75f64a73e176a5b49cf6694762cc4292cc689f2a5307141a4f5d33",
   "documents": [
     {

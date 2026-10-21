@@ -83,7 +83,7 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
 }
 
 /**
- * Adapt the authority-owned schema-6 sequence scene into the legacy shape the renderer consumes.
+ * Adapt the authority-owned schema-7 sequence scene into the legacy shape the renderer consumes.
  * Endpoint ownership and temporal ordering are semantic facts already settled by the scene.
  */
 function sequenceDiagramFromScene(
@@ -123,7 +123,7 @@ function isDiagramProduct(input: unknown): input is DiagramProduct {
   const product = asRecord(input);
   const selected = asRecord(product.selectedView);
   const projection = asRecord(product.projection);
-  return product.schemaVersion === 6 && typeof product.modelDigest === "string" &&
+  return product.schemaVersion === 7 && typeof product.modelDigest === "string" &&
     Array.isArray(product.documents) && Array.isArray(product.sources) && Array.isArray(product.references) &&
     typeof selected.kind === "string" && typeof selected.name === "string" &&
     projection.kind === selected.kind && Array.isArray(projection.exposedRoots) &&
@@ -276,21 +276,35 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
   const sequenceDiagram = projection.kind === "sequence-view"
     ? sequenceDiagramFromScene(selected.name, nodes, projection.scene)
     : undefined;
-  const gridRows = projection.kind === "grid-view"
-    ? projection.metadata.rows.filter((value) => nodes[value] !== undefined)
-    : [];
-  const gridColumns = projection.kind === "grid-view" ? projection.metadata.columns : [];
-  const gridRelationships = projection.kind === "grid-view" ? projection.metadata.cells : [];
-  const gridCells = projection.kind === "grid-view"
-    ? gridRows.map((nodeIndex) => {
-        const node = nodes[nodeIndex];
-        const values = Object.fromEntries(gridColumns.map((column) => [
-          `relationship:${column}`,
-          gridRelationships.some((cell) => cell.row === nodeIndex && cell.column === column) ? "✓" : "",
-        ]));
-        return { id: node.id, name: node.label, kind: node.kind, ...values };
-      })
-    : undefined;
+  // SysML v2 9.2.20.2.5: a grid view is a relationship matrix, or a table of the exposed
+  // elements when no relationship joins two of them. A matrix cell is a projected edge.
+  const gridMeta = projection.kind === "grid-view" ? projection.metadata : undefined;
+  const gridHeader = (index: number) => ({ id: nodes[index].id, label: nodes[index].label });
+  const gridFields = gridMeta === undefined ? {} : gridMeta.layout === "relationship-matrix" ? {
+    relationshipMatrix: true,
+    matrixRows: gridMeta.rows.filter((index) => nodes[index] !== undefined).map(gridHeader),
+    matrixColumns: gridMeta.columns.filter((index) => nodes[index] !== undefined).map(gridHeader),
+    matrixCells: gridMeta.cells.flatMap((cell) => {
+      const edge = edges[cell.edge];
+      const row = nodes[cell.row];
+      const column = nodes[cell.column];
+      return edge && row && column
+        ? [{ source: row.id, target: column.id, edgeId: edge.id, kind: edge.edgeKind }]
+        : [];
+    }),
+    provisional: false,
+  } : {
+    cells: gridMeta.rows.filter((index) => nodes[index] !== undefined).map((index) => {
+      const node = nodes[index];
+      return { id: node.id, name: node.label, kind: node.kind, type: node.attributes?.typedByName ?? null };
+    }),
+    columns: [
+      { key: "name", label: "Element", notationStatus: "normative" },
+      { key: "kind", label: "Kind", notationStatus: "normative" },
+      { key: "type", label: "Type", notationStatus: "normative" },
+    ],
+    provisional: false,
+  };
   return {
     title: selected.name,
     view: selected.kind,
@@ -301,18 +315,7 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       exposedRoots: projection.exposedRoots.map((index) => `n:${index}`),
       viewMetadata: projection.metadata,
       ...(sequenceDiagram ? { sequenceDiagram } : {}),
-      ...(projection.kind === "grid-view" ? {
-        cells: gridCells,
-        columns: [
-          { key: "name", label: "Element", notationStatus: "normative" },
-          ...gridColumns.map((column) => ({
-            key: `relationship:${column}`,
-            label: column,
-            notationStatus: "normative",
-          })),
-        ],
-        provisional: false,
-      } : {}),
+      ...gridFields,
     },
   };
 }

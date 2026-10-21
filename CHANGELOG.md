@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Grid views are relationship matrices (schema 7).** A grid view listed every nested feature of
+  its exposed elements as a row, against columns of library relationship kinds that never had an
+  entry. Following SysML v2 9.2.20.2.5 it is now a relationship matrix: the exposed elements at the
+  source ends of the allocations, dependencies, bindings and specializations between exposed
+  elements are the rows, those at the target ends the columns, and each relationship a cell drawn
+  as a dot, with its kind in a legend and tooltip. A grid whose exposed elements share no
+  relationship is a table of those elements with their kind and type. Consumers must accept
+  `schemaVersion` 7: grid metadata carries a `layout`, node-index `columns`, and cells that name
+  the edge they show.
+
 - **Smaller diagram products (schema 6).** A diagram product now carries only authored
   relationships. The library-implied subsetting, type featuring and redefinitions of every
   projected element, and the references, sources and library documents they pulled in, were most

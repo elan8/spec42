@@ -229,7 +229,7 @@ package DirectTypingExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:69267fbb225208d0727467cf99ff9304fae56c18592ecc8f63100e522e092090",
   "documents": [
     {

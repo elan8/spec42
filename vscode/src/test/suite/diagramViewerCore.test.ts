@@ -117,7 +117,7 @@ describe("diagram viewer core", () => {
 
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 6,
+      schemaVersion: 7,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],

@@ -135,7 +135,7 @@ package InterconnectionNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:ed6d166d16e502374dda82cb72b2a989127687252380fe7a8193866dc01432b7",
   "documents": [
     {

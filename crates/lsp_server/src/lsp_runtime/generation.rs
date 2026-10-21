@@ -90,7 +90,7 @@ pub(crate) struct DiagramParams {
     pub(crate) expected_model_digest: Option<String>,
 }
 
-/// `spec42/diagram`: the schema-6 diagram product of one catalog view, built natively.
+/// `spec42/diagram`: the schema-7 diagram product of one catalog view, built natively.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramResult {
