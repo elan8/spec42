@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **General-view edge labels keep clear of nodes and lines.** A label such as «allocate» was
+  placed at the middle of its edge's longest run regardless of what stood there, so it could
+  cover a node's border or another line. Layout now keeps room for each label between the layers
+  its edge joins; the label is drawn on its edge at that height, or beside it where two edges run
+  too close for both.
+
 - **Smaller diagram products (schema 6).** A diagram product now carries only authored
   relationships. The library-implied subsetting, type featuring and redefinitions of every
   projected element, and the references, sources and library documents they pulled in, were most
