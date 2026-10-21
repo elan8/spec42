@@ -632,8 +632,8 @@ package Deployment {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
-  "modelDigest": "blake3:84a3605bbdfa998b5c12e1051097704dc6734fcde6e2c8aaa9d8aabf9df8424e",
+  "schemaVersion": 7,
+  "modelDigest": "blake3:7c49bb3f1e45d12383e9461e47b06f847099404015da3c1cc3e3add0d3d77cfc",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_incident_allocation.md",

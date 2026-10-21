@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-6 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-7 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};
@@ -2714,7 +2714,7 @@ fn enrich_typed_catalog_product(selected_kind: &str, product: &mut Value) {
             let hierarchy_layout = graph_nodes
                 .iter()
                 .any(|node| !node.parent_id.is_empty() && by_id.contains(&node.parent_id));
-            let rows = if hierarchy_layout {
+            let mut rows = if hierarchy_layout {
                 build_hierarchy_rows(&graph_nodes, &tree_roots)
             } else {
                 graph_nodes
@@ -2722,6 +2722,28 @@ fn enrich_typed_catalog_product(selected_kind: &str, product: &mut Value) {
                     .map(|node| browser_row_value(node, 0, false))
                     .collect()
             };
+            // The projection says how each row belongs to its parent and whether its members are
+            // loaded; a row with members still to load opens through the host, by its key.
+            let facts: HashMap<String, &Value> = as_array(field(metadata, "rows"))
+                .iter()
+                .filter_map(|fact| {
+                    field(fact, "node")
+                        .as_u64()
+                        .map(|index| (format!("n:{index}"), fact))
+                })
+                .collect();
+            for row in &mut rows {
+                let Some(fact) = facts.get(&as_string(field(row, "id"), "")) else {
+                    continue;
+                };
+                let members = as_string(field(fact, "members"), "none");
+                row["membership"] = field(fact, "membership").clone();
+                row["members"] = json!(members);
+                row["key"] = field(fact, "key").clone();
+                if members == "unloaded" {
+                    row["hasChildren"] = json!(true);
+                }
+            }
             let mut meta = as_object(field(product, "meta"));
             meta.insert("rows".into(), Value::Array(rows));
             meta.insert("hierarchyLayout".into(), json!(hierarchy_layout));
@@ -2981,7 +3003,7 @@ fn prepare_typed_action_flow(
 }
 
 fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
-    if field(input, "schemaVersion").as_u64() != Some(6) {
+    if field(input, "schemaVersion").as_u64() != Some(7) {
         return None;
     }
     let selected = field(input, "selectedView");

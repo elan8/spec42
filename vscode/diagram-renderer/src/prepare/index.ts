@@ -83,7 +83,7 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
 }
 
 /**
- * Adapt the authority-owned schema-6 sequence scene into the legacy shape the renderer consumes.
+ * Adapt the authority-owned schema-7 sequence scene into the legacy shape the renderer consumes.
  * Endpoint ownership and temporal ordering are semantic facts already settled by the scene.
  */
 function sequenceDiagramFromScene(
@@ -123,7 +123,7 @@ function isDiagramProduct(input: unknown): input is DiagramProduct {
   const product = asRecord(input);
   const selected = asRecord(product.selectedView);
   const projection = asRecord(product.projection);
-  return product.schemaVersion === 6 && typeof product.modelDigest === "string" &&
+  return product.schemaVersion === 7 && typeof product.modelDigest === "string" &&
     Array.isArray(product.documents) && Array.isArray(product.sources) && Array.isArray(product.references) &&
     typeof selected.kind === "string" && typeof selected.name === "string" &&
     projection.kind === selected.kind && Array.isArray(projection.exposedRoots) &&

@@ -4,7 +4,7 @@ use spec42::headless_renderer::render_native_svg;
 
 fn schema6_sequence_payload() -> String {
     serde_json::json!({
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],

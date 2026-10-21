@@ -139,7 +139,7 @@ fn diagram_views_returns_the_webshop_catalog_over_the_lsp() {
     );
     let product: serde_json::Value =
         serde_json::from_str(product_json).expect("the product is JSON");
-    assert_eq!(product["schemaVersion"], 6);
+    assert_eq!(product["schemaVersion"], 7);
     assert_eq!(product["selectedView"]["name"], "checkoutPipeline");
     assert_eq!(product["modelDigest"], response["result"]["modelDigest"]);
 

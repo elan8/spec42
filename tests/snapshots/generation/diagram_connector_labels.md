@@ -950,8 +950,8 @@ package Links {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
-  "modelDigest": "blake3:c4d40bfab232d353f07152d874c367c9ab1ca99e93bd526f13db5b7526d3705b",
+  "schemaVersion": 7,
+  "modelDigest": "blake3:c283bd408e63a62c86726a772afd355ce139817d31150672b94ef780f9802790",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

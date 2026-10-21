@@ -706,8 +706,8 @@ package Seq {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
-  "modelDigest": "blake3:c5b81aa582d5fa418a0aaa72d74efb5a84d7fa66daa610bac4663fd3b0045f59",
+  "schemaVersion": 7,
+  "modelDigest": "blake3:6b04ed5bae203da056087c3fbe5d9a241c4eadc3a21c73351242535e332a178f",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_event_order_event_cycle.md",

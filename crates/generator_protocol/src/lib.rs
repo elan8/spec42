@@ -895,6 +895,31 @@ pub struct DiagramOccurrenceIdentity {
     pub semantic_path: Vec<DiagramSemanticReference>,
 }
 
+/// How a browser row belongs to its parent: SysML 9.2.20.2.2 presents membership, which for a
+/// type includes what it inherits.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramMembership {
+    Owned,
+    Inherited,
+}
+
+/// Whether a browser row's own members are in the projection.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramBrowserMembers {
+    None,
+    Loaded,
+    Unloaded,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramBrowserRow {
+    pub occurrence: DiagramOccurrenceIdentity,
+    /// The occurrence's stable key: what a client sends back to open this row's branch.
+    pub key: String,
+    pub membership: DiagramMembership,
+    pub members: DiagramBrowserMembers,
+}
+
 /// Authored FeatureTyping of a projected element. Compact node labels consume this family,
 /// not the effective-type closure that includes implied library types.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1053,6 +1078,9 @@ pub enum DiagramViewMetadata {
     },
     Browser {
         roots: Vec<DiagramOccurrenceIdentity>,
+        /// One per projected row, in row order: how it belongs to its parent and whether its own
+        /// members are loaded, still to load, or absent.
+        rows: Vec<DiagramBrowserRow>,
     },
     Grid {
         rows: Vec<DiagramOccurrenceIdentity>,
@@ -1328,7 +1356,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0xf58d_c614_fefb_46d6,
+            SCHEMA_FINGERPRINT, 0x9c88_afcd_af3f_b511,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1336,7 +1364,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x3372_b411_f3f5_d7e6,
+            COMPATIBILITY_TOKEN, 0x360e_726c_919a_4dcb,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

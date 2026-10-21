@@ -75,13 +75,19 @@ pub fn render_browser_view(
                     .style("stroke-width", "1px")
                     .style("opacity", "0.9"),
             );
+        // A row whose members are not loaded yet opens by asking the host for its branch.
+        let unloaded = as_string(field(row, "members"), "") == "unloaded";
         if has_children {
-            let collapsed_row = collapsed.contains(&row_id);
+            let collapsed_row = unloaded || collapsed.contains(&row_id);
             item = item.child(
                 Element::new("g")
                     .attr(
                         "class",
                         "browser-toggle general-node-toggle sysml-disclosure",
+                    )
+                    .maybe_attr(
+                        "data-browser-load",
+                        unloaded.then(|| as_string(field(row, "key"), "")),
                     )
                     .attr("role", "button")
                     .attr("tabindex", "0")
@@ -102,7 +108,14 @@ pub fn render_browser_view(
             );
         }
         let visibility_prefix = visibility_glyph(&as_string(field(row, "visibility"), ""));
-        let label = as_string(first_row_label(row), "Unnamed");
+        // SysML 8.2.3.6 (`el-prefix`, `usage-name-with-alias`): an inherited usage is shown with
+        // a caret before its name.
+        let inherited = if as_string(field(row, "membership"), "") == "inherited" {
+            "^"
+        } else {
+            ""
+        };
+        let label = format!("{inherited}{}", as_string(first_row_label(row), "Unnamed"));
         item = item.child(
             Element::new("text")
                 .attr_f(
