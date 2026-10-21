@@ -403,11 +403,25 @@ fn build_general_elk_graph(prepared: &Value) -> Option<GeneralElkGraphBuild> {
     let edges: Vec<Value> = diagram_edges
         .iter()
         .map(|edge| {
-            json!({
+            let mut elk_edge = json!({
                 "id": field(edge, "id"),
                 "sources": [field(edge, "source")],
                 "targets": [field(edge, "target")],
-            })
+            });
+            // The label the edge is drawn with takes room in the layout, between the layers
+            // the edge joins, so that it covers neither a node nor another line.
+            let label = serde_json::from_value::<crate::types::LaidOutEdge>(edge.clone())
+                .ok()
+                .and_then(|edge| crate::edges::general_edge_label_box(&edge));
+            if let Some((text, width, height)) = label {
+                elk_edge["labels"] = json!([{
+                    "id": format!("{}__label", as_string(field(edge, "id"), "")),
+                    "text": text,
+                    "width": width,
+                    "height": height,
+                }]);
+            }
+            elk_edge
         })
         .collect();
     let hierarchy_handling = if use_hierarchy || flat_children_were_chunked {

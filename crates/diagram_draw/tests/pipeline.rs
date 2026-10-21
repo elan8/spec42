@@ -1425,3 +1425,58 @@ fn flows_between_connected_ports_are_drawn_on_their_connector() {
     expected.sort();
     assert_eq!(directions, expected);
 }
+
+#[test]
+fn general_edge_labels_keep_clear_of_nodes_and_each_other() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_general_incident_allocation.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("general view lays out");
+    // Layout keeps a box for each drawn «allocate» label.
+    let kept: Vec<(f64, f64)> = input["edges"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(|edge| edge["layout"]["labels"].as_array()?.first().cloned())
+        .map(|label| {
+            (
+                label["width"].as_f64().unwrap(),
+                label["height"].as_f64().unwrap(),
+            )
+        })
+        .collect();
+    assert_eq!(kept.len(), 2, "{input}");
+
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw general view");
+    let tree = diagram_draw::xml::parse(&svg);
+    let mut texts = Vec::new();
+    with_class(&tree, "viz-edge-label", &mut texts);
+    assert_eq!(texts.len(), 2, "{svg}");
+    let (width, height) = kept[0];
+    let boxes: Vec<(f64, f64, f64, f64)> = texts
+        .iter()
+        .map(|text| {
+            let x: f64 = text.attrs["x"].parse().unwrap();
+            let y: f64 = text.attrs["y"].parse().unwrap();
+            (x - width / 2.0, y - height / 2.0, width, height)
+        })
+        .collect();
+    let overlaps = |a: (f64, f64, f64, f64), b: (f64, f64, f64, f64)| {
+        a.0 < b.0 + b.2 && b.0 < a.0 + a.2 && a.1 < b.1 + b.3 && b.1 < a.1 + a.3
+    };
+    for node in input["nodes"].as_array().unwrap() {
+        let rect = (
+            node["x"].as_f64().unwrap(),
+            node["y"].as_f64().unwrap(),
+            node["width"].as_f64().unwrap(),
+            node["height"].as_f64().unwrap(),
+        );
+        for label in &boxes {
+            assert!(
+                !overlaps(*label, rect),
+                "label {label:?} covers node {rect:?}"
+            );
+        }
+    }
+    assert!(!overlaps(boxes[0], boxes[1]), "labels overlap: {boxes:?}");
+}
