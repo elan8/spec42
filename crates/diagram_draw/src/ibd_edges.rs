@@ -2,7 +2,7 @@
 //! `interconnectionEdgeLabelAnchor` in `render/drawing.ts` (the General-View branches are already
 //! ported in `edges.rs`).
 
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use crate::graph_normalization::normalize_edge_kind;
 use crate::hit_target::{mark_visible_edge, path_edge_hit_target};
@@ -481,6 +481,44 @@ pub fn draw_ibd_edges(
         }
     }
 
+    // SysML 8.2.3.12 `flow-on-connection`: a flow between the two ends of a connector, such as
+    // one an interface definition declares, is drawn on that connector as a small arrow in the
+    // flow's direction rather than as a line of its own over it.
+    let edge_kind_of = |edge: &LaidOutEdge| {
+        edge.edge_kind
+            .clone()
+            .unwrap_or_else(|| normalize_edge_kind(&edge.label))
+    };
+    let typed = |edge: &LaidOutEdge| {
+        edge.attributes.get("typedProjection") == Some(&serde_json::Value::Bool(true))
+    };
+    let mut connector_of_ends: HashMap<(&str, &str), usize> = HashMap::new();
+    for (index, edge) in edges.iter().enumerate() {
+        if typed(edge) && edge_kind_of(edge) == "connection" && all_routes[index].len() >= 2 {
+            connector_of_ends
+                .entry((edge.source.as_str(), edge.target.as_str()))
+                .or_insert(index);
+        }
+    }
+    // For each connector, the flows drawn on it and whether each runs from its source end.
+    let mut flows_on: HashMap<usize, Vec<(&LaidOutEdge, bool)>> = HashMap::new();
+    for edge in edges {
+        if !typed(edge) || edge_kind_of(edge) != "flow" {
+            continue;
+        }
+        let (source, target) = (edge.source.as_str(), edge.target.as_str());
+        if let Some(&connector) = connector_of_ends.get(&(source, target)) {
+            flows_on.entry(connector).or_default().push((edge, true));
+        } else if let Some(&connector) = connector_of_ends.get(&(target, source)) {
+            flows_on.entry(connector).or_default().push((edge, false));
+        }
+    }
+    let on_connector: HashSet<&str> = flows_on
+        .values()
+        .flatten()
+        .map(|(edge, _)| edge.id.as_str())
+        .collect();
+
     let mut edge_layer = Element::new("g").attr("class", "viz-edges");
     struct PendingLabel {
         edge_id: String,
@@ -490,7 +528,10 @@ pub fn draw_ibd_edges(
     }
     let mut labels = Vec::new();
 
-    for edge in edges {
+    for (edge_index, edge) in edges.iter().enumerate() {
+        if on_connector.contains(edge.id.as_str()) {
+            continue;
+        }
         let (Some(&source), Some(&target)) = (
             nodes_by_id.get(edge.source.as_str()),
             nodes_by_id.get(edge.target.as_str()),
@@ -579,6 +620,13 @@ pub fn draw_ibd_edges(
         let tooltip_text =
             tooltip_fallback_text(&edge_tooltip_descriptor_interconnection(edge, nodes_by_id));
         edge_layer = edge_layer.child(path_edge_hit_target(&path, &edge.id, Some(&tooltip_text)));
+        if let Some(flows) = flows_on.get(&edge_index) {
+            for element in
+                flow_nodes_on_connector(&all_routes[edge_index], flows, nodes_by_id, theme)
+            {
+                edge_layer = edge_layer.child(element);
+            }
+        }
 
         if !display_label.is_empty() {
             if typed_projection {
@@ -647,6 +695,76 @@ pub fn draw_ibd_edges(
         );
     }
     vec![edge_layer, label_layer]
+}
+
+/// The length of the arrow a flow on a connector is drawn as, and the gap between two of them.
+const FLOW_NODE_LENGTH: f64 = 10.0;
+const FLOW_NODE_GAP: f64 = 14.0;
+
+/// The `flow-node` arrows of the flows on one connector, side by side about the middle of its
+/// longest run, each pointing the way its flow goes.
+fn flow_nodes_on_connector(
+    route: &[Point],
+    flows: &[(&LaidOutEdge, bool)],
+    nodes_by_id: &HashMap<&str, &LaidOutNode>,
+    theme: &Theme,
+) -> Vec<Element> {
+    // The first of the longest runs, so that the arrows stay clear of the bends.
+    let Some((start, end)) = route.windows(2).map(|pair| (pair[0], pair[1])).fold(
+        None,
+        |best: Option<(Point, Point)>, (a, b)| {
+            let length = |(a, b): (Point, Point)| (b.x - a.x).abs() + (b.y - a.y).abs();
+            match best {
+                Some(best) if length(best) >= length((a, b)) => Some(best),
+                _ => Some((a, b)),
+            }
+        },
+    ) else {
+        return Vec::new();
+    };
+    let length = (end.x - start.x).abs() + (end.y - start.y).abs();
+    if length <= 0.0 {
+        return Vec::new();
+    }
+    // Unit vector along the run, from the connector's source end towards its target end.
+    let (ux, uy) = ((end.x - start.x) / length, (end.y - start.y) / length);
+    let pitch = FLOW_NODE_LENGTH + FLOW_NODE_GAP;
+    let first = -(flows.len() as f64 - 1.0) * pitch / 2.0;
+    flows
+        .iter()
+        .enumerate()
+        .map(|(index, (flow, forward))| {
+            let along = length / 2.0 + first + index as f64 * pitch;
+            let (cx, cy) = (start.x + ux * along, start.y + uy * along);
+            let (dx, dy) = if *forward { (ux, uy) } else { (-ux, -uy) };
+            let half = FLOW_NODE_LENGTH / 2.0;
+            let tip = (cx + dx * half, cy + dy * half);
+            let base = (cx - dx * half, cy - dy * half);
+            let side = (-dy * half, dx * half);
+            let tooltip =
+                tooltip_fallback_text(&edge_tooltip_descriptor_interconnection(flow, nodes_by_id));
+            Element::new("path")
+                .attr("class", "ibd-flow-on-connection")
+                .attr("data-flow-id", flow.id.clone())
+                .attr("data-source", flow.source.clone())
+                .attr("data-target", flow.target.clone())
+                .attr(
+                    "d",
+                    format!(
+                        "M{},{}L{},{}L{},{}Z",
+                        n(tip.0),
+                        n(tip.1),
+                        n(base.0 + side.0),
+                        n(base.1 + side.1),
+                        n(base.0 - side.0),
+                        n(base.1 - side.1)
+                    ),
+                )
+                .style("fill", stroke_color_for_edge(theme))
+                .style("stroke", "none")
+                .child(Element::new("title").text(tooltip))
+        })
+        .collect()
 }
 
 #[cfg(test)]
