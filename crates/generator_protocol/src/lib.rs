@@ -1371,7 +1371,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x9c88_afcd_af3f_b511,
+            SCHEMA_FINGERPRINT, 0x252e_7fb1_75bd_0a3b,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1379,7 +1379,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x360e_726c_919a_4dcb,
+            COMPATIBILITY_TOKEN, 0x1df7_2a6b_fd2a_0025,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }
