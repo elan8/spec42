@@ -704,6 +704,11 @@ impl PublishedResolution {
         let mut browser_membership =
             BTreeMap::<DiagramOccurrenceIdentity, DiagramMembership>::new();
         while let Some(owner_occurrence) = queue.pop_front() {
+            // SysML 9.2.20.2.5: a Grid View arranges the exposed elements and their
+            // relationships; their members are not rows or columns of their own.
+            if view_entry.kind == DiagramViewKind::Grid {
+                continue;
+            }
             let owner = occurrences
                 .get(&owner_occurrence)
                 .expect("queued diagram occurrence must exist")
@@ -829,8 +834,12 @@ impl PublishedResolution {
         // Relationship usages may be owned outside the exposed subtrees (a deployment
         // allocation normally belongs to the enclosing assembly). Include the authored
         // relationship when its metaclass passes the filter and both of its settled ends
-        // are already represented. Do not expose unrelated endpoints or expand its owner.
-        if view_entry.kind == DiagramViewKind::General {
+        // are already represented. Do not expose unrelated endpoints or expand its owner. A
+        // Grid View's relationship matrix shows the same relationships as cells.
+        if matches!(
+            view_entry.kind,
+            DiagramViewKind::General | DiagramViewKind::Grid
+        ) {
             let represented = occurrences
                 .values()
                 .map(|(id, _)| *id)
@@ -1205,7 +1214,10 @@ impl PublishedResolution {
                 .iter()
                 .filter(|relationship| relationship.source == element.occurrence_id)
                 .collect::<Vec<_>>();
-            if view_entry.kind == DiagramViewKind::General {
+            if matches!(
+                view_entry.kind,
+                DiagramViewKind::General | DiagramViewKind::Grid
+            ) {
                 if let Some((source_kind, target_kind, kind)) =
                     general_binary_relationship(element.kind)
                 {
@@ -1511,7 +1523,10 @@ impl PublishedResolution {
             // subsetting (`Parts::parts`, `Items::items`, the kernel chain) stays off the canvas --
             // the typed facts remain on `relationships` for inspectors -- and an end that is
             // unresolved, ambiguous, or outside the view yields no edge rather than a guessed line.
-            if view_entry.kind == DiagramViewKind::General {
+            if matches!(
+                view_entry.kind,
+                DiagramViewKind::General | DiagramViewKind::Grid
+            ) {
                 for relationship in &outgoing {
                     if relationship.provenance != RelationshipProvenance::Authored {
                         continue;
@@ -1710,7 +1725,7 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
                 | DiagramRelationshipKind::FlowTarget
                 | DiagramRelationshipKind::Succession
         ),
-        DiagramViewKind::General => matches!(
+        DiagramViewKind::General | DiagramViewKind::Grid => matches!(
             kind,
             DiagramRelationshipKind::AllocateSource
                 | DiagramRelationshipKind::AllocateTarget
@@ -1719,7 +1734,7 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
                 | DiagramRelationshipKind::BindSource
                 | DiagramRelationshipKind::BindTarget
         ),
-        DiagramViewKind::Browser | DiagramViewKind::Grid | DiagramViewKind::Geometry => false,
+        DiagramViewKind::Browser | DiagramViewKind::Geometry => false,
     }
 }
 

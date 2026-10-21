@@ -1046,11 +1046,25 @@ pub struct DiagramEdge {
     pub source: Option<SourceReference>,
 }
 
+/// How a Grid View arranges its exposed elements. SysML v2 9.2.20.2.5 names a relationship
+/// matrix and a tabular view among the specializations of a Grid View.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramGridLayout {
+    /// Rows are the exposed elements at the source end of a relationship between two exposed
+    /// elements, columns those at its target end, and each cell one such relationship.
+    RelationshipMatrix,
+    /// No relationship joins two exposed elements: one row for each exposed element.
+    ElementTable,
+}
+
+/// One cell of a relationship matrix: the relationship edge from `row` to `column` declared by
+/// `origin`, with the edge's `kind`. Together they identify one entry of the projection's edges.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct DiagramGridCell {
     pub row: DiagramOccurrenceIdentity,
-    pub column: RelationshipKind,
-    pub relationship: DiagramSemanticReference,
+    pub column: DiagramOccurrenceIdentity,
+    pub origin: DiagramOccurrenceIdentity,
+    pub kind: DiagramEdgeKind,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1083,8 +1097,9 @@ pub enum DiagramViewMetadata {
         rows: Vec<DiagramBrowserRow>,
     },
     Grid {
+        layout: DiagramGridLayout,
         rows: Vec<DiagramOccurrenceIdentity>,
-        columns: Vec<RelationshipKind>,
+        columns: Vec<DiagramOccurrenceIdentity>,
         cells: Vec<DiagramGridCell>,
     },
     Geometry {

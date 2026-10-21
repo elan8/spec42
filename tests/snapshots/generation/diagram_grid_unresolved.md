@@ -199,6 +199,7 @@ package GridNegative {
     "metadata": {
       "cells": [],
       "columns": [],
+      "layout": "element-table",
       "rows": []
     },
     "nodes": [],
