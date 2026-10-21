@@ -155,7 +155,7 @@ package BrowserProbe {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:59e0977b23512e53c9fd68840d7ff3220d7f525d266b4af2d545bd67f1a7a275",
   "documents": [
     {
@@ -275,6 +275,20 @@ package BrowserProbe {
     "metadata": {
       "roots": [
         0
+      ],
+      "rows": [
+        {
+          "key": "96:element/v133:memory://snapshot/structure.kerml7:packagen11:KernelModel1:09:class-defn6:Holder1:0",
+          "members": "loaded",
+          "membership": "owned",
+          "node": 0
+        },
+        {
+          "key": "96:element/v133:memory://snapshot/structure.kerml7:packagen11:KernelModel1:09:class-defn6:Holder1:0116:element/v133:memory://snapshot/structure.kerml7:packagen11:KernelModel1:09:class-defn6:Holder1:013:kerml-featurea1:0",
+          "members": "none",
+          "membership": "owned",
+          "node": 1
+        }
       ]
     },
     "nodes": [
