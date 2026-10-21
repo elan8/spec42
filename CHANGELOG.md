@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Action flows run between parameters.** A flow between two parameters is drawn from the square
+  of one to the square of the other, leaving and entering each action on the side its parameter
+  stands on and going around the actions in between, instead of between the action boxes. The
+  parameters of an action that holds a flow are drawn on its boundary, so the flows that start or
+  end there no longer run through the whole diagram. Parameter names stand above their squares.
+
 - **Smaller diagram products (schema 6).** A diagram product now carries only authored
   relationships. The library-implied subsetting, type featuring and redefinitions of every
   projected element, and the references, sources and library documents they pulled in, were most

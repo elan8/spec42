@@ -87,12 +87,13 @@ fn draw_parameters(
     mut g: Element,
     items: &[Value],
     side: &str,
+    container: bool,
     layout: &crate::behavior_common::LaidOutRect,
     theme: &Theme,
 ) -> Element {
     for (index, item) in items.iter().enumerate() {
         let name = parameter_name(item);
-        let y = 20.0 + index as f64 * 14.0;
+        let y = crate::layout::parameter_offset(index, container);
         let boundary = if side == "input" { 0.0 } else { layout.width };
         let x = if side == "input" {
             -PARAMETER_SIZE / 2.0
@@ -121,8 +122,9 @@ fn draw_parameters(
                     "class",
                     format!("action-parameter-label action-parameter-{side}-label"),
                 )
+                // Above the square, so that a flow leaving it does not run through the name.
                 .attr_f("x", if side == "input" { x - 4.0 } else { x + 4.0 })
-                .attr_f("y", y + 3.0)
+                .attr_f("y", y - 6.0)
                 .attr("text-anchor", if side == "input" { "end" } else { "start" })
                 .style("font-size", "8px")
                 .style("fill", theme.text_secondary)
@@ -350,8 +352,8 @@ fn draw_action_node(
     );
 
     if !is_initial(&kind) && !is_final(&kind) && !is_decision(&kind) && !is_fork(&kind) {
-        g = draw_parameters(g, inputs, "input", layout, theme);
-        g = draw_parameters(g, outputs, "output", layout, theme);
+        g = draw_parameters(g, inputs, "input", false, layout, theme);
+        g = draw_parameters(g, outputs, "output", false, layout, theme);
     }
 
     g
@@ -377,7 +379,7 @@ fn draw_action_container(
     theme: &Theme,
 ) -> Element {
     let is_perform = activity_node_kind(node).contains("perform");
-    Element::new("g")
+    let g = Element::new("g")
         .attr(
             "class",
             "activity-action action-flow-node action-flow-container",
@@ -429,7 +431,13 @@ fn draw_action_container(
                 .attr_f("y2", crate::layout::ACTION_CONTAINER_HEADER)
                 .style("stroke", theme.node_border)
                 .style("stroke-width", "1px"),
-        )
+        );
+    // The parameters of the action that holds the flow stand on its boundary too, where the
+    // flows inside it start and end.
+    let inputs = attr_array(&node.attributes, "inputs", "inputParameters");
+    let outputs = attr_array(&node.attributes, "outputs", "outputParameters");
+    let g = draw_parameters(g, inputs, "input", true, layout, theme);
+    draw_parameters(g, outputs, "output", true, layout, theme)
 }
 
 struct LaneExtent {
@@ -497,6 +505,11 @@ pub fn render_action_flow_view(
     }
     // Include decorations outside node rectangles before enclosing the root view.
     let mut content = crate::behavior_common::content_extent(layout);
+    let holds_flow: std::collections::HashSet<String> = prepared
+        .nodes
+        .iter()
+        .map(|node| attr_text(&node.attributes, "containerId"))
+        .collect();
     for node in &prepared.nodes {
         let Some(position) = layout.positions.get(&node.id) else {
             continue;
@@ -518,7 +531,11 @@ pub fn render_action_flow_view(
                 } else {
                     content.2 = content.2.max(position.x + position.width + width);
                 }
-                content.3 = content.3.max(position.y + 25.0 + index as f64 * 14.0);
+                content.3 = content.3.max(
+                    position.y
+                        + crate::layout::parameter_offset(index, holds_flow.contains(&node.id))
+                        + 5.0,
+                );
             }
         }
         if activity_node_kind(node).contains("fork") || activity_node_kind(node).contains("join") {

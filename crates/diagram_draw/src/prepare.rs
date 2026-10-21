@@ -2825,23 +2825,27 @@ fn prepare_typed_action_flow(
     let parameters = |action: usize, directions: &[&str]| -> Vec<Value> {
         raw_nodes
             .iter()
-            .filter(|node| field(node, "owner").as_u64() == Some(action as u64))
-            .filter(|node| {
+            .enumerate()
+            .filter(|(_, node)| field(node, "owner").as_u64() == Some(action as u64))
+            .filter(|(_, node)| {
                 field(node, "direction")
                     .as_str()
                     .is_some_and(|direction| directions.contains(&direction))
             })
-            .filter_map(|node| field(node, "name").as_str())
-            .map(|name| json!({ "name": name }))
+            .filter_map(|(index, node)| Some((index, field(node, "name").as_str()?)))
+            .map(|(index, name)| json!({ "id": format!("n:{index}"), "name": name }))
             .collect()
     };
-    // A flow runs between parameters; it is drawn between the actions that own them.
-    let flow_end = |index: usize| -> Option<usize> {
+    // A flow runs between parameters; it is drawn between the squares of those parameters on the
+    // actions that own them, or between the actions themselves when an end is the action.
+    let flow_end = |index: usize| -> Option<(usize, Option<usize>)> {
         if action_indexes.contains(&index) {
-            return Some(index);
+            return Some((index, None));
         }
         let owner = field(raw_nodes.get(index)?, "owner").as_u64()? as usize;
-        action_indexes.contains(&owner).then_some(owner)
+        action_indexes
+            .contains(&owner)
+            .then_some((owner, Some(index)))
     };
     let mut ordered_indexes: Vec<usize> = action_indexes.iter().copied().collect();
     ordered_indexes.sort_unstable();
@@ -2906,11 +2910,12 @@ fn prepare_typed_action_flow(
             }
             let source = field(edge, "source").as_u64()? as usize;
             let target = field(edge, "target").as_u64()? as usize;
-            let (source, target) = if kind == "flow" {
+            let ((source, source_parameter), (target, target_parameter)) = if kind == "flow" {
                 (flow_end(source)?, flow_end(target)?)
             } else {
-                (source, target)
+                ((source, None), (target, None))
             };
+            let parameter = |index: Option<usize>| index.map(|index| format!("n:{index}"));
             if !action_indexes.contains(&source) || !action_indexes.contains(&target) {
                 return None;
             }
@@ -2928,6 +2933,8 @@ fn prepare_typed_action_flow(
                 "attributes": {
                     "succession": kind == "succession",
                     "streamingFlow": kind == "flow",
+                    "sourceParameter": parameter(source_parameter),
+                    "targetParameter": parameter(target_parameter),
                     "typedProjection": true,
                     "provenance": field(edge, "provenance"),
                     "sourceNavigation": navigation(field(edge, "navigation")),
