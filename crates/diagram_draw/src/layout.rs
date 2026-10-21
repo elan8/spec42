@@ -2507,10 +2507,12 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
                 field(field(port, "layoutOptions"), "org.eclipse.elk.port.side"),
                 "",
             );
+            // SysML 8.2.3.12: a port is a small square on the boundary of its part. Layout
+            // places it just outside that boundary, so its centre is moved onto it.
             let x = if side == "WEST" {
-                abs_x + num(field(port, "x"))
-            } else if side == "EAST" {
                 abs_x + num(field(port, "x")) + pw
+            } else if side == "EAST" {
+                abs_x + num(field(port, "x"))
             } else {
                 abs_x + num(field(port, "x")) + pw / 2.0
             };

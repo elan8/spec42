@@ -1339,3 +1339,89 @@ fn bindings_to_nested_ports_keep_their_exact_boundary_anchors() {
     assert!(svg.contains("data-port-name=\"bundle.b\""));
     assert_eq!(svg.matches("class=\"ibd-connector ").count(), 1);
 }
+
+/// Every element of `node`'s subtree whose `class` attribute contains `class`.
+fn with_class<'a>(
+    node: &'a diagram_draw::xml::XmlNode,
+    class: &str,
+    found: &mut Vec<&'a diagram_draw::xml::XmlNode>,
+) {
+    if node
+        .attrs
+        .get("class")
+        .is_some_and(|value| value.split_whitespace().any(|item| item == class))
+    {
+        found.push(node);
+    }
+    for child in &node.children {
+        with_class(child, class, found);
+    }
+}
+
+#[test]
+fn ports_stand_on_the_boundary_and_connectors_end_on_their_squares() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_office_two_monitors.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("typed interconnection lays out");
+    let layout = &input["interconnectionLayout"];
+    let mut ends = Vec::new();
+    for node in layout["nodes"].as_array().unwrap() {
+        let width = node["width"].as_f64().unwrap();
+        for anchor in node["portAnchors"].as_object().unwrap().values() {
+            // SysML 8.2.3.12: a port is a small square on the boundary of its part.
+            let x = anchor["x"].as_f64().unwrap();
+            match anchor["side"].as_str().unwrap() {
+                "WEST" => assert_eq!(x, 0.0, "{anchor}"),
+                "EAST" => assert_eq!(x, width, "{anchor}"),
+                _ => {}
+            }
+            ends.push((
+                node["x"].as_f64().unwrap() + x,
+                node["y"].as_f64().unwrap() + anchor["y"].as_f64().unwrap(),
+            ));
+        }
+    }
+    // A connector ends on the side of a port's 10 px square, not inside it or beyond it.
+    for edge in layout["edges"].as_array().unwrap() {
+        let points = edge["routePoints"].as_array().unwrap();
+        for point in [points.first().unwrap(), points.last().unwrap()] {
+            let (x, y) = (point["x"].as_f64().unwrap(), point["y"].as_f64().unwrap());
+            assert!(
+                ends.iter()
+                    .any(|(px, py)| (x - px).abs() == 5.0 && y == *py),
+                "connector end {point} is not on a port square"
+            );
+        }
+    }
+}
+
+#[test]
+fn flows_between_connected_ports_are_drawn_on_their_connector() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_interconnection_flows_on_connector.md"
+    ));
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw interconnection");
+    let tree = diagram_draw::xml::parse(&svg);
+    let mut connectors = Vec::new();
+    with_class(&tree, "ibd-connector", &mut connectors);
+    // SysML 8.2.3.12 `flow-on-connection`: the connector is the only line between the ports,
+    // with one arrow for each flow on it.
+    assert_eq!(connectors.len(), 1, "{svg}");
+    assert_eq!(connectors[0].attrs["data-type"], "connector");
+    let mut flows = Vec::new();
+    with_class(&tree, "ibd-flow-on-connection", &mut flows);
+    assert_eq!(flows.len(), 2, "{svg}");
+    let (source, target) = (
+        &connectors[0].attrs["data-source"],
+        &connectors[0].attrs["data-target"],
+    );
+    let mut directions: Vec<(&String, &String)> = flows
+        .iter()
+        .map(|flow| (&flow.attrs["data-source"], &flow.attrs["data-target"]))
+        .collect();
+    directions.sort();
+    let mut expected = vec![(source, target), (target, source)];
+    expected.sort();
+    assert_eq!(directions, expected);
+}

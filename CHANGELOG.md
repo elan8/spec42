@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Interconnection ports stand on their part's boundary.** A port square was drawn just off
+  the side of its part; it now straddles the boundary, as in the SysML notation, and a connector
+  ends on the side of the square it comes from. A flow between two ports that a connector joins is
+  drawn on that connector as a small arrow in the flow's direction (`flow-on-connection`), so an
+  interface with a flow each way no longer looks like a connector with an arrowhead at both ends.
+
 - **Smaller diagram products (schema 6).** A diagram product now carries only authored
   relationships. The library-implied subsetting, type featuring and redefinitions of every
   projected element, and the references, sources and library documents they pulled in, were most
