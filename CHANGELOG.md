@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Generator runtime security.** Upgrade Wasmtime to 48.0.7, addressing
+  RUSTSEC-2026-0378 and RUSTSEC-2026-0379.
+
 - **Smaller diagram products (schema 6).** A diagram product now carries only authored
   relationships. The library-implied subsetting, type featuring and redefinitions of every
   projected element, and the references, sources and library documents they pulled in, were most
