@@ -33,13 +33,31 @@ pub(crate) fn project_boundary_for_uri(
     workspace_roots: &[Url],
 ) -> Option<sysml_query::source::ProjectBoundary> {
     let document = canonicalize_or_self(&document.to_file_path().ok()?);
-    let ceiling = workspace_roots
+    let ceiling = project_ceiling_for_path(&document, workspace_roots)?;
+    sysml_query::source::discover_project_boundary(&document, &ceiling)
+}
+
+pub(crate) fn project_source_selected(
+    document: &Url,
+    workspace_roots: &[Url],
+) -> Result<bool, sysml_query::source::SourceError> {
+    let Ok(path) = document.to_file_path() else {
+        return Ok(false);
+    };
+    let document = canonicalize_or_self(&path);
+    let Some(ceiling) = project_ceiling_for_path(&document, workspace_roots) else {
+        return Ok(false);
+    };
+    sysml_query::source::workspace_source_selected(&document, &ceiling)
+}
+
+fn project_ceiling_for_path(document: &Path, workspace_roots: &[Url]) -> Option<PathBuf> {
+    workspace_roots
         .iter()
         .filter_map(|root| root.to_file_path().ok())
         .map(|root| canonicalize_or_self(&root))
         .filter(|root| document.starts_with(root))
-        .max_by_key(|root| root.components().count())?;
-    sysml_query::source::discover_project_boundary(&document, &ceiling)
+        .max_by_key(|root| root.components().count())
 }
 
 fn canonicalize_or_self(path: &Path) -> PathBuf {

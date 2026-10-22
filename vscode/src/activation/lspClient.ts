@@ -375,7 +375,10 @@ export function startLanguageClient(
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ language: "sysml" }, { language: "kerml" }],
     synchronize: {
-      fileEvents: vscode.workspace.createFileSystemWatcher("**/*.{sysml,kerml}"),
+      fileEvents: [
+        vscode.workspace.createFileSystemWatcher("**/*.{sysml,kerml}"),
+        vscode.workspace.createFileSystemWatcher("**/{.project.json,syside.toml,sysand-lock.toml,env.toml}"),
+      ],
     },
     initializationOptions: {
       libraryPaths,

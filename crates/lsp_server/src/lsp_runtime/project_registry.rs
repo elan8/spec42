@@ -9,7 +9,7 @@ use tower_lsp::lsp_types::Url;
 use crate::session::state::ServerState;
 use crate::session::WorkspaceHandle;
 
-use super::lifecycle::project_boundary_for_uri;
+use super::lifecycle::{project_boundary_for_uri, project_source_selected};
 
 /// Owns the independent semantic publication for every editor-visible SysML project.
 ///
@@ -353,6 +353,14 @@ impl ProjectRegistry {
         StandardLibraryAvailability,
         Option<String>,
     ) {
+        if let Err(error) = sysml_query::source::ProjectSourceScope::load(root) {
+            return (
+                Vec::new(),
+                Vec::new(),
+                self.standard_library_availability,
+                Some(error.to_string()),
+            );
+        }
         let Some(catalog) = &self.library_catalog else {
             let manifest = root.join(sysml_query::source::PROJECT_MANIFEST_FILE);
             if manifest.is_file() {
@@ -455,6 +463,13 @@ fn boundary_root_for_uri(uri: &Url, workspace_roots: &[Url]) -> Option<PathBuf> 
         return Some(canonicalize_or_self(path.parent()?));
     }
     if let Some(boundary) = project_boundary_for_uri(uri, workspace_roots) {
+        let path = uri.to_file_path().ok()?;
+        if sysml_query::source::is_sysml_like(&path) {
+            // Admission owns configuration-error reporting; never hide that state.
+            if let Ok(false) = project_source_selected(uri, workspace_roots) {
+                return None;
+            }
+        }
         return Some(boundary.project_root().to_path_buf());
     }
     // Editors may open a document outside every advertised workspace folder. It is not allowed
@@ -467,6 +482,107 @@ fn boundary_root_for_uri(uri: &Url, workspace_roots: &[Url]) -> Option<PathBuf> 
 mod tests {
     use super::*;
     use std::fs;
+
+    #[tokio::test]
+    async fn installed_manifests_cannot_create_workspace_sessions_but_keep_library_provenance() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path();
+        let library = root.join(".sysand/lib/types");
+        fs::create_dir_all(&library).unwrap();
+        fs::write(root.join("Model.sysml"), "package Model;").unwrap();
+        fs::write(
+            library.join(".project.json"),
+            r#"{"name":"Types","version":"1.0.0"}"#,
+        )
+        .unwrap();
+        fs::write(library.join("Types.sysml"), "package Types;").unwrap();
+        let model_uri = Url::from_file_path(root.join("Model.sysml")).unwrap();
+        let library_uri = Url::from_file_path(library.join("Types.sysml")).unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(
+                vec![Url::from_directory_path(root).unwrap()],
+                vec![library_root_url(&library).unwrap()],
+                Vec::new(),
+            )
+            .await;
+        assert_eq!(registry.handles().len(), 1);
+        assert!(registry.handle_for_uri(&library_uri).await.is_none());
+        assert_eq!(registry.handles().len(), 1);
+        assert!(registry
+            .query_handle_for_uri(&library_uri, Some(&model_uri))
+            .is_ok());
+    }
+
+    #[tokio::test]
+    async fn source_scope_applies_to_open_watch_and_query_routing_after_rediscovery() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path();
+        fs::create_dir(root.join("scratch")).unwrap();
+        fs::write(root.join("Model.sysml"), "package Model;").unwrap();
+        fs::write(root.join("scratch/Draft.sysml"), "package Draft;").unwrap();
+        let model = Url::from_file_path(root.join("Model.sysml")).unwrap();
+        let draft = Url::from_file_path(root.join("scratch/Draft.sysml")).unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(
+                vec![Url::from_directory_path(root).unwrap()],
+                Vec::new(),
+                Vec::new(),
+            )
+            .await;
+        let original = registry.handle_for_uri(&model).await.unwrap();
+        original
+            .store_document_text_fast(model.clone(), "package Unsaved;".into())
+            .await
+            .unwrap();
+        original
+            .set_document_open(model.clone(), true)
+            .await
+            .unwrap();
+        assert!(registry.handle_for_uri(&draft).await.is_some());
+        fs::write(root.join("syside.toml"), "exclude = ['scratch/**']").unwrap();
+        registry.rediscover().await;
+        assert!(registry.handle_for_uri(&draft).await.is_none());
+        assert!(registry.query_handle_for_uri(&draft, None).is_err());
+        let replacement = registry.handle_for_uri(&model).await.unwrap();
+        assert_eq!(
+            replacement.snapshot().index.get(&model).unwrap().content(),
+            "package Unsaved;"
+        );
+        fs::remove_file(root.join("syside.toml")).unwrap();
+        registry.rediscover().await;
+        assert!(registry.handle_for_uri(&draft).await.is_some());
+    }
+
+    #[tokio::test]
+    async fn malformed_source_configuration_is_an_explicit_project_admission_error() {
+        let temp = tempfile::tempdir().unwrap();
+        fs::write(temp.path().join("syside.toml"), "include = 4").unwrap();
+        let uri = Url::from_file_path(temp.path().join("Model.sysml")).unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(
+                vec![Url::from_directory_path(temp.path()).unwrap()],
+                Vec::new(),
+                Vec::new(),
+            )
+            .await;
+        assert!(registry.admission_error_for_uri(&uri).is_some());
+        assert!(registry.handles().is_empty());
+    }
 
     #[tokio::test]
     async fn library_queries_use_admission_and_require_context_when_shared() {

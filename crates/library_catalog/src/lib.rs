@@ -9,6 +9,7 @@
 pub mod catalog;
 pub mod dependencies;
 pub mod library;
+pub mod sysand;
 
 pub use catalog::{
     resolve_library_catalog, HostConfigFile, HostLibraryRequest, KparLibraryComponent,
