@@ -4,7 +4,7 @@ import { isNativeDiagramView, renderVisualization, type RenderController } from 
 import type { PreparedView } from "../../diagram-renderer/src/prepare";
 import type { DiagramProductIdentity, DisclosureState, RequestServerDraw, ViewportTransform } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
-import { isEmptyIncompleteDiagramProduct } from "./diagramProductState";
+import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "./diagramProductState";
 
 declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
 
@@ -260,8 +260,8 @@ async function render(message: RenderMessage): Promise<void> {
   const sameView = currentIdentity?.viewHandle === message.selectedHandle;
   retainedViewport = sameView ? controller?.getViewport() ?? retainedViewport : undefined;
   const viewport = retainedViewport;
-  // Product node indexes are snapshot-scoped: disclosure is reusable only at the same digest.
-  const disclosure = sameView && currentProduct?.modelDigest === product.modelDigest ? controller?.getDisclosureState() : undefined;
+  // Disclosure names nodes by product index; it is reusable only while the same nodes are projected.
+  const disclosure = sameView && sameProjectedNodes(currentProduct, product) ? controller?.getDisclosureState() : undefined;
   currentProduct = product;
 
   const prepared = prepareViewData(product);

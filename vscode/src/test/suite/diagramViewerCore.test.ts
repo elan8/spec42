@@ -19,9 +19,22 @@ import {
   resolveDiagramSelection,
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
-import { isEmptyIncompleteDiagramProduct } from "../../diagram/diagramProductState";
+import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "../../diagram/diagramProductState";
 
 describe("diagram viewer core", () => {
+  it("reuses disclosure only while a product projects the same nodes", () => {
+    const node = (name: string) => ({ reference: 0, name });
+    const product = (digest: string, names: string[]) => ({
+      modelDigest: digest, references: [{ kind: "qualified-name" }], projection: { nodes: names.map(node) },
+    });
+    const before = product("blake3:a", ["root", "child"]);
+    assert.equal(sameProjectedNodes(before, product("blake3:a", ["root", "child"])), true);
+    // Loading a browser branch keeps the digest but adds nodes and shifts their indexes.
+    assert.equal(sameProjectedNodes(before, product("blake3:a", ["root", "loaded", "child"])), false);
+    assert.equal(sameProjectedNodes(before, product("blake3:b", ["root", "child"])), false);
+    assert.equal(sameProjectedNodes(undefined, before), false);
+  });
+
   it("reuses an already-visible source column and otherwise requests a new one", () => {
     const editors = [
       { uri: "file:///workspace/other.sysml", viewColumn: 1 },
