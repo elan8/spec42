@@ -216,7 +216,9 @@ fn canonicalize_or_self(path: &Path) -> PathBuf {
 
 fn resolve_workspace_root(target: &Path, workspace_root: Option<&Path>) -> PathBuf {
     let fallback = workspace_root.map(Path::to_path_buf).unwrap_or_else(|| {
-        if target.is_dir() {
+        if let Some(root) = sysml_query::source::discover_enclosing_project_root(target) {
+            root
+        } else if target.is_dir() {
             target.to_path_buf()
         } else {
             target

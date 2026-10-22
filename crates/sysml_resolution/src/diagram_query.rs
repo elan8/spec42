@@ -127,6 +127,32 @@ pub struct DiagramElement {
     /// typing applied. Derived from the port's own features and those of its definitions, and
     /// kept apart from the authored `direction`. `None` when it has no directed feature.
     pub feature_direction: Option<FeatureDirection>,
+    /// In a browser view: how this row is a member of its parent and whether its own members
+    /// are in the projection. `None` in every other view kind.
+    pub browser_row: Option<DiagramBrowserRow>,
+}
+
+/// How a browser row belongs to the row above it (SysML 9.2.20.2.2 presents membership, which
+/// for a type includes the members it inherits).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DiagramMembership {
+    Owned,
+    Inherited,
+}
+
+/// Whether a browser row's own members are in the projection. A browser loads its exposed roots
+/// and their members; further branches load when the client asks for them.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DiagramBrowserMembers {
+    None,
+    Loaded,
+    Unloaded,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct DiagramBrowserRow {
+    pub membership: DiagramMembership,
+    pub members: DiagramBrowserMembers,
 }
 
 /// When a conditional succession is taken (SysML 7.17.5).
@@ -504,7 +530,19 @@ impl PublishedResolution {
     /// standard view definition has one catalog entry per kind; `diagram_view_of_kind` projects a
     /// chosen one.
     pub fn diagram_view(&self, view: SymbolId) -> QueryOutcome<DiagramViewProjection> {
-        self.project_diagram_view(view, None)
+        self.project_diagram_view(view, None, &|_| false)
+    }
+
+    /// The projection of `view`, as the catalogued `kind` when one is given, with the browser
+    /// branches `expanded` names loaded. `expanded` is asked about the stable key of each
+    /// occurrence (see [`DiagramOccurrenceIdentity::stable_key`]); other view kinds ignore it.
+    pub fn diagram_view_expanding(
+        &self,
+        view: SymbolId,
+        kind: Option<DiagramViewKind>,
+        expanded: &dyn Fn(&str) -> bool,
+    ) -> QueryOutcome<DiagramViewProjection> {
+        self.project_diagram_view(view, kind, expanded)
     }
 
     /// The projection of `view` as the catalogued `kind`: `Unresolved` if `view` is not
@@ -514,13 +552,14 @@ impl PublishedResolution {
         view: SymbolId,
         kind: DiagramViewKind,
     ) -> QueryOutcome<DiagramViewProjection> {
-        self.project_diagram_view(view, Some(kind))
+        self.project_diagram_view(view, Some(kind), &|_| false)
     }
 
     fn project_diagram_view(
         &self,
         view: SymbolId,
         kind: Option<DiagramViewKind>,
+        expanded: &dyn Fn(&str) -> bool,
     ) -> QueryOutcome<DiagramViewProjection> {
         let catalog = match self.diagram_view_catalog().answer {
             QueryAnswer::Resolved(value) => value,
@@ -660,11 +699,24 @@ impl PublishedResolution {
             occurrences.insert(occurrence.clone(), (*root, None));
             queue.push_back(occurrence);
         }
+        let mut browser_members =
+            BTreeMap::<DiagramOccurrenceIdentity, DiagramBrowserMembers>::new();
+        let mut browser_membership =
+            BTreeMap::<DiagramOccurrenceIdentity, DiagramMembership>::new();
         while let Some(owner_occurrence) = queue.pop_front() {
+            // SysML 9.2.20.2.5: a Grid View arranges the exposed elements and their
+            // relationships; their members are not rows or columns of their own.
+            if view_entry.kind == DiagramViewKind::Grid {
+                continue;
+            }
             let owner = occurrences
                 .get(&owner_occurrence)
                 .expect("queued diagram occurrence must exist")
                 .0;
+            // Owned and inherited members: a usage also has the features of its types. A browser
+            // presents that membership hierarchy, but only as far as it has been opened -- every
+            // branch at once repeated each type's members under every usage, thousands of rows
+            // for a modest package.
             let mut children = resolved_values(self.effective_features(owner)).to_vec();
             children.extend(
                 direct_children
@@ -687,6 +739,12 @@ impl PublishedResolution {
                 .iter()
                 .map(|child| child.identity)
                 .collect::<BTreeSet<_>>();
+            // A browser loads the members of its exposed roots and of the branches the client
+            // has opened; of any other row it only records that members are there to load.
+            let load_members = view_entry.kind != DiagramViewKind::Browser
+                || owner_occurrence.semantic_path.len() == 1
+                || expanded(owner_occurrence.stable_key());
+            let mut has_members = false;
             for child in &children {
                 // An inherited library port is still a port of this contextual part. Omitting
                 // it removes resolved connector endpoints (e.g. a purchased sensor's data). It
@@ -716,13 +774,36 @@ impl PublishedResolution {
                 {
                     continue;
                 }
+                // Lowering structure is not part of the browsed model: the ends a `flow` declares
+                // for its endpoints, the anonymous features under them, and value expressions,
+                // which the attribute that owns them already presents.
+                if view_entry.kind == DiagramViewKind::Browser
+                    && (child.kind == ElementKind::FlowEnd
+                        || child.kind.conforms_to(ElementKind::Expression))
+                {
+                    continue;
+                }
                 if !self.diagram_candidate_selected(view, child.identity, &mut reasons) {
+                    continue;
+                }
+                has_members = true;
+                if !load_members {
                     continue;
                 }
                 let Some(token) = self.symbol_token(child.identity) else {
                     continue;
                 };
                 let occurrence = owner_occurrence.child(child.identity, token.as_str());
+                if view_entry.kind == DiagramViewKind::Browser {
+                    browser_membership.insert(
+                        occurrence.clone(),
+                        if child.owner == Some(owner) {
+                            DiagramMembership::Owned
+                        } else {
+                            DiagramMembership::Inherited
+                        },
+                    );
+                }
                 let inserted = occurrences
                     .insert(
                         occurrence.clone(),
@@ -735,6 +816,16 @@ impl PublishedResolution {
                     queue.push_back(occurrence);
                 }
             }
+            if view_entry.kind == DiagramViewKind::Browser {
+                browser_members.insert(
+                    owner_occurrence.clone(),
+                    match (has_members, load_members) {
+                        (false, _) => DiagramBrowserMembers::None,
+                        (true, true) => DiagramBrowserMembers::Loaded,
+                        (true, false) => DiagramBrowserMembers::Unloaded,
+                    },
+                );
+            }
         }
         let projected_roots = occurrences
             .iter()
@@ -743,8 +834,12 @@ impl PublishedResolution {
         // Relationship usages may be owned outside the exposed subtrees (a deployment
         // allocation normally belongs to the enclosing assembly). Include the authored
         // relationship when its metaclass passes the filter and both of its settled ends
-        // are already represented. Do not expose unrelated endpoints or expand its owner.
-        if view_entry.kind == DiagramViewKind::General {
+        // are already represented. Do not expose unrelated endpoints or expand its owner. A
+        // Grid View's relationship matrix shows the same relationships as cells.
+        if matches!(
+            view_entry.kind,
+            DiagramViewKind::General | DiagramViewKind::Grid
+        ) {
             let represented = occurrences
                 .values()
                 .map(|(id, _)| *id)
@@ -895,9 +990,26 @@ impl PublishedResolution {
                     } else {
                         None
                     },
+                    browser_row: (view_entry.kind == DiagramViewKind::Browser).then(|| {
+                        DiagramBrowserRow {
+                            membership: browser_membership
+                                .get(occurrence_id)
+                                .copied()
+                                .unwrap_or(DiagramMembership::Owned),
+                            members: browser_members
+                                .get(occurrence_id)
+                                .copied()
+                                .unwrap_or(DiagramBrowserMembers::None),
+                        }
+                    }),
                 }
             })
             .collect::<Vec<_>>();
+        // A browser presents the model as it is written: siblings in declaration order, not
+        // semantic-ID order. Owners are referenced by occurrence identity, so the order is free.
+        if view_entry.kind == DiagramViewKind::Browser {
+            elements.sort_by_key(|element| (element.source.document, element.source.range));
+        }
         // SysML 8.2.3.11: an Interconnection View shows parts and ports as nodes and connection
         // usages as edges. Attributes, expressions, actions, states, and the rest are not peer
         // boxes here. Keep the connector usages (they are edge origins, filtered out of the node
@@ -1102,7 +1214,10 @@ impl PublishedResolution {
                 .iter()
                 .filter(|relationship| relationship.source == element.occurrence_id)
                 .collect::<Vec<_>>();
-            if view_entry.kind == DiagramViewKind::General {
+            if matches!(
+                view_entry.kind,
+                DiagramViewKind::General | DiagramViewKind::Grid
+            ) {
                 if let Some((source_kind, target_kind, kind)) =
                     general_binary_relationship(element.kind)
                 {
@@ -1408,7 +1523,10 @@ impl PublishedResolution {
             // subsetting (`Parts::parts`, `Items::items`, the kernel chain) stays off the canvas --
             // the typed facts remain on `relationships` for inspectors -- and an end that is
             // unresolved, ambiguous, or outside the view yields no edge rather than a guessed line.
-            if view_entry.kind == DiagramViewKind::General {
+            if matches!(
+                view_entry.kind,
+                DiagramViewKind::General | DiagramViewKind::Grid
+            ) {
                 for relationship in &outgoing {
                     if relationship.provenance != RelationshipProvenance::Authored {
                         continue;
@@ -1607,7 +1725,7 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
                 | DiagramRelationshipKind::FlowTarget
                 | DiagramRelationshipKind::Succession
         ),
-        DiagramViewKind::General => matches!(
+        DiagramViewKind::General | DiagramViewKind::Grid => matches!(
             kind,
             DiagramRelationshipKind::AllocateSource
                 | DiagramRelationshipKind::AllocateTarget
@@ -1616,7 +1734,7 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
                 | DiagramRelationshipKind::BindSource
                 | DiagramRelationshipKind::BindTarget
         ),
-        DiagramViewKind::Browser | DiagramViewKind::Grid | DiagramViewKind::Geometry => false,
+        DiagramViewKind::Browser | DiagramViewKind::Geometry => false,
     }
 }
 
@@ -1905,11 +2023,26 @@ fn diagram_scene(
                         } else {
                             feature(DiagramRelationshipKind::TransitionTrigger)
                         },
-                        // No reference kind publishes a transition guard, so the guard slot is
-                        // always absent. The enum makes that explicit; the string form silently
-                        // looked for a name the authority never emits.
-                        guard: DiagramTransitionFeature::Absent,
-                        effect: feature(DiagramRelationshipKind::TransitionEffect),
+                        // A guard is an expression, not a reference: its text as written, with
+                        // the transition as its navigation target (SysML 8.2.3.18).
+                        guard: match &origin.succession_guard {
+                            Some(DiagramSuccessionGuard::Condition(text)) => {
+                                DiagramTransitionFeature::Resolved {
+                                    label: text.clone(),
+                                    target: origin.semantic_id,
+                                    source: origin.source,
+                                }
+                            }
+                            _ => DiagramTransitionFeature::Absent,
+                        },
+                        effect: match feature(DiagramRelationshipKind::TransitionEffect) {
+                            // `do action a : A` binds the type through the effect action the
+                            // transition owns, so the reference starts one level down.
+                            DiagramTransitionFeature::Absent => {
+                                transition_effect_of_owned_action(origin, relationships, entries)
+                            }
+                            effect => effect,
+                        },
                         provenance: edge.provenance,
                         source_location: edge.source_location.unwrap_or(origin.source),
                     })
@@ -1937,7 +2070,10 @@ fn sequence_scene(
             .as_ref()
             .is_some_and(|owner| roots.contains(&owner.semantic_id()))
     };
-    let lifelines = elements
+    // A sequence view owns a stronger order than semantic-ID order: lifelines stand in the
+    // order the scenario declares its participants, so messages read the way they were written
+    // rather than across an alphabetical column order.
+    let mut lifeline_elements = elements
         .iter()
         .filter(is_direct_member)
         .filter(|element| {
@@ -1946,6 +2082,10 @@ fn sequence_scene(
                 ElementKind::PartUsage | ElementKind::PortUsage
             )
         })
+        .collect::<Vec<_>>();
+    lifeline_elements.sort_by_key(|element| (element.source.document, element.source.range));
+    let lifelines = lifeline_elements
+        .into_iter()
         .map(|element| element.occurrence_id.clone())
         .collect::<Vec<_>>();
     let lifeline_set = lifelines.iter().cloned().collect::<BTreeSet<_>>();
@@ -2186,6 +2326,46 @@ fn canonical_sequence_order(
         }
     }
     order
+}
+
+/// The effect of a transition whose `do action a : A` binds `A` from the owned effect action.
+fn transition_effect_of_owned_action(
+    origin: &DiagramElement,
+    relationships: &[DiagramRelationship],
+    entries: &BTreeMap<SymbolId, SymbolEntry>,
+) -> DiagramTransitionFeature {
+    relationships
+        .iter()
+        .find(|relationship| {
+            relationship.kind == DiagramRelationshipKind::TransitionEffect
+                && relationship.source.semantic_path.len()
+                    == origin.occurrence_id.semantic_path.len() + 1
+                && relationship
+                    .source
+                    .semantic_path
+                    .starts_with(&origin.occurrence_id.semantic_path)
+        })
+        .map_or(DiagramTransitionFeature::Absent, |relationship| {
+            match &relationship.target {
+                DiagramRelationshipTarget::Resolved(target) => DiagramTransitionFeature::Resolved {
+                    // SysML 8.2.3.18 names the effect action; its type when it has no name.
+                    label: entries
+                        .get(&relationship.source.semantic_id())
+                        .and_then(|entry| entry.name.clone())
+                        .or_else(|| {
+                            entries
+                                .get(&target.semantic_id)
+                                .and_then(|entry| entry.name.clone())
+                        })
+                        .unwrap_or_default(),
+                    target: target.semantic_id,
+                    source: relationship.source_location.unwrap_or(origin.source),
+                },
+                DiagramRelationshipTarget::Unresolved => DiagramTransitionFeature::Unresolved,
+                DiagramRelationshipTarget::Ambiguous(_) => DiagramTransitionFeature::Ambiguous,
+                DiagramRelationshipTarget::Unsupported => DiagramTransitionFeature::Unsupported,
+            }
+        })
 }
 
 fn transition_feature(

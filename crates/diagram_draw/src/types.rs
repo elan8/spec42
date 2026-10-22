@@ -29,6 +29,22 @@ pub struct EdgeLayout {
     pub edge_owner_offset: Option<Point>,
     #[serde(rename = "lcaOffset", default)]
     pub lca_offset: Option<Point>,
+    /// Where layout placed the edge's labels.
+    #[serde(default)]
+    pub labels: Vec<EdgeLabelBox>,
+}
+
+/// A laid-out edge label: its box in the same coordinates as the edge's sections.
+#[derive(Debug, Default, Clone, Deserialize)]
+pub struct EdgeLabelBox {
+    #[serde(default)]
+    pub x: f64,
+    #[serde(default)]
+    pub y: f64,
+    #[serde(default)]
+    pub width: f64,
+    #[serde(default)]
+    pub height: f64,
 }
 
 pub const IBD_NODE_WIDTH: f64 = 280.0;

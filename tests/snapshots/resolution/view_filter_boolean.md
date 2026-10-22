@@ -30,12 +30,6 @@ package Views {
         (range (start 3 9) (end 3 10))
       )
       (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 5 1) (end 7 2))
-      )
-      (diagnostic
         (severity warning)
         (code "invalid_import_filter")
         (source "semantic")

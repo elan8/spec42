@@ -117,7 +117,7 @@ describe("diagram viewer core", () => {
 
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 6,
+      schemaVersion: 7,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
@@ -192,6 +192,7 @@ describe("diagram viewer core", () => {
     })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 4 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 5 })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 6 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, sources: [{ document: 1, range: [0, 0, 0, 1] }] })));

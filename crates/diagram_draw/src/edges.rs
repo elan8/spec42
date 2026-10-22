@@ -215,6 +215,26 @@ fn truncate(value: &str, max: usize) -> String {
     }
 }
 
+/// The text a general-view edge is labelled with as drawn, and the box it needs: 11 px text with
+/// the 4 px halo it is drawn with. `None` for an edge drawn without a label. Layout reserves this
+/// box so the label does not cover a node or another line.
+pub(crate) fn general_edge_label_box(edge: &LaidOutEdge) -> Option<(String, f64, f64)> {
+    let edge_kind = edge
+        .edge_kind
+        .clone()
+        .unwrap_or_else(|| normalize_edge_kind(&edge.label));
+    let text = truncate(&general_edge_display_label(edge, &edge_kind), 18);
+    if text.is_empty() {
+        return None;
+    }
+    let width = text.encode_utf16().count() as f64 * GENERAL_LABEL_CHARACTER + 8.0;
+    Some((text, width.ceil(), GENERAL_LABEL_HEIGHT))
+}
+
+/// The advance of one character of an 11 px edge label, and the height of its box.
+const GENERAL_LABEL_CHARACTER: f64 = 6.6;
+const GENERAL_LABEL_HEIGHT: f64 = 16.0;
+
 struct LabelAnchor {
     x: f64,
     y: f64,
@@ -222,12 +242,53 @@ struct LabelAnchor {
     dy: &'static str,
 }
 
+/// The box kept for an edge's label moved onto the edge: at the height layout gave it, centred on
+/// the vertical run of the edge that passes there. `None` when the edge has no laid-out label or
+/// no such run.
+fn label_on_edge(edge: &LaidOutEdge) -> Option<crate::types::EdgeLabelBox> {
+    let layout = edge.layout.as_ref()?;
+    let label = layout.labels.first()?;
+    let y = label.y + label.height / 2.0;
+    let points = section_points(layout.sections.first()?);
+    let x = points.windows(2).find_map(|pair| {
+        let (a, b) = (pair[0], pair[1]);
+        ((a.x - b.x).abs() < 0.5 && y >= a.y.min(b.y) && y <= a.y.max(b.y)).then_some(a.x)
+    })?;
+    Some(crate::types::EdgeLabelBox {
+        x: x - label.width / 2.0,
+        ..label.clone()
+    })
+}
+
 /// Port of the non-interconnection branch of `edgeLabelAnchor` in `render/drawing.ts`.
 fn edge_label_anchor(
     edge: &LaidOutEdge,
     source: Option<&LaidOutNode>,
     target: Option<&LaidOutNode>,
+    others: &[crate::types::EdgeLabelBox],
 ) -> LabelAnchor {
+    // Layout kept room for the label between the layers the edge joins, beside the edge. It is
+    // drawn at that height on the edge itself, the line broken by its halo, so that it reads as
+    // that edge's label; where no vertical run of the edge passes that height it stays where
+    // layout put it.
+    if let Some(label) = edge.layout.as_ref().and_then(|l| l.labels.first()) {
+        // On the edge only where it then keeps clear of the other labels, wherever they go.
+        let on_edge = label_on_edge(edge).filter(|candidate| {
+            others.iter().all(|other| {
+                candidate.x + candidate.width <= other.x
+                    || other.x + other.width <= candidate.x
+                    || candidate.y + candidate.height <= other.y
+                    || other.y + other.height <= candidate.y
+            })
+        });
+        let placed = on_edge.as_ref().unwrap_or(label);
+        return LabelAnchor {
+            x: placed.x + placed.width / 2.0,
+            y: placed.y + placed.height / 2.0,
+            text_anchor: "middle",
+            dy: "0.35em",
+        };
+    }
     if let Some(section) = edge.layout.as_ref().and_then(|l| l.sections.first()) {
         let points = section_points(section);
         if edge
@@ -287,6 +348,19 @@ pub fn draw_edges(
     nodes_by_id: &HashMap<&str, &LaidOutNode>,
     theme: &Theme,
 ) -> Vec<Element> {
+    // Where each edge's label may go: the box layout kept for it, and that box on the edge.
+    let label_boxes: Vec<(&str, crate::types::EdgeLabelBox)> = edges
+        .iter()
+        .flat_map(|edge| {
+            let kept = edge
+                .layout
+                .as_ref()
+                .and_then(|layout| layout.labels.first().cloned());
+            kept.into_iter()
+                .chain(label_on_edge(edge))
+                .map(move |label| (edge.id.as_str(), label))
+        })
+        .collect();
     let mut edge_layer = Element::new("g").attr("class", "viz-edges");
     struct PendingLabel {
         edge_id: String,
@@ -382,7 +456,13 @@ pub fn draw_edges(
                 edge_id: edge.id.clone(),
                 edge_kind,
                 display_label,
-                anchor: edge_label_anchor(edge, Some(source), Some(target)),
+                anchor: edge_label_anchor(edge, Some(source), Some(target), &{
+                    label_boxes
+                        .iter()
+                        .filter(|(id, _)| *id != edge.id)
+                        .map(|(_, other)| other.clone())
+                        .collect::<Vec<_>>()
+                }),
             });
         }
     }
@@ -434,7 +514,7 @@ mod notation_tests {
             }] }
         }))
         .unwrap();
-        let anchor = edge_label_anchor(&edge, None, None);
+        let anchor = edge_label_anchor(&edge, None, None, &[]);
         assert_eq!((anchor.x, anchor.y), (50.0, 150.0));
     }
 

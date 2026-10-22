@@ -14,7 +14,7 @@ internal_docs/
 scripts/code-scanning-export/
 code-scanning-export/
 tmp/
-.cache/
+.cache
 third_party/
 crates/kernel/tests/output/*
 perf.data

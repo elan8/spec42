@@ -488,8 +488,8 @@ package SequenceCycle {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
-  "modelDigest": "blake3:d090175ffdeff652c3001a4de3dadaf36a1b814ce93d488cd6fd3d5e08fc9646",
+  "schemaVersion": 7,
+  "modelDigest": "blake3:bf6321170f99908ef520d63dcbf04abef5531a4af9ea33a5307e6efbe011a3fc",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_ordering_cycle.md",

@@ -113,8 +113,8 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
-  "modelDigest": "blake3:2aca90c6608c5d679f0661640593a74642ea6d46f0e0295c4f896145193dd1a9",
+  "schemaVersion": 7,
+  "modelDigest": "blake3:e6436e4155efda6d1f09109d6e114e41f80418244adf2433a1e89c1224ef1ada",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_port_definition_browser.md",
@@ -190,20 +190,34 @@ package M {
       {
         "kind": "containment",
         "navigation": 0,
-        "origin": 1,
+        "origin": 0,
         "provenance": "authored",
         "reference": 3,
-        "source": 0,
-        "target": 1
+        "source": 1,
+        "target": 0
       }
     ],
     "exposedRoots": [
-      0
+      1
     ],
     "kind": "browser-view",
     "metadata": {
       "roots": [
-        0
+        1
+      ],
+      "rows": [
+        {
+          "key": "98:element/v152:memory://snapshot/diagram_port_definition_browser.md7:packagen1:M1:08:port-defn1:P1:0124:element/v152:memory://snapshot/diagram_port_definition_browser.md7:packagen1:M1:08:port-defn1:P1:019:conjugated-port-defa1:0",
+          "members": "none",
+          "membership": "owned",
+          "node": 0
+        },
+        {
+          "key": "98:element/v152:memory://snapshot/diagram_port_definition_browser.md7:packagen1:M1:08:port-defn1:P1:0",
+          "members": "loaded",
+          "membership": "owned",
+          "node": 1
+        }
       ]
     },
     "nodes": [
@@ -212,12 +226,12 @@ package M {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "PortDefinition",
-        "name": "P",
+        "metaclass": "ConjugatedPortDefinition",
+        "name": "~P",
         "notationRole": "definition",
-        "owner": null,
-        "reference": 0,
-        "source": 1,
+        "owner": 1,
+        "reference": 2,
+        "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -229,12 +243,12 @@ package M {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "ConjugatedPortDefinition",
-        "name": "~P",
+        "metaclass": "PortDefinition",
+        "name": "P",
         "notationRole": "definition",
-        "owner": 0,
-        "reference": 2,
-        "source": 0,
+        "owner": null,
+        "reference": 0,
+        "source": 1,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {

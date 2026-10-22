@@ -51,6 +51,15 @@ retains the source spelling, corrected concrete anchor, exact rule identity, and
 
 - `KERML11-207` corrects `Performance::enclosedPerformance` to `enclosedPerformances`.
 - `KERML11-205` corrects `Performance::subperformance` to `subperformances`.
+- `SYSML21-348` corrects `Connections::BinaryConnections` to `BinaryConnection`, and `SYSML21-301`
+  corrects the viewpoint anchors to `Views::ViewpointCheck` / `Views::viewpointChecks`.
+
+Where no OMG issue exists yet, a correction is admitted only when the rule's own documentation, the
+pinned Systems Library and the Pilot implementation agree on the concrete element:
+
+- `Items::Item::subitem` to `subitems`;
+- `Actions::Action::join` to `joins` (`checkJoinNodeSpecialization`);
+- `Action::Action::controls` to `Actions::Action::controls` (`checkControlNodeSpecialization`).
 
 Refresh derives only these exact rule-scoped corrections; runtime consumers use the corrected
 typed contract and never try alternate spellings.

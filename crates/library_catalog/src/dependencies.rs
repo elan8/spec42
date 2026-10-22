@@ -255,7 +255,38 @@ pub fn resolve_project_dependency_admission(
             manifest_path.display()
         )
     })?;
-    let resolutions = resolve_project_dependencies_for_catalog(&project, catalog);
+    let standard_resources = catalog
+        .standard_library
+        .projects
+        .iter()
+        .flat_map(|project| project.resources.iter())
+        .collect::<BTreeSet<_>>();
+    let resources = project
+        .usage
+        .iter()
+        .filter(|usage| !standard_resources.contains(&usage.resource))
+        .map(|usage| usage.resource.as_str())
+        .collect::<Vec<_>>();
+    let installed = crate::sysand::installed_project_candidates(
+        project_root,
+        &resources,
+        &standard_resources
+            .iter()
+            .map(|resource| resource.as_str())
+            .collect::<Vec<_>>(),
+    )?;
+    let mut project_catalog = catalog.clone();
+    // Lock-selected identities override generic catalog versions, never the host baseline.
+    for candidate in installed {
+        if standard_resources.contains(&candidate.resource) {
+            continue;
+        }
+        project_catalog
+            .dependency_candidates
+            .retain(|existing| existing.resource != candidate.resource);
+        project_catalog.dependency_candidates.push(candidate);
+    }
+    let resolutions = resolve_project_dependencies_for_catalog(&project, &project_catalog);
     // An authored standard-library usage constrains the host-selected baseline; it never selects
     // one. When that baseline is disabled (`--no-stdlib` / `no_stdlib`) or unavailable, the pin has
     // nothing to constrain and is inert rather than a hard failure: admission proceeds so the
@@ -282,7 +313,7 @@ pub fn resolve_project_dependency_admission(
     }
 
     let canonical = |root: &PathBuf| root.canonicalize().unwrap_or_else(|_| root.clone());
-    let mut candidate_roots = catalog
+    let mut candidate_roots = project_catalog
         .dependency_candidates
         .iter()
         .flat_map(|candidate| candidate.package_roots.iter())

@@ -88,9 +88,13 @@ pub(crate) struct DiagramParams {
     /// A handle from `spec42/diagramViews` on the same publication.
     pub(crate) handle: String,
     pub(crate) expected_model_digest: Option<String>,
+    /// Browser view only: the keys of the rows whose members to load (`metadata.rows[].key` of
+    /// an earlier product of the same view). Absent or empty loads the exposed roots' members.
+    #[serde(default)]
+    pub(crate) expanded: Vec<String>,
 }
 
-/// `spec42/diagram`: the schema-6 diagram product of one catalog view, built natively.
+/// `spec42/diagram`: the schema-7 diagram product of one catalog view, built natively.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramResult {
@@ -292,6 +296,7 @@ impl GeneratorService {
         publication: Arc<PublishedModel>,
         handle: &str,
         expected_model_digest: Option<&str>,
+        expanded: &[String],
     ) -> Result<DiagramResult, String> {
         let started = Instant::now();
         // Catalog handles are scoped to the model view that minted them: reuse the cached one.
@@ -303,7 +308,7 @@ impl GeneratorService {
             }
         }
         let projection = model
-            .diagram_view(handle)
+            .diagram_view_expanding(handle, expanded)
             .map_err(|error| error.to_string())?;
         let product = diagram_product::diagram_product_json_compact(&projection)?;
         Ok(DiagramResult {
@@ -671,6 +676,7 @@ mod tests {
                 Arc::clone(&publication),
                 &view.handle,
                 Some(&catalog.model_digest),
+                &[],
             )
             .expect("a catalog handle stays valid for the diagram request");
         let product: serde_json::Value =
@@ -690,7 +696,7 @@ mod tests {
             .is_some_and(|nodes| !nodes.is_empty()));
 
         let stale = service
-            .diagram(publication, &view.handle, Some("blake3:stale"))
+            .diagram(publication, &view.handle, Some("blake3:stale"), &[])
             .expect_err("a stale catalog selection must not project");
         assert!(stale.contains("publication changed"));
     }
@@ -719,7 +725,7 @@ mod tests {
         drop(cached);
 
         let diagram = service
-            .diagram(publication, &handle, Some(&catalog.model_digest))
+            .diagram(publication, &handle, Some(&catalog.model_digest), &[])
             .expect("the handle stays valid for its still-current publication");
         assert_eq!(diagram.model_digest, catalog.model_digest);
     }

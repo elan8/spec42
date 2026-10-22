@@ -100,6 +100,15 @@ pub enum LibraryAnchorCorrectionIssue {
     /// Systems Library feature is the plural `Items::Item::subitems`, the same singular/plural
     /// library mismatch as KERML11-207.
     SysmlLibrarySubitems,
+    /// `checkJoinNodeSpecialization` names `Actions::Action::join`. The rule's own documentation,
+    /// 9.2.10.2.4 and the specialization table name `Actions::Action::joins`, the 2026-04 Systems
+    /// Library declares only `joins`, and the Pilot's `ImplicitGeneralizationMap` specializes
+    /// `joins` -- the same plural mismatch as its `forks`, `merges` and `decisions` siblings.
+    SysmlLibraryJoins,
+    /// `checkControlNodeSpecialization` names `Action::Action::controls` (its documentation says
+    /// `Actions::Action::control`). The 2026-04 Systems Library feature is
+    /// `Actions::Action::controls`, which `forks`, `joins`, `merges` and `decisions` subset.
+    SysmlLibraryControls,
 }
 
 impl ConstraintManifest {
@@ -209,6 +218,16 @@ impl ConstraintManifest {
                     "Items::Item::subitem",
                     "Items::Item::subitems",
                     LibraryAnchorCorrectionIssue::SysmlLibrarySubitems,
+                ) | (
+                    "sysml-2.0:8.3.17.11:checkJoinNodeSpecialization",
+                    "Actions::Action::join",
+                    "Actions::Action::joins",
+                    LibraryAnchorCorrectionIssue::SysmlLibraryJoins,
+                ) | (
+                    "sysml-2.0:8.3.17.6:checkControlNodeSpecialization",
+                    "Action::Action::controls",
+                    "Actions::Action::controls",
+                    LibraryAnchorCorrectionIssue::SysmlLibraryControls,
                 )
             );
             if !source_matches || !exact_correction {
@@ -225,6 +244,8 @@ impl ConstraintManifest {
             "sysml-2.0:8.3.26.8:checkViewpointDefinitionSpecialization",
             "sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization",
             "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization",
+            "sysml-2.0:8.3.17.11:checkJoinNodeSpecialization",
+            "sysml-2.0:8.3.17.6:checkControlNodeSpecialization",
         ] {
             if self.find_rule(rule_id).is_some() && !corrected_rules.contains(rule_id) {
                 return Err(format!(
@@ -2693,7 +2714,7 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
             .join("../..")
             .join("specifications/constraint_manifest.toml");
         let mut manifest = ConstraintManifest::load_toml(&manifest_path).unwrap();
-        assert_eq!(manifest.library_anchor_corrections.len(), 6);
+        assert_eq!(manifest.library_anchor_corrections.len(), 8);
         assert_eq!(
             manifest.library_anchor_corrections[0].issue,
             LibraryAnchorCorrectionIssue::Kerml11_207
@@ -2704,19 +2725,41 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
         );
         assert_eq!(
             manifest.library_anchor_corrections[2].issue,
-            LibraryAnchorCorrectionIssue::Sysml21_348
+            LibraryAnchorCorrectionIssue::SysmlLibrarySubitems
         );
         assert_eq!(
             manifest.library_anchor_corrections[3].issue,
-            LibraryAnchorCorrectionIssue::Sysml21_301
+            LibraryAnchorCorrectionIssue::Sysml21_348
         );
         assert_eq!(
             manifest.library_anchor_corrections[4].issue,
-            LibraryAnchorCorrectionIssue::Sysml21_301
+            LibraryAnchorCorrectionIssue::SysmlLibraryJoins
         );
         assert_eq!(
             manifest.library_anchor_corrections[5].issue,
-            LibraryAnchorCorrectionIssue::SysmlLibrarySubitems
+            LibraryAnchorCorrectionIssue::SysmlLibraryControls
+        );
+        assert_eq!(
+            manifest.library_anchor_corrections[6].issue,
+            LibraryAnchorCorrectionIssue::Sysml21_301
+        );
+        assert_eq!(
+            manifest.library_anchor_corrections[7].issue,
+            LibraryAnchorCorrectionIssue::Sysml21_301
+        );
+        assert_eq!(
+            manifest.executable_library_anchor(
+                "sysml-2.0:8.3.17.11:checkJoinNodeSpecialization",
+                "Actions::Action::join",
+            ),
+            "Actions::Action::joins"
+        );
+        assert_eq!(
+            manifest.executable_library_anchor(
+                "sysml-2.0:8.3.17.6:checkControlNodeSpecialization",
+                "Action::Action::controls",
+            ),
+            "Actions::Action::controls"
         );
         assert_eq!(
             manifest.executable_library_anchor(

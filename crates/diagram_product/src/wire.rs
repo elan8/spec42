@@ -1,4 +1,4 @@
-//! The schema-6 JSON wire contract. The Rust writer validates against these types before
+//! The schema-7 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -7,7 +7,7 @@ use ts_rs::TS;
 #[derive(Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct DiagramProduct {
-    #[ts(type = "6")]
+    #[ts(type = "7")]
     pub schema_version: u32,
     pub model_digest: String,
     pub documents: Vec<DiagramDocument>,
@@ -156,7 +156,7 @@ projection! {
     ActionFlow => ("action-flow-view", ActionFlowMetadata, ActionFlowScene),
     StateTransition => ("state-transition-view", StateTransitionMetadata, StateTransitionScene),
     Sequence => ("sequence-view", SequenceMetadata, SequenceScene),
-    Browser => ("browser-view", RootsMetadata, BrowserScene),
+    Browser => ("browser-view", BrowserMetadata, BrowserScene),
     Grid => ("grid-view", GridMetadata, GridScene),
     Geometry => ("geometry-view", GeometryMetadata, GeometryScene),
 }
@@ -318,6 +318,40 @@ pub struct RootsMetadata {
     pub roots: Vec<usize>,
 }
 
+/// A browser projects its exposed roots and the branches the client has opened; each row says how
+/// it belongs to its parent and whether its own members are loaded, still to load, or absent.
+#[derive(Deserialize, TS)]
+#[serde(deny_unknown_fields)]
+pub struct BrowserMetadata {
+    pub roots: Vec<usize>,
+    pub rows: Vec<BrowserRow>,
+}
+
+#[derive(Deserialize, TS)]
+#[serde(deny_unknown_fields)]
+pub struct BrowserRow {
+    pub node: usize,
+    /// The row's stable key: sent back with `spec42/diagram` to load this row's members.
+    pub key: String,
+    pub membership: Membership,
+    pub members: BrowserMembers,
+}
+
+#[derive(Deserialize, TS)]
+#[serde(rename_all = "kebab-case")]
+pub enum Membership {
+    Owned,
+    Inherited,
+}
+
+#[derive(Deserialize, TS)]
+#[serde(rename_all = "kebab-case")]
+pub enum BrowserMembers {
+    None,
+    Loaded,
+    Unloaded,
+}
+
 #[derive(Deserialize, TS)]
 #[serde(deny_unknown_fields)]
 pub struct InterconnectionMetadata {
@@ -348,20 +382,37 @@ pub struct SequenceMetadata {
     pub messages: Vec<usize>,
 }
 
+/// How a Grid View arranges its exposed elements (SysML v2 9.2.20.2.5).
 #[derive(Deserialize, TS)]
-#[serde(deny_unknown_fields)]
-pub struct GridMetadata {
-    pub rows: Vec<usize>,
-    pub columns: Vec<String>,
-    pub cells: Vec<GridCell>,
+#[serde(rename_all = "kebab-case")]
+pub enum GridLayout {
+    /// Rows are the source ends of the relationships between exposed elements, columns their
+    /// target ends, and each cell one relationship.
+    RelationshipMatrix,
+    /// One row for each exposed element; no relationship joins two of them.
+    ElementTable,
 }
 
 #[derive(Deserialize, TS)]
 #[serde(deny_unknown_fields)]
+pub struct GridMetadata {
+    pub layout: GridLayout,
+    /// Node indexes, in exposure order.
+    pub rows: Vec<usize>,
+    /// Node indexes, in exposure order; empty for an element table.
+    pub columns: Vec<usize>,
+    pub cells: Vec<GridCell>,
+}
+
+/// One cell of a relationship matrix: the relationship edge from the `row` node to the `column`
+/// node.
+#[derive(Deserialize, TS)]
+#[serde(deny_unknown_fields)]
 pub struct GridCell {
     pub row: usize,
-    pub column: String,
-    pub relationship: usize,
+    pub column: usize,
+    /// Index into the projection's edges.
+    pub edge: usize,
 }
 
 #[derive(Deserialize, TS)]

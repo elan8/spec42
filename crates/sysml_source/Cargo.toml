@@ -11,6 +11,9 @@ source_identity = { path = "../source_identity" }
 sysml_contract = { path = "../sysml_contract" }
 url = "2"
 ignore = "0.4"
+globset = "0.4"
+serde = { workspace = true }
+toml = { workspace = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }

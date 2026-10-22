@@ -71,6 +71,10 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private view: vscode.WebviewView | undefined;
   private options: DiagramViewOption[] = [];
   private selectedHandle: string | undefined;
+  /** Browser view rows whose members the user has opened: their keys, sent with every
+   * `spec42/diagram` request so the opened branches stay loaded across regenerations. Keys are
+   * stable while the model's structure is, so a model edit keeps them; switching views clears. */
+  private readonly expandedBranches = new Set<string>();
   private anchorUri: string | undefined;
   private lastArtifact: RenderedArtifact | undefined;
   private generation = 0;
@@ -254,7 +258,17 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       const handle = (message as { handle?: unknown }).handle;
       if (typeof handle === "string" && handle !== this.selectedHandle) {
         this.selectedHandle = handle;
+        this.expandedBranches.clear();
         void this.regenerate("switchView");
+      }
+      return;
+    }
+    if (kind === "loadBranch") {
+      // A browser row whose members are not in the product yet: ask for them and redraw.
+      const key = (message as { key?: unknown }).key;
+      if (typeof key === "string" && key && !this.expandedBranches.has(key)) {
+        this.expandedBranches.add(key);
+        void this.regenerate("manual");
       }
       return;
     }
@@ -575,6 +589,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       modelUri: document.uri.toString(),
       handle,
       ...(expectedModelDigest ? { expectedModelDigest } : {}),
+      ...(this.expandedBranches.size > 0 ? { expanded: [...this.expandedBranches] } : {}),
     }));
     if (signal.aborted) throw new Error("generation was cancelled");
     const productJson = result.productJson;
@@ -685,7 +700,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
 
 function emptyProduct(): DiagramProduct {
   return {
-    schemaVersion: 6,
+    schemaVersion: 7,
     modelDigest: "",
     documents: [],
     sources: [],

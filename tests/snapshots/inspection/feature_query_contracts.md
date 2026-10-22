@@ -77,18 +77,6 @@ probe feature_query_contracts.md 23 10 features
         (source "semantic")
         (range (start 9 8) (end 9 19))
       )
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 18 4) (end 22 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 23 4) (end 26 5))
-      )
     )
   )
 )

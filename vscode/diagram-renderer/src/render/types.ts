@@ -47,6 +47,8 @@ export type ViewportTransform = {x: number; y: number; k: number};
 export interface RenderOptions {
   viewport?: ViewportTransform;
   onNodeClick?: (node: PreparedNode) => void;
+  /** Browser view: load the members of the row with this key (they are not in the product). */
+  loadBranch?: (key: string) => void;
   disclosure?: DisclosureActions;
   disclosureState?: DisclosureState;
   selectedNodeId?: string | null;

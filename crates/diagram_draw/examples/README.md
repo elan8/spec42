@@ -5,7 +5,7 @@ represents each semantic port as an ordinary child node. Edges refer to the exac
 port identities supplied by the canonical diagram pipeline. There are no explicit
 ELK ports and no changes to the pinned elkrs dependency or production renderer.
 
-Run from the repository root with a schema-6 diagram product:
+Run from the repository root with a schema-7 diagram product:
 
 ```powershell
 cargo run --offline -p diagram_draw --example port_nodes -- product.json target/port-node-spike/result

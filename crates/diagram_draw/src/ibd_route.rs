@@ -197,6 +197,29 @@ fn point_from_attribute(edge: &LaidOutEdge, key: &str) -> Option<Point> {
     Some(Point { x, y })
 }
 
+/// Half the side of the square a port is drawn as.
+const PORT_HALF_SIZE: f64 = 5.0;
+
+/// The point on the side of the square of the port centred at `center` that faces `toward`, the
+/// end of the route laid out to it.
+fn port_side(center: Point, toward: Point) -> Point {
+    let (dx, dy) = (toward.x - center.x, toward.y - center.y);
+    if dx.abs() < 0.5 && dy.abs() < 0.5 {
+        return center;
+    }
+    if dx.abs() >= dy.abs() {
+        Point {
+            x: center.x + PORT_HALF_SIZE.copysign(dx),
+            y: center.y,
+        }
+    } else {
+        Point {
+            x: center.x,
+            y: center.y + PORT_HALF_SIZE.copysign(dy),
+        }
+    }
+}
+
 /// Port of `resolveIbdRoutePoints`.
 pub fn resolve_ibd_route_points(edge: &LaidOutEdge) -> Option<Vec<Point>> {
     let sections = &edge.layout.as_ref()?.sections;
@@ -232,5 +255,8 @@ pub fn resolve_ibd_route_points(edge: &LaidOutEdge) -> Option<Vec<Point>> {
     }
 
     let best_points = best_points?;
+    // A connector ends on the side of the port square it comes from, not inside the square.
+    let source_port = source_port.map(|port| port_side(port, best_points[0]));
+    let target_port = target_port.map(|port| port_side(port, best_points[best_points.len() - 1]));
     Some(snap_route_endpoints(best_points, source_port, target_port))
 }

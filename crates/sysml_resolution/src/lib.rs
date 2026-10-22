@@ -89,15 +89,15 @@ pub use diagnostics::{
     DiagnosticSeverity, PublishedDiagnostics, RelatedLocation,
 };
 pub use diagram_query::{
-    DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
-    DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
-    DiagramIncompleteReason, DiagramOccurrenceIdentity, DiagramRelationship,
-    DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
-    DiagramSemanticReference, DiagramSequenceEndpoint, DiagramSequenceMessage,
-    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
-    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
-    DiagramSuccessionGuard, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
-    DiagramViewProjection,
+    DiagramBrowserMembers, DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind,
+    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership,
+    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramSequenceEndpoint, DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene,
+    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
+    DiagramStateVertexKind, DiagramSuccessionGuard, DiagramTransitionFeature,
+    DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
 };
 pub use evaluation::{
     AnalysisEvaluation, AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure,

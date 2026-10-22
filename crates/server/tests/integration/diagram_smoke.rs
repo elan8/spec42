@@ -199,6 +199,43 @@ fn a_sequence_view_projects_lifelines_messages_and_their_order() {
             assert!(svg.contains(label), "the SVG contains {label}: {svg}");
         }
         assert!(!svg.contains("NaN"), "the SVG has finite geometry: {svg}");
+
+        // Lifelines stand in the order the scenario declares them (storefront, apiGateway,
+        // checkoutService), not in semantic-ID (alphabetical) order.
+        let nodes = product["projection"]["nodes"].as_array().expect("nodes");
+        let lifeline_names = scene["lifelines"]
+            .as_array()
+            .expect("lifelines")
+            .iter()
+            .map(|index| nodes[index.as_u64().expect("node index") as usize]["name"].clone())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            lifeline_names,
+            ["storefront", "apiGateway", "checkoutService"],
+            "lifelines keep their authored order"
+        );
+        let column = |name: &str| {
+            svg.find(&format!(">{name}<"))
+                .unwrap_or_else(|| panic!("{name}"))
+        };
+        assert!(
+            column("storefront") < column("apiGateway")
+                && column("apiGateway") < column("checkoutService"),
+            "the SVG draws the lifelines in authored order"
+        );
+        // SysML 8.2.3.25: a lifeline shows its type, and a typed message the item it carries.
+        assert!(
+            svg.contains(": Storefront"),
+            "the lifeline is labelled with its type: {svg}"
+        );
+        assert!(
+            svg.contains("submitCheckout : CheckoutRequest"),
+            "the typed message is labelled with its payload: {svg}"
+        );
+        assert!(
+            svg.contains(">forwardCheckout<"),
+            "an untyped message keeps its plain name: {svg}"
+        );
     });
 }
 
@@ -241,7 +278,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
         let product: serde_json::Value =
             serde_json::from_str(&run(Some(name), DiagramFormat::Json, "diagram.json"))
                 .expect("product JSON");
-        assert_eq!(product["schemaVersion"], 6);
+        assert_eq!(product["schemaVersion"], 7);
         assert_eq!(product["selectedView"]["kind"], "state-transition-view");
 
         let svg = run(Some(name), DiagramFormat::Svg, "diagram.svg");
@@ -380,7 +417,7 @@ fn diagram_products_carry_only_authored_relationships_within_a_size_budget() {
                 serde_json::from_slice::<serde_json::Value>(&pretty).expect("pretty JSON"),
                 "{example}/{view_name}: compact and pretty products differ only in layout"
             );
-            assert_eq!(product["schemaVersion"], 6);
+            assert_eq!(product["schemaVersion"], 7);
             let implied = product["projection"]["relationships"]
                 .as_array()
                 .expect("relationships")
@@ -395,6 +432,140 @@ fn diagram_products_carry_only_authored_relationships_within_a_size_budget() {
                 compact.len() <= ceiling,
                 "{example}/{view_name}: compact product is {} bytes, over its {ceiling}-byte budget",
                 compact.len()
+            );
+        }
+    });
+}
+
+/// A browser view presents membership (SysML 9.2.20.2.2): owned members and, for a usage, the
+/// members it inherits from its types. It loads the exposed roots' members; deeper branches load
+/// when asked for by key, so a package does not become thousands of rows at once.
+#[test]
+fn a_browser_view_loads_membership_branches_on_demand() {
+    with_isolated_data_dir(|| {
+        let workspace = tempfile::tempdir().expect("workspace");
+        let source = workspace.path().join("Browse.sysml");
+        std::fs::write(
+            &source,
+            r#"package Browse {
+    private import StandardViewDefinitions::*;
+    private import ScalarValues::*;
+    package Model {
+        item def Signal;
+        port def Out { out signal : Signal; }
+        part def Zeta { port output : Out; attribute rating : Integer = 3; }
+        part def Alpha { port input : ~Out; }
+        part assembly {
+            part zeta : Zeta;
+            part alpha : Alpha;
+            connect zeta.output to alpha.input;
+            flow zeta.output.signal to alpha.input.signal;
+        }
+    }
+    view tree : BrowserView { expose Model::*; }
+}
+"#,
+        )
+        .expect("write model");
+        let cli = stdlib_cli();
+        let snapshot = load_snapshot_for_paths(&cli, &source, Some(workspace.path()), false)
+            .expect("the browser model publishes");
+        let publication = snapshot.published_model_arc();
+        let model = GeneratorModelView::new(
+            Arc::clone(&publication),
+            publication.publication().model_digest().to_string(),
+            env!("CARGO_PKG_VERSION"),
+            QueryLimits::default(),
+        )
+        .expect("complete generator model");
+        let views = model.diagram_views().expect("the view catalog lists");
+        let view = views
+            .iter()
+            .find(|view| view.kind == DiagramViewKind::BrowserView)
+            .unwrap_or_else(|| panic!("the model authors a BrowserView: {views:?}"));
+        let product = |expanded: &[String]| -> serde_json::Value {
+            let projection = model
+                .diagram_view_expanding(&view.handle, expanded)
+                .expect("the browser projects");
+            serde_json::from_slice(
+                &diagram_product::diagram_product_json(&projection).expect("product"),
+            )
+            .expect("product JSON")
+        };
+        let row_of = |product: &serde_json::Value, parent: Option<&str>, name: &str| {
+            let nodes = product["projection"]["nodes"]
+                .as_array()
+                .expect("nodes")
+                .clone();
+            let index = nodes
+                .iter()
+                .position(|node| {
+                    node["name"] == name
+                        && match parent {
+                            None => node["owner"].is_null(),
+                            Some(parent) => node["owner"]
+                                .as_u64()
+                                .is_some_and(|owner| nodes[owner as usize]["name"] == parent),
+                        }
+                })
+                .unwrap_or_else(|| panic!("{parent:?}/{name} is a row"));
+            product["projection"]["metadata"]["rows"]
+                .as_array()
+                .expect("rows")
+                .iter()
+                .find(|row| row["node"] == index)
+                .cloned()
+                .expect("every node has a row")
+        };
+
+        let initial = product(&[]);
+        assert_eq!(initial["schemaVersion"], 7);
+        let nodes = initial["projection"]["nodes"].as_array().expect("nodes");
+        let root_names = initial["projection"]["metadata"]["roots"]
+            .as_array()
+            .expect("roots")
+            .iter()
+            .map(|index| nodes[index.as_u64().expect("index") as usize]["name"].clone())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            root_names,
+            ["Signal", "Out", "Zeta", "Alpha", "assembly"],
+            "roots stand in declaration order"
+        );
+        assert_eq!(
+            row_of(&initial, Some("Zeta"), "output")["membership"],
+            "owned"
+        );
+        let zeta = row_of(&initial, Some("assembly"), "zeta");
+        assert_eq!(
+            zeta["members"], "unloaded",
+            "a nested branch waits to be opened"
+        );
+        assert!(
+            nodes.iter().all(|node| node["name"] != "rating"
+                || node["owner"]
+                    .as_u64()
+                    .is_some_and(|owner| nodes[owner as usize]["name"] == "Zeta")),
+            "the usage's inherited members are not loaded yet"
+        );
+        for node in nodes {
+            let metaclass = node["metaclass"].as_str().unwrap_or("");
+            assert!(
+                metaclass != "FlowEnd" && !metaclass.starts_with("Literal"),
+                "lowering structure is not browsed: {node}"
+            );
+        }
+
+        let opened = product(&[zeta["key"].as_str().expect("row key").to_owned()]);
+        assert_eq!(
+            row_of(&opened, Some("assembly"), "zeta")["members"],
+            "loaded"
+        );
+        for inherited in ["output", "rating"] {
+            assert_eq!(
+                row_of(&opened, Some("zeta"), inherited)["membership"],
+                "inherited",
+                "{inherited} is a member zeta has through Zeta"
             );
         }
     });

@@ -32,7 +32,7 @@ describe("shared graph normalization", () => {
 describe("shared prepareViewData", () => {
   it("expands normalized diagram indexes without deriving semantics", () => {
     const prepared = prepareViewData({
-      schemaVersion: 6,
+      schemaVersion: 7,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [1, 2, 1, 6] }],
@@ -83,7 +83,7 @@ describe("shared prepareViewData", () => {
 
   it("adapts a typed interconnection projection into nested parts with boundary ports", () => {
     const prepared = prepareViewData({
-      schemaVersion: 6,
+      schemaVersion: 7,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [
@@ -203,7 +203,7 @@ describe("shared prepareViewData", () => {
       reference: 0, metaclass, notationRole: "usage", name, typing: { status: "absent" }, owner, source, compartments: [],
     });
     const prepared = prepareViewData({
-      schemaVersion: 6,
+      schemaVersion: 7,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [0, 1, 2, 3].map((line) => ({ document: 0, range: [line, 0, line, 4] })),
@@ -246,14 +246,41 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes.some((node) => /port|connection|attribute/i.test(node.kind))).toBe(false);
   });
 
-  it("uses typed grid metadata for relationship-valued columns", () => {
+  it("prepares a typed grid relationship matrix whose cells are projected edges", () => {
     const prepared = prepareViewData({
-      schemaVersion: 6,
+      schemaVersion: 7,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
       references: [{ kind: "qualified-name" }, { kind: "qualified-name" }, { kind: "relationship" }],
       selectedView: { reference: 0, kind: "grid-view", name: "Trace", source: 0 },
+      projection: {
+        kind: "grid-view",
+        exposedRoots: [0, 1],
+        nodes: [
+          { reference: 1, metaclass: "ActionUsage", notationRole: "usage", name: "register", typing: { status: "absent" }, owner: null, source: 0, compartments: [] },
+          { reference: 1, metaclass: "PartUsage", notationRole: "usage", name: "panel", typing: { status: "absent" }, owner: null, source: 0, compartments: [] },
+        ],
+        relationships: [],
+        edges: [{ reference: 2, source: 0, target: 1, origin: 0, kind: "allocate", provenance: "authored", navigation: null }],
+        metadata: { layout: "relationship-matrix", rows: [0], columns: [1], cells: [{ row: 0, column: 1, edge: 0 }] },
+        scene: { kind: "grid" },
+      },
+    });
+    expect(prepared.meta?.relationshipMatrix).toBe(true);
+    expect(prepared.meta?.matrixRows).toEqual([{ id: "n:0", label: "register" }]);
+    expect(prepared.meta?.matrixColumns).toEqual([{ id: "n:1", label: "panel" }]);
+    expect(prepared.meta?.matrixCells).toEqual([{ source: "n:0", target: "n:1", edgeId: "e:0", kind: "allocate" }]);
+  });
+
+  it("prepares a typed grid without relationships as a table of the exposed elements", () => {
+    const prepared = prepareViewData({
+      schemaVersion: 7,
+      modelDigest: "blake3:model",
+      documents: [{ uri: "file:///model.sysml" }],
+      sources: [{ document: 0, range: [0, 0, 0, 1] }],
+      references: [{ kind: "qualified-name" }, { kind: "qualified-name" }],
+      selectedView: { reference: 0, kind: "grid-view", name: "Table", source: 0 },
       projection: {
         kind: "grid-view",
         exposedRoots: [0],
@@ -262,20 +289,22 @@ describe("shared prepareViewData", () => {
         ],
         relationships: [],
         edges: [],
-        metadata: { rows: [0], columns: ["dependency"], cells: [{ row: 0, column: "dependency", relationship: 2 }] },
+        metadata: { layout: "element-table", rows: [0], columns: [], cells: [] },
         scene: { kind: "grid" },
       },
     });
-    expect(prepared.meta?.cells).toEqual([{ id: "n:0", name: "a", kind: "PartUsage", "relationship:dependency": "✓" }]);
+    expect(prepared.meta?.relationshipMatrix).toBeUndefined();
+    expect(prepared.meta?.cells).toEqual([{ id: "n:0", name: "a", kind: "PartUsage", type: null }]);
     expect(prepared.meta?.columns).toEqual([
       { key: "name", label: "Element", notationStatus: "normative" },
-      { key: "relationship:dependency", label: "dependency", notationStatus: "normative" },
+      { key: "kind", label: "Kind", notationStatus: "normative" },
+      { key: "type", label: "Type", notationStatus: "normative" },
     ]);
   });
 
   it("prepares a typed state scene without rendering containment or transition declarations as nodes", () => {
     const prepared = prepareViewData({
-      schemaVersion: 6,
+      schemaVersion: 7,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///timer.sysml", sourceDomain: "workspace" }],
       sources: [
@@ -912,7 +941,7 @@ describe("shared prepareViewData", () => {
       compartments: [],
     });
     const prepared = prepareViewData({
-      schemaVersion: 6,
+      schemaVersion: 7,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],

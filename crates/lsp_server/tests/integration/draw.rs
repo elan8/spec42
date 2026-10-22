@@ -2,7 +2,7 @@ use super::harness::TestSession;
 
 fn sequence_product() -> serde_json::Value {
     serde_json::json!({
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "modelDigest": "blake3:test-digest",
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],

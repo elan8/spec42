@@ -193,6 +193,7 @@ async function mountPrepared(
     viewport,
     abortSignal: signal,
     onNodeClick: openSource,
+    loadBranch: (key) => vscode.postMessage({ type: "loadBranch", key }),
   });
   if (!isCurrentRender(generation, signal)) {
     next.destroy();

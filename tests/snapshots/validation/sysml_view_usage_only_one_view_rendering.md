@@ -34,18 +34,6 @@ package Views {
   (document "memory://snapshot/sysml_view_usage_only_one_view_rendering.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 5 4) (end 7 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 10 4) (end 13 5))
-      )
-      (diagnostic
         (severity warning)
         (code "view_multiple_renderings")
         (source "semantic")
@@ -60,18 +48,6 @@ package Views {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_view_usage_only_one_view_rendering.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 5 4) (end 7 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 10 4) (end 13 5))
-      )
       (diagnostic
         (severity warning)
         (code "view_multiple_renderings")
