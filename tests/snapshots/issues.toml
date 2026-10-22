@@ -19,12 +19,6 @@ owner = "omg-specification"
 summary = "Pinned KerML XMI body for checkInvocationExpressionDefaultValueBindingConnector is exactly TBD (SHA-256 036265965ea6cd2b1d3d5c8d44f9e719188af11d63d0b6ef158a5d77dfb26e30), and the Pilot implements no counterpart (no adapter satisfies it); OMG must publish an evaluable normative predicate."
 
 [[issue]]
-id = "library-gap-join-node-specialization-anchor"
-kind = "library_gap"
-owner = "spec42-libraries"
-summary = "checkJoinNodeSpecialization (clause 8.3.17.11) carries the OCL anchor Actions::Action::join, which the standard library does not publish; the constraint's own normative prose, the library (Actions::Action::joins), and the Pilot ImplicitGeneralizationMap all use Actions::Action::joins. Applying that correction needs an official OMG issue for library_anchor_corrections (specifications/README.md), and none is recorded yet."
-
-[[issue]]
 id = "normative-specification-gap-include-use-case-specialization-body"
 kind = "normative_specification_gap"
 owner = "omg-specification"

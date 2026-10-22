@@ -149,10 +149,20 @@ fn official_library_anchor_corrections(
         .iter()
         .flat_map(|specification| &specification.constraints)
         .filter_map(|entry| {
-            let contract = entry.conditional_specializes_from_library.as_ref()?;
+            // A correction applies to the rule's conditional or plain library contract.
+            let source_anchor = entry
+                .conditional_specializes_from_library
+                .as_ref()
+                .map(|contract| contract.anchor.as_str())
+                .or_else(|| {
+                    entry
+                        .specializes_from_library
+                        .as_ref()
+                        .map(|contract| contract.anchor.as_str())
+                })?;
             let (corrected_anchor, issue) = match entry.rule_id.as_str() {
                 "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization"
-                    if contract.anchor == "Performances::Performance::enclosedPerformance" =>
+                    if source_anchor == "Performances::Performance::enclosedPerformance" =>
                 {
                     (
                         "Performances::Performance::enclosedPerformances",
@@ -160,7 +170,7 @@ fn official_library_anchor_corrections(
                     )
                 }
                 "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization"
-                    if contract.anchor == "Performances::Performance::subperformance" =>
+                    if source_anchor == "Performances::Performance::subperformance" =>
                 {
                     (
                         "Performances::Performance::subperformances",
@@ -168,7 +178,7 @@ fn official_library_anchor_corrections(
                     )
                 }
                 "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization"
-                    if contract.anchor == "Connections::BinaryConnections" =>
+                    if source_anchor == "Connections::BinaryConnections" =>
                 {
                     (
                         "Connections::BinaryConnection",
@@ -176,18 +186,50 @@ fn official_library_anchor_corrections(
                     )
                 }
                 "sysml-2.0:8.3.10.3:checkItemUsageSubitemSpecialization"
-                    if contract.anchor == "Items::Item::subitem" =>
+                    if source_anchor == "Items::Item::subitem" =>
                 {
                     (
                         "Items::Item::subitems",
                         LibraryAnchorCorrectionIssue::SysmlLibrarySubitems,
                     )
                 }
+                "sysml-2.0:8.3.26.8:checkViewpointDefinitionSpecialization"
+                    if source_anchor == "Views::Viewpoint" =>
+                {
+                    (
+                        "Views::ViewpointCheck",
+                        LibraryAnchorCorrectionIssue::Sysml21_301,
+                    )
+                }
+                "sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization"
+                    if source_anchor == "Views::viewpoints" =>
+                {
+                    (
+                        "Views::viewpointChecks",
+                        LibraryAnchorCorrectionIssue::Sysml21_301,
+                    )
+                }
+                "sysml-2.0:8.3.17.11:checkJoinNodeSpecialization"
+                    if source_anchor == "Actions::Action::join" =>
+                {
+                    (
+                        "Actions::Action::joins",
+                        LibraryAnchorCorrectionIssue::SysmlLibraryJoins,
+                    )
+                }
+                "sysml-2.0:8.3.17.6:checkControlNodeSpecialization"
+                    if source_anchor == "Action::Action::controls" =>
+                {
+                    (
+                        "Actions::Action::controls",
+                        LibraryAnchorCorrectionIssue::SysmlLibraryControls,
+                    )
+                }
                 _ => return None,
             };
             Some(LibraryAnchorCorrection {
                 rule_id: entry.rule_id.clone(),
-                source_anchor: contract.anchor.clone(),
+                source_anchor: source_anchor.to_string(),
                 corrected_anchor: corrected_anchor.to_string(),
                 issue,
             })
