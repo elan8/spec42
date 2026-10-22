@@ -120,7 +120,14 @@ pub(crate) struct DiagramViewChoice {
     pub(crate) kind: DiagramViewKind,
     pub(crate) reference: DiagramReferenceChoice,
     pub(crate) name: String,
-    pub(crate) source: StateTransitionSourceChoice,
+    pub(crate) namespace: Option<String>,
+    pub(crate) source: DiagramViewSourceChoice,
+}
+
+#[derive(Debug, Serialize)]
+pub(crate) struct DiagramViewSourceChoice {
+    pub(crate) uri: String,
+    pub(crate) range: DiagramRangeChoice,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
@@ -498,16 +505,30 @@ impl GeneratorService {
             .diagram_views()
             .map_err(|error| error.to_string())?
             .into_iter()
-            .map(|view| DiagramViewChoice {
-                handle: view.handle,
-                kind: view.kind,
-                reference: diagram_reference(view.reference),
-                name: view.name,
-                source: StateTransitionSourceChoice {
-                    uri: view.source.uri,
-                },
+            .map(|view| {
+                // Use the canonical owner and declaration span; never split a rendered name
+                // to rediscover namespace ownership in the editor.
+                let detail = model
+                    .element(&view.handle)
+                    .map_err(|error| error.to_string())?;
+                Ok(DiagramViewChoice {
+                    handle: view.handle,
+                    kind: view.kind,
+                    reference: diagram_reference(view.reference),
+                    name: view.name,
+                    namespace: detail.owner.map(|owner| owner.qualified_name),
+                    source: DiagramViewSourceChoice {
+                        uri: detail.source_uri,
+                        range: DiagramRangeChoice {
+                            start_line: detail.source_range.start_line,
+                            start_character: detail.source_range.start_character,
+                            end_line: detail.source_range.end_line,
+                            end_character: detail.source_range.end_character,
+                        },
+                    },
+                })
             })
-            .collect();
+            .collect::<Result<Vec<_>, String>>()?;
         Ok(DiagramViewsResult {
             model_digest: model.model_digest(),
             semantic_status: language_service::dto::SemanticResultStatus::from_publication(

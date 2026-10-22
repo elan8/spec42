@@ -29,9 +29,9 @@ export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
         { command: "spec42.examples.openRecommended", title: "Open Recommended Example" }
       ),
       new HelpItem(
-        "Open Diagram view",
+        "Open Views panel",
         "type-hierarchy-sub",
-        { command: "spec42.diagram.open", title: "Open Diagram" }
+        { command: "spec42.diagram.open", title: "Open Views" }
       ),
       new HelpItem(
         "Browse or add a library",

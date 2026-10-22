@@ -31,7 +31,7 @@ type RenderedArtifact = {
 type RenderMessage = {
   type: "render";
   productJson: string;
-  views: Array<{ handle: string; label: string; group: string }>;
+  views: Array<{ handle: string; label: string; group: string; kindLabel?: string; definition?: import("./diagramViewerCore").SourceNavigation }>;
   selectedHandle: string;
   header: string;
   incompleteReasons: string[];
@@ -216,12 +216,12 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
 
   async copyJson(): Promise<void> {
     if (!this.lastArtifact) {
-      await vscode.window.showInformationMessage("Generate a Spec42 diagram before copying its JSON.");
+      await vscode.window.showInformationMessage("Open a Spec42 view before copying its JSON.");
       return;
     }
     // The server sends compact JSON; indent the copy for the person reading it.
     await vscode.env.clipboard.writeText(`${JSON.stringify(this.lastArtifact.product, null, 2)}\n`);
-    await vscode.window.showInformationMessage("Copied the generated diagram JSON.");
+    await vscode.window.showInformationMessage("Copied the generated view JSON.");
   }
 
   private onPublicationChanged(publishedModelDigest: string): void {
@@ -427,7 +427,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
           if (!this.lastArtifact && this.emptyCatalogAttempts < EMPTY_CATALOG_PATIENCE) {
             this.postLoading();
           } else {
-            this.postPlaceholder("This model authors no diagram views. Add a `view … : GeneralView { expose … }` to see one here.");
+            this.postPlaceholder("This model authors no views. Add a `view … : GeneralView { expose … }` to see one here.");
           }
           return;
         }
@@ -439,7 +439,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
           : undefined;
         const selected = remembered ?? this.defaultSelection(catalog) ?? this.options[0];
         if (!selected) {
-          this.postPlaceholder("This model authors no diagram views.");
+          this.postPlaceholder("This model authors no views.");
           return;
         }
         this.selectedHandle = selected.handle;
@@ -453,7 +453,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
         }
         const kind = diagramViewKindForHandle(catalog, selected.handle);
         if (!kind) {
-          this.showWaiting("The selected diagram view is no longer in the catalog.");
+          this.showWaiting("The selected view is no longer in the catalog.");
           return;
         }
 
@@ -483,7 +483,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
         // Keep the last good render on screen, flagged stale; the loop retries in the background.
         this.postRender(message);
       } else if (isServerNotReady(error) || this.reconcileAttempt < 5) {
-        this.showWaiting("Loading diagram…", true);
+        this.showWaiting("Loading view…", true);
       } else {
         // Real, non-transient failure (e.g. missing generator plugin). Surface it, but the
         // reconcile loop keeps trying slowly so fixing the cause recovers with no user action.
@@ -525,7 +525,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   }
 
   private viewList(): RenderMessage["views"] {
-    return this.options.map((option) => ({ handle: option.handle, label: option.label, group: option.group }));
+    return this.options.map((option) => ({ handle: option.handle, label: option.label, group: option.group, kindLabel: option.kindLabel, definition: option.definition }));
   }
 
   private postPlaceholder(placeholder: string): void {
@@ -546,9 +546,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       productJson: JSON.stringify(emptyProduct()),
       views: this.viewList(),
       selectedHandle: this.selectedHandle ?? "",
-      header: "Loading diagram…",
+      header: "Loading view…",
       incompleteReasons: [],
-      placeholder: "Loading diagram…",
+      placeholder: "Loading view…",
       loading: true,
     });
   }
@@ -556,7 +556,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private postRender(error?: string): void {
     const artifact = this.lastArtifact;
     if (!artifact) {
-      this.postPlaceholder(error ?? "No diagram generated yet.");
+      this.postPlaceholder(error ?? "No view generated yet.");
       return;
     }
     this.send({
@@ -602,7 +602,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   }
 
   private async saveExport(format: "svg" | "png", data: string): Promise<void> {
-    const base = this.lastArtifact?.product.selectedView.name?.replace(/[^\w.-]+/g, "_") || "diagram";
+    const base = this.lastArtifact?.product.selectedView.name?.replace(/[^\w.-]+/g, "_") || "view";
     const folder = vscode.workspace.workspaceFolders?.[0]?.uri;
     const defaultUri = folder
       ? vscode.Uri.joinPath(folder, `${base}.${format}`)
@@ -623,7 +623,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       await vscode.workspace.fs.writeFile(target, bytes);
       await vscode.window.showInformationMessage(`Saved ${vscode.workspace.asRelativePath(target)}.`);
     } catch (error) {
-      await vscode.window.showErrorMessage(`Could not save the diagram: ${describeError(error)}`);
+      await vscode.window.showErrorMessage(`Could not save the view: ${describeError(error)}`);
     }
   }
 
@@ -673,6 +673,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   .status{flex-basis:100%;color:var(--vscode-descriptionForeground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .error{color:var(--vscode-errorForeground);font-weight:600}
   .canvas{flex:1;min-height:0;position:relative}
+  .view-kind{color:var(--vscode-descriptionForeground)}
+  header label{font-size:11px;display:flex;align-items:center;gap:3px}
+  .canvas .viz-bg{fill:transparent}
   .canvas svg{display:block;width:100%;height:100%}
   .empty{padding:24px 16px;color:var(--vscode-descriptionForeground);font:13px var(--vscode-font-family)}
   .loading{display:flex;align-items:center;gap:9px}
@@ -680,11 +683,14 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   @keyframes diagram-spin{to{transform:rotate(360deg)}}
 </style></head><body>
 <header>
-  <select id="view-select" title="Authored diagram view"></select>
-  <button id="home" title="Fit and center the entire diagram">Home</button>
-  <button id="copy-json" title="Copy the generated diagram JSON">JSON</button>
+  <select id="view-select" title="Select a view by namespace" aria-label="View"></select>
+  <button id="view-definition" title="Go to view definition" aria-label="Go to view definition" disabled>Go to definition</button>
+  <button id="home" title="Fit and center the entire view">Home</button>
+  <button id="copy-json" title="Copy the generated view JSON">JSON</button>
   <button id="export-svg" title="Export as SVG">SVG</button>
   <button id="export-png" title="Export as PNG">PNG</button>
+  <label title="Export with a transparent canvas; element fills are retained"><input id="transparent-export" type="checkbox"> Transparent export</label>
+  <span class="view-kind" id="view-kind"></span>
   <span class="status" id="status"></span>
 </header>
 <main id="diagram" class="canvas"></main>

@@ -174,13 +174,13 @@
       },
       {
         "command": "spec42.diagram.open",
-        "title": "Open Diagram",
+        "title": "Open Views",
         "icon": "$(type-hierarchy-sub)",
         "category": "Spec42"
       },
       {
         "command": "spec42.diagram.copyJson",
-        "title": "Copy Diagram JSON",
+        "title": "Copy View JSON",
         "category": "Spec42"
       },
       {
@@ -415,8 +415,8 @@
         {
           "type": "webview",
           "id": "spec42DiagramView",
-          "name": "Diagram",
-          "contextualTitle": "Spec42 Diagram"
+          "name": "Views",
+          "contextualTitle": "Spec42 Views"
         },
         {
           "type": "webview",

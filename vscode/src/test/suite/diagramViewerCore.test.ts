@@ -19,9 +19,22 @@ import {
   resolveDiagramSelection,
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
-import { isEmptyIncompleteDiagramProduct } from "../../diagram/diagramProductState";
+import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "../../diagram/diagramProductState";
 
 describe("diagram viewer core", () => {
+  it("reuses disclosure only while a product projects the same nodes", () => {
+    const node = (name: string) => ({ reference: 0, name });
+    const product = (digest: string, names: string[]) => ({
+      modelDigest: digest, references: [{ kind: "qualified-name" }], projection: { nodes: names.map(node) },
+    });
+    const before = product("blake3:a", ["root", "child"]);
+    assert.equal(sameProjectedNodes(before, product("blake3:a", ["root", "child"])), true);
+    // Loading a browser branch keeps the digest but adds nodes and shifts their indexes.
+    assert.equal(sameProjectedNodes(before, product("blake3:a", ["root", "loaded", "child"])), false);
+    assert.equal(sameProjectedNodes(before, product("blake3:b", ["root", "child"])), false);
+    assert.equal(sameProjectedNodes(undefined, before), false);
+  });
+
   it("reuses an already-visible source column and otherwise requests a new one", () => {
     const editors = [
       { uri: "file:///workspace/other.sysml", viewColumn: 1 },
@@ -198,37 +211,40 @@ describe("diagram viewer core", () => {
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, sources: [{ document: 1, range: [0, 0, 0, 1] }] })));
   });
 
-  it("lists every authored view in the model, grouped by file and keyed by handle", () => {
+  it("lists every authored view in the model, grouped by canonical namespace and keyed by handle", () => {
     const catalog = parseDiagramViewCatalog({
       modelDigest: "blake3:model",
       views: [{
         handle: "view:b",
         kind: "sequence-view",
         reference: { kind: "qualified-name", document: "file:///w/views.sysml", qualifiedName: "P::flow", sourceDomain: "workspace" },
+        namespace: "P",
         name: "checkoutFlow",
         source: { uri: "file:///w/views.sysml" },
       }, {
         handle: "view:a",
         kind: "general-view",
         reference: { kind: "qualified-name", document: "file:///w/views.sysml", qualifiedName: "P::structure", sourceDomain: "workspace" },
+        namespace: "P",
         name: "structure",
         source: { uri: "file:///w/views.sysml" },
       }, {
         handle: "view:elsewhere",
         kind: "grid-view",
         reference: { kind: "qualified-name", document: "file:///w/aaa.sysml", qualifiedName: "Q::matrix", sourceDomain: "workspace" },
+        namespace: "Q",
         name: "matrix",
         source: { uri: "file:///w/aaa.sysml" },
       }],
     });
     const all = allDiagramViewOptions(catalog);
-    // Ordered by file basename (aaa before views), then kind, then name.
-    assert.deepEqual(all.map((option) => option.handle), ["view:elsewhere", "view:a", "view:b"]);
-    assert.deepEqual(all.map((option) => option.group), ["aaa.sysml", "views.sysml", "views.sysml"]);
-    assert.equal(all[1].label, "structure · General View");
+    // Namespace and view-name order take precedence over file and kind.
+    assert.deepEqual(all.map((option) => option.handle), ["view:b", "view:a", "view:elsewhere"]);
+    assert.deepEqual(all.map((option) => option.group), ["P", "P", "Q"]);
+    assert.equal(all[1].label, "structure");
 
     const authored = authoredDiagramViewOptions(catalog, "file:///w/views.sysml");
-    assert.deepEqual(authored.map((option) => option.handle), ["view:a", "view:b"]);
+    assert.deepEqual(authored.map((option) => option.handle), ["view:b", "view:a"]);
     assert.equal(diagramViewKindForHandle(catalog, "view:b"), "sequence-view");
     assert.equal(diagramViewKindForHandle(catalog, "missing"), undefined);
   });
@@ -241,6 +257,29 @@ describe("diagram viewer core", () => {
     assert.equal(resolveDiagramSelection(options, "h2")?.handle, "h2");
     assert.equal(resolveDiagramSelection(options, "gone")?.handle, "h1");
     assert.equal(resolveDiagramSelection([], "h1"), undefined);
+  });
+
+  it("uses canonical namespace and source ranges without splitting quoted qualified names", () => {
+    const catalog = parseDiagramViewCatalog({modelDigest:"m", views:[{
+      handle:"h",kind:"general-view",name:"A::quoted name",namespace:"P::'Namespace::with separators'",
+      reference:{kind:"qualified-name",document:"file:///w/views.sysml",qualifiedName:"opaque",sourceDomain:"workspace"},
+      source:{uri:"file:///w/views.sysml",range:{startLine:10,startCharacter:4,endLine:12,endCharacter:5}},
+    }]});
+    const [view] = allDiagramViewOptions(catalog);
+    assert.equal(view.group, "P::'Namespace::with separators'");
+    assert.equal(view.label, "A::quoted name");
+    assert.equal(view.kindLabel, "General View");
+    assert.deepEqual(view.definition, {uri:"file:///w/views.sysml",startLine:10,startCharacter:4,endLine:12,endCharacter:5});
+    const root = allDiagramViewOptions({...catalog, views:[{...catalog.views[0], namespace:null}]});
+    assert.equal(root[0].group,"(Root namespace)");
+    assert.equal(allDiagramViewOptions({...catalog, views:[{...catalog.views[0], namespace:""}]} )[0].group, "(Unnamed namespace)");
+    const legacy = allDiagramViewOptions({...catalog, views:[{...catalog.views[0], namespace:undefined, source:{uri:"file:///w/views.sysml"}}]});
+    assert.equal(legacy[0].group,"(Namespace unavailable)");
+    assert.equal(legacy[0].definition, undefined);
+    assert.throws(()=>parseDiagramViewCatalog({...catalog, views:[{...catalog.views[0], namespace:42}]}));
+    assert.throws(()=>parseDiagramViewCatalog({...catalog, views:[{...catalog.views[0], source:{uri:"file:///w/views.sysml",range:{startLine:-1}}}]}));
+    const multiple = allDiagramViewOptions({...catalog, views:[catalog.views[0], {...catalog.views[0],handle:"h2",kind:"sequence-view"}]});
+    assert.deepEqual(multiple.map(view=>view.label),["A::quoted name · General View", "A::quoted name · Sequence View"]);
   });
 
   it("backs the reconcile loop off exponentially, then settles slow", () => {

@@ -111,6 +111,15 @@ fn diagram_views_returns_the_webshop_catalog_over_the_lsp() {
         ]
     );
 
+    for view in views {
+        assert_eq!(view["namespace"], "Views", "canonical owner: {view}");
+        let range = &view["source"]["range"];
+        assert!(
+            range["startLine"].is_u64() && range["endLine"].is_u64(),
+            "definition range: {view}"
+        );
+    }
+
     // A catalog handle yields the natively built diagram product on the same publication.
     let pipeline = views
         .iter()

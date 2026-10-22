@@ -1,16 +1,17 @@
+import { populateViewSelect, withExportBackground, type ViewChoice } from "./viewPresentation";
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
 import { isNativeDiagramView, renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
 import type { PreparedView } from "../../diagram-renderer/src/prepare";
-import type { DiagramProductIdentity, DisclosureState, RequestServerDraw } from "../../diagram-renderer/src/render/types";
+import type { DiagramProductIdentity, DisclosureState, RequestServerDraw, ViewportTransform } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
-import { isEmptyIncompleteDiagramProduct } from "./diagramProductState";
+import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "./diagramProductState";
 
 declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
 
 type RenderMessage = {
   type: "render";
   productJson: string;
-  views: Array<{ handle: string; label: string; group: string }>;
+  views: ViewChoice[];
   selectedHandle: string;
   header: string;
   incompleteReasons: string[];
@@ -101,6 +102,11 @@ const viewSelect = must<HTMLSelectElement>("view-select");
 const statusEl = must<HTMLElement>("status");
 const homeButton = must<HTMLButtonElement>("home");
 const copyButton = must<HTMLButtonElement>("copy-json");
+const definitionButton = must<HTMLButtonElement>("view-definition");
+const viewKindEl = must<HTMLElement>("view-kind");
+const transparentExport = must<HTMLInputElement>("transparent-export");
+let visibleViews: ViewChoice[] = [];
+
 const exportSvgButton = must<HTMLButtonElement>("export-svg");
 const exportPngButton = must<HTMLButtonElement>("export-png");
 
@@ -108,6 +114,7 @@ let controller: RenderController | undefined;
 let currentProduct: DiagramProduct | undefined;
 let currentPrepared: PreparedView | undefined;
 let currentIdentity: DiagramProductIdentity | undefined;
+let retainedViewport: ViewportTransform | undefined;
 let renderGeneration = 0;
 let renderAbort: AbortController | undefined;
 
@@ -146,6 +153,7 @@ function clearRenderState(): void {
   currentProduct = undefined;
   currentPrepared = undefined;
   currentIdentity = undefined;
+  retainedViewport = undefined;
 }
 
 function openSource(node: { uri?: string; sourcePath?: string; range?: { start?: { line: number; character?: number }; end?: { line?: number; character?: number } } }): void {
@@ -171,6 +179,7 @@ async function mountPrepared(
   product: DiagramProduct,
   productIdentity: DiagramProductIdentity,
   disclosureState?: DisclosureState,
+  viewport?: ViewportTransform,
 ): Promise<void> {
   const previous = controller;
   controller = undefined;
@@ -181,6 +190,7 @@ async function mountPrepared(
     product,
     requestDraw: isNativeDiagramView(prepared.view) ? requestServerDraw : undefined,
     disclosureState,
+    viewport,
     abortSignal: signal,
     onNodeClick: openSource,
     loadBranch: (key) => vscode.postMessage({ type: "loadBranch", key }),
@@ -193,29 +203,15 @@ async function mountPrepared(
 }
 
 function populateSelect(views: RenderMessage["views"], selectedHandle: string): void {
-  const groups = new Map<string, HTMLOptGroupElement>();
-  const children: Array<HTMLOptGroupElement | HTMLOptionElement> = [];
-  const singleGroup = new Set(views.map((view) => view.group)).size <= 1;
-  for (const view of views) {
-    const option = document.createElement("option");
-    option.value = view.handle;
-    option.textContent = view.label;
-    option.selected = view.handle === selectedHandle;
-    if (singleGroup) {
-      children.push(option);
-      continue;
-    }
-    let group = groups.get(view.group);
-    if (!group) {
-      group = document.createElement("optgroup");
-      group.label = view.group;
-      groups.set(view.group, group);
-      children.push(group);
-    }
-    group.appendChild(option);
-  }
-  viewSelect.replaceChildren(...children);
-  viewSelect.disabled = views.length <= 1;
+  visibleViews = views;
+  populateViewSelect(viewSelect, views, selectedHandle);
+  updateSelectedViewInfo();
+}
+
+function updateSelectedViewInfo(): void {
+  const view = visibleViews.find((choice) => choice.handle === viewSelect.value);
+  viewKindEl.textContent = view?.kindLabel ?? "";
+  definitionButton.disabled = !view?.definition;
 }
 
 function setStatus(header: string, error: string | undefined): void {
@@ -261,6 +257,11 @@ async function render(message: RenderMessage): Promise<void> {
     return;
   }
 
+  const sameView = currentIdentity?.viewHandle === message.selectedHandle;
+  retainedViewport = sameView ? controller?.getViewport() ?? retainedViewport : undefined;
+  const viewport = retainedViewport;
+  // Disclosure names nodes by product index; it is reusable only while the same nodes are projected.
+  const disclosure = sameView && sameProjectedNodes(currentProduct, product) ? controller?.getDisclosureState() : undefined;
   currentProduct = product;
 
   const prepared = prepareViewData(product);
@@ -270,14 +271,15 @@ async function render(message: RenderMessage): Promise<void> {
     viewHandle: message.selectedHandle,
   };
   currentIdentity = productIdentity;
-  await mountPrepared(generation, signal, prepared, product, productIdentity);
+  await mountPrepared(generation, signal, prepared, product, productIdentity, disclosure, viewport);
 }
 
 async function redrawPreservingDisclosure(): Promise<void> {
   if (!currentProduct || !currentPrepared || !currentIdentity) return;
   const disclosure = controller?.getDisclosureState();
+  const viewport = controller?.getViewport();
   const { generation, signal } = beginRender();
-  await mountPrepared(generation, signal, currentPrepared, currentProduct, currentIdentity, disclosure);
+  await mountPrepared(generation, signal, currentPrepared, currentProduct, currentIdentity, disclosure, viewport);
 }
 
 function withText(text: string): HTMLElement {
@@ -300,9 +302,9 @@ function withLoading(text: string): HTMLElement {
 }
 
 async function standaloneSvg(): Promise<string> {
-  if (!currentProduct || !currentIdentity) throw new Error("Open a diagram before exporting it.");
-  if (!controller) throw new Error("Wait for the diagram to finish rendering before exporting it.");
-  const scheme = currentColorScheme();
+  if (!currentProduct || !currentIdentity) throw new Error("Open a view before exporting it.");
+  if (!controller) throw new Error("Wait for the view to finish rendering before exporting it.");
+  const scheme = "light" as const;
   if (currentPrepared && isNativeDiagramView(currentPrepared.view)) {
     const svg = await requestServerDraw(
       currentIdentity,
@@ -316,8 +318,8 @@ async function standaloneSvg(): Promise<string> {
       },
       new AbortController().signal,
     );
-    if (!svg) throw new Error("Could not export the diagram while the language server is unavailable.");
-    return withBackground(svg, scheme);
+    if (!svg) throw new Error("Could not export the view while the language server is unavailable.");
+    return withExportBackground(svg, transparentExport.checked);
   }
   const prepared: PreparedView = prepareViewData(currentProduct);
   const holder = document.createElement("div");
@@ -331,25 +333,10 @@ async function standaloneSvg(): Promise<string> {
     });
     const svg = offscreen.exportSvg();
     offscreen.destroy();
-    return withBackground(svg, scheme);
+    return withExportBackground(svg, transparentExport.checked);
   } finally {
     holder.remove();
   }
-}
-
-function withBackground(svg: string, scheme: "light" | "dark"): string {
-  const fill = scheme === "light" ? "#f6f7f9" : "#1a1a1a";
-  const parsed = new DOMParser().parseFromString(svg, "image/svg+xml");
-  const root = parsed.documentElement;
-  if (root.nodeName.toLowerCase() !== "svg") return svg;
-  const rect = parsed.createElementNS("http://www.w3.org/2000/svg", "rect");
-  rect.setAttribute("x", "-100%");
-  rect.setAttribute("y", "-100%");
-  rect.setAttribute("width", "300%");
-  rect.setAttribute("height", "300%");
-  rect.setAttribute("fill", fill);
-  root.insertBefore(rect, root.firstChild);
-  return new XMLSerializer().serializeToString(root);
 }
 
 async function svgToPng(svg: string, scale = 2): Promise<string> {
@@ -357,7 +344,7 @@ async function svgToPng(svg: string, scale = 2): Promise<string> {
   const image = new Image();
   await new Promise<void>((resolve, reject) => {
     image.onload = () => resolve();
-    image.onerror = () => reject(new Error("the diagram SVG could not be rasterized"));
+    image.onerror = () => reject(new Error("the view SVG could not be rasterized"));
     image.src = source;
   });
   const viewBox = /viewBox="\s*(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)"/.exec(svg);
@@ -383,7 +370,12 @@ async function exportImage(format: "svg" | "png"): Promise<void> {
   }
 }
 
+definitionButton.addEventListener("click", () => {
+  const target = visibleViews.find((view) => view.handle === viewSelect.value)?.definition;
+  if (target) vscode.postMessage({type:"openSource", target});
+});
 viewSelect.addEventListener("change", () => {
+  updateSelectedViewInfo();
   vscode.postMessage({ type: "switchView", handle: viewSelect.value });
 });
 homeButton.addEventListener("click", () => controller?.reset());
