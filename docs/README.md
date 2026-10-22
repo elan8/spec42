@@ -14,6 +14,7 @@ The user guide lives here in `docs/user/` and on GitHub — there is no separate
 | Feature Inspector | [user/FEATURE-INSPECTOR.md](user/FEATURE-INSPECTOR.md) |
 | Libraries & dependencies | [user/LIBRARIES.md](user/LIBRARIES.md) |
 | Examples | [user/EXAMPLES.md](user/EXAMPLES.md) |
+| Calculation expressions and evaluation limits | [user/CALCULATION-EXPRESSIONS.md](user/CALCULATION-EXPRESSIONS.md) |
 | Validation and diagnostics | [user/VALIDATION.md](user/VALIDATION.md) |
 | GitHub Action and CI validation | [user/GITHUB-ACTION.md](user/GITHUB-ACTION.md) |
 | Troubleshooting | [user/TROUBLESHOOTING.md](user/TROUBLESHOOTING.md) |

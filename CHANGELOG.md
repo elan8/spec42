@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   key, membership, member state), and grid metadata carries a `layout`, node-index `columns`, and
   cells naming the edge they show; consumers must accept `schemaVersion` 7. The generator ABI
   fingerprint changed: **a generator plugin built against 0.56.0 must be rebuilt.** The semantic
-  contract version is now `spec-rule-burndown-element-kinds-v51`, so earlier publications and
+  contract version is now `spec-rule-burndown-element-kinds-v52`, so earlier publications and
   serialised models are not reused. The informational `view_expose_empty` diagnostic is gone. Join
   and control nodes no longer report `missing_library_anchor`. Projects can now limit their
   sources with `syside.toml` `include`/`exclude`. The bundled domain libraries are now
@@ -47,6 +47,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drawn, and a state-transition or action-flow view is no longer also listed as an interconnection
   view.
 - **Syntax highlighting** colours `flow` and `message` usages in every owning body.
+- **Calculation expressions resolve their callbacks and indexed accesses.** A collection
+  callback such as `sum(contributions->select { in c; c.active })` keeps its body in its own
+  scope, so its parameters and locals resolve there instead of in the caller. Indexed member
+  access such as `edges#(i).vertices` resolves the member through the indexed result's type,
+  including nested indices and casts (`(edges#(i) as Edge).vertices`). Calculation aliases and
+  bare returns are accepted. Evaluating callbacks and indexed occurrences remains explicitly
+  unsupported; see [Calculation expressions](docs/user/CALCULATION-EXPRESSIONS.md).
 
 - **Quieter view validation.** Remove the informational `view_expose_empty` check from
   Spec42, including the CLI and VS Code. Unresolved expose targets are still reported.

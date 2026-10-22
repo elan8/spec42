@@ -289,6 +289,12 @@ impl<D> SemanticModel<D> {
         }
         Ok(SettledLibrary {
             outcomes: self.resolution.outcomes.clone(),
+            expression_relationships:
+                crate::resolve::implied::synthesize_access_expression_result_relationships(
+                    &self.storage,
+                    &self.resolution,
+                )?
+                .into_boxed_slice(),
             root_names,
             unsettled_roots,
         })
@@ -1014,6 +1020,7 @@ mod tests {
                     document: DocumentIdx(0),
                     grammar: ExpressionGrammar::Constraint,
                     operand_start: 0,
+                    operand_scope: crate::lower::facts::ExpressionOperandScope::Local,
                     node: Expression::LiteralInteger(5),
                 },
                 predicate: FilterPredicate::Unsupported,

@@ -217,6 +217,7 @@ impl Relocation {
             document: self.document,
             grammar: expression.grammar,
             operand_start: expression.operand_start,
+            operand_scope: expression.operand_scope,
             node: expression.node.clone(),
         }
     }
@@ -356,7 +357,18 @@ impl SemanticModelBuilder {
                     .map(|narrowing| {
                         Ok(crate::lower::facts::MemberAccessNarrowing {
                             segment_count: narrowing.segment_count,
-                            target: relocation.reference(narrowing.target)?,
+                            target: match narrowing.target {
+                                crate::lower::facts::MemberAccessTarget::Reference(reference) => {
+                                    crate::lower::facts::MemberAccessTarget::Reference(
+                                        relocation.reference(reference)?,
+                                    )
+                                }
+                                crate::lower::facts::MemberAccessTarget::ExpressionResult(
+                                    result,
+                                ) => crate::lower::facts::MemberAccessTarget::ExpressionResult(
+                                    relocation.declaration(result)?,
+                                ),
+                            },
                         })
                     })
                     .collect::<Result<Vec<_>, ConstructionError>>()?

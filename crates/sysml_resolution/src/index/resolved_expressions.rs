@@ -5,7 +5,7 @@
 //! this time instead of discarded.
 //!
 //! One flat node arena per declaration. The walk is gated by the canonical classifier
-//! ([`classify_constraint_node`] / [`classify_calc_node`]): an expression those reject is
+//! ([`classify_authored_node`]): an expression those reject is
 //! [`ExpressionOutcome::Unsupported`] and no tree is offered, so this module never widens the
 //! supported-shape boundary the evaluation engine owns. Within an accepted expression the walk
 //! threads the operand ordinal in lockstep with lowering, so `FeatureReference` node *n* names the
@@ -16,15 +16,15 @@ use sysml_v2_parser::ast::{BinaryOperator, Expression, Node, Span, UnaryOperator
 use sysml_v2_parser::ParsedDocument;
 
 use crate::evaluate::classify::{
-    classify_calc_node, classify_constraint_node, is_arithmetic_operator, is_comparison_operator,
-    is_logical_operator, is_unary_operator,
+    classify_authored_node, is_arithmetic_operator, is_comparison_operator, is_logical_operator,
+    is_unary_operator,
 };
 use crate::evaluate::fold::literal_expression_value;
 use crate::expression::{
     ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome, PublishedExpression,
 };
 use crate::index::types::{ScopeBits, TypeIndex};
-use crate::lower::facts::{AuthoredExpression, ExpressionGrammar, PendingEvaluationFact};
+use crate::lower::facts::{AuthoredExpression, PendingEvaluationFact};
 use crate::lower::storage::{ParsedSources, SemanticModelStorage};
 use crate::model::evaluation::evaluated_scalar;
 use crate::model::resolver::SemanticModel;
@@ -597,14 +597,7 @@ fn canonical_classification(
     expression: &AuthoredExpression,
 ) -> Option<()> {
     let mut ordinal = expression.operand_start;
-    match expression.grammar {
-        ExpressionGrammar::Constraint => {
-            classify_constraint_node(parsed, &expression.node, &mut ordinal).map(|_| ())
-        }
-        ExpressionGrammar::Calc => {
-            classify_calc_node(parsed, &expression.node, &mut ordinal).map(|_| ())
-        }
-    }
+    classify_authored_node(parsed, expression, &mut ordinal).map(|_| ())
 }
 
 struct TreeBuilder<'a> {

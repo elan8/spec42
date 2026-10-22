@@ -26,7 +26,6 @@ use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::FilterForm;
 use crate::lower::facts::FilterPredicate;
 use crate::lower::facts::LineIndex;
-use crate::lower::facts::MemberAccessNarrowing;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationForm;
 use crate::lower::facts::MetadataAnnotationRecord;
@@ -42,6 +41,7 @@ use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::facts::UnsupportedRecord;
+use crate::lower::facts::{MemberAccessNarrowing, MemberAccessTarget};
 use crate::lower::intern::SymbolPathArenaBuilder;
 use crate::lower::intern::SymbolTableBuilder;
 use crate::lower::storage::ParsedSources;
@@ -846,6 +846,17 @@ impl SemanticModelBuilder {
             .unwrap_or(DeclarationKind::KermlExpression);
         let (expression, result) =
             self.push_owned_expression(document, owner, expression_kind, role, node.span)?;
+        self.record_value_expression_shape(document, expression, result, node)?;
+        Ok((expression, result))
+    }
+
+    fn record_value_expression_shape(
+        &mut self,
+        document: DocumentIdx,
+        expression: DeclarationId,
+        result: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
         if matches!(
             node.value,
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_)
@@ -938,7 +949,7 @@ impl SemanticModelBuilder {
                 span: node.span,
             });
         }
-        Ok((expression, result))
+        Ok(())
     }
 
     fn push_expression_argument(
@@ -1267,10 +1278,11 @@ impl SemanticModelBuilder {
         kind: ReferenceKind,
         node: &Node<Expression>,
     ) -> Result<Option<AuthoredReferenceId>, ConstructionError> {
-        fn collect(
-            node: &Node<Expression>,
+        fn collect<'a>(
+            node: &'a Node<Expression>,
             chain: &mut Vec<QualifiedReferenceId>,
             casts: &mut Vec<(usize, QualifiedReferenceId)>,
+            indexed_base: &mut Option<&'a Node<Expression>>,
         ) -> bool {
             match &node.value {
                 Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
@@ -1278,14 +1290,14 @@ impl SemanticModelBuilder {
                     true
                 }
                 Expression::MemberAccess { base, member, .. } => {
-                    if !collect(base, chain, casts) {
+                    if !collect(base, chain, casts, indexed_base) {
                         return false;
                     }
                     chain.push(*member);
                     true
                 }
                 Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
-                    [only] => collect(&only.expression, chain, casts),
+                    [only] => collect(&only.expression, chain, casts, indexed_base),
                     _ => false,
                 },
                 Expression::TypeCheck {
@@ -1293,12 +1305,16 @@ impl SemanticModelBuilder {
                     operand: Some(operand),
                     type_name,
                 } => {
-                    if !collect(operand, chain, casts) {
+                    if !collect(operand, chain, casts, indexed_base) {
                         return false;
                     }
                     if *kind == TypeCheckKind::As {
                         casts.push((chain.len(), *type_name));
                     }
+                    true
+                }
+                Expression::Index { .. } => {
+                    *indexed_base = Some(node);
                     true
                 }
                 _ => false,
@@ -1307,11 +1323,46 @@ impl SemanticModelBuilder {
 
         let mut chain = Vec::new();
         let mut casts = Vec::new();
-        if !collect(node, &mut chain, &mut casts) || chain.is_empty() {
+        let mut indexed_base = None;
+        if !collect(node, &mut chain, &mut casts, &mut indexed_base) || chain.is_empty() {
             return Ok(None);
         }
+        // Occurrence endpoint roles need their own indexed-occurrence contract. Do not
+        // reinterpret them as expression-result lookups merely because they share this helper.
+        if indexed_base.is_some() && kind != ReferenceKind::MemberAccessOperand {
+            return Ok(None);
+        }
+        // A nested indexed access is its own FeatureChainExpression, even when the caller
+        // has not yet materialized the enclosing operator's other operands (#337).
+        let source = if indexed_base.is_some()
+            && kind == ReferenceKind::MemberAccessOperand
+            && !self
+                .feature_chain_expressions
+                .iter()
+                .any(|chain| chain.expression == source)
+        {
+            let (expression, _) = self.mint_value_expression(document, source, None, node)?;
+            self.push_evaluation_fact(expression, self.calc_expression_site(document, &node.value));
+            expression
+        } else {
+            source
+        };
         let parsed = Arc::clone(&self.documents[document.index()].parsed);
-        let mut narrowings = Vec::with_capacity(casts.len());
+        let mut narrowings = Vec::with_capacity(casts.len() + usize::from(indexed_base.is_some()));
+        if let Some(base) = indexed_base {
+            let (expression, result) = self.mint_value_expression(document, source, None, base)?;
+            self.expression_arguments.push(ExpressionArgumentRecord {
+                expression: source,
+                argument: expression,
+                result,
+                ordinal: 0,
+            });
+            self.lower_indexed_access_argument(document, expression, base)?;
+            narrowings.push(MemberAccessNarrowing {
+                segment_count: 0,
+                target: MemberAccessTarget::ExpressionResult(result),
+            });
+        }
         for (chain_entry_count, target) in casts {
             let segment_count =
                 chain[..chain_entry_count]
@@ -1329,11 +1380,35 @@ impl SemanticModelBuilder {
             narrowings.push(MemberAccessNarrowing {
                 segment_count: u32::try_from(segment_count)
                     .map_err(|_| ConstructionError::Capacity)?,
-                target: target_reference,
+                target: MemberAccessTarget::Reference(target_reference),
             });
         }
-        let reference =
-            self.push_member_access_reference_with_kind(source, document, kind, &chain, node.span)?;
+        let reference_span = if indexed_base.is_some() {
+            let first = parsed
+                .qualified_reference(chain[0])
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            let last = parsed
+                .qualified_reference(
+                    *chain
+                        .last()
+                        .ok_or(ConstructionError::InvalidParserReference)?,
+                )
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            first.covering(&last)
+        } else {
+            node.span
+        };
+        let reference = self.push_member_access_reference_with_kind(
+            source,
+            document,
+            kind,
+            &chain,
+            reference_span,
+        )?;
         self.references[reference.index()].member_access_narrowings = narrowings.into_boxed_slice();
         Ok(Some(reference))
     }
@@ -1740,7 +1815,7 @@ impl SemanticModelBuilder {
                 self.references[reference.index()].member_access_narrowings =
                     Box::new([MemberAccessNarrowing {
                         segment_count: 0,
-                        target: callee,
+                        target: MemberAccessTarget::Reference(callee),
                     }]);
             }
         }
@@ -1932,6 +2007,7 @@ impl SemanticModelBuilder {
             document,
             grammar: ExpressionGrammar::Constraint,
             operand_start: 0,
+            operand_scope: crate::lower::facts::ExpressionOperandScope::Local,
             node: node.clone(),
         }
     }
@@ -1946,6 +2022,7 @@ impl SemanticModelBuilder {
             document,
             grammar: ExpressionGrammar::Calc,
             operand_start: 0,
+            operand_scope: crate::lower::facts::ExpressionOperandScope::Local,
             node: node.clone(),
         }
     }

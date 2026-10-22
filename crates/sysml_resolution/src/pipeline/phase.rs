@@ -130,9 +130,8 @@ impl Lowered {
         let sources = self.sources;
         let has_recovery = sources.any_parse_errors() || !storage.recovery.is_empty();
         let has_unsupported = !storage.unsupported.is_empty();
-        let seed = library
-            .filter(|library| library.admits(&storage))
-            .map(|library| library.outcomes.as_ref());
+        let admitted_library = library.filter(|library| library.admits(&storage));
+        let seed = admitted_library.map(|library| library.outcomes.as_ref());
         let library_anchors = library_specialization_anchors(&storage);
         let provisional_library_specializations =
             crate::resolve::implied::provisional_library_specializations(
@@ -144,13 +143,45 @@ impl Lowered {
         // authored references, including further metadata baseType redefinitions. Feed the
         // canonical synthesis back into name resolution until the exact relationship set is
         // stable; no intermediate resolution is published (SysML 7.27.3–7.27.4).
+        let feature_type_dependencies =
+            crate::resolve::effective_types::feature_chain_typing_dependencies(&storage);
         let mut provisional_relationships = provisional_library_specializations.to_vec();
         let mut previous_metadata_relationships = Vec::new();
-        // Each pass can only expose the baseType of an annotation whose metadata definition gained
-        // a supertype in the previous pass, so a dependency chain is at most one link per
-        // annotation long. Two passes beyond that confirm the fixed point; a model still changing
-        // after them does not converge and is reported as such.
-        let mut metadata_passes_remaining = storage.metadata_annotations.len().saturating_add(2);
+        let mut previous_expression_relationships = admitted_library
+            .map(|library| library.expression_relationships.to_vec())
+            .unwrap_or_default();
+        provisional_relationships.extend(previous_expression_relationships.iter().copied());
+        provisional_relationships.sort_by_key(|edge| (edge.kind, edge.source.0, edge.target.0));
+        provisional_relationships.dedup();
+        let has_expression_roots = storage.references.iter().any(|reference| {
+            reference.member_access_narrowings.iter().any(|narrowing| {
+                matches!(
+                    narrowing.target,
+                    crate::lower::facts::MemberAccessTarget::ExpressionResult(_)
+                )
+            })
+        });
+        // Metadata contributes at most one dependency link per annotation. An expression-result
+        // relationship is sourced at the result of one feature-reference, feature-chain or
+        // operator expression, and a pass can only add one whose prerequisite settled in the
+        // previous pass, so a dependency chain visits each of those expressions at most once.
+        // Two extra passes confirm the fixed point. Both families share this barrier so lookup
+        // never publishes stale result types; exhausting the bound leaves an explicit
+        // nonconverged publication.
+        let expression_links = if has_expression_roots {
+            storage
+                .feature_reference_expressions
+                .len()
+                .saturating_add(storage.feature_chain_expressions.len())
+                .saturating_add(storage.operator_expressions.len())
+        } else {
+            0
+        };
+        let mut relationship_passes_remaining = storage
+            .metadata_annotations
+            .len()
+            .saturating_add(expression_links)
+            .saturating_add(2);
         let (direct_names, effective_imports, exported_imports, memberships, resolution) = loop {
             let (direct_names, effective_imports, exported_imports, memberships, resolution) =
                 resolve_dense(
@@ -164,6 +195,7 @@ impl Lowered {
                         settled_outcomes: seed,
                         shadowed_library_roots: &shadowed_library_roots,
                         owned_end_features: &storage.owned_end_features,
+                        feature_type_dependencies: &feature_type_dependencies,
                     },
                 )?;
             let authored_relationships = storage
@@ -200,8 +232,10 @@ impl Lowered {
             // only prerequisites for the derivations below and are replaced, not kept, once this
             // pass's synthesis is known.
             let mut independent = base_implied.to_vec();
+            independent.extend(previous_expression_relationships.iter().copied());
             let mut implied = base_implied.to_vec();
             implied.extend(previous_metadata_relationships.iter().copied());
+            implied.extend(previous_expression_relationships.iter().copied());
             implied.sort_by_key(|relationship| {
                 (
                     relationship.kind,
@@ -249,6 +283,14 @@ impl Lowered {
             } else {
                 resolution
             };
+            let expression_relationships = if has_expression_roots {
+                crate::resolve::implied::synthesize_access_expression_result_relationships(
+                    &storage,
+                    &resolution,
+                )?
+            } else {
+                Vec::new()
+            };
             let mut metadata_relationships = Vec::new();
             let mut resolution = if storage.metadata_annotations.is_empty() {
                 resolution
@@ -282,6 +324,7 @@ impl Lowered {
             };
             let mut next_relationships = provisional_library_specializations.to_vec();
             next_relationships.extend(metadata_relationships.iter().copied());
+            next_relationships.extend(expression_relationships.iter().copied());
             next_relationships.sort_by_key(|relationship| {
                 (
                     relationship.kind,
@@ -290,7 +333,7 @@ impl Lowered {
                 )
             });
             next_relationships.dedup();
-            metadata_passes_remaining -= 1;
+            relationship_passes_remaining -= 1;
             if next_relationships == provisional_relationships {
                 break (
                     direct_names,
@@ -300,7 +343,7 @@ impl Lowered {
                     resolution,
                 );
             }
-            if metadata_passes_remaining == 0 {
+            if relationship_passes_remaining == 0 {
                 resolution.solver_status = SolverStatus::NonConverged;
                 break (
                     direct_names,
@@ -312,6 +355,7 @@ impl Lowered {
             }
             provisional_relationships = next_relationships;
             previous_metadata_relationships = metadata_relationships;
+            previous_expression_relationships = expression_relationships;
         };
         let resolution = if storage
             .declaration_facts

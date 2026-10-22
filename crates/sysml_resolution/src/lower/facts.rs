@@ -1280,9 +1280,9 @@ pub(crate) struct AuthoredReference {
     pub(crate) ordinal: u32,
     pub(crate) import: Option<AuthoredImportFacts>,
     pub(crate) flags: RelationshipFlags,
-    /// Typed cast boundaries inside a flattened member-access path. After `segment_count`
-    /// segments, subsequent member lookup starts from the resolved cast target rather than the
-    /// operand's pre-cast type.
+    /// Typed lookup boundaries in a member-access path. A zero-segment boundary roots
+    /// lookup at an owned expression result or resolved callee/cast. Later boundaries
+    /// replace the preceding feature's scope with the resolved cast target.
     pub(crate) member_access_narrowings: Box<[MemberAccessNarrowing]>,
     /// For a dotted feature chain (`a::b.c`), the zero-based index of the last path segment of
     /// each KerML chaining feature, in order: a `.` separator ends a chaining feature, while `::`
@@ -1295,7 +1295,14 @@ pub(crate) struct AuthoredReference {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct MemberAccessNarrowing {
     pub(crate) segment_count: u32,
-    pub(crate) target: AuthoredReferenceId,
+    pub(crate) target: MemberAccessTarget,
+}
+
+/// Lookup starts from a resolved reference (casts/callees) or an owned expression's result.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum MemberAccessTarget {
+    Reference(AuthoredReferenceId),
+    ExpressionResult(DeclarationId),
 }
 
 /// One explicitly declared KerML relationship whose source and target are both authored names.
@@ -1357,7 +1364,15 @@ pub(crate) struct AuthoredExpression {
     pub(crate) grammar: ExpressionGrammar,
     /// The ordinal the expression's first operand reference was lowered under.
     pub(crate) operand_start: u32,
+    /// Whether operand references belong to this site or to its owned argument expressions.
+    pub(crate) operand_scope: ExpressionOperandScope,
     pub(crate) node: Expression,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ExpressionOperandScope {
+    Local,
+    OwnedArguments,
 }
 
 /// An evaluation candidate: the declaration a constraint/calc expression belongs to, and the

@@ -37,6 +37,7 @@ impl EffectiveTypes {
 pub(crate) fn derive_effective_types_from_edges(
     count: usize,
     edges: impl IntoIterator<Item = (DeclarationId, DeclarationId, ReferenceKind)>,
+    chain_targets: &[(DeclarationId, DeclarationId)],
 ) -> Result<EffectiveTypes, ResolutionError> {
     let mut direct = vec![std::collections::BTreeSet::new(); count];
     let mut generals = vec![std::collections::BTreeSet::new(); count];
@@ -59,6 +60,15 @@ pub(crate) fn derive_effective_types_from_edges(
             }
             _ => {}
         }
+    }
+
+    // KerML 8.3.3.3.4 deriveFeatureType includes the last chaining feature's types.
+    // This is a typing dependency, not an authored or implied Subsetting relationship.
+    for (chain, target) in chain_targets {
+        generals
+            .get_mut(chain.index())
+            .ok_or(ResolutionError::InvalidStorage)?
+            .insert(*target);
     }
 
     let mut rows = direct
@@ -144,5 +154,22 @@ pub(crate) fn derive_effective_types(
     for relationship in resolution.authored_relationships.iter() {
         edges.push((relationship.source, relationship.target, relationship.kind));
     }
-    derive_effective_types_from_edges(storage.declarations.len(), edges)
+    derive_effective_types_from_edges(
+        storage.declarations.len(),
+        edges,
+        &feature_chain_typing_dependencies(storage),
+    )
+}
+
+/// The ordered expression-chain records identify the final chaining feature without relying
+/// on declaration IDs or relationship sort order. Both lookup and published effective types
+/// consume this dependency set. The source-target Features have no authored local members.
+pub(crate) fn feature_chain_typing_dependencies(
+    storage: &SemanticModelStorage,
+) -> Vec<(DeclarationId, DeclarationId)> {
+    storage
+        .feature_chain_expressions
+        .iter()
+        .map(|chain| (chain.subsetting_chain, chain.source_target))
+        .collect()
 }

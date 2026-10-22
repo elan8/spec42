@@ -7,6 +7,7 @@ use crate::evaluate::classify::is_logical_operator;
 use crate::evaluate::classify::is_range_or_coalesce_operator;
 use crate::evaluate::classify::is_unary_operator;
 use crate::evaluate::fold::quantity_unit_text;
+use crate::lower::facts::direction_node_fact;
 use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::occurrence_prefix_direction;
 use crate::lower::facts::occurrence_prefix_modifiers;
@@ -30,36 +31,19 @@ use crate::model::Visibility;
 use std::sync::Arc;
 use sysml_v2_parser::ast::{
     AssertConstraintMember, CalcDef, CalcDefBody, CalcDefBodyElement, CalcUsage as ParserCalcUsage,
-    ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
-    ConstraintUsage as ParserConstraintUsage, Expression, MembershipKind as ParserMembershipKind,
-    Node, RequireConstraint, SequenceExpressionList,
+    CollectionOperatorBody, CollectionOperatorParameterTerminator, ConstraintDef,
+    ConstraintDefBody, ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage,
+    Expression, MembershipKind as ParserMembershipKind, Node, RequireConstraint,
+    SequenceExpressionList,
 };
 
 use crate::lower::facts::ExpressionOperandRole;
 
 impl SemanticModelBuilder {
-    /// Lowers a `constraint def`/`constraint` usage body's boolean expression (slice 1 of the
-    /// constraint/calc expression fact family, widened by the arithmetic/logical-combinator slice
-    /// to accept nested arithmetic and `and`/`or` combinators; see `ReferenceKind::
-    /// ExpressionOperand`). Supports a literal, a feature/feature-chain reference (resolved as an
-    /// `ExpressionOperand` reference sourced at `declaration`, exactly like `lower_succession_end`
-    /// resolves `Expression::FeatureRef` through the shared `DeclarationDomain::Any` lexical lookup
-    /// fixed point), a parenthesized wrapper (unwrapped and recursed into), a comparison `BinaryOp`
-    /// (`Eq`/`Ne`/`Lt`/`Le`/`Gt`/`Ge` -- `StrictEq`/`StrictNe` KerML identity comparisons are
-    /// deliberately excluded, left unsupported like every other operator), an arithmetic `BinaryOp`
-    /// (`is_arithmetic_operator`, e.g. an operand like `chassisMass + engine.mass`), or a logical
-    /// `BinaryOp` (`is_logical_operator`, `and`/`or`/`xor`/`implies`, combining multiple comparisons, e.g. `... and
-    /// mass > 0[kg]`; `xor`/`implies` deliberately excluded) -- every one of these `BinaryOp` arms
-    /// simply recurses into both operands identically, since reference resolution does not care
-    /// which of the three operator families is used, only evaluation (`classify_constraint_node`)
-    /// distinguishes them by building a different `EvalNode` shape. Evaluation itself is otherwise
-    /// out of scope here. Also supports `Expression::Invocation`/`Expression::Constructor`
-    /// (reference-resolution slice, see `ReferenceKind::InvocationCallee`/
-    /// `lower_invocation_callee`): the callee/type name resolves as an `InvocationCallee` reference
-    /// and each argument recurses back into this same function, but the invocation is never
-    /// evaluated (`EvalNode::Invocation` always folds to `NonConstant`). Any other expression shape
-    /// -- tuples, type-check/classification expressions, unary ops, etc. -- falls through to the
-    /// existing unsupported-member diagnostic, unchanged from prior behavior.
+    /// Lowers constraint operands through canonical expression and reference owners.
+    /// Collection callbacks have their own parameter/member scope. Admitting and resolving
+    /// an expression is separate from classifying or evaluating it; unsupported shapes
+    /// retain the caller's diagnostic family.
     pub(crate) fn lower_constraint_expression(
         &mut self,
         document: DocumentIdx,
@@ -137,7 +121,9 @@ impl SemanticModelBuilder {
                 Ok(())
             }
             Expression::BodyExpr(body)
-                if body.value.parameters.is_empty() && body.value.result.is_some() =>
+                if body.value.parameters.is_empty()
+                    && body.value.members.is_empty()
+                    && body.value.result.is_some() =>
             {
                 self.lower_constraint_expression(
                     document,
@@ -146,6 +132,7 @@ impl SemanticModelBuilder {
                     body.value.result.as_deref().expect("guarded result"),
                 )
             }
+            Expression::BodyExpr(body) => self.lower_expression_body(document, declaration, body),
             Expression::BinaryOp { op, left, right }
                 if is_comparison_operator(op)
                     || is_arithmetic_operator(op)
@@ -163,8 +150,16 @@ impl SemanticModelBuilder {
                 self.leave_instantiation(entered);
                 Ok(())
             }
-            Expression::CollectionOp { base, args, .. } => {
+            Expression::CollectionOp {
+                base,
+                args,
+                brace_body,
+                ..
+            } => {
                 self.lower_constraint_expression(document, declaration, family, base)?;
+                if let Some(body) = brace_body {
+                    self.lower_expression_body(document, declaration, body)?;
+                }
                 if let Some(function) = function_reference_argument(node) {
                     return self.push_expression_operand_reference(
                         document,
@@ -218,31 +213,8 @@ impl SemanticModelBuilder {
         }
     }
 
-    /// Lowers a `calc def`/`calc` usage body's formula expression (slice 1 of the constraint/calc
-    /// expression fact family, extended by slice 4 for arithmetic). Originally scoped to
-    /// arithmetic-only `BinaryOp` support on the theory that calc bodies are typically
-    /// arithmetic-result formulas rather than boolean comparisons -- but the exhaustive
-    /// `unsupported_calc_definition_member` audit found this premise false for a large share of
-    /// the real corpus (Kernel Function Library equality/comparison functions like
-    /// `BaseFunctions.kerml`'s `return : Boolean[1] = not (x == y);`, KerML `inv { ... }`
-    /// boolean-invariant bodies reusing this same `CalcDefBody`/`lower_calc_def_body` walker per
-    /// `KermlInvariantMember`, etc.), so comparison/logical `BinaryOp` support now matches
-    /// `lower_constraint_expression`'s `BinaryOp` arm exactly (`is_comparison_operator`/
-    /// `is_logical_operator`, alongside `is_arithmetic_operator`'s `Add`/`Sub`/`Mul`/`Div`/`Mod`/
-    /// `Exp`/`Pow`). This slice supports the minimal leaf shapes -- a literal, a feature/
-    /// feature-chain reference (resolved as an `ExpressionOperand` reference exactly like
-    /// `lower_constraint_expression`), a parenthesized wrapper -- plus every comparison/
-    /// arithmetic/logical `BinaryOp` whose operands are recursed into just like
-    /// `lower_constraint_expression`'s own `BinaryOp` arm. Also supports `Expression::Invocation`/
-    /// `Expression::Constructor` (e.g. `sum(partMasses)`, `new PusherOutput(pusherForce)`),
-    /// exactly like `lower_constraint_expression`'s own Invocation/Constructor arm: reference
-    /// resolution only, never evaluation. Also supports a unary `-`/`not` `UnaryOp` (see
-    /// `is_unary_operator`), recursing into its single operand exactly like `Parenthesized`, and a
-    /// `Conditional` (`if <test> ? <then> else <else>`), recursing into all three sub-expressions
-    /// reference-resolution-only exactly like `Tuple`'s multi-operand shape (no evaluation of
-    /// which branch is taken). Every other expression shape stays unsupported, falling through to
-    /// the existing `unsupported_calc_definition_member` diagnostic, unchanged from prior
-    /// behavior.
+    /// Lowers calculation operands and scoped callbacks through the same semantic owners
+    /// as constraint expressions. Evaluation support is classified separately.
     pub(crate) fn lower_calc_expression(
         &mut self,
         document: DocumentIdx,
@@ -310,7 +282,9 @@ impl SemanticModelBuilder {
                 Ok(())
             }
             Expression::BodyExpr(body)
-                if body.value.parameters.is_empty() && body.value.result.is_some() =>
+                if body.value.parameters.is_empty()
+                    && body.value.members.is_empty()
+                    && body.value.result.is_some() =>
             {
                 self.lower_calc_expression(
                     document,
@@ -319,6 +293,7 @@ impl SemanticModelBuilder {
                     body.value.result.as_deref().expect("guarded result"),
                 )
             }
+            Expression::BodyExpr(body) => self.lower_expression_body(document, declaration, body),
             Expression::BinaryOp { op, left, right }
                 if is_arithmetic_operator(op)
                     || is_comparison_operator(op)
@@ -336,8 +311,16 @@ impl SemanticModelBuilder {
                 self.leave_instantiation(entered);
                 Ok(())
             }
-            Expression::CollectionOp { base, args, .. } => {
+            Expression::CollectionOp {
+                base,
+                args,
+                brace_body,
+                ..
+            } => {
                 self.lower_calc_expression(document, declaration, family, base)?;
+                if let Some(body) = brace_body {
+                    self.lower_expression_body(document, declaration, body)?;
+                }
                 if let Some(function) = function_reference_argument(node) {
                     return self.push_expression_operand_reference(
                         document,
@@ -448,6 +431,7 @@ impl SemanticModelBuilder {
             document,
             grammar: ExpressionGrammar::Constraint,
             operand_start: self.expression_operand_offset(owner),
+            operand_scope: crate::lower::facts::ExpressionOperandScope::Local,
             node: condition.value.clone(),
         };
         let mut metadata_ordinal = self
@@ -556,8 +540,16 @@ impl SemanticModelBuilder {
                 self.leave_instantiation(entered);
                 Ok(())
             }
-            Expression::CollectionOp { base, args, .. } => {
+            Expression::CollectionOp {
+                base,
+                args,
+                brace_body,
+                ..
+            } => {
                 self.lower_filter_expression(document, declaration, base)?;
+                if let Some(body) = brace_body {
+                    self.lower_expression_body(document, declaration, body)?;
+                }
                 if let Some(function) = function_reference_argument(node) {
                     return self.push_expression_operand_reference(
                         document,
@@ -1028,10 +1020,136 @@ impl SemanticModelBuilder {
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
+    /// Retains the indexed primary argument as an owned expression tree. Operator arguments
+    /// already have identities; register their shapes and lower each in that identity instead
+    /// of flattening indexing into the surrounding feature chain (KerML 8.3.4.8.4, .6).
+    pub(super) fn lower_indexed_access_argument(
+        &mut self,
+        document: DocumentIdx,
+        expression: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        let mut site = self.calc_expression_site(document, &node.value);
+        if matches!(node.value, Expression::Index { .. }) {
+            site.operand_scope = crate::lower::facts::ExpressionOperandScope::OwnedArguments;
+        }
+        self.push_evaluation_fact(expression, site);
+        if let Expression::Index { base, operands, .. } = &node.value {
+            self.note_expression_node(expression, node);
+            let arguments = self
+                .expression_arguments
+                .iter()
+                .filter(|argument| argument.expression == expression)
+                .copied()
+                .collect::<Vec<_>>();
+            let nodes = std::iter::once(base.as_ref()).chain(
+                operands
+                    .value
+                    .elements
+                    .iter()
+                    .map(|element| &element.expression),
+            );
+            if arguments.len() != operands.value.elements.len() + 1 {
+                return Err(ConstructionError::InvalidIdentity);
+            }
+            for (argument, operand) in arguments.into_iter().zip(nodes) {
+                self.record_value_expression_shape(
+                    document,
+                    argument.argument,
+                    argument.result,
+                    operand,
+                )?;
+                self.lower_indexed_access_argument(document, argument.argument, operand)?;
+            }
+            Ok(())
+        } else {
+            self.lower_calc_expression(
+                document,
+                expression,
+                UnsupportedFamily::CalcDefinitionMember,
+                node,
+            )
+        }
+    }
+
+    /// KerML 8.2.5.8.3: an ExpressionBody has its own parameter/member scope.
+    /// Reuse the calculation member dispatcher instead of treating callback parameters
+    /// as operands in the caller's scope. Evaluation of the callback stays explicit
+    /// and separate from admitting and resolving its authored body.
+    fn lower_expression_body(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        body: &Node<CollectionOperatorBody>,
+    ) -> Result<(), ConstructionError> {
+        let (expression, _) = self.push_owned_expression(
+            document,
+            owner,
+            DeclarationKind::KermlExpression,
+            None,
+            body.span,
+        )?;
+        if let Some(doc) = &body.value.doc {
+            self.record_doc_comment(document, expression, doc)?;
+        }
+        for parameter in &body.value.parameters {
+            let usage = &parameter.value.declaration.value;
+            let name = self.intern_declaration_name(document, usage.identification.name)?;
+            let short_name = self.intern_short_name(document, usage.identification.short_name)?;
+            let direction = direction_node_fact(parameter.value.direction.as_ref());
+            let declaration = self.push_typed_declaration(
+                document,
+                Some(expression),
+                DeclarationKind::ParameterUsage,
+                name,
+                parameter.span,
+                DeclarationFacts {
+                    short_name,
+                    direction,
+                    modifiers: DeclarationModifiers {
+                        reference: parameter.value.reference_keyword_span.is_some(),
+                        ordered: usage.multiplicity_modifiers.is_ordered(),
+                        nonunique: !usage.multiplicity_modifiers.is_unique(),
+                        ..DeclarationModifiers::default()
+                    },
+                    multiplicity: multiplicity_facts(usage.multiplicity.as_ref()),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                declaration,
+                MembershipKind::Feature,
+                Visibility::Default,
+                parameter.span,
+            )?;
+            self.lower_usage_declaration_clauses(document, declaration, usage, false, direction)?;
+            if let CollectionOperatorParameterTerminator::Body { doc: Some(doc), .. } =
+                &parameter.value.terminator
+            {
+                self.record_doc_comment(document, declaration, doc)?;
+            }
+        }
+        self.lower_calc_body_elements(document, expression, &body.value.members)?;
+        if let Some(result) = &body.value.result {
+            let result_expression = self.mint_result_expression(document, expression, result)?;
+            self.push_evaluation_fact(
+                result_expression,
+                self.calc_expression_site(document, &result.value),
+            );
+            self.lower_calc_expression(
+                document,
+                result_expression,
+                UnsupportedFamily::CalcDefinitionMember,
+                result,
+            )?;
+        }
+        Ok(())
+    }
+
     /// Shared body walker for `calc def`/`calc` usage bodies (both use `CalcDefBody`/
     /// `CalcDefBodyElement` in the typed AST -- there is no separate `CalcUsageBody`), mirroring
-    /// `lower_constraint_def_body`. Calculation-expression content, in/out/return parameters, and
-    /// nested calc structure fall through to `unsupported_calc_definition_member`.
+    /// `lower_constraint_def_body`. Expression bodies reuse the same member dispatcher so local
+    /// declarations and return expressions are lowered in their owning scope.
     pub(crate) fn lower_calc_def_body(
         &mut self,
         document: DocumentIdx,
@@ -1039,139 +1157,146 @@ impl SemanticModelBuilder {
         body: &CalcDefBody,
     ) -> Result<(), ConstructionError> {
         if let CalcDefBody::Brace { elements, .. } = body {
-            for element in elements {
-                match &element.value {
-                    CalcDefBodyElement::Error(error) => {
-                        self.push_recovery(document, error.span);
-                        self.mark_result_expressions_incomplete(declaration)?;
-                    }
-                    // KerML `flow of <payload> from <a> to <b>;` in a calc-shaped body
-                    // (`classifier`/`struct`/`class`/`behavior`, KerML 8.2's `Flow`). Upstream
-                    // types the whole declaration, so it lowers through the same
-                    // `lower_flow_usage` an action body uses rather than being reported as an
-                    // unsupported member.
-                    CalcDefBodyElement::FlowUsage(node) => {
-                        self.lower_flow_usage(document, declaration, node)?;
-                    }
-                    CalcDefBodyElement::AliasDef(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::CalcDefinitionMember,
-                            node.span,
-                        );
-                    }
-                    CalcDefBodyElement::CalcUsage(calc_usage) => {
-                        self.lower_calc_usage(document, Some(declaration), calc_usage)?;
-                    }
-                    CalcDefBodyElement::CalcDef(calc_def) => {
-                        self.lower_calc_def(document, Some(declaration), calc_def)?;
-                    }
-                    CalcDefBodyElement::PartUsage(part_usage) => {
-                        self.lower_part_usage(document, Some(declaration), part_usage)?;
-                    }
-                    // `MemberPrefix Package`/`LibraryPackage` in a KerML type body, lowered
-                    // through the same owners a top-level package declaration uses.
-                    CalcDefBodyElement::Package(member) => {
-                        self.lower_package(document, Some(declaration), &member.package)?;
-                    }
-                    CalcDefBodyElement::LibraryPackage(member) => {
-                        self.lower_library_package(document, Some(declaration), &member.package)?;
-                    }
-                    CalcDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::CalcDefinitionMember,
-                        element.span,
-                    ),
-                    // `CalculationBodyItem = ActionBodyItem | ReturnParameterMember`, so a
-                    // calculation body owns every action-body member as well as its own `return`.
-                    // They arrive through the action dispatcher rather than as restated variants,
-                    // and lower through the owner that already lowers them in an action body.
-                    CalcDefBodyElement::ActionMember(node) => {
-                        self.lower_action_def_body_element(document, declaration, node)?;
-                    }
-                    CalcDefBodyElement::KermlRelationship(node) => {
-                        self.lower_kerml_relationship_decl(document, declaration, node)?;
-                    }
-                    CalcDefBodyElement::Annotating(member) => {
-                        self.lower_annotating_member(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::CalcDefinitionMember,
-                            member,
-                        )?;
-                    }
-                    CalcDefBodyElement::ReturnExpression(_) => {
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::CalcDefinitionMember,
-                            element.span,
-                        );
-                        self.mark_result_expressions_incomplete(declaration)?;
-                    }
-                    CalcDefBodyElement::Expression(expression) => {
-                        let element =
-                            self.mint_result_expression(document, declaration, expression)?;
-                        self.push_evaluation_fact(
-                            element,
-                            self.calc_expression_site(document, &expression.value),
-                        );
-                        self.lower_calc_expression(
-                            document,
-                            element,
-                            UnsupportedFamily::CalcDefinitionMember,
-                            expression,
-                        )?
-                    }
-                    CalcDefBodyElement::ReturnDecl(return_decl) => {
-                        self.lower_return_decl(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::CalcDefinitionMember,
-                            return_decl,
-                        )?;
-                    }
-                    CalcDefBodyElement::AttributeUsage(nested) => {
-                        self.lower_attribute_usage(document, Some(declaration), nested)?;
-                    }
-                    CalcDefBodyElement::KermlClassifier(nested) => {
-                        self.lower_kerml_classifier_decl(document, Some(declaration), nested)?;
-                    }
-                    CalcDefBodyElement::KermlFeature(nested) => {
-                        self.lower_kerml_feature_member(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::CalcDefinitionMember,
-                            nested,
-                        )?;
-                    }
-                    CalcDefBodyElement::DefaultReferenceUsage(node) => {
-                        self.lower_default_reference_usage(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::CalcDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    CalcDefBodyElement::Invariant(node) => {
-                        self.lower_kerml_invariant_member(document, Some(declaration), node)?;
-                    }
-                    CalcDefBodyElement::Connector(node) => {
-                        self.lower_kerml_connector_member(document, declaration, node)?;
-                    }
-                    CalcDefBodyElement::Binding(node) => {
-                        self.lower_kerml_binding_member(document, declaration, node)?;
-                    }
-                    CalcDefBodyElement::Succession(node) => {
-                        self.lower_kerml_succession_member(document, declaration, node)?;
-                    }
-                    CalcDefBodyElement::Import(node) => {
-                        self.lower_import(document, Some(declaration), node)?;
-                    }
-                    CalcDefBodyElement::AssertConstraint(node) => {
-                        self.lower_assert_constraint_member(document, declaration, node)?;
-                    }
-                }
+            self.lower_calc_body_elements(document, declaration, elements)?;
+        }
+        Ok(())
+    }
+
+    fn lower_calc_body_elements(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        elements: &[Node<CalcDefBodyElement>],
+    ) -> Result<(), ConstructionError> {
+        for element in elements {
+            self.lower_calc_body_element(document, declaration, element)?;
+        }
+        Ok(())
+    }
+
+    fn lower_calc_body_element(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        element: &Node<CalcDefBodyElement>,
+    ) -> Result<(), ConstructionError> {
+        match &element.value {
+            CalcDefBodyElement::Error(error) => {
+                self.push_recovery(document, error.span);
+                self.mark_result_expressions_incomplete(declaration)?;
+            }
+            // KerML `flow of <payload> from <a> to <b>;` in a calc-shaped body
+            // (`classifier`/`struct`/`class`/`behavior`, KerML 8.2's `Flow`). Upstream
+            // types the whole declaration, so it lowers through the same
+            // `lower_flow_usage` an action body uses rather than being reported as an
+            // unsupported member.
+            CalcDefBodyElement::FlowUsage(node) => {
+                self.lower_flow_usage(document, declaration, node)?;
+            }
+            CalcDefBodyElement::AliasDef(node) => {
+                self.lower_alias_def(document, Some(declaration), node)?;
+            }
+            CalcDefBodyElement::CalcUsage(calc_usage) => {
+                self.lower_calc_usage(document, Some(declaration), calc_usage)?;
+            }
+            CalcDefBodyElement::CalcDef(calc_def) => {
+                self.lower_calc_def(document, Some(declaration), calc_def)?;
+            }
+            CalcDefBodyElement::PartUsage(part_usage) => {
+                self.lower_part_usage(document, Some(declaration), part_usage)?;
+            }
+            // `MemberPrefix Package`/`LibraryPackage` in a KerML type body, lowered
+            // through the same owners a top-level package declaration uses.
+            CalcDefBodyElement::Package(member) => {
+                self.lower_package(document, Some(declaration), &member.package)?;
+            }
+            CalcDefBodyElement::LibraryPackage(member) => {
+                self.lower_library_package(document, Some(declaration), &member.package)?;
+            }
+            CalcDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                document,
+                UnsupportedFamily::CalcDefinitionMember,
+                element.span,
+            ),
+            // `CalculationBodyItem = ActionBodyItem | ReturnParameterMember`, so a
+            // calculation body owns every action-body member as well as its own `return`.
+            // They arrive through the action dispatcher rather than as restated variants,
+            // and lower through the owner that already lowers them in an action body.
+            CalcDefBodyElement::ActionMember(node) => {
+                self.lower_action_def_body_element(document, declaration, node)?;
+            }
+            CalcDefBodyElement::KermlRelationship(node) => {
+                self.lower_kerml_relationship_decl(document, declaration, node)?;
+            }
+            CalcDefBodyElement::Annotating(member) => {
+                self.lower_annotating_member(
+                    document,
+                    Some(declaration),
+                    UnsupportedFamily::CalcDefinitionMember,
+                    member,
+                )?;
+            }
+            CalcDefBodyElement::ReturnExpression(expression)
+            | CalcDefBodyElement::Expression(expression) => {
+                let element = self.mint_result_expression(document, declaration, expression)?;
+                self.push_evaluation_fact(
+                    element,
+                    self.calc_expression_site(document, &expression.value),
+                );
+                self.lower_calc_expression(
+                    document,
+                    element,
+                    UnsupportedFamily::CalcDefinitionMember,
+                    expression,
+                )?
+            }
+            CalcDefBodyElement::ReturnDecl(return_decl) => {
+                self.lower_return_decl(
+                    document,
+                    Some(declaration),
+                    UnsupportedFamily::CalcDefinitionMember,
+                    return_decl,
+                )?;
+            }
+            CalcDefBodyElement::AttributeUsage(nested) => {
+                self.lower_attribute_usage(document, Some(declaration), nested)?;
+            }
+            CalcDefBodyElement::KermlClassifier(nested) => {
+                self.lower_kerml_classifier_decl(document, Some(declaration), nested)?;
+            }
+            CalcDefBodyElement::KermlFeature(nested) => {
+                self.lower_kerml_feature_member(
+                    document,
+                    Some(declaration),
+                    UnsupportedFamily::CalcDefinitionMember,
+                    nested,
+                )?;
+            }
+            CalcDefBodyElement::DefaultReferenceUsage(node) => {
+                self.lower_default_reference_usage(
+                    document,
+                    Some(declaration),
+                    UnsupportedFamily::CalcDefinitionMember,
+                    node,
+                )?;
+            }
+            CalcDefBodyElement::Invariant(node) => {
+                self.lower_kerml_invariant_member(document, Some(declaration), node)?;
+            }
+            CalcDefBodyElement::Connector(node) => {
+                self.lower_kerml_connector_member(document, declaration, node)?;
+            }
+            CalcDefBodyElement::Binding(node) => {
+                self.lower_kerml_binding_member(document, declaration, node)?;
+            }
+            CalcDefBodyElement::Succession(node) => {
+                self.lower_kerml_succession_member(document, declaration, node)?;
+            }
+            CalcDefBodyElement::Import(node) => {
+                self.lower_import(document, Some(declaration), node)?;
+            }
+            CalcDefBodyElement::AssertConstraint(node) => {
+                self.lower_assert_constraint_member(document, declaration, node)?;
             }
         }
         Ok(())

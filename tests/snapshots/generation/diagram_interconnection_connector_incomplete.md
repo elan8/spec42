@@ -235,7 +235,7 @@ package ConnectorIncomplete {
 ~~~json
 {
   "schemaVersion": 7,
-  "modelDigest": "blake3:58f5344c31b2379b16d748a75815fc00083569081d0cf954e000c8c03451d45e",
+  "modelDigest": "blake3:46dd85aa72e2d9f9c70116a667916a47ac46fc0c04ad4d3a427cd8d00e94fe24",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_connector_incomplete.md",
