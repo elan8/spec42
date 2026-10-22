@@ -376,12 +376,7 @@ pub(crate) fn classify_authored(
     let Some(parsed) = sources.parsed(expression.document) else {
         return ExpressionEvalShape::Unsupported;
     };
-    classify_expression(
-        parsed,
-        &expression.node,
-        expression.grammar,
-        expression.operand_start,
-    )
+    classify_expression(parsed, expression)
 }
 
 /// Classifies an expression exactly along `lower_constraint_expression`/`lower_calc_expression`'s
@@ -395,15 +390,10 @@ pub(crate) fn classify_authored(
 /// every leaf with the wrong reference.
 pub(crate) fn classify_expression(
     parsed: &ParsedDocument,
-    node: &Expression,
-    grammar: ExpressionGrammar,
-    start: u32,
+    expression: &AuthoredExpression,
 ) -> ExpressionEvalShape {
-    let mut ordinal = start;
-    let classified = match grammar {
-        ExpressionGrammar::Constraint => classify_constraint_node(parsed, node, &mut ordinal),
-        ExpressionGrammar::Calc => classify_calc_node(parsed, node, &mut ordinal),
-    };
+    let mut ordinal = expression.operand_start;
+    let classified = classify_authored_node(parsed, expression, &mut ordinal);
     match classified {
         None => ExpressionEvalShape::Unsupported,
         Some(tree) if eval_node_is_pure_literal(&tree) => {
@@ -532,5 +522,24 @@ fn has_indexed_primary(node: &Expression) -> bool {
             .iter()
             .any(|element| has_indexed_primary(&element.expression.value)),
         _ => false,
+    }
+}
+
+/// The single accept boundary shared by evaluation and resolved-expression publication.
+/// Owned argument expressions have separate reference ordinals; execution of those
+/// structured calls remains unsupported until the evaluator binds their argument values.
+pub(crate) fn classify_authored_node(
+    parsed: &ParsedDocument,
+    expression: &AuthoredExpression,
+    ordinal: &mut u32,
+) -> Option<EvalNode> {
+    if expression.operand_scope == crate::lower::facts::ExpressionOperandScope::OwnedArguments {
+        return None;
+    }
+    match expression.grammar {
+        ExpressionGrammar::Constraint => {
+            classify_constraint_node(parsed, &expression.node, ordinal)
+        }
+        ExpressionGrammar::Calc => classify_calc_node(parsed, &expression.node, ordinal),
     }
 }

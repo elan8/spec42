@@ -217,6 +217,7 @@ impl Relocation {
             document: self.document,
             grammar: expression.grammar,
             operand_start: expression.operand_start,
+            operand_scope: expression.operand_scope,
             node: expression.node.clone(),
         }
     }

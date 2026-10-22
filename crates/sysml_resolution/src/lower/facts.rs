@@ -1364,7 +1364,15 @@ pub(crate) struct AuthoredExpression {
     pub(crate) grammar: ExpressionGrammar,
     /// The ordinal the expression's first operand reference was lowered under.
     pub(crate) operand_start: u32,
+    /// Whether operand references belong to this site or to its owned argument expressions.
+    pub(crate) operand_scope: ExpressionOperandScope,
     pub(crate) node: Expression,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ExpressionOperandScope {
+    Local,
+    OwnedArguments,
 }
 
 /// An evaluation candidate: the declaration a constraint/calc expression belongs to, and the

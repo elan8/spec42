@@ -171,6 +171,12 @@ if wants generator; then
 
   step "Semantic snapshot corpus"
   cargo snapshot check
+
+  # Release snapshots retain an explicit unsupported result for argument execution. Exercise
+  # the same authored fixtures in debug too, where operand-scope drift is an assertion failure.
+  step "Debug expression operand scopes"
+  cargo run -p spec42-snapshot -- check --fixture resolution/indexed_member_access.md
+  cargo run -p spec42-snapshot -- check --fixture resolution/indexed_geometry_expressions.md
 fi
 
 if wants lint; then

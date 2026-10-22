@@ -2003,6 +2003,7 @@ impl SemanticModelBuilder {
             document,
             grammar: ExpressionGrammar::Constraint,
             operand_start: 0,
+            operand_scope: crate::lower::facts::ExpressionOperandScope::Local,
             node: node.clone(),
         }
     }
@@ -2017,6 +2018,7 @@ impl SemanticModelBuilder {
             document,
             grammar: ExpressionGrammar::Calc,
             operand_start: 0,
+            operand_scope: crate::lower::facts::ExpressionOperandScope::Local,
             node: node.clone(),
         }
     }

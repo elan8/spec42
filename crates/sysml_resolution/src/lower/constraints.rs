@@ -431,6 +431,7 @@ impl SemanticModelBuilder {
             document,
             grammar: ExpressionGrammar::Constraint,
             operand_start: self.expression_operand_offset(owner),
+            operand_scope: crate::lower::facts::ExpressionOperandScope::Local,
             node: condition.value.clone(),
         };
         let mut metadata_ordinal = self
@@ -1028,7 +1029,11 @@ impl SemanticModelBuilder {
         expression: DeclarationId,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
-        self.push_evaluation_fact(expression, self.calc_expression_site(document, &node.value));
+        let mut site = self.calc_expression_site(document, &node.value);
+        if matches!(node.value, Expression::Index { .. }) {
+            site.operand_scope = crate::lower::facts::ExpressionOperandScope::OwnedArguments;
+        }
+        self.push_evaluation_fact(expression, site);
         if let Expression::Index { base, operands, .. } = &node.value {
             self.note_expression_node(expression, node);
             let arguments = self

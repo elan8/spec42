@@ -1020,6 +1020,7 @@ mod tests {
                     document: DocumentIdx(0),
                     grammar: ExpressionGrammar::Constraint,
                     operand_start: 0,
+                    operand_scope: crate::lower::facts::ExpressionOperandScope::Local,
                     node: Expression::LiteralInteger(5),
                 },
                 predicate: FilterPredicate::Unsupported,
