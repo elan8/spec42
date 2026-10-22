@@ -82,12 +82,6 @@ package BodyMemberDispatch {
         )
       )
       (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 40 4) (end 42 5))
-      )
-      (diagnostic
         (severity warning)
         (code "requirement_constraint_invalid_owner")
         (source "semantic")

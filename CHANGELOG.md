@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Quieter view validation.** Remove the informational `view_expose_empty` check from
+  Spec42, including the CLI and VS Code. Unresolved expose targets are still reported.
+
 - **Generator runtime security.** Upgrade Wasmtime to 48.0.7, addressing
   RUSTSEC-2026-0378 and RUSTSEC-2026-0379.
 

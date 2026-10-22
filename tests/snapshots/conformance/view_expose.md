@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Expose targets resolve, and a view with a body that exposes nothing says so
+description=Empty exposure is legal while unresolved authored expose targets are still diagnosed
 type=file
 ~~~
 # SOURCE
@@ -36,7 +36,7 @@ package Exposing {
     }
 }
 ~~~
-# DIAGNOSTICS
+# EXPECTED DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/view_expose.md"
@@ -47,11 +47,20 @@ package Exposing {
         (source "semantic")
         (range (start 11 15) (end 11 29))
       )
+    )
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/view_expose.md"
+    (diagnostics
       (diagnostic
-        (severity information)
-        (code "view_expose_empty")
+        (severity warning)
+        (code "view_expose_unresolved")
         (source "semantic")
-        (range (start 14 4) (end 16 5))
+        (range (start 11 15) (end 11 29))
       )
     )
   )

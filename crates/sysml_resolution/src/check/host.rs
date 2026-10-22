@@ -1532,51 +1532,8 @@ impl<D> SemanticModel<D> {
         for id in declared.iter().copied() {
             match self.kind_of(id) {
                 Some(DeclarationKind::ViewUsage) => {
-                    // A view with members that exposes nothing renders nothing. Reported as
-                    // information: it is legal, and a view under construction passes through it.
-                    // The multiplicity a header `[m..n]` lowers to, and the comments and
-                    // documentation annotating the view, are not body content.
-                    // The view's own `ValuePart` expression (`view v = w;`) is owned by the view
-                    // but is not a body member either.
-                    let members = self
-                        .child_declarations(id)
-                        .iter()
-                        .copied()
-                        .filter(|child| {
-                            self.kind_of(*child).is_none_or(|kind| {
-                                let kind = crate::model::element_kind::element_kind(kind);
-                                !kind.conforms_to(sysml_contract::ElementKind::Multiplicity)
-                                    && !kind
-                                        .conforms_to(sysml_contract::ElementKind::AnnotatingElement)
-                            }) && !self
-                                .storage
-                                .feature_values
-                                .iter()
-                                .any(|value| value.declaration == id && value.value == *child)
-                        })
-                        .collect::<Vec<_>>();
-                    let owner_is_rendering = self
-                        .storage
-                        .declaration(id)
-                        .and_then(|declaration| declaration.owner)
-                        .and_then(|owner| self.kind_of(owner))
-                        == Some(DeclarationKind::RenderingUsage);
-                    if !owner_is_rendering
-                        && !members.is_empty()
-                        && !members
-                            .iter()
-                            .any(|child| self.kind_of(*child) == Some(DeclarationKind::Expose))
-                    {
-                        diagnostics.push(self.declaration_message_diagnostic(
-                            id,
-                            DiagnosticCode::ViewExposeEmpty,
-                            DiagnosticSeverity::Information,
-                            Some(format!(
-                                "View '{}' declares a body but exposes no members.",
-                                self.display_name(id)
-                            )),
-                        )?);
-                    }
+                    // Empty exposure is legal, including views under construction and views
+                    // whose exposure is inherited. Validate authored targets independently.
                     for (reference_id, reference) in
                         self.authored_references(id, &[ReferenceKind::FeatureTyping])
                     {

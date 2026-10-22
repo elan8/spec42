@@ -52,12 +52,6 @@ package Ports {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_objective_view_and_conjugated_port.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "view_expose_empty")
-        (source "semantic")
-        (range (start 13 4) (end 15 5))
-      )
     )
   )
 )

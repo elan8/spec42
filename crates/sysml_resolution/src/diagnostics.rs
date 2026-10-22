@@ -800,9 +800,6 @@ semantic_diagnostic_codes! {
         "This expose target does not resolve, so the view shows nothing for it.";
     }
     Validation {
-    /// A view declares members but exposes nothing.
-    ViewExposeEmpty => "view_expose_empty",
-        "This view declares a body but exposes no members.";
     /// A rendering member is typed by something that is not a rendering definition.
     ViewRenderingInvalidTarget => "view_rendering_invalid_target",
         "A rendering member must reference a rendering usage or be typed by a rendering definition or usage.";
