@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.57.0] - 2026-10-22
+
+- **Upgrade notes.** Diagram products are **schema 7**: browser metadata carries `rows` (row
+  key, membership, member state), and grid metadata carries a `layout`, node-index `columns`, and
+  cells naming the edge they show; consumers must accept `schemaVersion` 7. The generator ABI
+  fingerprint changed: **a generator plugin built against 0.56.0 must be rebuilt.** The semantic
+  contract version is now `spec-rule-burndown-element-kinds-v51`, so earlier publications and
+  serialised models are not reused. The informational `view_expose_empty` diagnostic is gone. Join
+  and control nodes no longer report `missing_library_anchor`. Projects can now limit their
+  sources with `syside.toml` `include`/`exclude`. The bundled domain libraries are now
+  [0.5.0](https://github.com/elan8/sysml-domain-libraries/releases/tag/v0.5.0), which adds
+  systems-engineering roles, document composition and software architecture vocabulary; existing
+  0.4.0 definitions keep their names.
+
+- **Diagrams of real models read better.**
+  - Sequence views draw lifelines in declaration order, headed `name : Type`, and label messages
+    `name : Payload`.
+  - State transitions are labelled `trigger [guard] / effect` with their authored guard and
+    effect, each label laid out on its own transition.
+  - Action flows run from one parameter square to the other, around actions and parameter names,
+    and an action holding a flow shows its own parameters on its border.
+  - Interconnection ports stand on their part's boundary, and a flow along a connector is drawn as
+    an arrow on that connector instead of a second line.
+  - General-view edge labels such as «allocate» keep clear of nodes and other lines.
+  - Every standard view is drawn in its native SysML `«view»` frame.
+- **Browser views are membership trees** of the exposed elements in declaration order, inherited
+  members marked with `^`; deeper branches load when they are expanded, so large models stay
+  responsive.
+- **Grid views are relationship matrices** of the allocations, dependencies, bindings and
+  specializations between the exposed elements (rows are source ends, columns target ends), or a
+  table of the exposed elements when none relates them.
+- **Views panel.** The VS Code Diagram panel is now **Views**: views are grouped by owning
+  namespace and sorted by name, *Go to definition* opens a view's declaration, the canvas follows
+  the editor theme, the viewport survives refreshes, and SVG/PNG export uses a white or transparent
+  background.
+- **Feature Inspector** leads with the element's qualified name, its kind and its documentation.
+- **Views typed by inherited view definitions and Boolean metaclass filters** are listed and
+  drawn, and a state-transition or action-flow view is no longer also listed as an interconnection
+  view.
+- **Syntax highlighting** colours `flow` and `message` usages in every owning body.
+
 - **Quieter view validation.** Remove the informational `view_expose_empty` check from
   Spec42, including the CLI and VS Code. Unresolved expose targets are still reported.
 
@@ -25,8 +66,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   about a third of its previous size (35% across the example and robot-vacuum views), so large
   views stay well clear of the editor's 16 MiB limit, and a view that still exceeds it is
   reported with its size and element counts. `spec42 diagram --view … --stats` shows where a
-  product's bytes go. Consumers must accept `schemaVersion` 6; field names and shapes are
-  unchanged, and `spec42 diagram --format json` still writes pretty-printed JSON.
+  product's bytes go. This release ships it as part of schema 7 (see the upgrade notes); the
+  existing field names and shapes are unchanged, and `spec42 diagram --format json` still writes
+  pretty-printed JSON.
 
 - **Bounded concurrent publication checks.** Snapshot runs time out with phase, active-fixture
   and thread-state evidence. A repeatable stress runner exercises snapshot and LSP integration
