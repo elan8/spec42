@@ -80,25 +80,82 @@ pub(crate) fn route(from: Rect, to: Rect, boxes: &[Rect], clearance: f64) -> Opt
     if boxes.len() > MAX_BOXES {
         return None;
     }
+    let mut all = boxes.to_vec();
+    all.extend([from, to]);
+    search(
+        &ports(from, clearance),
+        &ports(to, clearance),
+        &all,
+        &[],
+        clearance,
+    )
+}
+
+/// Which way a line leaves or enters a [`pin_route`] end.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Heading {
+    Left,
+    Right,
+}
+
+/// A route from the point `from` to the point `to`, such as between two parameter squares on the
+/// sides of their actions, that keeps `clearance` away from every box in `boxes`. It leaves
+/// `from` heading as given and enters `to` from the side `into` names: [`Heading::Left`] means it
+/// arrives from the left. `None` when the diagram is too large to route or no route exists.
+pub(crate) fn pin_route(
+    from: Point,
+    out_of: Heading,
+    to: Point,
+    into: Heading,
+    boxes: &[Rect],
+    clearance: f64,
+) -> Option<Vec<Point>> {
+    if boxes.len() > MAX_BOXES {
+        return None;
+    }
+    let stub = |(x, y): Point, heading: Heading| match heading {
+        Heading::Left => (x - clearance, y),
+        Heading::Right => (x + clearance, y),
+    };
+    let start = (from, stub(from, out_of), 0);
+    let end = (to, stub(to, into), 0);
+    // A line one more clearance out from each end, so that the route can turn into the last
+    // stretch even where no box stands further out.
+    let beyond = [stub(start.1, out_of), stub(end.1, into)];
+    search(&[start], &[end], boxes, &beyond, clearance)
+}
+
+/// The cheapest route from one of `starts` to one of `ends`: each is a point on a box, the point
+/// `clearance` out from it, and the axis of the line there. `extra` adds grid lines through
+/// further points.
+fn search(
+    starts: &[(Point, Point, usize)],
+    ends: &[(Point, Point, usize)],
+    boxes: &[Rect],
+    extra: &[Point],
+    clearance: f64,
+) -> Option<Vec<Point>> {
     // A line may run along the grown edge of a box, not inside it.
     let blocked: Vec<Rect> = boxes
         .iter()
-        .chain([&from, &to])
         .map(|rect| grown(*rect, clearance - 0.5))
         .collect();
-    let starts = ports(from, clearance);
-    let ends = ports(to, clearance);
 
     let mut xs: Vec<f64> = Vec::new();
     let mut ys: Vec<f64> = Vec::new();
-    for rect in boxes.iter().chain([&from, &to]) {
+    for rect in boxes {
         let outer = grown(*rect, clearance);
         xs.extend([outer.0, outer.0 + outer.2]);
         ys.extend([outer.1, outer.1 + outer.3]);
     }
-    for (_, stub, _) in starts.iter().chain(&ends) {
-        xs.push(stub.0);
-        ys.push(stub.1);
+    for point in starts
+        .iter()
+        .chain(ends)
+        .map(|(_, stub, _)| stub)
+        .chain(extra)
+    {
+        xs.push(point.0);
+        ys.push(point.1);
     }
     for values in [&mut xs, &mut ys] {
         values.sort_by(f64::total_cmp);
@@ -133,7 +190,7 @@ pub(crate) fn route(from: Rect, to: Rect, boxes: &[Rect], clearance: f64) -> Opt
     let mut best = vec![[f64::INFINITY; 2]; count];
     let mut previous: Vec<[Option<(usize, usize)>; 2]> = vec![[None; 2]; count];
     let mut queue = BinaryHeap::new();
-    for (_, stub, axis) in &starts {
+    for (_, stub, axis) in starts {
         if inside(stub.0, stub.1) {
             continue;
         }
@@ -323,6 +380,38 @@ mod tests {
         let first = route(from, to, &boxes, 12.0);
         assert!(first.is_some());
         assert_eq!(first, route(from, to, &boxes, 12.0));
+    }
+
+    #[test]
+    fn a_pin_route_leaves_and_enters_on_the_given_sides() {
+        // An output square on the right of one action to an input square on the left of the
+        // next one below it, with a third action in the way.
+        let from = (100.0, 20.0);
+        let to = (0.0, 220.0);
+        let between = (-40.0, 100.0, 200.0, 40.0);
+        let owners = [(-120.0, 0.0, 220.0, 40.0), (0.0, 200.0, 220.0, 40.0)];
+        let boxes = [between, owners[0], owners[1]];
+        let points = pin_route(from, Heading::Right, to, Heading::Left, &boxes, 10.0)
+            .expect("a route exists");
+        assert_eq!(points[0], from);
+        assert_eq!(*points.last().unwrap(), to);
+        assert!(points[1].0 > from.0, "{points:?}");
+        assert!(points[points.len() - 2].0 < to.0, "{points:?}");
+        assert!(!passes_through(&points, between), "{points:?}");
+    }
+
+    #[test]
+    fn a_pin_route_reaches_a_pin_on_the_outermost_box() {
+        // The target action is the leftmost box: nothing stands further out than its pin.
+        let from = (620.0, 710.0);
+        let to = (210.0, 960.0);
+        let boxes = [(400.0, 688.0, 220.0, 68.0), (210.0, 938.0, 220.0, 68.0)];
+        let points = pin_route(from, Heading::Right, to, Heading::Left, &boxes, 10.0)
+            .expect("a route exists");
+        assert!(points
+            .windows(2)
+            .all(|pair| pair[0].0 == pair[1].0 || pair[0].1 == pair[1].1));
+        assert!(points[points.len() - 2].0 < to.0, "{points:?}");
     }
 
     #[test]

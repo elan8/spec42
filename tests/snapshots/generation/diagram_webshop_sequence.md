@@ -11288,7 +11288,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 6,
-  "modelDigest": "blake3:760cb003162ae43be4e6b78d5828a29394450692659078c1e3f707804ceee35f",
+  "modelDigest": "blake3:fd58c53d788d56e4d4c8113998ca3420dc7bb2ceb6c55160fe29f6c3c26ff45a",
   "documents": [
     {
       "uri": "memory://snapshot/examples/webshop/Views.sysml",
@@ -16237,8 +16237,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         50
       ],
       "participants": [
-        55,
         68,
+        55,
         76,
         93,
         103,
@@ -19339,8 +19339,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "scene": {
       "kind": "sequence",
       "lifelines": [
-        55,
         68,
+        55,
         76,
         93,
         103,

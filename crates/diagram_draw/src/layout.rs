@@ -83,7 +83,7 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
                     "behaviorLayout": behavior_layout,
                 }));
             }
-            let behavior_layout = if let Some(nested) =
+            let mut behavior_layout = if let Some(nested) =
                 layout_nested_behavior(prepared, horizontal, BehaviorMode::Action)?
             {
                 nested
@@ -92,6 +92,7 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
             } else {
                 layout_behavior_graph(prepared, horizontal, BehaviorMode::Action)?.0
             };
+            route_parameter_flows(prepared, &mut behavior_layout);
             Ok(json!({
                 "prepared": prepared,
                 "behaviorLayout": behavior_layout,
@@ -402,11 +403,25 @@ fn build_general_elk_graph(prepared: &Value) -> Option<GeneralElkGraphBuild> {
     let edges: Vec<Value> = diagram_edges
         .iter()
         .map(|edge| {
-            json!({
+            let mut elk_edge = json!({
                 "id": field(edge, "id"),
                 "sources": [field(edge, "source")],
                 "targets": [field(edge, "target")],
-            })
+            });
+            // The label the edge is drawn with takes room in the layout, between the layers
+            // the edge joins, so that it covers neither a node nor another line.
+            let label = serde_json::from_value::<crate::types::LaidOutEdge>(edge.clone())
+                .ok()
+                .and_then(|edge| crate::edges::general_edge_label_box(&edge));
+            if let Some((text, width, height)) = label {
+                elk_edge["labels"] = json!([{
+                    "id": format!("{}__label", as_string(field(edge, "id"), "")),
+                    "text": text,
+                    "width": width,
+                    "height": height,
+                }]);
+            }
+            elk_edge
         })
         .collect();
     let hierarchy_handling = if use_hierarchy || flat_children_were_chunked {
@@ -838,21 +853,8 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
                 (220.0, 14.0)
             } else {
                 // An action is high enough for the parameters on its fuller side.
-                let attributes = field(node, "attributes");
-                let rows = [
-                    ["inputs", "inputParameters"],
-                    ["outputs", "outputParameters"],
-                ]
-                .iter()
-                .map(|keys| {
-                    keys.iter()
-                        .map(|key| as_array(field(attributes, key)).len())
-                        .max()
-                        .unwrap_or(0)
-                })
-                .max()
-                .unwrap_or(0);
-                (220.0, (68.0_f64).max(26.0 + rows as f64 * 14.0))
+                let rows = parameter_rows(node);
+                (220.0, (68.0_f64).max(20.0 + rows as f64 * PARAMETER_PITCH))
             }
         }
     }
@@ -920,6 +922,163 @@ fn parameter_label_room(node: &Value, keys: [&str; 2]) -> f64 {
 /// Space inside an action container: the name compartment on top, then padding around the flow.
 pub(crate) const ACTION_CONTAINER_HEADER: f64 = 44.0;
 const ACTION_CONTAINER_PADDING: f64 = 28.0;
+
+/// The distance between two parameter squares down one side of an action.
+pub(crate) const PARAMETER_PITCH: f64 = 16.0;
+
+/// How far below the top of an action the square of its `index`th parameter on one side sits. On
+/// an action that holds its own flow the squares start below its name compartment.
+pub(crate) fn parameter_offset(index: usize, container: bool) -> f64 {
+    let top = if container {
+        ACTION_CONTAINER_HEADER
+    } else {
+        0.0
+    };
+    top + 22.0 + index as f64 * PARAMETER_PITCH
+}
+
+/// The most parameters an action has on one side.
+fn parameter_rows(node: &Value) -> usize {
+    let attributes = field(node, "attributes");
+    [
+        ["inputs", "inputParameters"],
+        ["outputs", "outputParameters"],
+    ]
+    .iter()
+    .map(|keys| {
+        keys.iter()
+            .map(|key| as_array(field(attributes, key)).len())
+            .max()
+            .unwrap_or(0)
+    })
+    .max()
+    .unwrap_or(0)
+}
+
+/// Draws each flow between two parameters from the square of one to the square of the other,
+/// around the actions and control nodes on its way (SysML v2 8.2.3.17). A flow leaves and enters
+/// an action outwards, on the side its parameter is drawn on; on an action that holds the flow it
+/// leaves and enters inwards. Layout placed the actions with the flows drawn between their boxes;
+/// this replaces those routes. A flow with an end that is not a parameter keeps its route.
+fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
+    use crate::ortho_route::{pin_route, Heading};
+    let nodes = as_array(field(prepared, "nodes"));
+    let rect_of = |layout: &Value, id: &str| -> Option<crate::ortho_route::Rect> {
+        let rect = field(field(layout, "positions"), id);
+        rect.is_object().then(|| {
+            (
+                num(field(rect, "x")),
+                num(field(rect, "y")),
+                num(field(rect, "width")),
+                num(field(rect, "height")),
+            )
+        })
+    };
+    let container_of: HashMap<String, String> = nodes
+        .iter()
+        .filter_map(|node| {
+            let container = as_string(field(field(node, "attributes"), "containerId"), "");
+            (!container.is_empty()).then(|| (as_string(field(node, "id"), ""), container))
+        })
+        .collect();
+    let containers: HashSet<&String> = container_of.values().collect();
+    // Each parameter's square: its centre, the action that owns it, and the way a flow runs there.
+    let mut pins: HashMap<String, ((f64, f64), String, Heading)> = HashMap::new();
+    for node in nodes {
+        let id = as_string(field(node, "id"), "");
+        let Some((x, y, width, _)) = rect_of(layout, &id) else {
+            continue;
+        };
+        let container = containers.contains(&id);
+        let attributes = field(node, "attributes");
+        for (keys, input) in [
+            (["inputs", "inputParameters"], true),
+            (["outputs", "outputParameters"], false),
+        ] {
+            let items = keys
+                .iter()
+                .map(|key| as_array(field(attributes, key)))
+                .find(|items| !items.is_empty())
+                .unwrap_or_default();
+            for (index, item) in items.iter().enumerate() {
+                let parameter = as_string(field(item, "id"), "");
+                if parameter.is_empty() {
+                    continue;
+                }
+                let heading = if input != container {
+                    Heading::Left
+                } else {
+                    Heading::Right
+                };
+                let side = if input { x } else { x + width };
+                pins.insert(
+                    parameter,
+                    (
+                        (side, y + parameter_offset(index, container)),
+                        id.clone(),
+                        heading,
+                    ),
+                );
+            }
+        }
+    }
+    let ancestors = |id: &str| {
+        let mut found = HashSet::new();
+        let mut current = id.to_owned();
+        while let Some(container) = container_of.get(&current) {
+            if !found.insert(container.clone()) {
+                break;
+            }
+            current = container.clone();
+        }
+        found
+    };
+    let mut routes = Vec::new();
+    for edge in as_array(field(prepared, "edges")) {
+        let attributes = field(edge, "attributes");
+        let (Some(from), Some(to)) = (
+            pins.get(&as_string(field(attributes, "sourceParameter"), "")),
+            pins.get(&as_string(field(attributes, "targetParameter"), "")),
+        ) else {
+            continue;
+        };
+        // A flow stays inside the actions that hold either end, and goes around everything else,
+        // the actions that own its parameters included.
+        let mut around = ancestors(&from.1);
+        around.extend(ancestors(&to.1));
+        for end in [&from.1, &to.1] {
+            if containers.contains(end) {
+                around.insert(end.clone());
+            }
+        }
+        let boxes: Vec<crate::ortho_route::Rect> = nodes
+            .iter()
+            .map(|node| as_string(field(node, "id"), ""))
+            .filter(|id| !around.contains(id))
+            .filter_map(|id| rect_of(layout, &id))
+            .collect();
+        let points = pin_route(from.0, from.2, to.0, to.2, &boxes, 10.0)
+            .unwrap_or_else(|| vec![from.0, to.0]);
+        let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
+        routes.push((
+            as_string(field(edge, "id"), ""),
+            json!([{
+                "startPoint": point(&points[0]),
+                "bendPoints": points[1..points.len() - 1].iter().map(point).collect::<Vec<_>>(),
+                "endPoint": point(&points[points.len() - 1]),
+            }]),
+        ));
+    }
+    if routes.is_empty() {
+        return;
+    }
+    if !layout["edgeSectionsById"].is_object() {
+        layout["edgeSectionsById"] = json!({});
+    }
+    for (id, sections) in routes {
+        layout["edgeSectionsById"][id] = sections;
+    }
+}
 
 /// The laid-out content of one action flow level, relative to its own origin.
 struct ActionFlowLevel {
@@ -1001,9 +1160,17 @@ fn layout_nested_behavior(
                 content.header = container_header(member, mode);
                 let (min_x, min_y, max_x, max_y) = content.bounds;
                 let (own_width, _) = node_dimensions(member, mode);
+                // An action holding a flow is also high enough for its own parameters.
+                let parameters = match (mode, parameter_rows(member)) {
+                    (BehaviorMode::Action, rows) if rows > 0 => {
+                        parameter_offset(rows - 1, true) + PARAMETER_PITCH
+                    }
+                    _ => 0.0,
+                };
                 node["attributes"]["layoutSize"] = json!([
                     ((max_x - min_x) + 2.0 * ACTION_CONTAINER_PADDING).max(own_width),
-                    (max_y - min_y) + content.header + 2.0 * ACTION_CONTAINER_PADDING,
+                    ((max_y - min_y) + content.header + 2.0 * ACTION_CONTAINER_PADDING)
+                        .max(parameters),
                 ]);
                 levels.insert(id, content);
             }
@@ -1539,7 +1706,10 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
             label_box["layoutOptions"] = json!({
                 // The label of a shared line sits at its target, where the lines have joined.
                 "org.eclipse.elk.edgeLabels.placement": if group.is_some() { "HEAD" } else { "CENTER" },
-                "org.eclipse.elk.edgeLabels.inline": "false",
+                // A state machine's transitions run in parallel through long layers; a label
+                // beside its line is as close to the neighbouring line as to its own. Inline,
+                // the transition passes through its label, so no label can be misread.
+                "org.eclipse.elk.edgeLabels.inline": if matches!(mode, BehaviorMode::State) { "true" } else { "false" },
             });
             base["labels"] = json!([label_box]);
             base
@@ -2507,10 +2677,12 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
                 field(field(port, "layoutOptions"), "org.eclipse.elk.port.side"),
                 "",
             );
+            // SysML 8.2.3.12: a port is a small square on the boundary of its part. Layout
+            // places it just outside that boundary, so its centre is moved onto it.
             let x = if side == "WEST" {
-                abs_x + num(field(port, "x"))
-            } else if side == "EAST" {
                 abs_x + num(field(port, "x")) + pw
+            } else if side == "EAST" {
+                abs_x + num(field(port, "x"))
             } else {
                 abs_x + num(field(port, "x")) + pw / 2.0
             };

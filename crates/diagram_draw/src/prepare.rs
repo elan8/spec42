@@ -1627,7 +1627,46 @@ fn select_root(scene: &Value) -> Option<String> {
     root_ids.into_iter().next()
 }
 
-fn sequence_diagram_from_scene(name: &str, nodes: &[Value], scene: &Value) -> Option<Value> {
+/// The name of the item a flow or message carries (SysML 8.2.3.13, 8.2.3.25): the target of its
+/// authored `flowPayloadType` relationship, as a projected node or a library/model reference.
+fn flow_payload_name(
+    origin: u64,
+    relationships: &[Value],
+    raw_nodes: &[Value],
+    references: &[Value],
+) -> Option<String> {
+    relationships
+        .iter()
+        .find(|relationship| {
+            field(relationship, "source").as_u64() == Some(origin)
+                && field(relationship, "kind") == "flowPayloadType"
+        })
+        .and_then(|relationship| {
+            let target = field(relationship, "target");
+            field(target, "node")
+                .as_u64()
+                .and_then(|node| raw_nodes.get(node as usize))
+                .and_then(|node| field(node, "name").as_str())
+                .map(str::to_owned)
+                .or_else(|| {
+                    field(target, "reference")
+                        .as_u64()
+                        .and_then(|index| references.get(index as usize))
+                        .map(|reference| as_string(field(reference, "qualifiedName"), ""))
+                        .and_then(|name| name.rsplit("::").next().map(str::to_owned))
+                })
+        })
+        .filter(|item| !item.is_empty())
+}
+
+fn sequence_diagram_from_scene(
+    name: &str,
+    nodes: &[Value],
+    scene: &Value,
+    relationships: &[Value],
+    raw_nodes: &[Value],
+    references: &[Value],
+) -> Option<Value> {
     if as_string(field(scene, "kind"), "") != "sequence" {
         return None;
     }
@@ -1653,9 +1692,11 @@ fn sequence_diagram_from_scene(name: &str, nodes: &[Value], scene: &Value) -> Op
                     Value::String(label)
                 }
             };
+            // SysML 8.2.3.25: a lifeline is labelled by its occurrence and type.
             json!({
                 "id": field(&nodes[index], "id"),
                 "name": name,
+                "typeName": field(field(&nodes[index], "attributes"), "typedByName"),
             })
         })
         .collect();
@@ -1695,6 +1736,12 @@ fn sequence_diagram_from_scene(name: &str, nodes: &[Value], scene: &Value) -> Op
                 } else {
                     field(&nodes[index.unwrap()], "label").clone()
                 },
+                "payloadName": flow_payload_name(
+                    index.unwrap() as u64,
+                    relationships,
+                    raw_nodes,
+                    references,
+                ),
                 "source": field(&nodes[source_index.unwrap()], "id"),
                 "target": field(&nodes[target_index.unwrap()], "id"),
                 "kind": field(&nodes[index.unwrap()], "kind"),
@@ -2099,30 +2146,9 @@ fn interconnection_scene_from_typed_projection(
                     .and_then(|origin| raw_nodes.get(origin as usize))
                     .and_then(|origin| field(origin, "name").as_str())
                     .filter(|name| !name.trim().is_empty());
-                let item = relationships
-                    .iter()
-                    .find(|relationship| {
-                        field(relationship, "source").as_u64() == origin
-                            && field(relationship, "kind") == "flowPayloadType"
-                    })
-                    .and_then(|relationship| {
-                        let target = field(relationship, "target");
-                        field(target, "node")
-                            .as_u64()
-                            .and_then(|node| raw_nodes.get(node as usize))
-                            .and_then(|node| field(node, "name").as_str())
-                            .map(str::to_owned)
-                            .or_else(|| {
-                                field(target, "reference")
-                                    .as_u64()
-                                    .and_then(|index| references.get(index as usize))
-                                    .map(|reference| {
-                                        as_string(field(reference, "qualifiedName"), "")
-                                    })
-                                    .and_then(|name| name.rsplit("::").next().map(str::to_owned))
-                            })
-                    })
-                    .filter(|item| !item.is_empty());
+                let item = origin.and_then(|origin| {
+                    flow_payload_name(origin, relationships, raw_nodes, references)
+                });
                 match (name, item) {
                     (Some(name), Some(item)) => Some(format!("{name} : {item}")),
                     (Some(name), None) => Some(name.to_owned()),
@@ -2825,23 +2851,27 @@ fn prepare_typed_action_flow(
     let parameters = |action: usize, directions: &[&str]| -> Vec<Value> {
         raw_nodes
             .iter()
-            .filter(|node| field(node, "owner").as_u64() == Some(action as u64))
-            .filter(|node| {
+            .enumerate()
+            .filter(|(_, node)| field(node, "owner").as_u64() == Some(action as u64))
+            .filter(|(_, node)| {
                 field(node, "direction")
                     .as_str()
                     .is_some_and(|direction| directions.contains(&direction))
             })
-            .filter_map(|node| field(node, "name").as_str())
-            .map(|name| json!({ "name": name }))
+            .filter_map(|(index, node)| Some((index, field(node, "name").as_str()?)))
+            .map(|(index, name)| json!({ "id": format!("n:{index}"), "name": name }))
             .collect()
     };
-    // A flow runs between parameters; it is drawn between the actions that own them.
-    let flow_end = |index: usize| -> Option<usize> {
+    // A flow runs between parameters; it is drawn between the squares of those parameters on the
+    // actions that own them, or between the actions themselves when an end is the action.
+    let flow_end = |index: usize| -> Option<(usize, Option<usize>)> {
         if action_indexes.contains(&index) {
-            return Some(index);
+            return Some((index, None));
         }
         let owner = field(raw_nodes.get(index)?, "owner").as_u64()? as usize;
-        action_indexes.contains(&owner).then_some(owner)
+        action_indexes
+            .contains(&owner)
+            .then_some((owner, Some(index)))
     };
     let mut ordered_indexes: Vec<usize> = action_indexes.iter().copied().collect();
     ordered_indexes.sort_unstable();
@@ -2906,11 +2936,12 @@ fn prepare_typed_action_flow(
             }
             let source = field(edge, "source").as_u64()? as usize;
             let target = field(edge, "target").as_u64()? as usize;
-            let (source, target) = if kind == "flow" {
+            let ((source, source_parameter), (target, target_parameter)) = if kind == "flow" {
                 (flow_end(source)?, flow_end(target)?)
             } else {
-                (source, target)
+                ((source, None), (target, None))
             };
+            let parameter = |index: Option<usize>| index.map(|index| format!("n:{index}"));
             if !action_indexes.contains(&source) || !action_indexes.contains(&target) {
                 return None;
             }
@@ -2928,6 +2959,8 @@ fn prepare_typed_action_flow(
                 "attributes": {
                     "succession": kind == "succession",
                     "streamingFlow": kind == "flow",
+                    "sourceParameter": parameter(source_parameter),
+                    "targetParameter": parameter(target_parameter),
                     "typedProjection": true,
                     "provenance": field(edge, "provenance"),
                     "sourceNavigation": navigation(field(edge, "navigation")),
@@ -3121,20 +3154,19 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
             let trigger = trigger_label(field(transition, "trigger"));
             let guard = feature_label(field(transition, "guard"));
             let effect = feature_label(field(transition, "effect"));
-            let mut parts = Vec::new();
-            if !trigger.is_empty() {
-                parts.push(trigger.clone());
-            }
+            // SysML 8.2.3.18: `trigger [guard] / effect`; only the effect follows a slash.
+            let mut condition = trigger.clone();
             if !guard.is_empty() {
-                parts.push(format!("[{guard}]"));
+                if !condition.is_empty() {
+                    condition.push(' ');
+                }
+                condition.push_str(&format!("[{guard}]"));
             }
-            if !effect.is_empty() {
-                parts.push(effect.clone());
-            }
-            let label = if parts.is_empty() {
-                as_string(field(transition, "label"), "")
-            } else {
-                parts.join(" / ")
+            let label = match (condition.is_empty(), effect.is_empty()) {
+                (true, true) => as_string(field(transition, "label"), ""),
+                (false, true) => condition,
+                (true, false) => format!("/ {effect}"),
+                (false, false) => format!("{condition} / {effect}"),
             };
             edges.push(json!({
                 "id": format!("transition:{index}"),
@@ -3301,7 +3333,14 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
         .collect();
     let metadata = field(projection, "metadata");
     let sequence_diagram = if selected_kind == "sequence-view" {
-        sequence_diagram_from_scene(selected_name, &nodes, field(projection, "scene"))
+        sequence_diagram_from_scene(
+            selected_name,
+            &nodes,
+            field(projection, "scene"),
+            as_array(field(projection, "relationships")),
+            projection_nodes,
+            &references,
+        )
     } else {
         None
     };
