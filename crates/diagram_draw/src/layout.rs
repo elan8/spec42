@@ -955,6 +955,30 @@ fn parameter_rows(node: &Value) -> usize {
     .unwrap_or(0)
 }
 
+/// How far a flow keeps from an action or control node.
+const FLOW_CLEARANCE: f64 = 10.0;
+/// The box of a parameter's name as `action_flow::draw_parameters` writes it: 8 px text whose
+/// baseline is 6 px above the square's centre, starting 9 px out from the action's side.
+const PARAMETER_NAME_CHARACTER: f64 = 5.4;
+const PARAMETER_NAME_GAP: f64 = 9.0;
+const PARAMETER_NAME_ABOVE: f64 = 13.0;
+const PARAMETER_NAME_HEIGHT: f64 = 10.0;
+/// How far a flow keeps from a parameter name: less than from a box, so that the flow leaving the
+/// square beneath a name can still run straight out under it.
+const NAME_CLEARANCE: f64 = 2.0;
+
+/// A parameter name as an obstacle for `pin_route`, which keeps `FLOW_CLEARANCE` from every box:
+/// shrunk so that the route keeps only `NAME_CLEARANCE` from the text.
+fn name_obstacle((x, y, width, height): crate::ortho_route::Rect) -> crate::ortho_route::Rect {
+    let inset = FLOW_CLEARANCE - NAME_CLEARANCE;
+    (
+        x + inset,
+        y + inset,
+        width - 2.0 * inset,
+        height - 2.0 * inset,
+    )
+}
+
 /// Draws each flow between two parameters from the square of one to the square of the other,
 /// around the actions and control nodes on its way (SysML v2 8.2.3.17). A flow leaves and enters
 /// an action outwards, on the side its parameter is drawn on; on an action that holds the flow it
@@ -984,6 +1008,9 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
     let containers: HashSet<&String> = container_of.values().collect();
     // Each parameter's square: its centre, the action that owns it, and the way a flow runs there.
     let mut pins: HashMap<String, ((f64, f64), String, Heading)> = HashMap::new();
+    // The name of each parameter, which stands above its square on the outer side, so that a flow
+    // goes around it rather than through it.
+    let mut names: Vec<crate::ortho_route::Rect> = Vec::new();
     for node in nodes {
         let id = as_string(field(node, "id"), "");
         let Some((x, y, width, _)) = rect_of(layout, &id) else {
@@ -1011,6 +1038,20 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
                     Heading::Right
                 };
                 let side = if input { x } else { x + width };
+                let centre = y + parameter_offset(index, container);
+                let name_width = as_string(field(item, "name"), "").chars().count() as f64
+                    * PARAMETER_NAME_CHARACTER;
+                let name_x = if input {
+                    side - PARAMETER_NAME_GAP - name_width
+                } else {
+                    side + PARAMETER_NAME_GAP
+                };
+                names.push(name_obstacle((
+                    name_x,
+                    centre - PARAMETER_NAME_ABOVE,
+                    name_width,
+                    PARAMETER_NAME_HEIGHT,
+                )));
                 pins.insert(
                     parameter,
                     (
@@ -1056,8 +1097,9 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
             .map(|node| as_string(field(node, "id"), ""))
             .filter(|id| !around.contains(id))
             .filter_map(|id| rect_of(layout, &id))
+            .chain(names.iter().copied())
             .collect();
-        let points = pin_route(from.0, from.2, to.0, to.2, &boxes, 10.0)
+        let points = pin_route(from.0, from.2, to.0, to.2, &boxes, FLOW_CLEARANCE)
             .unwrap_or_else(|| vec![from.0, to.0]);
         let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
         routes.push((

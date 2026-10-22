@@ -117,3 +117,42 @@ fn flows_between_parameters_start_and_end_on_their_squares() {
     let svg = render_svg_from_payload(&payload(), 800.0, 600.0).expect("draw action flow");
     assert_eq!(svg.matches("class=\"action-parameter-badge").count(), 6);
 }
+
+#[test]
+fn a_flow_goes_around_the_names_of_other_parameters() {
+    // `b` gets a second output below `q`, with a long name. The flow from `q` to `c.r` must not
+    // run through that name, which stands beside `b` above its square.
+    let mut payload = payload();
+    let nodes = payload["projection"]["nodes"].as_array_mut().unwrap();
+    nodes.push(node(
+        "ReferenceUsage",
+        "aVeryLongParameterName",
+        json!(3),
+        json!("out"),
+    ));
+    let input = draw_input_from_payload(&payload).expect("action flow lays out");
+    let layout = &input["behaviorLayout"];
+    let b = &layout["positions"]["n:3"];
+    let (bx, by, bw) = (
+        b["x"].as_f64().unwrap(),
+        b["y"].as_f64().unwrap(),
+        b["width"].as_f64().unwrap(),
+    );
+    // The second output's square is 38 px below the top of `b`; its name is 8 px text whose
+    // baseline is 6 px above the square, starting 9 px out from the side.
+    let name = (bx + bw + 9.0, by + 38.0 - 13.0, 22.0 * 5.0, 10.0);
+    let section = &layout["edgeSectionsById"]["e:1"][0];
+    let mut points = vec![point(&section["startPoint"])];
+    points.extend(section["bendPoints"].as_array().unwrap().iter().map(point));
+    points.push(point(&section["endPoint"]));
+    let crosses = points.windows(2).any(|pair| {
+        let (a, b) = (pair[0], pair[1]);
+        let (left, right) = (a.0.min(b.0), a.0.max(b.0));
+        let (top, bottom) = (a.1.min(b.1), a.1.max(b.1));
+        left < name.0 + name.2 && right > name.0 && top < name.1 + name.3 && bottom > name.1
+    });
+    assert!(
+        !crosses,
+        "flow {points:?} runs through the name at {name:?}"
+    );
+}
