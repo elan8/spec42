@@ -2859,6 +2859,11 @@ pub(crate) fn status_from_candidates(
 }
 
 /// The narrowing that roots a reference's lookup at another reference's settled target, if any.
+///
+/// Several zero-segment narrowings are recorded innermost first: an indexed primary roots the
+/// lookup at its owned expression result, and a cast applied directly to it
+/// (`(edges#(i) as Edge).vertices`) narrows that same root again. The last one applies, so the
+/// cast's target wins over the index result's type.
 pub(crate) fn root_narrowing<R: ResolutionReferenceFact>(
     reference: &R,
 ) -> Option<crate::lower::facts::MemberAccessNarrowing> {

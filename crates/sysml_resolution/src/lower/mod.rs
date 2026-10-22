@@ -1390,7 +1390,11 @@ impl SemanticModelBuilder {
                 .metadata
                 .span;
             let last = parsed
-                .qualified_reference(*chain.last().expect("nonempty chain"))
+                .qualified_reference(
+                    *chain
+                        .last()
+                        .ok_or(ConstructionError::InvalidParserReference)?,
+                )
                 .ok_or(ConstructionError::InvalidParserReference)?
                 .metadata
                 .span;

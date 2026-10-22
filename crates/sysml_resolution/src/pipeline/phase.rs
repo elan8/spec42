@@ -161,18 +161,26 @@ impl Lowered {
                 )
             })
         });
-        // Metadata contributes at most one dependency link per annotation; expression results
-        // can add links through owned declarations. Two extra passes confirm the fixed point.
-        // Both families share this barrier so lookup never publishes stale result types;
-        // exhausting the bound leaves an explicit nonconverged publication.
+        // Metadata contributes at most one dependency link per annotation. An expression-result
+        // relationship is sourced at the result of one feature-reference, feature-chain or
+        // operator expression, and a pass can only add one whose prerequisite settled in the
+        // previous pass, so a dependency chain visits each of those expressions at most once.
+        // Two extra passes confirm the fixed point. Both families share this barrier so lookup
+        // never publishes stale result types; exhausting the bound leaves an explicit
+        // nonconverged publication.
+        let expression_links = if has_expression_roots {
+            storage
+                .feature_reference_expressions
+                .len()
+                .saturating_add(storage.feature_chain_expressions.len())
+                .saturating_add(storage.operator_expressions.len())
+        } else {
+            0
+        };
         let mut relationship_passes_remaining = storage
             .metadata_annotations
             .len()
-            .saturating_add(if has_expression_roots {
-                storage.declarations.len()
-            } else {
-                0
-            })
+            .saturating_add(expression_links)
             .saturating_add(2);
         let (direct_names, effective_imports, exported_imports, memberships, resolution) = loop {
             let (direct_names, effective_imports, exported_imports, memberships, resolution) =
