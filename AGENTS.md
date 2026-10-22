@@ -176,9 +176,16 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 - Planning documents contain only active decisions, blockers, and remaining work. Remove an item
   when it is completed; do not retain completion summaries, execution diaries, resolved-item
   indexes, historical context sections, or superseded plans.
-- Git commit messages own implementation history and completed-work rationale. `CHANGELOG.md` may
-  carry one succinct user-visible summary when the change is notable; it is not a substitute for a
-  planning archive.
+- Git commit messages own implementation history and completed-work rationale. `CHANGELOG.md` is
+  written only when preparing a release, from the commits since the previous release tag; it is
+  not a substitute for a planning archive.
+- Feature and fix changes never edit `CHANGELOG.md`. A commit with a user-visible effect instead
+  ends with git trailers, in the final paragraph together with any `Co-Authored-By:` line:
+  `Changelog: <one user-facing sentence>` and, for a change a consumer must act on (a wire or
+  schema version, a removed option, a contract version), `Breaking: <what to change>`.
+- Release preparation runs `scripts/changelog-draft.sh`, which lists the `Breaking:` and
+  `Changelog:` trailers and the subjects of the remaining commits since the last `v*` tag, and
+  edits the result into the `## [x.y.z]` section the release workflow publishes.
 - Move reusable lessons into this file as enduring repository policy, or into the authoritative
   design document when they are lasting properties of the system. Do not preserve them in a
   completed investigation or progress tracker.
