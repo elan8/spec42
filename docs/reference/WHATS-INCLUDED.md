@@ -17,7 +17,7 @@ This page is generated from Spec42 product configuration so the docs stay aligne
 | Library | Version | Format | Source |
 | --- | --- | --- | --- |
 | SysML v2 standard library | `2026-04` | `kpar` | [Systems-Modeling/SysML-v2-Release](https://github.com/Systems-Modeling/SysML-v2-Release) |
-| Domain libraries | `0.4.0` | `kpar` | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
+| Domain libraries | `0.5.0` | `kpar` | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
 
 ## Learn more
 

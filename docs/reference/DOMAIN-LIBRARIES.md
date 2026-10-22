@@ -7,10 +7,10 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 
 | | |
 | --- | --- |
-| Bundled version | `0.4.0` |
+| Bundled version | `0.5.0` |
 | Format | `kpar` |
-| Artifact | `elan8-domain-libraries-0.4.0.kpar` |
-| Packages / files | 25 packages · 22 source files |
+| Artifact | `elan8-domain-libraries-0.5.0.kpar` |
+| Packages / files | 27 packages · 24 source files |
 | Source | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
 
 ## Package tree
@@ -19,6 +19,8 @@ Tree of source files inside the KPAR. Package names are scanned from each `.sysm
 
 - **model/**
   - **generic/**
+    - **documents/**
+      - `model/generic/documents/Documents.sysml` — `Documents`
     - **generation/**
       - `model/generic/generation/Generation.sysml` — `Generation`
     - **mbse/**
@@ -27,6 +29,8 @@ Tree of source files inside the KPAR. Package names are scanned from each `.sysm
       - `model/generic/physical-modeling/PhysicalModeling.sysml` — `PhysicalModeling`
     - **procurement/**
       - `model/generic/procurement/PartProcurement.sysml` — `Procurement`
+    - **systems-engineering/**
+      - `model/generic/systems-engineering/SystemsEngineering.sysml` — `SystemsEngineering`
     - **units/**
       - `model/generic/units/EngineeringUnits.sysml` — `Engineering`
       - `model/generic/units/MonetaryUnits.sysml` — `Money`
@@ -74,6 +78,7 @@ Tree of source files inside the KPAR. Package names are scanned from each `.sysm
 | `Components` | `model/technical/electronics/components/ElectronicComponentDomain.sysml` |
 | `Compute` | `model/technical/electronics/compute/EmbeddedComputeDomain.sysml` |
 | `Core` | `model/generic/mbse/Core.sysml` |
+| `Documents` | `model/generic/documents/Documents.sysml` |
 | `Drivetrain` | `model/technical/mechanical/drivetrain/DrivetrainDomain.sysml` |
 | `Elan8` | `model/Elan8.sysml` |
 | `Electronics::Core` | `model/technical/electronics/Electronics.sysml` |
@@ -90,6 +95,7 @@ Tree of source files inside the KPAR. Package names are scanned from each `.sysm
 | `Procurement` | `model/generic/procurement/PartProcurement.sysml` |
 | `Sensing` | `model/technical/electronics/sensing/SensingDomain.sysml` |
 | `Software` | `model/technical/software/Software.sysml` |
+| `SystemsEngineering` | `model/generic/systems-engineering/SystemsEngineering.sysml` |
 | `Units` | `model/generic/units/Units.sysml` |
 
 ## In Spec42

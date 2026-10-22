@@ -16,7 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   contract version is now `spec-rule-burndown-element-kinds-v51`, so earlier publications and
   serialised models are not reused. The informational `view_expose_empty` diagnostic is gone. Join
   and control nodes no longer report `missing_library_anchor`. Projects can now limit their
-  sources with `syside.toml` `include`/`exclude`.
+  sources with `syside.toml` `include`/`exclude`. The bundled domain libraries are now
+  [0.5.0](https://github.com/elan8/sysml-domain-libraries/releases/tag/v0.5.0), which adds
+  systems-engineering roles, document composition and software architecture vocabulary; existing
+  0.4.0 definitions keep their names.
 
 - **Diagrams of real models read better.**
   - Sequence views draw lifelines in declaration order, headed `name : Type`, and label messages
