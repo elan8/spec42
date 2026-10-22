@@ -135,7 +135,7 @@ package BrowserNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:c4eeb28f5877a9161f6f02a68ec05ee1451d18ed0fe83acd4a8a7cb7b8d79402",
   "documents": [
     {
@@ -197,7 +197,8 @@ package BrowserNegative {
     "exposedRoots": [],
     "kind": "browser-view",
     "metadata": {
-      "roots": []
+      "roots": [],
+      "rows": []
     },
     "nodes": [],
     "relationships": [],

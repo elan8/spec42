@@ -51,9 +51,12 @@ pub fn run_diagram(cli: &Cli, args: &DiagramArgs) -> Result<ExitCode, String> {
                     document: args.document.as_deref(),
                 },
             )?;
-            let projection = model
-                .diagram_view(&summary.handle)
-                .map_err(|error| format!("`{view}` could not be projected: {error}"))?;
+            let projection = if summary.kind == generator_api::DiagramViewKind::BrowserView {
+                browser_projection(&model, &summary.handle, args.depth)
+            } else {
+                model.diagram_view(&summary.handle)
+            }
+            .map_err(|error| format!("`{view}` could not be projected: {error}"))?;
             let product = diagram_product::diagram_product_json(&projection)?;
             let product = String::from_utf8(product).expect("serde_json writes UTF-8");
             if args.stats {
@@ -146,6 +149,40 @@ fn product_stats(product: &str) -> Result<String, String> {
             .collect(),
     );
     Ok(out)
+}
+
+/// A browser projection loads its roots' members; `--depth` opens each further level by asking
+/// for the members of every row that still has some to load, as an editor does on expand.
+fn browser_projection(
+    model: &GeneratorModelView,
+    handle: &str,
+    depth: diagram_draw::Nesting,
+) -> Result<generator_api::DiagramViewProjection, generator_api::ModelQueryError> {
+    // A recursive type has an unbounded instance tree; stop opening after this many levels.
+    const DEEPEST: usize = 64;
+    let levels = match depth {
+        diagram_draw::Nesting::Levels(levels) => levels.saturating_sub(1),
+        diagram_draw::Nesting::All => DEEPEST,
+    };
+    let mut expanded = Vec::<String>::new();
+    let mut projection = model.diagram_view(handle)?;
+    for _ in 0..levels.min(DEEPEST) {
+        let generator_api::DiagramViewMetadata::Browser { rows, .. } = &projection.metadata else {
+            break;
+        };
+        let unloaded = rows
+            .iter()
+            .filter(|row| row.members == generator_api::DiagramBrowserMembers::Unloaded)
+            .map(|row| row.key.clone())
+            .filter(|key| !expanded.contains(key))
+            .collect::<Vec<_>>();
+        if unloaded.is_empty() {
+            break;
+        }
+        expanded.extend(unloaded);
+        projection = model.diagram_view_expanding(handle, &expanded)?;
+    }
+    Ok(projection)
 }
 
 fn qualified_name(view: &DiagramViewSummary) -> String {

@@ -20,7 +20,8 @@ pub use path::{
     RESERVED_MANIFEST_NAME,
 };
 pub use spec42_generator_protocol::{
-    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramIncompleteReason, DiagramRelationship,
-    DiagramRelationshipTarget, DiagramSemanticReference, DiagramSourceDomain, DiagramViewKind,
-    DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+    DiagramBrowserMembers, DiagramBrowserRow, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramIncompleteReason, DiagramMembership, DiagramRelationship, DiagramRelationshipTarget,
+    DiagramSemanticReference, DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata,
+    DiagramViewProjection, DiagramViewSummary,
 };

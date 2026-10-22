@@ -116,7 +116,7 @@ package EmptyExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:20a575d5dac99665184f789bfebf8cb8212f402f4052600189e0dedd86113d37",
   "documents": [
     {
@@ -157,7 +157,8 @@ package EmptyExample {
     "exposedRoots": [],
     "kind": "browser-view",
     "metadata": {
-      "roots": []
+      "roots": [],
+      "rows": []
     },
     "nodes": [],
     "relationships": [],

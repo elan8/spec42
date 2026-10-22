@@ -190,7 +190,7 @@ package EmptySelection {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:499c3848aa3175bb4794fa8950b04f722deea0471b770e7553d86041ceeb53d2",
   "documents": [
     {

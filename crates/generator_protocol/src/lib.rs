@@ -895,6 +895,31 @@ pub struct DiagramOccurrenceIdentity {
     pub semantic_path: Vec<DiagramSemanticReference>,
 }
 
+/// How a browser row belongs to its parent: SysML 9.2.20.2.2 presents membership, which for a
+/// type includes what it inherits.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramMembership {
+    Owned,
+    Inherited,
+}
+
+/// Whether a browser row's own members are in the projection.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramBrowserMembers {
+    None,
+    Loaded,
+    Unloaded,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramBrowserRow {
+    pub occurrence: DiagramOccurrenceIdentity,
+    /// The occurrence's stable key: what a client sends back to open this row's branch.
+    pub key: String,
+    pub membership: DiagramMembership,
+    pub members: DiagramBrowserMembers,
+}
+
 /// Authored FeatureTyping of a projected element. Compact node labels consume this family,
 /// not the effective-type closure that includes implied library types.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1021,11 +1046,25 @@ pub struct DiagramEdge {
     pub source: Option<SourceReference>,
 }
 
+/// How a Grid View arranges its exposed elements. SysML v2 9.2.20.2.5 names a relationship
+/// matrix and a tabular view among the specializations of a Grid View.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DiagramGridLayout {
+    /// Rows are the exposed elements at the source end of a relationship between two exposed
+    /// elements, columns those at its target end, and each cell one such relationship.
+    RelationshipMatrix,
+    /// No relationship joins two exposed elements: one row for each exposed element.
+    ElementTable,
+}
+
+/// One cell of a relationship matrix: the relationship edge from `row` to `column` declared by
+/// `origin`, with the edge's `kind`. Together they identify one entry of the projection's edges.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct DiagramGridCell {
     pub row: DiagramOccurrenceIdentity,
-    pub column: RelationshipKind,
-    pub relationship: DiagramSemanticReference,
+    pub column: DiagramOccurrenceIdentity,
+    pub origin: DiagramOccurrenceIdentity,
+    pub kind: DiagramEdgeKind,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1053,10 +1092,14 @@ pub enum DiagramViewMetadata {
     },
     Browser {
         roots: Vec<DiagramOccurrenceIdentity>,
+        /// One per projected row, in row order: how it belongs to its parent and whether its own
+        /// members are loaded, still to load, or absent.
+        rows: Vec<DiagramBrowserRow>,
     },
     Grid {
+        layout: DiagramGridLayout,
         rows: Vec<DiagramOccurrenceIdentity>,
-        columns: Vec<RelationshipKind>,
+        columns: Vec<DiagramOccurrenceIdentity>,
         cells: Vec<DiagramGridCell>,
     },
     Geometry {
@@ -1328,7 +1371,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0xf58d_c614_fefb_46d6,
+            SCHEMA_FINGERPRINT, 0x252e_7fb1_75bd_0a3b,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1336,7 +1379,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x3372_b411_f3f5_d7e6,
+            COMPATIBILITY_TOKEN, 0x1df7_2a6b_fd2a_0025,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

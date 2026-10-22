@@ -1,4 +1,4 @@
-//! The schema-6 diagram product: a typed diagram view projection
+//! The schema-7 diagram product: a typed diagram view projection
 //! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
 //! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
 //! once and referenced by index.
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 use spec42_generator_protocol as model;
 
 /// Version of the product format `diagram_draw` consumes.
-pub const SCHEMA_VERSION: u32 = 6;
+pub const SCHEMA_VERSION: u32 = 7;
 
 /// The file name under which generators publish the product.
 pub const ARTIFACT_PATH: &str = "diagram.json";
@@ -172,7 +172,7 @@ fn product_json(
 /// The projection also publishes what the library implies -- `Parts::parts` subsetting, type
 /// featuring, inherited redefinitions -- for every projected element. No drawing reads those, and
 /// with the references, sources and library documents they pull in they were most of a product's
-/// bytes, so schema 6 leaves them to the semantic query.
+/// bytes, so since schema 6 they are left to the semantic query.
 fn published_relationships(
     typed: &model::DiagramViewProjection,
 ) -> impl Iterator<Item = &model::DiagramRelationship> {
@@ -351,7 +351,7 @@ impl NormalizedProduct {
             "nodes": typed.elements.iter().map(|value| self.element(value)).collect::<Result<Vec<_>, _>>()?,
             "relationships": published_relationships(typed).map(|value| self.relationship(value)).collect::<Result<Vec<_>, _>>()?,
             "edges": typed.edges.iter().map(|value| self.edge(value)).collect::<Result<Vec<_>, _>>()?,
-            "metadata": self.metadata(&typed.metadata)?,
+            "metadata": self.metadata(&typed.metadata, &typed.edges)?,
             "scene": self.scene(&typed.scene)?,
         }))
     }
@@ -523,7 +523,11 @@ impl NormalizedProduct {
         }))
     }
 
-    fn metadata(&self, value: &model::DiagramViewMetadata) -> Result<Value, String> {
+    fn metadata(
+        &self,
+        value: &model::DiagramViewMetadata,
+        edges: &[model::DiagramEdge],
+    ) -> Result<Value, String> {
         let nodes = |values: &[model::DiagramOccurrenceIdentity]| {
             values
                 .iter()
@@ -554,19 +558,51 @@ impl NormalizedProduct {
                 participants,
                 messages,
             } => json!({ "participants": nodes(participants)?, "messages": nodes(messages)? }),
-            model::DiagramViewMetadata::Browser { roots } => json!({ "roots": nodes(roots)? }),
+            model::DiagramViewMetadata::Browser { roots, rows } => json!({
+                "roots": nodes(roots)?,
+                "rows": rows.iter().map(|row| Ok(json!({
+                    "node": self.node(&row.occurrence)?,
+                    "key": row.key,
+                    "membership": match row.membership {
+                        model::DiagramMembership::Owned => "owned",
+                        model::DiagramMembership::Inherited => "inherited",
+                    },
+                    "members": match row.members {
+                        model::DiagramBrowserMembers::None => "none",
+                        model::DiagramBrowserMembers::Loaded => "loaded",
+                        model::DiagramBrowserMembers::Unloaded => "unloaded",
+                    },
+                }))).collect::<Result<Vec<Value>, String>>()?,
+            }),
             model::DiagramViewMetadata::Grid {
+                layout,
                 rows,
                 columns,
                 cells,
             } => json!({
+                "layout": match layout {
+                    model::DiagramGridLayout::RelationshipMatrix => "relationship-matrix",
+                    model::DiagramGridLayout::ElementTable => "element-table",
+                },
                 "rows": nodes(rows)?,
-                "columns": columns.iter().map(|column| column.as_str()).collect::<Vec<_>>(),
-                "cells": cells.iter().map(|cell| Ok(json!({
-                    "row": self.node(&cell.row)?,
-                    "column": cell.column.as_str(),
-                    "relationship": self.reference(&cell.relationship)?,
-                }))).collect::<Result<Vec<Value>, String>>()?,
+                "columns": nodes(columns)?,
+                "cells": cells.iter().map(|cell| {
+                    // The cell is the edge it names; its kind and navigation are the edge's.
+                    let edge = edges
+                        .iter()
+                        .position(|edge| {
+                            edge.source_occurrence == cell.row
+                                && edge.target_occurrence == cell.column
+                                && edge.origin_occurrence == cell.origin
+                                && edge.kind == cell.kind
+                        })
+                        .ok_or_else(|| "grid cell names no projected edge".to_owned())?;
+                    Ok(json!({
+                        "row": self.node(&cell.row)?,
+                        "column": self.node(&cell.column)?,
+                        "edge": edge,
+                    }))
+                }).collect::<Result<Vec<Value>, String>>()?,
             }),
             model::DiagramViewMetadata::Geometry {
                 elements,
@@ -898,8 +934,12 @@ fn collect_metadata_references(
             .for_each(|value| collect_occurrence_references(values, value))
     };
     match metadata {
-        model::DiagramViewMetadata::General { roots }
-        | model::DiagramViewMetadata::Browser { roots } => add(roots),
+        model::DiagramViewMetadata::General { roots } => add(roots),
+        model::DiagramViewMetadata::Browser { roots, rows } => {
+            add(roots);
+            rows.iter()
+                .for_each(|row| collect_occurrence_references(values, &row.occurrence));
+        }
         model::DiagramViewMetadata::Interconnection {
             parts,
             ports,
@@ -932,11 +972,18 @@ fn collect_metadata_references(
             add(participants);
             add(messages);
         }
-        model::DiagramViewMetadata::Grid { rows, cells, .. } => {
+        model::DiagramViewMetadata::Grid {
+            rows,
+            columns,
+            cells,
+            ..
+        } => {
             add(rows);
+            add(columns);
             cells.iter().for_each(|cell| {
                 collect_occurrence_references(values, &cell.row);
-                collect_reference(values, &cell.relationship);
+                collect_occurrence_references(values, &cell.column);
+                collect_occurrence_references(values, &cell.origin);
             });
         }
         model::DiagramViewMetadata::Geometry {

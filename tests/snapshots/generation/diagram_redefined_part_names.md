@@ -539,7 +539,7 @@ package RedefinedParts {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:c1945dbf7a83e7bc8a8490e895695121d0fcfd01707c1599ca2219dae7309652",
   "documents": [
     {

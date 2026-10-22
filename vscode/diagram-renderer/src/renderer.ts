@@ -254,6 +254,12 @@ async function renderNativeSvgView(
     const toggle = origin.closest<SVGGElement>(".general-node-toggle");
     if (toggle) {
       event.stopPropagation();
+      // A browser row whose members are not loaded opens through the host, which fetches them.
+      const branch = toggle.getAttribute("data-browser-load");
+      if (branch) {
+        options.loadBranch?.(branch);
+        return;
+      }
       const nodeId = toggle.closest("[data-node-id]")?.getAttribute("data-node-id") ?? "";
       if (!nodeId) return;
       if (expanded.has(nodeId)) expanded.delete(nodeId);

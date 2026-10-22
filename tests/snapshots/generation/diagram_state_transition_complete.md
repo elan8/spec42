@@ -456,7 +456,7 @@ package StateExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:c62e03513e437d6bf0e188c9cdd154570736fa91c26a53606e4a2fc28b81829d",
   "documents": [
     {

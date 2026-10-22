@@ -75,13 +75,19 @@ pub fn render_browser_view(
                     .style("stroke-width", "1px")
                     .style("opacity", "0.9"),
             );
+        // A row whose members are not loaded yet opens by asking the host for its branch.
+        let unloaded = as_string(field(row, "members"), "") == "unloaded";
         if has_children {
-            let collapsed_row = collapsed.contains(&row_id);
+            let collapsed_row = unloaded || collapsed.contains(&row_id);
             item = item.child(
                 Element::new("g")
                     .attr(
                         "class",
                         "browser-toggle general-node-toggle sysml-disclosure",
+                    )
+                    .maybe_attr(
+                        "data-browser-load",
+                        unloaded.then(|| as_string(field(row, "key"), "")),
                     )
                     .attr("role", "button")
                     .attr("tabindex", "0")
@@ -102,7 +108,14 @@ pub fn render_browser_view(
             );
         }
         let visibility_prefix = visibility_glyph(&as_string(field(row, "visibility"), ""));
-        let label = as_string(first_row_label(row), "Unnamed");
+        // SysML 8.2.3.6 (`el-prefix`, `usage-name-with-alias`): an inherited usage is shown with
+        // a caret before its name.
+        let inherited = if as_string(field(row, "membership"), "") == "inherited" {
+            "^"
+        } else {
+            ""
+        };
+        let label = format!("{inherited}{}", as_string(first_row_label(row), "Unnamed"));
         item = item.child(
             Element::new("text")
                 .attr_f(
@@ -249,25 +262,104 @@ pub fn render_grid_view(
     )
 }
 
+/// A row or column of a relationship matrix: the node it is and the name it is headed with.
+struct MatrixHeader {
+    id: String,
+    label: String,
+}
+
+fn matrix_headers(meta: &Value, key: &str, legacy_key: &str) -> Vec<MatrixHeader> {
+    let typed = as_array(field(meta, key));
+    if !typed.is_empty() {
+        return typed
+            .iter()
+            .map(|entry| MatrixHeader {
+                id: as_string(field(entry, "id"), ""),
+                label: as_string(field(entry, "label"), ""),
+            })
+            .filter(|header| !header.id.is_empty())
+            .collect();
+    }
+    as_array(field(meta, legacy_key))
+        .iter()
+        .map(|value| as_string(value, ""))
+        .filter(|id| !id.is_empty())
+        .map(|id| MatrixHeader {
+            label: short_matrix_label(&id),
+            id,
+        })
+        .collect()
+}
+
+/// The keyword a relationship kind is shown with, as on its edge in a General View.
+fn matrix_kind_keyword(kind: &str) -> String {
+    match kind {
+        "" => String::new(),
+        "specializes" | "specialization" => "specializes".into(),
+        other => format!("«{other}»"),
+    }
+}
+
+/// A relationship matrix (SysML v2 9.2.20.2.5): rows are the elements at the source end of the
+/// relationships, columns those at the target end, and a cell holds one dot for each relationship
+/// from its row to its column, with the relationship kinds as its tooltip. A legend under the
+/// title names the kinds the matrix shows.
 fn render_relationship_matrix(
     prepared: &PreparedView,
     theme: &Theme,
 ) -> (Element, (f64, f64, f64, f64)) {
-    let row_ids: Vec<String> = as_array(field(&prepared.meta, "matrixRowIds"))
-        .iter()
-        .map(|value| as_string(value, ""))
-        .filter(|value| !value.is_empty())
-        .collect();
-    let col_ids: Vec<String> = as_array(field(&prepared.meta, "matrixColIds"))
-        .iter()
-        .map(|value| as_string(value, ""))
-        .filter(|value| !value.is_empty())
-        .collect();
+    let rows = matrix_headers(&prepared.meta, "matrixRows", "matrixRowIds");
+    let columns = matrix_headers(&prepared.meta, "matrixColumns", "matrixColIds");
     let matrix_cells = as_array(field(&prepared.meta, "matrixCells"));
-    let cell_size = 34.0;
-    let header_size = 120.0;
-    let left = 180.0;
-    let top = 92.0;
+    // The relationships from each row to each column: their kinds and their edges.
+    let relationships = |row: &str, column: &str| -> Vec<(String, String)> {
+        matrix_cells
+            .iter()
+            .filter(|entry| {
+                as_string(field(entry, "source"), "") == row
+                    && as_string(field(entry, "target"), "") == column
+            })
+            .flat_map(|entry| {
+                let edge = as_string(field(entry, "edgeId"), "");
+                let labels = as_array(field(entry, "labels"));
+                if labels.is_empty() {
+                    vec![(as_string(field(entry, "kind"), ""), edge)]
+                } else {
+                    labels
+                        .iter()
+                        .map(|label| (as_string(label, ""), edge.clone()))
+                        .collect()
+                }
+            })
+            .collect()
+    };
+    const CHARACTER: f64 = 6.2;
+    const LABEL_LIMIT: usize = 28;
+    let label_width =
+        |header: &MatrixHeader| header.label.chars().count().min(LABEL_LIMIT) as f64 * CHARACTER;
+    let cell_size = 36.0;
+    // Room for the longest row name, and for the longest column name written upwards at 45°.
+    let row_header = rows.iter().map(label_width).fold(60.0_f64, f64::max) + 16.0;
+    let column_header = columns.iter().map(label_width).fold(40.0_f64, f64::max)
+        * std::f64::consts::FRAC_1_SQRT_2
+        + 24.0;
+    let left = 40.0;
+    let mut kinds: Vec<String> = matrix_cells
+        .iter()
+        .flat_map(|entry| {
+            let labels = as_array(field(entry, "labels"));
+            if labels.is_empty() {
+                vec![as_string(field(entry, "kind"), "")]
+            } else {
+                labels.iter().map(|label| as_string(label, "")).collect()
+            }
+        })
+        .filter(|kind| !kind.is_empty())
+        .collect();
+    kinds.sort();
+    kinds.dedup();
+    let legend_top = 76.0;
+    let top = legend_top + 24.0;
 
     let mut root = Element::new("g").attr("class", "viz-root");
     root = root.child(title_text(
@@ -275,57 +367,64 @@ fn render_relationship_matrix(
         "Relationship Matrix",
         theme,
     ));
+    if !kinds.is_empty() {
+        root = root.child(
+            Element::new("text")
+                .attr("class", "grid-relationship-matrix-legend")
+                .attr_f("x", left)
+                .attr_f("y", legend_top)
+                .style("font-size", "11px")
+                .style("fill", theme.text_secondary)
+                .text(format!(
+                    "rows: source · columns: target · ● {}",
+                    kinds
+                        .iter()
+                        .map(|kind| matrix_kind_keyword(kind))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                )),
+        );
+    }
 
     let mut layer = Element::new("g")
         .attr("class", "grid-relationship-matrix")
         .attr("transform", format!("translate({},{})", n(left), n(top)));
-    for (col_index, col_id) in col_ids.iter().enumerate() {
-        let x = header_size + col_index as f64 * cell_size + cell_size / 2.0;
+    for (index, column) in columns.iter().enumerate() {
+        let x = row_header + index as f64 * cell_size + cell_size / 2.0;
+        let y = column_header - 6.0;
         layer = layer.child(
             Element::new("text")
+                .attr("class", "grid-relationship-matrix-column")
+                .attr("data-node-id", column.id.clone())
                 .attr_f("x", x)
-                .attr_f("y", 16.0)
-                .attr("text-anchor", "middle")
-                .attr("transform", format!("rotate(-35, {}, 16)", n(x)))
-                .style("font-size", "9px")
-                .style("fill", theme.text_secondary)
-                .text(short_matrix_label(col_id)),
+                .attr_f("y", y)
+                .attr("transform", format!("rotate(-45, {}, {})", n(x), n(y)))
+                .style("font-size", "10px")
+                .style("fill", theme.text_primary)
+                .text(truncate_label(&column.label, LABEL_LIMIT)),
         );
     }
-    for (row_index, row_id) in row_ids.iter().enumerate() {
+    for (row_index, row) in rows.iter().enumerate() {
+        let y = column_header + row_index as f64 * cell_size;
         layer = layer.child(
             Element::new("text")
-                .attr_f("x", header_size - 8.0)
-                .attr_f(
-                    "y",
-                    header_size + row_index as f64 * cell_size + cell_size / 2.0 + 4.0,
-                )
+                .attr("class", "grid-relationship-matrix-row")
+                .attr("data-node-id", row.id.clone())
+                .attr_f("x", row_header - 8.0)
+                .attr_f("y", y + cell_size / 2.0 + 4.0)
                 .attr("text-anchor", "end")
                 .style("font-size", "10px")
                 .style("fill", theme.text_primary)
-                .text(short_matrix_label(row_id)),
+                .text(truncate_label(&row.label, LABEL_LIMIT)),
         );
-        for (col_index, col_id) in col_ids.iter().enumerate() {
-            let cell = matrix_cells.iter().find(|entry| {
-                as_string(field(entry, "source"), "") == *row_id
-                    && as_string(field(entry, "target"), "") == *col_id
-            });
-            let labels: Vec<String> = cell
-                .map(|entry| {
-                    as_array(field(entry, "labels"))
-                        .iter()
-                        .map(|value| as_string(value, ""))
-                        .filter(|value| !value.is_empty())
-                        .collect()
-                })
-                .unwrap_or_default();
-            let present = !labels.is_empty();
-            let x = header_size + col_index as f64 * cell_size;
-            let y = header_size + row_index as f64 * cell_size;
+        for (column_index, column) in columns.iter().enumerate() {
+            let entries = relationships(&row.id, &column.id);
+            let present = !entries.is_empty();
+            let x = row_header + column_index as f64 * cell_size;
             let mut cell_group = Element::new("g")
                 .attr("class", "grid-relationship-matrix-cell")
-                .attr("data-row-id", row_id)
-                .attr("data-col-id", col_id)
+                .attr("data-row-id", row.id.clone())
+                .attr("data-col-id", column.id.clone())
                 .child(
                     Element::new("rect")
                         .attr_f("x", x)
@@ -344,13 +443,21 @@ fn render_relationship_matrix(
                         .style("stroke-width", "1px"),
                 );
             if present {
+                let edges: Vec<&str> = entries
+                    .iter()
+                    .map(|(_, edge)| edge.as_str())
+                    .filter(|edge| !edge.is_empty())
+                    .collect();
+                if !edges.is_empty() {
+                    cell_group = cell_group.attr("data-edge-ids", edges.join(" "));
+                }
                 let dot_spacing = 10.0;
-                let dots_width = (labels.len().saturating_sub(1)) as f64 * dot_spacing;
+                let dots_width = (entries.len().saturating_sub(1)) as f64 * dot_spacing;
                 let start_x = x + (cell_size - 2.0) / 2.0 - dots_width / 2.0;
-                for label_index in 0..labels.len() {
+                for index in 0..entries.len() {
                     cell_group = cell_group.child(
                         Element::new("text")
-                            .attr_f("x", start_x + label_index as f64 * dot_spacing)
+                            .attr_f("x", start_x + index as f64 * dot_spacing)
                             .attr_f("y", y + (cell_size - 2.0) / 2.0 + 4.0)
                             .attr("text-anchor", "middle")
                             .style("font-size", "12px")
@@ -359,15 +466,31 @@ fn render_relationship_matrix(
                             .text("●"),
                     );
                 }
-                cell_group = cell_group.child(Element::new("title").text(labels.join(", ")));
+                let tooltip = entries
+                    .iter()
+                    .map(|(kind, _)| matrix_kind_keyword(kind))
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                cell_group = cell_group.child(
+                    Element::new("title")
+                        .text(format!("{} → {}: {tooltip}", row.label, column.label)),
+                );
             }
             layer = layer.child(cell_group);
         }
     }
     root = root.child(layer);
-    let width = header_size + col_ids.len() as f64 * cell_size + 40.0;
-    let height = header_size + row_ids.len() as f64 * cell_size + 40.0;
-    (root, (0.0, 0.0, left + width, top + height))
+    // The last column's name, written upwards at 45°, reaches beyond the last cell.
+    let overhang = columns.last().map_or(0.0, |column| {
+        label_width(column) * std::f64::consts::FRAC_1_SQRT_2
+    });
+    let width = row_header + columns.len() as f64 * cell_size + overhang + 40.0;
+    let height = column_header + rows.len() as f64 * cell_size + 40.0;
+    let legend_width = 300.0;
+    (
+        root,
+        (0.0, 0.0, left + width.max(legend_width), top + height),
+    )
 }
 
 pub fn render_geometry_view(

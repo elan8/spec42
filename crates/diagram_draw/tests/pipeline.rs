@@ -472,7 +472,7 @@ fn interconnection_golden_payload() -> serde_json::Value {
 
 fn schema6_sequence_payload() -> serde_json::Value {
     json!({
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -653,7 +653,7 @@ fn schema6_state_transition_payload(
     transitions: Vec<serde_json::Value>,
 ) -> serde_json::Value {
     json!({
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -1100,7 +1100,7 @@ fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
 
     let payload = json!({
-        "schemaVersion": 6,
+        "schemaVersion": 7,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -1479,4 +1479,40 @@ fn general_edge_labels_keep_clear_of_nodes_and_each_other() {
         }
     }
     assert!(!overlaps(boxes[0], boxes[1]), "labels overlap: {boxes:?}");
+}
+
+#[test]
+fn a_grid_view_draws_its_relationship_matrix() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_grid_relationship_matrix.md"
+    ));
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw grid view");
+    let tree = diagram_draw::xml::parse(&svg);
+    let names = |class: &str| {
+        let mut found = Vec::new();
+        with_class(&tree, class, &mut found);
+        found
+            .iter()
+            .map(|node| node.text.clone())
+            .collect::<Vec<_>>()
+    };
+    // SysML v2 9.2.20.2.5: rows are the source ends, columns the target ends, in declaration
+    // order; an exposed element without a relationship to another exposed element is neither.
+    assert_eq!(
+        names("grid-relationship-matrix-row"),
+        ["register", "dispatch", "report"]
+    );
+    assert_eq!(
+        names("grid-relationship-matrix-column"),
+        ["controller", "panel"]
+    );
+    let mut cells = Vec::new();
+    with_class(&tree, "grid-relationship-matrix-cell", &mut cells);
+    assert_eq!(cells.len(), 6);
+    // A cell holding a relationship names the edge it draws.
+    let filled = cells
+        .iter()
+        .filter(|cell| cell.attrs.contains_key("data-edge-ids"))
+        .count();
+    assert_eq!(filled, 4, "{svg}");
 }

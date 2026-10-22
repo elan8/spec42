@@ -950,7 +950,7 @@ package Links {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:c4d40bfab232d353f07152d874c367c9ab1ca99e93bd526f13db5b7526d3705b",
   "documents": [
     {

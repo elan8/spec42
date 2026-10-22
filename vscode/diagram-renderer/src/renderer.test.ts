@@ -95,7 +95,7 @@ describe("shared renderer", () => {
       {
         theme: LIGHT_THEME,
         productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-        product: { schemaVersion: 6 },
+        product: { schemaVersion: 7 },
         requestDraw,
         onNodeClick,
       },
@@ -118,6 +118,35 @@ describe("shared renderer", () => {
     expect(target.innerHTML).toBe("");
   });
 
+  it("asks the host to load an unloaded browser branch instead of toggling it locally", async () => {
+    const browserSvg = `<svg class="sysml-viz-svg" width="100%" height="100%" viewBox="0 0 200 100" role="img">
+  <g class="viz-root"><g class="browser-view-rows">
+    <g class="browser-row" data-node-id="n:3">
+      <g class="browser-toggle general-node-toggle sysml-disclosure" data-browser-load="3:element/zeta" role="button" tabindex="0" aria-expanded="false"></g>
+    </g>
+  </g></g>
+</svg>`;
+    const target = host();
+    const requestDraw = vi.fn<RequestServerDraw>(async () => browserSvg);
+    const loadBranch = vi.fn();
+    const controller = await renderVisualization(
+      target,
+      { title: "Browse", view: "browser-view", nodes: [{ id: "n:3", label: "zeta", kind: "part" }], edges: [] },
+      {
+        theme: LIGHT_THEME,
+        productIdentity: { modelDigest: "blake3:test", viewHandle: "browse" },
+        product: { schemaVersion: 7 },
+        requestDraw,
+        loadBranch,
+      },
+    );
+    target.querySelector(".browser-toggle")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(loadBranch).toHaveBeenCalledWith("3:element/zeta");
+    // Loading is the host's job: no local redraw with a toggled disclosure.
+    expect(requestDraw).toHaveBeenCalledTimes(1);
+    controller.destroy();
+  });
+
     it("keeps the last SVG when a later draw request is declined", async () => {
       const target = host();
       const requestDraw = vi.fn<RequestServerDraw>()
@@ -129,7 +158,7 @@ describe("shared renderer", () => {
         {
           theme: LIGHT_THEME,
           productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-          product: { schemaVersion: 6 },
+          product: { schemaVersion: 7 },
           requestDraw,
         },
       );
@@ -144,7 +173,7 @@ describe("shared renderer", () => {
       const options = {
         theme: LIGHT_THEME,
         productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-        product: { schemaVersion: 6 },
+        product: { schemaVersion: 7 },
         requestDraw,
       };
       const prepared = {
@@ -183,7 +212,7 @@ describe("shared renderer", () => {
           theme: LIGHT_THEME,
           productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
           abortSignal: abort.signal,
-          product: { schemaVersion: 6 },
+          product: { schemaVersion: 7 },
           requestDraw,
         },
       );

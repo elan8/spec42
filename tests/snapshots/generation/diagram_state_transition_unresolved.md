@@ -128,7 +128,7 @@ package StateNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:bf665820593925526286414422b3d09f653c975ac22d48234ba75d84da7b6a28",
   "documents": [
     {

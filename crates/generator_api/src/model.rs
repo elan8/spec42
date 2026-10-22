@@ -4,16 +4,16 @@ use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{
-    DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
-    DiagramEdgeKind, DiagramElement, DiagramEndpointOccurrence, DiagramIncompleteReason,
-    DiagramNotationRole, DiagramOccurrenceIdentity, DiagramRelationship,
-    DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
-    DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata, DiagramViewProjection,
-    DiagramViewSummary, ElementIdentity, ProjectionCompleteness, ProjectionFeature,
-    SequenceEndpoint, SequenceMessage, SequenceOrder, SequenceScene, SourceReference,
-    StateMachineIdentity, StateMachineSummary, StateTransitionEdge, StateTransitionNode,
-    StateTransitionNodeKind, StateTransitionScene, StateTransitionViewProjection,
-    StateTransitionViewSummary, TransitionTrigger,
+    DiagramBrowserMembers, DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind,
+    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership, DiagramNotationRole,
+    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
+    DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+    ElementIdentity, ProjectionCompleteness, ProjectionFeature, SequenceEndpoint, SequenceMessage,
+    SequenceOrder, SequenceScene, SourceReference, StateMachineIdentity, StateMachineSummary,
+    StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
+    StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
 };
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
@@ -841,6 +841,17 @@ impl GeneratorModelView {
     }
 
     pub fn diagram_view(&self, handle: &str) -> Result<DiagramViewProjection, ModelQueryError> {
+        self.diagram_view_expanding(handle, &[])
+    }
+
+    /// The projection of the catalog view `handle`, with the browser branches whose row keys are
+    /// in `expanded` loaded (keys as an earlier projection of the view published them). A browser
+    /// otherwise loads its exposed roots and their members only. Other view kinds ignore it.
+    pub fn diagram_view_expanding(
+        &self,
+        handle: &str,
+        expanded: &[String],
+    ) -> Result<DiagramViewProjection, ModelQueryError> {
         let identity = self.resolve_handle(handle)?;
         let kind = self
             .diagram_handle_kinds
@@ -848,15 +859,15 @@ impl GeneratorModelView {
             .expect("generator handle index poisoned")
             .get(handle)
             .copied();
+        let is_expanded = |key: &str| expanded.iter().any(|expanded| expanded == key);
         // A catalog handle projects its catalogued kind; any other view handle (a state-transition
         // view's, an element's) projects the view's first kind.
-        let projection = match kind {
-            Some(kind) => outcome(
-                self.model.diagrams().view_of_kind(identity, kind),
-                "diagram view",
-            )?,
-            None => outcome(self.model.diagrams().view(identity), "diagram view")?,
-        };
+        let projection = outcome(
+            self.model
+                .diagrams()
+                .view_expanding(identity, kind, &is_expanded),
+            "diagram view",
+        )?;
         let view = DiagramViewSummary {
             handle: handle.to_owned(),
             reference: self.diagram_reference(projection.view.semantic_id)?,
@@ -1312,7 +1323,45 @@ impl GeneratorModelView {
                 })
             }
         };
-        let metadata = diagram_metadata(view.kind, &roots, &elements, &relationships, &scene);
+        let browser_rows = projection
+            .elements
+            .iter()
+            .filter_map(|element| element.browser_row.map(|row| (element, row)))
+            .map(|(element, row)| {
+                Ok(DiagramBrowserRow {
+                    occurrence: self.diagram_occurrence(&element.occurrence_id)?,
+                    key: element.occurrence_id.stable_key().to_owned(),
+                    membership: match row.membership {
+                        sysml_query::resolved_slice::DiagramMembership::Owned => {
+                            DiagramMembership::Owned
+                        }
+                        sysml_query::resolved_slice::DiagramMembership::Inherited => {
+                            DiagramMembership::Inherited
+                        }
+                    },
+                    members: match row.members {
+                        sysml_query::resolved_slice::DiagramBrowserMembers::None => {
+                            DiagramBrowserMembers::None
+                        }
+                        sysml_query::resolved_slice::DiagramBrowserMembers::Loaded => {
+                            DiagramBrowserMembers::Loaded
+                        }
+                        sysml_query::resolved_slice::DiagramBrowserMembers::Unloaded => {
+                            DiagramBrowserMembers::Unloaded
+                        }
+                    },
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        let metadata = diagram_metadata(
+            view.kind,
+            &roots,
+            &elements,
+            &relationships,
+            &edges,
+            &scene,
+            browser_rows,
+        );
         Ok(DiagramViewProjection {
             schema_version: 1,
             model_digest: self.model_digest.clone(),
@@ -1990,7 +2039,9 @@ fn diagram_metadata(
     roots: &[DiagramOccurrenceIdentity],
     elements: &[DiagramElement],
     relationships: &[DiagramRelationship],
+    edges: &[DiagramEdge],
     scene: &DiagramScene,
+    browser_rows: Vec<DiagramBrowserRow>,
 ) -> DiagramViewMetadata {
     let ids = |classes: &[Metaclass]| {
         elements
@@ -2078,22 +2129,17 @@ fn diagram_metadata(
                 _ => Vec::new(),
             },
         },
+        // The roots in element order, which a browser projection gives in declaration order.
         DiagramViewKind::BrowserView => DiagramViewMetadata::Browser {
-            roots: roots.to_vec(),
-        },
-        DiagramViewKind::GridView => DiagramViewMetadata::Grid {
-            rows: elements
+            roots: elements
                 .iter()
-                .map(|element| element.occurrence.clone())
+                .map(|element| &element.occurrence)
+                .filter(|occurrence| roots.contains(occurrence))
+                .cloned()
                 .collect(),
-            columns: relationships
-                .iter()
-                .map(|relationship| relationship.kind.clone())
-                .collect::<std::collections::BTreeSet<_>>()
-                .into_iter()
-                .collect(),
-            cells: Vec::new(),
+            rows: browser_rows,
         },
+        DiagramViewKind::GridView => grid_metadata(roots, elements, edges),
         DiagramViewKind::GeometryView => DiagramViewMetadata::Geometry {
             elements: elements
                 .iter()
@@ -2101,6 +2147,80 @@ fn diagram_metadata(
                 .collect(),
             primitives: Vec::new(),
         },
+    }
+}
+
+/// A Grid View as a relationship matrix (SysML v2 9.2.20.2.5): the exposed elements at the
+/// source ends of the relationships between exposed elements are its rows, those at the target
+/// ends its columns, and each relationship a cell. An exposed element without such a
+/// relationship is in neither. Where no relationship joins two exposed elements, the grid is a
+/// table with one row for each exposed element. Rows and columns are in declaration order.
+fn grid_metadata(
+    roots: &[DiagramOccurrenceIdentity],
+    elements: &[DiagramElement],
+    edges: &[DiagramEdge],
+) -> DiagramViewMetadata {
+    use spec42_generator_protocol::{DiagramGridCell, DiagramGridLayout};
+    let declared = |occurrence: &DiagramOccurrenceIdentity| {
+        elements
+            .iter()
+            .find(|element| &element.occurrence == occurrence)
+            .map(|element| {
+                let range = &element.source.range;
+                (
+                    element.source.uri.clone(),
+                    range.start_line,
+                    range.start_character,
+                )
+            })
+    };
+    let mut roots = roots.to_vec();
+    roots.sort_by_cached_key(|root| declared(root));
+    let roots = roots.as_slice();
+    let relationships = edges
+        .iter()
+        .filter(|edge| matches!(edge.kind, DiagramEdgeKind::Relationship(_)))
+        .filter(|edge| roots.contains(&edge.source_occurrence))
+        .filter(|edge| roots.contains(&edge.target_occurrence))
+        .collect::<Vec<_>>();
+    if relationships.is_empty() {
+        // The elements that declare a relationship are drawn as cells, never as rows.
+        let origins = edges
+            .iter()
+            .filter(|edge| matches!(edge.kind, DiagramEdgeKind::Relationship(_)))
+            .map(|edge| &edge.origin_occurrence)
+            .collect::<Vec<_>>();
+        return DiagramViewMetadata::Grid {
+            layout: DiagramGridLayout::ElementTable,
+            rows: roots
+                .iter()
+                .filter(|root| !origins.contains(root))
+                .cloned()
+                .collect(),
+            columns: Vec::new(),
+            cells: Vec::new(),
+        };
+    }
+    let along = |end: fn(&DiagramEdge) -> &DiagramOccurrenceIdentity| {
+        roots
+            .iter()
+            .filter(|root| relationships.iter().any(|edge| end(edge) == *root))
+            .cloned()
+            .collect::<Vec<_>>()
+    };
+    DiagramViewMetadata::Grid {
+        layout: DiagramGridLayout::RelationshipMatrix,
+        rows: along(|edge| &edge.source_occurrence),
+        columns: along(|edge| &edge.target_occurrence),
+        cells: relationships
+            .iter()
+            .map(|edge| DiagramGridCell {
+                row: edge.source_occurrence.clone(),
+                column: edge.target_occurrence.clone(),
+                origin: edge.origin_occurrence.clone(),
+                kind: edge.kind.clone(),
+            })
+            .collect(),
     }
 }
 

@@ -1158,7 +1158,7 @@ package Lamp {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:7ce8992951b50841d11d014feaf71d4626abc4b41dd5e731182e41a9edb83ab1",
   "documents": [
     {

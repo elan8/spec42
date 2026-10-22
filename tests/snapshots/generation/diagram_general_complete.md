@@ -144,7 +144,7 @@ package GeneralExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:07618aff193c8731c4f81104f0ea5dd3e4c5c5f0dbc3fe5895473a9662fd562a",
   "documents": [
     {

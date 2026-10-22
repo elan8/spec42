@@ -113,7 +113,7 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:c8b06514870ac19b584a2174c04de0bab3b9fe4f6fcf93f3f4aa053b2c701dd3",
   "documents": [
     {
@@ -122,15 +122,6 @@ package M {
     }
   ],
   "sources": [
-    {
-      "document": 0,
-      "range": [
-        1,
-        4,
-        1,
-        15
-      ]
-    },
     {
       "document": 0,
       "range": [
@@ -160,56 +151,30 @@ package M {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "M::g"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "ConjugatedPortDefinition",
-      "ownerQualifiedName": "M::P",
-      "source": 0,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "containment",
-      "source": 0
     }
   ],
   "selectedView": {
     "reference": 1,
     "kind": "grid-view",
     "name": "g",
-    "source": 2
+    "source": 1
   },
   "completeness": {
     "status": "complete",
     "reasons": []
   },
   "projection": {
-    "edges": [
-      {
-        "kind": "containment",
-        "navigation": 0,
-        "origin": 1,
-        "provenance": "authored",
-        "reference": 3,
-        "source": 0,
-        "target": 1
-      }
-    ],
+    "edges": [],
     "exposedRoots": [
       0
     ],
     "kind": "grid-view",
     "metadata": {
       "cells": [],
-      "columns": [
-        "specializes",
-        "conjugation"
-      ],
+      "columns": [],
+      "layout": "element-table",
       "rows": [
-        0,
-        1
+        0
       ]
     },
     "nodes": [
@@ -223,23 +188,6 @@ package M {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "ConjugatedPortDefinition",
-        "name": "~P",
-        "notationRole": "definition",
-        "owner": 0,
-        "reference": 2,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,

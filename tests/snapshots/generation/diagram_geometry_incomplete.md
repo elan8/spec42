@@ -120,7 +120,7 @@ package GeometryExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "modelDigest": "blake3:195cf83a7bbac0159aa2eb43a42ab9124b05df610d462ee7fca2ddc68405082d",
   "documents": [
     {
