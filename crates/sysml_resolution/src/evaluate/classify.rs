@@ -72,7 +72,9 @@ pub(crate) fn classify_constraint_node(
             }
             Some(EvalNode::Sequence(children))
         }
-        Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
+        Expression::BodyExpr(body)
+            if body.value.parameters.is_empty() && body.value.members.is_empty() =>
+        {
             classify_constraint_node(parsed, &body.value.result.as_ref()?.value, ordinal)
         }
         Expression::Index { base, operands, .. } => {
@@ -137,7 +139,15 @@ pub(crate) fn classify_constraint_node(
             }
             Some(EvalNode::Invocation(children))
         }
-        Expression::CollectionOp { base, args, .. } => {
+        // Callback bodies are resolved in their own semantic scopes. Until the
+        // evaluator models higher-order application, do not classify a call as
+        // though the callback were absent.
+        Expression::CollectionOp {
+            base,
+            args,
+            brace_body: None,
+            ..
+        } => {
             let mut children = Vec::with_capacity(args.len() + 1);
             children.push(classify_constraint_node(parsed, &base.value, ordinal)?);
             for arg in args {
@@ -258,7 +268,9 @@ pub(crate) fn classify_calc_node(
             }
             Some(EvalNode::Sequence(children))
         }
-        Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
+        Expression::BodyExpr(body)
+            if body.value.parameters.is_empty() && body.value.members.is_empty() =>
+        {
             classify_calc_node(parsed, &body.value.result.as_ref()?.value, ordinal)
         }
         Expression::Index { base, operands, .. } => {
@@ -305,7 +317,15 @@ pub(crate) fn classify_calc_node(
             }
             Some(EvalNode::Invocation(children))
         }
-        Expression::CollectionOp { base, args, .. } => {
+        // Callback bodies are resolved in their own semantic scopes. Until the
+        // evaluator models higher-order application, do not classify a call as
+        // though the callback were absent.
+        Expression::CollectionOp {
+            base,
+            args,
+            brace_body: None,
+            ..
+        } => {
             let mut children = Vec::with_capacity(args.len() + 1);
             children.push(classify_calc_node(parsed, &base.value, ordinal)?);
             for arg in args {
