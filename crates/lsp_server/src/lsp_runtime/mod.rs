@@ -154,25 +154,55 @@ impl LanguageServer for Backend {
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
         let mut ordinary_changes = Vec::new();
+        let mut project_inputs_changed = false;
         for change in params.changes {
             if change
                 .uri
                 .to_file_path()
                 .ok()
-                .and_then(|path| path.file_name().map(|name| name == ".project.json"))
+                .and_then(|path| {
+                    path.file_name().map(|name| {
+                        name == sysml_query::source::PROJECT_MANIFEST_FILE
+                            || name == sysml_query::source::PROJECT_CONFIG_FILE
+                            || name == library_catalog::sysand::SYSAND_LOCK_FILE
+                            || name == library_catalog::sysand::SYSAND_ENV_FILE
+                    })
+                })
                 .unwrap_or(false)
             {
-                self.projects.rediscover().await;
-                documents::initialized(
-                    &self.client,
-                    &self.projects,
-                    &self.server_name,
-                    &self.runtime_config,
-                )
-                .await;
+                project_inputs_changed = true;
                 continue;
             }
             ordinary_changes.push(change);
+        }
+        if project_inputs_changed {
+            let previous_workspace_uris = self
+                .projects
+                .handles()
+                .iter()
+                .flat_map(|handle| {
+                    handle
+                        .snapshot()
+                        .index
+                        .iter()
+                        .filter(|(_, entry)| !entry.document.kind().is_library())
+                        .map(|(uri, _)| uri.clone())
+                        .collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>();
+            self.projects.rediscover().await;
+            for uri in previous_workspace_uris {
+                if self.projects.existing_handle_for_uri(&uri).is_none() {
+                    self.client.publish_diagnostics(uri, Vec::new(), None).await;
+                }
+            }
+            documents::initialized(
+                &self.client,
+                &self.projects,
+                &self.server_name,
+                &self.runtime_config,
+            )
+            .await;
         }
         self.publish_grouped_file_events(ordinary_changes).await;
     }

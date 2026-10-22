@@ -9,6 +9,9 @@
 //! The crate knows nothing about SysML grammar. Its single dependant is the semantic authority,
 //! which re-exports these types for the query facade.
 
+mod project_scope;
+pub use project_scope::{workspace_source_selected, ProjectSourceScope, PROJECT_CONFIG_FILE};
+
 use std::fmt;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -18,6 +21,28 @@ use std::path::{Path, PathBuf};
 /// This is a source-boundary convention, not a parsed KPAR contract: source discovery only needs
 /// to know whether the marker exists. KPAR remains the authority for its schema and contents.
 pub const PROJECT_MANIFEST_FILE: &str = ".project.json";
+
+/// Nearest explicitly marked project for a batch target without a host-supplied ceiling.
+/// Editor hosts continue to use `discover_project_boundary` with their workspace ceiling.
+pub fn discover_enclosing_project_root(source: &Path) -> Option<PathBuf> {
+    let source = canonicalize_or_self(source);
+    let directory = if source.is_dir() {
+        source.as_path()
+    } else {
+        source.parent()?
+    };
+    for directory in directory.ancestors() {
+        if directory.join(PROJECT_MANIFEST_FILE).is_file()
+            || directory.join(PROJECT_CONFIG_FILE).is_file()
+        {
+            return Some(directory.to_path_buf());
+        }
+        if directory.join(".git").exists() || directory.join("sysand-lock.toml").is_file() {
+            break;
+        }
+    }
+    None
+}
 
 /// The filesystem boundary owning a source file.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -80,9 +105,18 @@ pub fn discover_project_roots(ceilings: &[PathBuf]) -> Vec<PathBuf> {
     let mut roots = Vec::new();
     for ceiling in ceilings {
         let mut builder = ignore::WalkBuilder::new(ceiling);
+        let environment = ProjectSourceScope::load(ceiling)
+            .ok()
+            .map(|scope| canonicalize_or_self(scope.sysand_dir()));
         // `.project.json` is intentionally hidden by name, so hidden-file suppression must be
         // disabled while gitignore and explicit ignore rules remain authoritative.
         builder.follow_links(false).require_git(false).hidden(false);
+        builder.filter_entry(move |entry| {
+            entry.file_name() != ".sysand"
+                && environment
+                    .as_ref()
+                    .is_none_or(|root| !canonicalize_or_self(entry.path()).starts_with(root))
+        });
         roots.extend(
             builder
                 .build()
@@ -98,6 +132,17 @@ pub fn discover_project_roots(ceilings: &[PathBuf]) -> Vec<PathBuf> {
     }
     roots.sort();
     roots.dedup();
+    // A nested project's custom environment must not become an editor-owned project either.
+    let environments = roots
+        .iter()
+        .filter_map(|root| ProjectSourceScope::load(root).ok())
+        .map(|scope| canonicalize_or_self(scope.sysand_dir()))
+        .collect::<Vec<_>>();
+    roots.retain(|root| {
+        !environments
+            .iter()
+            .any(|environment| root.starts_with(environment))
+    });
     roots
 }
 
@@ -546,12 +591,19 @@ impl SourceProvider for FilesystemProvider {
                 continue;
             }
             report.roots_scanned += 1;
+            let scope = self
+                .respect_project_boundary
+                .then(|| ProjectSourceScope::load(&root))
+                .transpose()?;
             let mut admitted_here = 0usize;
             for path in self.walk(&root) {
                 if self.respect_project_boundary
                     && discover_project_boundary(&path, &root)
                         .is_some_and(|boundary| boundary.project_root() != root)
                 {
+                    continue;
+                }
+                if scope.as_ref().is_some_and(|scope| !scope.includes(&path)) {
                     continue;
                 }
                 report.candidate_files += 1;

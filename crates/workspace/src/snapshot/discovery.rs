@@ -22,13 +22,16 @@ pub fn resolve_workspace_root(
     let first = normalize_existing_path(first)?;
     let ceiling = match workspace_root {
         Some(root) => normalize_existing_path(root)?,
-        None if first.is_dir() => first.clone(),
-        None => first.parent().map(Path::to_path_buf).ok_or_else(|| {
-            WorkspaceError::unresolved_library_environment(format!(
-                "Could not infer a workspace root from target file {}.",
-                first.display()
-            ))
-        })?,
+        None => match sysml_query::source::discover_enclosing_project_root(&first) {
+            Some(root) => root,
+            None if first.is_dir() => first.clone(),
+            None => first.parent().map(Path::to_path_buf).ok_or_else(|| {
+                WorkspaceError::unresolved_library_environment(format!(
+                    "Could not infer a workspace root from target file {}.",
+                    first.display()
+                ))
+            })?,
+        },
     };
     let boundary =
         sysml_query::source::discover_project_boundary(&first, &ceiling).ok_or_else(|| {

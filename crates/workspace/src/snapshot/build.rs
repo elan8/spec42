@@ -157,6 +157,53 @@ pub(crate) fn build_workspace_snapshot(
         Err(error) => return Err(map_provider_error(error)),
         Ok(documents) => documents,
     };
+    // The provider knows host-configured roots. Per-project installed roots are admitted here,
+    // after the same manifest/lock validation used by the editor registry.
+    if admission.selected_candidate_roots.iter().any(|root| {
+        !catalog.package_roots.iter().any(|configured| {
+            configured
+                .canonicalize()
+                .unwrap_or_else(|_| configured.clone())
+                == *root
+        })
+    }) {
+        let workspace = documents
+            .iter()
+            .filter(|document| !document.kind().is_library())
+            .map(|document| engine.services().syntax.parse(document))
+            .collect::<Vec<_>>();
+        let roots = admission
+            .library_roots
+            .iter()
+            .map(|path| sysml_query::library::LibraryRoot {
+                path: path.clone(),
+                kind: if admission.standard_library_roots.contains(path) {
+                    sysml_query::source::SourceKind::StandardLibrary
+                } else {
+                    sysml_query::source::SourceKind::Library
+                },
+            })
+            .collect::<Vec<_>>();
+        let closure = engine
+            .services()
+            .library
+            .resolve(&workspace, &roots, &Default::default())
+            .map_err(map_provider_error)?;
+        for document in closure.documents {
+            if let Some(existing) = documents
+                .iter()
+                .find(|existing| existing.uri() == document.uri())
+            {
+                if existing.digest() != document.digest() {
+                    return Err(WorkspaceError::unresolved_library_environment(
+                        "Dependency changed while the project was loading",
+                    ));
+                }
+            } else {
+                documents.push(document);
+            }
+        }
+    }
     if admission.manifest_present {
         documents.retain(|document| {
             if !document.kind().is_library() {
