@@ -1592,7 +1592,15 @@ pub(crate) fn synthesize_feature_chain_expression_result_specializations(
     let mut implied = Vec::new();
     let mut projections = Vec::new();
     let mut status = FeatureChainExpressionSpecializationStatus::Complete;
-    let operands = reference_indices_by_source(storage, ReferenceKind::MemberAccessOperand);
+    let mut operands = reference_indices_by_source(storage, ReferenceKind::MemberAccessOperand);
+    // FeatureChainRef is the parser's compact dotted-reference form. Its existing operand
+    // reference carries the same authored chain and settled endpoint as MemberAccessOperand;
+    // consume that owned fact rather than requiring a second reference with another role.
+    for (index, reference) in storage.references.iter().enumerate() {
+        if reference.kind == ReferenceKind::ExpressionOperand && reference.flags.dotted {
+            operands.entry(reference.source).or_default().push(index);
+        }
+    }
     for chain in storage.feature_chain_expressions.iter() {
         implied.extend([
             ImpliedRelationship {
@@ -2333,6 +2341,11 @@ pub(crate) fn synthesize_operator_expression_result_specializations(
         .any(|record| record.kind == crate::lower::facts::OperatorExpressionKind::Index);
     let array =
         has_index.then(|| resolve_library_specialization_anchor(storage, "Collections::Array"));
+    let specializations = if has_index {
+        Some(SettledSpecializationGraph::new(storage, resolution)?)
+    } else {
+        None
+    };
     let mut implied = Vec::new();
     let mut select_status = ExpressionArgumentProjectionStatus::Complete;
     let mut index_status = ExpressionArgumentProjectionStatus::Complete;
@@ -2358,7 +2371,11 @@ pub(crate) fn synthesize_operator_expression_result_specializations(
         if operator.kind == crate::lower::facts::OperatorExpressionKind::Index {
             match array.as_ref() {
                 Some(LibrarySpecializationAnchor::Resolved(array)) => {
-                    match settled_specializes(storage, resolution, argument.result, *array)? {
+                    match specializations
+                        .as_ref()
+                        .ok_or(ResolutionError::InvalidStorage)?
+                        .specializes(argument.result, *array)?
+                    {
                         SettledSpecialization::Conforms => continue,
                         SettledSpecialization::DoesNotConform => {}
                         SettledSpecialization::Unresolved => {
@@ -2396,60 +2413,90 @@ enum SettledSpecialization {
     Unresolved,
 }
 
-fn settled_specializes(
-    storage: &SemanticModelStorage,
-    resolution: &ResolutionResults,
-    specific: DeclarationId,
-    general: DeclarationId,
-) -> Result<SettledSpecialization, ResolutionError> {
-    let mut pending = vec![specific];
-    let mut visited = std::collections::BTreeSet::new();
-    let mut unresolved = false;
-    while let Some(current) = pending.pop() {
-        if current == general {
-            return Ok(SettledSpecialization::Conforms);
-        }
-        if !visited.insert(current) {
-            continue;
-        }
+/// A publication-local adjacency index over the settled facts consumed by this synthesis.
+/// Build once per derivation, rather than rescanning all references at every reachable node.
+struct SettledSpecializationGraph {
+    parents: Vec<Vec<DeclarationId>>,
+    unresolved: Vec<bool>,
+}
+
+impl SettledSpecializationGraph {
+    fn new(
+        storage: &SemanticModelStorage,
+        resolution: &ResolutionResults,
+    ) -> Result<Self, ResolutionError> {
+        let mut parents = vec![Vec::new(); storage.declarations.len()];
+        let mut unresolved = vec![false; storage.declarations.len()];
         for (index, reference) in storage.references.iter().enumerate() {
-            if reference.source != current
-                || !matches!(
-                    reference.kind,
-                    ReferenceKind::Subclassification
-                        | ReferenceKind::Subsetting
-                        | ReferenceKind::Redefinition
-                        | ReferenceKind::FeatureTyping
-                )
-            {
+            if !matches!(
+                reference.kind,
+                ReferenceKind::Subclassification
+                    | ReferenceKind::Subsetting
+                    | ReferenceKind::Redefinition
+                    | ReferenceKind::FeatureTyping
+            ) {
                 continue;
             }
             let id =
                 AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
             match resolution.outcome(id) {
-                Some(ResolutionStatus::Resolved(target)) => pending.push(target),
-                Some(
-                    ResolutionStatus::Unresolved
-                    | ResolutionStatus::Ambiguous(_)
-                    | ResolutionStatus::Unsupported
-                    | ResolutionStatus::NonConverged,
-                )
-                | None => unresolved = true,
+                Some(ResolutionStatus::Resolved(target)) => parents
+                    .get_mut(reference.source.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .push(target),
+                _ => {
+                    *unresolved
+                        .get_mut(reference.source.index())
+                        .ok_or(ResolutionError::InvalidStorage)? = true
+                }
             }
         }
-        pending.extend(
-            resolution
-                .implied_relationships
-                .iter()
-                .filter(|edge| edge.source == current)
-                .map(|edge| edge.target),
-        );
+        for edge in resolution.implied_relationships.iter() {
+            parents
+                .get_mut(edge.source.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(edge.target);
+        }
+        Ok(Self {
+            parents,
+            unresolved,
+        })
     }
-    Ok(if unresolved {
-        SettledSpecialization::Unresolved
-    } else {
-        SettledSpecialization::DoesNotConform
-    })
+
+    fn specializes(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+    ) -> Result<SettledSpecialization, ResolutionError> {
+        let mut pending = vec![specific];
+        let mut visited = std::collections::BTreeSet::new();
+        let mut unresolved = false;
+        while let Some(current) = pending.pop() {
+            if current == general {
+                return Ok(SettledSpecialization::Conforms);
+            }
+            if !visited.insert(current) {
+                continue;
+            }
+            unresolved |= self
+                .unresolved
+                .get(current.index())
+                .copied()
+                .ok_or(ResolutionError::InvalidStorage)?;
+            pending.extend(
+                self.parents
+                    .get(current.index())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .iter()
+                    .copied(),
+            );
+        }
+        Ok(if unresolved {
+            SettledSpecialization::Unresolved
+        } else {
+            SettledSpecialization::DoesNotConform
+        })
+    }
 }
 
 pub(crate) fn synthesize_semantic_metadata_specializations(
@@ -2506,6 +2553,7 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
         .iter()
         .filter(|candidate| base_type_redefinitions.contains(&candidate.declaration))
         .collect::<Vec<_>>();
+    let specializations = SettledSpecializationGraph::new(storage, resolution)?;
     let mut projections = Vec::new();
     let mut implied = Vec::new();
     let mut status = SemanticMetadataProjectionStatus::Complete;
@@ -2537,7 +2585,7 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
             status = SemanticMetadataProjectionStatus::Unresolved;
             continue;
         };
-        match settled_specializes(storage, resolution, metadata_type, semantic_metadata)? {
+        match specializations.specializes(metadata_type, semantic_metadata)? {
             SettledSpecialization::Conforms => {}
             SettledSpecialization::DoesNotConform => continue,
             SettledSpecialization::Unresolved => {
@@ -2554,7 +2602,7 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
                 continue;
             };
             if matches!(
-                settled_specializes(storage, resolution, metadata_type, owner)?,
+                specializations.specializes(metadata_type, owner)?,
                 SettledSpecialization::Conforms
             ) {
                 value = Some(candidate);
@@ -3738,4 +3786,34 @@ pub(crate) fn library_rule_metaclass(kind: DeclarationKind) -> &'static str {
         DeclarationKind::CalcUsage => "CalculationUsage",
         _ => element_kind::element_kind(kind).as_str(),
     }
+}
+
+/// Feed the canonical expression-result derivations into name resolution when a member
+/// lookup starts from an owned expression result. These are the same derivation owners
+/// used at final settlement; iteration changes prerequisites, never their meaning.
+pub(crate) fn synthesize_access_expression_result_relationships(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
+    let mut relationships =
+        synthesize_feature_reference_expression_result_specializations(storage, resolution)?
+            .implied_relationships
+            .into_vec();
+    relationships.extend(
+        synthesize_feature_chain_expression_result_specializations(storage, resolution)?
+            .implied_relationships,
+    );
+    relationships.extend(
+        synthesize_operator_expression_result_specializations(storage, resolution)?
+            .implied_relationships,
+    );
+    relationships.sort_by_key(|relationship| {
+        (
+            relationship.kind,
+            relationship.source.0,
+            relationship.target.0,
+        )
+    });
+    relationships.dedup();
+    Ok(relationships)
 }

@@ -64,7 +64,7 @@ package CollectionBodyErrors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:0215c47ea05f3b5e5b4f94125d4cbd9bf015caa312fcae4c37b57c65db958cdf") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0215c47ea05f3b5e5b4f94125d4cbd9bf015caa312fcae4c37b57c65db958cdf") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/collection_expression_body_errors.md") (qualified-name "CollectionBodyErrors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/collection_expression_body_errors.md") (path (named (kind package) (name "CollectionBodyErrors")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

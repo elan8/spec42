@@ -101,6 +101,8 @@ pub(crate) struct ResolutionStartingState<'a> {
     /// The canonical owned end collection, sorted by owner, whose positions the provisional
     /// positional end redefinitions pair.
     pub owned_end_features: &'a [OwnedEndRecord],
+    /// Canonical last-chaining-feature typing dependencies, not specialization edges.
+    pub feature_type_dependencies: &'a [(DeclarationId, DeclarationId)],
 }
 
 /// The settled direct specialization edges `(specific, general)` over resolved `references` and
@@ -235,6 +237,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         settled_outcomes: seed,
         shadowed_library_roots,
         owned_end_features,
+        feature_type_dependencies,
     } = starting_state;
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
@@ -950,6 +953,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 references,
                 &outcomes,
                 &pass_provisional_relationships,
+                feature_type_dependencies,
             )?;
             let alias_scope_changed = |source: DeclarationId| -> Result<bool, ResolutionError> {
                 let Some(previous) = settled_specialization_closures.as_ref() else {
@@ -1602,9 +1606,15 @@ fn build_ancestor_closures_with_implied<R: ResolutionReferenceFact>(
     outcomes: &[ResolutionStatus],
     implied: &[ImpliedRelationship],
 ) -> Result<AncestorClosures, ResolutionError> {
-    build_ancestor_closures_for(declarations, references, outcomes, implied, false, |kind| {
-        kind == ReferenceKind::Subclassification
-    })
+    build_ancestor_closures_for(
+        declarations,
+        references,
+        outcomes,
+        implied,
+        &[],
+        false,
+        |kind| kind == ReferenceKind::Subclassification,
+    )
 }
 
 /// Computes the full Type-generalization closure used by inherited-membership lookup after all
@@ -1630,20 +1640,29 @@ fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
     references: &[R],
     outcomes: &[ResolutionStatus],
     implied: &[ImpliedRelationship],
+    feature_type_dependencies: &[(DeclarationId, DeclarationId)],
 ) -> Result<AncestorClosures, ResolutionError> {
-    build_ancestor_closures_for(declarations, references, outcomes, implied, true, |kind| {
-        matches!(
-            kind,
-            ReferenceKind::Subclassification
-                | ReferenceKind::FeatureTyping
-                | ReferenceKind::Subsetting
-                | ReferenceKind::Redefinition
-                | ReferenceKind::References
-                | ReferenceKind::Crosses
-                | ReferenceKind::MetadataAnnotation
-                | ReferenceKind::Conjugation
-        )
-    })
+    build_ancestor_closures_for(
+        declarations,
+        references,
+        outcomes,
+        implied,
+        feature_type_dependencies,
+        true,
+        |kind| {
+            matches!(
+                kind,
+                ReferenceKind::Subclassification
+                    | ReferenceKind::FeatureTyping
+                    | ReferenceKind::Subsetting
+                    | ReferenceKind::Redefinition
+                    | ReferenceKind::References
+                    | ReferenceKind::Crosses
+                    | ReferenceKind::MetadataAnnotation
+                    | ReferenceKind::Conjugation
+            )
+        },
+    )
 }
 
 /// Subclassification plus conjugation, the two edges that contribute owned members to a type
@@ -1654,12 +1673,20 @@ fn build_member_inheritance_closures<R: ResolutionReferenceFact>(
     outcomes: &[ResolutionStatus],
     implied: &[ImpliedRelationship],
 ) -> Result<AncestorClosures, ResolutionError> {
-    build_ancestor_closures_for(declarations, references, outcomes, implied, false, |kind| {
-        matches!(
-            kind,
-            ReferenceKind::Subclassification | ReferenceKind::Conjugation
-        )
-    })
+    build_ancestor_closures_for(
+        declarations,
+        references,
+        outcomes,
+        implied,
+        &[],
+        false,
+        |kind| {
+            matches!(
+                kind,
+                ReferenceKind::Subclassification | ReferenceKind::Conjugation
+            )
+        },
+    )
 }
 
 fn reference_target_domain(kind: ReferenceKind) -> DeclarationDomain {
@@ -1677,6 +1704,7 @@ fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
     references: &[R],
     outcomes: &[ResolutionStatus],
     implied: &[ImpliedRelationship],
+    feature_type_dependencies: &[(DeclarationId, DeclarationId)],
     expand_alias_targets: bool,
     includes: impl Fn(ReferenceKind) -> bool,
 ) -> Result<AncestorClosures, ResolutionError> {
@@ -1747,6 +1775,16 @@ fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
             return Err(ResolutionError::InvalidStorage);
         }
         slot.insert(relationship.target);
+    }
+
+    // A chain's effective types include its final chaining feature's types. These lookup
+    // bridges use the canonical dependency owner, like alias transparency above; they never
+    // become published specialization relationships or participate in subclass cycle checks.
+    for (source, target) in feature_type_dependencies {
+        direct_parents
+            .get_mut(source.index())
+            .ok_or(ResolutionError::InvalidStorage)?
+            .insert(*target);
     }
 
     let mut dependants = vec![Vec::new(); declarations.len()];
@@ -2642,7 +2680,7 @@ pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFa
     // A root narrowing replaces the lexical lookup of a first segment: every segment is then a
     // member of the narrowing target.
     let first_member_segment = if let Some(root) = root_narrowing(reference) {
-        match outcomes.get(root.target.index()) {
+        match member_access_target_outcome(root.target, outcomes).as_ref() {
             Some(ResolutionStatus::Resolved(target)) => scratch.candidates.push(*target),
             Some(ResolutionStatus::Ambiguous(range)) => {
                 return Ok(ResolutionStatus::Ambiguous(*range));
@@ -2738,7 +2776,7 @@ pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFa
             })
         {
             scratch.candidates.clear();
-            match outcomes.get(narrowing.target.index()) {
+            match member_access_target_outcome(narrowing.target, outcomes).as_ref() {
                 Some(ResolutionStatus::Resolved(target)) => scratch.candidates.push(*target),
                 Some(ResolutionStatus::Ambiguous(range)) => {
                     return Ok(ResolutionStatus::Ambiguous(*range));
@@ -2827,6 +2865,23 @@ pub(crate) fn root_narrowing<R: ResolutionReferenceFact>(
     reference
         .member_access_narrowings()
         .iter()
-        .find(|narrowing| narrowing.segment_count == 0)
+        .rfind(|narrowing| narrowing.segment_count == 0)
         .copied()
+}
+
+/// A cast/callee depends on a reference outcome; an expression primary argument supplies
+/// its owned result Feature. Its effective members are derived from settled result typing,
+/// never from a spelling or an unindexed substitute for the argument.
+fn member_access_target_outcome(
+    target: crate::lower::facts::MemberAccessTarget,
+    outcomes: &[ResolutionStatus],
+) -> Option<ResolutionStatus> {
+    match target {
+        crate::lower::facts::MemberAccessTarget::Reference(reference) => {
+            outcomes.get(reference.index()).copied()
+        }
+        crate::lower::facts::MemberAccessTarget::ExpressionResult(result) => {
+            Some(ResolutionStatus::Resolved(result))
+        }
+    }
 }

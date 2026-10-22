@@ -47,8 +47,10 @@ The calculation expression walker still explicitly rejects these whole AST forms
 - Extent expressions (`all Type`).
 
 Unary plus and complement are also outside the admitted operator set. Some admitted shapes
-have restricted operands or only partial semantic representation. Member access after indexing
-(such as `edges#(i).vertices`) remains unsupported by the reference walker. General invocation,
+have restricted operands or only partial semantic representation. Indexed member access
+(such as `edges#(i).vertices`) retains its owned index arguments and resolves members through
+the index result, including nested indices, casts and conditional index operands. Resolving
+the member definition does not evaluate an indexed occurrence. General invocation,
 constructor and higher-order execution must not be inferred from successful reference
 resolution. The [conformance matrix](../reference/CONFORMANCE-MATRIX.md) continues to mark
 expressions and units as partial.
@@ -58,3 +60,6 @@ The body scope follows [KerML 1.0](https://www.omg.org/spec/KerML/1.0/PDF),
 fixtures are `resolution/collection_expression_bodies.md` and
 `resolution/collection_expression_body_errors.md` in the standalone snapshot corpus;
 they cover accepted forms, shadowing, local members, unresolved names and scope isolation.
+
+Remaining semantic-construction gaps are tracked in [#337](https://github.com/elan8/spec42/issues/337);
+full collection callback evaluation is tracked in [#338](https://github.com/elan8/spec42/issues/338).

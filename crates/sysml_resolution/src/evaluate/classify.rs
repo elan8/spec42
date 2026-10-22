@@ -173,7 +173,7 @@ pub(crate) fn classify_constraint_node(
         // A dotted feature chain (`s.error`) is lowered as one `MemberAccessOperand`, not an
         // `ExpressionOperand`, so it must not advance that ordinal. Its authored token end joins
         // directly to the canonical member-access reference's settled target.
-        Expression::MemberAccess { member, .. } => {
+        Expression::MemberAccess { member, .. } if !has_indexed_primary(node) => {
             let span = parsed.qualified_reference(*member)?.metadata.span;
             Some(EvalNode::Operand(EvalOperand::MemberAccessEnd(
                 span.offset.checked_add(span.len)?,
@@ -349,7 +349,7 @@ pub(crate) fn classify_calc_node(
             Some(EvalNode::Invocation(vec![base]))
         }
         // A dotted chain consumes its member-access occurrence, not an ExpressionOperand ordinal.
-        Expression::MemberAccess { member, .. } => {
+        Expression::MemberAccess { member, .. } if !has_indexed_primary(node) => {
             let span = parsed.qualified_reference(*member)?.metadata.span;
             Some(EvalNode::Operand(EvalOperand::MemberAccessEnd(
                 span.offset.checked_add(span.len)?,
@@ -514,4 +514,23 @@ pub(crate) fn is_arithmetic_operator(op: &BinaryOperator) -> bool {
 /// other three.
 pub(crate) fn is_range_or_coalesce_operator(op: &BinaryOperator) -> bool {
     matches!(op, BinaryOperator::Range | BinaryOperator::NullCoalesce)
+}
+
+/// Indexing selects an occurrence; resolving its member definition does not evaluate that
+/// selection. Keep this boundary explicit until the evaluator supports indexed access.
+fn has_indexed_primary(node: &Expression) -> bool {
+    match node {
+        Expression::Index { .. } => true,
+        Expression::MemberAccess { base, .. } => has_indexed_primary(&base.value),
+        Expression::TypeCheck {
+            operand: Some(operand),
+            ..
+        } => has_indexed_primary(&operand.value),
+        Expression::Sequence { operands, .. } => operands
+            .value
+            .elements
+            .iter()
+            .any(|element| has_indexed_primary(&element.expression.value)),
+        _ => false,
+    }
 }

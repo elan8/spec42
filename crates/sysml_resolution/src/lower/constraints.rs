@@ -1019,6 +1019,54 @@ impl SemanticModelBuilder {
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
+    /// Retains the indexed primary argument as an owned expression tree. Operator arguments
+    /// already have identities; register their shapes and lower each in that identity instead
+    /// of flattening indexing into the surrounding feature chain (KerML 8.3.4.8.4, .6).
+    pub(super) fn lower_indexed_access_argument(
+        &mut self,
+        document: DocumentIdx,
+        expression: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        self.push_evaluation_fact(expression, self.calc_expression_site(document, &node.value));
+        if let Expression::Index { base, operands, .. } = &node.value {
+            self.note_expression_node(expression, node);
+            let arguments = self
+                .expression_arguments
+                .iter()
+                .filter(|argument| argument.expression == expression)
+                .copied()
+                .collect::<Vec<_>>();
+            let nodes = std::iter::once(base.as_ref()).chain(
+                operands
+                    .value
+                    .elements
+                    .iter()
+                    .map(|element| &element.expression),
+            );
+            if arguments.len() != operands.value.elements.len() + 1 {
+                return Err(ConstructionError::InvalidIdentity);
+            }
+            for (argument, operand) in arguments.into_iter().zip(nodes) {
+                self.record_value_expression_shape(
+                    document,
+                    argument.argument,
+                    argument.result,
+                    operand,
+                )?;
+                self.lower_indexed_access_argument(document, argument.argument, operand)?;
+            }
+            Ok(())
+        } else {
+            self.lower_calc_expression(
+                document,
+                expression,
+                UnsupportedFamily::CalcDefinitionMember,
+                node,
+            )
+        }
+    }
+
     /// KerML 8.2.5.8.3: an ExpressionBody has its own parameter/member scope.
     /// Reuse the calculation member dispatcher instead of treating callback parameters
     /// as operands in the caller's scope. Evaluation of the callback stays explicit
