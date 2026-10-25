@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Upgrade notes.** The generator ABI is **version 6**, semantic API `0.3.0`: **a generator
+  plugin built against 0.57.0 must be rebuilt.** `Relationship::target` is now a
+  `RelationshipTarget` (`Resolved`, `Ambiguous`, `Unresolved`, `Unsupported`); use
+  `RelationshipTarget::resolved()` where a single target was read before.
+- **Generators see an element's relationships even when one of them does not resolve.**
+  `relationships()` used to fail for the whole element on its first unresolved, ambiguous or
+  unsupported reference, so a model being edited lost every settled relationship of that element.
+  Each relationship now carries its own outcome, with the reference as written when it did not
+  settle.
+- **Relationships carry where they were written** (`authored_at`), so a guest can tell the `first`
+  end of a succession from its `then` end, and a connector's source end from its target.
+- **No metaclass or relationship kind reaches a guest as `Unrecognized`.** Control nodes publish
+  as `DecisionNodeUsage`, `MergeNodeUsage`, `ForkNodeUsage` and `JoinNodeUsage`, and the remaining
+  element and relationship kinds the host publishes have named variants. Tests over every
+  `ElementKind` and every published relationship kind keep it so.
+
 ## [0.57.0] - 2026-10-22
 
 - **Upgrade notes.** Diagram products are **schema 7**: browser metadata carries `rows` (row

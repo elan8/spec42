@@ -35,6 +35,7 @@ struct WireSchema {
     source_range: SourceRange,
     multiplicity: Multiplicity,
     relationship: Relationship,
+    relationship_target: RelationshipTarget,
     requirement_usage_typing: RequirementUsageTyping,
     satisfy_relationship: SatisfyRelationship,
     satisfy_endpoint: SatisfyEndpoint,
@@ -177,12 +178,48 @@ pub enum Metaclass {
     VerdictUsage,
     VerifyUsage,
     WhileLoopActionUsage,
+    Namespace,
+    LibraryPackage,
+    AcceptActionUsage,
+    SendActionUsage,
+    ExhibitStateUsage,
+    Definition,
+    Usage,
+    PerformActionUsage,
+    ForLoopVariable,
+    ControlNode,
+    SuccessionAsUsage,
+    SatisfyRequirementUsage,
+    BindingConnectorAsUsage,
+    Expose,
+    AnnotatingElement,
+    Type,
+    Classifier,
+    Class,
+    Structure,
+    Association,
+    AssociationStructure,
+    DataType,
+    Metaclass,
+    Behavior,
+    Function,
+    Predicate,
+    Interaction,
+    Multiplicity,
+    Step,
+    BooleanExpression,
+    LiteralExpression,
+    Connector,
+    BindingConnector,
+    Succession,
+    Invariant,
+    MetadataFeature,
     /// A value this Spec42 produced that the enumeration above does not name.
     ///
     /// Carrying it explicitly means a guest can tell "I have never heard of this"
     /// apart from "I forgot to handle this", which a bare string cannot express.
-    /// Spec42's own conformance suite asserts this variant is never produced, so
-    /// seeing one means the upstream model gained a concept the ABI has not mapped.
+    /// `generator_api`'s tests assert every element kind the host publishes maps to a named
+    /// variant, so seeing one means the guest is older than the host.
     Unrecognized(String),
 }
 
@@ -299,6 +336,42 @@ impl Metaclass {
             Self::VerdictUsage => "VerdictUsage",
             Self::VerifyUsage => "VerifyUsage",
             Self::WhileLoopActionUsage => "WhileLoopActionUsage",
+            Self::Namespace => "Namespace",
+            Self::LibraryPackage => "LibraryPackage",
+            Self::AcceptActionUsage => "AcceptActionUsage",
+            Self::SendActionUsage => "SendActionUsage",
+            Self::ExhibitStateUsage => "ExhibitStateUsage",
+            Self::Definition => "Definition",
+            Self::Usage => "Usage",
+            Self::PerformActionUsage => "PerformActionUsage",
+            Self::ForLoopVariable => "ForLoopVariable",
+            Self::ControlNode => "ControlNode",
+            Self::SuccessionAsUsage => "SuccessionAsUsage",
+            Self::SatisfyRequirementUsage => "SatisfyRequirementUsage",
+            Self::BindingConnectorAsUsage => "BindingConnectorAsUsage",
+            Self::Expose => "Expose",
+            Self::AnnotatingElement => "AnnotatingElement",
+            Self::Type => "Type",
+            Self::Classifier => "Classifier",
+            Self::Class => "Class",
+            Self::Structure => "Structure",
+            Self::Association => "Association",
+            Self::AssociationStructure => "AssociationStructure",
+            Self::DataType => "DataType",
+            Self::Metaclass => "Metaclass",
+            Self::Behavior => "Behavior",
+            Self::Function => "Function",
+            Self::Predicate => "Predicate",
+            Self::Interaction => "Interaction",
+            Self::Multiplicity => "Multiplicity",
+            Self::Step => "Step",
+            Self::BooleanExpression => "BooleanExpression",
+            Self::LiteralExpression => "LiteralExpression",
+            Self::Connector => "Connector",
+            Self::BindingConnector => "BindingConnector",
+            Self::Succession => "Succession",
+            Self::Invariant => "Invariant",
+            Self::MetadataFeature => "MetadataFeature",
             Self::Unrecognized(value) => value,
         }
     }
@@ -416,6 +489,42 @@ impl Metaclass {
             "VerdictUsage" => Self::VerdictUsage,
             "VerifyUsage" => Self::VerifyUsage,
             "WhileLoopActionUsage" => Self::WhileLoopActionUsage,
+            "Namespace" => Self::Namespace,
+            "LibraryPackage" => Self::LibraryPackage,
+            "AcceptActionUsage" => Self::AcceptActionUsage,
+            "SendActionUsage" => Self::SendActionUsage,
+            "ExhibitStateUsage" => Self::ExhibitStateUsage,
+            "Definition" => Self::Definition,
+            "Usage" => Self::Usage,
+            "PerformActionUsage" => Self::PerformActionUsage,
+            "ForLoopVariable" => Self::ForLoopVariable,
+            "ControlNode" => Self::ControlNode,
+            "SuccessionAsUsage" => Self::SuccessionAsUsage,
+            "SatisfyRequirementUsage" => Self::SatisfyRequirementUsage,
+            "BindingConnectorAsUsage" => Self::BindingConnectorAsUsage,
+            "Expose" => Self::Expose,
+            "AnnotatingElement" => Self::AnnotatingElement,
+            "Type" => Self::Type,
+            "Classifier" => Self::Classifier,
+            "Class" => Self::Class,
+            "Structure" => Self::Structure,
+            "Association" => Self::Association,
+            "AssociationStructure" => Self::AssociationStructure,
+            "DataType" => Self::DataType,
+            "Metaclass" => Self::Metaclass,
+            "Behavior" => Self::Behavior,
+            "Function" => Self::Function,
+            "Predicate" => Self::Predicate,
+            "Interaction" => Self::Interaction,
+            "Multiplicity" => Self::Multiplicity,
+            "Step" => Self::Step,
+            "BooleanExpression" => Self::BooleanExpression,
+            "LiteralExpression" => Self::LiteralExpression,
+            "Connector" => Self::Connector,
+            "BindingConnector" => Self::BindingConnector,
+            "Succession" => Self::Succession,
+            "Invariant" => Self::Invariant,
+            "MetadataFeature" => Self::MetadataFeature,
             other => Self::Unrecognized(other.to_owned()),
         }
     }
@@ -471,12 +580,53 @@ pub enum RelationshipKind {
     TransitionEffect,
     Annotation,
     PortConjugation,
+    AcceptPayloadType,
+    AcceptVia,
+    AliasBinding,
+    AllocateSource,
+    AllocateTarget,
+    AssignTarget,
+    BindSource,
+    BindTarget,
+    Conjugation,
+    DependencyClient,
+    DependencySupplier,
+    Differencing,
+    Disjoining,
+    DoActionBinding,
+    EntryActionBinding,
+    ExitActionBinding,
+    ExpressionOperand,
+    FeatureChaining,
+    FeatureInverting,
+    FilterMetadataTest,
+    IncludeUseCase,
+    Intersecting,
+    Intersects,
+    InvocationCallee,
+    MemberAccessOperand,
+    MetaCastTarget,
+    MetadataAccessTarget,
+    MetadataAnnotation,
+    MetadataAnnotationAbout,
+    PerformParameterTarget,
+    PurposeTarget,
+    SatisfySource,
+    SatisfyTarget,
+    SendTarget,
+    StakeholderTarget,
+    TerminateTarget,
+    ThenTarget,
+    TypeCheckTarget,
+    TypeFeaturing,
+    Unioning,
+    VerifyRequirementTarget,
     /// A value this Spec42 produced that the enumeration above does not name.
     ///
     /// Carrying it explicitly means a guest can tell "I have never heard of this"
     /// apart from "I forgot to handle this", which a bare string cannot express.
-    /// Spec42's own conformance suite asserts this variant is never produced, so
-    /// seeing one means the upstream model gained a concept the ABI has not mapped.
+    /// `generator_api`'s tests assert every relationship kind the host publishes maps to a
+    /// named variant, so seeing one means the guest is older than the host.
     Unrecognized(String),
 }
 
@@ -516,6 +666,47 @@ impl RelationshipKind {
             Self::TransitionEffect => "transitionEffect",
             Self::Annotation => "annotation",
             Self::PortConjugation => "portConjugation",
+            Self::AcceptPayloadType => "acceptPayloadType",
+            Self::AcceptVia => "acceptVia",
+            Self::AliasBinding => "aliasBinding",
+            Self::AllocateSource => "allocateSource",
+            Self::AllocateTarget => "allocateTarget",
+            Self::AssignTarget => "assignTarget",
+            Self::BindSource => "bindSource",
+            Self::BindTarget => "bindTarget",
+            Self::Conjugation => "conjugation",
+            Self::DependencyClient => "dependencyClient",
+            Self::DependencySupplier => "dependencySupplier",
+            Self::Differencing => "differencing",
+            Self::Disjoining => "disjoining",
+            Self::DoActionBinding => "doActionBinding",
+            Self::EntryActionBinding => "entryActionBinding",
+            Self::ExitActionBinding => "exitActionBinding",
+            Self::ExpressionOperand => "expressionOperand",
+            Self::FeatureChaining => "featureChaining",
+            Self::FeatureInverting => "featureInverting",
+            Self::FilterMetadataTest => "filterMetadataTest",
+            Self::IncludeUseCase => "includeUseCase",
+            Self::Intersecting => "intersecting",
+            Self::Intersects => "intersects",
+            Self::InvocationCallee => "invocationCallee",
+            Self::MemberAccessOperand => "memberAccessOperand",
+            Self::MetaCastTarget => "metaCastTarget",
+            Self::MetadataAccessTarget => "metadataAccessTarget",
+            Self::MetadataAnnotation => "metadataAnnotation",
+            Self::MetadataAnnotationAbout => "metadataAnnotationAbout",
+            Self::PerformParameterTarget => "performParameterTarget",
+            Self::PurposeTarget => "purposeTarget",
+            Self::SatisfySource => "satisfySource",
+            Self::SatisfyTarget => "satisfyTarget",
+            Self::SendTarget => "sendTarget",
+            Self::StakeholderTarget => "stakeholderTarget",
+            Self::TerminateTarget => "terminateTarget",
+            Self::ThenTarget => "thenTarget",
+            Self::TypeCheckTarget => "typeCheckTarget",
+            Self::TypeFeaturing => "typeFeaturing",
+            Self::Unioning => "unioning",
+            Self::VerifyRequirementTarget => "verifyRequirementTarget",
             Self::Unrecognized(value) => value,
         }
     }
@@ -556,6 +747,47 @@ impl RelationshipKind {
             "transitionEffect" => Self::TransitionEffect,
             "annotation" => Self::Annotation,
             "portConjugation" => Self::PortConjugation,
+            "acceptPayloadType" => Self::AcceptPayloadType,
+            "acceptVia" => Self::AcceptVia,
+            "aliasBinding" => Self::AliasBinding,
+            "allocateSource" => Self::AllocateSource,
+            "allocateTarget" => Self::AllocateTarget,
+            "assignTarget" => Self::AssignTarget,
+            "bindSource" => Self::BindSource,
+            "bindTarget" => Self::BindTarget,
+            "conjugation" => Self::Conjugation,
+            "dependencyClient" => Self::DependencyClient,
+            "dependencySupplier" => Self::DependencySupplier,
+            "differencing" => Self::Differencing,
+            "disjoining" => Self::Disjoining,
+            "doActionBinding" => Self::DoActionBinding,
+            "entryActionBinding" => Self::EntryActionBinding,
+            "exitActionBinding" => Self::ExitActionBinding,
+            "expressionOperand" => Self::ExpressionOperand,
+            "featureChaining" => Self::FeatureChaining,
+            "featureInverting" => Self::FeatureInverting,
+            "filterMetadataTest" => Self::FilterMetadataTest,
+            "includeUseCase" => Self::IncludeUseCase,
+            "intersecting" => Self::Intersecting,
+            "intersects" => Self::Intersects,
+            "invocationCallee" => Self::InvocationCallee,
+            "memberAccessOperand" => Self::MemberAccessOperand,
+            "metaCastTarget" => Self::MetaCastTarget,
+            "metadataAccessTarget" => Self::MetadataAccessTarget,
+            "metadataAnnotation" => Self::MetadataAnnotation,
+            "metadataAnnotationAbout" => Self::MetadataAnnotationAbout,
+            "performParameterTarget" => Self::PerformParameterTarget,
+            "purposeTarget" => Self::PurposeTarget,
+            "satisfySource" => Self::SatisfySource,
+            "satisfyTarget" => Self::SatisfyTarget,
+            "sendTarget" => Self::SendTarget,
+            "stakeholderTarget" => Self::StakeholderTarget,
+            "terminateTarget" => Self::TerminateTarget,
+            "thenTarget" => Self::ThenTarget,
+            "typeCheckTarget" => Self::TypeCheckTarget,
+            "typeFeaturing" => Self::TypeFeaturing,
+            "unioning" => Self::Unioning,
+            "verifyRequirementTarget" => Self::VerifyRequirementTarget,
             other => Self::Unrecognized(other.to_owned()),
         }
     }
@@ -637,8 +869,42 @@ pub struct ElementDetail {
 pub struct Relationship {
     pub kind: RelationshipKind,
     pub source: ElementSummary,
-    pub target: ElementSummary,
+    pub target: RelationshipTarget,
     pub implied: bool,
+    /// Where the reference was written, in the source element's document; `None` for an
+    /// implied relationship. Orders references of one kind as authored: the `first` and `then`
+    /// ends of a succession are both `Succession`, and only their positions say which is which.
+    pub authored_at: Option<SourceRange>,
+}
+
+/// What resolution settled on for the target of one relationship.
+///
+/// Carried per relationship rather than failing the whole query, so an element with one
+/// unsettled reference still reports the references that did settle. A model being edited has
+/// unsettled references routinely; the state stays explicit and cannot be read as a target.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum RelationshipTarget {
+    Resolved(ElementSummary),
+    /// Several candidates, none chosen, all retained in canonical order.
+    Ambiguous(Vec<ElementSummary>),
+    /// No candidate. `authored` is the reference as written, when it was written.
+    Unresolved {
+        authored: Option<String>,
+    },
+    /// The reference is written in a form outside the supported resolution slice.
+    Unsupported {
+        authored: Option<String>,
+    },
+}
+
+impl RelationshipTarget {
+    /// The target element, when resolution settled on exactly one.
+    pub fn resolved(&self) -> Option<&ElementSummary> {
+        match self {
+            Self::Resolved(target) => Some(target),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1371,7 +1637,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x252e_7fb1_75bd_0a3b,
+            SCHEMA_FINGERPRINT, 0x3024_e215_b0bb_5fbb,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1379,7 +1645,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x1df7_2a6b_fd2a_0025,
+            COMPATIBILITY_TOKEN, 0x66b8_0a09_da50_bf6a,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

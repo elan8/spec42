@@ -3,7 +3,9 @@
 use std::fmt;
 
 use crate::source::Url;
-pub use sysml_resolution::{ContextualExpressionOutcome, PublishedContextualExpression};
+pub use sysml_resolution::{
+    published_relationship_kinds, ContextualExpressionOutcome, PublishedContextualExpression,
+};
 
 pub use sysml_resolution::{
     requirement_collection_from_kind, ActionDerivedFactCollection, ActionDerivedFactKind,

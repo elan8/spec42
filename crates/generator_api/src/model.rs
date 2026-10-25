@@ -38,7 +38,7 @@ impl Default for QueryLimits {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct SourceRange {
     pub start_line: u32,
     pub start_character: u32,
@@ -96,8 +96,19 @@ pub struct ElementDetail {
 pub struct RelationshipSummary {
     pub kind: ApiRelationshipKind,
     pub source: ElementSummary,
-    pub target: ElementSummary,
+    pub target: RelationshipTargetSummary,
     pub implied: bool,
+    pub authored_at: Option<SourceRange>,
+}
+
+/// What resolution settled on for one relationship's target; see
+/// `spec42_generator_protocol::RelationshipTarget`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum RelationshipTargetSummary {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved { authored: Option<String> },
+    Unsupported { authored: Option<String> },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -514,42 +525,45 @@ impl GeneratorModelView {
         let source = self.summary(identity)?;
         let mut values = Vec::new();
         for relationship in &inspection.relationships {
+            // Each relationship carries its own outcome: one unsettled reference must not hide
+            // the element's settled ones.
+            let authored = || relationship.authored.as_deref().map(str::to_owned);
             let target = match &relationship.target {
-                RelationshipTarget::Resolved(target) => self.summary(target)?,
-                RelationshipTarget::Ambiguous(_) => {
-                    return Err(ModelQueryError::Ambiguous(format!(
-                        "relationship `{}` from `{}`",
-                        relationship.kind,
-                        self.token(identity)
-                    )))
+                RelationshipTarget::Resolved(target) => {
+                    RelationshipTargetSummary::Resolved(self.summary(target)?)
                 }
-                RelationshipTarget::Unresolved => {
-                    return Err(ModelQueryError::Unresolved(format!(
-                        "relationship `{}` from `{}`",
-                        relationship.kind,
-                        self.token(identity)
-                    )))
+                RelationshipTarget::Ambiguous(candidates) => {
+                    let mut candidates = candidates
+                        .iter()
+                        .map(|candidate| self.summary(candidate))
+                        .collect::<Result<Vec<_>, _>>()?;
+                    candidates.sort_by(summary_order);
+                    RelationshipTargetSummary::Ambiguous(candidates)
                 }
-                RelationshipTarget::Unsupported => {
-                    return Err(ModelQueryError::Unsupported(format!(
-                        "relationship `{}` from `{}`",
-                        relationship.kind,
-                        self.token(identity)
-                    )))
-                }
+                RelationshipTarget::Unresolved => RelationshipTargetSummary::Unresolved {
+                    authored: authored(),
+                },
+                RelationshipTarget::Unsupported => RelationshipTargetSummary::Unsupported {
+                    authored: authored(),
+                },
             };
             values.push(RelationshipSummary {
                 kind: ApiRelationshipKind::parse(generator_relationship_kind(relationship.kind)),
                 source: source.clone(),
                 target,
                 implied: relationship.provenance == RelationshipProvenance::Implied,
+                authored_at: relationship
+                    .location
+                    .as_ref()
+                    .map(|location| source_range(location.range)),
             });
         }
         values.sort_by(|a, b| {
             a.kind
                 .as_str()
                 .cmp(b.kind.as_str())
-                .then_with(|| summary_order(&a.target, &b.target))
+                .then_with(|| a.authored_at.cmp(&b.authored_at))
+                .then_with(|| target_order(&a.target, &b.target))
         });
         self.enforce_limit(values.len())?;
         Ok(values)
@@ -2292,13 +2306,48 @@ fn summary_order(a: &ElementSummary, b: &ElementSummary) -> std::cmp::Ordering {
         .then_with(|| a.metaclass.as_str().cmp(b.metaclass.as_str()))
         .then_with(|| a.semantic_id.cmp(&b.semantic_id))
 }
+
+/// Resolved targets first in summary order, then ambiguous, unresolved and unsupported, each
+/// ordered by what was written, so the order never depends on the inspection's iteration.
+fn target_order(
+    a: &RelationshipTargetSummary,
+    b: &RelationshipTargetSummary,
+) -> std::cmp::Ordering {
+    use RelationshipTargetSummary as T;
+    fn rank(target: &RelationshipTargetSummary) -> u8 {
+        match target {
+            T::Resolved(_) => 0,
+            T::Ambiguous(_) => 1,
+            T::Unresolved { .. } => 2,
+            T::Unsupported { .. } => 3,
+        }
+    }
+    match (a, b) {
+        (T::Resolved(a), T::Resolved(b)) => summary_order(a, b),
+        (T::Ambiguous(a), T::Ambiguous(b)) => a
+            .iter()
+            .zip(b)
+            .map(|(a, b)| summary_order(a, b))
+            .find(|order| order.is_ne())
+            .unwrap_or_else(|| a.len().cmp(&b.len())),
+        (T::Unresolved { authored: a }, T::Unresolved { authored: b })
+        | (T::Unsupported { authored: a }, T::Unsupported { authored: b }) => a.cmp(b),
+        _ => rank(a).cmp(&rank(b)),
+    }
+}
 fn api_metaclass(kind: ElementKind) -> Metaclass {
     // The semantic vocabulary uses the concrete `FlowConnection*` spelling while the generator
     // wire contract uses SysML's `Flow*` metaclass spelling. Keep the typed bridge at this boundary;
     // `Metaclass::parse` is for its own vocabulary, not a second semantic classification table.
+    // Control nodes likewise: the semantic vocabulary names the node metaclass (`DecisionNode`),
+    // the wire contract the usage the node is written as (`DecisionNodeUsage`).
     match kind {
         ElementKind::FlowConnectionDefinition => return Metaclass::FlowDefinition,
         ElementKind::FlowConnectionUsage => return Metaclass::FlowUsage,
+        ElementKind::DecisionNode => return Metaclass::DecisionNodeUsage,
+        ElementKind::MergeNode => return Metaclass::MergeNodeUsage,
+        ElementKind::ForkNode => return Metaclass::ForkNodeUsage,
+        ElementKind::JoinNode => return Metaclass::JoinNodeUsage,
         _ => {}
     }
     let parsed = Metaclass::parse(kind.as_str());
@@ -2309,22 +2358,64 @@ fn api_metaclass(kind: ElementKind) -> Metaclass {
     }
 }
 
+/// The role a kind takes from the metamodel: `AcceptActionUsage` and `PerformActionUsage` are
+/// usages like any other. A succession or a binding written as a usage is a relationship between
+/// nodes, not a node.
+fn metamodel_notation_role(kind: ElementKind) -> DiagramNotationRole {
+    match kind {
+        ElementKind::SuccessionAsUsage | ElementKind::BindingConnectorAsUsage => {
+            DiagramNotationRole::Unsupported
+        }
+        kind if kind.conforms_to(ElementKind::Usage) => DiagramNotationRole::Usage,
+        kind if kind.conforms_to(ElementKind::Definition) => DiagramNotationRole::Definition,
+        _ => DiagramNotationRole::Unsupported,
+    }
+}
+
 fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
     let metaclass = api_metaclass(kind);
-    // A kind the generator vocabulary has no variant for takes its role from the metamodel:
-    // `ForkNode`, `AcceptActionUsage` and `PerformActionUsage` are usages like any other. A
-    // succession or a binding written as a usage is a relationship between nodes, not a node.
     if metaclass.is_unrecognized() {
-        return match kind {
-            ElementKind::SuccessionAsUsage | ElementKind::BindingConnectorAsUsage => {
-                DiagramNotationRole::Unsupported
-            }
-            kind if kind.conforms_to(ElementKind::Usage) => DiagramNotationRole::Usage,
-            kind if kind.conforms_to(ElementKind::Definition) => DiagramNotationRole::Definition,
-            _ => DiagramNotationRole::Unsupported,
-        };
+        return metamodel_notation_role(kind);
     }
     match metaclass {
+        // Named for the generator vocabulary without a notation of their own: they keep the role
+        // the metamodel gives them.
+        Metaclass::Namespace
+        | Metaclass::LibraryPackage
+        | Metaclass::AcceptActionUsage
+        | Metaclass::SendActionUsage
+        | Metaclass::ExhibitStateUsage
+        | Metaclass::Definition
+        | Metaclass::Usage
+        | Metaclass::PerformActionUsage
+        | Metaclass::ForLoopVariable
+        | Metaclass::ControlNode
+        | Metaclass::SuccessionAsUsage
+        | Metaclass::SatisfyRequirementUsage
+        | Metaclass::BindingConnectorAsUsage
+        | Metaclass::Expose
+        | Metaclass::AnnotatingElement
+        | Metaclass::Type
+        | Metaclass::Classifier
+        | Metaclass::Class
+        | Metaclass::Structure
+        | Metaclass::Association
+        | Metaclass::AssociationStructure
+        | Metaclass::DataType
+        | Metaclass::Metaclass
+        | Metaclass::Behavior
+        | Metaclass::Function
+        | Metaclass::Predicate
+        | Metaclass::Interaction
+        | Metaclass::Multiplicity
+        | Metaclass::Step
+        | Metaclass::BooleanExpression
+        | Metaclass::LiteralExpression
+        | Metaclass::Connector
+        | Metaclass::BindingConnector
+        | Metaclass::Succession
+        | Metaclass::Invariant
+        | Metaclass::MetadataFeature => metamodel_notation_role(kind),
         Metaclass::ActionDefinition
         | Metaclass::AllocationDefinition
         | Metaclass::AnalysisCaseDefinition
@@ -2481,6 +2572,132 @@ fn generator_relationship_kind(kind: &str) -> &str {
 mod tests {
     use super::*;
     use sysml_query::{source::SourceKind, Services};
+
+    /// The ABI documents that `Unrecognized` is never produced. These two make that hold for
+    /// every value the host can publish, rather than for the values a fixture happens to use.
+    #[test]
+    fn every_element_kind_publishes_a_named_metaclass() {
+        let unnamed = ElementKind::ALL
+            .iter()
+            .filter(|kind| api_metaclass(**kind).is_unrecognized())
+            .map(|kind| kind.as_str())
+            .collect::<Vec<_>>();
+        assert!(
+            unnamed.is_empty(),
+            "element kinds published as Unrecognized: {unnamed:?}"
+        );
+    }
+
+    /// One unresolved reference is reported on its own relationship and does not take the
+    /// element's settled relationships with it; the ends of a succession keep their authored
+    /// order. Both sides: the misspelled typing is explicit, the correct one resolves.
+    #[test]
+    fn an_unresolved_reference_is_explicit_and_keeps_its_siblings() {
+        let services = Services::new();
+        let source = services
+            .source
+            .admit_memory(
+                "generator-test",
+                "shop.sysml",
+                "package Shop {\n\
+                 \x20   item def OrderId;\n\
+                 \x20   action def Validate;\n\
+                 \x20   action def Ship;\n\
+                 \x20   action def ProcessOrder {\n\
+                 \x20       in item orderId : OrderIdd;\n\
+                 \x20       in item knownId : OrderId;\n\
+                 \x20       action validate : Validate;\n\
+                 \x20       action ship : Ship;\n\
+                 \x20       first validate then ship;\n\
+                 \x20   }\n\
+                 }\n",
+                SourceKind::Workspace,
+            )
+            .unwrap();
+        let model = services.publication.publish(&[source], []).unwrap();
+        let view = GeneratorModelView::new(model, "digest", "version", QueryLimits::default())
+            .expect("generator model");
+        let elements = view.find(None).unwrap();
+        let handle = |qualified_name: &str| {
+            elements
+                .iter()
+                .find(|e| e.qualified_name == qualified_name)
+                .unwrap_or_else(|| panic!("no element {qualified_name}"))
+                .handle
+                .clone()
+        };
+        let typing = |qualified_name: &str| {
+            view.relationships(&handle(qualified_name))
+                .expect("relationships answer even with an unresolved reference")
+                .into_iter()
+                .filter(|r| r.kind == ApiRelationshipKind::Typing)
+                .map(|r| r.target)
+                .collect::<Vec<_>>()
+        };
+
+        assert_eq!(
+            typing("Shop::ProcessOrder::orderId"),
+            vec![RelationshipTargetSummary::Unresolved {
+                authored: Some("OrderIdd".into())
+            }]
+        );
+        assert!(matches!(
+            typing("Shop::ProcessOrder::knownId").as_slice(),
+            [RelationshipTargetSummary::Resolved(target)] if target.qualified_name == "Shop::OrderId"
+        ));
+        let siblings = view
+            .relationships(&handle("Shop::ProcessOrder::orderId"))
+            .unwrap();
+        assert!(
+            siblings
+                .iter()
+                .any(|r| r.kind == ApiRelationshipKind::TypeFeaturing
+                    && matches!(&r.target, RelationshipTargetSummary::Resolved(t)
+                    if t.qualified_name == "Shop::ProcessOrder")),
+            "the settled typeFeaturing survives beside the unresolved typing: {siblings:?}"
+        );
+
+        let succession = elements
+            .iter()
+            .find(|e| e.metaclass == Metaclass::SuccessionAsUsage)
+            .expect("the succession is published under a named metaclass");
+        let mut ends = view
+            .relationships(&succession.handle)
+            .unwrap()
+            .into_iter()
+            .filter(|r| r.kind == ApiRelationshipKind::Succession)
+            .collect::<Vec<_>>();
+        assert!(
+            ends.iter().all(|r| r.authored_at.is_some()),
+            "authored ends carry a position"
+        );
+        ends.sort_by(|a, b| a.authored_at.cmp(&b.authored_at));
+        let order = ends
+            .iter()
+            .filter_map(|r| match &r.target {
+                RelationshipTargetSummary::Resolved(t) => Some(t.qualified_name.as_str()),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            order,
+            ["Shop::ProcessOrder::validate", "Shop::ProcessOrder::ship"]
+        );
+    }
+
+    #[test]
+    fn every_relationship_kind_publishes_a_named_kind() {
+        let unnamed = sysml_query::resolved_slice::published_relationship_kinds()
+            .into_iter()
+            .filter(|kind| {
+                ApiRelationshipKind::parse(generator_relationship_kind(kind)).is_unrecognized()
+            })
+            .collect::<Vec<_>>();
+        assert!(
+            unnamed.is_empty(),
+            "relationship kinds published as Unrecognized: {unnamed:?}"
+        );
+    }
 
     #[test]
     fn model_view_registers_one_canonical_traversal_with_provenance() {
