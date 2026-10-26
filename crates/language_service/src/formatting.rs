@@ -42,13 +42,23 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
             } else {
                 ""
             };
-            formatted_lines.push(format!("{comment_indent}{margin}{content}"));
+            // A blank comment line stays empty rather than becoming trailing whitespace.
+            formatted_lines.push(if content.is_empty() {
+                (String::new(), true)
+            } else {
+                (format!("{comment_indent}{margin}{content}"), true)
+            });
             depth += line.opens - line.closes;
             continue;
         }
-        // Multiline strings and unrestricted names retain their whitespace payload verbatim.
+        // Multiline strings, unrestricted names and textual-representation bodies retain their
+        // whitespace payload verbatim.
         if line.starts_in_protected_region {
-            formatted_lines.push(line.text.to_string());
+            if line.ends_in_block_comment {
+                // A comment opening after a protected region still aligns with the code depth.
+                comment_indent = indent_unit.repeat(depth.max(0) as usize);
+            }
+            formatted_lines.push((line.text.to_string(), true));
             depth += line.opens - line.closes;
             continue;
         }
@@ -61,7 +71,7 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
             line.text.trim()
         };
         if content.is_empty() {
-            formatted_lines.push(String::new());
+            formatted_lines.push((String::new(), false));
             continue;
         }
 
@@ -69,29 +79,32 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
         if line.ends_in_block_comment {
             comment_indent = indent_unit.repeat(indent_depth as usize);
         }
-        formatted_lines.push(format!(
-            "{}{}",
-            indent_unit.repeat(indent_depth as usize),
-            content
+        formatted_lines.push((
+            format!("{}{}", indent_unit.repeat(indent_depth as usize), content),
+            false,
         ));
         depth += line.opens - line.closes;
     }
 
-    // Retain intentional separation, but
-    // collapse runs of blank lines and do not leave whitespace-only EOF lines.
-    let mut collapsed = Vec::with_capacity(formatted_lines.len());
+    // Retain intentional separation, but collapse runs of blank code lines and do not leave
+    // whitespace-only EOF lines. Blank lines inside comments and strings are payload.
+    let mut collapsed: Vec<(String, bool)> = Vec::with_capacity(formatted_lines.len());
     let mut previous_blank = false;
-    for line in formatted_lines {
-        let blank = line.is_empty();
+    for (line, payload) in formatted_lines {
+        let blank = line.is_empty() && !payload;
         if blank && previous_blank {
             continue;
         }
         previous_blank = blank;
-        collapsed.push(line);
+        collapsed.push((line, payload));
     }
-    while collapsed.last().is_some_and(|line| line.is_empty()) {
+    while collapsed
+        .last()
+        .is_some_and(|(line, payload)| line.is_empty() && !payload)
+    {
         collapsed.pop();
     }
+    let collapsed: Vec<String> = collapsed.into_iter().map(|(line, _)| line).collect();
 
     let candidate = if collapsed.is_empty() {
         "\n".to_string()
@@ -140,6 +153,11 @@ enum LexState {
 fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
     let mut state = LexState::Code;
     let mut lines = Vec::new();
+    // A block comment that follows `language` in the same statement is a textual
+    // representation's body (`rep r language "python" /* ... */`), whose whitespace is payload.
+    let mut statement_has_language = false;
+    let mut word = String::new();
+    let mut verbatim_comment = false;
 
     for raw_line in source.split('\n') {
         // Drop every trailing CR, not just one. A protected-region line is copied
@@ -147,7 +165,7 @@ fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
         // as a CRLF ending and the layout never converges.
         let line = raw_line.trim_end_matches('\r');
         let starts_in_protected_region = state != LexState::Code;
-        let starts_in_block_comment = state == LexState::BlockComment;
+        let starts_in_block_comment = state == LexState::BlockComment && !verbatim_comment;
         let mut opens = 0;
         let mut closes = 0;
         let mut leading_closes = 0;
@@ -155,12 +173,24 @@ fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
         let mut chars = line.chars().peekable();
 
         while let Some(ch) = chars.next() {
+            if state == LexState::Code {
+                if ch.is_alphanumeric() || ch == '_' {
+                    word.push(ch);
+                } else {
+                    statement_has_language |= word == "language";
+                    word.clear();
+                    if matches!(ch, ';' | '{' | '}') {
+                        statement_has_language = false;
+                    }
+                }
+            }
             match state {
                 LexState::Code => match ch {
                     '/' if chars.peek() == Some(&'/') => break,
                     '/' if chars.peek() == Some(&'*') => {
                         chars.next();
                         state = LexState::BlockComment;
+                        verbatim_comment = statement_has_language;
                     }
                     '"' => state = LexState::String { escaped: false },
                     '\'' => state = LexState::UnrestrictedName { escaped: false },
@@ -207,7 +237,7 @@ fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
             starts_in_protected_region,
             ends_in_protected_region: state != LexState::Code,
             starts_in_block_comment,
-            ends_in_block_comment: state == LexState::BlockComment,
+            ends_in_block_comment: state == LexState::BlockComment && !verbatim_comment,
             opens,
             closes,
             leading_closes,
@@ -435,6 +465,42 @@ part x;
         assert_eq!(
             format_document_text(unfinished, default_options()),
             unfinished
+        );
+    }
+
+    #[test]
+    fn blank_documentation_lines_are_empty_and_never_collapsed() {
+        let source = "package P {\npart def A {\ndoc /* Summary\n   \n\n     * more */\n}\n}\n";
+        let formatted = format_document_text(source, default_options());
+        assert_eq!(
+            formatted,
+            "package P {\n    part def A {\n        doc /* Summary\n\n\n         * more */\n    }\n}\n"
+        );
+        assert!(formatted.lines().all(|line| line == line.trim_end()));
+        assert_eq!(
+            format_document_text(&formatted, default_options()),
+            formatted
+        );
+    }
+
+    #[test]
+    fn a_comment_opened_after_a_multiline_string_aligns_with_its_depth() {
+        let source = "package P {\npart def A {\ndoc /* first\n* a */\nattribute s = \"x\ny\"; /* second\n* b */\n}\n}\n";
+        let formatted = format_document_text(source, default_options());
+        assert!(
+            formatted.contains("y\"; /* second\n         * b */"),
+            "{formatted}"
+        );
+    }
+
+    #[test]
+    fn textual_representation_bodies_keep_their_indentation() {
+        let source =
+            "part def A {\nrep script language \"python\" /*\n    if x:\n        y()\n*/\n}\n";
+        let formatted = format_document_text(source, default_options());
+        assert_eq!(
+            formatted,
+            "part def A {\n    rep script language \"python\" /*\n    if x:\n        y()\n*/\n}\n"
         );
     }
 }

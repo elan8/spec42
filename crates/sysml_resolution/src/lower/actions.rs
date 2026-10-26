@@ -1,4 +1,4 @@
-//! Phase 2 lowering â€” behaviour: action definitions and usages, control nodes, flows, performs.
+//! Phase 2 lowering — behaviour: action definitions and usages, control nodes, flows, performs.
 
 use crate::lower::facts::control_node_prefix_modifiers;
 use crate::lower::facts::definition_prefix_modifiers;
@@ -868,7 +868,7 @@ impl SemanticModelBuilder {
     /// `succession <name> : <type>` prefix supplies the declaration identity and FeatureTyping
     /// reference; the bare form remains anonymous. The `first` end is
     /// always lowered; the `then` end is `None` for the standalone initial-node marker
-    /// `first start;` (Â§6 G13), which is left as-is (no reference to lower). Braced body content
+    /// `first start;` (§6 G13), which is left as-is (no reference to lower). Braced body content
     /// remains out of scope.
     pub(crate) fn lower_first_stmt(
         &mut self,
@@ -1620,7 +1620,8 @@ impl SemanticModelBuilder {
         self.lower_constraint_expression(document, declaration, family, rhs)
     }
 
-    /// Preserve the shared ActionNodePrefix on for/while/loop declarations.
+    /// Preserve the shared ActionNodePrefix on for/while/loop declarations, and record the node's
+    /// own feature membership.
     fn lower_structured_action_declaration(
         &mut self,
         document: DocumentIdx,
@@ -1652,6 +1653,13 @@ impl SemanticModelBuilder {
         }
         let declaration =
             self.push_typed_declaration(document, Some(owner), kind, name, span, facts)?;
+        // The node's own membership precedes its clauses and annotations, as for every usage.
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
         if let Some(usage) = usage {
             self.lower_usage_declaration_clauses(document, declaration, usage, false, None)?;
         }
@@ -1688,12 +1696,6 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let declaration =
             self.lower_structured_action_declaration(document, owner, decl_kind, span, prefix)?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
         if let Some(condition) = condition {
             self.push_evaluation_fact(
                 declaration,
@@ -1840,12 +1842,6 @@ impl SemanticModelBuilder {
             DeclarationKind::ForLoop,
             span,
             &node.prefix,
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
         )?;
         self.push_evaluation_fact(
             declaration,

@@ -840,7 +840,8 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             if kind.contains("initial") || kind.contains("final") {
                 (34.0, 34.0)
             } else if kind.contains("composite") {
-                (340.0, 320.0)
+                // Wide enough for its full name and state actions, which are not truncated.
+                (state_box(node).0.max(340.0), 320.0)
             } else {
                 state_box(node)
             }
@@ -3222,5 +3223,22 @@ mod general_hierarchy_tests {
                 assert!(separated, "sibling boxes must not overlap");
             }
         }
+    }
+}
+#[cfg(test)]
+mod composite_state_size_tests {
+    use super::*;
+
+    #[test]
+    fn a_composite_state_is_wide_enough_for_its_full_name() {
+        let composite = |label: &str| json!({ "id": "s", "label": label, "kind": "composite-state", "attributes": {} });
+        assert_eq!(
+            node_dimensions(&composite("Idle"), BehaviorMode::State),
+            (340.0, 320.0)
+        );
+        let long = "WaitingForTheExternalControllerToBecomeReadyAndCalibrated";
+        let (width, height) = node_dimensions(&composite(long), BehaviorMode::State);
+        assert!(width >= long.chars().count() as f64 * 7.4, "{width}");
+        assert_eq!(height, 320.0);
     }
 }
