@@ -8102,17 +8102,14 @@ fn parse_generator_plugin(value: &str, fallback_name: &str) -> Result<GeneratorP
     Ok(GeneratorPlugin::Conformance(name.to_string()))
 }
 
+/// Artifact paths are portable `/`-separated relative names, so they are validated independently of
+/// the host's path rules: a host `Path` accepts `/x` as relative on Windows and `C:\x` or `a\..\x`
+/// as a single file name elsewhere.
 fn validate_artifact_path(path: &str) -> Result<(), String> {
-    let candidate = Path::new(path);
-    if path.is_empty()
-        || candidate.is_absolute()
-        || candidate.components().any(|part| {
-            matches!(
-                part,
-                std::path::Component::ParentDir | std::path::Component::CurDir
-            )
-        })
-    {
+    let invalid = path.split('/').any(|segment| {
+        segment.is_empty() || segment == "." || segment == ".." || segment.contains(['\\', ':'])
+    });
+    if invalid {
         return Err(format!("invalid generated artifact path {path:?}"));
     }
     Ok(())
@@ -10452,6 +10449,11 @@ mod tests {
             "../escape.csv",
             "a/../escape.csv",
             "./same.csv",
+            "C:/drive.csv",
+            "C:\\drive.csv",
+            "a\\..\\escape.csv",
+            "a//empty-segment.csv",
+            "trailing/",
         ] {
             assert!(
                 GeneratedArtifacts::default()
