@@ -657,7 +657,7 @@ package InheritedViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:405a773edb6ab45a0a61c6077819204d0781034231df03e0ef58602941298f43",
   "documents": [
     {
@@ -1093,6 +1093,25 @@ package InheritedViews {
         0,
         1,
         3
+      ],
+      "portFamilies": [
+        {
+          "connectors": [
+            5
+          ],
+          "general": [
+            {
+              "label": "Signal",
+              "reference": 11
+            }
+          ],
+          "types": [
+            {
+              "label": "Signal",
+              "reference": 11
+            }
+          ]
+        }
       ],
       "ports": [
         2,

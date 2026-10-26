@@ -700,7 +700,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
 
 function emptyProduct(): DiagramProduct {
   return {
-    schemaVersion: 7,
+    schemaVersion: 8,
     modelDigest: "",
     documents: [],
     sources: [],

@@ -641,7 +641,7 @@ package Dispatch {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:8f44467c21d0741937dea7923724fd5dbcaa6b4f5a37c5d9a115d3af6b68d0e7",
   "documents": [
     {
@@ -1140,6 +1140,25 @@ package Dispatch {
         0,
         4,
         6
+      ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1
+          ],
+          "general": [
+            {
+              "label": "DispatchPort",
+              "reference": 2
+            }
+          ],
+          "types": [
+            {
+              "label": "DispatchPort",
+              "reference": 2
+            }
+          ]
+        }
       ],
       "ports": [
         5,

@@ -694,7 +694,7 @@ package NestedOwners {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:227f155bdfc01d343dc187c0213efa4caf309772700b5ce56ecf319f7e1973b6",
   "documents": [
     {
@@ -1422,6 +1422,25 @@ package NestedOwners {
         4,
         7,
         8
+      ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1
+          ],
+          "general": [
+            {
+              "label": "P",
+              "reference": 16
+            }
+          ],
+          "types": [
+            {
+              "label": "P",
+              "reference": 16
+            }
+          ]
+        }
       ],
       "ports": [
         5,

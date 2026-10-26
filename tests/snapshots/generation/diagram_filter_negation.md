@@ -247,7 +247,7 @@ package Filters {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:a0f98b5c42e64eb5e30593d0cddaab54f372fbc076b71137720f0dbd38eb091c",
   "documents": [
     {
@@ -359,6 +359,7 @@ package Filters {
         0,
         1
       ],
+      "portFamilies": [],
       "ports": []
     },
     "nodes": [

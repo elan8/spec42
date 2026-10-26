@@ -539,7 +539,7 @@ package RedefinedParts {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:9817f6e84c0530246d0a630c4799b26ffbcbcc8c5d23228bcc074932dd2fd4ac",
   "documents": [
     {
@@ -962,6 +962,7 @@ package RedefinedParts {
         6,
         7
       ],
+      "portFamilies": [],
       "ports": []
     },
     "nodes": [

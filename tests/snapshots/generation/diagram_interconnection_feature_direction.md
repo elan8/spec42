@@ -614,7 +614,7 @@ package Feed {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:d9b1b2da6f205ab670a622c043fd41a43d71c785fcfa520080e8e82eeaf5a2a6",
   "documents": [
     {
@@ -1084,6 +1084,7 @@ package Feed {
         2,
         5
       ],
+      "portFamilies": [],
       "ports": [
         3,
         4,

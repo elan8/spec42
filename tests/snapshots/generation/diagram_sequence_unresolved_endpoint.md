@@ -294,7 +294,7 @@ package SequenceUnresolved {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:2ac7f4df7cc35fc2a085081c6f737e1e4b36993d5621a326717ac596d2a134fc",
   "documents": [
     {

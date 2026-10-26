@@ -22,7 +22,7 @@ fn edge(kind: &str, source: usize, target: usize) -> Value {
 /// flow x to b.p; flow b.q to c.r; flow c.s to y; first b then c; }`
 fn payload() -> Value {
     json!({
-        "schemaVersion": 7,
+        "schemaVersion": 8,
         "documents": [{ "uri": "file:///flow.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name", "qualifiedName": "A" }],

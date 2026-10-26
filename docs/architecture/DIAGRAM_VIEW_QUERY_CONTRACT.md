@@ -97,7 +97,7 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-7 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
+The schema-8 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
 discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.
 
@@ -109,8 +109,14 @@ fails when the Rust contract and checked-in TypeScript files differ.
 Schema 6 kept the schema-5 field names and shapes and changed what `relationships` contains (see
 above). Schema 7 adds the browser `metadata.rows` (row key, membership, member state) and changes
 the grid metadata: a `layout` (`relationship-matrix` or `element-table`), node-index `columns`, and
-cells naming their row and column nodes and the `edge` they show. A product of an earlier schema is
-not accepted. The renderer's legacy pre-schema-5 adapters
+cells naming their row and column nodes and the `edge` they show. Schema 8 adds the interconnection
+`metadata.portFamilies`: connectors grouped by the family of related port definitions their ends
+share. A connector's port type is the most specific port definition every end's typing specializes,
+reflexively and with conjugation ignored, excluding standard-library definitions; port types related
+by specialization within the view form one family, listed in family-name order with its most general
+(`general`) and all (`types`) port types and its connector nodes. A connector in no family has no
+common port type. The renderer colours connectors by family and draws a legend; it does not derive
+port types itself. A product of an earlier schema is not accepted. The renderer's legacy pre-schema-5 adapters
 remain boundary-only compatibility code. A future incompatible wire change must increment `schemaVersion`, regenerate
 the bindings, update the checked-in product corpus, and migrate consumers in the same change.
 

@@ -7000,7 +7000,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:3066897884cd7b4d4c303e8d2b810eb9e9d19540127b9348c4f8c267d1b5d9cc",
   "documents": [
     {
@@ -8977,6 +8977,97 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         32,
         33,
         34
+      ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "general": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 1
+            }
+          ],
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 1
+            }
+          ]
+        },
+        {
+          "connectors": [
+            7
+          ],
+          "general": [
+            {
+              "label": "ButtonInputPort",
+              "reference": 2
+            }
+          ],
+          "types": [
+            {
+              "label": "ButtonInputPort",
+              "reference": 2
+            }
+          ]
+        },
+        {
+          "connectors": [
+            10
+          ],
+          "general": [
+            {
+              "label": "BuzzerCommandPort",
+              "reference": 3
+            }
+          ],
+          "types": [
+            {
+              "label": "BuzzerCommandPort",
+              "reference": 3
+            }
+          ]
+        },
+        {
+          "connectors": [
+            8
+          ],
+          "general": [
+            {
+              "label": "DisplayCommandPort",
+              "reference": 4
+            }
+          ],
+          "types": [
+            {
+              "label": "DisplayCommandPort",
+              "reference": 4
+            }
+          ]
+        },
+        {
+          "connectors": [
+            9
+          ],
+          "general": [
+            {
+              "label": "LcdSegmentDrivePort",
+              "reference": 5
+            }
+          ],
+          "types": [
+            {
+              "label": "LcdSegmentDrivePort",
+              "reference": 5
+            }
+          ]
+        }
       ],
       "ports": [
         12,

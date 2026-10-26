@@ -950,7 +950,7 @@ package Links {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:ac9c832ae85315cf486663e73928cb785e0103b55d2c951b0e71c82aa5c03eb5",
   "documents": [
     {
@@ -1993,6 +1993,29 @@ package Links {
         9,
         12,
         15
+      ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1,
+            4,
+            5,
+            8,
+            18
+          ],
+          "general": [
+            {
+              "label": "PowerPort",
+              "reference": 9
+            }
+          ],
+          "types": [
+            {
+              "label": "PowerPort",
+              "reference": 9
+            }
+          ]
+        }
       ],
       "ports": [
         10,

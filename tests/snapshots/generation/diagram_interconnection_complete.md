@@ -368,7 +368,7 @@ package InterconnectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:d15976d3dfe973b7d7280c953d380f5da97604adba48a5c3ded82a0e5b86e8c7",
   "documents": [
     {
@@ -707,6 +707,7 @@ package InterconnectionExample {
         0,
         3
       ],
+      "portFamilies": [],
       "ports": [
         4,
         5,

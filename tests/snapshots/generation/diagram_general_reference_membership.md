@@ -295,7 +295,7 @@ package Membership {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:78ae781d420e1857045674551253b6621ac8c3b5a71bb6b1af66061010ec83ae",
   "documents": [
     {

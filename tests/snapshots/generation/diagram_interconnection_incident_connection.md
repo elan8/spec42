@@ -291,7 +291,7 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:34c99daa2182910a9004bed8ec39a639f6de53cc4bae37b991426d1996bb8708",
   "documents": [
     {
@@ -546,6 +546,7 @@ package Model {
         1,
         3
       ],
+      "portFamilies": [],
       "ports": [
         2,
         4

@@ -488,7 +488,7 @@ package SequenceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:33015b1f8330c034adeb37aca0b5603343986927cc4ee6c9584a8896e76dde40",
   "documents": [
     {

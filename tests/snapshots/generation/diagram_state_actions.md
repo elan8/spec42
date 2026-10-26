@@ -885,7 +885,7 @@ package Oven {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:5030eea2d87b9d7d2d4bc69a45e45d47496348b233acb58b3461f5db1a0a1cae",
   "documents": [
     {

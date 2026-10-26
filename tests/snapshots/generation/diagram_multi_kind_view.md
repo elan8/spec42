@@ -258,7 +258,7 @@ package Garage {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:90088f8d39efd7deb6d0c233f66a9052cb342def6976f29a33b64328c32e1b6b",
   "documents": [
     {
@@ -380,6 +380,7 @@ package Garage {
         1,
         2
       ],
+      "portFamilies": [],
       "ports": []
     },
     "nodes": [

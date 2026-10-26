@@ -262,7 +262,7 @@ package Trace {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:a8022208f58092a0c005c712f35059ea5a2ff724b8f0197613cfaa52e610c373",
   "documents": [
     {

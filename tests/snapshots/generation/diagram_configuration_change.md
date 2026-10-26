@@ -379,7 +379,7 @@ package ScenarioViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:2c492bd288b391c1390ec402398725f1e33421925588395dfee0df95b1799ef5",
   "documents": [
     {

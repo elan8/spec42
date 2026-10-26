@@ -11287,7 +11287,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "modelDigest": "blake3:7c71e2f7850f62f5c70a3a04711c0aead01976dcad508adf409271ad15585243",
   "documents": [
     {
