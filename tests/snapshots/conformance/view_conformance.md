@@ -69,6 +69,12 @@ package Views {
         (source "semantic")
         (range (start 19 8) (end 19 40))
       )
+      (diagnostic
+        (severity error)
+        (code "recovered_requirement_body_element")
+        (source "parser")
+        (range (start 19 40) (end 19 41))
+      )
     )
   )
 )

@@ -136,7 +136,7 @@ package BrowserNegative {
 ~~~json
 {
   "schemaVersion": 7,
-  "modelDigest": "blake3:d11afb7cf12e5b01808696d886d714c06054b5d14febb5ef81459303afba3d19",
+  "modelDigest": "blake3:2929350cead48ba1cfb470c2f184a8bf1dd23bf96450bbbdbc8083c488af2974",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_unresolved.md",

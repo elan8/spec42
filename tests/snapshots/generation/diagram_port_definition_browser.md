@@ -114,7 +114,7 @@ package M {
 ~~~json
 {
   "schemaVersion": 7,
-  "modelDigest": "blake3:03b3b81596c42117d8511aea4345eace92249414f41ba11a3f288cd472e5fcd5",
+  "modelDigest": "blake3:4181c8800d3ae546fb9da6144d567789b45371b71d0426ac3d287abade4b6e2d",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_port_definition_browser.md",

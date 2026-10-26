@@ -217,7 +217,7 @@ package ActionFlowExample {
 ~~~json
 {
   "schemaVersion": 7,
-  "modelDigest": "blake3:5c3d45134f4f278700859552a789e569f6bcb23a2a98d042e492ebc4b53d1a9e",
+  "modelDigest": "blake3:6f985f0bb302ccba3e4ccc0124c641de0a92be1c851b90deaa9491a9946414a7",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_action_flow_complete.md",
