@@ -1,7 +1,8 @@
 # META
 ~~~ini
-description=A braced body already terminates its definition or usage, so a ';' written directly after the closing '}' terminates nothing and is reported as an error; the same members without the ';' are accepted
+description=SysML 8.2.2.6.3 permits a separate empty anonymous usage after a braced member; report a warning without parser recovery, retaining strict validity and a complete semantic publication
 type=file
+require_complete_publication=true
 ~~~
 # SOURCE
 ~~~sysml
@@ -24,13 +25,13 @@ package Stray {
   (document "memory://snapshot/redundant_semicolon_after_body.md"
     (diagnostics
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "redundant_semicolon_after_body")
         (source "parser")
         (range (start 3 5) (end 3 6))
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "redundant_semicolon_after_body")
         (source "parser")
         (range (start 6 9) (end 6 10))
@@ -45,13 +46,13 @@ package Stray {
   (document "memory://snapshot/redundant_semicolon_after_body.md"
     (diagnostics
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "redundant_semicolon_after_body")
         (source "parser")
         (range (start 3 5) (end 3 6))
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "redundant_semicolon_after_body")
         (source "parser")
         (range (start 6 9) (end 6 10))
@@ -63,7 +64,7 @@ package Stray {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:7b4fe50e6e0891b7d9e615e6f03b358882e026713e43ef6fbb3a38ab2af077cd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7b4fe50e6e0891b7d9e615e6f03b358882e026713e43ef6fbb3a38ab2af077cd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/redundant_semicolon_after_body.md") (qualified-name "Stray"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/redundant_semicolon_after_body.md") (path (named (kind package) (name "Stray")) (anonymous (kind default-reference) (ordinal 0))))) (kind default-reference) (membership (kind feature) (visibility default)))

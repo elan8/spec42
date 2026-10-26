@@ -105,9 +105,12 @@ impl ParsedSources {
     }
 
     pub(crate) fn any_parse_errors(&self) -> bool {
-        self.documents
-            .iter()
-            .any(|document| !document.parse_errors.is_empty())
+        self.documents.iter().any(|document| {
+            document
+                .parse_errors
+                .iter()
+                .any(ParseError::prevents_strict_parsing)
+        })
     }
 
     pub(crate) fn into_documents(self) -> Vec<AdmittedDocument> {
