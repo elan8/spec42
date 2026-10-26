@@ -8102,17 +8102,12 @@ fn parse_generator_plugin(value: &str, fallback_name: &str) -> Result<GeneratorP
     Ok(GeneratorPlugin::Conformance(name.to_string()))
 }
 
-/// Artifact paths are portable `/`-separated relative names, so they are validated independently of
-/// the host's path rules: a host `Path` accepts `/x` as relative on Windows and `C:\x` or `a\..\x`
-/// as a single file name elsewhere.
+/// Reuse the generator boundary's portable path policy, including Windows device names and
+/// filesystem aliases. Host `Path` rules alone accept different names on different platforms.
 fn validate_artifact_path(path: &str) -> Result<(), String> {
-    let invalid = path.split('/').any(|segment| {
-        segment.is_empty() || segment == "." || segment == ".." || segment.contains(['\\', ':'])
-    });
-    if invalid {
-        return Err(format!("invalid generated artifact path {path:?}"));
-    }
-    Ok(())
+    generator_api::ArtifactPath::parse(path)
+        .map(|_| ())
+        .map_err(|error| format!("invalid generated artifact path {path:?}: {error}"))
 }
 
 fn artifact_fence_language(path: &str) -> &'static str {
@@ -10454,6 +10449,12 @@ mod tests {
             "a\\..\\escape.csv",
             "a//empty-segment.csv",
             "trailing/",
+            "nul\0.csv",
+            "CON.csv",
+            "nested/LPT1.txt",
+            "report.csv.",
+            "report.csv ",
+            "bad|name.csv",
         ] {
             assert!(
                 GeneratedArtifacts::default()
