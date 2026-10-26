@@ -2069,6 +2069,7 @@ fn relationship_provenance(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn diagram_metadata(
     kind: DiagramViewKind,
     roots: &[DiagramOccurrenceIdentity],
