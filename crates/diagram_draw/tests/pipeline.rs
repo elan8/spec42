@@ -765,9 +765,9 @@ fn an_action_flow_written_with_then_draws_its_whole_flow() {
         id_of("finish", "ActionUsage"),
     );
     let (split, joined, choice) = (
-        id_of("split", "ForkNode"),
-        id_of("joined", "JoinNode"),
-        id_of("choice", "DecisionNode"),
+        id_of("split", "ForkNodeUsage"),
+        id_of("joined", "JoinNodeUsage"),
+        id_of("choice", "DecisionNodeUsage"),
     );
     let accept = id_of("waitForPayment", "AcceptActionUsage");
     // `then accept ...;` declares an accept action without a name of its own.
@@ -924,7 +924,7 @@ fn conditional_successions_carry_their_guards() {
             .unwrap()
             .to_owned()
     };
-    let outcome = id_of("outcome", "DecisionNode");
+    let outcome = id_of("outcome", "DecisionNodeUsage");
     let (ship, repair, expedite, check) = (
         id_of("ship", "ActionUsage"),
         id_of("repair", "ActionUsage"),
