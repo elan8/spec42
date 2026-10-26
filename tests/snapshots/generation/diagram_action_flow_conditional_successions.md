@@ -1949,7 +1949,7 @@ package Flow {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "DecisionNode",
+        "metaclass": "DecisionNodeUsage",
         "name": "outcome",
         "notationRole": "usage",
         "owner": 0,
