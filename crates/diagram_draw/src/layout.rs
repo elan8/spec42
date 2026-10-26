@@ -42,20 +42,25 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
                     };
                     (far("x", "width"), far("y", "height"))
                 };
-                let nested = match (
-                    layout_nested_behavior(prepared, true, BehaviorMode::State)?,
-                    layout_nested_behavior(prepared, false, BehaviorMode::State)?,
-                ) {
-                    (Some(across), Some(down)) => Some(
-                        if reference_page_scale(extent(&down))
-                            > reference_page_scale(extent(&across))
-                        {
-                            (down, false)
-                        } else {
-                            (across, true)
-                        },
-                    ),
-                    _ => None,
+                let nested = if horizontal || direction.eq_ignore_ascii_case("vertical") {
+                    layout_nested_behavior(prepared, horizontal, BehaviorMode::State)?
+                        .map(|layout| (layout, horizontal))
+                } else {
+                    match (
+                        layout_nested_behavior(prepared, true, BehaviorMode::State)?,
+                        layout_nested_behavior(prepared, false, BehaviorMode::State)?,
+                    ) {
+                        (Some(across), Some(down)) => Some(
+                            if reference_page_scale(extent(&down))
+                                > reference_page_scale(extent(&across))
+                            {
+                                (down, false)
+                            } else {
+                                (across, true)
+                            },
+                        ),
+                        _ => None,
+                    }
                 };
                 let (behavior_layout, horizontal) = if let Some(nested) = nested {
                     nested
@@ -861,18 +866,17 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
 }
 
 /// The box of a simple state: as wide as its name and its `entry`/`do`/`exit` lines need, and as
-/// high as the lines it shows. The drawing truncates the name at 28 and an action line at 34
-/// characters, so the box never has to grow beyond those.
+/// high as the lines it shows. Keep full labels readable in nested machines as well.
 fn state_box(node: &Value) -> (f64, f64) {
     const NAME_CHARACTER: f64 = 7.4; // 12 px bold
     const ACTION_CHARACTER: f64 = 5.6; // 10 px
     let attributes = field(node, "attributes");
-    let characters = |text: &str, limit: usize| text.chars().count().min(limit) as f64;
+    let characters = |text: &str| text.chars().count() as f64;
     let name = as_string(
         first_nonempty([field(node, "label"), field(node, "name")]),
         "",
     );
-    let mut width = characters(&name, 28) * NAME_CHARACTER + 32.0;
+    let mut width = characters(&name) * NAME_CHARACTER + 32.0;
     let mut actions = 0.0;
     for (prefix, keys) in [
         ("entry ", ["entry", "entryAction"]),
@@ -883,7 +887,7 @@ fn state_box(node: &Value) -> (f64, f64) {
         if !action.is_empty() {
             actions += 1.0;
             let line = format!("{prefix}{action}");
-            width = width.max(characters(&line, 34) * ACTION_CHARACTER + 24.0);
+            width = width.max(characters(&line) * ACTION_CHARACTER + 24.0);
         }
     }
     // The keyword and the name sit on a 38 px header; the label of the state actions

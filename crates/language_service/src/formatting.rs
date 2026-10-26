@@ -30,10 +30,23 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
     };
     let mut depth = 0i32;
     let mut formatted_lines = Vec::with_capacity(analysis.len());
+    let mut comment_indent = String::new();
 
     for line in analysis {
-        // Physical lines that begin within a multiline string or block comment
-        // are payload, not layout.  Keep their whitespace byte-for-byte.
+        // KerML strips the leading whitespace of continuation lines in regular comments.
+        // Reindent that margin, retaining everything after it (including markup and spaces).
+        if line.starts_in_block_comment {
+            let content = line.text.trim_start_matches([' ', '\t']);
+            let margin = if content.starts_with('*') && !content.starts_with("*/") {
+                " "
+            } else {
+                ""
+            };
+            formatted_lines.push(format!("{comment_indent}{margin}{content}"));
+            depth += line.opens - line.closes;
+            continue;
+        }
+        // Multiline strings and unrestricted names retain their whitespace payload verbatim.
         if line.starts_in_protected_region {
             formatted_lines.push(line.text.to_string());
             depth += line.opens - line.closes;
@@ -53,6 +66,9 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
         }
 
         let indent_depth = (depth - line.leading_closes).max(0);
+        if line.ends_in_block_comment {
+            comment_indent = indent_unit.repeat(indent_depth as usize);
+        }
         formatted_lines.push(format!(
             "{}{}",
             indent_unit.repeat(indent_depth as usize),
@@ -103,6 +119,8 @@ struct LineAnalysis<'a> {
     text: &'a str,
     starts_in_protected_region: bool,
     ends_in_protected_region: bool,
+    starts_in_block_comment: bool,
+    ends_in_block_comment: bool,
     opens: i32,
     closes: i32,
     leading_closes: i32,
@@ -129,6 +147,7 @@ fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
         // as a CRLF ending and the layout never converges.
         let line = raw_line.trim_end_matches('\r');
         let starts_in_protected_region = state != LexState::Code;
+        let starts_in_block_comment = state == LexState::BlockComment;
         let mut opens = 0;
         let mut closes = 0;
         let mut leading_closes = 0;
@@ -187,6 +206,8 @@ fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
             text: line,
             starts_in_protected_region,
             ends_in_protected_region: state != LexState::Code,
+            starts_in_block_comment,
+            ends_in_block_comment: state == LexState::BlockComment,
             opens,
             closes,
             leading_closes,
@@ -379,6 +400,41 @@ part x;
                 },
             ),
             "package P {\n\tpart x;\n}\n"
+        );
+    }
+
+    #[test]
+    fn multiline_documentation_margins_follow_the_enclosing_block() {
+        let source =
+            "package P {\npart def A {\ndoc /* Summary\n* first\n     * second  \n*/\n}\n}\n";
+        let expected = "package P {\n    part def A {\n        doc /* Summary\n         * first\n         * second  \n        */\n    }\n}\n";
+        let formatted = format_document_text(source, default_options());
+        assert_eq!(formatted, expected);
+        assert_eq!(
+            format_document_text(&formatted, default_options()),
+            formatted
+        );
+        let tabs = FormatOptions {
+            tab_size: 4,
+            insert_spaces: false,
+        };
+        assert_eq!(
+            format_document_text(source, tabs),
+            expected.replace("        ", "\t\t").replace("    ", "\t")
+        );
+    }
+
+    #[test]
+    fn documentation_markup_and_unfinished_comments_keep_their_payload() {
+        let source = "part def A {\ndoc /*\n       Summary  \n     *\n      * - item\n     */\n}\n";
+        let expected =
+            "part def A {\n    doc /*\n    Summary  \n     *\n     * - item\n    */\n}\n";
+        assert_eq!(format_document_text(source, default_options()), expected);
+        assert_eq!(format_document_text(expected, default_options()), expected);
+        let unfinished = "part def A {\ndoc /*\n    unfinished";
+        assert_eq!(
+            format_document_text(unfinished, default_options()),
+            unfinished
         );
     }
 }

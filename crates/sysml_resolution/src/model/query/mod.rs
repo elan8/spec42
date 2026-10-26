@@ -2145,6 +2145,15 @@ impl<D> SemanticModel<D> {
         };
         match (collection, source_kind) {
             (
+                ActionDerivedFactCollection::UntilArgument,
+                Some(DeclarationKind::While | DeclarationKind::Loop),
+            ) => {
+                if !action_parameter(3).is_empty() {
+                    return expression_parameter(3);
+                }
+                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
+            (
                 ActionDerivedFactCollection::TerminateOccurrenceArgument,
                 Some(DeclarationKind::TerminateActionUsage),
             ) => return expression_parameter(1),
