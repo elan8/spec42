@@ -120,8 +120,8 @@ package GeometryExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:333c4bdc3a289d9365de0914b6c76dfd19762650ca9f1fed3cd72fe160a0cf99",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:9ae5d94e47f9bf43a55491b091deed25cfb986968b08301863fc28ab1f7c8a98",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_geometry_incomplete.md",

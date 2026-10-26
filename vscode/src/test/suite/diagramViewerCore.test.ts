@@ -1,3 +1,4 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../../generated/diagram-product/schemaVersion";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
@@ -130,7 +131,7 @@ describe("diagram viewer core", () => {
 
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],

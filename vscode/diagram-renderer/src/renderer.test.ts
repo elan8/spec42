@@ -1,3 +1,4 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../../src/generated/diagram-product/schemaVersion";
 // @vitest-environment jsdom
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -110,7 +111,7 @@ describe("shared renderer", () => {
       {
         theme: LIGHT_THEME,
         productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-        product: { schemaVersion: 7 },
+        product: { schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION },
         requestDraw,
         onNodeClick,
       },
@@ -150,7 +151,7 @@ describe("shared renderer", () => {
       {
         theme: LIGHT_THEME,
         productIdentity: { modelDigest: "blake3:test", viewHandle: "browse" },
-        product: { schemaVersion: 7 },
+        product: { schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION },
         requestDraw,
         loadBranch,
       },
@@ -173,7 +174,7 @@ describe("shared renderer", () => {
         {
           theme: LIGHT_THEME,
           productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-          product: { schemaVersion: 7 },
+          product: { schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION },
           requestDraw,
         },
       );
@@ -188,7 +189,7 @@ describe("shared renderer", () => {
       const options = {
         theme: LIGHT_THEME,
         productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-        product: { schemaVersion: 7 },
+        product: { schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION },
         requestDraw,
       };
       const prepared = {
@@ -227,7 +228,7 @@ describe("shared renderer", () => {
           theme: LIGHT_THEME,
           productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
           abortSignal: abort.signal,
-          product: { schemaVersion: 7 },
+          product: { schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION },
           requestDraw,
         },
       );

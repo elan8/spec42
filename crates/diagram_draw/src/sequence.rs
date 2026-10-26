@@ -173,14 +173,32 @@ pub fn render_sequence_view(
     let lifeline_gap = lifeline_gap(&lifelines, &messages);
     let activations = as_array(get(&diagram, "activations")).to_vec();
     let fragments = as_array(get(&diagram, "fragments")).to_vec();
+    let limitations = prepared
+        .meta
+        .get("projectionLimitations")
+        .map(|value| as_array(Some(value)))
+        .unwrap_or(&[]);
+    let limitation_text = limitations
+        .iter()
+        .filter_map(|reason| get(reason, "code").and_then(Value::as_str))
+        .collect::<Vec<_>>()
+        .join(", ");
     if lifelines.is_empty() || messages.is_empty() {
+        let text = if !limitations.is_empty() {
+            format!("Sequence projection incomplete: {limitation_text}. Inspect the projection details.")
+        } else if as_f64(get(&diagram, "sourceMessageCount"), 0.0) > 0.0 {
+            "Source messages have no drawable endpoints or order. Inspect the projection details."
+                .to_string()
+        } else {
+            "No sequence lifelines or messages in the selected scope".to_string()
+        };
         root = root.child(
             Element::new("text")
                 .attr_f("x", width / 2.0)
                 .attr_f("y", height / 2.0)
                 .attr("text-anchor", "middle")
                 .style("fill", theme.text_secondary)
-                .text("No sequence lifelines or messages in payload"),
+                .text(text),
         );
         return crate::view_frame::enclose(root, &prepared.title, (0.0, 0.0, width, height), theme);
     }
@@ -584,7 +602,7 @@ pub fn render_sequence_view(
     root = root.insert_before_child("sequence-messages", fragment_layer);
 
     let half_box = LIFELINE_BOX_WIDTH / 2.0;
-    let extents = (
+    let mut extents = (
         (x_offset - half_box)
             .min(0.0)
             .max(x_offset - half_box - 16.0),
@@ -592,6 +610,20 @@ pub fn render_sequence_view(
         (x_offset + (lifelines.len() as f64 - 1.0).max(0.0) * lifeline_gap + half_box + 16.0),
         lifeline_bottom + 24.0,
     );
+    if !limitations.is_empty() {
+        let text = format!("Incomplete projection: {limitation_text}");
+        root = root.child(
+            Element::new("text")
+                .attr("class", "sequence-projection-limitations")
+                .attr_f("x", extents.0 + 8.0)
+                .attr_f("y", lifeline_bottom + 40.0)
+                .style("fill", theme.text_secondary)
+                .style("font-size", "11px")
+                .text(&text),
+        );
+        extents.2 = extents.2.max(text.chars().count() as f64 * 6.5 + 24.0);
+        extents.3 += 36.0;
+    }
     crate::view_frame::enclose(root, &prepared.title, extents, theme)
 }
 

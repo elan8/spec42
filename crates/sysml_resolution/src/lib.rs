@@ -94,10 +94,11 @@ pub use diagram_query::{
     DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership,
     DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
     DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
-    DiagramSequenceEndpoint, DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene,
-    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
-    DiagramStateVertexKind, DiagramSuccessionGuard, DiagramTransitionFeature,
-    DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
+    DiagramSequenceCycleStep, DiagramSequenceEndpoint, DiagramSequenceMessage,
+    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
+    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
+    DiagramSuccessionGuard, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection,
 };
 pub use evaluation::{
     AnalysisEvaluation, AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure,

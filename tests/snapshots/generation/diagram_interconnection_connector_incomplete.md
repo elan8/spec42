@@ -234,8 +234,8 @@ package ConnectorIncomplete {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:81fb230b71a60b2cd67907cc57a3b0a7975d5ff0d355c3baddf56003607b1cd9",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:72a11fa3e75e0dbb45e4c61e6f00e8fa9c188f0aae15aa3a98aa4a7811803b3f",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_connector_incomplete.md",

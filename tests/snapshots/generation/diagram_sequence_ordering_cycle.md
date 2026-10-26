@@ -488,8 +488,8 @@ package SequenceCycle {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:144fb001aeb2afa45113f85df2896f6e4cac29c1dbbe06bb62bdac240deea808",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:49033aea2a71eea2f6c9e2c5645e3b83f120b709ac283e81adc191c5768a3211",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_ordering_cycle.md",
@@ -1005,7 +1005,21 @@ package SequenceCycle {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "sequence-ordering-cycle"
+        "code": "sequence-ordering-cycle",
+        "witness": [
+          {
+            "events": [],
+            "provenance": "authored",
+            "source": 3,
+            "target": 8
+          },
+          {
+            "events": [],
+            "provenance": "authored",
+            "source": 8,
+            "target": 3
+          }
+        ]
       }
     ]
   },

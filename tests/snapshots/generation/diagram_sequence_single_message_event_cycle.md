@@ -356,8 +356,8 @@ package SingleCycle {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:74fcd689819f58de481312331efa9578a6aa3fd95b536f2befac14d508d53d92",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:07606d70520129fe1df32b41179c1ca2446923d650dab6c8d22f1c7693003127",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_single_message_event_cycle.md",
@@ -697,7 +697,19 @@ package SingleCycle {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "sequence-ordering-cycle"
+        "code": "sequence-ordering-cycle",
+        "witness": [
+          {
+            "events": [
+              8,
+              10,
+              8
+            ],
+            "provenance": "implied",
+            "source": 2,
+            "target": 2
+          }
+        ]
       }
     ]
   },

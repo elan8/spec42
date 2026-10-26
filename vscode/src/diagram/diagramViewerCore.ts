@@ -1,3 +1,4 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../generated/diagram-product/schemaVersion";
 import * as path from "path";
 import type { DiagramProduct } from "../generated/diagram-product/DiagramProduct";
 
@@ -306,7 +307,7 @@ export function parseDiagramProduct(text: string): DiagramProduct {
   const documents = product.documents;
   const sources = product.sources;
   const references = product.references;
-  if (product.schemaVersion !== 7 || typeof product.modelDigest !== "string" ||
+  if (product.schemaVersion !== DIAGRAM_PRODUCT_SCHEMA_VERSION || typeof product.modelDigest !== "string" ||
       !Array.isArray(documents) || !documents.every(isDiagramDocument) ||
       !Array.isArray(sources) || !sources.every((source) => isDiagramSource(source, documents.length)) ||
       !Array.isArray(references) || !references.every((reference) => isProductReference(reference, documents.length, sources.length, references.length)) ||
@@ -319,7 +320,7 @@ export function parseDiagramProduct(text: string): DiagramProduct {
       !Array.isArray(projection.relationships) ||
       !Array.isArray(projection.edges) || !projection.metadata || typeof projection.metadata !== "object" ||
       !isDiagramScene(projection.scene, String(view.kind), sources.length)) {
-    throw new Error("Generated diagram product does not match schema version 5.");
+    throw new Error("Generated diagram product does not match schema version 8.");
   }
   for (const reason of completeness.reasons) {
     if (!reason || typeof reason !== "object") throw new Error("Generated diagram product has a malformed completeness reason.");

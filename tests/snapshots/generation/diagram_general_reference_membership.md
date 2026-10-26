@@ -295,8 +295,8 @@ package Membership {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:05294aa9e0cb81c065abcf2193f7e31eaa31253ac960ccfa10dd5f0334e4bd03",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:96cdedcdd7c17673da9666731852a5ba83abf665b87ea6405f35ca7d802767a0",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_reference_membership.md",

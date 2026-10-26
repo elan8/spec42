@@ -1,3 +1,4 @@
+import { diagramLimitations } from "./diagramLimitations";
 import { populateViewSelect, withExportBackground, type ViewChoice } from "./viewPresentation";
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
 import { isNativeDiagramView, renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
@@ -14,7 +15,6 @@ type RenderMessage = {
   views: ViewChoice[];
   selectedHandle: string;
   header: string;
-  incompleteReasons: string[];
   placeholder?: string;
   loading?: boolean;
   error?: string;
@@ -225,12 +225,50 @@ function setStatus(header: string, error: string | undefined): void {
   statusEl.appendChild(document.createTextNode(header));
 }
 
+function showLimitations(product?: DiagramProduct, viewHandle?: string): void {
+  const host = must<HTMLElement>("limitations");
+  const wasOpen = host.querySelector("details")?.open ?? false;
+  host.replaceChildren();
+  const limitations = product ? diagramLimitations(product) : [];
+  host.hidden = limitations.length === 0;
+  if (!product || limitations.length === 0) return;
+  const details = document.createElement("details");
+  details.open = wasOpen;
+  const summary = document.createElement("summary");
+  summary.textContent = `Projection limitations (${limitations.length})`;
+  details.appendChild(summary);
+  const list = document.createElement("ul");
+  for (const limitation of limitations) {
+    const item = document.createElement("li");
+    const code = document.createElement("code");
+    code.textContent = limitation.code;
+    const text = document.createElement("p");
+    text.textContent = limitation.explanation;
+    item.append(code, text);
+    for (const link of limitation.links) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = link.label;
+      button.addEventListener("click", () => vscode.postMessage({ type: "openSource", target: link.target }));
+      item.appendChild(button);
+    }
+    list.appendChild(item);
+  }
+  const copy = document.createElement("button");
+  copy.type = "button";
+  copy.textContent = "Copy structured details";
+  copy.addEventListener("click", () => vscode.postMessage({ type: "copyLimitations", modelDigest: product.modelDigest, viewHandle }));
+  details.append(list, copy);
+  host.appendChild(details);
+}
+
 async function render(message: RenderMessage): Promise<void> {
   const { generation, signal } = beginRender();
   populateSelect(message.views, message.selectedHandle);
   setStatus(message.header, message.error);
 
   if (message.placeholder) {
+    showLimitations();
     if (!isCurrentRender(generation, signal)) return;
     clearRenderState();
     canvas.replaceChildren(message.loading ? withLoading(message.placeholder) : withText(message.placeholder));
@@ -243,16 +281,16 @@ async function render(message: RenderMessage): Promise<void> {
   } catch {
     if (!isCurrentRender(generation, signal)) return;
     clearRenderState();
+    showLimitations();
     canvas.replaceChildren(withText("The generated diagram product was not valid JSON."));
     return;
   }
 
+  showLimitations(product, message.selectedHandle);
   if (isEmptyIncompleteDiagramProduct(product)) {
     if (!isCurrentRender(generation, signal)) return;
     clearRenderState();
-    const reasons = message.incompleteReasons.length > 0
-      ? message.incompleteReasons.join(", ")
-      : "the projection is empty";
+    const reasons = diagramLimitations(product).map((reason) => reason.explanation).join(" ") || "the projection is empty";
     canvas.replaceChildren(withText(`Nothing to draw yet — ${reasons}.`));
     return;
   }

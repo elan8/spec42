@@ -116,8 +116,8 @@ package EmptyExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:19b47fdd8f9e48a09a41c67a1bb393bd1ad96ffa1ac71955caaead8b228aaba5",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:6d41bb4b9c018f95057430d5dca1c6e4fd8c93de69fd0e20d2e0b013a3e36f11",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_empty_valid.md",

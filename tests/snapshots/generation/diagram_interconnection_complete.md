@@ -368,8 +368,8 @@ package InterconnectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:9ea89b2be8a765ccbec647f906d7a6ec3772c3669b5d0fc5b43824b783861802",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:1ab1c109e59216347a68f9d7005975725447ab604839767c9a27677da16f1f1c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_complete.md",
