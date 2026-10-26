@@ -24,6 +24,14 @@ fn files_in(directory: &Path) -> Result<BTreeMap<PathBuf, Vec<u8>>, String> {
 }
 
 fn run() -> Result<(), String> {
+    // The TypeScript literal mirrors the authoritative Rust schema version. Fail before
+    // writing bindings if a schema migration forgets to update that literal.
+    let version_field = format!("schemaVersion: {},", diagram_product::SCHEMA_VERSION);
+    if !DiagramProduct::decl().contains(&version_field) {
+        return Err(
+            "diagram product TypeScript schema version disagrees with SCHEMA_VERSION".into(),
+        );
+    }
     let check = std::env::args().skip(1).any(|arg| arg == "--check");
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../..")

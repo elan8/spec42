@@ -7,7 +7,7 @@ use ts_rs::TS;
 #[derive(Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct DiagramProduct {
-    #[ts(type = "7")]
+    #[ts(type = "8")]
     pub schema_version: u32,
     pub model_digest: String,
     pub documents: Vec<DiagramDocument>,
