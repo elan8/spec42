@@ -197,8 +197,11 @@ class Lsp:
         self.reader.join(timeout=10)
         if self.resources:
             self.resources.close()
-        self.process.stdin.close()
-        self.process.stdout.close()
+        for pipe in [self.process.stdin, self.process.stdout]:
+            try:
+                pipe.close()
+            except BrokenPipeError:
+                pass
 
 
 def main():
@@ -227,7 +230,7 @@ def main():
     uri = document.as_uri()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     command = [str(server), *args.server_arg]
-    report = {"schema_version": 1, "benchmark": "lsp-edit-to-handler",
+    report = {"schema_version": 2, "benchmark": "lsp-edit-to-handler",
               "scope": "discovery-with-missing-libraries-permitted" if args.allow_missing_libraries else "editor-with-library-admission",
               "limitations": ["Not version-correlated diagnostic latency", "No view refresh measurement",
                               "CPU times are cumulative child-process times; resource snapshots are taken after completion receipt, not at a semantic barrier",
@@ -236,6 +239,7 @@ def main():
               "environment": {"platform": platform.platform(), "machine": platform.node(),
                               "processor": platform.processor(), "cpu_count": os.cpu_count(),
                               "profile": args.profile, "command": command,
+                              "command_cwd": str(root), "runner_sha256": digest(Path(__file__)),
                               "server_sha256": digest(server),
                               "spec42_environment": {k: os.environ[k] for k in [
                                   "SPEC42_LSP_TEST_STDLIB", "SPEC42_LSP_TEST_NO_STDLIB",
@@ -323,7 +327,11 @@ def main():
             report["error"] = repr(error)
         finally:
             if lsp:
-                lsp.close()
+                try:
+                    lsp.close()
+                except Exception as error:
+                    report["status"] = "failed"
+                    report["cleanup_error"] = repr(error)
                 report["events"] = lsp.events
             args.output.write_text(json.dumps(report, indent=2, default=str) + "\n", encoding="utf-8")
     print(json.dumps({key: report.get(key) for key in ["status", "summary_ms", "error"]}))
