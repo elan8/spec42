@@ -191,7 +191,7 @@ package EmptySelection {
 ~~~json
 {
   "schemaVersion": 10,
-  "modelDigest": "blake3:0bea5c96f39ce27bf1bd5e4e25d49b2c288f39b1874d96c793d4cee29ebd25a2",
+  "modelDigest": "blake3:134e1d50ff5597e8cd5a94e9d17332fb42f20a6aaa03167d0168a78b62a8cf7c",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

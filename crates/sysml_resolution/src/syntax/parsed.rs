@@ -148,14 +148,26 @@ impl ParsedSource {
         &self.0.diagnostics
     }
 
-    /// Whether the parse produced no diagnostic at all — the strict-parse notion of success.
+    /// Whether strict parsing succeeded. Non-fatal warnings remain available in diagnostics.
     pub fn is_clean(&self) -> bool {
-        self.0.diagnostics.is_empty()
+        !self.0.parser_failed
+            && !self
+                .0
+                .errors
+                .iter()
+                .any(ParseError::prevents_strict_parsing)
     }
 
-    /// The first diagnostic, for callers that treat any diagnostic as rejection.
+    /// The first diagnostic preventing strict parsing. Fully parsed syntax warnings do not reject it.
     pub fn first_error(&self) -> Option<&SyntaxDiagnostic> {
-        self.0.diagnostics.first()
+        if self.0.parser_failed {
+            return self.0.diagnostics.first();
+        }
+        self.0
+            .errors
+            .iter()
+            .position(ParseError::prevents_strict_parsing)
+            .and_then(|index| self.0.diagnostics.get(index))
     }
 
     /// Whether the parser failed outright (panicked) rather than recovering.

@@ -14,6 +14,12 @@ package MyPkg { }; in newX : Real;
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "redundant_semicolon_after_body")
+        (source "parser")
+        (range (start 0 17) (end 0 18))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 0 29) (end 0 33))
