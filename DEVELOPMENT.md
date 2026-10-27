@@ -362,6 +362,7 @@ python scripts/benchmark-editor.py --server target/release/spec42_core_lsp_test.
 ```
 
 Choose an existing source document in the workspace for `--document`.
+Use `--change-kind incremental` to send ordered UTF-16 range edits instead of full-text updates.
 For another host, use `--server-arg` for its LSP command-line arguments.
 The report keeps raw messages, per-version samples, p50/p95/max, binary/input/configuration hashes,
 revision, dirty-tree state, build-profile label and host metadata. Check the profile against the

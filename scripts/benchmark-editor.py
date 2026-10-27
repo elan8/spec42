@@ -27,6 +27,11 @@ def distribution(values):
             for name, p in [("p50", .5), ("p95", .95), ("max", 1)]}
 
 
+def end_position(text):
+    return {"line": text.count("\n"),
+            "character": len(text.rsplit("\n", 1)[-1].encode("utf-16-le")) // 2}
+
+
 class Lsp:
     def __init__(self, command, cwd, stderr):
         self.messages = queue.Queue()
@@ -102,6 +107,7 @@ def main():
     parser.add_argument("--document", type=Path, required=True)
     parser.add_argument("--iterations", type=int, default=20)
     parser.add_argument("--burst-size", type=int, default=10)
+    parser.add_argument("--change-kind", choices=["full", "incremental"], default="full")
     parser.add_argument("--timeout-seconds", type=float, default=120)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
@@ -149,14 +155,21 @@ def main():
             lsp.send("textDocument/hover", {"textDocument": {"uri": uri}, "position": {"line": 0, "character": 0}}, 2)
             lsp.until(lambda m: m.get("id") == 2, args.timeout_seconds)
             version = 1
+            current_text = text
             for workload, count in [("single", 1), ("burst", args.burst_size)]:
                 for iteration in range(args.iterations):
                     sent = {}
                     for _ in range(count):
                         version += 1
-                        changed = text + f"\n// editor benchmark revision {version}\n"
+                        suffix = f"\n// editor benchmark revision {version}\n"
+                        changed = text + suffix
+                        change = {"text": changed}
+                        if args.change_kind == "incremental":
+                            change = {"range": {"start": end_position(text),
+                                                "end": end_position(current_text)}, "text": suffix}
                         sent[version] = lsp.send("textDocument/didChange", {"textDocument": {"uri": uri, "version": version},
-                                                                         "contentChanges": [{"text": changed}]})
+                                                                         "contentChanges": [change]})
+                        current_text = changed
                     pending = set(sent)
                     while pending:
                         def completed(message):
