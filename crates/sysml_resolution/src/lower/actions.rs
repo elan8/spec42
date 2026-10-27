@@ -1509,8 +1509,8 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers an `assign <target> := <value>;` reassignment statement (BNF `AssignStmt`, `ast::
-    /// AssignStmt`; `is_then` is not modeled as a distinct fact -- both the plain and `then assign
-    /// ...;` spellings resolve identically) as its own anonymous `DeclarationKind::Assign` feature
+    /// AssignStmt`; a `then assign ...;` also carries the source of its succession, like any other
+    /// `then` node) as its own anonymous `DeclarationKind::Assign` feature
     /// owned by `owner`, mirroring `lower_bind`'s "statement, not a new named usage" shape: `lhs`
     /// is lowered as an `AssignTarget` reference through the exact `lower_succession_end` `FeatureRef`/
     /// `MemberAccess` dispatch every other paired/single-operand control-flow reference kind uses,
@@ -1525,6 +1525,12 @@ impl SemanticModelBuilder {
         span: Span,
         node: &AssignStmt,
     ) -> Result<(), ConstructionError> {
+        // `then assign` is SysML's `SourceSuccessionMember ActionNodeMember` (8.2.2.17.1): a
+        // succession from the preceding member to this assignment node.
+        let then_source = node
+            .is_then
+            .then(|| self.then_source(owner, self.declarations.len()))
+            .flatten();
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -1534,6 +1540,7 @@ impl SemanticModelBuilder {
             // A synthesized scope for the assignment's target/value references.
             DeclarationFacts::none(),
         )?;
+        self.declaration_facts[declaration.index()].then_source = then_source;
         self.push_membership(
             declaration,
             MembershipKind::Feature,
