@@ -325,8 +325,8 @@ package Shop {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:d41e97d324693057e4fcabdc575982c9df6055d6217859b86f9665d5629d5f25",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:48773ffd1129d74ac7394bbbec2534096f10ba6fdc8291178ea915bf692ff5ad",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

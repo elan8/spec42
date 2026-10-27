@@ -583,6 +583,7 @@ name = "diagram_draw"
 version = "0.57.0"
 dependencies = [
  "diagram_layout",
+ "diagram_product",
  "serde",
  "serde_json",
 ]

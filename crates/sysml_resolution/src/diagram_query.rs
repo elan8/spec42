@@ -87,7 +87,21 @@ pub enum DiagramIncompleteReason {
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
     SequenceMessageEndpointOutsideLifeline,
-    SequenceOrderingCycle,
+    SequenceOrderingCycle {
+        witness: Box<[DiagramSequenceCycleStep]>,
+    },
+    SequenceContentOmitted {
+        elements: Box<[DiagramOccurrenceIdentity]>,
+    },
+}
+
+/// One edge of an actual closed precedence path, retained by the projection owner.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct DiagramSequenceCycleStep {
+    pub source: DiagramOccurrenceIdentity,
+    pub target: DiagramOccurrenceIdentity,
+    pub events: Box<[DiagramOccurrenceIdentity]>,
+    pub authored: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -353,6 +367,7 @@ pub enum DiagramSequenceEndpoint {
 pub enum DiagramSequenceOrder {
     Resolved(u32),
     Cyclic,
+    BlockedByCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -588,7 +603,17 @@ impl PublishedResolution {
             .diagram_entries_for(ElementSource::Workspace)
             .into_keys()
             .collect::<BTreeSet<_>>();
-        let mut reasons = BTreeSet::new();
+        // Non-convergence is a property of the whole solve, so every view inherits it. Parser
+        // recovery and unsupported syntax are attributed to their documents and reach a view only
+        // through the documents it draws from (below), so an unrelated broken file does not mark
+        // every view incomplete.
+        let mut reasons = self
+            .model
+            .completeness()
+            .obstacles()
+            .filter(|obstacle| matches!(obstacle, crate::PublicationObstacle::NonConverged))
+            .map(publication_obstacle_reason)
+            .collect::<BTreeSet<_>>();
         let exposed = match self.view_exposed_elements(view).answer {
             QueryAnswer::Resolved(exposed) => exposed,
             QueryAnswer::Ambiguous(_) => {
@@ -1572,6 +1597,18 @@ impl PublishedResolution {
                 edge_scene_suffix(&edge.kind)
             )
         });
+        // The view's own declaration and every projected element name the documents this view
+        // draws from; their recovery or unsupported constructs may have dropped content from it.
+        let documents = std::iter::once(view_entry.source.document)
+            .chain(elements.iter().map(|element| element.source.document))
+            .collect::<BTreeSet<_>>();
+        for document in documents {
+            reasons.extend(
+                self.model
+                    .document_obstacles(document)
+                    .map(publication_obstacle_reason),
+            );
+        }
         let scene = diagram_scene(
             view_entry.kind,
             &projected_roots,
@@ -1740,6 +1777,14 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
 
 /// The boundary form of one element reference.
 ///
+fn publication_obstacle_reason(obstacle: crate::PublicationObstacle) -> DiagramIncompleteReason {
+    match obstacle {
+        crate::PublicationObstacle::ParseRecovery => DiagramIncompleteReason::ParseRecovery,
+        crate::PublicationObstacle::UnsupportedSyntax => DiagramIncompleteReason::UnsupportedSyntax,
+        crate::PublicationObstacle::NonConverged => DiagramIncompleteReason::NonConverged,
+    }
+}
+
 /// `document` is the identity the caller materialised from `entry.location.document`: the
 /// generator protocol is a process boundary, so the URI is spelled out here rather than carried
 /// as a publication-scoped handle no other process could resolve.
@@ -2097,6 +2142,52 @@ fn sequence_scene(
         .map(|(index, element)| (index as u32, element))
         .collect::<Vec<_>>();
 
+    // A flow the scene cannot place is omitted scenario content only when it sits in nested
+    // behaviour (a sub-scenario or structured action). A flow inside a lifeline's own structure,
+    // or inside any definition, is that participant's internals, not a message of this
+    // interaction, so it is not reported.
+    let by_occurrence = elements
+        .iter()
+        .map(|element| (&element.occurrence_id, element))
+        .collect::<BTreeMap<_, _>>();
+    let in_structure = |element: &DiagramElement| {
+        let mut owner = element.owner.as_ref();
+        while let Some(current) = owner {
+            if roots.contains(&current.semantic_id()) {
+                return false;
+            }
+            let Some(entry) = by_occurrence.get(current) else {
+                return false;
+            };
+            if lifeline_set.contains(current)
+                || [
+                    ElementKind::Definition,
+                    ElementKind::PartUsage,
+                    ElementKind::PortUsage,
+                    ElementKind::ItemUsage,
+                ]
+                .into_iter()
+                .any(|kind| entry.kind.conforms_to(kind))
+            {
+                return true;
+            }
+            owner = entry.owner.as_ref();
+        }
+        false
+    };
+    let omitted = elements
+        .iter()
+        .filter(|element| element.kind.conforms_to(ElementKind::FlowConnectionUsage))
+        .filter(|element| !is_direct_member(element))
+        .filter(|element| !in_structure(element))
+        .map(|element| element.occurrence_id.clone())
+        .collect::<BTreeSet<_>>();
+    if !omitted.is_empty() {
+        reasons.insert(DiagramIncompleteReason::SequenceContentOmitted {
+            elements: omitted.into_iter().collect::<Vec<_>>().into_boxed_slice(),
+        });
+    }
+
     let owner_by_occurrence = elements
         .iter()
         .filter_map(|element| {
@@ -2179,14 +2270,28 @@ fn sequence_scene(
             .and_then(|relationship| resolved_target(&relationship.target))
             .cloned()
     };
+    // Only event occurrences order messages. A lifeline, or a port or part of one, is structure
+    // that every message to it shares; treating it as an event would order repeated or reply
+    // messages through it into a false cycle.
+    let kind_by_occurrence = elements
+        .iter()
+        .map(|element| (&element.occurrence_id, element.kind))
+        .collect::<BTreeMap<_, _>>();
+    let is_event = |occurrence: &DiagramOccurrenceIdentity| {
+        !lifeline_set.contains(occurrence)
+            && !matches!(
+                kind_by_occurrence.get(occurrence),
+                Some(ElementKind::PartUsage | ElementKind::PortUsage | ElementKind::ItemUsage)
+            )
+    };
     let message_events = messages
         .iter()
-        .filter_map(|(index, message)| {
-            Some((
+        .map(|(index, message)| {
+            (
                 *index,
-                event_end(message, DiagramRelationshipKind::FlowSource)?,
-                event_end(message, DiagramRelationshipKind::FlowTarget)?,
-            ))
+                event_end(message, DiagramRelationshipKind::FlowSource).filter(is_event),
+                event_end(message, DiagramRelationshipKind::FlowTarget).filter(is_event),
+            )
         })
         .collect::<Vec<_>>();
     let mut event_successors =
@@ -2201,46 +2306,125 @@ fn sequence_scene(
             .insert(edge.target.clone());
     }
     for (_, source, target) in &message_events {
+        let (Some(source), Some(target)) = (source, target) else {
+            continue;
+        };
         event_successors
             .entry(source.clone())
             .or_default()
             .insert(target.clone());
     }
-    for (index, source, target) in &message_events {
-        let mut reachable = BTreeSet::new();
-        for start in [source, target] {
-            let mut seen = BTreeSet::new();
-            let mut pending = event_successors
-                .get(start)
-                .into_iter()
-                .flatten()
-                .cloned()
-                .collect::<Vec<_>>();
-            while let Some(event) = pending.pop() {
-                if seen.insert(event.clone()) {
-                    pending.extend(event_successors.get(&event).into_iter().flatten().cloned());
-                }
-            }
-            // A cycle through one message's own endpoint must not acquire a guessed order,
-            // even when no second message exists to produce a pairwise ordering cycle.
-            if seen.contains(start) {
-                precedence.insert((*index, *index));
-            }
-            reachable.extend(seen);
+    // A row is a deterministic display position respecting known precedence, not a claim
+    // that unrelated messages have an authored temporal order. A message precedes another when
+    // one of its events (send or receive) reaches one of the other's events. An event the two
+    // share carries no order between them, so a path may neither start nor end at one.
+    let mut evidence = precedence
+        .iter()
+        .map(|pair| (*pair, None))
+        .collect::<BTreeMap<_, Option<(DiagramOccurrenceIdentity, DiagramOccurrenceIdentity)>>>();
+    let events_of = |source: &Option<DiagramOccurrenceIdentity>,
+                     target: &Option<DiagramOccurrenceIdentity>| {
+        [source.as_ref(), target.as_ref()]
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+    };
+    let message_event_sets = message_events
+        .iter()
+        .map(|(index, source, target)| (*index, events_of(source, target)))
+        .collect::<BTreeMap<_, _>>();
+    let mut messages_by_event = BTreeMap::<&DiagramOccurrenceIdentity, Vec<u32>>::new();
+    for (index, events) in &message_event_sets {
+        for event in events {
+            messages_by_event.entry(event).or_default().push(*index);
         }
-        for (next, next_source, next_target) in &message_events {
-            if index != next
-                && (target == next_source
-                    || reachable.contains(next_source)
-                    || reachable.contains(next_target))
-            {
-                precedence.insert((*index, *next));
+    }
+    let mut cyclic_events = BTreeSet::new();
+    // Visit each distinct endpoint once and discard its search tree after use, rather than
+    // retaining a potentially graph-sized predecessor map for every event.
+    for (event, indexes) in &messages_by_event {
+        let reachable = directed_sequence_parents(&event_successors, *event);
+        if reachable.contains_key(*event) {
+            cyclic_events.insert(*event);
+        }
+        for (next, next_events) in &message_event_sets {
+            if next_events.contains(*event) {
+                continue;
+            }
+            for next_event in next_events {
+                if !reachable.contains_key(next_event) {
+                    continue;
+                }
+                for index in indexes {
+                    if index == next || message_event_sets[index].contains(next_event) {
+                        continue;
+                    }
+                    let pair = (*index, *next);
+                    precedence.insert(pair);
+                    evidence
+                        .entry(pair)
+                        .or_insert_with(|| Some(((*event).clone(), next_event.clone())));
+                }
             }
         }
     }
-    let order = canonical_sequence_order(&message_indexes, precedence);
-    if order.len() != messages.len() {
-        reasons.insert(DiagramIncompleteReason::SequenceOrderingCycle);
+    for (index, source, target) in &message_events {
+        // A receive-only event cycle is contradictory even if it cannot return to the send.
+        for event in [source.as_ref(), target.as_ref()].into_iter().flatten() {
+            if cyclic_events.contains(event) {
+                let pair = (*index, *index);
+                precedence.insert(pair);
+                evidence
+                    .entry(pair)
+                    .or_insert_with(|| Some((event.clone(), event.clone())));
+            }
+        }
+    }
+    let order = canonical_sequence_order(&message_indexes, precedence.iter().copied());
+    let graph = precedence.iter().fold(
+        BTreeMap::<u32, BTreeSet<u32>>::new(),
+        |mut graph, (a, b)| {
+            graph.entry(*a).or_default().insert(*b);
+            graph
+        },
+    );
+    let cyclic = message_indexes
+        .iter()
+        .copied()
+        .filter(|index| !order.contains_key(index))
+        .filter(|index| directed_sequence_path(&graph, index, index).is_some())
+        .collect::<BTreeSet<_>>();
+    // Publish a real closed path for each cycle not already witnessed. Downstream messages
+    // blocked by a cycle are distinct from messages that belong to it.
+    let mut witnessed = BTreeSet::new();
+    for index in &cyclic {
+        if witnessed.contains(index) {
+            continue;
+        }
+        let path = directed_sequence_path(&graph, index, index).expect("cyclic member has a path");
+        witnessed.extend(path.iter().copied());
+        let witness = path
+            .windows(2)
+            .map(|pair| {
+                let event_ends = &evidence[&(pair[0], pair[1])];
+                let events = event_ends
+                    .as_ref()
+                    .map(|(source, target)| {
+                        directed_sequence_path(&event_successors, source, target)
+                            .expect("precedence has an event path")
+                    })
+                    .unwrap_or_default();
+                DiagramSequenceCycleStep {
+                    source: elements[pair[0] as usize].occurrence_id.clone(),
+                    target: elements[pair[1] as usize].occurrence_id.clone(),
+                    authored: event_ends.is_none(),
+                    events: events.into_boxed_slice(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
+        reasons.insert(DiagramIncompleteReason::SequenceOrderingCycle { witness });
     }
 
     let messages = messages
@@ -2262,7 +2446,13 @@ fn sequence_scene(
                     .get(&index)
                     .copied()
                     .map(DiagramSequenceOrder::Resolved)
-                    .unwrap_or(DiagramSequenceOrder::Cyclic),
+                    .unwrap_or_else(|| {
+                        if cyclic.contains(&index) {
+                            DiagramSequenceOrder::Cyclic
+                        } else {
+                            DiagramSequenceOrder::BlockedByCycle
+                        }
+                    }),
                 provenance: if relationships
                     .iter()
                     .filter(|relationship| {
@@ -2287,6 +2477,47 @@ fn sequence_scene(
         lifelines: lifelines.into_boxed_slice(),
         messages: messages.into_boxed_slice(),
     }
+}
+
+/// Breadth-first predecessor tree. The source has a predecessor only for a real nonempty cycle.
+fn directed_sequence_parents<N: Ord + Clone>(
+    graph: &BTreeMap<N, BTreeSet<N>>,
+    source: &N,
+) -> BTreeMap<N, N> {
+    let mut pending = VecDeque::from([source.clone()]);
+    let mut parents = BTreeMap::new();
+    let mut seen = BTreeSet::from([source.clone()]);
+    while let Some(current) = pending.pop_front() {
+        for next in graph.get(&current).into_iter().flatten() {
+            if next == source {
+                parents
+                    .entry(next.clone())
+                    .or_insert_with(|| current.clone());
+            }
+            if seen.insert(next.clone()) {
+                parents.insert(next.clone(), current.clone());
+                pending.push_back(next.clone());
+            }
+        }
+    }
+    parents
+}
+
+/// A shortest nonempty directed path, with stable neighbor order. Identity alone is not a path.
+fn directed_sequence_path<N: Ord + Clone>(
+    graph: &BTreeMap<N, BTreeSet<N>>,
+    source: &N,
+    target: &N,
+) -> Option<Vec<N>> {
+    let parents = directed_sequence_parents(graph, source);
+    let mut current = parents.get(target)?.clone();
+    let mut path = vec![target.clone(), current.clone()];
+    while &current != source {
+        current = parents.get(&current)?.clone();
+        path.push(current.clone());
+    }
+    path.reverse();
+    Some(path)
 }
 
 fn canonical_sequence_order(
@@ -2633,8 +2864,8 @@ mod tests {
     use std::collections::BTreeSet;
 
     use super::{
-        authored_chain_score, canonical_sequence_order, compartment_kind, usable_value,
-        DiagramCompartmentKind,
+        authored_chain_score, canonical_sequence_order, compartment_kind, directed_sequence_path,
+        usable_value, DiagramCompartmentKind,
     };
     use crate::{
         ElementKind, PublicationCompleteness, PublicationObstacle, QueryAnswer, QueryOutcome,
@@ -2719,6 +2950,28 @@ mod tests {
         let messages = BTreeSet::from([0, 1, 2]);
         let order = canonical_sequence_order(&messages, [(0, 1), (1, 0)]);
         assert_eq!(order, [(2, 1)].into_iter().collect());
+    }
+
+    #[test]
+    fn a_shared_endpoint_is_not_a_nonempty_ordering_path() {
+        let graph = [(0, BTreeSet::from([1, 2])), (3, BTreeSet::from([1]))]
+            .into_iter()
+            .collect();
+        assert_eq!(directed_sequence_path(&graph, &0, &0), None);
+        assert_eq!(directed_sequence_path(&graph, &0, &3), None);
+        assert_eq!(directed_sequence_path(&graph, &3, &0), None);
+        assert_eq!(directed_sequence_path(&graph, &0, &1), Some(vec![0, 1]));
+    }
+
+    #[test]
+    fn cycle_witness_is_closed_and_does_not_include_a_blocked_successor() {
+        let graph = [(0, BTreeSet::from([1])), (1, BTreeSet::from([0, 2]))]
+            .into_iter()
+            .collect();
+        assert_eq!(directed_sequence_path(&graph, &0, &0), Some(vec![0, 1, 0]));
+        assert_eq!(directed_sequence_path(&graph, &2, &2), None);
+        let graph = [(0, BTreeSet::from([0]))].into_iter().collect();
+        assert_eq!(directed_sequence_path(&graph, &0, &0), Some(vec![0, 0]));
     }
 
     #[test]

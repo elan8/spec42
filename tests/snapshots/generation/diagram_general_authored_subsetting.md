@@ -389,8 +389,8 @@ package GeneralSubsetting {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:b6c8681cd807568c667d67d478a1c0cda14b4f7130dc33bd306ea6d5dc48ef35",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:400a3c2c481af80ed6f0edc605ca57dc7e5f4c2270d82229e6b9508467e55a58",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_authored_subsetting.md",

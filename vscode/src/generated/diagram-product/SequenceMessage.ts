@@ -3,4 +3,4 @@ import type { Provenance } from "./Provenance";
 import type { SequenceEndpoint } from "./SequenceEndpoint";
 import type { SequenceOrder } from "./SequenceOrder";
 
-export type SequenceMessage = { node: number, label: string, source: SequenceEndpoint, target: SequenceEndpoint, order: SequenceOrder, provenance: Provenance, navigation: number, };
+export type SequenceMessage = { node: number, label: string | null, source: SequenceEndpoint, target: SequenceEndpoint, order: SequenceOrder, provenance: Provenance, navigation: number, };

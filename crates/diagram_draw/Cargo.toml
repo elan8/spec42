@@ -7,6 +7,7 @@ license.workspace = true
 description = "Native Rust SVG drawing for Spec42 diagram views (spec42 #176 / #181)"
 
 [dependencies]
+diagram_product = { path = "../diagram_product" }
 diagram_layout = { path = "../diagram_layout" }
 serde = { workspace = true }
 serde_json = { workspace = true }

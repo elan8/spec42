@@ -1,4 +1,6 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../generated/diagram-product/schemaVersion";
 import * as vscode from "vscode";
+import { diagramLimitations } from "./diagramLimitations";
 import { State } from "vscode-languageclient/node";
 import type { LspClientHandles } from "../activation/lspClient";
 import {
@@ -34,7 +36,6 @@ type RenderMessage = {
   views: Array<{ handle: string; label: string; group: string; kindLabel?: string; definition?: import("./diagramViewerCore").SourceNavigation }>;
   selectedHandle: string;
   header: string;
-  incompleteReasons: string[];
   placeholder?: string;
   loading?: boolean;
   error?: string;
@@ -277,6 +278,26 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       const data = (message as { data?: unknown }).data;
       if ((format === "svg" || format === "png") && typeof data === "string") {
         void this.saveExport(format, data);
+      }
+      return;
+    }
+    if (kind === "copyLimitations") {
+      const request = message as { modelDigest?: string; viewHandle?: string };
+      const artifact = this.lastArtifact;
+      if (artifact && request.modelDigest === artifact.product.modelDigest && request.viewHandle === this.selectedHandle) {
+        // Only the limitations: each canonical reason beside its explanation and the source sites
+        // its product-local indexes name, so the copy stands alone without the whole product.
+        const product = artifact.product;
+        const details = diagramLimitations(product).map((detail, index) => ({
+          ...detail,
+          reason: product.completeness.reasons[index],
+        }));
+        void vscode.env.clipboard.writeText(JSON.stringify({
+          view: product.selectedView.name,
+          modelDigest: product.modelDigest,
+          status: product.completeness.status,
+          limitations: details,
+        }, null, 2));
       }
       return;
     }
@@ -535,7 +556,6 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       views: this.viewList(),
       selectedHandle: this.selectedHandle ?? "",
       header: placeholder,
-      incompleteReasons: [],
       placeholder,
     });
   }
@@ -547,7 +567,6 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       views: this.viewList(),
       selectedHandle: this.selectedHandle ?? "",
       header: "Loading view…",
-      incompleteReasons: [],
       placeholder: "Loading view…",
       loading: true,
     });
@@ -565,7 +584,6 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       views: this.viewList(),
       selectedHandle: this.selectedHandle ?? "",
       header: artifactHeader(artifact),
-      incompleteReasons: artifact.product.completeness.reasons.map((reason) => reason.code),
       error,
     });
   }
@@ -673,6 +691,11 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   .status{flex-basis:100%;color:var(--vscode-descriptionForeground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .error{color:var(--vscode-errorForeground);font-weight:600}
   .canvas{flex:1;min-height:0;position:relative}
+  .limitations{padding:6px 10px;border-bottom:1px solid var(--vscode-panel-border);max-height:35vh;overflow:auto}
+  .limitations summary{cursor:pointer;color:var(--vscode-textLink-foreground)}
+  .limitations code{color:var(--vscode-descriptionForeground)}
+  .limitations button{color:var(--vscode-button-foreground);background:var(--vscode-button-background);border:1px solid var(--vscode-contrastBorder,transparent);padding:3px 6px;margin:3px}
+  .limitations button:focus-visible,.limitations summary:focus-visible{outline:1px solid var(--vscode-focusBorder);outline-offset:2px}
   .view-kind{color:var(--vscode-descriptionForeground)}
   header label{font-size:11px;display:flex;align-items:center;gap:3px}
   .canvas .viz-bg{fill:transparent}
@@ -693,6 +716,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   <span class="view-kind" id="view-kind"></span>
   <span class="status" id="status"></span>
 </header>
+<aside id="limitations" class="limitations" aria-label="Projection limitations" hidden></aside>
 <main id="diagram" class="canvas"></main>
 <script nonce="${nonce}" src="${script}"></script></body></html>`;
   }
@@ -700,7 +724,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
 
 function emptyProduct(): DiagramProduct {
   return {
-    schemaVersion: 7,
+    schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
     modelDigest: "",
     documents: [],
     sources: [],

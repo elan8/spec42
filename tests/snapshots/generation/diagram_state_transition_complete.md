@@ -456,8 +456,8 @@ package StateExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:6a1e047b5704aa3dfee53f47726f3d714b79e4ff82215d05e3702a0f33a54ec5",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:5dd89777240e59da11944555ab0b2a1f2d0ee7d8763fafdfc4fb58d69fc8151d",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_complete.md",

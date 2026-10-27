@@ -6,4 +6,4 @@ import type { Projection } from "./Projection";
 import type { SelectedView } from "./SelectedView";
 import type { SemanticReference } from "./SemanticReference";
 
-export type DiagramProduct = { schemaVersion: 7, modelDigest: string, documents: Array<DiagramDocument>, sources: Array<DiagramSource>, references: Array<SemanticReference>, selectedView: SelectedView, completeness: Completeness, projection: Projection, };
+export type DiagramProduct = { schemaVersion: typeof import('./schemaVersion').DIAGRAM_PRODUCT_SCHEMA_VERSION, modelDigest: string, documents: Array<DiagramDocument>, sources: Array<DiagramSource>, references: Array<SemanticReference>, selectedView: SelectedView, completeness: Completeness, projection: Projection, };

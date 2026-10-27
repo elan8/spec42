@@ -667,8 +667,8 @@ package Seq {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:dd2897b0ae5ff6837531cce0f49a1d128979ff3ed14eb94f8c7d36c7ce0e4c06",
+  "schemaVersion": 8,
+  "modelDigest": "blake3:068595b640a6ee194d84493ea7e891ee9b823cdd995d90790a5e7c9f68e49f52",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_event_order_semantic_names.md",

@@ -1,3 +1,4 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../../generated/diagram-product/schemaVersion";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
@@ -130,7 +131,7 @@ describe("diagram viewer core", () => {
 
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
@@ -209,6 +210,27 @@ describe("diagram viewer core", () => {
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, sources: [{ document: 1, range: [0, 0, 0, 1] }] })));
+    const withReason = (reason: unknown) => JSON.stringify({
+      ...value,
+      completeness: { status: "incomplete", reasons: [reason] },
+      projection: { ...value.projection, exposedRoots: [0], nodes: [node] },
+    });
+    assert.equal(parseDiagramProduct(withReason({ code: "sequence-content-omitted", elements: [0] })).completeness.reasons.length, 1);
+    assert.equal(parseDiagramProduct(withReason({
+      code: "sequence-ordering-cycle",
+      witness: [{ source: 0, target: 0, events: [0], provenance: "implied" }],
+    })).completeness.reasons.length, 1);
+    assert.throws(() => parseDiagramProduct(withReason({ code: "sequence-content-omitted", elements: [1] })));
+    assert.throws(() => parseDiagramProduct(withReason({ code: "sequence-content-omitted" })));
+    assert.throws(() => parseDiagramProduct(withReason({ code: "sequence-ordering-cycle" })));
+    assert.throws(() => parseDiagramProduct(withReason({
+      code: "sequence-ordering-cycle",
+      witness: [{ source: 0, target: 3, events: [], provenance: "authored" }],
+    })));
+    assert.throws(() => parseDiagramProduct(withReason({
+      code: "sequence-ordering-cycle",
+      witness: [{ source: 0, target: 0, provenance: "authored" }],
+    })));
   });
 
   it("lists every authored view in the model, grouped by canonical namespace and keyed by handle", () => {
