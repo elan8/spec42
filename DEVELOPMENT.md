@@ -351,6 +351,28 @@ Spec42 emits structured performance logs when `spec42.performanceLogging.enabled
 Performance measurements are gathered locally on controlled hardware and reviewed with the change;
 they are not CI gates.
 
+### Editor notification baseline
+
+Build an optimized core LSP host, then measure single full-text edits and bursts without
+writing the edited source file:
+
+```powershell
+cargo build --offline --release -p lsp_server --bin spec42_core_lsp_test
+python scripts/benchmark-editor.py --server target/release/spec42_core_lsp_test.exe --profile release --workspace ../sysml-robot-vacuum-cleaner --document ../sysml-robot-vacuum-cleaner/model/Root.sysml --iterations 20 --burst-size 10 --output target/editor-robot-vacuum.json
+```
+
+Choose an existing source document in the workspace for `--document`.
+For another host, use `--server-arg` for its LSP command-line arguments.
+The report keeps raw messages, per-version samples, p50/p95/max, binary/input/configuration hashes,
+revision, dirty-tree state, build-profile label and host metadata. Check the profile against the
+actual binary build; the runner does not build or download anything.
+
+This first #192 probe measures client send to the matching `backend:didChange` completion event,
+including transport and queueing behind earlier handlers. It does not establish version-correlated
+diagnostic latency, parse/build/check/fanout attribution, CPU/memory or VS Code view-refresh costs.
+Those remain release acceptance work. Failed or timed-out runs retain a failed report and stderr;
+timings from debug runs are smoke-test evidence only.
+
 ### Query benchmarks
 
 A representation change is admitted with a benchmark showing it neutral-or-better on the bundled standard-library corpus. The six cases are the cold build, the warm relink one keystroke costs, and the four keystroke-path queries:
