@@ -951,7 +951,7 @@ package Links {
 ~~~json
 {
   "schemaVersion": 10,
-  "modelDigest": "blake3:64b11f93a055dbb41900df07b96861d6e2a27583c000a0177ca197e03484d5f7",
+  "modelDigest": "blake3:1429d4539ea97b101e8cea1bbe80c9092594f9724a4c46eb069357a0d530563f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
