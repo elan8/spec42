@@ -6858,8 +6858,8 @@ package TimerBrowser {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:45c49ad830cd350aed80616f7a128214c26998ce5bef66b9ce2a00c77c6d13d3",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:fe84186703722ba0d3a641b24f3930bfd5d6286e5559a96018264133e6e41345",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_browser.md",
@@ -7393,8 +7393,12 @@ package TimerBrowser {
     "source": 0
   },
   "completeness": {
-    "status": "complete",
-    "reasons": []
+    "status": "incomplete",
+    "reasons": [
+      {
+        "code": "parse-recovery"
+      }
+    ]
   },
   "projection": {
     "edges": [

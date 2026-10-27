@@ -840,18 +840,43 @@ pub enum DiagramIncompleteReason {
     ParseRecovery,
     UnsupportedSyntax,
     NonConverged,
-    ExposureUnresolved { exposure: DiagramSemanticReference },
-    ExposureAmbiguous { exposure: DiagramSemanticReference },
-    ExposureUnsupported { exposure: DiagramSemanticReference },
-    RelationshipUnresolved { relationship_kind: String },
-    RelationshipAmbiguous { relationship_kind: String },
-    RelationshipUnsupported { relationship_kind: String },
+    ExposureUnresolved {
+        exposure: DiagramSemanticReference,
+    },
+    ExposureAmbiguous {
+        exposure: DiagramSemanticReference,
+    },
+    ExposureUnsupported {
+        exposure: DiagramSemanticReference,
+    },
+    RelationshipUnresolved {
+        relationship_kind: String,
+    },
+    RelationshipAmbiguous {
+        relationship_kind: String,
+    },
+    RelationshipUnsupported {
+        relationship_kind: String,
+    },
     ViewFilterUnresolved,
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
     SequenceMessageEndpointOutsideLifeline,
-    SequenceOrderingCycle,
+    SequenceOrderingCycle {
+        witness: Vec<SequenceCycleStep>,
+    },
+    SequenceContentOmitted {
+        elements: Vec<DiagramOccurrenceIdentity>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SequenceCycleStep {
+    pub source: DiagramOccurrenceIdentity,
+    pub target: DiagramOccurrenceIdentity,
+    pub events: Vec<DiagramOccurrenceIdentity>,
+    pub provenance: RelationshipProvenance,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1170,6 +1195,7 @@ pub enum SequenceEndpoint {
 pub enum SequenceOrder {
     Resolved(u32),
     Cyclic,
+    BlockedByCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1386,7 +1412,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x0443_cbf0_6ab6_eb18,
+            SCHEMA_FINGERPRINT, 0x1533_417b_1fb9_2379,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1394,7 +1420,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x5f75_0469_2af8_fc9c,
+            COMPATIBILITY_TOKEN, 0x6268_1aa4_771d_cc84,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

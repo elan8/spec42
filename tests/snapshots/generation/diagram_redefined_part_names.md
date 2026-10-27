@@ -539,8 +539,8 @@ package RedefinedParts {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:9817f6e84c0530246d0a630c4799b26ffbcbcc8c5d23228bcc074932dd2fd4ac",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:4c3a4bc8b500d25fd543e1f3caa563e3978aadd3f930fc4b29cf13dcfd712e41",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

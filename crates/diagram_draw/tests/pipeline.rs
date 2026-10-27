@@ -475,7 +475,7 @@ fn interconnection_golden_payload() -> serde_json::Value {
 
 fn schema6_sequence_payload() -> serde_json::Value {
     json!({
-        "schemaVersion": 8,
+        "schemaVersion": diagram_product::SCHEMA_VERSION,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -656,7 +656,7 @@ fn schema6_state_transition_payload(
     transitions: Vec<serde_json::Value>,
 ) -> serde_json::Value {
     json!({
-        "schemaVersion": 8,
+        "schemaVersion": diagram_product::SCHEMA_VERSION,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -1103,7 +1103,7 @@ fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
 
     let payload = json!({
-        "schemaVersion": 8,
+        "schemaVersion": diagram_product::SCHEMA_VERSION,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],

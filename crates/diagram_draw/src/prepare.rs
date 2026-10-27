@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-8 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-9 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};
@@ -1734,7 +1734,7 @@ fn sequence_diagram_from_scene(
                 "name": if field(message, "label").is_string() {
                     field(message, "label").clone()
                 } else {
-                    field(&nodes[index.unwrap()], "label").clone()
+                    Value::String(String::new())
                 },
                 "payloadName": flow_payload_name(
                     index.unwrap() as u64,
@@ -1753,6 +1753,7 @@ fn sequence_diagram_from_scene(
         "name": name,
         "lifelines": lifelines,
         "messages": messages,
+        "sourceMessageCount": as_array(field(scene, "messages")).len(),
         "activations": [],
         "fragments": [],
     }))
@@ -3024,7 +3025,14 @@ fn prepare_typed_action_flow(
 }
 
 fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
-    if field(input, "schemaVersion").as_u64() != Some(8) {
+    if field(input, "schemaVersion").as_u64() != Some(u64::from(diagram_product::SCHEMA_VERSION)) {
+        if input.get("selectedView").is_some() && input.get("projection").is_some() {
+            return Some(Err(format!(
+                "unsupported diagram product schema version {}; expected {}",
+                field(input, "schemaVersion"),
+                diagram_product::SCHEMA_VERSION,
+            )));
+        }
         return None;
     }
     let selected = field(input, "selectedView");
@@ -3397,6 +3405,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
             .map(|index| format!("n:{}", as_string(index, "")))
             .collect::<Vec<_>>(),
         "viewMetadata": metadata,
+        "projectionLimitations": field(field(input, "completeness"), "reasons"),
     });
     if let Some(sequence_diagram) = sequence_diagram {
         meta["sequenceDiagram"] = sequence_diagram;

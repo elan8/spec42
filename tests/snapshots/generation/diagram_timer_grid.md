@@ -6858,8 +6858,8 @@ package TimerGrid {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:a2417f92128e68f22f2894b1f8a4c7a0924b182ce424cecb75916dbf283f4a06",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:50ec05354315c58d11437a584176b95f775e9b316b9abf1230d504ded861c060",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_grid.md",
@@ -6933,8 +6933,12 @@ package TimerGrid {
     "source": 0
   },
   "completeness": {
-    "status": "complete",
-    "reasons": []
+    "status": "incomplete",
+    "reasons": [
+      {
+        "code": "parse-recovery"
+      }
+    ]
   },
   "projection": {
     "edges": [],

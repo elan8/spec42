@@ -42,20 +42,25 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
                     };
                     (far("x", "width"), far("y", "height"))
                 };
-                let nested = match (
-                    layout_nested_behavior(prepared, true, BehaviorMode::State)?,
-                    layout_nested_behavior(prepared, false, BehaviorMode::State)?,
-                ) {
-                    (Some(across), Some(down)) => Some(
-                        if reference_page_scale(extent(&down))
-                            > reference_page_scale(extent(&across))
-                        {
-                            (down, false)
-                        } else {
-                            (across, true)
-                        },
-                    ),
-                    _ => None,
+                let nested = if horizontal || direction.eq_ignore_ascii_case("vertical") {
+                    layout_nested_behavior(prepared, horizontal, BehaviorMode::State)?
+                        .map(|layout| (layout, horizontal))
+                } else {
+                    match (
+                        layout_nested_behavior(prepared, true, BehaviorMode::State)?,
+                        layout_nested_behavior(prepared, false, BehaviorMode::State)?,
+                    ) {
+                        (Some(across), Some(down)) => Some(
+                            if reference_page_scale(extent(&down))
+                                > reference_page_scale(extent(&across))
+                            {
+                                (down, false)
+                            } else {
+                                (across, true)
+                            },
+                        ),
+                        _ => None,
+                    }
                 };
                 let (behavior_layout, horizontal) = if let Some(nested) = nested {
                     nested
@@ -835,7 +840,8 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             if kind.contains("initial") || kind.contains("final") {
                 (34.0, 34.0)
             } else if kind.contains("composite") {
-                (340.0, 320.0)
+                // Wide enough for its full name and state actions, which are not truncated.
+                (state_box(node).0.max(340.0), 320.0)
             } else {
                 state_box(node)
             }
@@ -861,18 +867,17 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
 }
 
 /// The box of a simple state: as wide as its name and its `entry`/`do`/`exit` lines need, and as
-/// high as the lines it shows. The drawing truncates the name at 28 and an action line at 34
-/// characters, so the box never has to grow beyond those.
+/// high as the lines it shows. Keep full labels readable in nested machines as well.
 fn state_box(node: &Value) -> (f64, f64) {
     const NAME_CHARACTER: f64 = 7.4; // 12 px bold
     const ACTION_CHARACTER: f64 = 5.6; // 10 px
     let attributes = field(node, "attributes");
-    let characters = |text: &str, limit: usize| text.chars().count().min(limit) as f64;
+    let characters = |text: &str| text.chars().count() as f64;
     let name = as_string(
         first_nonempty([field(node, "label"), field(node, "name")]),
         "",
     );
-    let mut width = characters(&name, 28) * NAME_CHARACTER + 32.0;
+    let mut width = characters(&name) * NAME_CHARACTER + 32.0;
     let mut actions = 0.0;
     for (prefix, keys) in [
         ("entry ", ["entry", "entryAction"]),
@@ -883,7 +888,7 @@ fn state_box(node: &Value) -> (f64, f64) {
         if !action.is_empty() {
             actions += 1.0;
             let line = format!("{prefix}{action}");
-            width = width.max(characters(&line, 34) * ACTION_CHARACTER + 24.0);
+            width = width.max(characters(&line) * ACTION_CHARACTER + 24.0);
         }
     }
     // The keyword and the name sit on a 38 px header; the label of the state actions
@@ -3218,5 +3223,22 @@ mod general_hierarchy_tests {
                 assert!(separated, "sibling boxes must not overlap");
             }
         }
+    }
+}
+#[cfg(test)]
+mod composite_state_size_tests {
+    use super::*;
+
+    #[test]
+    fn a_composite_state_is_wide_enough_for_its_full_name() {
+        let composite = |label: &str| json!({ "id": "s", "label": label, "kind": "composite-state", "attributes": {} });
+        assert_eq!(
+            node_dimensions(&composite("Idle"), BehaviorMode::State),
+            (340.0, 320.0)
+        );
+        let long = "WaitingForTheExternalControllerToBecomeReadyAndCalibrated";
+        let (width, height) = node_dimensions(&composite(long), BehaviorMode::State);
+        assert!(width >= long.chars().count() as f64 * 7.4, "{width}");
+        assert_eq!(height, 320.0);
     }
 }

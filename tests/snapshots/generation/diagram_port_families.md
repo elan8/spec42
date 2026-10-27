@@ -1403,8 +1403,8 @@ package Families {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:5708ac1bbb9151a63a6e152e866d8ab25afdfbc548fd322dd1bec1f139480993",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:bf52c3f53142bf0d206af007d603472aec8bf7d488698f596d4e21bb79b32e80",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

@@ -278,7 +278,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
         let product: serde_json::Value =
             serde_json::from_str(&run(Some(name), DiagramFormat::Json, "diagram.json"))
                 .expect("product JSON");
-        assert_eq!(product["schemaVersion"], 8);
+        assert_eq!(product["schemaVersion"], diagram_product::SCHEMA_VERSION);
         assert_eq!(product["selectedView"]["kind"], "state-transition-view");
 
         let svg = run(Some(name), DiagramFormat::Svg, "diagram.svg");
@@ -417,7 +417,7 @@ fn diagram_products_carry_only_authored_relationships_within_a_size_budget() {
                 serde_json::from_slice::<serde_json::Value>(&pretty).expect("pretty JSON"),
                 "{example}/{view_name}: compact and pretty products differ only in layout"
             );
-            assert_eq!(product["schemaVersion"], 8);
+            assert_eq!(product["schemaVersion"], diagram_product::SCHEMA_VERSION);
             let implied = product["projection"]["relationships"]
                 .as_array()
                 .expect("relationships")
@@ -519,7 +519,7 @@ fn a_browser_view_loads_membership_branches_on_demand() {
         };
 
         let initial = product(&[]);
-        assert_eq!(initial["schemaVersion"], 8);
+        assert_eq!(initial["schemaVersion"], diagram_product::SCHEMA_VERSION);
         let nodes = initial["projection"]["nodes"].as_array().expect("nodes");
         let root_names = initial["projection"]["metadata"]["roots"]
             .as_array()

@@ -148,7 +148,7 @@ fn diagram_views_returns_the_webshop_catalog_over_the_lsp() {
     );
     let product: serde_json::Value =
         serde_json::from_str(product_json).expect("the product is JSON");
-    assert_eq!(product["schemaVersion"], 8);
+    assert_eq!(product["schemaVersion"], diagram_product::SCHEMA_VERSION);
     assert_eq!(product["selectedView"]["name"], "checkoutPipeline");
     assert_eq!(product["modelDigest"], response["result"]["modelDigest"]);
 
@@ -170,4 +170,100 @@ fn diagram_views_returns_the_webshop_catalog_over_the_lsp() {
         5,
         "the regression must exercise the whole webshop model"
     );
+}
+
+#[test]
+fn sequence_products_survive_live_anonymous_nested_and_recovery_edits() {
+    use diagram_product::wire::{CompletenessStatus, DiagramProduct, Projection};
+    let stdlib = tempfile::tempdir().unwrap();
+    standard_library_fixture(stdlib.path());
+    let workspace = tempfile::tempdir().unwrap();
+    let path = workspace.path().join("Model.sysml");
+    let uri = url::Url::from_file_path(&path).unwrap().to_string();
+    let mut session = TestSession::new_with_env(&[("SPEC42_LSP_TEST_STDLIB", stdlib.path())]);
+    session.initialize_with_root(
+        "sequence-live-edits",
+        &url::Url::from_directory_path(workspace.path()).unwrap(),
+    );
+    let fixtures = [
+        include_str!("../../../../tests/snapshots/generation/sequence_shared_part_endpoints.md"),
+        include_str!("../../../../tests/snapshots/generation/sequence_anonymous_messages.md"),
+        include_str!("../../../../tests/snapshots/generation/sequence_omitted_nested.md"),
+        include_str!("../../../../tests/snapshots/generation/sequence_recovery.md"),
+        include_str!("../../../../tests/snapshots/generation/sequence_recovery_repaired.md"),
+    ];
+    let mut previous_digest = None;
+    for (stage, fixture) in fixtures.iter().enumerate() {
+        let fixture = fixture.replace("\r\n", "\n");
+        let source = fixture
+            .split_once("## model.sysml\n~~~sysml\n")
+            .unwrap()
+            .1
+            .split_once("\n~~~")
+            .unwrap()
+            .0;
+        if stage == 0 {
+            session.did_open(&uri, source, 1);
+        } else {
+            session.did_change_full(&uri, source, stage as i32 + 1);
+        }
+        session.wait_for_publications(&[&uri]);
+        session.barrier();
+        let catalog = session.request("spec42/diagramViews", serde_json::json!({"modelUri": uri}));
+        let view = catalog["result"]["views"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|view| view["name"] == "selected")
+            .expect("selected view survives the edit");
+        let digest = catalog["result"]["modelDigest"].clone();
+        let response = session.request(
+            "spec42/diagram",
+            serde_json::json!({
+                "modelUri": uri, "handle": view["handle"], "expectedModelDigest": digest,
+            }),
+        );
+        assert!(response.get("error").is_none(), "stage {stage}: {response}");
+        let product: DiagramProduct =
+            serde_json::from_str(response["result"]["productJson"].as_str().unwrap()).unwrap();
+        assert_eq!(product.schema_version, diagram_product::SCHEMA_VERSION);
+        assert_eq!(product.model_digest, digest.as_str().unwrap());
+        let golden: DiagramProduct = serde_json::from_str(
+            fixture
+                .split_once("## diagram.json\n~~~json\n")
+                .unwrap()
+                .1
+                .split_once("\n~~~")
+                .unwrap()
+                .0,
+        )
+        .unwrap();
+        assert_eq!(
+            matches!(product.completeness.status, CompletenessStatus::Complete),
+            matches!(golden.completeness.status, CompletenessStatus::Complete)
+        );
+        let labels = |projection: &Projection| match projection {
+            Projection::Sequence { scene, .. } => scene
+                .messages
+                .iter()
+                .map(|message| message.label.clone())
+                .collect::<Vec<_>>(),
+            _ => panic!("expected sequence product"),
+        };
+        assert_eq!(labels(&product.projection), labels(&golden.projection));
+        if let Some(previous) = previous_digest {
+            assert_ne!(digest, previous, "each edit publishes a new identity");
+            let stale = session.request(
+                "spec42/diagram",
+                serde_json::json!({
+                    "modelUri": uri, "handle": view["handle"], "expectedModelDigest": previous,
+                }),
+            );
+            assert!(
+                stale.get("error").is_some(),
+                "superseded selection: {stale}"
+            );
+        }
+        previous_digest = Some(digest);
+    }
 }

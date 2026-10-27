@@ -6858,8 +6858,8 @@ package TimerGeometry {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:b748aed6433338e9596c4d10f356feb9f09ed0c9269dd0df7a9dcce3b1b2d74a",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:f3b5e08ff83cfea43d74efa74539a99cbcc5787b1079b1a22b9cd1db9c254a95",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_geometry.md",
@@ -11673,6 +11673,9 @@ package TimerGeometry {
   "completeness": {
     "status": "incomplete",
     "reasons": [
+      {
+        "code": "parse-recovery"
+      },
       {
         "code": "geometry-facts-unavailable"
       }

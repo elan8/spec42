@@ -155,8 +155,8 @@ package BrowserProbe {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:9437dfb322b15ab8d4243601fb6cfec320a0b55d8e654774e38f16b93d981e32",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:622570345552c88747b08e9701d55bfec729e83090f724305fd6d9c357d226a1",
   "documents": [
     {
       "uri": "memory://snapshot/structure.kerml",

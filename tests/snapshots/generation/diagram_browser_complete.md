@@ -168,8 +168,8 @@ package BrowserExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:adaab9eb02dd32e3957f292112a463950cecc819dd95f3823fb143a7b0a1fb86",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:ee95d2d6bf8a0a782a580d3cab96eb381030b6985f25e1f3043b046cd837a627",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_complete.md",

@@ -247,8 +247,8 @@ package Filters {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:a0f98b5c42e64eb5e30593d0cddaab54f372fbc076b71137720f0dbd38eb091c",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:7987f485102869a6883c1e1e4f783a140488695933cdd6d9e9586004e34d3ec7",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

@@ -1192,6 +1192,7 @@ impl GeneratorModelView {
                                     sysml_query::resolved_slice::DiagramSequenceOrder::Cyclic => {
                                         SequenceOrder::Cyclic
                                     }
+                                    sysml_query::resolved_slice::DiagramSequenceOrder::BlockedByCycle => SequenceOrder::BlockedByCycle,
                                 },
                                 provenance: relationship_provenance(message.provenance),
                                 source_reference: source_reference(
@@ -1890,7 +1891,37 @@ impl GeneratorModelView {
             Owned::SequenceMessageEndpointOutsideLifeline => {
                 DiagramIncompleteReason::SequenceMessageEndpointOutsideLifeline
             }
-            Owned::SequenceOrderingCycle => DiagramIncompleteReason::SequenceOrderingCycle,
+            Owned::SequenceOrderingCycle { witness } => {
+                DiagramIncompleteReason::SequenceOrderingCycle {
+                    witness: witness
+                        .iter()
+                        .map(|step| {
+                            Ok(spec42_generator_protocol::SequenceCycleStep {
+                                source: self.diagram_occurrence(&step.source)?,
+                                target: self.diagram_occurrence(&step.target)?,
+                                events: step
+                                    .events
+                                    .iter()
+                                    .map(|event| self.diagram_occurrence(event))
+                                    .collect::<Result<Vec<_>, _>>()?,
+                                provenance: if step.authored {
+                                    spec42_generator_protocol::RelationshipProvenance::Authored
+                                } else {
+                                    spec42_generator_protocol::RelationshipProvenance::Implied
+                                },
+                            })
+                        })
+                        .collect::<Result<Vec<_>, ModelQueryError>>()?,
+                }
+            }
+            Owned::SequenceContentOmitted { elements } => {
+                DiagramIncompleteReason::SequenceContentOmitted {
+                    elements: elements
+                        .iter()
+                        .map(|element| self.diagram_occurrence(element))
+                        .collect::<Result<Vec<_>, _>>()?,
+                }
+            }
         })
     }
 

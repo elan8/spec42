@@ -1,4 +1,4 @@
-//! The schema-8 diagram product: a typed diagram view projection
+//! The schema-9 diagram product: a typed diagram view projection
 //! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
 //! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
 //! once and referenced by index.
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 use spec42_generator_protocol as model;
 
 /// Version of the product format `diagram_draw` consumes.
-pub const SCHEMA_VERSION: u32 = 8;
+pub const SCHEMA_VERSION: u32 = 9;
 
 /// The file name under which generators publish the product.
 pub const ARTIFACT_PATH: &str = "diagram.json";
@@ -373,6 +373,7 @@ impl NormalizedProduct {
                     "order": match message.order {
                         model::SequenceOrder::Resolved(order) => json!({ "status": "resolved", "value": order }),
                         model::SequenceOrder::Cyclic => json!({ "status": "cyclic" }),
+                        model::SequenceOrder::BlockedByCycle => json!({ "status": "blocked-by-cycle" }),
                     },
                     "provenance": provenance(&message.provenance),
                     "navigation": self.source(&message.source_reference)?,
@@ -670,8 +671,15 @@ impl NormalizedProduct {
             model::DiagramIncompleteReason::SequenceMessageEndpointOutsideLifeline => {
                 json!({ "code": "sequence-message-endpoint-outside-lifeline" })
             }
-            model::DiagramIncompleteReason::SequenceOrderingCycle => {
-                json!({ "code": "sequence-ordering-cycle" })
+            model::DiagramIncompleteReason::SequenceOrderingCycle { witness } => {
+                json!({ "code": "sequence-ordering-cycle", "witness": witness.iter().map(|step| Ok(json!({
+                    "source": self.node(&step.source)?, "target": self.node(&step.target)?,
+                    "events": step.events.iter().map(|event| self.node(event)).collect::<Result<Vec<_>, _>>()?,
+                    "provenance": provenance(&step.provenance),
+                }))).collect::<Result<Vec<Value>, String>>()? })
+            }
+            model::DiagramIncompleteReason::SequenceContentOmitted { elements } => {
+                json!({ "code": "sequence-content-omitted", "elements": elements.iter().map(|element| self.node(element)).collect::<Result<Vec<_>, _>>()? })
             }
         })
     }
@@ -938,6 +946,20 @@ fn collect_reason_reference(
         | model::DiagramIncompleteReason::ExposureAmbiguous { exposure }
         | model::DiagramIncompleteReason::ExposureUnsupported { exposure } => {
             collect_reference(values, exposure)
+        }
+        model::DiagramIncompleteReason::SequenceOrderingCycle { witness } => {
+            for step in witness {
+                collect_occurrence_references(values, &step.source);
+                collect_occurrence_references(values, &step.target);
+                for event in &step.events {
+                    collect_occurrence_references(values, event);
+                }
+            }
+        }
+        model::DiagramIncompleteReason::SequenceContentOmitted { elements } => {
+            for element in elements {
+                collect_occurrence_references(values, element);
+            }
         }
         _ => {}
     }

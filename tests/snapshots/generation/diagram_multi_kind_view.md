@@ -258,8 +258,8 @@ package Garage {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:90088f8d39efd7deb6d0c233f66a9052cb342def6976f29a33b64328c32e1b6b",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:8a7611d6ade3483c287500ec35560ed6caa63331cfbe1709ce8f6ab9fc8cefde",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

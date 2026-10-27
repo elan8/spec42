@@ -706,8 +706,8 @@ package Seq {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:0ed7dcb2ffa2e1738f5dba848e30ad8541af6b5336090d5df6a7ea5bb6826c1b",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:aeb7cfbdd944bb847d2038da71511459ed3f1af6fb7ff26b6afc550c553b2a29",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_event_order_event_cycle.md",
@@ -1476,7 +1476,34 @@ package Seq {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "sequence-ordering-cycle"
+        "code": "sequence-ordering-cycle",
+        "witness": [
+          {
+            "events": [
+              22,
+              21,
+              22
+            ],
+            "provenance": "implied",
+            "source": 2,
+            "target": 2
+          }
+        ]
+      },
+      {
+        "code": "sequence-ordering-cycle",
+        "witness": [
+          {
+            "events": [
+              21,
+              22,
+              21
+            ],
+            "provenance": "implied",
+            "source": 12,
+            "target": 12
+          }
+        ]
       }
     ]
   },
@@ -2481,7 +2508,7 @@ package Seq {
           "navigation": 13,
           "node": 7,
           "order": {
-            "status": "cyclic"
+            "status": "blocked-by-cycle"
           },
           "provenance": "authored",
           "source": {

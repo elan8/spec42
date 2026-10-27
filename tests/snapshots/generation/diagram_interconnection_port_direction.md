@@ -333,8 +333,8 @@ package PortDirectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
-  "modelDigest": "blake3:94d7ead54b6b835cfbec6cc297204c087048ff044dd7c2d3130ce9c485e3cd4f",
+  "schemaVersion": 9,
+  "modelDigest": "blake3:b833805d33bb9b8b92f8ade6978896eafeabe2c6f602b202223e0122352b6631",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_port_direction.md",
