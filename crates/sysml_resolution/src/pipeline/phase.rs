@@ -829,7 +829,15 @@ impl Complete {
     }
 }
 
-/// The whole phase order in one expression, for the coordinator and for tests.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct SemanticPhaseDurations {
+    pub(crate) resolve: std::time::Duration,
+    pub(crate) evaluation: std::time::Duration,
+    pub(crate) indexing: std::time::Duration,
+    pub(crate) diagnostics: std::time::Duration,
+}
+
+/// The whole phase order, with measurements taken at its owning barriers.
 pub(crate) fn build_model(
     storage: SemanticModelStorage,
     sources: ParsedSources,
@@ -837,24 +845,42 @@ pub(crate) fn build_model(
     standard_library_availability: sysml_contract::StandardLibraryAvailability,
     library: Option<&SettledLibrary>,
     reported: &[Box<str>],
-) -> Result<(ResolvedSemanticModel, ParsedSources), crate::BuildFailure> {
+) -> Result<(ResolvedSemanticModel, ParsedSources, SemanticPhaseDurations), crate::BuildFailure> {
     let identities: Vec<_> = storage
         .documents
         .iter()
         .map(|document| document.identity.clone())
         .collect();
     let failure = |phase, error| resolution_failure(phase, &identities, error);
+    let started = std::time::Instant::now();
     let resolved = Lowered::from((storage, sources))
         .resolve(library)
         .map_err(|error| failure(crate::ConstructionPhase::Resolution, error))?;
-    let (indexed, sources) = resolved
-        .evaluate(policy)
+    let resolve = started.elapsed();
+    let started = std::time::Instant::now();
+    let evaluated = resolved.evaluate(policy);
+    let evaluation = started.elapsed();
+    let started = std::time::Instant::now();
+    let (indexed, sources) = evaluated
         .index()
         .map_err(|error| failure(crate::ConstructionPhase::Indexing, error))?;
-    Ok(indexed
+    let indexing = started.elapsed();
+    let started = std::time::Instant::now();
+    let complete = indexed
         .diagnose(sources, reported, standard_library_availability)
         .map_err(|error| failure(crate::ConstructionPhase::Diagnostics, error))?
-        .into_parts())
+        .into_parts();
+    let diagnostics = started.elapsed();
+    Ok((
+        complete.0,
+        complete.1,
+        SemanticPhaseDurations {
+            resolve,
+            evaluation,
+            indexing,
+            diagnostics,
+        },
+    ))
 }
 
 fn resolution_failure(

@@ -63,6 +63,7 @@ impl SemanticBuild {
 pub struct SemanticBuildCompletion {
     token: BuildToken,
     result: Result<Arc<PublishedModel>, PublicationBuildFailure>,
+    measurements: Option<BuildMeasurements>,
 }
 
 impl SemanticBuildCompletion {
@@ -72,6 +73,12 @@ impl SemanticBuildCompletion {
 
     pub fn failure(&self) -> Option<&PublicationBuildFailure> {
         self.result.as_ref().err()
+    }
+
+    /// Timings and counted facts recorded by canonical phase owners for a successful build.
+    /// Failed constructions have no complete phase measurement and return `None`.
+    pub fn measurements(&self) -> Option<&BuildMeasurements> {
+        self.measurements.as_ref()
     }
 
     /// Admit this completion at `session`'s barrier.
@@ -223,13 +230,17 @@ impl PublicationService {
     /// Performs the expensive construction. Call it off the host's executor; it parses any
     /// document the memo does not hold and resolves the model.
     pub fn construct(&self, build: SemanticBuild) -> SemanticBuildCompletion {
+        let (result, measurements) = match build.prepared.inner.build_measured() {
+            Ok((inner, measurements)) => (
+                Ok(Arc::new(PublishedModel::from_resolution(inner))),
+                Some(measurements),
+            ),
+            Err(error) => (Err(error), None),
+        };
         SemanticBuildCompletion {
             token: build.token,
-            result: build
-                .prepared
-                .inner
-                .build()
-                .map(|inner| Arc::new(PublishedModel::from_resolution(inner))),
+            result,
+            measurements,
         }
     }
 

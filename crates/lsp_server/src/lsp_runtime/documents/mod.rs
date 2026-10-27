@@ -48,16 +48,59 @@ async fn publish_semantic_change(
     handle: &WorkspaceHandle,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     changed_uri: Url,
+    source_version: i32,
 ) {
     let old = handle.snapshot();
     let mut diagnostic_uris = diagnostic_fanout(&old, &changed_uri);
     drop(old);
 
-    if handle.rebuild_publication().await.unwrap_or(false) {
+    let rebuild_started = Instant::now();
+    let rebuilt = handle.rebuild_publication_measured().await;
+    let rebuild_ms = rebuild_started.elapsed().as_secs_f64() * 1000.0;
+    let diagnostics_started = Instant::now();
+    if rebuilt.as_ref().is_ok_and(|report| {
+        report.outcome == sysml_query::publication::PublicationOutcome::Published
+    }) {
         let new = handle.snapshot();
         diagnostic_uris =
             merge_diagnostic_fanout(diagnostic_uris, diagnostic_fanout(&new, &changed_uri));
         publish_workspace_diagnostics(client, handle, runtime_config, Some(&diagnostic_uris)).await;
+    }
+    let diagnostics_ms = diagnostics_started.elapsed().as_secs_f64() * 1000.0;
+    if runtime_config
+        .get()
+        .expect("initialize precedes all other LSP requests")
+        .perf_logging_enabled
+    {
+        if let Ok(report) = &rebuilt {
+            let ms = |duration: Duration| (duration.as_secs_f64() * 1000.0).to_string();
+            let mut fields = vec![
+                ("uri", format!("{:?}", changed_uri.as_str())),
+                ("version", source_version.to_string()),
+                ("outcome", format!("\"{:?}\"", report.outcome)),
+                ("rebuildMs", rebuild_ms.to_string()),
+                ("preparationMs", ms(report.preparation)),
+                ("preparationQueueMs", ms(report.preparation_queue)),
+                ("constructionWallMs", ms(report.construction)),
+                ("admissionWallMs", ms(report.admission)),
+                ("diagnosticFanoutMs", diagnostics_ms.to_string()),
+            ];
+            if let Some(phases) = report.phases {
+                fields.extend([
+                    ("buildParseMs", ms(phases.parse)),
+                    ("loweringMs", ms(phases.lowering)),
+                    ("resolutionTotalMs", ms(phases.resolution)),
+                    ("resolveMs", ms(phases.resolve)),
+                    ("evaluationMs", ms(phases.evaluation)),
+                    ("indexingMs", ms(phases.indexing)),
+                    ("checksMs", ms(phases.diagnostics)),
+                    ("documentsLowered", phases.documents_lowered.to_string()),
+                    ("documentsReused", phases.documents_reused.to_string()),
+                    ("sourcesParsed", phases.sources_parsed.to_string()),
+                ]);
+            }
+            log_perf(client, true, "backend:publication", fields).await;
+        }
     }
     // Also after a success: that clears the reported failure, so a recurrence is announced.
     report_publication_failure(client, handle).await;

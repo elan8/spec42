@@ -172,6 +172,11 @@ pub struct BuildMeasurements {
     pub parse: std::time::Duration,
     pub lowering: std::time::Duration,
     pub resolution: std::time::Duration,
+    /// Subphases of `resolution`, measured by the owning phase barriers.
+    pub resolve: std::time::Duration,
+    pub evaluation: std::time::Duration,
+    pub indexing: std::time::Duration,
+    pub diagnostics: std::time::Duration,
     /// How many admitted documents this build lowered itself: a memo miss, or no memo at all.
     ///
     /// `documents_lowered + documents_reused` is every admitted document, library and workspace
@@ -815,6 +820,10 @@ fn build_parts(
             parse: measurements.parse,
             lowering: measurements.lowering,
             resolution: measurements.resolution,
+            resolve: measurements.semantic.resolve,
+            evaluation: measurements.semantic.evaluation,
+            indexing: measurements.semantic.indexing,
+            diagnostics: measurements.semantic.diagnostics,
             sources_parsed: measurements.sources_parsed,
             documents_lowered: measurements.documents_lowered,
             documents_reused: measurements.documents_reused,

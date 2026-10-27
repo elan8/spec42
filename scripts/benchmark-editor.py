@@ -36,6 +36,7 @@ class Lsp:
     def __init__(self, command, cwd, stderr):
         self.messages = queue.Queue()
         self.events = []
+        self.publications = {}
         self.process = subprocess.Popen(command, cwd=cwd, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=stderr)
         self.reader = threading.Thread(target=self.read, daemon=True)
@@ -85,6 +86,11 @@ class Lsp:
                 raise item
             received, message = item
             self.events.append({"received_ns": received, "message": message})
+            raw = message.get("params", {}).get("message", "")
+            if raw.startswith("[SysML][perf] "):
+                event = json.loads(raw[len("[SysML][perf] "):])
+                if event.get("event") == "backend:publication":
+                    self.publications[(event["uri"].lower(), event["version"])] = event
             if "error" in message:
                 raise RuntimeError(message["error"])
             if predicate(message):
@@ -184,9 +190,21 @@ def main():
                         pending.remove(completed_version)
                         report["samples"].append({"workload": workload, "iteration": iteration, "version": completed_version,
                                                   "send_to_handler_complete_ms": (received - sent[completed_version]) / 1e6,
-                                                  "handler_fields": event})
+                                                  "handler_fields": event,
+                                                  "publication_fields": lsp.publications.pop((uri.lower(), completed_version), None)})
             report["summary_ms"] = {workload: distribution([sample["send_to_handler_complete_ms"] for sample in report["samples"] if sample["workload"] == workload])
                                     for workload in ["single", "burst"]}
+            report["phase_summary_ms"] = {}
+            for workload in ["single", "burst"]:
+                phases = {}
+                for sample in report["samples"]:
+                    if sample["workload"] != workload:
+                        continue
+                    for record in [sample["handler_fields"], sample["publication_fields"] or {}]:
+                        for name, value in record.items():
+                            if name.endswith("Ms") and isinstance(value, (float, int)):
+                                phases.setdefault(name, []).append(value)
+                report["phase_summary_ms"][workload] = {name: distribution(values) for name, values in phases.items()}
             report["status"] = "complete"
         except Exception as error:
             report["status"] = "failed"

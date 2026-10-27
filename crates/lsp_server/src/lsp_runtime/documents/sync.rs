@@ -71,7 +71,14 @@ pub(crate) async fn did_open(
             .unwrap_or_default();
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let scheduled_relink = true;
-        publish_semantic_change(client, handle, runtime_config, uri_norm.clone()).await;
+        publish_semantic_change(
+            client,
+            handle,
+            runtime_config,
+            uri_norm.clone(),
+            params.text_document.version,
+        )
+        .await;
         (warning, lock_wait_ms, scheduled_relink)
     };
 
@@ -140,6 +147,9 @@ pub(crate) async fn did_change(
         .prepare_document_content_edit(uri_norm.clone(), version, params.content_changes)
         .await
         .unwrap_or_default();
+    let source_ingest_ms = apply_start.elapsed().as_secs_f64() * 1000.0;
+    let mut parse_worker_ms = 0.0;
+    let mut source_commit_ms = 0.0;
 
     // Phase 2: parse the new content WITHOUT holding up the actor. Malformed or
     // incomplete syntax (e.g. an unterminated view/viewpoint) can make error
@@ -156,13 +166,16 @@ pub(crate) async fn did_change(
             crate::session::handle::PreparedDocumentEdit::admit_text(admit_uri, &content, &services)
         })
         .await;
+        parse_worker_ms = parse_start.elapsed().as_secs_f64() * 1000.0;
         let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
         match parse_outcome {
             Ok((document, parsed)) => {
+                let commit_started = Instant::now();
                 let parse_warnings = handle
                     .apply_parsed_document_update(edit, document, parsed, parse_time_ms)
                     .await
                     .unwrap_or_default();
+                source_commit_ms = commit_started.elapsed().as_secs_f64() * 1000.0;
                 semantic_inputs_changed = true;
                 warnings.extend(parse_warnings);
             }
@@ -194,7 +207,7 @@ pub(crate) async fn did_change(
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
     if semantic_inputs_changed {
-        publish_semantic_change(client, handle, runtime_config, uri_norm.clone()).await;
+        publish_semantic_change(client, handle, runtime_config, uri_norm.clone(), version).await;
     }
     log_perf(
         client,
@@ -204,6 +217,14 @@ pub(crate) async fn did_change(
             ("uri", format!("{:?}", uri_norm.as_str())),
             ("version", version.to_string()),
             ("applyChangesMs", apply_ms.to_string()),
+            ("sourceIngestWallMs", source_ingest_ms.to_string()),
+            ("parseWorkerWallMs", parse_worker_ms.to_string()),
+            ("sourceCommitWallMs", source_commit_ms.to_string()),
+            ("sourceChanged", semantic_inputs_changed.to_string()),
+            (
+                "handlerTotalMs",
+                (apply_start.elapsed().as_secs_f64() * 1000.0).to_string(),
+            ),
         ],
     )
     .await;

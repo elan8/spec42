@@ -2465,7 +2465,7 @@ mod tests {
             unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         };
-        let (model, _) = crate::pipeline::phase::build_model(
+        let (model, _, _) = crate::pipeline::phase::build_model(
             storage,
             crate::lower::storage::ParsedSources::default(),
             EvaluationPolicy::Evaluate,

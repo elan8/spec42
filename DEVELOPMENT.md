@@ -368,11 +368,17 @@ The report keeps raw messages, per-version samples, p50/p95/max, binary/input/co
 revision, dirty-tree state, build-profile label and host metadata. Check the profile against the
 actual binary build; the runner does not build or download anything.
 
-This first #192 probe measures client send to the matching `backend:didChange` completion event,
-including transport and queueing behind earlier handlers. It does not establish version-correlated
-diagnostic latency, parse/build/check/fanout attribution, CPU/memory or VS Code view-refresh costs.
-Those remain release acceptance work. Failed or timed-out runs retain a failed report and stderr;
-timings from debug runs are smoke-test evidence only.
+The #192 probe measures client send to the matching `backend:didChange` completion event,
+including transport and queueing behind earlier handlers. Hosts that emit `backend:publication`
+records provide phase measurements for the same URI and document version: preparation and its actor
+queue, construction wall time, canonical parse/lower/resolve/evaluate/index/check costs, admission,
+and diagnostic fanout. Handler records separately measure source ingestion, parsing and source
+commit. The construction `resolutionTotalMs` contains its resolve/evaluate/index/check subphases;
+do not add it to those subphases. Missing phase records remain explicit `null` values.
+
+Version-correlated diagnostic latency, CPU/memory and VS Code view-refresh costs remain release
+acceptance work. Failed or timed-out runs retain a failed report and stderr; timings from debug runs
+are smoke-test evidence only.
 
 ### Query benchmarks
 
