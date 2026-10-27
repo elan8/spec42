@@ -11287,7 +11287,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:4f5021841c1564594ea47e2f9ae1b86b0de8bc550325a9d4ba720c6cdfa04cfe",
   "documents": [
     {
@@ -11352,15 +11352,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "range": [
-        28,
-        35,
-        28,
-        51
-      ]
-    },
-    {
-      "document": 1,
-      "range": [
         29,
         13,
         29,
@@ -11392,15 +11383,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         22,
         34,
         33
-      ]
-    },
-    {
-      "document": 1,
-      "range": [
-        34,
-        36,
-        34,
-        50
       ]
     },
     {
@@ -11460,15 +11442,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "range": [
-        48,
-        36,
-        48,
-        54
-      ]
-    },
-    {
-      "document": 1,
-      "range": [
         49,
         13,
         49,
@@ -11532,15 +11505,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "range": [
-        57,
-        36,
-        57,
-        54
-      ]
-    },
-    {
-      "document": 1,
-      "range": [
         58,
         13,
         58,
@@ -11581,15 +11545,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         22,
         64,
         33
-      ]
-    },
-    {
-      "document": 1,
-      "range": [
-        64,
-        36,
-        64,
-        55
       ]
     },
     {
@@ -11649,15 +11604,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "range": [
-        78,
-        36,
-        78,
-        63
-      ]
-    },
-    {
-      "document": 1,
-      "range": [
         79,
         8,
         79,
@@ -11676,15 +11622,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "range": [
-        79,
-        34,
-        79,
-        38
-      ]
-    },
-    {
-      "document": 1,
-      "range": [
         80,
         8,
         80,
@@ -11698,15 +11635,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         22,
         80,
         32
-      ]
-    },
-    {
-      "document": 1,
-      "range": [
-        80,
-        35,
-        80,
-        38
       ]
     },
     {
@@ -12575,11 +12503,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "kind": "qualified-name",
-      "qualifiedName": "WebShopArchitecture::ApiGateway::::"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
       "qualifiedName": "WebShopArchitecture::ApiGateway::catalogApiOut"
     },
     {
@@ -12840,11 +12763,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "kind": "qualified-name",
-      "qualifiedName": "WebShopArchitecture::CheckoutService::::"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
       "qualifiedName": "WebShopArchitecture::CheckoutService::apiIn"
     },
     {
@@ -12881,11 +12799,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 1,
       "kind": "qualified-name",
       "qualifiedName": "WebShopArchitecture::InventoryService::"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "WebShopArchitecture::InventoryService::::"
     },
     {
       "document": 1,
@@ -12940,11 +12853,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "kind": "qualified-name",
-      "qualifiedName": "WebShopArchitecture::OrdersEventsTopic::::"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
       "qualifiedName": "WebShopArchitecture::OrdersEventsTopic::topicEgress"
     },
     {
@@ -12971,11 +12879,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 1,
       "kind": "qualified-name",
       "qualifiedName": "WebShopArchitecture::PaymentsService::"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
-      "qualifiedName": "WebShopArchitecture::PaymentsService::::"
     },
     {
       "document": 1,
@@ -13015,11 +12918,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "kind": "qualified-name",
-      "qualifiedName": "WebShopArchitecture::Storefront::::"
-    },
-    {
-      "document": 1,
-      "kind": "qualified-name",
       "qualifiedName": "WebShopArchitecture::Storefront::catalogApiOut"
     },
     {
@@ -13036,377 +12934,342 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "WebShopArchitecture::ApiGateway",
-      "source": 8,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::ApiGateway::",
-      "source": 10,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::ApiGateway::::",
-      "source": 10,
+      "source": 7,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Documentation",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 48,
+      "source": 40,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 115,
+      "source": 107,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 118,
+      "source": 110,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 121,
+      "source": 113,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 124,
+      "source": 116,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 127,
+      "source": 119,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 130,
+      "source": 122,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 133,
+      "source": 125,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 136,
+      "source": 128,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment",
-      "source": 89,
+      "source": 81,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment",
-      "source": 90,
+      "source": 82,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment::",
+      "source": 81,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment::",
+      "source": 82,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted",
+      "source": 101,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted",
+      "source": 102,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted::",
+      "source": 101,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted::",
+      "source": 102,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome",
+      "source": 105,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome",
+      "source": 106,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome::",
+      "source": 105,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome::",
+      "source": 106,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout",
+      "source": 77,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout",
+      "source": 78,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout::",
+      "source": 77,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout::",
+      "source": 78,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved",
+      "source": 85,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved",
+      "source": 86,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved::",
+      "source": 85,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved::",
+      "source": 86,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated",
+      "source": 97,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated",
+      "source": 98,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated::",
+      "source": 97,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated::",
+      "source": 98,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock",
+      "source": 89,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock",
+      "source": 90,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock::",
       "source": 89,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::authorizePayment::",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock::",
       "source": 90,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted",
-      "source": 109,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted",
-      "source": 110,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted::",
-      "source": 109,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutAccepted::",
-      "source": 110,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome",
-      "source": 113,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome",
-      "source": 114,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome::",
-      "source": 113,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::checkoutOutcome::",
-      "source": 114,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout",
-      "source": 85,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout",
-      "source": 86,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout::",
-      "source": 85,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::forwardCheckout::",
-      "source": 86,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved",
       "source": 93,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved",
       "source": 94,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved::",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved::",
       "source": 93,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::paymentApproved::",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved::",
       "source": 94,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated",
-      "source": 105,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated",
-      "source": 106,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated::",
-      "source": 105,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::publishOrderCreated::",
-      "source": 106,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock",
-      "source": 97,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock",
-      "source": 98,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock::",
-      "source": 97,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::reserveStock::",
-      "source": 98,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved",
-      "source": 101,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved",
-      "source": 102,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved::",
-      "source": 101,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::stockReserved::",
-      "source": 102,
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout",
+      "source": 73,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "FlowEnd",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout",
-      "source": 81,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout",
-      "source": 82,
+      "source": 74,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout::",
-      "source": 81,
+      "source": 73,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow::submitCheckout::",
-      "source": 82,
+      "source": 74,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutService",
-      "source": 15,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutService::",
-      "source": 17,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::CheckoutService::::",
-      "source": 17,
+      "source": 13,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "WebShopArchitecture::InventoryService",
-      "source": 29,
+      "source": 25,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::InventoryService::",
-      "source": 31,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::InventoryService::::",
+      "metaclass": "AttributeUsage",
+      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
       "source": 31,
       "sourceDomain": "workspace"
     },
@@ -13414,84 +13277,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
-      "source": 36,
+      "source": 33,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
-      "source": 39,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "AttributeUsage",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic",
-      "source": 42,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
-      "source": 38,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
-      "source": 41,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::",
-      "source": 44,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
-      "source": 38,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
-      "source": 41,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::OrdersEventsTopic::::",
-      "source": 44,
+      "source": 35,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "AttributeUsage",
       "ownerQualifiedName": "WebShopArchitecture::PaymentsService",
-      "source": 23,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::PaymentsService::",
-      "source": 25,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::PaymentsService::::",
-      "source": 25,
+      "source": 20,
       "sourceDomain": "workspace"
     },
     {
@@ -13502,26 +13302,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "sourceDomain": "workspace"
     },
     {
-      "kind": "source-anchor",
-      "metaclass": "LiteralString",
-      "ownerQualifiedName": "WebShopArchitecture::Storefront::",
-      "source": 5,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "WebShopArchitecture::Storefront::::",
-      "source": 5,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "containment",
-      "source": 2
-    },
-    {
       "kind": "relationship",
       "ordinal": 37,
       "relationshipKind": "redefinition",
@@ -13529,481 +13309,499 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "containment",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 6,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 8,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 12,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 14,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "containment",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 17,
       "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 48,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 78,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 101,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 112,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 118,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 124,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 136,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 149,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "succession",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "containment",
-      "source": 10
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 31,
       "relationshipKind": "containment",
-      "source": 10
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "typing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
-      "relationshipKind": "flow",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "succession",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "flow",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "succession",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "succession",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 114,
+      "ordinal": 38,
       "relationshipKind": "containment",
-      "source": 15
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 116,
+      "ordinal": 44,
       "relationshipKind": "containment",
-      "source": 15
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 264,
-      "relationshipKind": "flowPayloadType",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 265,
-      "relationshipKind": "flowSource",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 266,
-      "relationshipKind": "flowTarget",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "succession",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 115,
+      "ordinal": 50,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 117,
+      "ordinal": 56,
       "relationshipKind": "containment",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 120,
-      "relationshipKind": "containment",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 122,
-      "relationshipKind": "containment",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 281,
-      "relationshipKind": "flowPayloadType",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 282,
-      "relationshipKind": "flowSource",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 283,
-      "relationshipKind": "flowTarget",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "succession",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 121,
-      "relationshipKind": "containment",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 123,
-      "relationshipKind": "containment",
-      "source": 18
+      "source": 7
     },
     {
       "kind": "relationship",
       "ordinal": 62,
       "relationshipKind": "containment",
-      "source": 19
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "ordinal": 68,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 74,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 95,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 104,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 110,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 116,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 126,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 133,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "succession",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "typing",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "flow",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "succession",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "flow",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "succession",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "succession",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 106,
+      "relationshipKind": "containment",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 108,
+      "relationshipKind": "containment",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 244,
+      "relationshipKind": "flowPayloadType",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 245,
+      "relationshipKind": "flowSource",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 246,
+      "relationshipKind": "flowTarget",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "succession",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 107,
+      "relationshipKind": "containment",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 109,
+      "relationshipKind": "containment",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 112,
+      "relationshipKind": "containment",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 114,
+      "relationshipKind": "containment",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 261,
+      "relationshipKind": "flowPayloadType",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 262,
+      "relationshipKind": "flowSource",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 263,
+      "relationshipKind": "flowTarget",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "succession",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 113,
+      "relationshipKind": "containment",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 115,
+      "relationshipKind": "containment",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "containment",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "containment",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 131,
+      "relationshipKind": "flowPayloadType",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 132,
+      "relationshipKind": "flowSource",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 133,
+      "relationshipKind": "flowTarget",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
       "relationshipKind": "containment",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 141,
-      "relationshipKind": "flowPayloadType",
+      "ordinal": 61,
+      "relationshipKind": "containment",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 142,
-      "relationshipKind": "flowSource",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 143,
-      "relationshipKind": "flowTarget",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 75,
       "relationshipKind": "containment",
       "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
+      "ordinal": 76,
+      "relationshipKind": "containment",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 77,
+      "relationshipKind": "containment",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 78,
       "relationshipKind": "containment",
       "source": 20
     },
@@ -14011,197 +13809,215 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "kind": "relationship",
       "ordinal": 79,
       "relationshipKind": "containment",
-      "source": 21
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 80,
+      "relationshipKind": "containment",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
+      "relationshipKind": "containment",
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 82,
       "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "containment",
-      "source": 21
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 84,
       "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "containment",
-      "source": 21
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 86,
       "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 87,
-      "relationshipKind": "containment",
-      "source": 21
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 88,
       "relationshipKind": "containment",
-      "source": 21
+      "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
+      "ordinal": 89,
       "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 92,
-      "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 94,
-      "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 95,
-      "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 97,
-      "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 99,
-      "relationshipKind": "containment",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 192,
-      "relationshipKind": "typing",
-      "source": 21
+      "source": 20
     },
     {
       "kind": "relationship",
       "ordinal": 91,
+      "relationshipKind": "containment",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 93,
+      "relationshipKind": "containment",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 182,
+      "relationshipKind": "typing",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 85,
+      "relationshipKind": "succession",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 105,
+      "relationshipKind": "flow",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 94,
       "relationshipKind": "succession",
       "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 113,
-      "relationshipKind": "flow",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 100,
+      "ordinal": 87,
       "relationshipKind": "succession",
       "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 93,
+      "ordinal": 134,
+      "relationshipKind": "flow",
+      "source": 24
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
       "relationshipKind": "succession",
       "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 150,
+      "ordinal": 111,
       "relationshipKind": "flow",
       "source": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 89,
+      "ordinal": 92,
       "relationshipKind": "succession",
-      "source": 25
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 119,
-      "relationshipKind": "flow",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 98,
+      "ordinal": 39,
+      "relationshipKind": "flow",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 90,
       "relationshipKind": "succession",
       "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "flow",
+      "ordinal": 64,
+      "relationshipKind": "containment",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 96,
-      "relationshipKind": "succession",
+      "ordinal": 66,
+      "relationshipKind": "containment",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "containment",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "containment",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 158,
+      "ordinal": 148,
       "relationshipKind": "flowPayloadType",
-      "source": 29
+      "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 159,
+      "ordinal": 149,
       "relationshipKind": "flowSource",
-      "source": 29
+      "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 160,
+      "ordinal": 150,
       "relationshipKind": "flowTarget",
-      "source": 29
+      "source": 28
     },
     {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "succession",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
+      "relationshipKind": "containment",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 69,
+      "ordinal": 67,
+      "relationshipKind": "containment",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 117,
       "relationshipKind": "containment",
       "source": 30
     },
     {
       "kind": "relationship",
-      "ordinal": 71,
+      "ordinal": 118,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 119,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 120,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 121,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 122,
+      "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 123,
       "relationshipKind": "containment",
       "source": 30
     },
@@ -14209,269 +14025,269 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "kind": "relationship",
       "ordinal": 125,
       "relationshipKind": "containment",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 278,
+      "relationshipKind": "typing",
+      "source": 30
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "flow",
       "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 124,
+      "relationshipKind": "succession",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 127,
+      "relationshipKind": "containment",
+      "source": 33
     },
     {
       "kind": "relationship",
       "ordinal": 128,
       "relationshipKind": "containment",
-      "source": 31
+      "source": 33
     },
     {
       "kind": "relationship",
       "ordinal": 129,
       "relationshipKind": "containment",
-      "source": 31
+      "source": 33
     },
     {
       "kind": "relationship",
       "ordinal": 130,
       "relationshipKind": "containment",
-      "source": 31
+      "source": 33
     },
     {
       "kind": "relationship",
       "ordinal": 131,
       "relationshipKind": "containment",
-      "source": 31
+      "source": 33
     },
     {
       "kind": "relationship",
       "ordinal": 132,
       "relationshipKind": "containment",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 133,
-      "relationshipKind": "containment",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 135,
-      "relationshipKind": "containment",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 298,
-      "relationshipKind": "typing",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "flow",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 134,
-      "relationshipKind": "succession",
       "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 137,
-      "relationshipKind": "containment",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 140,
-      "relationshipKind": "containment",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 143,
-      "relationshipKind": "containment",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 146,
-      "relationshipKind": "containment",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 147,
-      "relationshipKind": "containment",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 148,
-      "relationshipKind": "containment",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 329,
+      "ordinal": 304,
       "relationshipKind": "typing",
-      "source": 34
+      "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 74,
+      "ordinal": 70,
       "relationshipKind": "containment",
-      "source": 36
+      "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 76,
+      "ordinal": 72,
       "relationshipKind": "containment",
-      "source": 36
+      "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 175,
+      "ordinal": 165,
       "relationshipKind": "flowPayloadType",
-      "source": 36
+      "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 176,
+      "ordinal": 166,
       "relationshipKind": "flowSource",
-      "source": 36
+      "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 177,
+      "ordinal": 167,
       "relationshipKind": "flowTarget",
-      "source": 36
+      "source": 35
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "succession",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 71,
+      "relationshipKind": "containment",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 75,
+      "ordinal": 73,
+      "relationshipKind": "containment",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 96,
       "relationshipKind": "containment",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 77,
+      "ordinal": 97,
       "relationshipKind": "containment",
       "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 98,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 99,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 100,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 101,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 103,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 221,
+      "relationshipKind": "typing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "flow",
+      "source": 38
     },
     {
       "kind": "relationship",
       "ordinal": 102,
-      "relationshipKind": "containment",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 105,
-      "relationshipKind": "containment",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 106,
-      "relationshipKind": "containment",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 107,
-      "relationshipKind": "containment",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 108,
-      "relationshipKind": "containment",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 109,
-      "relationshipKind": "containment",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 111,
-      "relationshipKind": "containment",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 236,
-      "relationshipKind": "typing",
-      "source": 38
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "flow",
+      "relationshipKind": "succession",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 110,
-      "relationshipKind": "succession",
+      "ordinal": 135,
+      "relationshipKind": "containment",
       "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 151,
+      "ordinal": 137,
       "relationshipKind": "containment",
-      "source": 41
+      "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 153,
-      "relationshipKind": "containment",
-      "source": 41
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 365,
+      "ordinal": 325,
       "relationshipKind": "flowPayloadType",
-      "source": 41
+      "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 366,
+      "ordinal": 326,
       "relationshipKind": "flowSource",
-      "source": 41
+      "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 367,
+      "ordinal": 327,
       "relationshipKind": "flowTarget",
-      "source": 41
+      "source": 40
     },
     {
       "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "succession",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 136,
+      "relationshipKind": "containment",
       "source": 41
     },
     {
       "kind": "relationship",
-      "ordinal": 152,
+      "ordinal": 138,
+      "relationshipKind": "containment",
+      "source": 41
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
       "relationshipKind": "containment",
       "source": 42
     },
     {
       "kind": "relationship",
-      "ordinal": 154,
+      "ordinal": 42,
       "relationshipKind": "containment",
       "source": 42
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 80,
+      "relationshipKind": "flowPayloadType",
+      "source": 42
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
+      "relationshipKind": "flowSource",
+      "source": 42
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "flowTarget",
+      "source": 42
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "succession",
+      "source": 42
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "containment",
+      "source": 43
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 43,
       "relationshipKind": "containment",
       "source": 43
     },
@@ -14479,89 +14295,59 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "kind": "relationship",
       "ordinal": 46,
       "relationshipKind": "containment",
-      "source": 43
+      "source": 44
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
-      "relationshipKind": "flowPayloadType",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 91,
-      "relationshipKind": "flowSource",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 92,
-      "relationshipKind": "flowTarget",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "succession",
-      "source": 43
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
+      "ordinal": 48,
       "relationshipKind": "containment",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 97,
+      "relationshipKind": "flowPayloadType",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 98,
+      "relationshipKind": "flowSource",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 99,
+      "relationshipKind": "flowTarget",
+      "source": 44
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "succession",
       "source": 44
     },
     {
       "kind": "relationship",
       "ordinal": 47,
       "relationshipKind": "containment",
-      "source": 44
+      "source": 45
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 49,
       "relationshipKind": "containment",
       "source": 45
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "containment",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 107,
-      "relationshipKind": "flowPayloadType",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 108,
-      "relationshipKind": "flowSource",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 109,
-      "relationshipKind": "flowTarget",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "succession",
-      "source": 45
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
+      "ordinal": 32,
       "relationshipKind": "containment",
       "source": 46
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 33,
       "relationshipKind": "containment",
       "source": 46
     },
@@ -14569,247 +14355,151 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "kind": "relationship",
       "ordinal": 34,
       "relationshipKind": "containment",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "containment",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "containment",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "containment",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "containment",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "typing",
-      "source": 47
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "flow",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "succession",
-      "source": 49
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 56,
-      "relationshipKind": "containment",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 58,
-      "relationshipKind": "containment",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 124,
-      "relationshipKind": "flowPayloadType",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 125,
-      "relationshipKind": "flowSource",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 126,
-      "relationshipKind": "flowTarget",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "succession",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "containment",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "containment",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "containment",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 196,
-      "relationshipKind": "redefinition",
-      "source": 55
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "containment",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 126,
-      "relationshipKind": "containment",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 302,
-      "relationshipKind": "redefinition",
-      "source": 64
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 127,
-      "relationshipKind": "containment",
-      "source": 65
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 138,
-      "relationshipKind": "containment",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 141,
-      "relationshipKind": "containment",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 144,
-      "relationshipKind": "containment",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 333,
-      "relationshipKind": "redefinition",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 341,
-      "relationshipKind": "redefinition",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 349,
-      "relationshipKind": "redefinition",
-      "source": 75
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 139,
-      "relationshipKind": "containment",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 142,
-      "relationshipKind": "containment",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 145,
-      "relationshipKind": "containment",
-      "source": 76
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 103,
-      "relationshipKind": "containment",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 240,
-      "relationshipKind": "redefinition",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 104,
-      "relationshipKind": "containment",
-      "source": 83
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "typing",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 210,
-      "relationshipKind": "typing",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 257,
-      "relationshipKind": "typing",
-      "source": 87
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 313,
-      "relationshipKind": "typing",
-      "source": 87
+      "source": 46
     },
     {
       "kind": "relationship",
       "ordinal": 35,
       "relationshipKind": "containment",
-      "source": 90
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "redefinition",
-      "source": 90
+      "source": 46
     },
     {
       "kind": "relationship",
       "ordinal": 36,
       "relationshipKind": "containment",
-      "source": 91
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "typing",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "flow",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
+      "relationshipKind": "succession",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "containment",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "containment",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 114,
+      "relationshipKind": "flowPayloadType",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 115,
+      "relationshipKind": "flowSource",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 116,
+      "relationshipKind": "flowTarget",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "succession",
+      "source": 49
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "containment",
+      "source": 50
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "containment",
+      "source": 50
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 186,
+      "relationshipKind": "redefinition",
+      "source": 54
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 282,
+      "relationshipKind": "redefinition",
+      "source": 62
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 308,
+      "relationshipKind": "redefinition",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 311,
+      "relationshipKind": "redefinition",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 314,
+      "relationshipKind": "redefinition",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 225,
+      "relationshipKind": "redefinition",
+      "source": 78
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "typing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 195,
+      "relationshipKind": "typing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 237,
+      "relationshipKind": "typing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 288,
+      "relationshipKind": "typing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 67,
+      "relationshipKind": "redefinition",
+      "source": 85
     }
   ],
   "selectedView": {
@@ -14826,1396 +14516,1252 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "edges": [
       {
         "kind": "containment",
-        "navigation": 115,
+        "navigation": 107,
         "origin": 1,
         "provenance": "authored",
-        "reference": 167,
+        "reference": 143,
         "source": 0,
         "target": 1
       },
       {
         "kind": "succession",
-        "navigation": 116,
+        "navigation": 108,
         "origin": 1,
         "provenance": "implied",
-        "reference": 352,
+        "reference": 328,
         "source": 20,
         "target": 30
       },
       {
         "kind": "containment",
-        "navigation": 118,
+        "navigation": 110,
         "origin": 2,
         "provenance": "authored",
-        "reference": 168,
+        "reference": 144,
         "source": 0,
         "target": 2
       },
       {
         "kind": "succession",
-        "navigation": 119,
+        "navigation": 111,
         "origin": 2,
         "provenance": "implied",
-        "reference": 276,
+        "reference": 252,
         "source": 30,
         "target": 40
       },
       {
         "kind": "containment",
-        "navigation": 121,
+        "navigation": 113,
         "origin": 3,
         "provenance": "authored",
-        "reference": 169,
+        "reference": 145,
         "source": 0,
         "target": 3
       },
       {
         "kind": "succession",
-        "navigation": 122,
+        "navigation": 114,
         "origin": 3,
         "provenance": "implied",
-        "reference": 228,
+        "reference": 204,
         "source": 40,
         "target": 35
       },
       {
         "kind": "containment",
-        "navigation": 124,
+        "navigation": 116,
         "origin": 4,
         "provenance": "authored",
-        "reference": 170,
+        "reference": 146,
         "source": 0,
         "target": 4
       },
       {
         "kind": "succession",
-        "navigation": 125,
+        "navigation": 117,
         "origin": 4,
         "provenance": "implied",
-        "reference": 302,
+        "reference": 278,
         "source": 35,
         "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 127,
+        "navigation": 119,
         "origin": 5,
         "provenance": "authored",
-        "reference": 171,
+        "reference": 147,
         "source": 0,
         "target": 5
       },
       {
         "kind": "succession",
-        "navigation": 128,
+        "navigation": 120,
         "origin": 5,
         "provenance": "implied",
-        "reference": 328,
+        "reference": 304,
         "source": 10,
         "target": 15
       },
       {
         "kind": "containment",
-        "navigation": 130,
+        "navigation": 122,
         "origin": 6,
         "provenance": "authored",
-        "reference": 172,
+        "reference": 148,
         "source": 0,
         "target": 6
       },
       {
         "kind": "succession",
-        "navigation": 131,
+        "navigation": 123,
         "origin": 6,
         "provenance": "implied",
-        "reference": 336,
+        "reference": 312,
         "source": 15,
         "target": 50
       },
       {
         "kind": "containment",
-        "navigation": 133,
+        "navigation": 125,
         "origin": 7,
         "provenance": "authored",
-        "reference": 173,
+        "reference": 149,
         "source": 0,
         "target": 7
       },
       {
         "kind": "succession",
-        "navigation": 134,
+        "navigation": 126,
         "origin": 7,
         "provenance": "implied",
-        "reference": 320,
+        "reference": 296,
         "source": 50,
         "target": 45
       },
       {
         "kind": "containment",
-        "navigation": 136,
+        "navigation": 128,
         "origin": 8,
         "provenance": "authored",
-        "reference": 174,
+        "reference": 150,
         "source": 0,
         "target": 8
       },
       {
         "kind": "succession",
-        "navigation": 137,
+        "navigation": 129,
         "origin": 8,
         "provenance": "implied",
-        "reference": 236,
+        "reference": 212,
         "source": 45,
         "target": 25
       },
       {
         "kind": "containment",
-        "navigation": 48,
+        "navigation": 40,
         "origin": 9,
         "provenance": "authored",
-        "reference": 175,
+        "reference": 151,
         "source": 0,
         "target": 9
       },
       {
         "kind": "containment",
-        "navigation": 53,
+        "navigation": 45,
         "origin": 55,
         "provenance": "authored",
-        "reference": 176,
+        "reference": 152,
         "source": 0,
         "target": 55
       },
       {
         "kind": "containment",
-        "navigation": 8,
+        "navigation": 7,
         "origin": 64,
         "provenance": "implied",
-        "reference": 207,
+        "reference": 183,
         "source": 55,
         "target": 64
       },
       {
         "kind": "containment",
-        "navigation": 10,
-        "origin": 65,
-        "provenance": "authored",
-        "reference": 164,
-        "source": 64,
-        "target": 65
-      },
-      {
-        "kind": "containment",
-        "navigation": 10,
-        "origin": 66,
-        "provenance": "authored",
-        "reference": 166,
-        "source": 65,
-        "target": 66
-      },
-      {
-        "kind": "containment",
-        "navigation": 14,
+        "navigation": 12,
         "origin": 60,
         "provenance": "implied",
-        "reference": 208,
+        "reference": 184,
         "source": 55,
         "target": 60
       },
       {
         "kind": "containment",
-        "navigation": 13,
+        "navigation": 11,
         "origin": 61,
         "provenance": "implied",
-        "reference": 209,
+        "reference": 185,
         "source": 55,
         "target": 61
       },
       {
         "kind": "containment",
-        "navigation": 12,
+        "navigation": 10,
         "origin": 62,
         "provenance": "implied",
-        "reference": 210,
+        "reference": 186,
         "source": 55,
         "target": 62
       },
       {
         "kind": "containment",
-        "navigation": 11,
+        "navigation": 9,
         "origin": 63,
         "provenance": "implied",
-        "reference": 211,
+        "reference": 187,
         "source": 55,
         "target": 63
       },
       {
         "kind": "containment",
         "navigation": 1,
-        "origin": 67,
+        "origin": 65,
         "provenance": "implied",
-        "reference": 212,
+        "reference": 188,
         "source": 55,
-        "target": 67
+        "target": 65
       },
       {
         "kind": "containment",
-        "navigation": 56,
+        "navigation": 48,
         "origin": 56,
         "provenance": "authored",
-        "reference": 213,
+        "reference": 189,
         "source": 55,
         "target": 56
       },
       {
         "kind": "succession",
-        "navigation": 56,
+        "navigation": 48,
         "origin": 56,
         "provenance": "authored",
-        "reference": 222,
+        "reference": 198,
         "source": 57,
         "target": 56
       },
       {
         "kind": "containment",
-        "navigation": 55,
+        "navigation": 47,
         "origin": 57,
         "provenance": "authored",
-        "reference": 214,
+        "reference": 190,
         "source": 55,
         "target": 57
       },
       {
         "kind": "containment",
-        "navigation": 57,
+        "navigation": 49,
         "origin": 58,
         "provenance": "authored",
-        "reference": 215,
+        "reference": 191,
         "source": 55,
         "target": 58
       },
       {
         "kind": "succession",
-        "navigation": 57,
+        "navigation": 49,
         "origin": 58,
         "provenance": "authored",
-        "reference": 219,
+        "reference": 195,
         "source": 56,
         "target": 58
       },
       {
         "kind": "containment",
-        "navigation": 58,
+        "navigation": 50,
         "origin": 59,
         "provenance": "authored",
-        "reference": 216,
+        "reference": 192,
         "source": 55,
         "target": 59
       },
       {
         "kind": "succession",
-        "navigation": 58,
+        "navigation": 50,
         "origin": 59,
         "provenance": "authored",
-        "reference": 221,
+        "reference": 197,
         "source": 58,
         "target": 59
       },
       {
         "kind": "containment",
-        "navigation": 49,
-        "origin": 68,
+        "navigation": 41,
+        "origin": 66,
         "provenance": "authored",
-        "reference": 177,
+        "reference": 153,
         "source": 0,
-        "target": 68
+        "target": 66
       },
       {
         "kind": "containment",
         "navigation": 3,
-        "origin": 73,
-        "provenance": "implied",
-        "reference": 339,
-        "source": 68,
-        "target": 73
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 74,
-        "provenance": "authored",
-        "reference": 377,
-        "source": 73,
-        "target": 74
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 75,
-        "provenance": "authored",
-        "reference": 379,
-        "source": 74,
-        "target": 75
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
         "origin": 71,
         "provenance": "implied",
-        "reference": 340,
-        "source": 68,
+        "reference": 315,
+        "source": 66,
         "target": 71
       },
       {
         "kind": "containment",
         "navigation": 6,
-        "origin": 72,
-        "provenance": "implied",
-        "reference": 341,
-        "source": 68,
-        "target": 72
-      },
-      {
-        "kind": "containment",
-        "navigation": 51,
         "origin": 69,
-        "provenance": "authored",
-        "reference": 342,
-        "source": 68,
+        "provenance": "implied",
+        "reference": 316,
+        "source": 66,
         "target": 69
       },
       {
         "kind": "containment",
-        "navigation": 52,
+        "navigation": 5,
         "origin": 70,
-        "provenance": "authored",
-        "reference": 343,
-        "source": 68,
-        "target": 70
-      },
-      {
-        "kind": "succession",
-        "navigation": 52,
-        "origin": 70,
-        "provenance": "authored",
-        "reference": 346,
-        "source": 69,
+        "provenance": "implied",
+        "reference": 317,
+        "source": 66,
         "target": 70
       },
       {
         "kind": "containment",
-        "navigation": 95,
+        "navigation": 43,
+        "origin": 67,
+        "provenance": "authored",
+        "reference": 318,
+        "source": 66,
+        "target": 67
+      },
+      {
+        "kind": "containment",
+        "navigation": 44,
+        "origin": 68,
+        "provenance": "authored",
+        "reference": 319,
+        "source": 66,
+        "target": 68
+      },
+      {
+        "kind": "succession",
+        "navigation": 44,
+        "origin": 68,
+        "provenance": "authored",
+        "reference": 322,
+        "source": 67,
+        "target": 68
+      },
+      {
+        "kind": "containment",
+        "navigation": 87,
         "origin": 10,
         "provenance": "authored",
-        "reference": 178,
+        "reference": 154,
         "source": 0,
         "target": 10
       },
       {
         "kind": "flow",
-        "navigation": 96,
+        "navigation": 88,
         "origin": 10,
         "provenance": "implied",
-        "reference": 269,
-        "source": 78,
-        "target": 105
+        "reference": 245,
+        "source": 74,
+        "target": 97
       },
       {
         "kind": "containment",
-        "navigation": 97,
+        "navigation": 89,
         "origin": 11,
         "provenance": "authored",
-        "reference": 323,
+        "reference": 299,
         "source": 10,
         "target": 11
       },
       {
         "kind": "containment",
-        "navigation": 97,
+        "navigation": 89,
         "origin": 12,
         "provenance": "authored",
-        "reference": 329,
+        "reference": 305,
         "source": 11,
         "target": 12
       },
       {
         "kind": "containment",
-        "navigation": 98,
+        "navigation": 90,
         "origin": 13,
         "provenance": "authored",
-        "reference": 324,
+        "reference": 300,
         "source": 10,
         "target": 13
       },
       {
         "kind": "containment",
-        "navigation": 98,
+        "navigation": 90,
         "origin": 14,
         "provenance": "authored",
-        "reference": 330,
+        "reference": 306,
         "source": 13,
         "target": 14
       },
       {
         "kind": "containment",
-        "navigation": 99,
+        "navigation": 91,
         "origin": 15,
         "provenance": "authored",
-        "reference": 179,
+        "reference": 155,
         "source": 0,
         "target": 15
       },
       {
         "kind": "flow",
-        "navigation": 100,
+        "navigation": 92,
         "origin": 15,
         "provenance": "implied",
-        "reference": 288,
-        "source": 104,
-        "target": 81
+        "reference": 264,
+        "source": 96,
+        "target": 77
       },
       {
         "kind": "containment",
-        "navigation": 101,
+        "navigation": 93,
         "origin": 16,
         "provenance": "authored",
-        "reference": 331,
+        "reference": 307,
         "source": 15,
         "target": 16
       },
       {
         "kind": "containment",
-        "navigation": 101,
+        "navigation": 93,
         "origin": 17,
         "provenance": "authored",
-        "reference": 337,
+        "reference": 313,
         "source": 16,
         "target": 17
       },
       {
         "kind": "containment",
-        "navigation": 102,
+        "navigation": 94,
         "origin": 18,
         "provenance": "authored",
-        "reference": 332,
+        "reference": 308,
         "source": 15,
         "target": 18
       },
       {
         "kind": "containment",
-        "navigation": 102,
+        "navigation": 94,
         "origin": 19,
         "provenance": "authored",
-        "reference": 338,
+        "reference": 314,
         "source": 18,
         "target": 19
       },
       {
         "kind": "containment",
-        "navigation": 79,
+        "navigation": 71,
         "origin": 20,
         "provenance": "authored",
-        "reference": 180,
+        "reference": 156,
         "source": 0,
         "target": 20
       },
       {
         "kind": "flow",
-        "navigation": 80,
+        "navigation": 72,
         "origin": 20,
         "provenance": "implied",
-        "reference": 345,
-        "source": 69,
+        "reference": 321,
+        "source": 67,
         "target": 57
       },
       {
         "kind": "containment",
-        "navigation": 81,
+        "navigation": 73,
         "origin": 21,
         "provenance": "authored",
-        "reference": 347,
+        "reference": 323,
         "source": 20,
         "target": 21
       },
       {
         "kind": "containment",
-        "navigation": 81,
+        "navigation": 73,
         "origin": 22,
         "provenance": "authored",
-        "reference": 353,
+        "reference": 329,
         "source": 21,
         "target": 22
       },
       {
         "kind": "containment",
-        "navigation": 82,
+        "navigation": 74,
         "origin": 23,
         "provenance": "authored",
-        "reference": 348,
+        "reference": 324,
         "source": 20,
         "target": 23
       },
       {
         "kind": "containment",
-        "navigation": 82,
+        "navigation": 74,
         "origin": 24,
         "provenance": "authored",
-        "reference": 354,
+        "reference": 330,
         "source": 23,
         "target": 24
       },
       {
         "kind": "containment",
-        "navigation": 111,
+        "navigation": 103,
         "origin": 25,
         "provenance": "authored",
-        "reference": 181,
+        "reference": 157,
         "source": 0,
         "target": 25
       },
       {
         "kind": "flow",
-        "navigation": 112,
+        "navigation": 104,
         "origin": 25,
         "provenance": "implied",
-        "reference": 220,
+        "reference": 196,
         "source": 59,
-        "target": 70
+        "target": 68
       },
       {
         "kind": "containment",
-        "navigation": 113,
+        "navigation": 105,
         "origin": 26,
         "provenance": "authored",
-        "reference": 239,
+        "reference": 215,
         "source": 25,
         "target": 26
       },
       {
         "kind": "containment",
-        "navigation": 113,
+        "navigation": 105,
         "origin": 27,
         "provenance": "authored",
-        "reference": 244,
+        "reference": 220,
         "source": 26,
         "target": 27
       },
       {
         "kind": "containment",
-        "navigation": 114,
+        "navigation": 106,
         "origin": 28,
         "provenance": "authored",
-        "reference": 240,
+        "reference": 216,
         "source": 25,
         "target": 28
       },
       {
         "kind": "containment",
-        "navigation": 114,
+        "navigation": 106,
         "origin": 29,
         "provenance": "authored",
-        "reference": 245,
+        "reference": 221,
         "source": 28,
         "target": 29
       },
       {
         "kind": "containment",
-        "navigation": 83,
+        "navigation": 75,
         "origin": 30,
         "provenance": "authored",
-        "reference": 182,
+        "reference": 158,
         "source": 0,
         "target": 30
       },
       {
         "kind": "flow",
-        "navigation": 84,
+        "navigation": 76,
         "origin": 30,
         "provenance": "implied",
-        "reference": 218,
+        "reference": 194,
         "source": 56,
-        "target": 80
+        "target": 76
       },
       {
         "kind": "containment",
-        "navigation": 85,
+        "navigation": 77,
         "origin": 31,
         "provenance": "authored",
-        "reference": 271,
+        "reference": 247,
         "source": 30,
         "target": 31
       },
       {
         "kind": "containment",
-        "navigation": 85,
+        "navigation": 77,
         "origin": 32,
         "provenance": "authored",
-        "reference": 277,
+        "reference": 253,
         "source": 31,
         "target": 32
       },
       {
         "kind": "containment",
-        "navigation": 86,
+        "navigation": 78,
         "origin": 33,
         "provenance": "authored",
-        "reference": 272,
+        "reference": 248,
         "source": 30,
         "target": 33
       },
       {
         "kind": "containment",
-        "navigation": 86,
+        "navigation": 78,
         "origin": 34,
         "provenance": "authored",
-        "reference": 278,
+        "reference": 254,
         "source": 33,
         "target": 34
       },
       {
         "kind": "containment",
-        "navigation": 91,
+        "navigation": 83,
         "origin": 35,
         "provenance": "authored",
-        "reference": 183,
+        "reference": 159,
         "source": 0,
         "target": 35
       },
       {
         "kind": "flow",
-        "navigation": 92,
+        "navigation": 84,
         "origin": 35,
         "provenance": "implied",
-        "reference": 313,
-        "source": 94,
-        "target": 83
+        "reference": 289,
+        "source": 88,
+        "target": 79
       },
       {
         "kind": "containment",
-        "navigation": 93,
+        "navigation": 85,
         "origin": 36,
         "provenance": "authored",
-        "reference": 297,
+        "reference": 273,
         "source": 35,
         "target": 36
       },
       {
         "kind": "containment",
-        "navigation": 93,
+        "navigation": 85,
         "origin": 37,
         "provenance": "authored",
-        "reference": 303,
+        "reference": 279,
         "source": 36,
         "target": 37
       },
       {
         "kind": "containment",
-        "navigation": 94,
+        "navigation": 86,
         "origin": 38,
         "provenance": "authored",
-        "reference": 298,
+        "reference": 274,
         "source": 35,
         "target": 38
       },
       {
         "kind": "containment",
-        "navigation": 94,
+        "navigation": 86,
         "origin": 39,
         "provenance": "authored",
-        "reference": 304,
+        "reference": 280,
         "source": 38,
         "target": 39
       },
       {
         "kind": "containment",
-        "navigation": 59,
-        "origin": 76,
+        "navigation": 51,
+        "origin": 72,
         "provenance": "authored",
-        "reference": 184,
+        "reference": 160,
         "source": 0,
-        "target": 76
+        "target": 72
       },
       {
         "kind": "containment",
-        "navigation": 15,
-        "origin": 90,
-        "provenance": "implied",
-        "reference": 246,
-        "source": 76,
-        "target": 90
-      },
-      {
-        "kind": "containment",
-        "navigation": 17,
-        "origin": 91,
-        "provenance": "authored",
-        "reference": 355,
-        "source": 90,
-        "target": 91
-      },
-      {
-        "kind": "containment",
-        "navigation": 17,
-        "origin": 92,
-        "provenance": "authored",
-        "reference": 357,
-        "source": 91,
-        "target": 92
-      },
-      {
-        "kind": "containment",
-        "navigation": 18,
-        "origin": 89,
-        "provenance": "implied",
-        "reference": 247,
-        "source": 76,
-        "target": 89
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "origin": 85,
-        "provenance": "implied",
-        "reference": 248,
-        "source": 76,
-        "target": 85
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 84,
-        "provenance": "implied",
-        "reference": 249,
-        "source": 76,
-        "target": 84
-      },
-      {
-        "kind": "containment",
-        "navigation": 22,
+        "navigation": 13,
         "origin": 86,
         "provenance": "implied",
-        "reference": 250,
-        "source": 76,
+        "reference": 222,
+        "source": 72,
         "target": 86
       },
       {
         "kind": "containment",
-        "navigation": 20,
-        "origin": 87,
+        "navigation": 15,
+        "origin": 85,
         "provenance": "implied",
-        "reference": 251,
-        "source": 76,
-        "target": 87
+        "reference": 223,
+        "source": 72,
+        "target": 85
       },
       {
         "kind": "containment",
-        "navigation": 21,
-        "origin": 88,
-        "provenance": "implied",
-        "reference": 252,
-        "source": 76,
-        "target": 88
-      },
-      {
-        "kind": "containment",
-        "navigation": 67,
-        "origin": 77,
-        "provenance": "authored",
-        "reference": 253,
-        "source": 76,
-        "target": 77
-      },
-      {
-        "kind": "succession",
-        "navigation": 67,
-        "origin": 77,
-        "provenance": "authored",
-        "reference": 266,
-        "source": 82,
-        "target": 77
-      },
-      {
-        "kind": "containment",
-        "navigation": 64,
-        "origin": 78,
-        "provenance": "authored",
-        "reference": 254,
-        "source": 76,
-        "target": 78
-      },
-      {
-        "kind": "succession",
-        "navigation": 64,
-        "origin": 78,
-        "provenance": "authored",
-        "reference": 261,
-        "source": 83,
-        "target": 78
-      },
-      {
-        "kind": "containment",
-        "navigation": 62,
-        "origin": 79,
-        "provenance": "authored",
-        "reference": 255,
-        "source": 76,
-        "target": 79
-      },
-      {
-        "kind": "succession",
-        "navigation": 62,
-        "origin": 79,
-        "provenance": "authored",
-        "reference": 264,
-        "source": 80,
-        "target": 79
-      },
-      {
-        "kind": "containment",
-        "navigation": 61,
-        "origin": 80,
-        "provenance": "authored",
-        "reference": 256,
-        "source": 76,
-        "target": 80
-      },
-      {
-        "kind": "containment",
-        "navigation": 65,
+        "navigation": 16,
         "origin": 81,
-        "provenance": "authored",
-        "reference": 257,
-        "source": 76,
+        "provenance": "implied",
+        "reference": 224,
+        "source": 72,
         "target": 81
-      },
-      {
-        "kind": "succession",
-        "navigation": 65,
-        "origin": 81,
-        "provenance": "authored",
-        "reference": 270,
-        "source": 78,
-        "target": 81
-      },
-      {
-        "kind": "containment",
-        "navigation": 66,
-        "origin": 82,
-        "provenance": "authored",
-        "reference": 258,
-        "source": 76,
-        "target": 82
-      },
-      {
-        "kind": "succession",
-        "navigation": 66,
-        "origin": 82,
-        "provenance": "authored",
-        "reference": 268,
-        "source": 81,
-        "target": 82
-      },
-      {
-        "kind": "containment",
-        "navigation": 63,
-        "origin": 83,
-        "provenance": "authored",
-        "reference": 259,
-        "source": 76,
-        "target": 83
-      },
-      {
-        "kind": "succession",
-        "navigation": 63,
-        "origin": 83,
-        "provenance": "authored",
-        "reference": 263,
-        "source": 79,
-        "target": 83
-      },
-      {
-        "kind": "containment",
-        "navigation": 68,
-        "origin": 93,
-        "provenance": "authored",
-        "reference": 185,
-        "source": 0,
-        "target": 93
-      },
-      {
-        "kind": "containment",
-        "navigation": 23,
-        "origin": 100,
-        "provenance": "implied",
-        "reference": 305,
-        "source": 93,
-        "target": 100
-      },
-      {
-        "kind": "containment",
-        "navigation": 25,
-        "origin": 101,
-        "provenance": "authored",
-        "reference": 370,
-        "source": 100,
-        "target": 101
-      },
-      {
-        "kind": "containment",
-        "navigation": 25,
-        "origin": 102,
-        "provenance": "authored",
-        "reference": 372,
-        "source": 101,
-        "target": 102
-      },
-      {
-        "kind": "containment",
-        "navigation": 26,
-        "origin": 99,
-        "provenance": "implied",
-        "reference": 306,
-        "source": 93,
-        "target": 99
-      },
-      {
-        "kind": "containment",
-        "navigation": 28,
-        "origin": 97,
-        "provenance": "implied",
-        "reference": 307,
-        "source": 93,
-        "target": 97
-      },
-      {
-        "kind": "containment",
-        "navigation": 27,
-        "origin": 98,
-        "provenance": "implied",
-        "reference": 308,
-        "source": 93,
-        "target": 98
       },
       {
         "kind": "containment",
         "navigation": 1,
-        "origin": 96,
+        "origin": 80,
         "provenance": "implied",
-        "reference": 309,
-        "source": 93,
-        "target": 96
+        "reference": 225,
+        "source": 72,
+        "target": 80
       },
       {
         "kind": "containment",
-        "navigation": 71,
-        "origin": 94,
+        "navigation": 19,
+        "origin": 82,
+        "provenance": "implied",
+        "reference": 226,
+        "source": 72,
+        "target": 82
+      },
+      {
+        "kind": "containment",
+        "navigation": 17,
+        "origin": 83,
+        "provenance": "implied",
+        "reference": 227,
+        "source": 72,
+        "target": 83
+      },
+      {
+        "kind": "containment",
+        "navigation": 18,
+        "origin": 84,
+        "provenance": "implied",
+        "reference": 228,
+        "source": 72,
+        "target": 84
+      },
+      {
+        "kind": "containment",
+        "navigation": 59,
+        "origin": 73,
         "provenance": "authored",
-        "reference": 310,
-        "source": 93,
-        "target": 94
+        "reference": 229,
+        "source": 72,
+        "target": 73
       },
       {
         "kind": "succession",
-        "navigation": 71,
-        "origin": 94,
+        "navigation": 59,
+        "origin": 73,
         "provenance": "authored",
-        "reference": 314,
-        "source": 95,
+        "reference": 242,
+        "source": 78,
+        "target": 73
+      },
+      {
+        "kind": "containment",
+        "navigation": 56,
+        "origin": 74,
+        "provenance": "authored",
+        "reference": 230,
+        "source": 72,
+        "target": 74
+      },
+      {
+        "kind": "succession",
+        "navigation": 56,
+        "origin": 74,
+        "provenance": "authored",
+        "reference": 237,
+        "source": 79,
+        "target": 74
+      },
+      {
+        "kind": "containment",
+        "navigation": 54,
+        "origin": 75,
+        "provenance": "authored",
+        "reference": 231,
+        "source": 72,
+        "target": 75
+      },
+      {
+        "kind": "succession",
+        "navigation": 54,
+        "origin": 75,
+        "provenance": "authored",
+        "reference": 240,
+        "source": 76,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 53,
+        "origin": 76,
+        "provenance": "authored",
+        "reference": 232,
+        "source": 72,
+        "target": 76
+      },
+      {
+        "kind": "containment",
+        "navigation": 57,
+        "origin": 77,
+        "provenance": "authored",
+        "reference": 233,
+        "source": 72,
+        "target": 77
+      },
+      {
+        "kind": "succession",
+        "navigation": 57,
+        "origin": 77,
+        "provenance": "authored",
+        "reference": 246,
+        "source": 74,
+        "target": 77
+      },
+      {
+        "kind": "containment",
+        "navigation": 58,
+        "origin": 78,
+        "provenance": "authored",
+        "reference": 234,
+        "source": 72,
+        "target": 78
+      },
+      {
+        "kind": "succession",
+        "navigation": 58,
+        "origin": 78,
+        "provenance": "authored",
+        "reference": 244,
+        "source": 77,
+        "target": 78
+      },
+      {
+        "kind": "containment",
+        "navigation": 55,
+        "origin": 79,
+        "provenance": "authored",
+        "reference": 235,
+        "source": 72,
+        "target": 79
+      },
+      {
+        "kind": "succession",
+        "navigation": 55,
+        "origin": 79,
+        "provenance": "authored",
+        "reference": 239,
+        "source": 75,
+        "target": 79
+      },
+      {
+        "kind": "containment",
+        "navigation": 60,
+        "origin": 87,
+        "provenance": "authored",
+        "reference": 161,
+        "source": 0,
+        "target": 87
+      },
+      {
+        "kind": "containment",
+        "navigation": 20,
+        "origin": 94,
+        "provenance": "implied",
+        "reference": 281,
+        "source": 87,
         "target": 94
       },
       {
         "kind": "containment",
-        "navigation": 70,
-        "origin": 95,
-        "provenance": "authored",
-        "reference": 311,
-        "source": 93,
-        "target": 95
+        "navigation": 22,
+        "origin": 93,
+        "provenance": "implied",
+        "reference": 282,
+        "source": 87,
+        "target": 93
       },
       {
         "kind": "containment",
-        "navigation": 87,
+        "navigation": 24,
+        "origin": 91,
+        "provenance": "implied",
+        "reference": 283,
+        "source": 87,
+        "target": 91
+      },
+      {
+        "kind": "containment",
+        "navigation": 23,
+        "origin": 92,
+        "provenance": "implied",
+        "reference": 284,
+        "source": 87,
+        "target": 92
+      },
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 90,
+        "provenance": "implied",
+        "reference": 285,
+        "source": 87,
+        "target": 90
+      },
+      {
+        "kind": "containment",
+        "navigation": 63,
+        "origin": 88,
+        "provenance": "authored",
+        "reference": 286,
+        "source": 87,
+        "target": 88
+      },
+      {
+        "kind": "succession",
+        "navigation": 63,
+        "origin": 88,
+        "provenance": "authored",
+        "reference": 290,
+        "source": 89,
+        "target": 88
+      },
+      {
+        "kind": "containment",
+        "navigation": 62,
+        "origin": 89,
+        "provenance": "authored",
+        "reference": 287,
+        "source": 87,
+        "target": 89
+      },
+      {
+        "kind": "containment",
+        "navigation": 79,
         "origin": 40,
         "provenance": "authored",
-        "reference": 186,
+        "reference": 162,
         "source": 0,
         "target": 40
       },
       {
         "kind": "flow",
-        "navigation": 88,
+        "navigation": 80,
         "origin": 40,
         "provenance": "implied",
-        "reference": 262,
-        "source": 79,
-        "target": 95
+        "reference": 238,
+        "source": 75,
+        "target": 89
       },
       {
         "kind": "containment",
-        "navigation": 89,
+        "navigation": 81,
         "origin": 41,
         "provenance": "authored",
-        "reference": 223,
+        "reference": 199,
         "source": 40,
         "target": 41
       },
       {
         "kind": "containment",
-        "navigation": 89,
+        "navigation": 81,
         "origin": 42,
         "provenance": "authored",
-        "reference": 229,
+        "reference": 205,
         "source": 41,
         "target": 42
       },
       {
         "kind": "containment",
-        "navigation": 90,
+        "navigation": 82,
         "origin": 43,
         "provenance": "authored",
-        "reference": 224,
+        "reference": 200,
         "source": 40,
         "target": 43
       },
       {
         "kind": "containment",
-        "navigation": 90,
+        "navigation": 82,
         "origin": 44,
         "provenance": "authored",
-        "reference": 230,
+        "reference": 206,
         "source": 43,
         "target": 44
       },
       {
         "kind": "containment",
-        "navigation": 107,
+        "navigation": 99,
         "origin": 45,
         "provenance": "authored",
-        "reference": 187,
+        "reference": 163,
         "source": 0,
         "target": 45
       },
       {
         "kind": "flow",
-        "navigation": 108,
+        "navigation": 100,
         "origin": 45,
         "provenance": "implied",
-        "reference": 267,
-        "source": 77,
+        "reference": 243,
+        "source": 73,
         "target": 58
       },
       {
         "kind": "containment",
-        "navigation": 109,
+        "navigation": 101,
         "origin": 46,
         "provenance": "authored",
-        "reference": 231,
+        "reference": 207,
         "source": 45,
         "target": 46
       },
       {
         "kind": "containment",
-        "navigation": 109,
+        "navigation": 101,
         "origin": 47,
         "provenance": "authored",
-        "reference": 237,
+        "reference": 213,
         "source": 46,
         "target": 47
       },
       {
         "kind": "containment",
-        "navigation": 110,
+        "navigation": 102,
         "origin": 48,
         "provenance": "authored",
-        "reference": 232,
+        "reference": 208,
         "source": 45,
         "target": 48
       },
       {
         "kind": "containment",
-        "navigation": 110,
+        "navigation": 102,
         "origin": 49,
         "provenance": "authored",
-        "reference": 238,
+        "reference": 214,
         "source": 48,
         "target": 49
       },
       {
         "kind": "containment",
-        "navigation": 72,
-        "origin": 103,
+        "navigation": 64,
+        "origin": 95,
         "provenance": "authored",
-        "reference": 188,
+        "reference": 164,
         "source": 0,
+        "target": 95
+      },
+      {
+        "kind": "containment",
+        "navigation": 25,
+        "origin": 103,
+        "provenance": "implied",
+        "reference": 255,
+        "source": 95,
         "target": 103
       },
       {
         "kind": "containment",
-        "navigation": 29,
-        "origin": 111,
+        "navigation": 27,
+        "origin": 102,
         "provenance": "implied",
-        "reference": 279,
-        "source": 103,
-        "target": 111
-      },
-      {
-        "kind": "containment",
-        "navigation": 31,
-        "origin": 112,
-        "provenance": "authored",
-        "reference": 358,
-        "source": 111,
-        "target": 112
-      },
-      {
-        "kind": "containment",
-        "navigation": 31,
-        "origin": 113,
-        "provenance": "authored",
-        "reference": 360,
-        "source": 112,
-        "target": 113
-      },
-      {
-        "kind": "containment",
-        "navigation": 32,
-        "origin": 110,
-        "provenance": "implied",
-        "reference": 280,
-        "source": 103,
-        "target": 110
+        "reference": 256,
+        "source": 95,
+        "target": 102
       },
       {
         "kind": "containment",
         "navigation": 1,
-        "origin": 106,
+        "origin": 98,
         "provenance": "implied",
-        "reference": 281,
-        "source": 103,
-        "target": 106
+        "reference": 257,
+        "source": 95,
+        "target": 98
       },
       {
         "kind": "containment",
-        "navigation": 34,
-        "origin": 107,
+        "navigation": 29,
+        "origin": 99,
         "provenance": "implied",
-        "reference": 282,
-        "source": 103,
-        "target": 107
+        "reference": 258,
+        "source": 95,
+        "target": 99
       },
       {
         "kind": "containment",
-        "navigation": 33,
+        "navigation": 28,
+        "origin": 100,
+        "provenance": "implied",
+        "reference": 259,
+        "source": 95,
+        "target": 100
+      },
+      {
+        "kind": "containment",
+        "navigation": 30,
+        "origin": 101,
+        "provenance": "implied",
+        "reference": 260,
+        "source": 95,
+        "target": 101
+      },
+      {
+        "kind": "containment",
+        "navigation": 67,
+        "origin": 96,
+        "provenance": "authored",
+        "reference": 261,
+        "source": 95,
+        "target": 96
+      },
+      {
+        "kind": "succession",
+        "navigation": 67,
+        "origin": 96,
+        "provenance": "authored",
+        "reference": 265,
+        "source": 97,
+        "target": 96
+      },
+      {
+        "kind": "containment",
+        "navigation": 66,
+        "origin": 97,
+        "provenance": "authored",
+        "reference": 262,
+        "source": 95,
+        "target": 97
+      },
+      {
+        "kind": "containment",
+        "navigation": 68,
+        "origin": 104,
+        "provenance": "authored",
+        "reference": 165,
+        "source": 0,
+        "target": 104
+      },
+      {
+        "kind": "containment",
+        "navigation": 31,
         "origin": 108,
         "provenance": "implied",
-        "reference": 283,
-        "source": 103,
+        "reference": 266,
+        "source": 104,
         "target": 108
       },
       {
         "kind": "containment",
-        "navigation": 35,
+        "navigation": 33,
         "origin": 109,
         "provenance": "implied",
-        "reference": 284,
-        "source": 103,
+        "reference": 267,
+        "source": 104,
         "target": 109
       },
       {
         "kind": "containment",
-        "navigation": 75,
-        "origin": 104,
-        "provenance": "authored",
-        "reference": 285,
-        "source": 103,
-        "target": 104
-      },
-      {
-        "kind": "succession",
-        "navigation": 75,
-        "origin": 104,
-        "provenance": "authored",
-        "reference": 289,
-        "source": 105,
-        "target": 104
+        "navigation": 35,
+        "origin": 110,
+        "provenance": "implied",
+        "reference": 268,
+        "source": 104,
+        "target": 110
       },
       {
         "kind": "containment",
-        "navigation": 74,
+        "navigation": 38,
+        "origin": 106,
+        "provenance": "implied",
+        "reference": 269,
+        "source": 104,
+        "target": 106
+      },
+      {
+        "kind": "containment",
+        "navigation": 37,
+        "origin": 107,
+        "provenance": "implied",
+        "reference": 270,
+        "source": 104,
+        "target": 107
+      },
+      {
+        "kind": "containment",
+        "navigation": 70,
         "origin": 105,
         "provenance": "authored",
-        "reference": 286,
-        "source": 103,
+        "reference": 271,
+        "source": 104,
         "target": 105
       },
       {
         "kind": "containment",
-        "navigation": 76,
-        "origin": 114,
-        "provenance": "authored",
-        "reference": 189,
-        "source": 0,
-        "target": 114
-      },
-      {
-        "kind": "containment",
-        "navigation": 36,
-        "origin": 118,
-        "provenance": "implied",
-        "reference": 290,
-        "source": 114,
-        "target": 118
-      },
-      {
-        "kind": "containment",
-        "navigation": 38,
-        "origin": 119,
-        "provenance": "authored",
-        "reference": 361,
-        "source": 118,
-        "target": 119
-      },
-      {
-        "kind": "containment",
-        "navigation": 38,
-        "origin": 120,
-        "provenance": "authored",
-        "reference": 367,
-        "source": 119,
-        "target": 120
-      },
-      {
-        "kind": "containment",
-        "navigation": 39,
-        "origin": 121,
-        "provenance": "implied",
-        "reference": 291,
-        "source": 114,
-        "target": 121
-      },
-      {
-        "kind": "containment",
-        "navigation": 41,
-        "origin": 122,
-        "provenance": "authored",
-        "reference": 362,
-        "source": 121,
-        "target": 122
-      },
-      {
-        "kind": "containment",
-        "navigation": 41,
-        "origin": 123,
-        "provenance": "authored",
-        "reference": 368,
-        "source": 122,
-        "target": 123
-      },
-      {
-        "kind": "containment",
-        "navigation": 42,
-        "origin": 124,
-        "provenance": "implied",
-        "reference": 292,
-        "source": 114,
-        "target": 124
-      },
-      {
-        "kind": "containment",
-        "navigation": 44,
-        "origin": 125,
-        "provenance": "authored",
-        "reference": 363,
-        "source": 124,
-        "target": 125
-      },
-      {
-        "kind": "containment",
-        "navigation": 44,
-        "origin": 126,
-        "provenance": "authored",
-        "reference": 369,
-        "source": 125,
-        "target": 126
-      },
-      {
-        "kind": "containment",
-        "navigation": 46,
-        "origin": 116,
-        "provenance": "implied",
-        "reference": 293,
-        "source": 114,
-        "target": 116
-      },
-      {
-        "kind": "containment",
-        "navigation": 45,
-        "origin": 117,
-        "provenance": "implied",
-        "reference": 294,
-        "source": 114,
-        "target": 117
-      },
-      {
-        "kind": "containment",
-        "navigation": 78,
-        "origin": 115,
-        "provenance": "authored",
-        "reference": 295,
-        "source": 114,
-        "target": 115
-      },
-      {
-        "kind": "containment",
-        "navigation": 103,
+        "navigation": 95,
         "origin": 50,
         "provenance": "authored",
-        "reference": 190,
+        "reference": 166,
         "source": 0,
         "target": 50
       },
       {
         "kind": "flow",
-        "navigation": 104,
+        "navigation": 96,
         "origin": 50,
         "provenance": "implied",
-        "reference": 265,
-        "source": 82,
-        "target": 115
+        "reference": 241,
+        "source": 78,
+        "target": 105
       },
       {
         "kind": "containment",
-        "navigation": 105,
+        "navigation": 97,
         "origin": 51,
         "provenance": "authored",
-        "reference": 315,
+        "reference": 291,
         "source": 50,
         "target": 51
       },
       {
         "kind": "containment",
-        "navigation": 105,
+        "navigation": 97,
         "origin": 52,
         "provenance": "authored",
-        "reference": 321,
+        "reference": 297,
         "source": 51,
         "target": 52
       },
       {
         "kind": "containment",
-        "navigation": 106,
+        "navigation": 98,
         "origin": 53,
         "provenance": "authored",
-        "reference": 316,
+        "reference": 292,
         "source": 50,
         "target": 53
       },
       {
         "kind": "containment",
-        "navigation": 106,
+        "navigation": 98,
         "origin": 54,
         "provenance": "authored",
-        "reference": 322,
+        "reference": 298,
         "source": 53,
         "target": 54
       }
@@ -16237,12 +15783,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         50
       ],
       "participants": [
-        68,
+        66,
         55,
-        76,
-        93,
-        103,
-        114
+        72,
+        87,
+        95,
+        104
       ]
     },
     "nodes": [
@@ -16252,11 +15798,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "kind": "parts",
             "members": [
               55,
-              68,
-              76,
-              93,
-              103,
-              114
+              66,
+              72,
+              87,
+              95,
+              104
             ],
             "provenance": "direct"
           },
@@ -16280,11 +15826,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceDefinition",
+        "multiplicity": null,
         "name": "CheckoutFlow",
         "notationRole": "definition",
         "owner": null,
-        "reference": 8,
-        "source": 47,
+        "reference": 7,
+        "source": 39,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16297,11 +15844,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 99,
-        "source": 115,
+        "reference": 91,
+        "source": 107,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16314,11 +15862,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 100,
-        "source": 118,
+        "reference": 92,
+        "source": 110,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16331,11 +15880,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 101,
-        "source": 121,
+        "reference": 93,
+        "source": 113,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16348,11 +15898,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 102,
-        "source": 124,
+        "reference": 94,
+        "source": 116,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16365,11 +15916,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 103,
-        "source": 127,
+        "reference": 95,
+        "source": 119,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16382,11 +15934,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 104,
-        "source": 130,
+        "reference": 96,
+        "source": 122,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16399,11 +15952,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 105,
-        "source": 133,
+        "reference": 97,
+        "source": 125,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16416,11 +15970,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 106,
-        "source": 136,
+        "reference": 98,
+        "source": 128,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16433,11 +15988,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "Documentation",
+        "multiplicity": null,
         "name": null,
         "notationRole": "annotation",
         "owner": 0,
-        "reference": 98,
-        "source": 48,
+        "reference": 90,
+        "source": 40,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -16450,520 +16006,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "reserveStock",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 43,
-        "source": 95,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 10,
-        "reference": 131,
-        "source": 97,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 11,
-        "reference": 133,
-        "source": 97,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 10,
-        "reference": 132,
-        "source": 98,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 13,
-        "reference": 134,
-        "source": 98,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "stockReserved",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 45,
-        "source": 99,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 15,
-        "reference": 135,
-        "source": 101,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 16,
-        "reference": 137,
-        "source": 101,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 15,
-        "reference": 136,
-        "source": 102,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 18,
-        "reference": 138,
-        "source": 102,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "submitCheckout",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 50,
-        "source": 79,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 20,
-        "reference": 139,
-        "source": 81,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 21,
-        "reference": 141,
-        "source": 81,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 20,
-        "reference": 140,
-        "source": 82,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 23,
-        "reference": 142,
-        "source": 82,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "checkoutOutcome",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 19,
-        "source": 111,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 25,
-        "reference": 115,
-        "source": 113,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 26,
-        "reference": 117,
-        "source": 113,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 25,
-        "reference": 116,
-        "source": 114,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 28,
-        "reference": 118,
-        "source": 114,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "forwardCheckout",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 29,
-        "source": 83,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 30,
-        "reference": 119,
-        "source": 85,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 31,
-        "reference": 121,
-        "source": 85,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 30,
-        "reference": 120,
-        "source": 86,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 33,
-        "reference": 122,
-        "source": 86,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "paymentApproved",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 36,
-        "source": 91,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 35,
-        "reference": 123,
-        "source": 93,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 36,
-        "reference": 125,
-        "source": 93,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 35,
-        "reference": 124,
-        "source": 94,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 38,
-        "reference": 126,
-        "source": 94,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "authorizePayment",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 15,
+        "reference": 42,
         "source": 87,
         "stateSubaction": null,
         "successionGuard": null,
@@ -16977,10 +16024,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 40,
-        "reference": 107,
+        "owner": 10,
+        "reference": 123,
         "source": 89,
         "stateSubaction": null,
         "successionGuard": null,
@@ -16994,10 +16042,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 41,
-        "reference": 109,
+        "owner": 11,
+        "reference": 125,
         "source": 89,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17011,10 +16060,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 40,
-        "reference": 108,
+        "owner": 10,
+        "reference": 124,
         "source": 90,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17028,10 +16078,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 43,
-        "reference": 110,
+        "owner": 13,
+        "reference": 126,
         "source": 90,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17045,11 +16096,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
-        "name": "checkoutAccepted",
+        "multiplicity": null,
+        "name": "stockReserved",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 17,
-        "source": 107,
+        "reference": 44,
+        "source": 91,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17062,11 +16114,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 45,
-        "reference": 111,
-        "source": 109,
+        "owner": 15,
+        "reference": 127,
+        "source": 93,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17079,11 +16132,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 46,
-        "reference": 113,
-        "source": 109,
+        "owner": 16,
+        "reference": 129,
+        "source": 93,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17096,11 +16150,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 45,
-        "reference": 112,
-        "source": 110,
+        "owner": 15,
+        "reference": 128,
+        "source": 94,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17113,11 +16168,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 48,
-        "reference": 114,
-        "source": 110,
+        "owner": 18,
+        "reference": 130,
+        "source": 94,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17130,10 +16186,101 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
-        "name": "publishOrderCreated",
+        "multiplicity": null,
+        "name": "submitCheckout",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 41,
+        "reference": 49,
+        "source": 71,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 20,
+        "reference": 131,
+        "source": 73,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 21,
+        "reference": 133,
+        "source": 73,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 20,
+        "reference": 132,
+        "source": 74,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 23,
+        "reference": 134,
+        "source": 74,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowUsage",
+        "multiplicity": null,
+        "name": "checkoutOutcome",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 18,
         "source": 103,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17147,10 +16294,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 50,
-        "reference": 127,
+        "owner": 25,
+        "reference": 107,
         "source": 105,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17164,10 +16312,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 51,
-        "reference": 129,
+        "owner": 26,
+        "reference": 109,
         "source": 105,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17181,10 +16330,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 50,
-        "reference": 128,
+        "owner": 25,
+        "reference": 108,
         "source": 106,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17198,11 +16348,462 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 28,
+        "reference": 110,
+        "source": 106,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowUsage",
+        "multiplicity": null,
+        "name": "forwardCheckout",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 28,
+        "source": 75,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 30,
+        "reference": 111,
+        "source": 77,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 31,
+        "reference": 113,
+        "source": 77,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 30,
+        "reference": 112,
+        "source": 78,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 33,
+        "reference": 114,
+        "source": 78,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowUsage",
+        "multiplicity": null,
+        "name": "paymentApproved",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 35,
+        "source": 83,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 35,
+        "reference": 115,
+        "source": 85,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 36,
+        "reference": 117,
+        "source": 85,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 35,
+        "reference": 116,
+        "source": 86,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 38,
+        "reference": 118,
+        "source": 86,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowUsage",
+        "multiplicity": null,
+        "name": "authorizePayment",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 14,
+        "source": 79,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 40,
+        "reference": 99,
+        "source": 81,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 41,
+        "reference": 101,
+        "source": 81,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 40,
+        "reference": 100,
+        "source": 82,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 43,
+        "reference": 102,
+        "source": 82,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowUsage",
+        "multiplicity": null,
+        "name": "checkoutAccepted",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 16,
+        "source": 99,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 45,
+        "reference": 103,
+        "source": 101,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 46,
+        "reference": 105,
+        "source": 101,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 45,
+        "reference": 104,
+        "source": 102,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 48,
+        "reference": 106,
+        "source": 102,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowUsage",
+        "multiplicity": null,
+        "name": "publishOrderCreated",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 40,
+        "source": 95,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 50,
+        "reference": 119,
+        "source": 97,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 51,
+        "reference": 121,
+        "source": 97,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 50,
+        "reference": 120,
+        "source": 98,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 53,
-        "reference": 130,
-        "source": 106,
+        "reference": 122,
+        "source": 98,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17215,7 +16816,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "kind": "attributes",
             "members": [
               64,
-              67
+              65
             ],
             "provenance": "inherited"
           },
@@ -17244,11 +16845,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "apiGateway",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 10,
-        "source": 53,
+        "reference": 9,
+        "source": 45,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17267,11 +16869,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "forwardSent",
         "notationRole": "usage",
         "owner": 55,
-        "reference": 11,
-        "source": 56,
+        "reference": 10,
+        "source": 48,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17284,11 +16887,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "submitReceived",
         "notationRole": "usage",
         "owner": 55,
-        "reference": 14,
-        "source": 55,
+        "reference": 13,
+        "source": 47,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17301,11 +16905,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "outcomeReceived",
         "notationRole": "usage",
         "owner": 55,
-        "reference": 13,
-        "source": 57,
+        "reference": 12,
+        "source": 49,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17318,11 +16923,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "outcomeForwarded",
         "notationRole": "usage",
         "owner": 55,
-        "reference": 12,
-        "source": 58,
+        "reference": 11,
+        "source": 50,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17335,44 +16941,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "catalogApiOut",
         "notationRole": "usage",
         "owner": 55,
-        "reference": 4,
-        "source": 14,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "checkoutApiOut",
-        "notationRole": "usage",
-        "owner": 55,
-        "reference": 5,
-        "source": 13,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "publicCatalogIn",
-        "notationRole": "usage",
-        "owner": 55,
-        "reference": 6,
+        "reference": 3,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17386,10 +16959,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "publicCheckoutIn",
+        "multiplicity": null,
+        "name": "checkoutApiOut",
         "notationRole": "usage",
         "owner": 55,
-        "reference": 7,
+        "reference": 4,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17402,150 +16976,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "serviceName",
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "publicCatalogIn",
         "notationRole": "usage",
         "owner": 55,
-        "reference": 95,
-        "source": 8,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 64,
-        "reference": 96,
+        "reference": 5,
         "source": 10,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 65,
-        "reference": 97,
-        "source": 10,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "moduleName",
-        "notationRole": "usage",
-        "owner": 55,
-        "reference": 87,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "String",
-              "reference": 94
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              73
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "ports",
-            "members": [
-              71,
-              72
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "occurrences",
-            "members": [
-              69,
-              70
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "storefront",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 47,
-        "source": 49,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Storefront",
-              "reference": 89
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "submitSent",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 49,
-        "source": 51,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "outcomeReceived",
-        "notationRole": "usage",
-        "owner": 68,
-        "reference": 48,
-        "source": 52,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17558,10 +16995,29 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "catalogApiOut",
+        "multiplicity": null,
+        "name": "publicCheckoutIn",
         "notationRole": "usage",
-        "owner": 68,
-        "reference": 92,
+        "owner": 55,
+        "reference": 6,
+        "source": 9,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "AttributeUsage",
+        "multiplicity": null,
+        "name": "serviceName",
+        "notationRole": "usage",
+        "owner": 55,
+        "reference": 89,
         "source": 7,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17574,11 +17030,120 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "checkoutApiOut",
+        "metaclass": "AttributeUsage",
+        "multiplicity": null,
+        "name": "moduleName",
         "notationRole": "usage",
-        "owner": 68,
-        "reference": 93,
+        "owner": 55,
+        "reference": 82,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 88
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              71
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              69,
+              70
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "occurrences",
+            "members": [
+              67,
+              68
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "multiplicity": null,
+        "name": "storefront",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 46,
+        "source": 41,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Storefront",
+              "reference": 84
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
+        "name": "submitSent",
+        "notationRole": "usage",
+        "owner": 66,
+        "reference": 48,
+        "source": 43,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
+        "name": "outcomeReceived",
+        "notationRole": "usage",
+        "owner": 66,
+        "reference": 47,
+        "source": 44,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "catalogApiOut",
+        "notationRole": "usage",
+        "owner": 66,
+        "reference": 86,
         "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17591,12 +17156,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "moduleName",
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "checkoutApiOut",
         "notationRole": "usage",
-        "owner": 68,
-        "reference": 161,
-        "source": 3,
+        "owner": 66,
+        "reference": 87,
+        "source": 5,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17608,29 +17174,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 73,
-        "reference": 162,
-        "source": 5,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 74,
-        "reference": 163,
-        "source": 5,
+        "metaclass": "AttributeUsage",
+        "multiplicity": null,
+        "name": "moduleName",
+        "notationRole": "usage",
+        "owner": 66,
+        "reference": 141,
+        "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17642,32 +17192,32 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              84,
-              90
+              80,
+              86
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              85,
-              86,
-              87,
-              88,
-              89
+              81,
+              82,
+              83,
+              84,
+              85
             ],
             "provenance": "inherited"
           },
           {
             "kind": "occurrences",
             "members": [
+              73,
+              74,
+              75,
+              76,
               77,
               78,
-              79,
-              80,
-              81,
-              82,
-              83
+              79
             ],
             "provenance": "direct"
           }
@@ -17676,11 +17226,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "checkoutService",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 21,
-        "source": 59,
+        "reference": 20,
+        "source": 51,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17688,7 +17239,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "CheckoutService",
-              "reference": 54
+              "reference": 53
             }
           ]
         }
@@ -17699,11 +17250,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "outcomeSent",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 26,
-        "source": 67,
+        "owner": 72,
+        "reference": 25,
+        "source": 59,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17716,11 +17268,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "reserveSent",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 28,
-        "source": 64,
+        "owner": 72,
+        "reference": 27,
+        "source": 56,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17733,11 +17286,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "authorizeSent",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 23,
-        "source": 62,
+        "owner": 72,
+        "reference": 22,
+        "source": 54,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17750,11 +17304,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "forwardReceived",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 24,
-        "source": 61,
+        "owner": 72,
+        "reference": 23,
+        "source": 53,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17767,11 +17322,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "reserveReturned",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 27,
-        "source": 65,
+        "owner": 72,
+        "reference": 26,
+        "source": 57,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17784,11 +17340,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "orderCreatedSent",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 25,
-        "source": 66,
+        "owner": 72,
+        "reference": 24,
+        "source": 58,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17801,11 +17358,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "authorizeReturned",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 22,
-        "source": 63,
+        "owner": 72,
+        "reference": 21,
+        "source": 55,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17818,10 +17376,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "moduleName",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 87,
+        "owner": 72,
+        "reference": 82,
         "source": 1,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17830,7 +17389,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 94
+              "reference": 88
             }
           ]
         }
@@ -17841,10 +17400,29 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "ordersDbOut",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 60,
+        "owner": 72,
+        "reference": 58,
+        "source": 16,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "orderEventsOut",
+        "notationRole": "usage",
+        "owner": 72,
+        "reference": 57,
         "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17858,28 +17436,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "orderEventsOut",
-        "notationRole": "usage",
-        "owner": 76,
-        "reference": 59,
-        "source": 22,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "paymentsApiOut",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 61,
-        "source": 20,
+        "owner": 72,
+        "reference": 59,
+        "source": 17,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17892,27 +17454,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "inventoryApiOut",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 58,
-        "source": 21,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "apiIn",
-        "notationRole": "usage",
-        "owner": 76,
-        "reference": 57,
+        "owner": 72,
+        "reference": 56,
         "source": 18,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17925,11 +17471,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "serviceName",
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "apiIn",
         "notationRole": "usage",
-        "owner": 76,
-        "reference": 143,
+        "owner": 72,
+        "reference": 55,
         "source": 15,
         "stateSubaction": null,
         "successionGuard": null,
@@ -17942,29 +17489,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 90,
-        "reference": 144,
-        "source": 17,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 91,
-        "reference": 145,
-        "source": 17,
+        "metaclass": "AttributeUsage",
+        "multiplicity": null,
+        "name": "serviceName",
+        "notationRole": "usage",
+        "owner": 72,
+        "reference": 135,
+        "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -17976,25 +17507,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              96,
-              100
+              90,
+              94
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              97,
-              98,
-              99
+              91,
+              92,
+              93
             ],
             "provenance": "inherited"
           },
           {
             "kind": "occurrences",
             "members": [
-              94,
-              95
+              88,
+              89
             ],
             "provenance": "direct"
           }
@@ -18003,11 +17534,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "paymentsService",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 38,
-        "source": 68,
+        "reference": 37,
+        "source": 60,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18015,7 +17547,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "PaymentsService",
-              "reference": 81
+              "reference": 77
             }
           ]
         }
@@ -18026,11 +17558,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "authorizeAnswered",
         "notationRole": "usage",
-        "owner": 93,
-        "reference": 39,
-        "source": 71,
+        "owner": 87,
+        "reference": 38,
+        "source": 63,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18043,11 +17576,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "authorizeReceived",
         "notationRole": "usage",
-        "owner": 93,
-        "reference": 40,
-        "source": 70,
+        "owner": 87,
+        "reference": 39,
+        "source": 62,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18060,10 +17594,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "moduleName",
         "notationRole": "usage",
-        "owner": 93,
-        "reference": 87,
+        "owner": 87,
+        "reference": 82,
         "source": 1,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18072,7 +17607,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 94
+              "reference": 88
             }
           ]
         }
@@ -18083,10 +17618,212 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "providerOut",
         "notationRole": "usage",
-        "owner": 93,
-        "reference": 86,
+        "owner": 87,
+        "reference": 81,
+        "source": 24,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "paymentsDbOut",
+        "notationRole": "usage",
+        "owner": 87,
+        "reference": 80,
+        "source": 23,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "apiIn",
+        "notationRole": "usage",
+        "owner": 87,
+        "reference": 79,
+        "source": 22,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "AttributeUsage",
+        "multiplicity": null,
+        "name": "serviceName",
+        "notationRole": "usage",
+        "owner": 87,
+        "reference": 140,
+        "source": 20,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              98,
+              103
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "ports",
+            "members": [
+              99,
+              100,
+              101,
+              102
+            ],
+            "provenance": "inherited"
+          },
+          {
+            "kind": "occurrences",
+            "members": [
+              96,
+              97
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PartUsage",
+        "multiplicity": null,
+        "name": "inventoryService",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 30,
+        "source": 64,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "InventoryService",
+              "reference": 61
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
+        "name": "reserveAnswered",
+        "notationRole": "usage",
+        "owner": 95,
+        "reference": 31,
+        "source": 67,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
+        "name": "reserveReceived",
+        "notationRole": "usage",
+        "owner": 95,
+        "reference": 32,
+        "source": 66,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "AttributeUsage",
+        "multiplicity": null,
+        "name": "moduleName",
+        "notationRole": "usage",
+        "owner": 95,
+        "reference": 82,
+        "source": 1,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "String",
+              "reference": 88
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "orderEventsIn",
+        "notationRole": "usage",
+        "owner": 95,
+        "reference": 65,
+        "source": 29,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "inventoryDbOut",
+        "notationRole": "usage",
+        "owner": 95,
+        "reference": 64,
         "source": 28,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18100,10 +17837,29 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
-        "name": "paymentsDbOut",
+        "multiplicity": null,
+        "name": "reservationEventsOut",
         "notationRole": "usage",
-        "owner": 93,
-        "reference": 85,
+        "owner": 95,
+        "reference": 66,
+        "source": 30,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "apiIn",
+        "notationRole": "usage",
+        "owner": 95,
+        "reference": 63,
         "source": 27,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18116,62 +17872,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "apiIn",
-        "notationRole": "usage",
-        "owner": 93,
-        "reference": 84,
-        "source": 26,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "serviceName",
         "notationRole": "usage",
-        "owner": 93,
-        "reference": 158,
-        "source": 23,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 100,
-        "reference": 159,
-        "source": 25,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 101,
-        "reference": 160,
+        "owner": 95,
+        "reference": 136,
         "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18184,15 +17890,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              106,
-              111
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "ports",
-            "members": [
-              107,
               108,
               109,
               110
@@ -18200,9 +17897,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "provenance": "inherited"
           },
           {
+            "kind": "ports",
+            "members": [
+              106,
+              107
+            ],
+            "provenance": "inherited"
+          },
+          {
             "kind": "occurrences",
             "members": [
-              104,
               105
             ],
             "provenance": "direct"
@@ -18212,19 +17916,20 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
-        "name": "inventoryService",
+        "multiplicity": null,
+        "name": "ordersEventsTopic",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 31,
-        "source": 72,
+        "reference": 33,
+        "source": 68,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
           "status": "resolved",
           "types": [
             {
-              "label": "InventoryService",
-              "reference": 63
+              "label": "OrdersEventsTopic",
+              "reference": 71
             }
           ]
         }
@@ -18235,11 +17940,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
-        "name": "reserveAnswered",
+        "multiplicity": null,
+        "name": "orderCreatedReceived",
         "notationRole": "usage",
-        "owner": 103,
-        "reference": 32,
-        "source": 75,
+        "owner": 104,
+        "reference": 34,
+        "source": 70,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18251,12 +17957,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "reserveReceived",
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "topicEgress",
         "notationRole": "usage",
-        "owner": 103,
-        "reference": 33,
-        "source": 74,
+        "owner": 104,
+        "reference": 73,
+        "source": 38,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PortUsage",
+        "multiplicity": null,
+        "name": "topicIngress",
+        "notationRole": "usage",
+        "owner": 104,
+        "reference": 74,
+        "source": 37,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18269,34 +17994,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": "moduleName",
+        "multiplicity": null,
+        "name": "channelName",
         "notationRole": "usage",
-        "owner": 103,
-        "reference": 87,
-        "source": 1,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "String",
-              "reference": 94
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "orderEventsIn",
-        "notationRole": "usage",
-        "owner": 103,
-        "reference": 68,
-        "source": 34,
+        "owner": 104,
+        "reference": 137,
+        "source": 31,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18308,11 +18011,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "inventoryDbOut",
+        "metaclass": "AttributeUsage",
+        "multiplicity": null,
+        "name": "retention",
         "notationRole": "usage",
-        "owner": 103,
-        "reference": 67,
+        "owner": 104,
+        "reference": 138,
         "source": 33,
         "stateSubaction": null,
         "successionGuard": null,
@@ -18325,332 +18029,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "reservationEventsOut",
-        "notationRole": "usage",
-        "owner": 103,
-        "reference": 69,
-        "source": 35,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "apiIn",
-        "notationRole": "usage",
-        "owner": 103,
-        "reference": 66,
-        "source": 32,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "AttributeUsage",
-        "name": "serviceName",
-        "notationRole": "usage",
-        "owner": 103,
-        "reference": 146,
-        "source": 29,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 111,
-        "reference": 147,
-        "source": 31,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 112,
-        "reference": 148,
-        "source": 31,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "attributes",
-            "members": [
-              118,
-              121,
-              124
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "ports",
-            "members": [
-              116,
-              117
-            ],
-            "provenance": "inherited"
-          },
-          {
-            "kind": "occurrences",
-            "members": [
-              115
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PartUsage",
-        "name": "ordersEventsTopic",
-        "notationRole": "usage",
-        "owner": 0,
-        "reference": 34,
-        "source": 76,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "OrdersEventsTopic",
-              "reference": 74
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "OccurrenceUsage",
-        "name": "orderCreatedReceived",
-        "notationRole": "usage",
-        "owner": 114,
-        "reference": 35,
-        "source": 78,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "topicEgress",
-        "notationRole": "usage",
-        "owner": 114,
-        "reference": 77,
-        "source": 46,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "PortUsage",
-        "name": "topicIngress",
-        "notationRole": "usage",
-        "owner": 114,
-        "reference": 78,
-        "source": 45,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "channelName",
-        "notationRole": "usage",
-        "owner": 114,
-        "reference": 149,
-        "source": 36,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 118,
-        "reference": 152,
-        "source": 38,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 119,
-        "reference": 155,
-        "source": 38,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
-        "name": "retention",
-        "notationRole": "usage",
-        "owner": 114,
-        "reference": 150,
-        "source": 39,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 121,
-        "reference": 153,
-        "source": 41,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 122,
-        "reference": 156,
-        "source": 41,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "partitions",
         "notationRole": "usage",
-        "owner": 114,
-        "reference": 151,
-        "source": 42,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 124,
-        "reference": 154,
-        "source": 44,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 125,
-        "reference": 157,
-        "source": 44,
+        "owner": 104,
+        "reference": 139,
+        "source": 35,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -18661,9 +18046,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "relationships": [
       {
         "kind": "succession",
-        "navigation": 116,
+        "navigation": 108,
         "provenance": "authored",
-        "reference": 191,
+        "reference": 167,
         "source": 1,
         "target": {
           "node": 20,
@@ -18672,9 +18057,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 117,
+        "navigation": 109,
         "provenance": "authored",
-        "reference": 192,
+        "reference": 168,
         "source": 1,
         "target": {
           "node": 30,
@@ -18683,9 +18068,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 119,
+        "navigation": 111,
         "provenance": "authored",
-        "reference": 193,
+        "reference": 169,
         "source": 2,
         "target": {
           "node": 30,
@@ -18694,9 +18079,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 120,
+        "navigation": 112,
         "provenance": "authored",
-        "reference": 194,
+        "reference": 170,
         "source": 2,
         "target": {
           "node": 40,
@@ -18705,9 +18090,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 122,
+        "navigation": 114,
         "provenance": "authored",
-        "reference": 195,
+        "reference": 171,
         "source": 3,
         "target": {
           "node": 40,
@@ -18716,9 +18101,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 123,
+        "navigation": 115,
         "provenance": "authored",
-        "reference": 196,
+        "reference": 172,
         "source": 3,
         "target": {
           "node": 35,
@@ -18727,9 +18112,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 125,
+        "navigation": 117,
         "provenance": "authored",
-        "reference": 197,
+        "reference": 173,
         "source": 4,
         "target": {
           "node": 35,
@@ -18738,9 +18123,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 126,
+        "navigation": 118,
         "provenance": "authored",
-        "reference": 198,
+        "reference": 174,
         "source": 4,
         "target": {
           "node": 10,
@@ -18749,9 +18134,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 128,
+        "navigation": 120,
         "provenance": "authored",
-        "reference": 199,
+        "reference": 175,
         "source": 5,
         "target": {
           "node": 10,
@@ -18760,9 +18145,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 129,
+        "navigation": 121,
         "provenance": "authored",
-        "reference": 200,
+        "reference": 176,
         "source": 5,
         "target": {
           "node": 15,
@@ -18771,9 +18156,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 131,
+        "navigation": 123,
         "provenance": "authored",
-        "reference": 201,
+        "reference": 177,
         "source": 6,
         "target": {
           "node": 15,
@@ -18782,9 +18167,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 132,
+        "navigation": 124,
         "provenance": "authored",
-        "reference": 202,
+        "reference": 178,
         "source": 6,
         "target": {
           "node": 50,
@@ -18793,9 +18178,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 134,
+        "navigation": 126,
         "provenance": "authored",
-        "reference": 203,
+        "reference": 179,
         "source": 7,
         "target": {
           "node": 50,
@@ -18804,9 +18189,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 135,
+        "navigation": 127,
         "provenance": "authored",
-        "reference": 204,
+        "reference": 180,
         "source": 7,
         "target": {
           "node": 45,
@@ -18815,9 +18200,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 137,
+        "navigation": 129,
         "provenance": "authored",
-        "reference": 205,
+        "reference": 181,
         "source": 8,
         "target": {
           "node": 45,
@@ -18826,9 +18211,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 138,
+        "navigation": 130,
         "provenance": "authored",
-        "reference": 206,
+        "reference": 182,
         "source": 8,
         "target": {
           "node": 25,
@@ -18837,9 +18222,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "typing",
-        "navigation": 54,
+        "navigation": 46,
         "provenance": "authored",
-        "reference": 217,
+        "reference": 193,
         "source": 55,
         "target": {
           "reference": 1,
@@ -18848,12 +18233,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "redefinition",
-        "navigation": 9,
+        "navigation": 8,
         "provenance": "authored",
-        "reference": 165,
+        "reference": 142,
         "source": 64,
         "target": {
-          "reference": 62,
+          "reference": 60,
           "status": "resolved"
         }
       },
@@ -18861,21 +18246,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 373,
-        "source": 67,
+        "reference": 337,
+        "source": 65,
         "target": {
-          "reference": 94,
+          "reference": 88,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 50,
+        "navigation": 42,
         "provenance": "authored",
-        "reference": 344,
-        "source": 68,
+        "reference": 320,
+        "source": 66,
         "target": {
-          "reference": 89,
+          "reference": 84,
           "status": "resolved"
         }
       },
@@ -18883,26 +18268,433 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 378,
-        "source": 73,
+        "reference": 341,
+        "source": 71,
         "target": {
           "candidates": [
-            67,
-            84,
-            96,
-            106
+            65,
+            80,
+            90,
+            98
           ],
           "status": "ambiguous"
         }
       },
       {
         "kind": "flowPayloadType",
-        "navigation": 96,
+        "navigation": 88,
         "provenance": "authored",
-        "reference": 325,
+        "reference": 301,
         "source": 10,
         "target": {
+          "reference": 83,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 89,
+        "provenance": "authored",
+        "reference": 302,
+        "source": 10,
+        "target": {
+          "node": 74,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 90,
+        "provenance": "authored",
+        "reference": 303,
+        "source": 10,
+        "target": {
+          "node": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 92,
+        "provenance": "authored",
+        "reference": 309,
+        "source": 15,
+        "target": {
+          "reference": 83,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 93,
+        "provenance": "authored",
+        "reference": 310,
+        "source": 15,
+        "target": {
+          "node": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 94,
+        "provenance": "authored",
+        "reference": 311,
+        "source": 15,
+        "target": {
+          "node": 77,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 72,
+        "provenance": "authored",
+        "reference": 325,
+        "source": 20,
+        "target": {
+          "reference": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 73,
+        "provenance": "authored",
+        "reference": 326,
+        "source": 20,
+        "target": {
+          "node": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 74,
+        "provenance": "authored",
+        "reference": 327,
+        "source": 20,
+        "target": {
+          "node": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 104,
+        "provenance": "authored",
+        "reference": 217,
+        "source": 25,
+        "target": {
+          "reference": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 105,
+        "provenance": "authored",
+        "reference": 218,
+        "source": 25,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 106,
+        "provenance": "authored",
+        "reference": 219,
+        "source": 25,
+        "target": {
+          "node": 68,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 76,
+        "provenance": "authored",
+        "reference": 249,
+        "source": 30,
+        "target": {
+          "reference": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 77,
+        "provenance": "authored",
+        "reference": 250,
+        "source": 30,
+        "target": {
+          "node": 56,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 78,
+        "provenance": "authored",
+        "reference": 251,
+        "source": 30,
+        "target": {
+          "node": 76,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 84,
+        "provenance": "authored",
+        "reference": 275,
+        "source": 35,
+        "target": {
+          "reference": 76,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 85,
+        "provenance": "authored",
+        "reference": 276,
+        "source": 35,
+        "target": {
+          "node": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 86,
+        "provenance": "authored",
+        "reference": 277,
+        "source": 35,
+        "target": {
+          "node": 79,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 52,
+        "provenance": "authored",
+        "reference": 236,
+        "source": 72,
+        "target": {
+          "reference": 53,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 14,
+        "provenance": "authored",
+        "reference": 331,
+        "source": 86,
+        "target": {
+          "reference": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 338,
+        "source": 80,
+        "target": {
           "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 61,
+        "provenance": "authored",
+        "reference": 288,
+        "source": 87,
+        "target": {
+          "reference": 77,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 21,
+        "provenance": "authored",
+        "reference": 336,
+        "source": 94,
+        "target": {
+          "reference": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 339,
+        "source": 90,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 80,
+        "provenance": "authored",
+        "reference": 201,
+        "source": 40,
+        "target": {
+          "reference": 75,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 81,
+        "provenance": "authored",
+        "reference": 202,
+        "source": 40,
+        "target": {
+          "node": 75,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 82,
+        "provenance": "authored",
+        "reference": 203,
+        "source": 40,
+        "target": {
+          "node": 89,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 100,
+        "provenance": "authored",
+        "reference": 209,
+        "source": 45,
+        "target": {
+          "reference": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 101,
+        "provenance": "authored",
+        "reference": 210,
+        "source": 45,
+        "target": {
+          "node": 73,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 102,
+        "provenance": "authored",
+        "reference": 211,
+        "source": 45,
+        "target": {
+          "node": 58,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 65,
+        "provenance": "authored",
+        "reference": 263,
+        "source": 95,
+        "target": {
+          "reference": 61,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 26,
+        "provenance": "authored",
+        "reference": 332,
+        "source": 103,
+        "target": {
+          "reference": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 340,
+        "source": 98,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 69,
+        "provenance": "authored",
+        "reference": 272,
+        "source": 104,
+        "target": {
+          "reference": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 32,
+        "provenance": "authored",
+        "reference": 333,
+        "source": 108,
+        "target": {
+          "reference": 67,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 34,
+        "provenance": "authored",
+        "reference": 334,
+        "source": 109,
+        "target": {
+          "reference": 69,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 36,
+        "provenance": "authored",
+        "reference": 335,
+        "source": 110,
+        "target": {
+          "reference": 68,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 96,
+        "provenance": "authored",
+        "reference": 293,
+        "source": 50,
+        "target": {
+          "reference": 70,
           "status": "resolved"
         }
       },
@@ -18910,8 +18702,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "flowSource",
         "navigation": 97,
         "provenance": "authored",
-        "reference": 326,
-        "source": 10,
+        "reference": 294,
+        "source": 50,
         "target": {
           "node": 78,
           "status": "resolved"
@@ -18921,417 +18713,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "flowTarget",
         "navigation": 98,
         "provenance": "authored",
-        "reference": 327,
-        "source": 10,
+        "reference": 295,
+        "source": 50,
         "target": {
           "node": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 100,
-        "provenance": "authored",
-        "reference": 333,
-        "source": 15,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 101,
-        "provenance": "authored",
-        "reference": 334,
-        "source": 15,
-        "target": {
-          "node": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 102,
-        "provenance": "authored",
-        "reference": 335,
-        "source": 15,
-        "target": {
-          "node": 81,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 80,
-        "provenance": "authored",
-        "reference": 349,
-        "source": 20,
-        "target": {
-          "reference": 53,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 81,
-        "provenance": "authored",
-        "reference": 350,
-        "source": 20,
-        "target": {
-          "node": 69,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 82,
-        "provenance": "authored",
-        "reference": 351,
-        "source": 20,
-        "target": {
-          "node": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 112,
-        "provenance": "authored",
-        "reference": 241,
-        "source": 25,
-        "target": {
-          "reference": 52,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 113,
-        "provenance": "authored",
-        "reference": 242,
-        "source": 25,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 114,
-        "provenance": "authored",
-        "reference": 243,
-        "source": 25,
-        "target": {
-          "node": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 84,
-        "provenance": "authored",
-        "reference": 273,
-        "source": 30,
-        "target": {
-          "reference": 53,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 85,
-        "provenance": "authored",
-        "reference": 274,
-        "source": 30,
-        "target": {
-          "node": 56,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 86,
-        "provenance": "authored",
-        "reference": 275,
-        "source": 30,
-        "target": {
-          "node": 80,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 92,
-        "provenance": "authored",
-        "reference": 299,
-        "source": 35,
-        "target": {
-          "reference": 80,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 93,
-        "provenance": "authored",
-        "reference": 300,
-        "source": 35,
-        "target": {
-          "node": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 94,
-        "provenance": "authored",
-        "reference": 301,
-        "source": 35,
-        "target": {
-          "node": 83,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 60,
-        "provenance": "authored",
-        "reference": 260,
-        "source": 76,
-        "target": {
-          "reference": 54,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 356,
-        "source": 90,
-        "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 374,
-        "source": 84,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 69,
-        "provenance": "authored",
-        "reference": 312,
-        "source": 93,
-        "target": {
-          "reference": 81,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 371,
-        "source": 100,
-        "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 375,
-        "source": 96,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 88,
-        "provenance": "authored",
-        "reference": 225,
-        "source": 40,
-        "target": {
-          "reference": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 89,
-        "provenance": "authored",
-        "reference": 226,
-        "source": 40,
-        "target": {
-          "node": 79,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 90,
-        "provenance": "authored",
-        "reference": 227,
-        "source": 40,
-        "target": {
-          "node": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 108,
-        "provenance": "authored",
-        "reference": 233,
-        "source": 45,
-        "target": {
-          "reference": 52,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 109,
-        "provenance": "authored",
-        "reference": 234,
-        "source": 45,
-        "target": {
-          "node": 77,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 110,
-        "provenance": "authored",
-        "reference": 235,
-        "source": 45,
-        "target": {
-          "node": 58,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 73,
-        "provenance": "authored",
-        "reference": 287,
-        "source": 103,
-        "target": {
-          "reference": 63,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 30,
-        "provenance": "authored",
-        "reference": 359,
-        "source": 111,
-        "target": {
-          "reference": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 376,
-        "source": 106,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 77,
-        "provenance": "authored",
-        "reference": 296,
-        "source": 114,
-        "target": {
-          "reference": 74,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 37,
-        "provenance": "authored",
-        "reference": 364,
-        "source": 118,
-        "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 40,
-        "provenance": "authored",
-        "reference": 365,
-        "source": 121,
-        "target": {
-          "reference": 72,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 43,
-        "provenance": "authored",
-        "reference": 366,
-        "source": 124,
-        "target": {
-          "reference": 71,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 104,
-        "provenance": "authored",
-        "reference": 317,
-        "source": 50,
-        "target": {
-          "reference": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 105,
-        "provenance": "authored",
-        "reference": 318,
-        "source": 50,
-        "target": {
-          "node": 82,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 106,
-        "provenance": "authored",
-        "reference": 319,
-        "source": 50,
-        "target": {
-          "node": 115,
           "status": "resolved"
         }
       }
@@ -19339,17 +18724,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "scene": {
       "kind": "sequence",
       "lifelines": [
-        68,
+        66,
         55,
-        76,
-        93,
-        103,
-        114
+        72,
+        87,
+        95,
+        104
       ],
       "messages": [
         {
           "label": "reserveStock",
-          "navigation": 95,
+          "navigation": 87,
           "node": 10,
           "order": {
             "status": "resolved",
@@ -19357,17 +18742,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 76,
+            "lifeline": 72,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 103,
+            "lifeline": 95,
             "status": "resolved"
           }
         },
         {
           "label": "stockReserved",
-          "navigation": 99,
+          "navigation": 91,
           "node": 15,
           "order": {
             "status": "resolved",
@@ -19375,17 +18760,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 103,
+            "lifeline": 95,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 76,
+            "lifeline": 72,
             "status": "resolved"
           }
         },
         {
           "label": "submitCheckout",
-          "navigation": 79,
+          "navigation": 71,
           "node": 20,
           "order": {
             "status": "resolved",
@@ -19393,7 +18778,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 68,
+            "lifeline": 66,
             "status": "resolved"
           },
           "target": {
@@ -19403,7 +18788,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         },
         {
           "label": "checkoutOutcome",
-          "navigation": 111,
+          "navigation": 103,
           "node": 25,
           "order": {
             "status": "resolved",
@@ -19415,13 +18800,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "status": "resolved"
           },
           "target": {
-            "lifeline": 68,
+            "lifeline": 66,
             "status": "resolved"
           }
         },
         {
           "label": "forwardCheckout",
-          "navigation": 83,
+          "navigation": 75,
           "node": 30,
           "order": {
             "status": "resolved",
@@ -19433,13 +18818,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "status": "resolved"
           },
           "target": {
-            "lifeline": 76,
+            "lifeline": 72,
             "status": "resolved"
           }
         },
         {
           "label": "paymentApproved",
-          "navigation": 91,
+          "navigation": 83,
           "node": 35,
           "order": {
             "status": "resolved",
@@ -19447,17 +18832,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 93,
+            "lifeline": 87,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 76,
+            "lifeline": 72,
             "status": "resolved"
           }
         },
         {
           "label": "authorizePayment",
-          "navigation": 87,
+          "navigation": 79,
           "node": 40,
           "order": {
             "status": "resolved",
@@ -19465,17 +18850,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 76,
+            "lifeline": 72,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 93,
+            "lifeline": 87,
             "status": "resolved"
           }
         },
         {
           "label": "checkoutAccepted",
-          "navigation": 107,
+          "navigation": 99,
           "node": 45,
           "order": {
             "status": "resolved",
@@ -19483,7 +18868,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 76,
+            "lifeline": 72,
             "status": "resolved"
           },
           "target": {
@@ -19493,7 +18878,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         },
         {
           "label": "publishOrderCreated",
-          "navigation": 103,
+          "navigation": 95,
           "node": 50,
           "order": {
             "status": "resolved",
@@ -19501,11 +18886,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 76,
+            "lifeline": 72,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 114,
+            "lifeline": 104,
             "status": "resolved"
           }
         }

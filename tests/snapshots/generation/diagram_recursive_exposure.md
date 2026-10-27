@@ -205,7 +205,7 @@ package RecursiveExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:5b08064733bd8c84742bac445519ba074d054144b5680c125f099a43a9de9d73",
   "documents": [
     {
@@ -370,6 +370,7 @@ package RecursiveExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "vehicle",
         "notationRole": "usage",
         "owner": null,
@@ -387,6 +388,7 @@ package RecursiveExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "wheel",
         "notationRole": "usage",
         "owner": 0,
@@ -412,6 +414,7 @@ package RecursiveExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "engine",
         "notationRole": "usage",
         "owner": 0,
@@ -429,6 +432,7 @@ package RecursiveExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "cylinder",
         "notationRole": "usage",
         "owner": 2,

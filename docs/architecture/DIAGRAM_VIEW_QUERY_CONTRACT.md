@@ -15,7 +15,7 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
 never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 8
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 9
 is the sole renderer product for this contract.
 
 Projected element `name` is the publication's canonical effective name (SysML 7.6.5), so an
@@ -97,7 +97,7 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-8 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
+The schema-9 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
 discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.
 
@@ -111,7 +111,9 @@ above). Schema 7 adds the browser `metadata.rows` (row key, membership, member s
 the grid metadata: a `layout` (`relationship-matrix` or `element-table`), node-index `columns`, and
 cells naming their row and column nodes and the `edge` they show. Schema 8 adds sequence cycle
 witnesses and omitted-content reasons, distinguishes messages blocked downstream of a cycle,
-and makes an anonymous message's label null. The generated schema constant is derived from the
+and makes an anonymous message's label null. Schema 9 adds a node's authored `multiplicity` as it is written in a label (`[6]`,
+`[0..*]`), or `null` when none was authored or a bound is an expression; a multiplicity, its bounds and
+any KerML expression that is not a SysML usage are never nodes of a view. The generated schema constant is derived from the
 Rust owner and imported by TypeScript consumers. A product of an earlier schema is
 not accepted. The renderer's legacy pre-schema-5 adapters
 remain boundary-only compatibility code. A future incompatible wire change must increment `schemaVersion`, regenerate

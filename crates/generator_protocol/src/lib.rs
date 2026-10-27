@@ -893,6 +893,10 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceReference,
     pub compartments: Vec<DiagramCompartment>,
+    /// The authored multiplicity of this element's declaration (`joints : Motor[6]`), for its
+    /// label. `None` when no `[...]` was written, or when a bound is not a literal integer (an
+    /// expression bound such as `[1..n]` is not reduced to text here).
+    pub multiplicity: Option<Multiplicity>,
     /// The authored direction (`"in"` / `"out"` / `"inout"`) of a port or of a directed feature
     /// such as a parameter of an action. `None` for an element with no authored direction; a
     /// generator or renderer must not derive a side or a direction from this element's name or
@@ -1397,7 +1401,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x12aa_c6bc_67cf_10ec,
+            SCHEMA_FINGERPRINT, 0xce94_4bea_a65a_a40a,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1405,7 +1409,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xe91f_3a3f_9afd_65a0,
+            COMPATIBILITY_TOKEN, 0x7e84_5966_4298_65e7,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

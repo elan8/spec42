@@ -1096,7 +1096,7 @@ package Controls {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:dc60f6bdf6f3a035f4802cd3cb42e022f1791b2a6c111d7c82ecb10ce5f1fc84",
   "documents": [
     {
@@ -1284,54 +1284,9 @@ package Controls {
       "document": 0,
       "range": [
         11,
-        35,
-        11,
-        38
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        11,
-        36,
-        11,
-        37
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        11,
         41,
         11,
         48
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        11,
-        53,
-        11,
-        54
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        11,
-        56,
-        11,
-        57
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        11,
-        59,
-        11,
-        60
       ]
     },
     {
@@ -1364,28 +1319,10 @@ package Controls {
     {
       "document": 0,
       "range": [
-        12,
-        45,
-        12,
-        46
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
         14,
         20,
         14,
         27
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        14,
-        34,
-        14,
-        38
       ]
     },
     {
@@ -1404,15 +1341,6 @@ package Controls {
         13,
         21,
         9
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        17,
-        16,
-        17,
-        20
       ]
     },
     {
@@ -1449,15 +1377,6 @@ package Controls {
         19,
         23,
         24
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        24,
-        16,
-        24,
-        20
       ]
     },
     {
@@ -1524,22 +1443,7 @@ package Controls {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Controls::Process::iteration::visit::value::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Controls::Process::iteration::x"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
-      "qualifiedName": "Controls::Process::iteration::x::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
-      "qualifiedName": "Controls::Process::iteration::x::::"
     },
     {
       "document": 0,
@@ -1555,11 +1459,6 @@ package Controls {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "Controls::Process::retrying"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
-      "qualifiedName": "Controls::Process::retrying::"
     },
     {
       "document": 0,
@@ -1595,7 +1494,7 @@ package Controls {
       "kind": "source-anchor",
       "metaclass": "IfActionUsage",
       "ownerQualifiedName": "Controls::Process",
-      "source": 32,
+      "source": 25,
       "sourceDomain": "workspace"
     },
     {
@@ -1617,90 +1516,6 @@ package Controls {
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Controls::Process",
       "source": 15,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralBoolean",
-      "ownerQualifiedName": "Controls::Process::",
-      "source": 33,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralInteger",
-      "ownerQualifiedName": "Controls::Process::iteration",
-      "source": 22,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralInteger",
-      "ownerQualifiedName": "Controls::Process::iteration",
-      "source": 23,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralInteger",
-      "ownerQualifiedName": "Controls::Process::iteration",
-      "source": 24,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Expression",
-      "ownerQualifiedName": "Controls::Process::iteration::visit::value",
-      "source": 28,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Controls::Process::iteration::visit::value::",
-      "source": 28,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "MultiplicityRange",
-      "ownerQualifiedName": "Controls::Process::iteration::x",
-      "source": 19,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralInteger",
-      "ownerQualifiedName": "Controls::Process::iteration::x::",
-      "source": 20,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Controls::Process::iteration::x::::",
-      "source": 20,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralBoolean",
-      "ownerQualifiedName": "Controls::Process::polling",
-      "source": 30,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralBoolean",
-      "ownerQualifiedName": "Controls::Process::retrying",
-      "source": 38,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Controls::Process::retrying::",
-      "source": 38,
       "sourceDomain": "workspace"
     },
     {
@@ -1735,49 +1550,43 @@ package Controls {
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 13,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "ordinal": 16,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "ordinal": 18,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 20,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "ordinal": 26,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
+      "ordinal": 28,
       "relationshipKind": "containment",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "containment",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 29,
       "relationshipKind": "containment",
       "source": 1
     },
@@ -1795,13 +1604,13 @@ package Controls {
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 41,
       "relationshipKind": "thenTarget",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
+      "ordinal": 44,
       "relationshipKind": "thenTarget",
       "source": 1
     },
@@ -1819,19 +1628,19 @@ package Controls {
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 17,
       "relationshipKind": "succession",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "ordinal": 19,
       "relationshipKind": "succession",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 21,
       "relationshipKind": "succession",
       "source": 4
     },
@@ -1879,184 +1688,112 @@ package Controls {
     },
     {
       "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "containment",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
       "ordinal": 25,
       "relationshipKind": "containment",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "containment",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "containment",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "containment",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "containment",
-      "source": 7
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 14,
       "relationshipKind": "succession",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "ordinal": 23,
       "relationshipKind": "containment",
       "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "containment",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "typing",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "typing",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "containment",
+      "source": 11
     },
     {
       "kind": "relationship",
       "ordinal": 27,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 56,
-      "relationshipKind": "typing",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "containment",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 64,
-      "relationshipKind": "expressionOperand",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "containment",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 71,
-      "relationshipKind": "typing",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "containment",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "containment",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "containment",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
       "relationshipKind": "succession",
-      "source": 14
+      "source": 11
     },
     {
       "kind": "relationship",
       "ordinal": 12,
       "relationshipKind": "containment",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "containment",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "containment",
-      "source": 17
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "typing",
-      "source": 20
+      "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "typing",
-      "source": 20
+      "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 23,
       "relationshipKind": "typing",
-      "source": 20
+      "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 53,
       "relationshipKind": "typing",
-      "source": 20
+      "source": 16
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "typing",
-      "source": 21
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "typing",
-      "source": 21
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 21,
       "relationshipKind": "typing",
-      "source": 21
+      "source": 17
     }
   ],
   "selectedView": {
-    "reference": 22,
+    "reference": 18,
     "kind": "action-flow-view",
     "name": "selected",
-    "source": 39
+    "source": 30
   },
   "completeness": {
     "status": "complete",
@@ -2067,180 +1804,153 @@ package Controls {
       {
         "kind": "containment",
         "navigation": 5,
-        "origin": 15,
+        "origin": 11,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 24,
         "source": 0,
-        "target": 15
+        "target": 11
       },
       {
         "kind": "containment",
         "navigation": 0,
-        "origin": 16,
+        "origin": 12,
         "provenance": "implied",
-        "reference": 57,
-        "source": 15,
-        "target": 16
+        "reference": 40,
+        "source": 11,
+        "target": 12
       },
       {
         "kind": "containment",
         "navigation": 2,
-        "origin": 17,
+        "origin": 13,
         "provenance": "implied",
-        "reference": 58,
-        "source": 15,
-        "target": 17
+        "reference": 41,
+        "source": 11,
+        "target": 13
       },
       {
         "kind": "containment",
         "navigation": 7,
-        "origin": 18,
+        "origin": 14,
         "provenance": "authored",
-        "reference": 41,
+        "reference": 25,
         "source": 0,
-        "target": 18
+        "target": 14
       },
       {
         "kind": "containment",
         "navigation": 0,
-        "origin": 19,
+        "origin": 15,
         "provenance": "implied",
-        "reference": 63,
-        "source": 18,
-        "target": 19
+        "reference": 46,
+        "source": 14,
+        "target": 15
       },
       {
         "kind": "containment",
         "navigation": 2,
-        "origin": 20,
+        "origin": 16,
         "provenance": "implied",
-        "reference": 64,
-        "source": 18,
-        "target": 20
+        "reference": 47,
+        "source": 14,
+        "target": 16
       },
       {
         "kind": "containment",
         "navigation": 9,
-        "origin": 21,
+        "origin": 17,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 26,
         "source": 0,
-        "target": 21
+        "target": 17
       },
       {
         "kind": "containment",
         "navigation": 0,
-        "origin": 22,
+        "origin": 18,
         "provenance": "implied",
-        "reference": 66,
-        "source": 21,
-        "target": 22
+        "reference": 49,
+        "source": 17,
+        "target": 18
       },
       {
         "kind": "containment",
         "navigation": 2,
-        "origin": 23,
+        "origin": 19,
         "provenance": "implied",
-        "reference": 67,
-        "source": 21,
-        "target": 23
+        "reference": 50,
+        "source": 17,
+        "target": 19
       },
       {
         "kind": "containment",
         "navigation": 11,
         "origin": 1,
         "provenance": "authored",
-        "reference": 43,
+        "reference": 27,
         "source": 0,
         "target": 1
       },
       {
         "kind": "containment",
-        "navigation": 36,
-        "origin": 8,
+        "navigation": 28,
+        "origin": 7,
         "provenance": "authored",
-        "reference": 44,
+        "reference": 28,
         "source": 0,
-        "target": 8
+        "target": 7
       },
       {
         "kind": "succession",
-        "navigation": 36,
+        "navigation": 28,
+        "origin": 7,
+        "provenance": "authored",
+        "reference": 36,
+        "source": 4,
+        "target": 7
+      },
+      {
+        "kind": "containment",
+        "navigation": 29,
         "origin": 8,
         "provenance": "authored",
-        "reference": 53,
-        "source": 4,
+        "reference": 61,
+        "source": 7,
         "target": 8
       },
       {
         "kind": "containment",
-        "navigation": 37,
-        "origin": 11,
-        "provenance": "authored",
-        "reference": 88,
-        "source": 8,
-        "target": 11
-      },
-      {
-        "kind": "containment",
-        "navigation": 38,
+        "navigation": 23,
         "origin": 9,
         "provenance": "authored",
-        "reference": 89,
-        "source": 8,
+        "reference": 29,
+        "source": 0,
+        "target": 9
+      },
+      {
+        "kind": "succession",
+        "navigation": 23,
+        "origin": 9,
+        "provenance": "authored",
+        "reference": 54,
+        "source": 20,
         "target": 9
       },
       {
         "kind": "containment",
-        "navigation": 38,
+        "navigation": 24,
         "origin": 10,
         "provenance": "authored",
-        "reference": 90,
+        "reference": 59,
         "source": 9,
         "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 29,
-        "origin": 12,
-        "provenance": "authored",
-        "reference": 45,
-        "source": 0,
-        "target": 12
-      },
-      {
-        "kind": "succession",
-        "navigation": 29,
-        "origin": 12,
-        "provenance": "authored",
-        "reference": 74,
-        "source": 24,
-        "target": 12
-      },
-      {
-        "kind": "containment",
-        "navigation": 31,
-        "origin": 14,
-        "provenance": "authored",
-        "reference": 85,
-        "source": 12,
-        "target": 14
-      },
-      {
-        "kind": "containment",
-        "navigation": 30,
-        "origin": 13,
-        "provenance": "authored",
-        "reference": 86,
-        "source": 12,
-        "target": 13
       },
       {
         "kind": "containment",
         "navigation": 13,
         "origin": 2,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 30,
         "source": 0,
         "target": 2
       },
@@ -2249,16 +1959,16 @@ package Controls {
         "navigation": 13,
         "origin": 2,
         "provenance": "authored",
-        "reference": 59,
-        "source": 15,
-        "target": 18
+        "reference": 42,
+        "source": 11,
+        "target": 14
       },
       {
         "kind": "containment",
         "navigation": 15,
         "origin": 3,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 31,
         "source": 0,
         "target": 3
       },
@@ -2267,180 +1977,99 @@ package Controls {
         "navigation": 15,
         "origin": 3,
         "provenance": "authored",
-        "reference": 60,
-        "source": 15,
-        "target": 21
+        "reference": 43,
+        "source": 11,
+        "target": 17
       },
       {
         "kind": "containment",
         "navigation": 17,
-        "origin": 24,
+        "origin": 20,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 32,
         "source": 0,
-        "target": 24
+        "target": 20
       },
       {
         "kind": "succession",
         "navigation": 17,
-        "origin": 24,
+        "origin": 20,
         "provenance": "authored",
-        "reference": 61,
-        "source": 15,
-        "target": 24
+        "reference": 44,
+        "source": 11,
+        "target": 20
       },
       {
         "kind": "containment",
-        "navigation": 25,
-        "origin": 32,
+        "navigation": 20,
+        "origin": 22,
         "provenance": "authored",
-        "reference": 69,
-        "source": 24,
-        "target": 32
+        "reference": 52,
+        "source": 20,
+        "target": 22
       },
       {
         "kind": "containment",
         "navigation": 2,
-        "origin": 33,
+        "origin": 23,
         "provenance": "implied",
-        "reference": 75,
-        "source": 32,
-        "target": 33
-      },
-      {
-        "kind": "containment",
-        "navigation": 27,
-        "origin": 34,
-        "provenance": "authored",
-        "reference": 76,
-        "source": 32,
-        "target": 34
-      },
-      {
-        "kind": "containment",
-        "navigation": 28,
-        "origin": 35,
-        "provenance": "authored",
-        "reference": 78,
-        "source": 34,
-        "target": 35
-      },
-      {
-        "kind": "containment",
-        "navigation": 28,
-        "origin": 36,
-        "provenance": "authored",
-        "reference": 79,
-        "source": 35,
-        "target": 36
-      },
-      {
-        "kind": "containment",
-        "navigation": 18,
-        "origin": 25,
-        "provenance": "authored",
-        "reference": 70,
-        "source": 24,
-        "target": 25
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "origin": 26,
-        "provenance": "authored",
-        "reference": 81,
-        "source": 25,
-        "target": 26
-      },
-      {
-        "kind": "containment",
-        "navigation": 20,
-        "origin": 27,
-        "provenance": "authored",
-        "reference": 83,
-        "source": 26,
-        "target": 27
-      },
-      {
-        "kind": "containment",
-        "navigation": 20,
-        "origin": 28,
-        "provenance": "authored",
-        "reference": 84,
-        "source": 27,
-        "target": 28
+        "reference": 55,
+        "source": 22,
+        "target": 23
       },
       {
         "kind": "containment",
         "navigation": 22,
-        "origin": 29,
+        "origin": 24,
         "provenance": "authored",
-        "reference": 71,
-        "source": 24,
-        "target": 29
+        "reference": 56,
+        "source": 22,
+        "target": 24
       },
       {
         "kind": "containment",
-        "navigation": 23,
-        "origin": 30,
+        "navigation": 18,
+        "origin": 21,
         "provenance": "authored",
-        "reference": 72,
-        "source": 24,
-        "target": 30
+        "reference": 53,
+        "source": 20,
+        "target": 21
       },
       {
         "kind": "containment",
-        "navigation": 24,
-        "origin": 31,
-        "provenance": "authored",
-        "reference": 73,
-        "source": 24,
-        "target": 31
-      },
-      {
-        "kind": "containment",
-        "navigation": 32,
+        "navigation": 25,
         "origin": 4,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 33,
         "source": 0,
         "target": 4
       },
       {
         "kind": "succession",
-        "navigation": 32,
+        "navigation": 25,
         "origin": 4,
         "provenance": "authored",
-        "reference": 87,
-        "source": 12,
+        "reference": 60,
+        "source": 9,
         "target": 4
       },
       {
         "kind": "containment",
-        "navigation": 35,
-        "origin": 6,
-        "provenance": "authored",
-        "reference": 50,
-        "source": 4,
-        "target": 6
-      },
-      {
-        "kind": "containment",
-        "navigation": 34,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 51,
-        "source": 4,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 33,
+        "navigation": 27,
         "origin": 5,
         "provenance": "authored",
-        "reference": 52,
+        "reference": 34,
         "source": 4,
         "target": 5
+      },
+      {
+        "kind": "containment",
+        "navigation": 26,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 35,
+        "source": 4,
+        "target": 6
       }
     ],
     "exposedRoots": [
@@ -2451,17 +2080,17 @@ package Controls {
       "actions": [
         0,
         4,
+        5,
         6,
         7,
         8,
+        9,
+        10,
         11,
-        12,
         14,
-        15,
-        18,
-        21,
-        24,
-        32
+        17,
+        20,
+        22
       ],
       "controlNodes": []
     },
@@ -2472,12 +2101,12 @@ package Controls {
             "kind": "actions",
             "members": [
               4,
-              8,
-              12,
-              15,
-              18,
-              21,
-              24
+              7,
+              9,
+              11,
+              14,
+              17,
+              20
             ],
             "provenance": "direct"
           }
@@ -2486,6 +2115,7 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionDefinition",
+        "multiplicity": null,
         "name": "Process",
         "notationRole": "definition",
         "owner": null,
@@ -2503,10 +2133,11 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 25,
+        "reference": 21,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2520,10 +2151,11 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 26,
+        "reference": 22,
         "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2537,10 +2169,11 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 27,
+        "reference": 23,
         "source": 15,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2553,8 +2186,8 @@ package Controls {
           {
             "kind": "actions",
             "members": [
-              6,
-              7
+              5,
+              6
             ],
             "provenance": "direct"
           }
@@ -2563,28 +2196,12 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "IfActionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 24,
-        "source": 32,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralBoolean",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 4,
-        "reference": 28,
-        "source": 33,
+        "reference": 20,
+        "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2597,11 +2214,12 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "no",
         "notationRole": "usage",
         "owner": 4,
         "reference": 2,
-        "source": 35,
+        "source": 27,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2614,11 +2232,12 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "yes",
         "notationRole": "usage",
         "owner": 4,
         "reference": 3,
-        "source": 34,
+        "source": 26,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2630,7 +2249,7 @@ package Controls {
           {
             "kind": "actions",
             "members": [
-              11
+              8
             ],
             "provenance": "direct"
           }
@@ -2639,45 +2258,12 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "WhileLoopActionUsage",
+        "multiplicity": null,
         "name": "retrying",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 16,
-        "source": 36,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "in",
-        "featureDirection": null,
-        "metaclass": "LiteralBoolean",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 8,
-        "reference": 38,
-        "source": 38,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 9,
-        "reference": 39,
-        "source": 38,
+        "reference": 13,
+        "source": 28,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2690,34 +2276,10 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "retry",
         "notationRole": "usage",
-        "owner": 8,
-        "reference": 18,
-        "source": 37,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [
-          {
-            "kind": "actions",
-            "members": [
-              14
-            ],
-            "provenance": "direct"
-          }
-        ],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "WhileLoopActionUsage",
-        "name": "polling",
-        "notationRole": "usage",
-        "owner": 0,
+        "owner": 7,
         "reference": 14,
         "source": 29,
         "stateSubaction": null,
@@ -2727,16 +2289,25 @@ package Controls {
         }
       },
       {
-        "compartments": [],
+        "compartments": [
+          {
+            "kind": "actions",
+            "members": [
+              10
+            ],
+            "provenance": "direct"
+          }
+        ],
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "LiteralBoolean",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 12,
-        "reference": 37,
-        "source": 30,
+        "metaclass": "WhileLoopActionUsage",
+        "multiplicity": null,
+        "name": "polling",
+        "notationRole": "usage",
+        "owner": 0,
+        "reference": 11,
+        "source": 23,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2749,11 +2320,12 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "repeat",
         "notationRole": "usage",
-        "owner": 12,
-        "reference": 15,
-        "source": 31,
+        "owner": 9,
+        "reference": 12,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2765,8 +2337,8 @@ package Controls {
           {
             "kind": "attributes",
             "members": [
-              16,
-              17
+              12,
+              13
             ],
             "provenance": "inherited"
           }
@@ -2775,6 +2347,7 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "a",
         "notationRole": "usage",
         "owner": 0,
@@ -2787,7 +2360,7 @@ package Controls {
           "types": [
             {
               "label": "Step",
-              "reference": 19
+              "reference": 15
             }
           ]
         }
@@ -2798,10 +2371,11 @@ package Controls {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": "value",
         "notationRole": "reference-usage",
-        "owner": 15,
-        "reference": 21,
+        "owner": 11,
+        "reference": 17,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2810,7 +2384,7 @@ package Controls {
           "types": [
             {
               "label": "Integer",
-              "reference": 23
+              "reference": 19
             }
           ]
         }
@@ -2821,10 +2395,11 @@ package Controls {
         "direction": "out",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": "result",
         "notationRole": "reference-usage",
-        "owner": 15,
-        "reference": 20,
+        "owner": 11,
+        "reference": 16,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2833,7 +2408,7 @@ package Controls {
           "types": [
             {
               "label": "Integer",
-              "reference": 23
+              "reference": 19
             }
           ]
         }
@@ -2843,8 +2418,8 @@ package Controls {
           {
             "kind": "attributes",
             "members": [
-              19,
-              20
+              15,
+              16
             ],
             "provenance": "inherited"
           }
@@ -2853,6 +2428,7 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "b",
         "notationRole": "usage",
         "owner": 0,
@@ -2865,7 +2441,7 @@ package Controls {
           "types": [
             {
               "label": "Step",
-              "reference": 19
+              "reference": 15
             }
           ]
         }
@@ -2876,10 +2452,11 @@ package Controls {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": "value",
         "notationRole": "reference-usage",
-        "owner": 18,
-        "reference": 21,
+        "owner": 14,
+        "reference": 17,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2888,7 +2465,7 @@ package Controls {
           "types": [
             {
               "label": "Integer",
-              "reference": 23
+              "reference": 19
             }
           ]
         }
@@ -2899,10 +2476,11 @@ package Controls {
         "direction": "out",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": "result",
         "notationRole": "reference-usage",
-        "owner": 18,
-        "reference": 20,
+        "owner": 14,
+        "reference": 16,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2911,7 +2489,7 @@ package Controls {
           "types": [
             {
               "label": "Integer",
-              "reference": 23
+              "reference": 19
             }
           ]
         }
@@ -2921,8 +2499,8 @@ package Controls {
           {
             "kind": "attributes",
             "members": [
-              22,
-              23
+              18,
+              19
             ],
             "provenance": "inherited"
           }
@@ -2931,6 +2509,7 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "c",
         "notationRole": "usage",
         "owner": 0,
@@ -2943,7 +2522,7 @@ package Controls {
           "types": [
             {
               "label": "Step",
-              "reference": 19
+              "reference": 15
             }
           ]
         }
@@ -2954,10 +2533,11 @@ package Controls {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": "value",
         "notationRole": "reference-usage",
-        "owner": 21,
-        "reference": 21,
+        "owner": 17,
+        "reference": 17,
         "source": 0,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2966,7 +2546,7 @@ package Controls {
           "types": [
             {
               "label": "Integer",
-              "reference": 23
+              "reference": 19
             }
           ]
         }
@@ -2977,10 +2557,11 @@ package Controls {
         "direction": "out",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": "result",
         "notationRole": "reference-usage",
-        "owner": 21,
-        "reference": 20,
+        "owner": 17,
+        "reference": 16,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2989,7 +2570,7 @@ package Controls {
           "types": [
             {
               "label": "Integer",
-              "reference": 23
+              "reference": 19
             }
           ]
         }
@@ -2999,7 +2580,7 @@ package Controls {
           {
             "kind": "actions",
             "members": [
-              32
+              22
             ],
             "provenance": "direct"
           }
@@ -3008,6 +2589,7 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ForLoopActionUsage",
+        "multiplicity": null,
         "name": "iteration",
         "notationRole": "usage",
         "owner": 0,
@@ -3025,10 +2607,11 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ForLoopVariable",
+        "multiplicity": "[1]",
         "name": "x",
         "notationRole": "usage",
-        "owner": 24,
-        "reference": 11,
+        "owner": 20,
+        "reference": 10,
         "source": 18,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3037,111 +2620,9 @@ package Controls {
           "types": [
             {
               "label": "Integer",
-              "reference": 23
+              "reference": 19
             }
           ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "MultiplicityRange",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 25,
-        "reference": 34,
-        "source": 19,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralInteger",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 26,
-        "reference": 35,
-        "source": 20,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 27,
-        "reference": 36,
-        "source": 20,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralInteger",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 24,
-        "reference": 29,
-        "source": 22,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralInteger",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 24,
-        "reference": 30,
-        "source": 23,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralInteger",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 24,
-        "reference": 31,
-        "source": 24,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
         }
       },
       {
@@ -3149,14 +2630,14 @@ package Controls {
           {
             "kind": "attributes",
             "members": [
-              34
+              24
             ],
             "provenance": "direct"
           },
           {
             "kind": "attributes",
             "members": [
-              33
+              23
             ],
             "provenance": "inherited"
           }
@@ -3165,11 +2646,12 @@ package Controls {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "visit",
         "notationRole": "usage",
-        "owner": 24,
+        "owner": 20,
         "reference": 8,
-        "source": 25,
+        "source": 20,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -3177,7 +2659,7 @@ package Controls {
           "types": [
             {
               "label": "Step",
-              "reference": 19
+              "reference": 15
             }
           ]
         }
@@ -3188,10 +2670,11 @@ package Controls {
         "direction": "out",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": "result",
         "notationRole": "reference-usage",
-        "owner": 32,
-        "reference": 20,
+        "owner": 22,
+        "reference": 16,
         "source": 2,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3200,7 +2683,7 @@ package Controls {
           "types": [
             {
               "label": "Integer",
-              "reference": 23
+              "reference": 19
             }
           ]
         }
@@ -3211,45 +2694,12 @@ package Controls {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": "value",
         "notationRole": "reference-usage",
-        "owner": 32,
+        "owner": 22,
         "reference": 9,
-        "source": 27,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Expression",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 34,
-        "reference": 32,
-        "source": 28,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 35,
-        "reference": 33,
-        "source": 28,
+        "source": 22,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -3262,7 +2712,51 @@ package Controls {
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
+        "reference": 45,
+        "source": 11,
+        "target": {
+          "reference": 15,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 1,
+        "provenance": "authored",
+        "reference": 66,
+        "source": 12,
+        "target": {
+          "reference": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 3,
+        "provenance": "authored",
         "reference": 62,
+        "source": 13,
+        "target": {
+          "reference": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 8,
+        "provenance": "authored",
+        "reference": 48,
+        "source": 14,
+        "target": {
+          "reference": 15,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 1,
+        "provenance": "authored",
+        "reference": 67,
         "source": 15,
         "target": {
           "reference": 19,
@@ -3271,31 +2765,31 @@ package Controls {
       },
       {
         "kind": "typing",
-        "navigation": 1,
-        "provenance": "authored",
-        "reference": 95,
-        "source": 16,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 91,
-        "source": 17,
+        "reference": 63,
+        "source": 16,
         "target": {
-          "reference": 23,
+          "reference": 19,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 8,
+        "navigation": 10,
         "provenance": "authored",
-        "reference": 65,
+        "reference": 51,
+        "source": 17,
+        "target": {
+          "reference": 15,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 1,
+        "provenance": "authored",
+        "reference": 68,
         "source": 18,
         "target": {
           "reference": 19,
@@ -3304,56 +2798,12 @@ package Controls {
       },
       {
         "kind": "typing",
-        "navigation": 1,
+        "navigation": 3,
         "provenance": "authored",
-        "reference": 96,
+        "reference": 64,
         "source": 19,
         "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 3,
-        "provenance": "authored",
-        "reference": 92,
-        "source": 20,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 10,
-        "provenance": "authored",
-        "reference": 68,
-        "source": 21,
-        "target": {
           "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 1,
-        "provenance": "authored",
-        "reference": 97,
-        "source": 22,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 3,
-        "provenance": "authored",
-        "reference": 93,
-        "source": 23,
-        "target": {
-          "reference": 23,
           "status": "resolved"
         }
       },
@@ -3361,10 +2811,10 @@ package Controls {
         "kind": "succession",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 54,
+        "reference": 37,
         "source": 1,
         "target": {
-          "node": 15,
+          "node": 11,
           "status": "resolved"
         }
       },
@@ -3372,10 +2822,10 @@ package Controls {
         "kind": "thenTarget",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 55,
+        "reference": 38,
         "source": 2,
         "target": {
-          "node": 18,
+          "node": 14,
           "status": "resolved"
         }
       },
@@ -3383,43 +2833,10 @@ package Controls {
         "kind": "thenTarget",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 56,
+        "reference": 39,
         "source": 3,
         "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 77,
-        "source": 32,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 3,
-        "provenance": "authored",
-        "reference": 94,
-        "source": 33,
-        "target": {
-          "reference": 23,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
-        "navigation": 28,
-        "provenance": "authored",
-        "reference": 80,
-        "source": 35,
-        "target": {
-          "node": 25,
+          "node": 17,
           "status": "resolved"
         }
       },
@@ -3427,10 +2844,32 @@ package Controls {
         "kind": "typing",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 82,
-        "source": 25,
+        "reference": 57,
+        "source": 22,
         "target": {
-          "reference": 23,
+          "reference": 15,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 3,
+        "provenance": "authored",
+        "reference": 65,
+        "source": 23,
+        "target": {
+          "reference": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 19,
+        "provenance": "authored",
+        "reference": 58,
+        "source": 21,
+        "target": {
+          "reference": 19,
           "status": "resolved"
         }
       }

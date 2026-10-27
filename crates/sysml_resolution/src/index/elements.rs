@@ -452,6 +452,12 @@ impl<D> SemanticModel<D> {
         })
     }
 
+    /// The authored multiplicity of the single declaration of `symbol`, or `Absent`.
+    pub(crate) fn symbol_multiplicity(&self, symbol: SymbolId) -> MultiplicityFacts {
+        self.declaration_of(symbol)
+            .map_or(MultiplicityFacts::Absent, |id| self.multiplicity(id))
+    }
+
     pub(crate) fn multiplicity(&self, id: DeclarationId) -> MultiplicityFacts {
         let Some(facts) = self.storage.declaration_facts(id) else {
             return MultiplicityFacts::Absent;

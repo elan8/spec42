@@ -707,7 +707,7 @@ package Repro {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:4f5e90bbd99fc518976d692a1c1e587fbebd0d6adb6da21dc2757814474232fa",
   "documents": [
     {
@@ -783,15 +783,6 @@ package Repro {
       "document": 0,
       "range": [
         6,
-        7,
-        6,
-        11
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        6,
         22,
         6,
         31
@@ -849,15 +840,6 @@ package Repro {
         4,
         7,
         52
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        7,
-        10,
-        7,
-        14
       ]
     },
     {
@@ -974,105 +956,91 @@ package Repro {
       "kind": "source-anchor",
       "metaclass": "WhileLoopActionUsage",
       "ownerQualifiedName": "Repro::Interaction",
-      "source": 14,
+      "source": 13,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "LiteralBoolean",
-      "ownerQualifiedName": "Repro::Interaction::",
-      "source": 7,
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedElse",
+      "source": 11,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "LiteralBoolean",
-      "ownerQualifiedName": "Repro::Interaction::",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedElse",
+      "source": 12,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedElse::",
+      "source": 11,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedElse::",
+      "source": 12,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedIf",
+      "source": 8,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedIf",
+      "source": 9,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedIf::",
+      "source": 8,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedIf::",
+      "source": 9,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "Repro::Interaction::::OmittedWhile",
       "source": 15,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedElse",
-      "source": 12,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedElse",
-      "source": 13,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedElse::",
-      "source": 12,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedElse::",
-      "source": 13,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedIf",
-      "source": 9,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedIf",
-      "source": 10,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedIf::",
-      "source": 9,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedIf::",
-      "source": 10,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
       "ownerQualifiedName": "Repro::Interaction::::OmittedWhile",
-      "source": 17,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "FlowEnd",
-      "ownerQualifiedName": "Repro::Interaction::::OmittedWhile",
-      "source": 18,
+      "source": 16,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "Repro::Interaction::::OmittedWhile::",
-      "source": 17,
+      "source": 15,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "Feature",
       "ownerQualifiedName": "Repro::Interaction::::OmittedWhile::",
-      "source": 18,
+      "source": 16,
       "sourceDomain": "workspace"
     },
     {
@@ -1111,25 +1079,25 @@ package Repro {
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 13,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 22,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
       "relationshipKind": "containment",
       "source": 0
     },
@@ -1147,19 +1115,7 @@ package Repro {
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "containment",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "containment",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
+      "ordinal": 14,
       "relationshipKind": "containment",
       "source": 1
     },
@@ -1237,37 +1193,37 @@ package Repro {
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "ordinal": 16,
       "relationshipKind": "containment",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "containment",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "flowSource",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "flowTarget",
       "source": 6
     },
     {
       "kind": "relationship",
       "ordinal": 18,
       "relationshipKind": "containment",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
+      "relationshipKind": "flowSource",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
+      "relationshipKind": "flowTarget",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "containment",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 19,
       "relationshipKind": "containment",
       "source": 7
     },
@@ -1285,15 +1241,21 @@ package Repro {
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 15,
       "relationshipKind": "flow",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 23,
       "relationshipKind": "flow",
       "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "containment",
+      "source": 10
     },
     {
       "kind": "relationship",
@@ -1303,31 +1265,25 @@ package Repro {
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "containment",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 61,
       "relationshipKind": "flowSource",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "ordinal": 62,
       "relationshipKind": "flowTarget",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "ordinal": 25,
       "relationshipKind": "containment",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "ordinal": 27,
       "relationshipKind": "containment",
       "source": 11
     }
@@ -1336,7 +1292,7 @@ package Repro {
     "reference": 12,
     "kind": "sequence-view",
     "name": "selected",
-    "source": 19
+    "source": 17
   },
   "completeness": {
     "status": "incomplete",
@@ -1344,9 +1300,9 @@ package Repro {
       {
         "code": "sequence-content-omitted",
         "elements": [
-          3,
-          8,
-          22
+          2,
+          7,
+          20
         ]
       }
     ]
@@ -1358,31 +1314,40 @@ package Repro {
         "navigation": 6,
         "origin": 1,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 31,
         "source": 0,
         "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 7,
+        "origin": 7,
+        "provenance": "authored",
+        "reference": 36,
+        "source": 1,
+        "target": 7
+      },
+      {
+        "kind": "flow",
+        "navigation": 8,
+        "origin": 7,
+        "provenance": "implied",
+        "reference": 57,
+        "source": 17,
+        "target": 18
       },
       {
         "kind": "containment",
         "navigation": 8,
         "origin": 8,
         "provenance": "authored",
-        "reference": 38,
-        "source": 1,
+        "reference": 45,
+        "source": 7,
         "target": 8
       },
       {
-        "kind": "flow",
-        "navigation": 9,
-        "origin": 8,
-        "provenance": "implied",
-        "reference": 61,
-        "source": 18,
-        "target": 19
-      },
-      {
         "kind": "containment",
-        "navigation": 9,
+        "navigation": 8,
         "origin": 9,
         "provenance": "authored",
         "reference": 49,
@@ -1394,27 +1359,36 @@ package Repro {
         "navigation": 9,
         "origin": 10,
         "provenance": "authored",
-        "reference": 53,
-        "source": 9,
+        "reference": 46,
+        "source": 7,
         "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 10,
+        "navigation": 9,
         "origin": 11,
         "provenance": "authored",
         "reference": 50,
-        "source": 8,
+        "source": 10,
         "target": 11
       },
       {
         "kind": "containment",
         "navigation": 10,
-        "origin": 12,
+        "origin": 2,
         "provenance": "authored",
-        "reference": 54,
-        "source": 11,
-        "target": 12
+        "reference": 37,
+        "source": 1,
+        "target": 2
+      },
+      {
+        "kind": "flow",
+        "navigation": 11,
+        "origin": 2,
+        "provenance": "implied",
+        "reference": 58,
+        "source": 17,
+        "target": 18
       },
       {
         "kind": "containment",
@@ -1422,21 +1396,12 @@ package Repro {
         "origin": 3,
         "provenance": "authored",
         "reference": 39,
-        "source": 1,
+        "source": 2,
         "target": 3
       },
       {
-        "kind": "flow",
-        "navigation": 12,
-        "origin": 3,
-        "provenance": "implied",
-        "reference": 62,
-        "source": 18,
-        "target": 19
-      },
-      {
         "kind": "containment",
-        "navigation": 12,
+        "navigation": 11,
         "origin": 4,
         "provenance": "authored",
         "reference": 43,
@@ -1448,144 +1413,126 @@ package Repro {
         "navigation": 12,
         "origin": 5,
         "provenance": "authored",
-        "reference": 47,
-        "source": 4,
+        "reference": 40,
+        "source": 2,
         "target": 5
       },
       {
         "kind": "containment",
-        "navigation": 13,
+        "navigation": 12,
         "origin": 6,
         "provenance": "authored",
         "reference": 44,
-        "source": 3,
+        "source": 5,
         "target": 6
       },
       {
         "kind": "containment",
         "navigation": 13,
-        "origin": 7,
+        "origin": 19,
         "provenance": "authored",
-        "reference": 48,
-        "source": 6,
-        "target": 7
-      },
-      {
-        "kind": "containment",
-        "navigation": 7,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 40,
-        "source": 1,
-        "target": 2
+        "reference": 32,
+        "source": 0,
+        "target": 19
       },
       {
         "kind": "containment",
         "navigation": 14,
         "origin": 20,
         "provenance": "authored",
-        "reference": 34,
-        "source": 0,
+        "reference": 38,
+        "source": 19,
         "target": 20
       },
       {
-        "kind": "containment",
-        "navigation": 16,
-        "origin": 22,
-        "provenance": "authored",
-        "reference": 41,
-        "source": 20,
-        "target": 22
-      },
-      {
         "kind": "flow",
-        "navigation": 17,
-        "origin": 22,
+        "navigation": 15,
+        "origin": 20,
         "provenance": "implied",
-        "reference": 63,
-        "source": 18,
-        "target": 19
-      },
-      {
-        "kind": "containment",
-        "navigation": 17,
-        "origin": 23,
-        "provenance": "authored",
-        "reference": 55,
-        "source": 22,
-        "target": 23
-      },
-      {
-        "kind": "containment",
-        "navigation": 17,
-        "origin": 24,
-        "provenance": "authored",
         "reference": 59,
-        "source": 23,
-        "target": 24
-      },
-      {
-        "kind": "containment",
-        "navigation": 18,
-        "origin": 25,
-        "provenance": "authored",
-        "reference": 56,
-        "source": 22,
-        "target": 25
-      },
-      {
-        "kind": "containment",
-        "navigation": 18,
-        "origin": 26,
-        "provenance": "authored",
-        "reference": 60,
-        "source": 25,
-        "target": 26
+        "source": 17,
+        "target": 18
       },
       {
         "kind": "containment",
         "navigation": 15,
         "origin": 21,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 51,
         "source": 20,
         "target": 21
       },
       {
         "kind": "containment",
+        "navigation": 15,
+        "origin": 22,
+        "provenance": "authored",
+        "reference": 55,
+        "source": 21,
+        "target": 22
+      },
+      {
+        "kind": "containment",
+        "navigation": 16,
+        "origin": 23,
+        "provenance": "authored",
+        "reference": 52,
+        "source": 20,
+        "target": 23
+      },
+      {
+        "kind": "containment",
+        "navigation": 16,
+        "origin": 24,
+        "provenance": "authored",
+        "reference": 56,
+        "source": 23,
+        "target": 24
+      },
+      {
+        "kind": "containment",
         "navigation": 1,
+        "origin": 17,
+        "provenance": "authored",
+        "reference": 33,
+        "source": 0,
+        "target": 17
+      },
+      {
+        "kind": "containment",
+        "navigation": 2,
         "origin": 18,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 34,
         "source": 0,
         "target": 18
       },
       {
         "kind": "containment",
-        "navigation": 2,
-        "origin": 19,
-        "provenance": "authored",
-        "reference": 36,
-        "source": 0,
-        "target": 19
-      },
-      {
-        "kind": "containment",
         "navigation": 3,
-        "origin": 13,
+        "origin": 12,
         "provenance": "authored",
-        "reference": 37,
+        "reference": 35,
         "source": 0,
-        "target": 13
+        "target": 12
       },
       {
         "kind": "flow",
         "navigation": 4,
-        "origin": 13,
+        "origin": 12,
         "provenance": "implied",
-        "reference": 64,
-        "source": 18,
-        "target": 19
+        "reference": 60,
+        "source": 17,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 4,
+        "origin": 13,
+        "provenance": "authored",
+        "reference": 61,
+        "source": 12,
+        "target": 13
       },
       {
         "kind": "containment",
@@ -1598,11 +1545,11 @@ package Repro {
       },
       {
         "kind": "containment",
-        "navigation": 4,
+        "navigation": 5,
         "origin": 15,
         "provenance": "authored",
-        "reference": 69,
-        "source": 14,
+        "reference": 62,
+        "source": 12,
         "target": 15
       },
       {
@@ -1611,17 +1558,8 @@ package Repro {
         "origin": 16,
         "provenance": "authored",
         "reference": 66,
-        "source": 13,
+        "source": 15,
         "target": 16
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 17,
-        "provenance": "authored",
-        "reference": 70,
-        "source": 16,
-        "target": 17
       }
     ],
     "exposedRoots": [
@@ -1630,11 +1568,11 @@ package Repro {
     "kind": "sequence-view",
     "metadata": {
       "messages": [
-        13
+        12
       ],
       "participants": [
-        18,
-        19
+        17,
+        18
       ]
     },
     "nodes": [
@@ -1643,8 +1581,8 @@ package Repro {
           {
             "kind": "parts",
             "members": [
-              18,
-              19
+              17,
+              18
             ],
             "provenance": "direct"
           },
@@ -1652,14 +1590,14 @@ package Repro {
             "kind": "actions",
             "members": [
               1,
-              20
+              19
             ],
             "provenance": "direct"
           },
           {
             "kind": "connections",
             "members": [
-              13
+              12
             ],
             "provenance": "direct"
           }
@@ -1668,6 +1606,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionDefinition",
+        "multiplicity": null,
         "name": "Interaction",
         "notationRole": "definition",
         "owner": null,
@@ -1684,8 +1623,8 @@ package Repro {
           {
             "kind": "connections",
             "members": [
-              3,
-              8
+              2,
+              7
             ],
             "provenance": "direct"
           }
@@ -1694,6 +1633,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "IfActionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1710,12 +1650,13 @@ package Repro {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "LiteralBoolean",
-        "name": null,
-        "notationRole": "unsupported",
+        "metaclass": "FlowUsage",
+        "multiplicity": null,
+        "name": "OmittedElse",
+        "notationRole": "usage",
         "owner": 1,
-        "reference": 15,
-        "source": 7,
+        "reference": 2,
+        "source": 10,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1727,11 +1668,30 @@ package Repro {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "FlowUsage",
-        "name": "OmittedElse",
-        "notationRole": "usage",
-        "owner": 1,
-        "reference": 2,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 2,
+        "reference": 15,
+        "source": 11,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 3,
+        "reference": 17,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1745,10 +1705,11 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 3,
-        "reference": 17,
+        "owner": 2,
+        "reference": 16,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1762,45 +1723,12 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 4,
-        "reference": 19,
-        "source": 12,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 3,
+        "owner": 5,
         "reference": 18,
-        "source": 13,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 6,
-        "reference": 20,
-        "source": 13,
+        "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1813,10 +1741,47 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "OmittedIf",
         "notationRole": "usage",
         "owner": 1,
         "reference": 4,
+        "source": 7,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 7,
+        "reference": 19,
+        "source": 8,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 8,
+        "reference": 21,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1830,10 +1795,11 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 8,
-        "reference": 21,
+        "owner": 7,
+        "reference": 20,
         "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1847,45 +1813,12 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 9,
-        "reference": 23,
-        "source": 9,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 8,
+        "owner": 10,
         "reference": 22,
-        "source": 10,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 11,
-        "reference": 24,
-        "source": 10,
+        "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1898,6 +1831,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "Visible",
         "notationRole": "usage",
         "owner": 0,
@@ -1915,6 +1849,25 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 12,
+        "reference": 27,
+        "source": 4,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 13,
@@ -1931,12 +1884,13 @@ package Repro {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "Feature",
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 14,
-        "reference": 31,
-        "source": 4,
+        "owner": 12,
+        "reference": 28,
+        "source": 5,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1948,10 +1902,11 @@ package Repro {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "FlowEnd",
+        "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 13,
+        "owner": 15,
         "reference": 30,
         "source": 5,
         "stateSubaction": null,
@@ -1965,24 +1920,8 @@ package Repro {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 16,
-        "reference": 32,
-        "source": 5,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "A",
         "notationRole": "usage",
         "owner": 0,
@@ -2000,6 +1939,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "B",
         "notationRole": "usage",
         "owner": 0,
@@ -2016,7 +1956,7 @@ package Repro {
           {
             "kind": "connections",
             "members": [
-              22
+              20
             ],
             "provenance": "direct"
           }
@@ -2025,28 +1965,12 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "WhileLoopActionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
         "reference": 14,
-        "source": 14,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralBoolean",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 20,
-        "reference": 16,
-        "source": 15,
+        "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2059,10 +1983,65 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "OmittedWhile",
         "notationRole": "usage",
-        "owner": 20,
+        "owner": 19,
         "reference": 6,
+        "source": 14,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 20,
+        "reference": 23,
+        "source": 15,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "Feature",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 21,
+        "reference": 25,
+        "source": 15,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "FlowEnd",
+        "multiplicity": null,
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 20,
+        "reference": 24,
         "source": 16,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2075,63 +2054,13 @@ package Repro {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 22,
-        "reference": 25,
-        "source": 17,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 23,
-        "reference": 27,
-        "source": 17,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "FlowEnd",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 22,
         "reference": 26,
-        "source": 18,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 25,
-        "reference": 28,
-        "source": 18,
+        "source": 16,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2142,67 +2071,67 @@ package Repro {
     "relationships": [
       {
         "kind": "flowSource",
+        "navigation": 8,
+        "provenance": "authored",
+        "reference": 47,
+        "source": 7,
+        "target": {
+          "node": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 51,
-        "source": 8,
+        "reference": 48,
+        "source": 7,
         "target": {
           "node": 18,
           "status": "resolved"
         }
       },
       {
-        "kind": "flowTarget",
-        "navigation": 10,
+        "kind": "flowSource",
+        "navigation": 11,
         "provenance": "authored",
-        "reference": 52,
-        "source": 8,
+        "reference": 41,
+        "source": 2,
         "target": {
-          "node": 19,
+          "node": 17,
           "status": "resolved"
         }
       },
       {
-        "kind": "flowSource",
+        "kind": "flowTarget",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 45,
-        "source": 3,
+        "reference": 42,
+        "source": 2,
         "target": {
           "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 13,
-        "provenance": "authored",
-        "reference": 46,
-        "source": 3,
-        "target": {
-          "node": 19,
           "status": "resolved"
         }
       },
       {
         "kind": "flowSource",
-        "navigation": 17,
+        "navigation": 15,
         "provenance": "authored",
-        "reference": 57,
-        "source": 22,
+        "reference": 53,
+        "source": 20,
         "target": {
-          "node": 18,
+          "node": 17,
           "status": "resolved"
         }
       },
       {
         "kind": "flowTarget",
-        "navigation": 18,
+        "navigation": 16,
         "provenance": "authored",
-        "reference": 58,
-        "source": 22,
+        "reference": 54,
+        "source": 20,
         "target": {
-          "node": 19,
+          "node": 18,
           "status": "resolved"
         }
       },
@@ -2210,10 +2139,10 @@ package Repro {
         "kind": "flowSource",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 67,
-        "source": 13,
+        "reference": 63,
+        "source": 12,
         "target": {
-          "node": 18,
+          "node": 17,
           "status": "resolved"
         }
       },
@@ -2221,10 +2150,10 @@ package Repro {
         "kind": "flowTarget",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 68,
-        "source": 13,
+        "reference": 64,
+        "source": 12,
         "target": {
-          "node": 19,
+          "node": 18,
           "status": "resolved"
         }
       }
@@ -2232,25 +2161,25 @@ package Repro {
     "scene": {
       "kind": "sequence",
       "lifelines": [
-        18,
-        19
+        17,
+        18
       ],
       "messages": [
         {
           "label": "Visible",
           "navigation": 3,
-          "node": 13,
+          "node": 12,
           "order": {
             "status": "resolved",
             "value": 1
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 18,
+            "lifeline": 17,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 19,
+            "lifeline": 18,
             "status": "resolved"
           }
         }

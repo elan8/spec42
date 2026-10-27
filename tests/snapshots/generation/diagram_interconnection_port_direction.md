@@ -333,7 +333,7 @@ package PortDirectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:b833805d33bb9b8b92f8ade6978896eafeabe2c6f602b202223e0122352b6631",
   "documents": [
     {
@@ -647,6 +647,7 @@ package PortDirectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Node",
         "notationRole": "definition",
         "owner": null,
@@ -664,6 +665,7 @@ package PortDirectionExample {
         "direction": "inout",
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "bidi",
         "notationRole": "usage",
         "owner": 0,
@@ -687,6 +689,7 @@ package PortDirectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "plain",
         "notationRole": "usage",
         "owner": 0,
@@ -710,6 +713,7 @@ package PortDirectionExample {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "inbound",
         "notationRole": "usage",
         "owner": 0,
@@ -733,6 +737,7 @@ package PortDirectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "mirrored",
         "notationRole": "usage",
         "owner": 0,
@@ -756,6 +761,7 @@ package PortDirectionExample {
         "direction": "out",
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "outbound",
         "notationRole": "usage",
         "owner": 0,

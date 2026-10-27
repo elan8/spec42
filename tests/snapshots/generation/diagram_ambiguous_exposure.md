@@ -157,7 +157,7 @@ package AmbiguousExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:e7dffc44ac91aad558ec9f04b32d71cdeee0a86806ab6b62ee9f77d7a98598d3",
   "documents": [
     {

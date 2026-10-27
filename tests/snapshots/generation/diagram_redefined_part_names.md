@@ -539,7 +539,7 @@ package RedefinedParts {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:4c3a4bc8b500d25fd543e1f3caa563e3978aadd3f930fc4b29cf13dcfd712e41",
   "documents": [
     {
@@ -982,6 +982,7 @@ package RedefinedParts {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "System",
         "notationRole": "definition",
         "owner": null,
@@ -999,6 +1000,7 @@ package RedefinedParts {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1030,6 +1032,7 @@ package RedefinedParts {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "specialized",
         "notationRole": "usage",
         "owner": 0,
@@ -1053,6 +1056,7 @@ package RedefinedParts {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "component",
         "notationRole": "usage",
         "owner": 2,
@@ -1078,6 +1082,7 @@ package RedefinedParts {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "further",
         "notationRole": "usage",
         "owner": 0,
@@ -1101,6 +1106,7 @@ package RedefinedParts {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "component",
         "notationRole": "usage",
         "owner": 4,
@@ -1126,6 +1132,7 @@ package RedefinedParts {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "renamed",
         "notationRole": "usage",
         "owner": 0,
@@ -1149,6 +1156,7 @@ package RedefinedParts {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "replacement",
         "notationRole": "usage",
         "owner": 6,

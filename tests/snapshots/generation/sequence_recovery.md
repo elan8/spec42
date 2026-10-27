@@ -281,7 +281,7 @@ package Repro {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:d719e0c4408a57815fbea7fcb113f229f9702cbd413ea7c8be8e46f3bcb205c2",
   "documents": [
     {
@@ -599,6 +599,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceDefinition",
+        "multiplicity": null,
         "name": "Interaction",
         "notationRole": "definition",
         "owner": null,
@@ -616,6 +617,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "One",
         "notationRole": "usage",
         "owner": 0,
@@ -633,6 +635,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
@@ -650,6 +653,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
@@ -667,6 +671,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
@@ -684,6 +689,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 4,
@@ -701,6 +707,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "A",
         "notationRole": "usage",
         "owner": 0,
@@ -718,6 +725,7 @@ package Repro {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "B",
         "notationRole": "usage",
         "owner": 0,

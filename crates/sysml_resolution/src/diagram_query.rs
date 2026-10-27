@@ -123,6 +123,9 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceLocation,
     pub compartments: Box<[DiagramCompartment]>,
+    /// The authored multiplicity of this element's declaration (`joints : Motor[6]`), which its
+    /// label shows. `Absent` when no `[...]` was written.
+    pub multiplicity: crate::MultiplicityFacts,
     /// The authored direction (`in` / `out` / `inout`) of a port or of a directed feature such
     /// as a parameter of an action. `None` for an element with no authored direction; a
     /// renderer must not derive a side from this element's name or its owner's when it is
@@ -808,6 +811,13 @@ impl PublishedResolution {
                 {
                     continue;
                 }
+                // Nor is it a node of any other view: a usage's multiplicity (`joints : Motor[6]`)
+                // and a KerML expression, with the result features beneath them, are parts of a
+                // declaration that its own notation shows (SysML 8.2.3.6 `UsageDeclaration`). A
+                // SysML usage that is an expression -- a calculation or a constraint -- is a node.
+                if is_declaration_structure(child.kind) {
+                    continue;
+                }
                 if !self.diagram_candidate_selected(view, child.identity, &mut reasons) {
                     continue;
                 }
@@ -1006,6 +1016,7 @@ impl PublishedResolution {
                     owner: owner.clone(),
                     source: entry.location,
                     compartments: Box::default(),
+                    multiplicity: self.model.symbol_multiplicity(entry.identity),
                     direction,
                     conjugated,
                     state_subaction: self.model.state_subaction_kind(entry.identity),
@@ -1735,6 +1746,14 @@ impl PublishedResolution {
         }
         entries
     }
+}
+
+/// KerML structure that lowering adds to a declaration and that no view draws as a node: a
+/// multiplicity and its bounds, and an expression that is not a SysML usage.
+fn is_declaration_structure(kind: ElementKind) -> bool {
+    !kind.conforms_to(ElementKind::Usage)
+        && (kind.conforms_to(ElementKind::Multiplicity)
+            || kind.conforms_to(ElementKind::Expression))
 }
 
 fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind) -> bool {
