@@ -296,7 +296,7 @@ package Membership {
 ~~~json
 {
   "schemaVersion": 7,
-  "modelDigest": "blake3:78ae781d420e1857045674551253b6621ac8c3b5a71bb6b1af66061010ec83ae",
+  "modelDigest": "blake3:05294aa9e0cb81c065abcf2193f7e31eaa31253ac960ccfa10dd5f0334e4bd03",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_reference_membership.md",

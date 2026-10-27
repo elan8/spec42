@@ -11288,7 +11288,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 7,
-  "modelDigest": "blake3:7c71e2f7850f62f5c70a3a04711c0aead01976dcad508adf409271ad15585243",
+  "modelDigest": "blake3:f37c58fdc3f284e7199fd5f66c36af8f42aee6ecf13078bb32b98713dc2a9d17",
   "documents": [
     {
       "uri": "memory://snapshot/examples/webshop/Views.sysml",

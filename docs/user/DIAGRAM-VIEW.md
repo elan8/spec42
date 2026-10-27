@@ -67,3 +67,39 @@ Spec42 projects the standard SysML view kinds — General, Interconnection, Acti
 Transition, Sequence, Browser, Grid, and (partially) Geometry. Where a view's typed projection is
 still incomplete the panel reports the typed reason rather than guessing. Coverage is tracked in
 the [conformance matrix](../reference/CONFORMANCE-MATRIX.md).
+
+## Action flow notation
+
+Action inputs and outputs appear as small squares on the action boundary, including inherited
+parameters. These are action parameters, rather than structural ports (`port` usages). Input
+parameters appear on the left and output parameters on the right; item flows connect their squares.
+This follows SysML 2.0 §8.2.3.17.
+
+The `then` shorthand follows the language's lexical source rule (§7.17.4). For example:
+
+```sysml
+action def Process {
+    action a;
+    action b;
+    action c;
+    first a;
+    then b;
+    then c;
+}
+```
+
+Both successions start at `a`: `a → b` and `a → c`. A succession does not become the
+source of the next succession. To express a chain, write `first a then b; first b then c;`,
+or introduce the actions inline:
+
+```sysml
+action def Process {
+    first start;
+    then action a;
+    then action b;
+    then action c;
+}
+```
+
+Keywords are lowercase. A loop can be named with its action prefix, for example
+`action iteration for x : Integer in (1, 2, 3) { action visit; }`.
