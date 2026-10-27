@@ -10,9 +10,10 @@ pub use diagnostics::{GeneratorDiagnostic, GeneratorDiagnosticLevel};
 pub use model::{
     DerivationEndpointSummary, DerivationRelationshipSummary, ElementDetail, ElementSummary,
     GeneratorModelView, ModelQueryError, MultiplicitySummary, QueryLimits, RelationshipSummary,
-    RequirementUsageTypingSummary, RequirementVerificationSummary, SatisfyEndpointSummary,
-    SatisfyPolaritySummary, SatisfyRelationshipSummary, SourceRange, TypingProvenanceSummary,
-    VerificationOutcomeSummary, VerificationRequirementSummary, GENERATOR_SEMANTIC_API_VERSION,
+    RelationshipTargetSummary, RequirementUsageTypingSummary, RequirementVerificationSummary,
+    SatisfyEndpointSummary, SatisfyPolaritySummary, SatisfyRelationshipSummary, SourceRange,
+    TypingProvenanceSummary, VerificationOutcomeSummary, VerificationRequirementSummary,
+    GENERATOR_SEMANTIC_API_VERSION,
 };
 pub type GeneratorPublicationCompleteness = sysml_query::resolved_slice::PublicationCompleteness;
 pub use path::{
