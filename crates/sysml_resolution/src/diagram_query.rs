@@ -443,6 +443,24 @@ pub struct DiagramViewProjection {
     pub edges: Box<[DiagramEdge]>,
     pub scene: DiagramScene,
     pub incomplete_reasons: Box<[DiagramIncompleteReason]>,
+    /// Port families of an interconnection view's connectors; empty for other view kinds.
+    pub port_families: Box<[DiagramPortFamily]>,
+}
+
+/// Connectors whose ports belong to one family of related port definitions.
+///
+/// A connector's port type is the most specific port definition every end's typing specializes
+/// (reflexively, conjugation ignored, standard-library definitions excluded). Port types related
+/// by specialization within one view form a family. A connector without such a type (unrelated
+/// or untyped ends, ends that are not ports) belongs to no family.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DiagramPortFamily {
+    /// The family's most general port types, which name it.
+    pub general: Box<[SymbolId]>,
+    /// Every connector port type in the family, in qualified-name order.
+    pub types: Box<[SymbolId]>,
+    /// The connector elements in the family, in occurrence order.
+    pub connectors: Box<[DiagramOccurrenceIdentity]>,
 }
 
 impl PublishedResolution {
@@ -1621,6 +1639,11 @@ impl PublishedResolution {
         if view_entry.kind == DiagramViewKind::Geometry && !elements.is_empty() {
             reasons.insert(DiagramIncompleteReason::GeometryFactsUnavailable);
         }
+        let port_families = if view_entry.kind == DiagramViewKind::Interconnection {
+            self.interconnection_port_families(&elements, &edges)
+        } else {
+            Box::default()
+        };
         self.model
             .query_outcome(QueryAnswer::Resolved(DiagramViewProjection {
                 view: view_entry,
@@ -1633,7 +1656,185 @@ impl PublishedResolution {
                 edges: edges.into_boxed_slice(),
                 scene,
                 incomplete_reasons: reasons.into_iter().collect::<Vec<_>>().into_boxed_slice(),
+                port_families,
             }))
+    }
+
+    /// The port families of an interconnection view's connector edges; see [`DiagramPortFamily`].
+    fn interconnection_port_families(
+        &self,
+        elements: &[DiagramElement],
+        edges: &[DiagramEdge],
+    ) -> Box<[DiagramPortFamily]> {
+        // Port definitions a family may be named by: everything but the standard library, whose
+        // `Ports::Port` every port definition specializes.
+        let port_definitions: BTreeSet<SymbolId> = [
+            ElementSource::Workspace,
+            ElementSource::Library,
+            ElementSource::External,
+        ]
+        .into_iter()
+        .flat_map(|source| {
+            resolved_values(self.search_elements(ElementSearch {
+                kind: ElementKind::PortDefinition,
+                source,
+            }))
+            .into_vec()
+        })
+        .map(|entry| entry.identity)
+        .collect();
+        let mut generals_cache: BTreeMap<SymbolId, BTreeSet<SymbolId>> = BTreeMap::new();
+        let mut generals = |symbol: SymbolId| -> BTreeSet<SymbolId> {
+            generals_cache
+                .entry(symbol)
+                .or_insert_with(|| {
+                    std::iter::once(symbol)
+                        .chain(
+                            resolved_values(self.all_supertypes(
+                                symbol,
+                                crate::SpecializationScope::Subclassification,
+                            ))
+                            .iter()
+                            .copied(),
+                        )
+                        .filter(|candidate| port_definitions.contains(candidate))
+                        .collect()
+                })
+                .clone()
+        };
+        let by_occurrence: BTreeMap<&DiagramOccurrenceIdentity, &DiagramElement> = elements
+            .iter()
+            .map(|element| (&element.occurrence_id, element))
+            .collect();
+        // The port definitions each end of a connector element specializes, or `None` when an end
+        // is not a port with resolved typing.
+        let mut ends: BTreeMap<u32, Option<Vec<BTreeSet<SymbolId>>>> = BTreeMap::new();
+        for edge in edges {
+            if edge.kind != DiagramEdgeKind::Connector {
+                continue;
+            }
+            let entry = ends.entry(edge.origin).or_insert_with(|| Some(Vec::new()));
+            for occurrence in [&edge.source, &edge.target] {
+                let end = by_occurrence.get(occurrence).and_then(|element| {
+                    match (&element.kind, &element.typing) {
+                        (ElementKind::PortUsage, DiagramElementTyping::Resolved(types))
+                            if !types.is_empty() =>
+                        {
+                            Some(types.iter().flat_map(|ty| generals(*ty)).collect())
+                        }
+                        _ => None,
+                    }
+                });
+                match (entry.as_mut(), end) {
+                    (Some(collected), Some(end)) => collected.push(end),
+                    _ => *entry = None,
+                }
+            }
+        }
+        // Each connector's most specific common port types.
+        let mut connector_types: BTreeMap<u32, BTreeSet<SymbolId>> = BTreeMap::new();
+        for (origin, collected) in ends {
+            let Some(collected) = collected else { continue };
+            let Some((first, rest)) = collected.split_first() else {
+                continue;
+            };
+            let common: BTreeSet<SymbolId> = first
+                .iter()
+                .copied()
+                .filter(|ty| rest.iter().all(|end| end.contains(ty)))
+                .collect();
+            let specific: BTreeSet<SymbolId> = common
+                .iter()
+                .copied()
+                .filter(|general| {
+                    !common
+                        .iter()
+                        .any(|other| other != general && generals(*other).contains(general))
+                })
+                .collect();
+            if !specific.is_empty() {
+                connector_types.insert(origin, specific);
+            }
+        }
+        // Families: connector port types joined by a shared connector or by specialization.
+        let types: Vec<SymbolId> = connector_types
+            .values()
+            .flatten()
+            .copied()
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect();
+        let index: BTreeMap<SymbolId, usize> =
+            types.iter().enumerate().map(|(i, ty)| (*ty, i)).collect();
+        let mut parent: Vec<usize> = (0..types.len()).collect();
+        fn find(parent: &mut [usize], mut node: usize) -> usize {
+            while parent[node] != node {
+                parent[node] = parent[parent[node]];
+                node = parent[node];
+            }
+            node
+        }
+        let union = |parent: &mut Vec<usize>, a: usize, b: usize| {
+            let (a, b) = (find(parent, a), find(parent, b));
+            if a != b {
+                parent[a.max(b)] = a.min(b);
+            }
+        };
+        for set in connector_types.values() {
+            let mut members = set.iter().map(|ty| index[ty]);
+            if let Some(first) = members.next() {
+                for other in members {
+                    union(&mut parent, first, other);
+                }
+            }
+        }
+        for (i, specific) in types.iter().enumerate() {
+            for (j, general) in types.iter().enumerate() {
+                if i != j && generals(*specific).contains(general) {
+                    union(&mut parent, i, j);
+                }
+            }
+        }
+        let name = |symbol: SymbolId| self.qualified_name(symbol).unwrap_or_default().to_owned();
+        let mut families: BTreeMap<usize, (BTreeSet<SymbolId>, Vec<&DiagramOccurrenceIdentity>)> =
+            BTreeMap::new();
+        for (origin, set) in &connector_types {
+            let root = find(&mut parent, index[set.iter().next().expect("non-empty")]);
+            let family = families.entry(root).or_default();
+            family.0.extend(set.iter().copied());
+            family.1.push(&elements[*origin as usize].occurrence_id);
+        }
+        let mut families: Vec<DiagramPortFamily> = families
+            .into_values()
+            .map(|(members, mut connectors)| {
+                let mut types: Vec<SymbolId> = members.iter().copied().collect();
+                types.sort_by_cached_key(|ty| (name(*ty), *ty));
+                let general: Vec<SymbolId> = types
+                    .iter()
+                    .copied()
+                    .filter(|candidate| {
+                        !types
+                            .iter()
+                            .any(|other| other != candidate && generals(*candidate).contains(other))
+                    })
+                    .collect();
+                connectors.sort();
+                connectors.dedup();
+                DiagramPortFamily {
+                    general: general.into_boxed_slice(),
+                    types: types.into_boxed_slice(),
+                    connectors: connectors.into_iter().cloned().collect(),
+                }
+            })
+            .collect();
+        families.sort_by_cached_key(|family| {
+            family
+                .general
+                .iter()
+                .map(|ty| name(*ty))
+                .collect::<Vec<_>>()
+        });
+        families.into_boxed_slice()
     }
 
     fn diagram_candidate_selected(

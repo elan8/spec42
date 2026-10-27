@@ -2,7 +2,7 @@
 //! `interconnectionEdgeLabelAnchor` in `render/drawing.ts` (the General-View branches are already
 //! ported in `edges.rs`).
 
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 
 use crate::graph_normalization::normalize_edge_kind;
 use crate::hit_target::{mark_visible_edge, path_edge_hit_target};
@@ -419,6 +419,30 @@ fn truncate(value: &str, max: usize) -> String {
 }
 
 /// Port of the Interconnection-View branch of `drawEdges`.
+/// Connector colours for port families, in family order. The first six are the original
+/// connector colours; families beyond the palette repeat colours, which the legend states.
+const PORT_FAMILY_COLORS_LIGHT: [&str; 12] = [
+    "#1d4ed8", "#b45309", "#0f766e", "#7e22ce", "#be123c", "#4d7c0f", "#0e7490", "#c2410c",
+    "#a21caf", "#854d0e", "#4338ca", "#be185d",
+];
+const PORT_FAMILY_COLORS_DARK: [&str; 12] = [
+    "#60a5fa", "#fbbf24", "#5eead4", "#c084fc", "#fb7185", "#a3e635", "#67e8f9", "#fb923c",
+    "#f0abfc", "#d6b38a", "#a5b4fc", "#f9a8d4",
+];
+
+/// The connector colour of port family `family` (its index in the view's family order).
+pub fn port_family_color(theme: &Theme, family: usize) -> &'static str {
+    let palette = if theme.color_scheme == "dark" {
+        &PORT_FAMILY_COLORS_DARK
+    } else {
+        &PORT_FAMILY_COLORS_LIGHT
+    };
+    palette[family % palette.len()]
+}
+
+/// Number of distinct port family colours before they repeat.
+pub const PORT_FAMILY_COLOR_COUNT: usize = PORT_FAMILY_COLORS_LIGHT.len();
+
 pub fn draw_ibd_edges(
     edges: &[LaidOutEdge],
     nodes_by_id: &HashMap<&str, &LaidOutNode>,
@@ -431,13 +455,6 @@ pub fn draw_ibd_edges(
     let all_routes: Vec<Vec<Point>> = edges
         .iter()
         .map(|edge| route_points_for_edge(edge, &layout_edges_by_id))
-        .collect();
-    let port_types: Vec<String> = edges
-        .iter()
-        .map(|edge| attr_text(&edge.attributes, "portTypeIdentity"))
-        .filter(|identity: &String| !identity.is_empty())
-        .collect::<BTreeSet<_>>()
-        .into_iter()
         .collect();
     let mut typed_labels = HashMap::new();
     // Port labels are painted after connectors, in a separate overlay. Reserve their actual
@@ -548,20 +565,14 @@ pub fn draw_ibd_edges(
         let display_label = ibd_edge_display_label(edge, &edge_kind);
         let typed_projection =
             edge.attributes.get("typedProjection") == Some(&serde_json::Value::Bool(true));
-        let type_identity = attr_text(&edge.attributes, "portTypeIdentity");
-        let palette_index = port_types.binary_search(&type_identity).ok();
-        let palette: &[&str; 6] = if theme.color_scheme == "dark" {
-            &[
-                "#60a5fa", "#fbbf24", "#5eead4", "#c084fc", "#fb7185", "#a3e635",
-            ]
-        } else {
-            &[
-                "#1d4ed8", "#b45309", "#0f766e", "#7e22ce", "#be123c", "#4d7c0f",
-            ]
-        };
+        let port_family = edge
+            .attributes
+            .get("portFamily")
+            .and_then(serde_json::Value::as_u64)
+            .map(|family| family as usize);
         let stroke = if typed_projection && edge_kind == "connection" {
-            palette_index.map_or(stroke_color_for_edge(theme), |index| {
-                palette[index % palette.len()]
+            port_family.map_or(stroke_color_for_edge(theme), |family| {
+                port_family_color(theme, family)
             })
         } else {
             stroke_color_for_edge(theme)
@@ -591,8 +602,11 @@ pub fn draw_ibd_edges(
             .style("stroke-width", n(stroke_width))
             .style("opacity", "0.9");
         path_el = mark_visible_edge(path_el, &edge.id, &n(stroke_width));
-        if typed_projection && !type_identity.is_empty() {
-            path_el = path_el.attr("data-port-type", type_identity);
+        if let (true, Some(family)) = (typed_projection, port_family) {
+            path_el = path_el.attr("data-port-family", family.to_string()).attr(
+                "data-port-type",
+                attr_text(&edge.attributes, "portFamilyLabel"),
+            );
         }
         if typed_projection && !display_label.is_empty() {
             path_el = path_el.attr(

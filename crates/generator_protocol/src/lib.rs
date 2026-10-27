@@ -1092,6 +1092,18 @@ pub struct DiagramGridCell {
     pub kind: DiagramEdgeKind,
 }
 
+/// Connectors whose ports belong to one family of related port definitions.
+///
+/// A connector's port type is the most specific non-standard-library port definition every end's
+/// typing specializes, conjugation ignored; port types related by specialization within one view
+/// form a family, named by its most general members.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramPortFamily {
+    pub general: Vec<DiagramElementType>,
+    pub types: Vec<DiagramElementType>,
+    pub connectors: Vec<DiagramOccurrenceIdentity>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum DiagramViewMetadata {
     General {
@@ -1101,6 +1113,9 @@ pub enum DiagramViewMetadata {
         parts: Vec<DiagramOccurrenceIdentity>,
         ports: Vec<DiagramOccurrenceIdentity>,
         connectors: Vec<DiagramOccurrenceIdentity>,
+        /// Connectors grouped by the family of related port definitions their ends share, in
+        /// family-name order. A connector in no family has no common port type.
+        port_families: Vec<DiagramPortFamily>,
     },
     ActionFlow {
         actions: Vec<DiagramOccurrenceIdentity>,
@@ -1397,7 +1412,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x12aa_c6bc_67cf_10ec,
+            SCHEMA_FINGERPRINT, 0x1533_417b_1fb9_2379,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1405,7 +1420,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xe91f_3a3f_9afd_65a0,
+            COMPATIBILITY_TOKEN, 0x6268_1aa4_771d_cc84,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

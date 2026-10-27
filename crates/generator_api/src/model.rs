@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{
     DiagramBrowserMembers, DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind,
-    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementType,
     DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership, DiagramNotationRole,
-    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramOccurrenceIdentity, DiagramPortFamily, DiagramRelationship, DiagramRelationshipEndpoint,
     DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
     DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
     ElementIdentity, ProjectionCompleteness, ProjectionFeature, SequenceEndpoint, SequenceMessage,
@@ -1354,6 +1354,40 @@ impl GeneratorModelView {
                 })
             })
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        let element_type = |target: &SymbolId| -> Result<DiagramElementType, ModelQueryError> {
+            let target_entry = self.by_identity.get(target).ok_or_else(|| {
+                ModelQueryError::Unresolved(
+                    "diagram port family type is absent from the publication".into(),
+                )
+            })?;
+            Ok(DiagramElementType {
+                reference: self.diagram_reference(*target)?,
+                label: display_label(&self.model, &target_entry.entry),
+            })
+        };
+        let port_families = projection
+            .port_families
+            .iter()
+            .map(|family| {
+                Ok(DiagramPortFamily {
+                    general: family
+                        .general
+                        .iter()
+                        .map(element_type)
+                        .collect::<Result<_, _>>()?,
+                    types: family
+                        .types
+                        .iter()
+                        .map(element_type)
+                        .collect::<Result<_, _>>()?,
+                    connectors: family
+                        .connectors
+                        .iter()
+                        .map(|occurrence| self.diagram_occurrence(occurrence))
+                        .collect::<Result<_, _>>()?,
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
         let metadata = diagram_metadata(
             view.kind,
             &roots,
@@ -1362,6 +1396,7 @@ impl GeneratorModelView {
             &edges,
             &scene,
             browser_rows,
+            port_families,
         );
         Ok(DiagramViewProjection {
             schema_version: 1,
@@ -2065,6 +2100,7 @@ fn relationship_provenance(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn diagram_metadata(
     kind: DiagramViewKind,
     roots: &[DiagramOccurrenceIdentity],
@@ -2073,6 +2109,7 @@ fn diagram_metadata(
     edges: &[DiagramEdge],
     scene: &DiagramScene,
     browser_rows: Vec<DiagramBrowserRow>,
+    port_families: Vec<DiagramPortFamily>,
 ) -> DiagramViewMetadata {
     let ids = |classes: &[Metaclass]| {
         elements
@@ -2097,6 +2134,7 @@ fn diagram_metadata(
                 Metaclass::ConnectionUsage,
                 Metaclass::BindingConnectorUsage,
             ]),
+            port_families,
         },
         DiagramViewKind::ActionFlowView => {
             // The semantic vocabulary names these kinds as SysML does (`ForkNode`,
