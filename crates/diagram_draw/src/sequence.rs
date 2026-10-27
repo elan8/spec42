@@ -178,11 +178,17 @@ pub fn render_sequence_view(
         .get("projectionLimitations")
         .map(|value| as_array(Some(value)))
         .unwrap_or(&[]);
-    let limitation_text = limitations
+    // Distinct reasons can share a code (two unresolved relationship kinds); name each code once.
+    let mut limitation_codes = Vec::<&str>::new();
+    for code in limitations
         .iter()
         .filter_map(|reason| get(reason, "code").and_then(Value::as_str))
-        .collect::<Vec<_>>()
-        .join(", ");
+    {
+        if !limitation_codes.contains(&code) {
+            limitation_codes.push(code);
+        }
+    }
+    let limitation_text = limitation_codes.join(", ");
     if lifelines.is_empty() || messages.is_empty() {
         let text = if !limitations.is_empty() {
             format!("Sequence projection incomplete: {limitation_text}. Inspect the projection details.")

@@ -264,6 +264,20 @@ function showLimitations(product?: DiagramProduct, viewHandle?: string): void {
 
 async function render(message: RenderMessage): Promise<void> {
   const { generation, signal } = beginRender();
+  try {
+    await renderCurrent(message, generation, signal);
+  } catch (error) {
+    // A render that throws (a malformed product, a failed layout) must not leave the previous
+    // view's SVG on the canvas looking current. A superseded render's failure is irrelevant.
+    if (!isCurrentRender(generation, signal)) return;
+    clearRenderState();
+    showLimitations();
+    const reason = error instanceof Error ? error.message : String(error);
+    canvas.replaceChildren(withText(`The view could not be rendered: ${reason}`));
+  }
+}
+
+async function renderCurrent(message: RenderMessage, generation: number, signal: AbortSignal): Promise<void> {
   populateSelect(message.views, message.selectedHandle);
   setStatus(message.header, message.error);
 

@@ -603,17 +603,16 @@ impl PublishedResolution {
             .diagram_entries_for(ElementSource::Workspace)
             .into_keys()
             .collect::<BTreeSet<_>>();
+        // Non-convergence is a property of the whole solve, so every view inherits it. Parser
+        // recovery and unsupported syntax are attributed to their documents and reach a view only
+        // through the documents it draws from (below), so an unrelated broken file does not mark
+        // every view incomplete.
         let mut reasons = self
             .model
             .completeness()
             .obstacles()
-            .map(|obstacle| match obstacle {
-                crate::PublicationObstacle::ParseRecovery => DiagramIncompleteReason::ParseRecovery,
-                crate::PublicationObstacle::UnsupportedSyntax => {
-                    DiagramIncompleteReason::UnsupportedSyntax
-                }
-                crate::PublicationObstacle::NonConverged => DiagramIncompleteReason::NonConverged,
-            })
+            .filter(|obstacle| matches!(obstacle, crate::PublicationObstacle::NonConverged))
+            .map(publication_obstacle_reason)
             .collect::<BTreeSet<_>>();
         let exposed = match self.view_exposed_elements(view).answer {
             QueryAnswer::Resolved(exposed) => exposed,
@@ -1598,6 +1597,18 @@ impl PublishedResolution {
                 edge_scene_suffix(&edge.kind)
             )
         });
+        // The view's own declaration and every projected element name the documents this view
+        // draws from; their recovery or unsupported constructs may have dropped content from it.
+        let documents = std::iter::once(view_entry.source.document)
+            .chain(elements.iter().map(|element| element.source.document))
+            .collect::<BTreeSet<_>>();
+        for document in documents {
+            reasons.extend(
+                self.model
+                    .document_obstacles(document)
+                    .map(publication_obstacle_reason),
+            );
+        }
         let scene = diagram_scene(
             view_entry.kind,
             &projected_roots,
@@ -1766,6 +1777,14 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
 
 /// The boundary form of one element reference.
 ///
+fn publication_obstacle_reason(obstacle: crate::PublicationObstacle) -> DiagramIncompleteReason {
+    match obstacle {
+        crate::PublicationObstacle::ParseRecovery => DiagramIncompleteReason::ParseRecovery,
+        crate::PublicationObstacle::UnsupportedSyntax => DiagramIncompleteReason::UnsupportedSyntax,
+        crate::PublicationObstacle::NonConverged => DiagramIncompleteReason::NonConverged,
+    }
+}
+
 /// `document` is the identity the caller materialised from `entry.location.document`: the
 /// generator protocol is a process boundary, so the URI is spelled out here rather than carried
 /// as a publication-scoped handle no other process could resolve.
@@ -2123,10 +2142,44 @@ fn sequence_scene(
         .map(|(index, element)| (index as u32, element))
         .collect::<Vec<_>>();
 
+    // A flow the scene cannot place is omitted scenario content only when it sits in nested
+    // behaviour (a sub-scenario or structured action). A flow inside a lifeline's own structure,
+    // or inside any definition, is that participant's internals, not a message of this
+    // interaction, so it is not reported.
+    let by_occurrence = elements
+        .iter()
+        .map(|element| (&element.occurrence_id, element))
+        .collect::<BTreeMap<_, _>>();
+    let in_structure = |element: &DiagramElement| {
+        let mut owner = element.owner.as_ref();
+        while let Some(current) = owner {
+            if roots.contains(&current.semantic_id()) {
+                return false;
+            }
+            let Some(entry) = by_occurrence.get(current) else {
+                return false;
+            };
+            if lifeline_set.contains(current)
+                || [
+                    ElementKind::Definition,
+                    ElementKind::PartUsage,
+                    ElementKind::PortUsage,
+                    ElementKind::ItemUsage,
+                ]
+                .into_iter()
+                .any(|kind| entry.kind.conforms_to(kind))
+            {
+                return true;
+            }
+            owner = entry.owner.as_ref();
+        }
+        false
+    };
     let omitted = elements
         .iter()
         .filter(|element| element.kind.conforms_to(ElementKind::FlowConnectionUsage))
         .filter(|element| !is_direct_member(element))
+        .filter(|element| !in_structure(element))
         .map(|element| element.occurrence_id.clone())
         .collect::<BTreeSet<_>>();
     if !omitted.is_empty() {
@@ -2217,15 +2270,27 @@ fn sequence_scene(
             .and_then(|relationship| resolved_target(&relationship.target))
             .cloned()
     };
+    // Only event occurrences order messages. A lifeline, or a port or part of one, is structure
+    // that every message to it shares; treating it as an event would order repeated or reply
+    // messages through it into a false cycle.
+    let kind_by_occurrence = elements
+        .iter()
+        .map(|element| (&element.occurrence_id, element.kind))
+        .collect::<BTreeMap<_, _>>();
+    let is_event = |occurrence: &DiagramOccurrenceIdentity| {
+        !lifeline_set.contains(occurrence)
+            && !matches!(
+                kind_by_occurrence.get(occurrence),
+                Some(ElementKind::PartUsage | ElementKind::PortUsage | ElementKind::ItemUsage)
+            )
+    };
     let message_events = messages
         .iter()
         .map(|(index, message)| {
             (
                 *index,
-                event_end(message, DiagramRelationshipKind::FlowSource)
-                    .filter(|event| !lifeline_set.contains(event)),
-                event_end(message, DiagramRelationshipKind::FlowTarget)
-                    .filter(|event| !lifeline_set.contains(event)),
+                event_end(message, DiagramRelationshipKind::FlowSource).filter(is_event),
+                event_end(message, DiagramRelationshipKind::FlowTarget).filter(is_event),
             )
         })
         .collect::<Vec<_>>();
@@ -2250,46 +2315,57 @@ fn sequence_scene(
             .insert(target.clone());
     }
     // A row is a deterministic display position respecting known precedence, not a claim
-    // that unrelated messages have an authored temporal order. Compare sending events only:
-    // sharing a send/receive event does not make the two messages precede one another.
+    // that unrelated messages have an authored temporal order. A message precedes another when
+    // one of its events (send or receive) reaches one of the other's events. An event the two
+    // share carries no order between them, so a path may neither start nor end at one.
     let mut evidence = precedence
         .iter()
         .map(|pair| (*pair, None))
         .collect::<BTreeMap<_, Option<(DiagramOccurrenceIdentity, DiagramOccurrenceIdentity)>>>();
-    let mut messages_by_source = BTreeMap::<_, Vec<_>>::new();
-    for (index, source, _) in &message_events {
-        if let Some(source) = source {
-            messages_by_source.entry(source).or_default().push(*index);
+    let events_of = |source: &Option<DiagramOccurrenceIdentity>,
+                     target: &Option<DiagramOccurrenceIdentity>| {
+        [source.as_ref(), target.as_ref()]
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+    };
+    let message_event_sets = message_events
+        .iter()
+        .map(|(index, source, target)| (*index, events_of(source, target)))
+        .collect::<BTreeMap<_, _>>();
+    let mut messages_by_event = BTreeMap::<&DiagramOccurrenceIdentity, Vec<u32>>::new();
+    for (index, events) in &message_event_sets {
+        for event in events {
+            messages_by_event.entry(event).or_default().push(*index);
         }
     }
-    let events = message_events
-        .iter()
-        .flat_map(|(_, source, target)| [source.as_ref(), target.as_ref()].into_iter().flatten())
-        .collect::<BTreeSet<_>>();
     let mut cyclic_events = BTreeSet::new();
     // Visit each distinct endpoint once and discard its search tree after use, rather than
     // retaining a potentially graph-sized predecessor map for every event.
-    for event in events {
-        let reachable = directed_sequence_parents(&event_successors, event);
-        if reachable.contains_key(event) {
-            cyclic_events.insert(event);
+    for (event, indexes) in &messages_by_event {
+        let reachable = directed_sequence_parents(&event_successors, *event);
+        if reachable.contains_key(*event) {
+            cyclic_events.insert(*event);
         }
-        let Some(indexes) = messages_by_source.get(event) else {
-            continue;
-        };
-        for (next, next_source, _) in &message_events {
-            let Some(next_source) = next_source else {
-                continue;
-            };
-            if event == next_source || !reachable.contains_key(next_source) {
+        for (next, next_events) in &message_event_sets {
+            if next_events.contains(*event) {
                 continue;
             }
-            for index in indexes {
-                let pair = (*index, *next);
-                precedence.insert(pair);
-                evidence
-                    .entry(pair)
-                    .or_insert_with(|| Some((event.clone(), next_source.clone())));
+            for next_event in next_events {
+                if !reachable.contains_key(next_event) {
+                    continue;
+                }
+                for index in indexes {
+                    if index == next || message_event_sets[index].contains(next_event) {
+                        continue;
+                    }
+                    let pair = (*index, *next);
+                    precedence.insert(pair);
+                    evidence
+                        .entry(pair)
+                        .or_insert_with(|| Some(((*event).clone(), next_event.clone())));
+                }
             }
         }
     }

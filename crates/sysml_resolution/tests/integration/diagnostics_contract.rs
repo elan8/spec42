@@ -544,6 +544,65 @@ fn value_assignment_meta_cast_with_unresolvable_base_and_metaclass_stays_unresol
 }
 
 #[test]
+fn a_view_reports_parse_recovery_only_from_the_documents_it_draws_from() {
+    let request = BuildRequest::new(
+        vec![
+            SourceInput::new(
+                "memory://standard-views.sysml",
+                "standard library package StandardViewDefinitions { view def GeneralView; }"
+                    .to_owned(),
+                SourceKind::StandardLibrary,
+            ),
+            SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { private import StandardViewDefinitions::*; ",
+                    "part def Board; part board : Board; ",
+                    "view clean : GeneralView { expose board; } ",
+                    "view mixed : GeneralView { expose board; expose Other::wheel; } }",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            ),
+            SourceInput::new(
+                "memory://other.sysml",
+                "package Other { part wheel; part broken : ; }".to_owned(),
+                SourceKind::Workspace,
+            ),
+        ],
+        ConstructionSchedule::Sequential,
+        "contract-v1",
+    )
+    .unwrap();
+    let published = build(request).unwrap();
+    assert!(published
+        .completeness()
+        .contains(PublicationObstacle::ParseRecovery));
+    let catalog = match published.diagram_view_catalog().answer {
+        QueryAnswer::Resolved(catalog) => catalog,
+        other => panic!("expected diagram catalog, got {other:?}"),
+    };
+    let reasons = |name: &str| {
+        let view = catalog
+            .iter()
+            .find(|view| published.qualified_name(view.semantic_id) == Some(name))
+            .unwrap();
+        match published.diagram_view(view.semantic_id).answer {
+            QueryAnswer::Resolved(projection) => projection.incomplete_reasons,
+            other => panic!("expected a projection of {name}, got {other:?}"),
+        }
+    };
+    assert!(
+        !reasons("Model::clean").contains(&DiagramIncompleteReason::ParseRecovery),
+        "a view drawing only from a clean document must not inherit another file's recovery"
+    );
+    assert!(
+        reasons("Model::mixed").contains(&DiagramIncompleteReason::ParseRecovery),
+        "a view drawing from a recovered document must say so"
+    );
+}
+
+#[test]
 fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
     let request = BuildRequest::new(
         vec![

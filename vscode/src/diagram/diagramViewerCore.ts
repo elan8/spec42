@@ -293,6 +293,24 @@ export function parseLspDiagramResult(value: unknown): LspDiagramResult {
 
 export const MAX_DIAGRAM_PRODUCT_BYTES = 16 * 1024 * 1024;
 
+/** The sequence reasons name projected nodes; their explanations index them without guards. */
+function isCompletenessReasonShape(reason: Record<string, unknown>, nodeCount: number): boolean {
+  const nodes = (value: unknown) => Array.isArray(value) && value.every((index) => indexIn(index, nodeCount));
+  switch (reason.code) {
+    case "sequence-content-omitted":
+      return nodes(reason.elements);
+    case "sequence-ordering-cycle":
+      return Array.isArray(reason.witness) && reason.witness.every((step) => {
+        if (!step || typeof step !== "object") return false;
+        const candidate = step as Record<string, unknown>;
+        return indexIn(candidate.source, nodeCount) && indexIn(candidate.target, nodeCount) &&
+          ["authored", "implied"].includes(String(candidate.provenance)) && nodes(candidate.events);
+      });
+    default:
+      return true;
+  }
+}
+
 export function parseDiagramProduct(text: string): DiagramProduct {
   const bytes = Buffer.byteLength(text, "utf8");
   if (bytes > MAX_DIAGRAM_PRODUCT_BYTES) throw new Error(oversizedProductMessage(text, bytes));
@@ -330,6 +348,9 @@ export function parseDiagramProduct(text: string): DiagramProduct {
     }
     if (candidate.exposure !== undefined && !indexIn(candidate.exposure, references.length)) {
       throw new Error("Generated diagram product has an out-of-range completeness reference.");
+    }
+    if (!isCompletenessReasonShape(candidate, (projection.nodes as unknown[]).length)) {
+      throw new Error("Generated diagram product has a malformed completeness reason.");
     }
   }
   if (!(projection.edges as unknown[]).every((edge) => isDiagramEdge(edge, references.length, sources.length, (projection.nodes as unknown[]).length)) ||

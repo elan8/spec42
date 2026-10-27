@@ -1,5 +1,6 @@
 import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../generated/diagram-product/schemaVersion";
 import * as vscode from "vscode";
+import { diagramLimitations } from "./diagramLimitations";
 import { State } from "vscode-languageclient/node";
 import type { LspClientHandles } from "../activation/lspClient";
 import {
@@ -284,8 +285,19 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       const request = message as { modelDigest?: string; viewHandle?: string };
       const artifact = this.lastArtifact;
       if (artifact && request.modelDigest === artifact.product.modelDigest && request.viewHandle === this.selectedHandle) {
-        // Reasons reference product-local node indexes; copy their complete canonical context.
-        void vscode.env.clipboard.writeText(JSON.stringify(artifact.product, null, 2));
+        // Only the limitations: each canonical reason beside its explanation and the source sites
+        // its product-local indexes name, so the copy stands alone without the whole product.
+        const product = artifact.product;
+        const details = diagramLimitations(product).map((detail, index) => ({
+          ...detail,
+          reason: product.completeness.reasons[index],
+        }));
+        void vscode.env.clipboard.writeText(JSON.stringify({
+          view: product.selectedView.name,
+          modelDigest: product.modelDigest,
+          status: product.completeness.status,
+          limitations: details,
+        }, null, 2));
       }
       return;
     }
