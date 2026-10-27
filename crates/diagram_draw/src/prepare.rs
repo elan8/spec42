@@ -2886,19 +2886,24 @@ fn prepare_typed_action_flow(
         }
         None
     };
-    // The parameters of an action: the directed features it owns, by the side they are drawn on.
+    // The parameters of an action: the directed features it owns, by the side they are drawn on,
+    // with their authored direction for the mark in their box. A port is never a parameter here:
+    // an action flow view shows no ports (SysML v2 9.2.20.2.1).
     let parameters = |action: usize, directions: &[&str]| -> Vec<Value> {
         raw_nodes
             .iter()
             .enumerate()
             .filter(|(_, node)| field(node, "owner").as_u64() == Some(action as u64))
-            .filter(|(_, node)| {
-                field(node, "direction")
-                    .as_str()
-                    .is_some_and(|direction| directions.contains(&direction))
+            .filter(|(_, node)| field(node, "metaclass").as_str() != Some("PortUsage"))
+            .filter_map(|(index, node)| {
+                let direction = field(node, "direction").as_str()?;
+                directions
+                    .contains(&direction)
+                    .then_some((index, direction, field(node, "name").as_str()?))
             })
-            .filter_map(|(index, node)| Some((index, field(node, "name").as_str()?)))
-            .map(|(index, name)| json!({ "id": format!("n:{index}"), "name": name }))
+            .map(|(index, direction, name)| {
+                json!({ "id": format!("n:{index}"), "name": name, "direction": direction })
+            })
             .collect()
     };
     // A flow runs between parameters; it is drawn between the squares of those parameters on the
