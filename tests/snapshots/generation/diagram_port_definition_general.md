@@ -113,7 +113,7 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:312c3555fb56310033b3b6494381f78a0b0bc63ee84d1ffe04609dfaf8b58965",
   "documents": [
     {
@@ -213,6 +213,7 @@ package M {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortDefinition",
+        "multiplicity": null,
         "name": "P",
         "notationRole": "definition",
         "owner": null,
@@ -230,6 +231,7 @@ package M {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConjugatedPortDefinition",
+        "multiplicity": null,
         "name": "~P",
         "notationRole": "definition",
         "owner": 0,

@@ -356,7 +356,7 @@ package SingleCycle {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:dc5d7ade19595a62e3977d0db5a7ba6a51ab114d69f7f96b5db2a085a105952c",
   "documents": [
     {
@@ -697,7 +697,19 @@ package SingleCycle {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "sequence-ordering-cycle"
+        "code": "sequence-ordering-cycle",
+        "witness": [
+          {
+            "events": [
+              8,
+              10,
+              8
+            ],
+            "provenance": "implied",
+            "source": 2,
+            "target": 2
+          }
+        ]
       }
     ]
   },
@@ -848,6 +860,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceDefinition",
+        "multiplicity": null,
         "name": "Scenario",
         "notationRole": "definition",
         "owner": null,
@@ -865,6 +878,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -882,6 +896,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "only",
         "notationRole": "usage",
         "owner": 0,
@@ -899,6 +914,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
@@ -916,6 +932,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
@@ -933,6 +950,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
@@ -950,6 +968,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 5,
@@ -975,6 +994,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 0,
@@ -998,6 +1018,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "sendEvent",
         "notationRole": "usage",
         "owner": 7,
@@ -1023,6 +1044,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "q",
         "notationRole": "usage",
         "owner": 0,
@@ -1046,6 +1068,7 @@ package SingleCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "receiveEvent",
         "notationRole": "usage",
         "owner": 9,

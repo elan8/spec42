@@ -133,7 +133,7 @@ package ActionNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:bdeae44c09645c9f77c76b87debec59d2defb3425877498a894433c717c14f18",
   "documents": [
     {

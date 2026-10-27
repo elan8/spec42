@@ -291,7 +291,7 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:e569aeba5c3fca6053e162bacbdf15c7dea35c12f164ede5a00705f3edf73402",
   "documents": [
     {
@@ -546,6 +546,7 @@ package Model {
         1,
         3
       ],
+      "portFamilies": [],
       "ports": [
         2,
         4
@@ -558,6 +559,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,
@@ -583,6 +585,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "left",
         "notationRole": "usage",
         "owner": null,
@@ -606,6 +609,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 1,
@@ -637,6 +641,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "right",
         "notationRole": "usage",
         "owner": null,
@@ -660,6 +665,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 3,

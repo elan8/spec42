@@ -144,7 +144,7 @@ package GeneralExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:ab3c1566bfe8b3eb08e0b56d3108f6a174945b6423f3c3297defa2dd92475d29",
   "documents": [
     {
@@ -250,6 +250,7 @@ package GeneralExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "System",
         "notationRole": "definition",
         "owner": null,
@@ -267,6 +268,7 @@ package GeneralExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "child",
         "notationRole": "usage",
         "owner": 0,

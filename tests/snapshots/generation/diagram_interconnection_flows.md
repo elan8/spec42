@@ -670,7 +670,7 @@ package Feed {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:63635ed37d42e43220ab166137c20ba3259d2176208db03285bfcc04ebaaa4bd",
   "documents": [
     {
@@ -1225,6 +1225,7 @@ package Feed {
         5,
         7
       ],
+      "portFamilies": [],
       "ports": [
         4,
         6,
@@ -1257,6 +1258,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "vehicle",
         "notationRole": "usage",
         "owner": null,
@@ -1274,6 +1276,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1291,6 +1294,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "topUp",
         "notationRole": "usage",
         "owner": 0,
@@ -1316,6 +1320,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "tank",
         "notationRole": "usage",
         "owner": 0,
@@ -1339,6 +1344,7 @@ package Feed {
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "outlet",
         "notationRole": "usage",
         "owner": 3,
@@ -1370,6 +1376,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "spare",
         "notationRole": "usage",
         "owner": 0,
@@ -1393,6 +1400,7 @@ package Feed {
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "outlet",
         "notationRole": "usage",
         "owner": 5,
@@ -1425,6 +1433,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "engine",
         "notationRole": "usage",
         "owner": 0,
@@ -1448,6 +1457,7 @@ package Feed {
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "inlet",
         "notationRole": "usage",
         "owner": 7,
@@ -1471,6 +1481,7 @@ package Feed {
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "reserve",
         "notationRole": "usage",
         "owner": 7,

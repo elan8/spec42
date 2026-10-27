@@ -229,7 +229,7 @@ package DirectTypingExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:d1a1f15b29bcf5a8c4bd9ed560ee2e1e54c52a7b5e234784e993498194c31198",
   "documents": [
     {
@@ -405,6 +405,7 @@ package DirectTypingExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "root",
         "notationRole": "usage",
         "owner": null,
@@ -428,6 +429,7 @@ package DirectTypingExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "typedChild",
         "notationRole": "usage",
         "owner": 0,
@@ -451,6 +453,7 @@ package DirectTypingExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "untypedChild",
         "notationRole": "usage",
         "owner": 0,

@@ -216,7 +216,7 @@ package ActionFlowExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:e7f119f63db4e414cf94da7521f94284355724111d1bc607111c83331b82a7e6",
   "documents": [
     {
@@ -436,6 +436,7 @@ package ActionFlowExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionDefinition",
+        "multiplicity": null,
         "name": "Process",
         "notationRole": "definition",
         "owner": null,
@@ -453,6 +454,7 @@ package ActionFlowExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -470,6 +472,7 @@ package ActionFlowExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "execute",
         "notationRole": "usage",
         "owner": 0,
@@ -487,6 +490,7 @@ package ActionFlowExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "prepare",
         "notationRole": "usage",
         "owner": 0,

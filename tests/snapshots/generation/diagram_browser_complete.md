@@ -168,7 +168,7 @@ package BrowserExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:93b6c8660baa39a1a05c901ae583a0b42e78919d66913a33ee7a26bb6a2880f3",
   "documents": [
     {
@@ -288,6 +288,7 @@ package BrowserExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Root",
         "notationRole": "definition",
         "owner": null,
@@ -305,6 +306,7 @@ package BrowserExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "branch",
         "notationRole": "usage",
         "owner": 0,

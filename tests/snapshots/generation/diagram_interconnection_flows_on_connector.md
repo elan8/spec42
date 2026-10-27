@@ -641,7 +641,7 @@ package Dispatch {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:de1f0cdf096e8008e40abde1add7966639e0bb4da536996fb378fc13a427a9a4",
   "documents": [
     {
@@ -1141,6 +1141,25 @@ package Dispatch {
         4,
         6
       ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1
+          ],
+          "general": [
+            {
+              "label": "DispatchPort",
+              "reference": 2
+            }
+          ],
+          "types": [
+            {
+              "label": "DispatchPort",
+              "reference": 2
+            }
+          ]
+        }
+      ],
       "ports": [
         5,
         7
@@ -1171,6 +1190,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "service",
         "notationRole": "usage",
         "owner": null,
@@ -1188,6 +1208,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1205,6 +1226,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1222,6 +1244,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1247,6 +1270,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "car",
         "notationRole": "usage",
         "owner": 0,
@@ -1270,6 +1294,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": "inout",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "group",
         "notationRole": "usage",
         "owner": 4,
@@ -1301,6 +1326,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "group",
         "notationRole": "usage",
         "owner": 0,
@@ -1324,6 +1350,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": "inout",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "car",
         "notationRole": "usage",
         "owner": 6,

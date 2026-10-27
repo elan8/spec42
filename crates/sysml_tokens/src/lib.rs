@@ -71,6 +71,14 @@ fn token_ast_type(
     best.map(|(ty, idx, _)| (ty, idx))
 }
 
+/// Whether `range` covers exactly the token at `line`/`start` of `len` characters.
+fn range_is_token(range: &SourceRange, line: u32, start: u32, len: u32) -> bool {
+    range.start_line == line
+        && range.end_line == line
+        && range.start_character == start
+        && range.end_character == start + len
+}
+
 fn apply_ast_semantic_ranges(
     tokens: &mut [(u32, u32, u32, u32)],
     ast_ranges: &[(SourceRange, u32)],
@@ -122,10 +130,13 @@ fn apply_ast_semantic_ranges(
                 // Reserved-keyword text (e.g. `entry`, `standard`, `concern`) can also be a
                 // legal identifier (enum member, attribute name) elsewhere in the grammar.
                 // The lexer classifies purely by spelling, so only let the AST's precisely
-                // spanned identifier classification override it -- not looser AST guesses.
+                // spanned identifier classification override it -- not looser AST guesses,
+                // and not a range that merely contains the keyword (`in` before a parameter
+                // name, `as` inside a value expression).
                 if *type_idx == TYPE_KEYWORD
                     && ast_type != TYPE_KEYWORD
-                    && ast_type != TYPE_PROPERTY
+                    && (ast_type != TYPE_PROPERTY
+                        || !range_is_token(&ast_ranges[range_idx].0, *line, *start, *len))
                 {
                     continue;
                 }

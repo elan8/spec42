@@ -583,6 +583,7 @@ name = "diagram_draw"
 version = "0.57.0"
 dependencies = [
  "diagram_layout",
+ "diagram_product",
  "serde",
  "serde_json",
 ]
@@ -2175,7 +2176,7 @@ dependencies = [
 [[package]]
 name = "sysml-v2-parser"
 version = "0.58.0"
-source = "git+https://github.com/elan8/sysml-v2-parser.git?rev=4b090189d474ab2cd246ca76e2967da8e4b46069#4b090189d474ab2cd246ca76e2967da8e4b46069"
+source = "git+https://github.com/elan8/sysml-v2-parser.git?rev=b88af9da7d91fe76d94217b1808a218dd937589a#b88af9da7d91fe76d94217b1808a218dd937589a"
 dependencies = [
  "log",
  "memchr",

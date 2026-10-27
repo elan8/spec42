@@ -488,7 +488,7 @@ package SequenceCycle {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:5a44298b8150279865a708b757f7b0b0ebb49fa59e1f0408d91e1802a36cd7bf",
   "documents": [
     {
@@ -1005,7 +1005,21 @@ package SequenceCycle {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "sequence-ordering-cycle"
+        "code": "sequence-ordering-cycle",
+        "witness": [
+          {
+            "events": [],
+            "provenance": "authored",
+            "source": 3,
+            "target": 8
+          },
+          {
+            "events": [],
+            "provenance": "authored",
+            "source": 8,
+            "target": 3
+          }
+        ]
       }
     ]
   },
@@ -1248,6 +1262,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceDefinition",
+        "multiplicity": null,
         "name": "Interaction",
         "notationRole": "definition",
         "owner": null,
@@ -1265,6 +1280,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -1282,6 +1298,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -1299,6 +1316,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "first",
         "notationRole": "usage",
         "owner": 0,
@@ -1316,6 +1334,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
@@ -1333,6 +1352,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 4,
@@ -1350,6 +1370,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
@@ -1367,6 +1388,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 6,
@@ -1384,6 +1406,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "second",
         "notationRole": "usage",
         "owner": 0,
@@ -1401,6 +1424,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
@@ -1418,6 +1442,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 9,
@@ -1435,6 +1460,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
@@ -1452,6 +1478,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 11,
@@ -1478,6 +1505,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "left",
         "notationRole": "usage",
         "owner": 0,
@@ -1495,6 +1523,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "send",
         "notationRole": "usage",
         "owner": 13,
@@ -1512,6 +1541,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "receive",
         "notationRole": "usage",
         "owner": 13,
@@ -1538,6 +1568,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "right",
         "notationRole": "usage",
         "owner": 0,
@@ -1555,6 +1586,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "send",
         "notationRole": "usage",
         "owner": 16,
@@ -1572,6 +1604,7 @@ package SequenceCycle {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "receive",
         "notationRole": "usage",
         "owner": 16,

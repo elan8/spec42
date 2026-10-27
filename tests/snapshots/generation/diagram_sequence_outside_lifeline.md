@@ -284,7 +284,7 @@ package SequenceOutside {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:462cc207d7cfe52b13b20813929cf40dd188e4a0fd24bf949b8f61d47558da47",
   "documents": [
     {
@@ -590,6 +590,7 @@ package SequenceOutside {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceDefinition",
+        "multiplicity": null,
         "name": "Interaction",
         "notationRole": "definition",
         "owner": null,
@@ -607,6 +608,7 @@ package SequenceOutside {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "delivery",
         "notationRole": "usage",
         "owner": 0,
@@ -624,6 +626,7 @@ package SequenceOutside {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
@@ -641,6 +644,7 @@ package SequenceOutside {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
@@ -658,6 +662,7 @@ package SequenceOutside {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
@@ -675,6 +680,7 @@ package SequenceOutside {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 4,
@@ -700,6 +706,7 @@ package SequenceOutside {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "sender",
         "notationRole": "usage",
         "owner": 0,
@@ -717,6 +724,7 @@ package SequenceOutside {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "sent",
         "notationRole": "usage",
         "owner": 6,

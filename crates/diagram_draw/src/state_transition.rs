@@ -173,7 +173,7 @@ fn draw_state_node(
                 .style("font-size", "12px")
                 .style("font-weight", "700")
                 .style("fill", theme.text_primary)
-                .text(truncate_label(&node.label, 28)),
+                .text(&node.label),
         );
         let mut action_lines = Vec::new();
         // SysML 8.2.3.18: the state actions compartment lists the entry, do and exit actions
@@ -220,7 +220,7 @@ fn draw_state_node(
                     .attr_f("y", STATE_ACTIONS_TOP + 14.0 + index as f64 * 16.0)
                     .style("font-size", "10px")
                     .style("fill", theme.text_secondary)
-                    .text(truncate_label(line, 34)),
+                    .text(line),
             );
         }
         if is_composite {

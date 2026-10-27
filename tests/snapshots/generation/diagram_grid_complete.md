@@ -168,7 +168,7 @@ package GridExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:c06b2103ceefe3fd8fde1c034941bad64a7b774d4cfb2650437fb0ada25cfefc",
   "documents": [
     {
@@ -239,6 +239,7 @@ package GridExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "TableRoot",
         "notationRole": "definition",
         "owner": null,

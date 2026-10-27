@@ -190,7 +190,7 @@ package EmptySelection {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:134e1d50ff5597e8cd5a94e9d17332fb42f20a6aaa03167d0168a78b62a8cf7c",
   "documents": [
     {
@@ -233,6 +233,7 @@ package EmptySelection {
     "metadata": {
       "connectors": [],
       "parts": [],
+      "portFamilies": [],
       "ports": []
     },
     "nodes": [],

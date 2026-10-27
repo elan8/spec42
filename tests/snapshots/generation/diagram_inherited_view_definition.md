@@ -657,7 +657,7 @@ package InheritedViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:9eba9cec89b6c67d17ab57ea7f0bcfdd72d134c7a1b1357755b5fbc017183f31",
   "documents": [
     {
@@ -1094,6 +1094,25 @@ package InheritedViews {
         1,
         3
       ],
+      "portFamilies": [
+        {
+          "connectors": [
+            5
+          ],
+          "general": [
+            {
+              "label": "Signal",
+              "reference": 11
+            }
+          ],
+          "types": [
+            {
+              "label": "Signal",
+              "reference": 11
+            }
+          ]
+        }
+      ],
       "ports": [
         2,
         4,
@@ -1124,6 +1143,7 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
@@ -1149,6 +1169,7 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "sender",
         "notationRole": "usage",
         "owner": 0,
@@ -1172,6 +1193,7 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 1,
@@ -1203,6 +1225,7 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "receiver",
         "notationRole": "usage",
         "owner": 0,
@@ -1226,6 +1249,7 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 3,
@@ -1258,6 +1282,7 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "InterfaceUsage",
+        "multiplicity": null,
         "name": "link",
         "notationRole": "usage",
         "owner": 0,
@@ -1281,6 +1306,7 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "x",
         "notationRole": "usage",
         "owner": 5,
@@ -1304,6 +1330,7 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "y",
         "notationRole": "usage",
         "owner": 5,

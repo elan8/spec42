@@ -247,7 +247,7 @@ package Filters {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:1eea3591ab775899155cc68cbf7e2a347ec74c1bb51858f9a66d6740a5393110",
   "documents": [
     {
@@ -359,6 +359,7 @@ package Filters {
         0,
         1
       ],
+      "portFamilies": [],
       "ports": []
     },
     "nodes": [
@@ -376,6 +377,7 @@ package Filters {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
@@ -393,6 +395,7 @@ package Filters {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "child",
         "notationRole": "usage",
         "owner": 0,

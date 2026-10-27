@@ -6858,7 +6858,7 @@ package TimerBrowser {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:9bdb4b717bc366abf3696d5c2ac4680c385c7a9bcac9f5f1eacd352d499c8fcb",
   "documents": [
     {
@@ -7393,8 +7393,12 @@ package TimerBrowser {
     "source": 0
   },
   "completeness": {
-    "status": "complete",
-    "reasons": []
+    "status": "incomplete",
+    "reasons": [
+      {
+        "code": "parse-recovery"
+      }
+    ]
   },
   "projection": {
     "edges": [
@@ -7580,6 +7584,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "timerInstance",
         "notationRole": "usage",
         "owner": null,
@@ -7603,6 +7608,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "pcb",
         "notationRole": "usage",
         "owner": 0,
@@ -7626,6 +7632,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "battery",
         "notationRole": "usage",
         "owner": 0,
@@ -7649,6 +7656,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "buzzer",
         "notationRole": "usage",
         "owner": 0,
@@ -7672,6 +7680,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "housing",
         "notationRole": "usage",
         "owner": 0,
@@ -7695,6 +7704,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -7712,6 +7722,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -7729,6 +7740,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -7746,6 +7758,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -7763,6 +7776,7 @@ package TimerBrowser {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,

@@ -6858,7 +6858,7 @@ package TimerGrid {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:6471acc4ff37c901bec1eef9a56e51468f8974373792f6b5b409800559b71c23",
   "documents": [
     {
@@ -6933,8 +6933,12 @@ package TimerGrid {
     "source": 0
   },
   "completeness": {
-    "status": "complete",
-    "reasons": []
+    "status": "incomplete",
+    "reasons": [
+      {
+        "code": "parse-recovery"
+      }
+    ]
   },
   "projection": {
     "edges": [],
@@ -6957,6 +6961,7 @@ package TimerGrid {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "timerInstance",
         "notationRole": "usage",
         "owner": null,

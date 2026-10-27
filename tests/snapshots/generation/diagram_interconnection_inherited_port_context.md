@@ -249,7 +249,7 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:9949838afa055e17ecc30011a92edc22609e1583bc26d21a6e782854d56723c5",
   "documents": [
     {
@@ -628,6 +628,7 @@ package Model {
         4,
         6
       ],
+      "portFamilies": [],
       "ports": [
         3,
         5
@@ -657,6 +658,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "system",
         "notationRole": "usage",
         "owner": null,
@@ -680,6 +682,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -705,6 +708,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "left",
         "notationRole": "usage",
         "owner": 0,
@@ -728,6 +732,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 2,
@@ -759,6 +764,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "right",
         "notationRole": "usage",
         "owner": 0,
@@ -782,6 +788,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 4,
@@ -805,6 +812,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "spare",
         "notationRole": "usage",
         "owner": 0,

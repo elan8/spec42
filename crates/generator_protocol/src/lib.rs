@@ -840,18 +840,43 @@ pub enum DiagramIncompleteReason {
     ParseRecovery,
     UnsupportedSyntax,
     NonConverged,
-    ExposureUnresolved { exposure: DiagramSemanticReference },
-    ExposureAmbiguous { exposure: DiagramSemanticReference },
-    ExposureUnsupported { exposure: DiagramSemanticReference },
-    RelationshipUnresolved { relationship_kind: String },
-    RelationshipAmbiguous { relationship_kind: String },
-    RelationshipUnsupported { relationship_kind: String },
+    ExposureUnresolved {
+        exposure: DiagramSemanticReference,
+    },
+    ExposureAmbiguous {
+        exposure: DiagramSemanticReference,
+    },
+    ExposureUnsupported {
+        exposure: DiagramSemanticReference,
+    },
+    RelationshipUnresolved {
+        relationship_kind: String,
+    },
+    RelationshipAmbiguous {
+        relationship_kind: String,
+    },
+    RelationshipUnsupported {
+        relationship_kind: String,
+    },
     ViewFilterUnresolved,
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
     SequenceMessageEndpointOutsideLifeline,
-    SequenceOrderingCycle,
+    SequenceOrderingCycle {
+        witness: Vec<SequenceCycleStep>,
+    },
+    SequenceContentOmitted {
+        elements: Vec<DiagramOccurrenceIdentity>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SequenceCycleStep {
+    pub source: DiagramOccurrenceIdentity,
+    pub target: DiagramOccurrenceIdentity,
+    pub events: Vec<DiagramOccurrenceIdentity>,
+    pub provenance: RelationshipProvenance,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -868,6 +893,10 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceReference,
     pub compartments: Vec<DiagramCompartment>,
+    /// The authored multiplicity of this element's declaration (`joints : Motor[6]`), for its
+    /// label. `None` when no `[...]` was written, or when a bound is not a literal integer (an
+    /// expression bound such as `[1..n]` is not reduced to text here).
+    pub multiplicity: Option<Multiplicity>,
     /// The authored direction (`"in"` / `"out"` / `"inout"`) of a port or of a directed feature
     /// such as a parameter of an action. `None` for an element with no authored direction; a
     /// generator or renderer must not derive a side or a direction from this element's name or
@@ -1067,6 +1096,18 @@ pub struct DiagramGridCell {
     pub kind: DiagramEdgeKind,
 }
 
+/// Connectors whose ports belong to one family of related port definitions.
+///
+/// A connector's port type is the most specific non-standard-library port definition every end's
+/// typing specializes, conjugation ignored; port types related by specialization within one view
+/// form a family, named by its most general members.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramPortFamily {
+    pub general: Vec<DiagramElementType>,
+    pub types: Vec<DiagramElementType>,
+    pub connectors: Vec<DiagramOccurrenceIdentity>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum DiagramViewMetadata {
     General {
@@ -1076,6 +1117,9 @@ pub enum DiagramViewMetadata {
         parts: Vec<DiagramOccurrenceIdentity>,
         ports: Vec<DiagramOccurrenceIdentity>,
         connectors: Vec<DiagramOccurrenceIdentity>,
+        /// Connectors grouped by the family of related port definitions their ends share, in
+        /// family-name order. A connector in no family has no common port type.
+        port_families: Vec<DiagramPortFamily>,
     },
     ActionFlow {
         actions: Vec<DiagramOccurrenceIdentity>,
@@ -1155,6 +1199,7 @@ pub enum SequenceEndpoint {
 pub enum SequenceOrder {
     Resolved(u32),
     Cyclic,
+    BlockedByCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1371,7 +1416,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x252e_7fb1_75bd_0a3b,
+            SCHEMA_FINGERPRINT, 0xf988_eae7_0c18_282f,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1379,7 +1424,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x1df7_2a6b_fd2a_0025,
+            COMPATIBILITY_TOKEN, 0xd591_a7b0_d5d9_17b9,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

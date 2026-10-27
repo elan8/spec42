@@ -706,7 +706,7 @@ package Seq {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:72d13023493e996bdc4c0e69a12928b8f2bf10499d818a605130c8114f86d5b2",
   "documents": [
     {
@@ -1476,7 +1476,34 @@ package Seq {
     "status": "incomplete",
     "reasons": [
       {
-        "code": "sequence-ordering-cycle"
+        "code": "sequence-ordering-cycle",
+        "witness": [
+          {
+            "events": [
+              22,
+              21,
+              22
+            ],
+            "provenance": "implied",
+            "source": 2,
+            "target": 2
+          }
+        ]
+      },
+      {
+        "code": "sequence-ordering-cycle",
+        "witness": [
+          {
+            "events": [
+              21,
+              22,
+              21
+            ],
+            "provenance": "implied",
+            "source": 12,
+            "target": 12
+          }
+        ]
       }
     ]
   },
@@ -1813,6 +1840,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceDefinition",
+        "multiplicity": null,
         "name": "Scenario",
         "notationRole": "definition",
         "owner": null,
@@ -1830,6 +1858,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -1847,6 +1876,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "telemetryMsg",
         "notationRole": "usage",
         "owner": 0,
@@ -1864,6 +1894,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
@@ -1881,6 +1912,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
@@ -1898,6 +1930,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
@@ -1915,6 +1948,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 5,
@@ -1932,6 +1966,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "ackMsg",
         "notationRole": "usage",
         "owner": 0,
@@ -1949,6 +1984,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 7,
@@ -1966,6 +2002,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
@@ -1983,6 +2020,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 7,
@@ -2000,6 +2038,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 10,
@@ -2017,6 +2056,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "pressMsg",
         "notationRole": "usage",
         "owner": 0,
@@ -2034,6 +2074,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 12,
@@ -2051,6 +2092,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 13,
@@ -2068,6 +2110,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 12,
@@ -2085,6 +2128,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 15,
@@ -2111,6 +2155,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 0,
@@ -2134,6 +2179,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "r3",
         "notationRole": "usage",
         "owner": 17,
@@ -2151,6 +2197,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "s1",
         "notationRole": "usage",
         "owner": 17,
@@ -2178,6 +2225,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "q",
         "notationRole": "usage",
         "owner": 0,
@@ -2201,6 +2249,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "r1",
         "notationRole": "usage",
         "owner": 20,
@@ -2218,6 +2267,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "s2",
         "notationRole": "usage",
         "owner": 20,
@@ -2235,6 +2285,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "s3",
         "notationRole": "usage",
         "owner": 20,
@@ -2260,6 +2311,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "r",
         "notationRole": "usage",
         "owner": 0,
@@ -2283,6 +2335,7 @@ package Seq {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceUsage",
+        "multiplicity": null,
         "name": "r2",
         "notationRole": "usage",
         "owner": 24,
@@ -2481,7 +2534,7 @@ package Seq {
           "navigation": 13,
           "node": 7,
           "order": {
-            "status": "cyclic"
+            "status": "blocked-by-cycle"
           },
           "provenance": "authored",
           "source": {

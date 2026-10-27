@@ -310,7 +310,7 @@ package WarningView {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:d89ea199b87539b29ade9f126c0ddb75a992203d07dee3f4d6bb33a2026732d4",
   "documents": [
     {
@@ -659,6 +659,7 @@ package WarningView {
         "direction": null,
         "featureDirection": null,
         "metaclass": "OccurrenceDefinition",
+        "multiplicity": null,
         "name": "Scenario",
         "notationRole": "definition",
         "owner": null,
@@ -676,6 +677,7 @@ package WarningView {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": "M",
         "notationRole": "usage",
         "owner": 0,
@@ -693,6 +695,7 @@ package WarningView {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
@@ -710,6 +713,7 @@ package WarningView {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
@@ -727,6 +731,7 @@ package WarningView {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowEnd",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
@@ -744,6 +749,7 @@ package WarningView {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 4,
@@ -761,6 +767,7 @@ package WarningView {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "a",
         "notationRole": "usage",
         "owner": 0,
@@ -784,6 +791,7 @@ package WarningView {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "b",
         "notationRole": "usage",
         "owner": 0,

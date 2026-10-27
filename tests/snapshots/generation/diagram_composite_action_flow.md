@@ -325,7 +325,7 @@ package Shop {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:570524d22009d9fa3a585761102fbfe2134eaa7b2f6fd4ce316d2feac3cf5f2d",
   "documents": [
     {
@@ -686,6 +686,7 @@ package Shop {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionDefinition",
+        "multiplicity": null,
         "name": "Fulfil",
         "notationRole": "definition",
         "owner": null,
@@ -703,6 +704,7 @@ package Shop {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -720,6 +722,7 @@ package Shop {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "ship",
         "notationRole": "usage",
         "owner": 0,
@@ -746,6 +749,7 @@ package Shop {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "order",
         "notationRole": "usage",
         "owner": 0,
@@ -763,6 +767,7 @@ package Shop {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
@@ -780,6 +785,7 @@ package Shop {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "pack",
         "notationRole": "usage",
         "owner": 3,
@@ -797,6 +803,7 @@ package Shop {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "pick",
         "notationRole": "usage",
         "owner": 3,

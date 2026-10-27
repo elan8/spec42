@@ -40,7 +40,7 @@ package InteractionDemo {
 }
 package Views {
 	private import StandardViewDefinitions::*;
-	import InteractionDemo::*;
+	private import InteractionDemo::*;
 
 	view checkoutFlow : SequenceView {
 		expose InteractionDemo::CheckoutFlow;

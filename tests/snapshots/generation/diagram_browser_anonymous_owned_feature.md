@@ -155,7 +155,7 @@ package BrowserProbe {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:d8ab8cfdecb79af9019eafce94e40f450fb6e34b5b8cb858825f822f8163e3e7",
   "documents": [
     {
@@ -298,6 +298,7 @@ package BrowserProbe {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Class",
+        "multiplicity": null,
         "name": "Holder",
         "notationRole": "unsupported",
         "owner": null,
@@ -315,6 +316,7 @@ package BrowserProbe {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,

@@ -185,34 +185,48 @@ fn normalize_outline_symbols(symbols: &mut [SyntaxOutlineNode]) {
     }
 }
 
-/// Collects folding ranges from the AST. This reuses the document-symbol outline ranges and
-/// produces one folding range per symbol whose extent spans multiple lines.
+/// Fold every authored braced body, including anonymous bodies and declarations that do not
+/// have an editor symbol. The parser's structural visitor owns the inventory of body kinds.
 pub(super) fn folding_regions(
     document: &sysml_v2_parser::ParsedDocument,
 ) -> Vec<SyntaxFoldingRegion> {
-    let symbols = document_outline(document);
-    let mut out = Vec::new();
-
-    fn push_symbol(symbol: &SyntaxOutlineNode, out: &mut Vec<SyntaxFoldingRegion>) {
-        let start = symbol.range.start_line;
-        let end = symbol.range.end_line;
-        if end > start {
-            out.push(SyntaxFoldingRegion {
-                start_line: start,
-                end_line: end,
-                kind: Some(SyntaxFoldingKind::Region),
-            });
-        }
-        for c in &symbol.children {
-            push_symbol(c, out);
+    use sysml_v2_parser::ast::visit::Visitor;
+    struct Folds<'a> {
+        document: &'a sysml_v2_parser::ParsedDocument,
+        regions: Vec<SyntaxFoldingRegion>,
+    }
+    impl Visitor for Folds<'_> {
+        fn visit_body_braces<E>(
+            &mut self,
+            open: &sysml_v2_parser::Span,
+            _: &[sysml_v2_parser::Node<E>],
+            close: &sysml_v2_parser::Span,
+        ) {
+            // Recovery may synthesize a missing delimiter. It is not an authored folding end.
+            if open.len == 0 || close.len == 0 {
+                return;
+            }
+            let start = node_range(self.document, open).start_line;
+            let end = node_range(self.document, close).end_line;
+            if end > start {
+                self.regions.push(SyntaxFoldingRegion {
+                    start_line: start,
+                    end_line: end,
+                    kind: Some(SyntaxFoldingKind::Region),
+                });
+            }
         }
     }
-
-    for s in &symbols {
-        push_symbol(s, &mut out);
-    }
-
-    out
+    let mut folds = Folds {
+        document,
+        regions: Vec::new(),
+    };
+    folds.visit_root_namespace(document);
+    folds
+        .regions
+        .sort_by_key(|region| (region.start_line, region.end_line));
+    folds.regions.dedup();
+    folds.regions
 }
 
 /// Split a declaration's extent into its header and its braced body.

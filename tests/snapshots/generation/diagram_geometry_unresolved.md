@@ -135,7 +135,7 @@ package GeometryNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
+  "schemaVersion": 10,
   "modelDigest": "blake3:20ec908d8a2f1cc6c4e4ae09b912f117a203f72c87a00b880d75b3326ae048fb",
   "documents": [
     {
