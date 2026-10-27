@@ -353,12 +353,12 @@ they are not CI gates.
 
 ### Editor notification baseline
 
-Build an optimized core LSP host, then measure single full-text edits and bursts without
+Build the optimized normal LSP host with its pinned libraries, then measure single full-text edits and bursts without
 writing the edited source file:
 
 ```powershell
-cargo build --offline --release -p lsp_server --bin spec42_core_lsp_test
-python scripts/benchmark-editor.py --server target/release/spec42_core_lsp_test.exe --profile release --workspace ../sysml-robot-vacuum-cleaner --document ../sysml-robot-vacuum-cleaner/model/Root.sysml --iterations 20 --burst-size 10 --output target/editor-robot-vacuum.json
+cargo build --offline --release -p server --bin spec42
+python scripts/benchmark-editor.py --server target/release/spec42.exe --server-arg=lsp --profile release --workspace ../sysml-robot-vacuum-cleaner --document ../sysml-robot-vacuum-cleaner/model/Root.sysml --iterations 20 --burst-size 10 --output target/editor-robot-vacuum.json
 ```
 
 Choose an existing source document in the workspace for `--document`.
@@ -367,6 +367,10 @@ For another host, use `--server-arg` for its LSP command-line arguments.
 The report keeps raw messages, per-version samples, p50/p95/max, binary/input/configuration hashes,
 revision, dirty-tree state, build-profile label and host metadata. Check the profile against the
 actual binary build; the runner does not build or download anything.
+The normal host's `sysml/libraryStatus` response is retained and must confirm the pinned standard
+library is available. Missing-library-context diagnostics fail a representative run. The core test
+host intentionally has no libraries by default: use `--allow-missing-libraries` only for explicitly
+labelled discovery/negative-control runs, which do not establish representative editor performance.
 
 The #192 probe measures client send to the matching `backend:didChange` completion event,
 including transport and queueing behind earlier handlers. Hosts that emit `backend:publication`

@@ -21,6 +21,29 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def library_inputs(status):
+    libraries = [("stdlib", status["stdlib"])] + [(item["id"], item) for item in status["kparLibraries"]]
+    result = {}
+    for name, library in libraries:
+        if not library["available"]:
+            continue
+        if not library.get("resolvedPath"):
+            raise RuntimeError(f"Available library {name} has no resolved input path")
+        root = Path(library["resolvedPath"])
+        if root.is_file():
+            files = {root.name: digest(root)}
+        elif root.is_dir():
+            files = {str(path.relative_to(root)): digest(path) for path in sorted(root.rglob("*"))
+                     if path.is_file() and path.suffix.lower() in (".sysml", ".kerml", ".kpar")}
+        else:
+            raise RuntimeError(f"Available library {name} input path does not exist: {root}")
+        if not files:
+            raise RuntimeError(f"No source/archive inputs found for available library {name}: {root}")
+        result[name] = {"root": str(root), "files": files,
+                        "digest": hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()}
+    return result
+
+
 def distribution(values):
     ordered = sorted(values)
     return {name: ordered[max(0, math.ceil(len(ordered) * p) - 1)]
@@ -85,10 +108,11 @@ class WindowsResources:
 
 
 class Lsp:
-    def __init__(self, command, cwd, stderr):
+    def __init__(self, command, cwd, stderr, allow_missing_libraries=False):
         self.messages = queue.Queue()
         self.events = []
         self.publications = {}
+        self.allow_missing_libraries = allow_missing_libraries
         self.process = subprocess.Popen(command, cwd=cwd, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=stderr)
         self.reader = threading.Thread(target=self.read, daemon=True)
@@ -153,6 +177,9 @@ class Lsp:
                 raise item
             received, message = item
             self.events.append({"received_ns": received, "message": message})
+            if message.get("method") == "textDocument/publishDiagnostics" and not self.allow_missing_libraries:
+                if any(diagnostic.get("code") == "missing_library_context" for diagnostic in message["params"]["diagnostics"]):
+                    raise RuntimeError("Missing library context: this run cannot be used as a representative editor baseline")
             raw = message.get("params", {}).get("message", "")
             if raw.startswith("[SysML][perf] "):
                 event = json.loads(raw[len("[SysML][perf] "):])
@@ -170,6 +197,8 @@ class Lsp:
         self.reader.join(timeout=10)
         if self.resources:
             self.resources.close()
+        self.process.stdin.close()
+        self.process.stdout.close()
 
 
 def main():
@@ -183,6 +212,8 @@ def main():
     parser.add_argument("--iterations", type=int, default=20)
     parser.add_argument("--burst-size", type=int, default=10)
     parser.add_argument("--change-kind", choices=["full", "incremental"], default="full")
+    parser.add_argument("--allow-missing-libraries", action="store_true",
+                        help="Permit a discovery run without library admission evidence; not a representative editor baseline")
     parser.add_argument("--timeout-seconds", type=float, default=120)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
@@ -197,6 +228,7 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     command = [str(server), *args.server_arg]
     report = {"schema_version": 1, "benchmark": "lsp-edit-to-handler",
+              "scope": "discovery-with-missing-libraries-permitted" if args.allow_missing_libraries else "editor-with-library-admission",
               "limitations": ["Not version-correlated diagnostic latency", "No view refresh measurement",
                               "CPU times are cumulative child-process times; resource snapshots are taken after completion receipt, not at a semantic barrier",
                               "Client timestamps include transport, queueing and handler work",
@@ -221,10 +253,18 @@ def main():
     lsp = None
     with args.output.with_suffix(".stderr.log").open("wb") as stderr:
         try:
-            lsp = Lsp(command, root, stderr)
+            lsp = Lsp(command, root, stderr, args.allow_missing_libraries)
             lsp.send("initialize", {"processId": None, "rootUri": workspace.as_uri(), "capabilities": {},
                      "initializationOptions": {"performanceLogging": {"enabled": True}}}, 1)
             lsp.until(lambda m: m.get("id") == 1, args.timeout_seconds)
+            if not args.allow_missing_libraries:
+                lsp.send("sysml/libraryStatus", {}, 3)
+                _, status = lsp.until(lambda m: m.get("id") == 3, args.timeout_seconds)
+                report["library_status"] = status["result"]
+                standard = report["library_status"]["stdlib"]
+                if not standard["available"] or not standard["versionMatches"]:
+                    raise RuntimeError("The host must admit the pinned standard library before editor benchmarking")
+                report["library_inputs"] = library_inputs(report["library_status"])
             lsp.send("initialized", {})
             lsp.until(lambda m: m.get("method") == "spec42/semanticIndexReady", args.timeout_seconds)
             lsp.send("textDocument/didOpen", {"textDocument": {"uri": uri, "languageId": "sysml", "version": 1, "text": text}})
