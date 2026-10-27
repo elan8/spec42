@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-8 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-9 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};
@@ -1812,26 +1812,36 @@ fn prepare_interconnection_from_typed_projection(
             Some((format!("e:{index}"), format!("n:{owner}")))
         })
         .collect();
-    let port_type_keys: HashMap<String, String> = nodes
+    // The semantic layer groups connectors into port families; the drawing only colours them.
+    let families = as_array(field(metadata, "portFamilies"));
+    let family_of_connector: HashMap<u64, usize> = families
         .iter()
         .enumerate()
-        .filter_map(|(index, node)| {
-            if !is_port_metaclass(&as_string(field(node, "metaclass"), "")) {
-                return None;
-            }
-            let typing = field(node, "typing");
-            if field(typing, "status") != "resolved" {
-                return None;
-            }
-            let types = as_array(field(typing, "types"));
-            if types.len() != 1 {
-                return None;
-            }
-            let reference = field(&types[0], "reference")
-                .as_u64()
-                .and_then(|index| references.get(index as usize))?;
-            let qualified_name = field(reference, "qualifiedName").as_str()?;
-            Some((format!("n:{index}"), qualified_name.to_string()))
+        .flat_map(|(family, value)| {
+            as_array(field(value, "connectors"))
+                .iter()
+                .filter_map(Value::as_u64)
+                .map(move |connector| (connector, family))
+                .collect::<Vec<_>>()
+        })
+        .collect();
+    let family_labels: Vec<String> = families
+        .iter()
+        .map(|family| {
+            as_array(field(family, "general"))
+                .iter()
+                .map(|ty| as_string(field(ty, "label"), ""))
+                .collect::<Vec<_>>()
+                .join(" / ")
+        })
+        .collect();
+    prepared["meta"]["portFamilies"] = json!(family_labels);
+    let family_of_edge: HashMap<String, usize> = edges
+        .iter()
+        .enumerate()
+        .filter_map(|(index, edge)| {
+            let origin = field(edge, "origin").as_u64()?;
+            Some((format!("e:{index}"), *family_of_connector.get(&origin)?))
         })
         .collect();
     if let Some(edges) = prepared.get_mut("edges").and_then(Value::as_array_mut) {
@@ -1843,17 +1853,12 @@ fn prepare_interconnection_from_typed_projection(
             {
                 edge["attributes"]["connectorOwner"] = json!(owner);
             }
-            let attributes = &edge["attributes"];
-            let source_type = field(attributes, "sourcePortId")
+            if let Some(&family) = field(edge, "id")
                 .as_str()
-                .and_then(|id| port_type_keys.get(id));
-            let target_type = field(attributes, "targetPortId")
-                .as_str()
-                .and_then(|id| port_type_keys.get(id));
-            if let (Some(source_type), Some(target_type)) = (source_type, target_type) {
-                if source_type == target_type {
-                    edge["attributes"]["portTypeIdentity"] = json!(source_type);
-                }
+                .and_then(|id| family_of_edge.get(id))
+            {
+                edge["attributes"]["portFamily"] = json!(family);
+                edge["attributes"]["portFamilyLabel"] = json!(family_labels[family]);
             }
         }
     }

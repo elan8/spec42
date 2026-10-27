@@ -1180,7 +1180,7 @@ package Door {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:b2c5494565232da3714a7757939f7bce8845a648ff4f4c3609d7f7898e4e09ac",
   "documents": [
     {

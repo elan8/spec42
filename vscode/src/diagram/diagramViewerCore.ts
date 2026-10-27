@@ -338,7 +338,7 @@ export function parseDiagramProduct(text: string): DiagramProduct {
       !Array.isArray(projection.relationships) ||
       !Array.isArray(projection.edges) || !projection.metadata || typeof projection.metadata !== "object" ||
       !isDiagramScene(projection.scene, String(view.kind), sources.length)) {
-    throw new Error("Generated diagram product does not match schema version 8.");
+    throw new Error(`Generated diagram product does not match schema version ${DIAGRAM_PRODUCT_SCHEMA_VERSION}.`);
   }
   for (const reason of completeness.reasons) {
     if (!reason || typeof reason !== "object") throw new Error("Generated diagram product has a malformed completeness reason.");

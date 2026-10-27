@@ -265,7 +265,7 @@ package ProvenanceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "modelDigest": "blake3:3435e90b44978c9ee69f2dbf841cec988712995543bb5d06282a68f4c6a35c20",
   "documents": [
     {
