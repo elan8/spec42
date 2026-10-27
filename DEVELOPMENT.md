@@ -376,9 +376,15 @@ and diagnostic fanout. Handler records separately measure source ingestion, pars
 commit. The construction `resolutionTotalMs` contains its resolve/evaluate/index/check subphases;
 do not add it to those subphases. Missing phase records remain explicit `null` values.
 
-Version-correlated diagnostic latency, CPU/memory and VS Code view-refresh costs remain release
-acceptance work. Failed or timed-out runs retain a failed report and stderr; timings from debug runs
-are smoke-test evidence only.
+On Windows the runner records cumulative process user/kernel CPU time, working set, commit charge
+and process-lifetime peaks after receiving each completion. The resource observation has its own
+timestamp; it is not synchronized with a semantic phase. Unsupported platforms or counter errors
+stay explicit as unavailable. Compare CPU deltas with `resources_before_edits`, rather than treating
+the cumulative counters as per-edit CPU time.
+
+Version-correlated diagnostic latency and VS Code view-refresh costs remain release acceptance
+work. Failed or timed-out runs retain a failed report and stderr; timings from debug runs are
+smoke-test evidence only.
 
 ### Query benchmarks
 

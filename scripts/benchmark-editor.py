@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Report LSP edit-to-handler latency, including transport and queued obsolete work.
 
-This is the first #192 baseline: it does not measure VS Code rendering, CPU/memory,
-or claim version-correlated diagnostic latency. It never writes the edited file.
+It records Windows process CPU/memory counters after completions, but does not measure
+VS Code rendering or claim version-correlated diagnostic latency. It never writes the edited file.
 """
 import argparse
 import hashlib
@@ -32,6 +32,58 @@ def end_position(text):
             "character": len(text.rsplit("\n", 1)[-1].encode("utf-16-le")) // 2}
 
 
+class WindowsResources:
+    """Read only the child process: GetProcessTimes and GetProcessMemoryInfo.
+
+    API contracts: learn.microsoft.com/windows/win32/api/{processthreadsapi,psapi}/
+    nf-processthreadsapi-getprocesstimes and nf-psapi-getprocessmemoryinfo.
+    """
+    def __init__(self, pid):
+        import ctypes
+        from ctypes import wintypes
+        self.ctypes, self.wintypes = ctypes, wintypes
+
+        class MemoryCounters(ctypes.Structure):
+            _fields_ = [("cb", wintypes.DWORD), ("page_faults", wintypes.DWORD)] + [
+                (name, ctypes.c_size_t) for name in ["peak_rss_bytes", "rss_bytes", "peak_paged_pool",
+                "paged_pool", "peak_nonpaged_pool", "nonpaged_pool", "commit_bytes", "peak_commit_bytes"]]
+
+        self.memory_type = MemoryCounters
+        self.kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        self.psapi = ctypes.WinDLL("psapi", use_last_error=True)
+        self.kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        self.kernel.OpenProcess.restype = wintypes.HANDLE
+        self.kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+        self.kernel.CloseHandle.restype = wintypes.BOOL
+        self.kernel.GetProcessTimes.argtypes = [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4
+        self.kernel.GetProcessTimes.restype = wintypes.BOOL
+        self.psapi.GetProcessMemoryInfo.argtypes = [wintypes.HANDLE, ctypes.POINTER(MemoryCounters), wintypes.DWORD]
+        self.psapi.GetProcessMemoryInfo.restype = wintypes.BOOL
+        self.handle = self.kernel.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+        if not self.handle:
+            raise ctypes.WinError(ctypes.get_last_error())
+
+    def sample(self):
+        ctypes, wintypes = self.ctypes, self.wintypes
+        created, exited, kernel, user = (wintypes.FILETIME() for _ in range(4))
+        if not self.kernel.GetProcessTimes(self.handle, *[ctypes.byref(item) for item in [created, exited, kernel, user]]):
+            raise ctypes.WinError(ctypes.get_last_error())
+        memory = self.memory_type()
+        memory.cb = ctypes.sizeof(memory)
+        if not self.psapi.GetProcessMemoryInfo(self.handle, ctypes.byref(memory), memory.cb):
+            raise ctypes.WinError(ctypes.get_last_error())
+        seconds = lambda value: ((value.dwHighDateTime << 32) | value.dwLowDateTime) / 10_000_000
+        return {"status": "measured", "observed_ns": time.perf_counter_ns(),
+                "cpu_user_s": seconds(user), "cpu_kernel_s": seconds(kernel),
+                "rss_bytes": memory.rss_bytes, "peak_rss_bytes": memory.peak_rss_bytes,
+                "commit_bytes": memory.commit_bytes, "peak_commit_bytes": memory.peak_commit_bytes}
+
+    def close(self):
+        if self.handle:
+            self.kernel.CloseHandle(self.handle)
+            self.handle = None
+
+
 class Lsp:
     def __init__(self, command, cwd, stderr):
         self.messages = queue.Queue()
@@ -41,6 +93,21 @@ class Lsp:
                                         stdout=subprocess.PIPE, stderr=stderr)
         self.reader = threading.Thread(target=self.read, daemon=True)
         self.reader.start()
+        self.resources = None
+        self.resource_error = "Process resource counters are currently implemented for Windows only"
+        if os.name == "nt":
+            try:
+                self.resources = WindowsResources(self.process.pid)
+            except OSError as error:
+                self.resource_error = repr(error)
+
+    def resource_sample(self):
+        if not self.resources:
+            return {"status": "unavailable", "reason": self.resource_error}
+        try:
+            return self.resources.sample()
+        except OSError as error:
+            return {"status": "unavailable", "reason": repr(error)}
 
     def read(self):
         try:
@@ -101,6 +168,8 @@ class Lsp:
             self.process.kill()
         self.process.wait(timeout=10)
         self.reader.join(timeout=10)
+        if self.resources:
+            self.resources.close()
 
 
 def main():
@@ -128,7 +197,8 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     command = [str(server), *args.server_arg]
     report = {"schema_version": 1, "benchmark": "lsp-edit-to-handler",
-              "limitations": ["Not version-correlated diagnostic latency", "No view refresh or CPU/memory measurement",
+              "limitations": ["Not version-correlated diagnostic latency", "No view refresh measurement",
+                              "CPU times are cumulative child-process times; resource snapshots are taken after completion receipt, not at a semantic barrier",
                               "Client timestamps include transport, queueing and handler work",
                               "Workspace digest covers rg-visible source/manifests; external libraries identified by binary/config/environment"],
               "environment": {"platform": platform.platform(), "machine": platform.node(),
@@ -160,6 +230,7 @@ def main():
             lsp.send("textDocument/didOpen", {"textDocument": {"uri": uri, "languageId": "sysml", "version": 1, "text": text}})
             lsp.send("textDocument/hover", {"textDocument": {"uri": uri}, "position": {"line": 0, "character": 0}}, 2)
             lsp.until(lambda m: m.get("id") == 2, args.timeout_seconds)
+            report["resources_before_edits"] = lsp.resource_sample()
             version = 1
             current_text = text
             for workload, count in [("single", 1), ("burst", args.burst_size)]:
@@ -191,6 +262,7 @@ def main():
                         report["samples"].append({"workload": workload, "iteration": iteration, "version": completed_version,
                                                   "send_to_handler_complete_ms": (received - sent[completed_version]) / 1e6,
                                                   "handler_fields": event,
+                                                  "resources": lsp.resource_sample(),
                                                   "publication_fields": lsp.publications.pop((uri.lower(), completed_version), None)})
             report["summary_ms"] = {workload: distribution([sample["send_to_handler_complete_ms"] for sample in report["samples"] if sample["workload"] == workload])
                                     for workload in ["single", "burst"]}
