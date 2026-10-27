@@ -368,8 +368,8 @@ package InterconnectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:d15976d3dfe973b7d7280c953d380f5da97604adba48a5c3ded82a0e5b86e8c7",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:5318e1de11ce2311ebba51e635bbb9ff6ca423af1591823a66b5b7833bf357fe",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_complete.md",
@@ -707,6 +707,7 @@ package InterconnectionExample {
         0,
         3
       ],
+      "portFamilies": [],
       "ports": [
         4,
         5,
@@ -744,6 +745,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
@@ -761,6 +763,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -778,6 +781,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -803,6 +807,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "nested",
         "notationRole": "usage",
         "owner": 0,
@@ -820,6 +825,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "tap",
         "notationRole": "usage",
         "owner": 3,
@@ -837,6 +843,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "input",
         "notationRole": "usage",
         "owner": 0,
@@ -854,6 +861,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "output",
         "notationRole": "usage",
         "owner": 0,

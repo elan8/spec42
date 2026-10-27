@@ -142,7 +142,7 @@ pub enum Metaclass {
     AssignmentActionUsage,
     BindingConnectorUsage,
     ConjugatedPortDefinition,
-    DecisionNodeUsage,
+    DecisionNode,
     Dependency,
     DerivationConnectorUsage,
     Diagnostic,
@@ -153,17 +153,17 @@ pub enum Metaclass {
     FlowEnd,
     FlowPayload,
     ForLoopActionUsage,
-    ForkNodeUsage,
+    ForkNode,
     IfActionUsage,
     Import,
     InterfaceEndUsage,
-    JoinNodeUsage,
+    JoinNode,
     LiteralBoolean,
     LiteralInteger,
     LiteralRational,
     LiteralString,
     LiteralInfinity,
-    MergeNodeUsage,
+    MergeNode,
     MetadataAccessExpression,
     MultiplicityRange,
     NeedUsage,
@@ -300,7 +300,7 @@ impl Metaclass {
             Self::AssignmentActionUsage => "AssignmentActionUsage",
             Self::BindingConnectorUsage => "BindingConnectorUsage",
             Self::ConjugatedPortDefinition => "ConjugatedPortDefinition",
-            Self::DecisionNodeUsage => "DecisionNodeUsage",
+            Self::DecisionNode => "DecisionNode",
             Self::Dependency => "Dependency",
             Self::DerivationConnectorUsage => "DerivationConnectorUsage",
             Self::Diagnostic => "Diagnostic",
@@ -311,11 +311,11 @@ impl Metaclass {
             Self::FlowEnd => "FlowEnd",
             Self::FlowPayload => "FlowPayload",
             Self::ForLoopActionUsage => "ForLoopActionUsage",
-            Self::ForkNodeUsage => "ForkNodeUsage",
+            Self::ForkNode => "ForkNode",
             Self::IfActionUsage => "IfActionUsage",
             Self::Import => "Import",
             Self::InterfaceEndUsage => "InterfaceEndUsage",
-            Self::JoinNodeUsage => "JoinNodeUsage",
+            Self::JoinNode => "JoinNode",
             Self::LiteralBoolean => "LiteralBoolean",
             Self::LiteralInteger => "LiteralInteger",
             Self::LiteralRational => "LiteralRational",
@@ -323,7 +323,7 @@ impl Metaclass {
             Self::LiteralInfinity => "LiteralInfinity",
             Self::MetadataAccessExpression => "MetadataAccessExpression",
             Self::NullExpression => "NullExpression",
-            Self::MergeNodeUsage => "MergeNodeUsage",
+            Self::MergeNode => "MergeNode",
             Self::MultiplicityRange => "MultiplicityRange",
             Self::NeedUsage => "NeedUsage",
             Self::ObjectiveUsage => "ObjectiveUsage",
@@ -453,7 +453,7 @@ impl Metaclass {
             "AssignmentActionUsage" => Self::AssignmentActionUsage,
             "BindingConnectorUsage" => Self::BindingConnectorUsage,
             "ConjugatedPortDefinition" => Self::ConjugatedPortDefinition,
-            "DecisionNodeUsage" => Self::DecisionNodeUsage,
+            "DecisionNode" => Self::DecisionNode,
             "Dependency" => Self::Dependency,
             "DerivationConnectorUsage" => Self::DerivationConnectorUsage,
             "Diagnostic" => Self::Diagnostic,
@@ -464,11 +464,11 @@ impl Metaclass {
             "FlowEnd" => Self::FlowEnd,
             "FlowPayload" => Self::FlowPayload,
             "ForLoopActionUsage" => Self::ForLoopActionUsage,
-            "ForkNodeUsage" => Self::ForkNodeUsage,
+            "ForkNode" => Self::ForkNode,
             "IfActionUsage" => Self::IfActionUsage,
             "Import" => Self::Import,
             "InterfaceEndUsage" => Self::InterfaceEndUsage,
-            "JoinNodeUsage" => Self::JoinNodeUsage,
+            "JoinNode" => Self::JoinNode,
             "LiteralBoolean" => Self::LiteralBoolean,
             "LiteralInteger" => Self::LiteralInteger,
             "LiteralRational" => Self::LiteralRational,
@@ -476,7 +476,7 @@ impl Metaclass {
             "LiteralInfinity" => Self::LiteralInfinity,
             "MetadataAccessExpression" => Self::MetadataAccessExpression,
             "NullExpression" => Self::NullExpression,
-            "MergeNodeUsage" => Self::MergeNodeUsage,
+            "MergeNode" => Self::MergeNode,
             "MultiplicityRange" => Self::MultiplicityRange,
             "NeedUsage" => Self::NeedUsage,
             "ObjectiveUsage" => Self::ObjectiveUsage,
@@ -1106,18 +1106,43 @@ pub enum DiagramIncompleteReason {
     ParseRecovery,
     UnsupportedSyntax,
     NonConverged,
-    ExposureUnresolved { exposure: DiagramSemanticReference },
-    ExposureAmbiguous { exposure: DiagramSemanticReference },
-    ExposureUnsupported { exposure: DiagramSemanticReference },
-    RelationshipUnresolved { relationship_kind: String },
-    RelationshipAmbiguous { relationship_kind: String },
-    RelationshipUnsupported { relationship_kind: String },
+    ExposureUnresolved {
+        exposure: DiagramSemanticReference,
+    },
+    ExposureAmbiguous {
+        exposure: DiagramSemanticReference,
+    },
+    ExposureUnsupported {
+        exposure: DiagramSemanticReference,
+    },
+    RelationshipUnresolved {
+        relationship_kind: String,
+    },
+    RelationshipAmbiguous {
+        relationship_kind: String,
+    },
+    RelationshipUnsupported {
+        relationship_kind: String,
+    },
     ViewFilterUnresolved,
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
     SequenceMessageEndpointOutsideLifeline,
-    SequenceOrderingCycle,
+    SequenceOrderingCycle {
+        witness: Vec<SequenceCycleStep>,
+    },
+    SequenceContentOmitted {
+        elements: Vec<DiagramOccurrenceIdentity>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SequenceCycleStep {
+    pub source: DiagramOccurrenceIdentity,
+    pub target: DiagramOccurrenceIdentity,
+    pub events: Vec<DiagramOccurrenceIdentity>,
+    pub provenance: RelationshipProvenance,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1134,6 +1159,10 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceReference,
     pub compartments: Vec<DiagramCompartment>,
+    /// The authored multiplicity of this element's declaration (`joints : Motor[6]`), for its
+    /// label. `None` when no `[...]` was written, or when a bound is not a literal integer (an
+    /// expression bound such as `[1..n]` is not reduced to text here).
+    pub multiplicity: Option<Multiplicity>,
     /// The authored direction (`"in"` / `"out"` / `"inout"`) of a port or of a directed feature
     /// such as a parameter of an action. `None` for an element with no authored direction; a
     /// generator or renderer must not derive a side or a direction from this element's name or
@@ -1333,6 +1362,18 @@ pub struct DiagramGridCell {
     pub kind: DiagramEdgeKind,
 }
 
+/// Connectors whose ports belong to one family of related port definitions.
+///
+/// A connector's port type is the most specific non-standard-library port definition every end's
+/// typing specializes, conjugation ignored; port types related by specialization within one view
+/// form a family, named by its most general members.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramPortFamily {
+    pub general: Vec<DiagramElementType>,
+    pub types: Vec<DiagramElementType>,
+    pub connectors: Vec<DiagramOccurrenceIdentity>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum DiagramViewMetadata {
     General {
@@ -1342,6 +1383,9 @@ pub enum DiagramViewMetadata {
         parts: Vec<DiagramOccurrenceIdentity>,
         ports: Vec<DiagramOccurrenceIdentity>,
         connectors: Vec<DiagramOccurrenceIdentity>,
+        /// Connectors grouped by the family of related port definitions their ends share, in
+        /// family-name order. A connector in no family has no common port type.
+        port_families: Vec<DiagramPortFamily>,
     },
     ActionFlow {
         actions: Vec<DiagramOccurrenceIdentity>,
@@ -1421,6 +1465,7 @@ pub enum SequenceEndpoint {
 pub enum SequenceOrder {
     Resolved(u32),
     Cyclic,
+    BlockedByCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1637,7 +1682,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x3024_e215_b0bb_5fbb,
+            SCHEMA_FINGERPRINT, 0x1369_aed7_fa4a_ab18,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1645,7 +1690,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x66b8_0a09_da50_bf6a,
+            COMPATIBILITY_TOKEN, 0x1c4b_1324_144f_9b38,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

@@ -1,4 +1,4 @@
-//! The schema-7 JSON wire contract. The Rust writer validates against these types before
+//! The schema-10 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -7,7 +7,7 @@ use ts_rs::TS;
 #[derive(Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct DiagramProduct {
-    #[ts(type = "7")]
+    #[ts(type = "typeof import('./schemaVersion').DIAGRAM_PRODUCT_SCHEMA_VERSION")]
     pub schema_version: u32,
     pub model_digest: String,
     pub documents: Vec<DiagramDocument>,
@@ -126,7 +126,17 @@ pub enum IncompleteReason {
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
     SequenceMessageEndpointOutsideLifeline,
-    SequenceOrderingCycle,
+    SequenceOrderingCycle { witness: Vec<SequenceCycleStep> },
+    SequenceContentOmitted { elements: Vec<usize> },
+}
+
+#[derive(Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SequenceCycleStep {
+    pub source: usize,
+    pub target: usize,
+    pub events: Vec<usize>,
+    pub provenance: Provenance,
 }
 
 macro_rules! projection {
@@ -172,6 +182,9 @@ pub struct DiagramNode {
     pub owner: Option<usize>,
     pub source: usize,
     pub compartments: Vec<Compartment>,
+    /// The authored multiplicity as written in a label (`"[6]"`, `"[0..*]"`), or `null` when none
+    /// was authored or a bound is an expression.
+    pub multiplicity: Option<String>,
     pub direction: Option<String>,
     pub conjugated: bool,
     /// `"entry"`, `"do"` or `"exit"` for the action a state owns in that role.
@@ -353,10 +366,23 @@ pub enum BrowserMembers {
 }
 
 #[derive(Deserialize, TS)]
-#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct InterconnectionMetadata {
     pub parts: Vec<usize>,
     pub ports: Vec<usize>,
+    pub connectors: Vec<usize>,
+    /// Connectors grouped by the family of related port definitions their ends share, in
+    /// family-name order; a connector in no family has no common port type.
+    pub port_families: Vec<PortFamily>,
+}
+
+/// One port family: its naming (most general) types, every connector port type in it, and its
+/// connector nodes.
+#[derive(Deserialize, TS)]
+#[serde(deny_unknown_fields)]
+pub struct PortFamily {
+    pub general: Vec<TypeReference>,
+    pub types: Vec<TypeReference>,
     pub connectors: Vec<usize>,
 }
 
@@ -456,7 +482,7 @@ status!(SequenceSceneKind, Sequence, "sequence");
 #[serde(deny_unknown_fields)]
 pub struct SequenceMessage {
     pub node: usize,
-    pub label: String,
+    pub label: Option<String>,
     pub source: SequenceEndpoint,
     pub target: SequenceEndpoint,
     pub order: SequenceOrder,
@@ -479,6 +505,7 @@ pub enum SequenceEndpoint {
 pub enum SequenceOrder {
     Resolved { value: u32 },
     Cyclic,
+    BlockedByCycle,
 }
 
 #[derive(Deserialize, TS)]

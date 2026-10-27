@@ -1,3 +1,4 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../../src/generated/diagram-product/schemaVersion";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,9 +31,16 @@ describe("shared graph normalization", () => {
 });
 
 describe("shared prepareViewData", () => {
+  it("rejects incompatible products instead of drawing an empty legacy payload", () => {
+    const product = generatedProduct("sequence_shared_part_endpoints.md") as Record<string, unknown>;
+    for (const schemaVersion of [DIAGRAM_PRODUCT_SCHEMA_VERSION - 1, DIAGRAM_PRODUCT_SCHEMA_VERSION + 1, null]) {
+      expect(() => prepareViewData({ ...product, schemaVersion })).toThrow("Unsupported diagram product schema version");
+    }
+  });
+
   it("expands normalized diagram indexes without deriving semantics", () => {
     const prepared = prepareViewData({
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [1, 2, 1, 6] }],
@@ -83,7 +91,7 @@ describe("shared prepareViewData", () => {
 
   it("adapts a typed interconnection projection into nested parts with boundary ports", () => {
     const prepared = prepareViewData({
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [
@@ -203,7 +211,7 @@ describe("shared prepareViewData", () => {
       reference: 0, metaclass, notationRole: "usage", name, typing: { status: "absent" }, owner, source, compartments: [],
     });
     const prepared = prepareViewData({
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [0, 1, 2, 3].map((line) => ({ document: 0, range: [line, 0, line, 4] })),
@@ -248,7 +256,7 @@ describe("shared prepareViewData", () => {
 
   it("prepares a typed grid relationship matrix whose cells are projected edges", () => {
     const prepared = prepareViewData({
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
@@ -275,7 +283,7 @@ describe("shared prepareViewData", () => {
 
   it("prepares a typed grid without relationships as a table of the exposed elements", () => {
     const prepared = prepareViewData({
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
@@ -304,7 +312,7 @@ describe("shared prepareViewData", () => {
 
   it("prepares a typed state scene without rendering containment or transition declarations as nodes", () => {
     const prepared = prepareViewData({
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///timer.sysml", sourceDomain: "workspace" }],
       sources: [
@@ -941,7 +949,7 @@ describe("shared prepareViewData", () => {
       compartments: [],
     });
     const prepared = prepareViewData({
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],

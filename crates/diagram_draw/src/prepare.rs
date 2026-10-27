@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-7 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-10 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};
@@ -1734,7 +1734,7 @@ fn sequence_diagram_from_scene(
                 "name": if field(message, "label").is_string() {
                     field(message, "label").clone()
                 } else {
-                    field(&nodes[index.unwrap()], "label").clone()
+                    Value::String(String::new())
                 },
                 "payloadName": flow_payload_name(
                     index.unwrap() as u64,
@@ -1753,6 +1753,7 @@ fn sequence_diagram_from_scene(
         "name": name,
         "lifelines": lifelines,
         "messages": messages,
+        "sourceMessageCount": as_array(field(scene, "messages")).len(),
         "activations": [],
         "fragments": [],
     }))
@@ -1811,26 +1812,36 @@ fn prepare_interconnection_from_typed_projection(
             Some((format!("e:{index}"), format!("n:{owner}")))
         })
         .collect();
-    let port_type_keys: HashMap<String, String> = nodes
+    // The semantic layer groups connectors into port families; the drawing only colours them.
+    let families = as_array(field(metadata, "portFamilies"));
+    let family_of_connector: HashMap<u64, usize> = families
         .iter()
         .enumerate()
-        .filter_map(|(index, node)| {
-            if !is_port_metaclass(&as_string(field(node, "metaclass"), "")) {
-                return None;
-            }
-            let typing = field(node, "typing");
-            if field(typing, "status") != "resolved" {
-                return None;
-            }
-            let types = as_array(field(typing, "types"));
-            if types.len() != 1 {
-                return None;
-            }
-            let reference = field(&types[0], "reference")
-                .as_u64()
-                .and_then(|index| references.get(index as usize))?;
-            let qualified_name = field(reference, "qualifiedName").as_str()?;
-            Some((format!("n:{index}"), qualified_name.to_string()))
+        .flat_map(|(family, value)| {
+            as_array(field(value, "connectors"))
+                .iter()
+                .filter_map(Value::as_u64)
+                .map(move |connector| (connector, family))
+                .collect::<Vec<_>>()
+        })
+        .collect();
+    let family_labels: Vec<String> = families
+        .iter()
+        .map(|family| {
+            as_array(field(family, "general"))
+                .iter()
+                .map(|ty| as_string(field(ty, "label"), ""))
+                .collect::<Vec<_>>()
+                .join(" / ")
+        })
+        .collect();
+    prepared["meta"]["portFamilies"] = json!(family_labels);
+    let family_of_edge: HashMap<String, usize> = edges
+        .iter()
+        .enumerate()
+        .filter_map(|(index, edge)| {
+            let origin = field(edge, "origin").as_u64()?;
+            Some((format!("e:{index}"), *family_of_connector.get(&origin)?))
         })
         .collect();
     if let Some(edges) = prepared.get_mut("edges").and_then(Value::as_array_mut) {
@@ -1842,17 +1853,12 @@ fn prepare_interconnection_from_typed_projection(
             {
                 edge["attributes"]["connectorOwner"] = json!(owner);
             }
-            let attributes = &edge["attributes"];
-            let source_type = field(attributes, "sourcePortId")
+            if let Some(&family) = field(edge, "id")
                 .as_str()
-                .and_then(|id| port_type_keys.get(id));
-            let target_type = field(attributes, "targetPortId")
-                .as_str()
-                .and_then(|id| port_type_keys.get(id));
-            if let (Some(source_type), Some(target_type)) = (source_type, target_type) {
-                if source_type == target_type {
-                    edge["attributes"]["portTypeIdentity"] = json!(source_type);
-                }
+                .and_then(|id| family_of_edge.get(id))
+            {
+                edge["attributes"]["portFamily"] = json!(family);
+                edge["attributes"]["portFamilyLabel"] = json!(family_labels[family]);
             }
         }
     }
@@ -2885,19 +2891,24 @@ fn prepare_typed_action_flow(
         }
         None
     };
-    // The parameters of an action: the directed features it owns, by the side they are drawn on.
+    // The parameters of an action: the directed features it owns, by the side they are drawn on,
+    // with their authored direction for the mark in their box. A port is never a parameter here:
+    // an action flow view shows no ports (SysML v2 9.2.20.2.1).
     let parameters = |action: usize, directions: &[&str]| -> Vec<Value> {
         raw_nodes
             .iter()
             .enumerate()
             .filter(|(_, node)| field(node, "owner").as_u64() == Some(action as u64))
-            .filter(|(_, node)| {
-                field(node, "direction")
-                    .as_str()
-                    .is_some_and(|direction| directions.contains(&direction))
+            .filter(|(_, node)| field(node, "metaclass").as_str() != Some("PortUsage"))
+            .filter_map(|(index, node)| {
+                let direction = field(node, "direction").as_str()?;
+                directions
+                    .contains(&direction)
+                    .then_some((index, direction, field(node, "name").as_str()?))
             })
-            .filter_map(|(index, node)| Some((index, field(node, "name").as_str()?)))
-            .map(|(index, name)| json!({ "id": format!("n:{index}"), "name": name }))
+            .map(|(index, direction, name)| {
+                json!({ "id": format!("n:{index}"), "name": name, "direction": direction })
+            })
             .collect()
     };
     // A flow runs between parameters; it is drawn between the squares of those parameters on the
@@ -3019,7 +3030,14 @@ fn prepare_typed_action_flow(
 }
 
 fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
-    if field(input, "schemaVersion").as_u64() != Some(7) {
+    if field(input, "schemaVersion").as_u64() != Some(u64::from(diagram_product::SCHEMA_VERSION)) {
+        if input.get("selectedView").is_some() && input.get("projection").is_some() {
+            return Some(Err(format!(
+                "unsupported diagram product schema version {}; expected {}",
+                field(input, "schemaVersion"),
+                diagram_product::SCHEMA_VERSION,
+            )));
+        }
         return None;
     }
     let selected = field(input, "selectedView");
@@ -3301,6 +3319,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "owner": field(element, "owner"),
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
+                    "multiplicity": field(element, "multiplicity"),
                     "direction": field(element, "direction"),
                     "conjugated": field(element, "conjugated"),
                     "referenceMembership": reference_membership,
@@ -3327,6 +3346,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                             "typeName": field(field(node, "attributes"), "typedByName")
                                 .as_str()
                                 .map(str::to_string),
+                            "multiplicity": field(field(node, "attributes"), "multiplicity"),
                         }))
                     })
                     .collect();
@@ -3392,6 +3412,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
             .map(|index| format!("n:{}", as_string(index, "")))
             .collect::<Vec<_>>(),
         "viewMetadata": metadata,
+        "projectionLimitations": field(field(input, "completeness"), "reasons"),
     });
     if let Some(sequence_diagram) = sequence_diagram {
         meta["sequenceDiagram"] = sequence_diagram;

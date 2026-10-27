@@ -249,8 +249,8 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:7f901818efb29620db728e5b98fe81099e6a1f47a87e37979bc128521b0dab27",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:fdc2b42f6d36a3d7287462bfaa09e2205945bb9da2f3ccf61513cef20fafca4f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -628,6 +628,7 @@ package Model {
         4,
         6
       ],
+      "portFamilies": [],
       "ports": [
         3,
         5
@@ -657,6 +658,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "system",
         "notationRole": "usage",
         "owner": null,
@@ -680,6 +682,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -705,6 +708,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "left",
         "notationRole": "usage",
         "owner": 0,
@@ -728,6 +732,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 2,
@@ -759,6 +764,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "right",
         "notationRole": "usage",
         "owner": 0,
@@ -782,6 +788,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 4,
@@ -805,6 +812,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "spare",
         "notationRole": "usage",
         "owner": 0,

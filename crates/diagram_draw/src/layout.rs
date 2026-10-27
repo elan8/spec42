@@ -42,20 +42,25 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
                     };
                     (far("x", "width"), far("y", "height"))
                 };
-                let nested = match (
-                    layout_nested_behavior(prepared, true, BehaviorMode::State)?,
-                    layout_nested_behavior(prepared, false, BehaviorMode::State)?,
-                ) {
-                    (Some(across), Some(down)) => Some(
-                        if reference_page_scale(extent(&down))
-                            > reference_page_scale(extent(&across))
-                        {
-                            (down, false)
-                        } else {
-                            (across, true)
-                        },
-                    ),
-                    _ => None,
+                let nested = if horizontal || direction.eq_ignore_ascii_case("vertical") {
+                    layout_nested_behavior(prepared, horizontal, BehaviorMode::State)?
+                        .map(|layout| (layout, horizontal))
+                } else {
+                    match (
+                        layout_nested_behavior(prepared, true, BehaviorMode::State)?,
+                        layout_nested_behavior(prepared, false, BehaviorMode::State)?,
+                    ) {
+                        (Some(across), Some(down)) => Some(
+                            if reference_page_scale(extent(&down))
+                                > reference_page_scale(extent(&across))
+                            {
+                                (down, false)
+                            } else {
+                                (across, true)
+                            },
+                        ),
+                        _ => None,
+                    }
                 };
                 let (behavior_layout, horizontal) = if let Some(nested) = nested {
                     nested
@@ -835,7 +840,8 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             if kind.contains("initial") || kind.contains("final") {
                 (34.0, 34.0)
             } else if kind.contains("composite") {
-                (340.0, 320.0)
+                // Wide enough for its full name and state actions, which are not truncated.
+                (state_box(node).0.max(340.0), 320.0)
             } else {
                 state_box(node)
             }
@@ -861,18 +867,17 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
 }
 
 /// The box of a simple state: as wide as its name and its `entry`/`do`/`exit` lines need, and as
-/// high as the lines it shows. The drawing truncates the name at 28 and an action line at 34
-/// characters, so the box never has to grow beyond those.
+/// high as the lines it shows. Keep full labels readable in nested machines as well.
 fn state_box(node: &Value) -> (f64, f64) {
     const NAME_CHARACTER: f64 = 7.4; // 12 px bold
     const ACTION_CHARACTER: f64 = 5.6; // 10 px
     let attributes = field(node, "attributes");
-    let characters = |text: &str, limit: usize| text.chars().count().min(limit) as f64;
+    let characters = |text: &str| text.chars().count() as f64;
     let name = as_string(
         first_nonempty([field(node, "label"), field(node, "name")]),
         "",
     );
-    let mut width = characters(&name, 28) * NAME_CHARACTER + 32.0;
+    let mut width = characters(&name) * NAME_CHARACTER + 32.0;
     let mut actions = 0.0;
     for (prefix, keys) in [
         ("entry ", ["entry", "entryAction"]),
@@ -883,7 +888,7 @@ fn state_box(node: &Value) -> (f64, f64) {
         if !action.is_empty() {
             actions += 1.0;
             let line = format!("{prefix}{action}");
-            width = width.max(characters(&line, 34) * ACTION_CHARACTER + 24.0);
+            width = width.max(characters(&line) * ACTION_CHARACTER + 24.0);
         }
     }
     // The keyword and the name sit on a 38 px header; the label of the state actions
@@ -897,7 +902,7 @@ fn state_box(node: &Value) -> (f64, f64) {
     (width.max(96.0).ceil(), height)
 }
 
-/// The room the names of an action's parameters on one side take beside it: the square on the
+/// The room the names of an action's parameters on one side take beside it: the box against the
 /// boundary, a gap, and the longest name in 8 px text. Zero for an action without them.
 fn parameter_label_room(node: &Value, keys: [&str; 2]) -> f64 {
     let attributes = field(node, "attributes");
@@ -916,18 +921,24 @@ fn parameter_label_room(node: &Value, keys: [&str; 2]) -> f64 {
             .count()
         })
         .max()
-        .map_or(0.0, |characters| characters as f64 * 4.6 + 12.0)
+        .map_or(0.0, |characters| {
+            characters as f64 * 4.6 + PARAMETER_SIZE + 6.0
+        })
 }
 
 /// Space inside an action container: the name compartment on top, then padding around the flow.
 pub(crate) const ACTION_CONTAINER_HEADER: f64 = 44.0;
 const ACTION_CONTAINER_PADDING: f64 = 28.0;
 
-/// The distance between two parameter squares down one side of an action.
+/// The distance between two parameter boxes down one side of an action.
 pub(crate) const PARAMETER_PITCH: f64 = 16.0;
 
-/// How far below the top of an action the square of its `index`th parameter on one side sits. On
-/// an action that holds its own flow the squares start below its name compartment.
+/// The side of a parameter's box, which stands against its action's boundary on the outside
+/// (SysML v2 8.2.3.17 `param-l`/`param-r`); a port's square straddles the boundary instead.
+pub(crate) const PARAMETER_SIZE: f64 = 12.0;
+
+/// How far below the top of an action the box of its `index`th parameter on one side sits. On
+/// an action that holds its own flow the boxes start below its name compartment.
 pub(crate) fn parameter_offset(index: usize, container: bool) -> f64 {
     let top = if container {
         ACTION_CONTAINER_HEADER
@@ -958,13 +969,13 @@ fn parameter_rows(node: &Value) -> usize {
 /// How far a flow keeps from an action or control node.
 const FLOW_CLEARANCE: f64 = 10.0;
 /// The box of a parameter's name as `action_flow::draw_parameters` writes it: 8 px text whose
-/// baseline is 6 px above the square's centre, starting 9 px out from the action's side.
+/// baseline is 6 px above the parameter box's centre, starting 3 px beyond the box.
 const PARAMETER_NAME_CHARACTER: f64 = 5.4;
-const PARAMETER_NAME_GAP: f64 = 9.0;
+const PARAMETER_NAME_GAP: f64 = PARAMETER_SIZE + 3.0;
 const PARAMETER_NAME_ABOVE: f64 = 13.0;
 const PARAMETER_NAME_HEIGHT: f64 = 10.0;
 /// How far a flow keeps from a parameter name: less than from a box, so that the flow leaving the
-/// square beneath a name can still run straight out under it.
+/// box beneath a name can still run straight out under it.
 const NAME_CLEARANCE: f64 = 2.0;
 
 /// A parameter name as an obstacle for `pin_route`, which keeps `FLOW_CLEARANCE` from every box:
@@ -979,7 +990,7 @@ fn name_obstacle((x, y, width, height): crate::ortho_route::Rect) -> crate::orth
     )
 }
 
-/// Draws each flow between two parameters from the square of one to the square of the other,
+/// Draws each flow between two parameters from the box of one to the box of the other,
 /// around the actions and control nodes on its way (SysML v2 8.2.3.17). A flow leaves and enters
 /// an action outwards, on the side its parameter is drawn on; on an action that holds the flow it
 /// leaves and enters inwards. Layout placed the actions with the flows drawn between their boxes;
@@ -1006,9 +1017,10 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
         })
         .collect();
     let containers: HashSet<&String> = container_of.values().collect();
-    // Each parameter's square: its centre, the action that owns it, and the way a flow runs there.
+    // Each parameter's box: where a flow meets it, the action that owns it, and the way a flow
+    // runs there.
     let mut pins: HashMap<String, ((f64, f64), String, Heading)> = HashMap::new();
-    // The name of each parameter, which stands above its square on the outer side, so that a flow
+    // The name of each parameter, which stands above its box on the outer side, so that a flow
     // goes around it rather than through it.
     let mut names: Vec<crate::ortho_route::Rect> = Vec::new();
     for node in nodes {
@@ -1038,6 +1050,13 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
                     Heading::Right
                 };
                 let side = if input { x } else { x + width };
+                // A flow outside the action meets the outer edge of the parameter's box; a flow
+                // inside the action that holds it meets the boundary the box stands against.
+                let anchor = match (input, container) {
+                    (true, false) => side - PARAMETER_SIZE,
+                    (false, false) => side + PARAMETER_SIZE,
+                    (_, true) => side,
+                };
                 let centre = y + parameter_offset(index, container);
                 let name_width = as_string(field(item, "name"), "").chars().count() as f64
                     * PARAMETER_NAME_CHARACTER;
@@ -1052,14 +1071,7 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
                     name_width,
                     PARAMETER_NAME_HEIGHT,
                 )));
-                pins.insert(
-                    parameter,
-                    (
-                        (side, y + parameter_offset(index, container)),
-                        id.clone(),
-                        heading,
-                    ),
-                );
+                pins.insert(parameter, ((anchor, centre), id.clone(), heading));
             }
         }
     }
@@ -1267,7 +1279,7 @@ fn layout_nested_behavior(
         };
         for (id, rect) in positions.iter() {
             let (x, y) = (num(field(rect, "x")), num(field(rect, "y")));
-            // The names of an action's parameters stand outside it, beside their squares.
+            // The names of an action's parameters stand outside it, beyond their boxes.
             let member = members
                 .iter()
                 .find(|member| as_string(field(member, "id"), "") == *id);
@@ -3218,5 +3230,22 @@ mod general_hierarchy_tests {
                 assert!(separated, "sibling boxes must not overlap");
             }
         }
+    }
+}
+#[cfg(test)]
+mod composite_state_size_tests {
+    use super::*;
+
+    #[test]
+    fn a_composite_state_is_wide_enough_for_its_full_name() {
+        let composite = |label: &str| json!({ "id": "s", "label": label, "kind": "composite-state", "attributes": {} });
+        assert_eq!(
+            node_dimensions(&composite("Idle"), BehaviorMode::State),
+            (340.0, 320.0)
+        );
+        let long = "WaitingForTheExternalControllerToBecomeReadyAndCalibrated";
+        let (width, height) = node_dimensions(&composite(long), BehaviorMode::State);
+        assert!(width >= long.chars().count() as f64 * 7.4, "{width}");
+        assert_eq!(height, 320.0);
     }
 }

@@ -1,0 +1,15 @@
+# cargo-audit configuration. Every ignored advisory names its tracking issue and the condition
+# for removing it; do not add an entry without both.
+
+[advisories]
+ignore = [
+    # zstd 0.13 / zstd-safe 7 / zstd-sys 2.0, reached only through Wasmtime's compilation cache
+    # (`wasmtime-internal-cache`, generator_host). The cache (de)compresses Wasmtime's own local
+    # entries, which are compiled machine code Spec42 already executes, so these add no new attack
+    # surface. No Wasmtime release (up to 50.0.0) uses zstd >= 0.14.3 yet. Remove when one does:
+    # https://github.com/elan8/spec42/issues/367
+    "RUSTSEC-2026-0391", # zstd: data from an abandoned stream leaks into the next stream
+    "RUSTSEC-2026-0398", # zstd-safe: Seekable::decompress sets a Vec length beyond capacity
+    "RUSTSEC-2026-0403", # zstd-safe: uninitialized memory on a failed legacy-frame decompression
+    "RUSTSEC-2026-0410", # zstd-sys: WebAssembly allocator shim corrupts memory on failure
+]

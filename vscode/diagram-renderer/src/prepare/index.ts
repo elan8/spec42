@@ -1,3 +1,4 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../../../src/generated/diagram-product/schemaVersion";
 import { resolveNodeChrome } from "../node-notation";
 import { normalizeEdgeKind } from "../graph-normalization";
 import type { DiagramProduct } from "../../../src/generated/diagram-product/DiagramProduct";
@@ -60,6 +61,10 @@ export function rendererLabel(view: string): string {
 }
 
 export function prepareViewData(visualizationInput: unknown): PreparedView {
+  const input = asRecord(visualizationInput);
+  if ("selectedView" in input && "projection" in input && input.schemaVersion !== DIAGRAM_PRODUCT_SCHEMA_VERSION) {
+    throw new Error(`Unsupported diagram product schema version ${input.schemaVersion}; expected ${DIAGRAM_PRODUCT_SCHEMA_VERSION}`);
+  }
   const typed = prepareTypedDiagramProduct(visualizationInput);
   if (typed) return typed;
   const passthrough = asRecord(visualizationInput).preparedView;
@@ -83,7 +88,7 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
 }
 
 /**
- * Adapt the authority-owned schema-7 sequence scene into the legacy shape the renderer consumes.
+ * Adapt the authority-owned schema-8 sequence scene into the legacy shape the renderer consumes.
  * Endpoint ownership and temporal ordering are semantic facts already settled by the scene.
  */
 function sequenceDiagramFromScene(
@@ -123,7 +128,7 @@ function isDiagramProduct(input: unknown): input is DiagramProduct {
   const product = asRecord(input);
   const selected = asRecord(product.selectedView);
   const projection = asRecord(product.projection);
-  return product.schemaVersion === 7 && typeof product.modelDigest === "string" &&
+  return product.schemaVersion === DIAGRAM_PRODUCT_SCHEMA_VERSION && typeof product.modelDigest === "string" &&
     Array.isArray(product.documents) && Array.isArray(product.sources) && Array.isArray(product.references) &&
     typeof selected.kind === "string" && typeof selected.name === "string" &&
     projection.kind === selected.kind && Array.isArray(projection.exposedRoots) &&

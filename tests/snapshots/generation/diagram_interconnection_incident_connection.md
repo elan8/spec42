@@ -291,8 +291,8 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:34c99daa2182910a9004bed8ec39a639f6de53cc4bae37b991426d1996bb8708",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:98c15882ec3d718fcc6301b814ca9d80e6f943bae7ddc375da329d6222c6b115",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -546,6 +546,7 @@ package Model {
         1,
         3
       ],
+      "portFamilies": [],
       "ports": [
         2,
         4
@@ -558,6 +559,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,
@@ -583,6 +585,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "left",
         "notationRole": "usage",
         "owner": null,
@@ -606,6 +609,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 1,
@@ -637,6 +641,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "right",
         "notationRole": "usage",
         "owner": null,
@@ -660,6 +665,7 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 3,

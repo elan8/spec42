@@ -54,6 +54,20 @@ fn folding_ranges_match_multiline_outline_regions() {
 }
 
 #[test]
+fn folding_covers_occurrences_states_and_anonymous_control_bodies() {
+    let text = "occurrence def Scenario {\n    occurrence step {\n    }\n}\nstate def Machine {\n    state running {\n        state nested;\n    }\n}\naction def Work {\n    for x in (1, 2) {\n        action process;\n    }\n    if true {\n        action yes;\n    }\n}\noccurrence def Empty;\n";
+    let root = parse(text).expect("valid occurrence, state and control bodies");
+    let ranges: Vec<_> = folding_ranges(&root)
+        .into_iter()
+        .map(|region| (region.start_line, region.end_line))
+        .collect();
+    assert_eq!(
+        ranges,
+        vec![(0, 3), (1, 2), (4, 8), (5, 7), (9, 16), (10, 12), (13, 15)]
+    );
+}
+
+#[test]
 fn document_symbols_empty() {
     let root = parse("").expect("parse empty");
     let symbols = document_symbols(&root);

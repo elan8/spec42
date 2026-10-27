@@ -247,8 +247,8 @@ package Filters {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:a0f98b5c42e64eb5e30593d0cddaab54f372fbc076b71137720f0dbd38eb091c",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:132899e785c1ce337754ca7becbef7e263504b19260cb45f1926d11fbb2c4b1f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -359,6 +359,7 @@ package Filters {
         0,
         1
       ],
+      "portFamilies": [],
       "ports": []
     },
     "nodes": [
@@ -376,6 +377,7 @@ package Filters {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
@@ -393,6 +395,7 @@ package Filters {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "child",
         "notationRole": "usage",
         "owner": 0,

@@ -295,8 +295,8 @@ package Membership {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:78ae781d420e1857045674551253b6621ac8c3b5a71bb6b1af66061010ec83ae",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:7b33554c8e7a95e1c9fec1b3c600f9d58d686166f9750a1958915b8ab04f09e1",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_reference_membership.md",
@@ -582,6 +582,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Vehicle",
         "notationRole": "definition",
         "owner": null,
@@ -599,6 +600,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "owned",
         "notationRole": "usage",
         "owner": 0,
@@ -622,6 +624,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "borrowed",
         "notationRole": "usage",
         "owner": 0,
@@ -645,6 +648,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "forwarded",
         "notationRole": "usage",
         "owner": 0,
@@ -662,6 +666,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "socket",
         "notationRole": "usage",
         "owner": 0,

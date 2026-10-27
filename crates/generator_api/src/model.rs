@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{
     DiagramBrowserMembers, DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind,
-    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementType,
     DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership, DiagramNotationRole,
-    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramOccurrenceIdentity, DiagramPortFamily, DiagramRelationship, DiagramRelationshipEndpoint,
     DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
     DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
     ElementIdentity, ProjectionCompleteness, ProjectionFeature, SequenceEndpoint, SequenceMessage,
@@ -932,6 +932,7 @@ impl GeneratorModelView {
                     .map(|owner| self.diagram_occurrence(owner))
                     .transpose()?,
                 source: source_reference(&element.source, self.model.document_identity(element.source.document).unwrap_or_default()),
+                multiplicity: diagram_multiplicity(element.multiplicity),
                 compartments: element.compartments.iter().map(|compartment| {
                     Ok(DiagramCompartment {
                         kind: match compartment.kind {
@@ -1206,6 +1207,7 @@ impl GeneratorModelView {
                                     sysml_query::resolved_slice::DiagramSequenceOrder::Cyclic => {
                                         SequenceOrder::Cyclic
                                     }
+                                    sysml_query::resolved_slice::DiagramSequenceOrder::BlockedByCycle => SequenceOrder::BlockedByCycle,
                                 },
                                 provenance: relationship_provenance(message.provenance),
                                 source_reference: source_reference(
@@ -1367,6 +1369,40 @@ impl GeneratorModelView {
                 })
             })
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        let element_type = |target: &SymbolId| -> Result<DiagramElementType, ModelQueryError> {
+            let target_entry = self.by_identity.get(target).ok_or_else(|| {
+                ModelQueryError::Unresolved(
+                    "diagram port family type is absent from the publication".into(),
+                )
+            })?;
+            Ok(DiagramElementType {
+                reference: self.diagram_reference(*target)?,
+                label: display_label(&self.model, &target_entry.entry),
+            })
+        };
+        let port_families = projection
+            .port_families
+            .iter()
+            .map(|family| {
+                Ok(DiagramPortFamily {
+                    general: family
+                        .general
+                        .iter()
+                        .map(element_type)
+                        .collect::<Result<_, _>>()?,
+                    types: family
+                        .types
+                        .iter()
+                        .map(element_type)
+                        .collect::<Result<_, _>>()?,
+                    connectors: family
+                        .connectors
+                        .iter()
+                        .map(|occurrence| self.diagram_occurrence(occurrence))
+                        .collect::<Result<_, _>>()?,
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
         let metadata = diagram_metadata(
             view.kind,
             &roots,
@@ -1375,6 +1411,7 @@ impl GeneratorModelView {
             &edges,
             &scene,
             browser_rows,
+            port_families,
         );
         Ok(DiagramViewProjection {
             schema_version: 1,
@@ -1869,7 +1906,37 @@ impl GeneratorModelView {
             Owned::SequenceMessageEndpointOutsideLifeline => {
                 DiagramIncompleteReason::SequenceMessageEndpointOutsideLifeline
             }
-            Owned::SequenceOrderingCycle => DiagramIncompleteReason::SequenceOrderingCycle,
+            Owned::SequenceOrderingCycle { witness } => {
+                DiagramIncompleteReason::SequenceOrderingCycle {
+                    witness: witness
+                        .iter()
+                        .map(|step| {
+                            Ok(spec42_generator_protocol::SequenceCycleStep {
+                                source: self.diagram_occurrence(&step.source)?,
+                                target: self.diagram_occurrence(&step.target)?,
+                                events: step
+                                    .events
+                                    .iter()
+                                    .map(|event| self.diagram_occurrence(event))
+                                    .collect::<Result<Vec<_>, _>>()?,
+                                provenance: if step.authored {
+                                    spec42_generator_protocol::RelationshipProvenance::Authored
+                                } else {
+                                    spec42_generator_protocol::RelationshipProvenance::Implied
+                                },
+                            })
+                        })
+                        .collect::<Result<Vec<_>, ModelQueryError>>()?,
+                }
+            }
+            Owned::SequenceContentOmitted { elements } => {
+                DiagramIncompleteReason::SequenceContentOmitted {
+                    elements: elements
+                        .iter()
+                        .map(|element| self.diagram_occurrence(element))
+                        .collect::<Result<Vec<_>, _>>()?,
+                }
+            }
         })
     }
 
@@ -2048,6 +2115,7 @@ fn relationship_provenance(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn diagram_metadata(
     kind: DiagramViewKind,
     roots: &[DiagramOccurrenceIdentity],
@@ -2056,6 +2124,7 @@ fn diagram_metadata(
     edges: &[DiagramEdge],
     scene: &DiagramScene,
     browser_rows: Vec<DiagramBrowserRow>,
+    port_families: Vec<DiagramPortFamily>,
 ) -> DiagramViewMetadata {
     let ids = |classes: &[Metaclass]| {
         elements
@@ -2080,6 +2149,7 @@ fn diagram_metadata(
                 Metaclass::ConnectionUsage,
                 Metaclass::BindingConnectorUsage,
             ]),
+            port_families,
         },
         DiagramViewKind::ActionFlowView => {
             // The semantic vocabulary names these kinds as SysML does (`ForkNode`,
@@ -2106,16 +2176,7 @@ fn diagram_metadata(
                     "ForLoopActionUsage",
                     "TerminateActionUsage",
                 ]),
-                control_nodes: named(&[
-                    "DecisionNode",
-                    "MergeNode",
-                    "ForkNode",
-                    "JoinNode",
-                    "DecisionNodeUsage",
-                    "MergeNodeUsage",
-                    "ForkNodeUsage",
-                    "JoinNodeUsage",
-                ]),
+                control_nodes: named(&["DecisionNode", "MergeNode", "ForkNode", "JoinNode"]),
             }
         }
         DiagramViewKind::StateTransitionView => DiagramViewMetadata::StateTransition {
@@ -2324,6 +2385,8 @@ fn target_order(
     }
     match (a, b) {
         (T::Resolved(a), T::Resolved(b)) => summary_order(a, b),
+        // Each candidate list was sorted by `summary_order` when it was built, so comparing the
+        // lists element by element, then by length, is a total and deterministic order.
         (T::Ambiguous(a), T::Ambiguous(b)) => a
             .iter()
             .zip(b)
@@ -2339,15 +2402,10 @@ fn api_metaclass(kind: ElementKind) -> Metaclass {
     // The semantic vocabulary uses the concrete `FlowConnection*` spelling while the generator
     // wire contract uses SysML's `Flow*` metaclass spelling. Keep the typed bridge at this boundary;
     // `Metaclass::parse` is for its own vocabulary, not a second semantic classification table.
-    // Control nodes likewise: the semantic vocabulary names the node metaclass (`DecisionNode`),
-    // the wire contract the usage the node is written as (`DecisionNodeUsage`).
+    // Control nodes need no bridge: both name the SysML metaclass (`DecisionNode`, a `ControlNode`).
     match kind {
         ElementKind::FlowConnectionDefinition => return Metaclass::FlowDefinition,
         ElementKind::FlowConnectionUsage => return Metaclass::FlowUsage,
-        ElementKind::DecisionNode => return Metaclass::DecisionNodeUsage,
-        ElementKind::MergeNode => return Metaclass::MergeNodeUsage,
-        ElementKind::ForkNode => return Metaclass::ForkNodeUsage,
-        ElementKind::JoinNode => return Metaclass::JoinNodeUsage,
         _ => {}
     }
     let parsed = Metaclass::parse(kind.as_str());
@@ -2491,18 +2549,18 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         | Metaclass::AssertUsage
         | Metaclass::AssignmentActionUsage
         | Metaclass::BindingConnectorUsage
-        | Metaclass::DecisionNodeUsage
+        | Metaclass::DecisionNode
         | Metaclass::Dependency
         | Metaclass::DerivationConnectorUsage
         | Metaclass::ElseActionUsage
         | Metaclass::FilterUsage
         | Metaclass::FlowPayload
         | Metaclass::ForLoopActionUsage
-        | Metaclass::ForkNodeUsage
+        | Metaclass::ForkNode
         | Metaclass::IfActionUsage
         | Metaclass::InterfaceEndUsage
-        | Metaclass::JoinNodeUsage
-        | Metaclass::MergeNodeUsage
+        | Metaclass::JoinNode
+        | Metaclass::MergeNode
         | Metaclass::NeedUsage
         | Metaclass::ObjectiveUsage
         | Metaclass::ParameterUsage
@@ -2535,6 +2593,27 @@ fn source_range(range: sysml_query::resolved_slice::TextRange) -> SourceRange {
         start_character: range.start.character,
         end_line: range.end.line,
         end_character: range.end.character,
+    }
+}
+/// The multiplicity a diagram label shows, when both bounds are literal or unbounded. A diagram is
+/// never refused for an expression bound; it is drawn without the multiplicity instead.
+fn diagram_multiplicity(
+    value: MultiplicityFacts,
+) -> Option<spec42_generator_protocol::Multiplicity> {
+    match value {
+        MultiplicityFacts::Absent => None,
+        MultiplicityFacts::Declared {
+            lower,
+            upper,
+            ordered,
+            nonunique,
+        } => Some(spec42_generator_protocol::Multiplicity {
+            lower: bound(lower).ok()?,
+            upper: bound(upper).ok()?,
+            ordered,
+            unique: Some(!nonunique),
+            implied: false,
+        }),
     }
 }
 fn bound(value: MultiplicityBound) -> Result<Option<String>, ModelQueryError> {

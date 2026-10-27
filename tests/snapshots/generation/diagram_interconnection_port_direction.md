@@ -333,8 +333,8 @@ package PortDirectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:94d7ead54b6b835cfbec6cc297204c087048ff044dd7c2d3130ce9c485e3cd4f",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:1ebe2eaeb0cd8101c2cc9600068d971490593c471320e70c735825553977c65f",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_port_direction.md",
@@ -620,6 +620,7 @@ package PortDirectionExample {
       "parts": [
         0
       ],
+      "portFamilies": [],
       "ports": [
         1,
         2,
@@ -647,6 +648,7 @@ package PortDirectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Node",
         "notationRole": "definition",
         "owner": null,
@@ -664,6 +666,7 @@ package PortDirectionExample {
         "direction": "inout",
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "bidi",
         "notationRole": "usage",
         "owner": 0,
@@ -687,6 +690,7 @@ package PortDirectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "plain",
         "notationRole": "usage",
         "owner": 0,
@@ -710,6 +714,7 @@ package PortDirectionExample {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "inbound",
         "notationRole": "usage",
         "owner": 0,
@@ -733,6 +738,7 @@ package PortDirectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "mirrored",
         "notationRole": "usage",
         "owner": 0,
@@ -756,6 +762,7 @@ package PortDirectionExample {
         "direction": "out",
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "outbound",
         "notationRole": "usage",
         "owner": 0,

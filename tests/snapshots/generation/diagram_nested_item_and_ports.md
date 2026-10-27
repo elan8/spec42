@@ -694,8 +694,8 @@ package NestedOwners {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:227f155bdfc01d343dc187c0213efa4caf309772700b5ce56ecf319f7e1973b6",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:8382cf59041f3a022fe0459999d7594ac59716ae1e9f43441604f21402bb123a",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1423,6 +1423,25 @@ package NestedOwners {
         7,
         8
       ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1
+          ],
+          "general": [
+            {
+              "label": "P",
+              "reference": 16
+            }
+          ],
+          "types": [
+            {
+              "label": "P",
+              "reference": 16
+            }
+          ]
+        }
+      ],
       "ports": [
         5,
         9,
@@ -1465,6 +1484,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
@@ -1482,6 +1502,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "BindingConnectorAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -1514,6 +1535,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "destination",
         "notationRole": "usage",
         "owner": 0,
@@ -1545,6 +1567,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ItemUsage",
+        "multiplicity": null,
         "name": "carried",
         "notationRole": "usage",
         "owner": 2,
@@ -1568,6 +1591,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "slot",
         "notationRole": "usage",
         "owner": 3,
@@ -1599,6 +1623,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": "inout",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "inBox",
         "notationRole": "usage",
         "owner": 2,
@@ -1630,6 +1655,7 @@ package NestedOwners {
         "direction": "inout",
         "featureDirection": null,
         "metaclass": "ItemUsage",
+        "multiplicity": null,
         "name": "box",
         "notationRole": "usage",
         "owner": 5,
@@ -1653,6 +1679,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "slot",
         "notationRole": "usage",
         "owner": 6,
@@ -1684,6 +1711,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "src",
         "notationRole": "usage",
         "owner": 0,
@@ -1707,6 +1735,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "out1",
         "notationRole": "usage",
         "owner": 8,
@@ -1739,6 +1768,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "bundle",
         "notationRole": "usage",
         "owner": 0,
@@ -1762,6 +1792,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "a",
         "notationRole": "usage",
         "owner": 10,
@@ -1785,6 +1816,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "b",
         "notationRole": "usage",
         "owner": 10,
@@ -1817,6 +1849,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "second",
         "notationRole": "usage",
         "owner": 0,
@@ -1840,6 +1873,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "a",
         "notationRole": "usage",
         "owner": 13,
@@ -1863,6 +1897,7 @@ package NestedOwners {
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "b",
         "notationRole": "usage",
         "owner": 13,

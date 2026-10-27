@@ -27,6 +27,7 @@ mod node_notation;
 mod nodes;
 mod ortho_route;
 pub mod pipeline;
+mod port_legend;
 mod prepare;
 pub mod sequence;
 pub mod state_transition;
@@ -485,13 +486,23 @@ pub fn render_interconnection_view_svg(
             }
         }
     }
-    let bounds = bounds_with_routes(
+    let mut bounds = bounds_with_routes(
         (extent.0, extent.1, extent.2 - extent.0, extent.3 - extent.1),
         graph
             .edges
             .iter()
             .flat_map(|edge| ibd_edges::route_points_for_edge(edge, &layout_edges_by_id)),
     );
+    // The connector colours' legend sits below the content, inside the view frame.
+    if let Some((legend, legend_bottom)) = port_legend::draw_port_family_legend(
+        &graph.meta,
+        &graph.edges,
+        theme,
+        (bounds.0, bounds.1 + bounds.3 + 24.0),
+    ) {
+        root = root.child(legend);
+        bounds.3 = legend_bottom - bounds.1;
+    }
     let (root, (left, top, right, bottom)) = view_frame::enclose(
         root,
         &graph.title,

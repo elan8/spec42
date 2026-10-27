@@ -15,7 +15,7 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
 never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 7
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 10
 is the sole renderer product for this contract.
 
 Projected element `name` is the publication's canonical effective name (SysML 7.6.5), so an
@@ -54,11 +54,11 @@ An empty drawing explains that no elements are selected and directs the reader t
 exposes and filters. It does not turn an empty selection into an incomplete result or render
 elements excluded by the view's filters.
 
-Projection completeness is scoped to facts the selected query consumes. Publication-wide parser
-recovery or unsupported syntax is not itself a diagram reason: a selected exposure, required
-relationship, filter, or geometry fact must carry the affected outcome. A resolved exposure of a
+Projection completeness includes the publication's parser-recovery, unsupported-syntax, and
+non-convergence obstacles: an incomplete publication cannot establish that its selected content
+is exhaustive. Query-specific reasons remain scoped to the selected exposure. A resolved exposure of a
 typed usage traverses the publication's canonical effective-feature query, preserving authored
-versus implied containment provenance. Until the semantic evaluation layer publishes an
+versus implied containment provenance.
 The semantic evaluation layer applies all effective view conditions before projection. Conditions
 from separate filter memberships are conjunctive, while Boolean composition within a condition
 retains its authored meaning. Candidate classification uses canonical semantic kinds and resolved
@@ -97,7 +97,7 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-7 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
+The schema-10 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
 discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.
 
@@ -109,10 +109,49 @@ fails when the Rust contract and checked-in TypeScript files differ.
 Schema 6 kept the schema-5 field names and shapes and changed what `relationships` contains (see
 above). Schema 7 adds the browser `metadata.rows` (row key, membership, member state) and changes
 the grid metadata: a `layout` (`relationship-matrix` or `element-table`), node-index `columns`, and
-cells naming their row and column nodes and the `edge` they show. A product of an earlier schema is
-not accepted. The renderer's legacy pre-schema-5 adapters
+cells naming their row and column nodes and the `edge` they show. Schema 8 adds sequence cycle
+witnesses and omitted-content reasons, distinguishes messages blocked downstream of a cycle,
+and makes an anonymous message's label null. Schema 9 adds the interconnection
+`metadata.portFamilies`: connectors grouped by the family of related port definitions their ends
+share. A connector's port type is the most specific port definition every end's typing specializes,
+reflexively and with conjugation ignored, excluding standard-library definitions; port types related
+by specialization within the view form one family, listed in family-name order with its most general
+(`general`) and all (`types`) port types and its connector nodes. A connector in no family has no
+common port type. The renderer colours connectors by family and draws a legend; it does not derive
+port types itself. Schema 10 adds a node's authored `multiplicity` as it is written in a label
+(`[6]`, `[0..*]`), or `null` when none was authored or a bound is an expression; a multiplicity, its
+bounds and any KerML expression that is not a SysML usage are never nodes of a view. The generated schema constant is derived from the Rust owner and imported by
+TypeScript consumers. A product of an earlier schema is not accepted. The renderer's legacy pre-schema-5 adapters
 remain boundary-only compatibility code. A future incompatible wire change must increment `schemaVersion`, regenerate
 the bindings, update the checked-in product corpus, and migrate consumers in the same change.
+
+## Sequence ordering and incomplete content
+
+The normative boundary is OMG SysML 2.0 Language §§7.16.2 (messages), 8.2.3.9 (message notation),
+and 9.2.20.2.7 (SequenceView):
+[Language specification](https://www.omg.org/spec/SysML/2.0/Language/PDF).
+Messages relate source and target events; graphical lifeline ordering represents event time
+precedence. A nested occurrence alone is not a nested sequence view. The fixtures named
+`sequence_*` in the generation corpus exercise these boundaries and the current support limits.
+
+The semantic projection derives precedence from authored message successions and nonempty paths
+between sending events, including message transfer arcs between actual events. A participant
+used directly as a message endpoint is a lifeline, not a shared event. Shared lifelines, fan-in,
+fan-out, reply messages, and self messages do not alone establish precedence or a cycle. A
+resolved ordinal gives deterministic display order consistent with modeled precedence; an
+unconstrained tie does not assert an authored execution order.
+
+`sequence-ordering-cycle` carries closed witnesses whose steps name source and target message
+node indexes, event-path node indexes, and authored or implied provenance. Contextual occurrence
+identity is retained before assigning indexes. Only messages on a cycle are `cyclic`; dependent
+messages that cannot be ordered are `blocked-by-cycle`. Unrelated messages retain their order.
+
+Only messages directly owned by the exposed sequence occurrence are currently drawn. Messages
+inside nested or structured behavior within that exposure produce `sequence-content-omitted`
+with the omitted node indexes. A narrow exposure does not report unrelated outer content.
+Renderers retain usable content and display typed limitations, including for empty incomplete
+results. The editor explains each reason, links its supplied source identities, and can copy the
+structured details. It does not reconstruct causality or flatten omitted behavior.
 
 ## Root-view framing
 

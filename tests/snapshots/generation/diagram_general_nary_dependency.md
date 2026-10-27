@@ -262,8 +262,8 @@ package Trace {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:a8022208f58092a0c005c712f35059ea5a2ff724b8f0197613cfaa52e610c373",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:aec38deafd7a715d90865a194280f26280e9d6fe382b00b797e267072af363b3",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_nary_dependency.md",
@@ -479,6 +479,7 @@ package Trace {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Dependency",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,
@@ -496,6 +497,7 @@ package Trace {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "b",
         "notationRole": "usage",
         "owner": null,
@@ -513,6 +515,7 @@ package Trace {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "c",
         "notationRole": "usage",
         "owner": null,
@@ -530,6 +533,7 @@ package Trace {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "d",
         "notationRole": "usage",
         "owner": null,

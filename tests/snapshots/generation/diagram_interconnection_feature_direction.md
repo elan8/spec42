@@ -614,8 +614,8 @@ package Feed {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:d9b1b2da6f205ab670a622c043fd41a43d71c785fcfa520080e8e82eeaf5a2a6",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:fd58ac50638268cc957cc0ea83964693a25c9468c666de8a7411c02dd163da29",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1084,6 +1084,7 @@ package Feed {
         2,
         5
       ],
+      "portFamilies": [],
       "ports": [
         3,
         4,
@@ -1115,6 +1116,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "system",
         "notationRole": "usage",
         "owner": null,
@@ -1132,6 +1134,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1158,6 +1161,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "load",
         "notationRole": "usage",
         "owner": 0,
@@ -1181,6 +1185,7 @@ package Feed {
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "feed",
         "notationRole": "usage",
         "owner": 2,
@@ -1204,6 +1209,7 @@ package Feed {
         "direction": "in",
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "forced",
         "notationRole": "usage",
         "owner": 2,
@@ -1237,6 +1243,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "source",
         "notationRole": "usage",
         "owner": 0,
@@ -1260,6 +1267,7 @@ package Feed {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "tag",
         "notationRole": "usage",
         "owner": 5,
@@ -1283,6 +1291,7 @@ package Feed {
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "feed",
         "notationRole": "usage",
         "owner": 5,
@@ -1306,6 +1315,7 @@ package Feed {
         "direction": null,
         "featureDirection": "inout",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "link",
         "notationRole": "usage",
         "owner": 5,

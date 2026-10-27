@@ -950,8 +950,8 @@ package Links {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:ac9c832ae85315cf486663e73928cb785e0103b55d2c951b0e71c82aa5c03eb5",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:1429d4539ea97b101e8cea1bbe80c9092594f9724a4c46eb069357a0d530563f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1994,6 +1994,29 @@ package Links {
         12,
         15
       ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1,
+            4,
+            5,
+            8,
+            18
+          ],
+          "general": [
+            {
+              "label": "PowerPort",
+              "reference": 9
+            }
+          ],
+          "types": [
+            {
+              "label": "PowerPort",
+              "reference": 9
+            }
+          ]
+        }
+      ],
       "ports": [
         10,
         11,
@@ -2037,6 +2060,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "system",
         "notationRole": "usage",
         "owner": null,
@@ -2063,6 +2087,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -2086,6 +2111,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": "source",
         "notationRole": "usage",
         "owner": 1,
@@ -2109,6 +2135,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": "target",
         "notationRole": "usage",
         "owner": 1,
@@ -2132,6 +2159,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": "namedUntyped",
         "notationRole": "usage",
         "owner": 0,
@@ -2158,6 +2186,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": "mainPower",
         "notationRole": "usage",
         "owner": 0,
@@ -2181,6 +2210,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": "source",
         "notationRole": "usage",
         "owner": 5,
@@ -2204,6 +2234,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": "target",
         "notationRole": "usage",
         "owner": 5,
@@ -2227,6 +2258,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -2253,6 +2285,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "a",
         "notationRole": "usage",
         "owner": 0,
@@ -2276,6 +2309,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 9,
@@ -2299,6 +2333,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "q",
         "notationRole": "usage",
         "owner": 9,
@@ -2331,6 +2366,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "b",
         "notationRole": "usage",
         "owner": 0,
@@ -2354,6 +2390,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 12,
@@ -2377,6 +2414,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "q",
         "notationRole": "usage",
         "owner": 12,
@@ -2409,6 +2447,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "c",
         "notationRole": "usage",
         "owner": 0,
@@ -2432,6 +2471,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 15,
@@ -2455,6 +2495,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "q",
         "notationRole": "usage",
         "owner": 15,
@@ -2487,6 +2528,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "InterfaceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -2510,6 +2552,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": "a",
         "notationRole": "usage",
         "owner": 18,
@@ -2533,6 +2576,7 @@ package Links {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": "b",
         "notationRole": "usage",
         "owner": 18,

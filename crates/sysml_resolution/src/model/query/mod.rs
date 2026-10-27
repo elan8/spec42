@@ -838,6 +838,45 @@ impl ResolvedSemanticModel {
     /// A document this publication did not admit has no diagnostics, which is a different answer
     /// from "no diagnostic was reported": the caller asked about a document that is not part of
     /// this model, and the empty slice says so alongside the publication's completeness.
+    /// The publication obstacles one document contributes: parser recovery (a parser error, not a
+    /// warning, or a recovered node) and constructs lowering does not model. Non-convergence is a property of
+    /// the whole solve and is never attributed to a document.
+    pub(crate) fn document_obstacles(
+        &self,
+        document: DocumentId,
+    ) -> impl Iterator<Item = crate::PublicationObstacle> {
+        let id = u32::try_from(document.index()).ok().map(DocumentIdx);
+        let diagnostics = id
+            .and_then(|id| self.diagnostics.by_document.get(id.index()))
+            .and_then(|(start, end)| {
+                self.diagnostics
+                    .diagnostics
+                    .get(*start as usize..*end as usize)
+            })
+            .unwrap_or_default();
+        let recovery = id.is_some_and(|id| {
+            self.storage
+                .recovery
+                .iter()
+                .any(|record| record.document == id)
+        }) || diagnostics.iter().any(|diagnostic| {
+            diagnostic.origin() == sysml_contract::DiagnosticOrigin::Parser
+                && diagnostic.severity() == crate::DiagnosticSeverity::Error
+        });
+        let unsupported = id.is_some_and(|id| {
+            self.storage
+                .unsupported
+                .iter()
+                .any(|record| record.document == id)
+        });
+        [
+            recovery.then_some(crate::PublicationObstacle::ParseRecovery),
+            unsupported.then_some(crate::PublicationObstacle::UnsupportedSyntax),
+        ]
+        .into_iter()
+        .flatten()
+    }
+
     pub(crate) fn published_document_diagnostics(
         &self,
         document: &str,
@@ -2144,6 +2183,15 @@ impl<D> SemanticModel<D> {
             ))
         };
         match (collection, source_kind) {
+            (
+                ActionDerivedFactCollection::UntilArgument,
+                Some(DeclarationKind::While | DeclarationKind::Loop),
+            ) => {
+                if !action_parameter(3).is_empty() {
+                    return expression_parameter(3);
+                }
+                return self.resolved_outcome(ActionDerivedFactOutcome::Arguments(Box::new([])));
+            }
             (
                 ActionDerivedFactCollection::TerminateOccurrenceArgument,
                 Some(DeclarationKind::TerminateActionUsage),

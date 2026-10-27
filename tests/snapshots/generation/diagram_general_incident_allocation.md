@@ -632,8 +632,8 @@ package Deployment {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:ca2c572cfdb030aab81abc0bad29a69e716a1a6bd2c7510b52c4cdf0fb6e73ad",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:8adc99ed9918b8dfab1501ec610a060cfaeae0b0fb46cc4197f35c9de1bd281f",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_incident_allocation.md",
@@ -915,6 +915,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "workerA",
         "notationRole": "usage",
         "owner": null,
@@ -938,6 +939,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "workerB",
         "notationRole": "usage",
         "owner": null,
@@ -961,6 +963,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "cpu",
         "notationRole": "usage",
         "owner": null,
@@ -984,6 +987,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AllocationUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,
@@ -1001,6 +1005,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AllocationUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,

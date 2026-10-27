@@ -3,7 +3,12 @@ import type { Compartment } from "./Compartment";
 import type { NodeTyping } from "./NodeTyping";
 import type { NotationRole } from "./NotationRole";
 
-export type DiagramNode = { reference: number, metaclass: string, notationRole: NotationRole, name: string | null, typing: NodeTyping, owner: number | null, source: number, compartments: Array<Compartment>, direction: string | null, conjugated: boolean, 
+export type DiagramNode = { reference: number, metaclass: string, notationRole: NotationRole, name: string | null, typing: NodeTyping, owner: number | null, source: number, compartments: Array<Compartment>, 
+/**
+ * The authored multiplicity as written in a label (`"[6]"`, `"[0..*]"`), or `null` when none
+ * was authored or a bound is an expression.
+ */
+multiplicity: string | null, direction: string | null, conjugated: boolean, 
 /**
  * `"entry"`, `"do"` or `"exit"` for the action a state owns in that role.
  */

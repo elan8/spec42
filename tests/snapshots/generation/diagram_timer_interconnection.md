@@ -7000,8 +7000,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:3066897884cd7b4d4c303e8d2b810eb9e9d19540127b9348c4f8c267d1b5d9cc",
+  "schemaVersion": 10,
+  "modelDigest": "blake3:bccecae512981bd5e5af8fb27d096035d2f411951813201c1861eb4462b6ac73",
   "documents": [
     {
       "uri": "memory://snapshot/examples/timer/KitchenTimer.sysml",
@@ -8978,6 +8978,97 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         33,
         34
       ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "general": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 1
+            }
+          ],
+          "types": [
+            {
+              "label": "BatteryOutlet",
+              "reference": 1
+            }
+          ]
+        },
+        {
+          "connectors": [
+            7
+          ],
+          "general": [
+            {
+              "label": "ButtonInputPort",
+              "reference": 2
+            }
+          ],
+          "types": [
+            {
+              "label": "ButtonInputPort",
+              "reference": 2
+            }
+          ]
+        },
+        {
+          "connectors": [
+            10
+          ],
+          "general": [
+            {
+              "label": "BuzzerCommandPort",
+              "reference": 3
+            }
+          ],
+          "types": [
+            {
+              "label": "BuzzerCommandPort",
+              "reference": 3
+            }
+          ]
+        },
+        {
+          "connectors": [
+            8
+          ],
+          "general": [
+            {
+              "label": "DisplayCommandPort",
+              "reference": 4
+            }
+          ],
+          "types": [
+            {
+              "label": "DisplayCommandPort",
+              "reference": 4
+            }
+          ]
+        },
+        {
+          "connectors": [
+            9
+          ],
+          "general": [
+            {
+              "label": "LcdSegmentDrivePort",
+              "reference": 5
+            }
+          ],
+          "types": [
+            {
+              "label": "LcdSegmentDrivePort",
+              "reference": 5
+            }
+          ]
+        }
+      ],
       "ports": [
         12,
         13,
@@ -9025,6 +9116,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "timerInstance",
         "notationRole": "usage",
         "owner": null,
@@ -9048,6 +9140,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -9065,6 +9158,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -9082,6 +9176,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -9099,6 +9194,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -9116,6 +9212,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -9154,6 +9251,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "pcb",
         "notationRole": "usage",
         "owner": 0,
@@ -9177,6 +9275,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 6,
@@ -9194,6 +9293,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 6,
@@ -9211,6 +9311,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 6,
@@ -9228,6 +9329,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 6,
@@ -9255,6 +9357,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "buzzerDriver",
         "notationRole": "usage",
         "owner": 6,
@@ -9278,6 +9381,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "buzzerPwrOut",
         "notationRole": "usage",
         "owner": 11,
@@ -9301,6 +9405,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "pwrIn",
         "notationRole": "usage",
         "owner": 11,
@@ -9324,6 +9429,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "ctrlIn",
         "notationRole": "usage",
         "owner": 11,
@@ -9359,6 +9465,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "mcu",
         "notationRole": "usage",
         "owner": 6,
@@ -9382,6 +9489,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "displayOut",
         "notationRole": "usage",
         "owner": 15,
@@ -9405,6 +9513,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "pwr",
         "notationRole": "usage",
         "owner": 15,
@@ -9428,6 +9537,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "buttonIn",
         "notationRole": "usage",
         "owner": 15,
@@ -9451,6 +9561,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "lcdDrive",
         "notationRole": "usage",
         "owner": 15,
@@ -9474,6 +9585,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "buzzerOut",
         "notationRole": "usage",
         "owner": 15,
@@ -9506,6 +9618,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "buttons",
         "notationRole": "usage",
         "owner": 6,
@@ -9529,6 +9642,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "pwr",
         "notationRole": "usage",
         "owner": 21,
@@ -9552,6 +9666,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "output",
         "notationRole": "usage",
         "owner": 21,
@@ -9585,6 +9700,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "display",
         "notationRole": "usage",
         "owner": 6,
@@ -9608,6 +9724,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "cmd",
         "notationRole": "usage",
         "owner": 24,
@@ -9631,6 +9748,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "pwr",
         "notationRole": "usage",
         "owner": 24,
@@ -9654,6 +9772,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "lcdIn",
         "notationRole": "usage",
         "owner": 24,
@@ -9685,6 +9804,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "buzzer",
         "notationRole": "usage",
         "owner": 0,
@@ -9708,6 +9828,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "in",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "pwr",
         "notationRole": "usage",
         "owner": 28,
@@ -9739,6 +9860,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "battery",
         "notationRole": "usage",
         "owner": 0,
@@ -9762,6 +9884,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": "out",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "powerOut",
         "notationRole": "usage",
         "owner": 30,
@@ -9794,6 +9917,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "housing",
         "notationRole": "usage",
         "owner": 0,
@@ -9817,6 +9941,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "frontCover",
         "notationRole": "usage",
         "owner": 32,
@@ -9840,6 +9965,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "backCover",
         "notationRole": "usage",
         "owner": 32,

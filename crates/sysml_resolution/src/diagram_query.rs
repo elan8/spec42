@@ -87,7 +87,21 @@ pub enum DiagramIncompleteReason {
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
     SequenceMessageEndpointOutsideLifeline,
-    SequenceOrderingCycle,
+    SequenceOrderingCycle {
+        witness: Box<[DiagramSequenceCycleStep]>,
+    },
+    SequenceContentOmitted {
+        elements: Box<[DiagramOccurrenceIdentity]>,
+    },
+}
+
+/// One edge of an actual closed precedence path, retained by the projection owner.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct DiagramSequenceCycleStep {
+    pub source: DiagramOccurrenceIdentity,
+    pub target: DiagramOccurrenceIdentity,
+    pub events: Box<[DiagramOccurrenceIdentity]>,
+    pub authored: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -109,6 +123,9 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceLocation,
     pub compartments: Box<[DiagramCompartment]>,
+    /// The authored multiplicity of this element's declaration (`joints : Motor[6]`), which its
+    /// label shows. `Absent` when no `[...]` was written.
+    pub multiplicity: crate::MultiplicityFacts,
     /// The authored direction (`in` / `out` / `inout`) of a port or of a directed feature such
     /// as a parameter of an action. `None` for an element with no authored direction; a
     /// renderer must not derive a side from this element's name or its owner's when it is
@@ -353,6 +370,7 @@ pub enum DiagramSequenceEndpoint {
 pub enum DiagramSequenceOrder {
     Resolved(u32),
     Cyclic,
+    BlockedByCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -428,6 +446,24 @@ pub struct DiagramViewProjection {
     pub edges: Box<[DiagramEdge]>,
     pub scene: DiagramScene,
     pub incomplete_reasons: Box<[DiagramIncompleteReason]>,
+    /// Port families of an interconnection view's connectors; empty for other view kinds.
+    pub port_families: Box<[DiagramPortFamily]>,
+}
+
+/// Connectors whose ports belong to one family of related port definitions.
+///
+/// A connector's port type is the most specific port definition every end's typing specializes
+/// (reflexively, conjugation ignored, standard-library definitions excluded). Port types related
+/// by specialization within one view form a family. A connector without such a type (unrelated
+/// or untyped ends, ends that are not ports) belongs to no family.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DiagramPortFamily {
+    /// The family's most general port types, which name it.
+    pub general: Box<[SymbolId]>,
+    /// Every connector port type in the family, in qualified-name order.
+    pub types: Box<[SymbolId]>,
+    /// The connector elements in the family, in occurrence order.
+    pub connectors: Box<[DiagramOccurrenceIdentity]>,
 }
 
 impl PublishedResolution {
@@ -588,7 +624,17 @@ impl PublishedResolution {
             .diagram_entries_for(ElementSource::Workspace)
             .into_keys()
             .collect::<BTreeSet<_>>();
-        let mut reasons = BTreeSet::new();
+        // Non-convergence is a property of the whole solve, so every view inherits it. Parser
+        // recovery and unsupported syntax are attributed to their documents and reach a view only
+        // through the documents it draws from (below), so an unrelated broken file does not mark
+        // every view incomplete.
+        let mut reasons = self
+            .model
+            .completeness()
+            .obstacles()
+            .filter(|obstacle| matches!(obstacle, crate::PublicationObstacle::NonConverged))
+            .map(publication_obstacle_reason)
+            .collect::<BTreeSet<_>>();
         let exposed = match self.view_exposed_elements(view).answer {
             QueryAnswer::Resolved(exposed) => exposed,
             QueryAnswer::Ambiguous(_) => {
@@ -781,6 +827,13 @@ impl PublishedResolution {
                     && (child.kind == ElementKind::FlowEnd
                         || child.kind.conforms_to(ElementKind::Expression))
                 {
+                    continue;
+                }
+                // Nor is it a node of any other view: a usage's multiplicity (`joints : Motor[6]`)
+                // and a KerML expression, with the result features beneath them, are parts of a
+                // declaration that its own notation shows (SysML 8.2.3.6 `UsageDeclaration`). A
+                // SysML usage that is an expression -- a calculation or a constraint -- is a node.
+                if is_declaration_structure(child.kind) {
                     continue;
                 }
                 if !self.diagram_candidate_selected(view, child.identity, &mut reasons) {
@@ -981,6 +1034,7 @@ impl PublishedResolution {
                     owner: owner.clone(),
                     source: entry.location,
                     compartments: Box::default(),
+                    multiplicity: self.model.symbol_multiplicity(entry.identity),
                     direction,
                     conjugated,
                     state_subaction: self.model.state_subaction_kind(entry.identity),
@@ -1572,6 +1626,18 @@ impl PublishedResolution {
                 edge_scene_suffix(&edge.kind)
             )
         });
+        // The view's own declaration and every projected element name the documents this view
+        // draws from; their recovery or unsupported constructs may have dropped content from it.
+        let documents = std::iter::once(view_entry.source.document)
+            .chain(elements.iter().map(|element| element.source.document))
+            .collect::<BTreeSet<_>>();
+        for document in documents {
+            reasons.extend(
+                self.model
+                    .document_obstacles(document)
+                    .map(publication_obstacle_reason),
+            );
+        }
         let scene = diagram_scene(
             view_entry.kind,
             &projected_roots,
@@ -1584,6 +1650,11 @@ impl PublishedResolution {
         if view_entry.kind == DiagramViewKind::Geometry && !elements.is_empty() {
             reasons.insert(DiagramIncompleteReason::GeometryFactsUnavailable);
         }
+        let port_families = if view_entry.kind == DiagramViewKind::Interconnection {
+            self.interconnection_port_families(&elements, &edges)
+        } else {
+            Box::default()
+        };
         self.model
             .query_outcome(QueryAnswer::Resolved(DiagramViewProjection {
                 view: view_entry,
@@ -1596,7 +1667,185 @@ impl PublishedResolution {
                 edges: edges.into_boxed_slice(),
                 scene,
                 incomplete_reasons: reasons.into_iter().collect::<Vec<_>>().into_boxed_slice(),
+                port_families,
             }))
+    }
+
+    /// The port families of an interconnection view's connector edges; see [`DiagramPortFamily`].
+    fn interconnection_port_families(
+        &self,
+        elements: &[DiagramElement],
+        edges: &[DiagramEdge],
+    ) -> Box<[DiagramPortFamily]> {
+        // Port definitions a family may be named by: everything but the standard library, whose
+        // `Ports::Port` every port definition specializes.
+        let port_definitions: BTreeSet<SymbolId> = [
+            ElementSource::Workspace,
+            ElementSource::Library,
+            ElementSource::External,
+        ]
+        .into_iter()
+        .flat_map(|source| {
+            resolved_values(self.search_elements(ElementSearch {
+                kind: ElementKind::PortDefinition,
+                source,
+            }))
+            .into_vec()
+        })
+        .map(|entry| entry.identity)
+        .collect();
+        let mut generals_cache: BTreeMap<SymbolId, BTreeSet<SymbolId>> = BTreeMap::new();
+        let mut generals = |symbol: SymbolId| -> BTreeSet<SymbolId> {
+            generals_cache
+                .entry(symbol)
+                .or_insert_with(|| {
+                    std::iter::once(symbol)
+                        .chain(
+                            resolved_values(self.all_supertypes(
+                                symbol,
+                                crate::SpecializationScope::Subclassification,
+                            ))
+                            .iter()
+                            .copied(),
+                        )
+                        .filter(|candidate| port_definitions.contains(candidate))
+                        .collect()
+                })
+                .clone()
+        };
+        let by_occurrence: BTreeMap<&DiagramOccurrenceIdentity, &DiagramElement> = elements
+            .iter()
+            .map(|element| (&element.occurrence_id, element))
+            .collect();
+        // The port definitions each end of a connector element specializes, or `None` when an end
+        // is not a port with resolved typing.
+        let mut ends: BTreeMap<u32, Option<Vec<BTreeSet<SymbolId>>>> = BTreeMap::new();
+        for edge in edges {
+            if edge.kind != DiagramEdgeKind::Connector {
+                continue;
+            }
+            let entry = ends.entry(edge.origin).or_insert_with(|| Some(Vec::new()));
+            for occurrence in [&edge.source, &edge.target] {
+                let end = by_occurrence.get(occurrence).and_then(|element| {
+                    match (&element.kind, &element.typing) {
+                        (ElementKind::PortUsage, DiagramElementTyping::Resolved(types))
+                            if !types.is_empty() =>
+                        {
+                            Some(types.iter().flat_map(|ty| generals(*ty)).collect())
+                        }
+                        _ => None,
+                    }
+                });
+                match (entry.as_mut(), end) {
+                    (Some(collected), Some(end)) => collected.push(end),
+                    _ => *entry = None,
+                }
+            }
+        }
+        // Each connector's most specific common port types.
+        let mut connector_types: BTreeMap<u32, BTreeSet<SymbolId>> = BTreeMap::new();
+        for (origin, collected) in ends {
+            let Some(collected) = collected else { continue };
+            let Some((first, rest)) = collected.split_first() else {
+                continue;
+            };
+            let common: BTreeSet<SymbolId> = first
+                .iter()
+                .copied()
+                .filter(|ty| rest.iter().all(|end| end.contains(ty)))
+                .collect();
+            let specific: BTreeSet<SymbolId> = common
+                .iter()
+                .copied()
+                .filter(|general| {
+                    !common
+                        .iter()
+                        .any(|other| other != general && generals(*other).contains(general))
+                })
+                .collect();
+            if !specific.is_empty() {
+                connector_types.insert(origin, specific);
+            }
+        }
+        // Families: connector port types joined by a shared connector or by specialization.
+        let types: Vec<SymbolId> = connector_types
+            .values()
+            .flatten()
+            .copied()
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect();
+        let index: BTreeMap<SymbolId, usize> =
+            types.iter().enumerate().map(|(i, ty)| (*ty, i)).collect();
+        let mut parent: Vec<usize> = (0..types.len()).collect();
+        fn find(parent: &mut [usize], mut node: usize) -> usize {
+            while parent[node] != node {
+                parent[node] = parent[parent[node]];
+                node = parent[node];
+            }
+            node
+        }
+        let union = |parent: &mut Vec<usize>, a: usize, b: usize| {
+            let (a, b) = (find(parent, a), find(parent, b));
+            if a != b {
+                parent[a.max(b)] = a.min(b);
+            }
+        };
+        for set in connector_types.values() {
+            let mut members = set.iter().map(|ty| index[ty]);
+            if let Some(first) = members.next() {
+                for other in members {
+                    union(&mut parent, first, other);
+                }
+            }
+        }
+        for (i, specific) in types.iter().enumerate() {
+            for (j, general) in types.iter().enumerate() {
+                if i != j && generals(*specific).contains(general) {
+                    union(&mut parent, i, j);
+                }
+            }
+        }
+        let name = |symbol: SymbolId| self.qualified_name(symbol).unwrap_or_default().to_owned();
+        let mut families: BTreeMap<usize, (BTreeSet<SymbolId>, Vec<&DiagramOccurrenceIdentity>)> =
+            BTreeMap::new();
+        for (origin, set) in &connector_types {
+            let root = find(&mut parent, index[set.iter().next().expect("non-empty")]);
+            let family = families.entry(root).or_default();
+            family.0.extend(set.iter().copied());
+            family.1.push(&elements[*origin as usize].occurrence_id);
+        }
+        let mut families: Vec<DiagramPortFamily> = families
+            .into_values()
+            .map(|(members, mut connectors)| {
+                let mut types: Vec<SymbolId> = members.iter().copied().collect();
+                types.sort_by_cached_key(|ty| (name(*ty), *ty));
+                let general: Vec<SymbolId> = types
+                    .iter()
+                    .copied()
+                    .filter(|candidate| {
+                        !types
+                            .iter()
+                            .any(|other| other != candidate && generals(*candidate).contains(other))
+                    })
+                    .collect();
+                connectors.sort();
+                connectors.dedup();
+                DiagramPortFamily {
+                    general: general.into_boxed_slice(),
+                    types: types.into_boxed_slice(),
+                    connectors: connectors.into_iter().cloned().collect(),
+                }
+            })
+            .collect();
+        families.sort_by_cached_key(|family| {
+            family
+                .general
+                .iter()
+                .map(|ty| name(*ty))
+                .collect::<Vec<_>>()
+        });
+        families.into_boxed_slice()
     }
 
     fn diagram_candidate_selected(
@@ -1700,6 +1949,14 @@ impl PublishedResolution {
     }
 }
 
+/// KerML structure that lowering adds to a declaration and that no view draws as a node: a
+/// multiplicity and its bounds, and an expression that is not a SysML usage.
+fn is_declaration_structure(kind: ElementKind) -> bool {
+    !kind.conforms_to(ElementKind::Usage)
+        && (kind.conforms_to(ElementKind::Multiplicity)
+            || kind.conforms_to(ElementKind::Expression))
+}
+
 fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind) -> bool {
     match view {
         DiagramViewKind::Interconnection => kind == DiagramRelationshipKind::ConnectorEnd,
@@ -1740,6 +1997,14 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
 
 /// The boundary form of one element reference.
 ///
+fn publication_obstacle_reason(obstacle: crate::PublicationObstacle) -> DiagramIncompleteReason {
+    match obstacle {
+        crate::PublicationObstacle::ParseRecovery => DiagramIncompleteReason::ParseRecovery,
+        crate::PublicationObstacle::UnsupportedSyntax => DiagramIncompleteReason::UnsupportedSyntax,
+        crate::PublicationObstacle::NonConverged => DiagramIncompleteReason::NonConverged,
+    }
+}
+
 /// `document` is the identity the caller materialised from `entry.location.document`: the
 /// generator protocol is a process boundary, so the URI is spelled out here rather than carried
 /// as a publication-scoped handle no other process could resolve.
@@ -1865,20 +2130,31 @@ fn contextual_endpoint<'a>(
                 .zip(element.occurrence_id.semantic_path.iter())
                 .take_while(|(left, right)| left == right)
                 .count();
-            (authored_match, shared, element.occurrence_id.clone())
+            // Of two occurrences equally close to the source, one that is a member of their
+            // common owner is the one the source's scope names: `first start then propel;` in
+            // `Drive` means `Drive`'s own `start`, not the `start` of its nested `propel`. Two
+            // occurrences that are both deeper stay ambiguous.
+            let in_scope = element.occurrence_id.semantic_path.len() == shared + 1;
+            (
+                authored_match,
+                shared,
+                in_scope,
+                element.occurrence_id.clone(),
+            )
         })
         .collect::<Vec<_>>();
     candidates.sort();
     let occurrence = match candidates
         .last()
-        .map(|candidate| (candidate.0, candidate.1))
+        .map(|candidate| (candidate.0, candidate.1, candidate.2))
     {
         None => DiagramEndpointOccurrence::OutsideProjection,
         Some(best) => {
             let best = candidates
                 .into_iter()
-                .filter_map(|(authored_match, shared, occurrence)| {
-                    (authored_match == best.0 && shared == best.1).then_some(occurrence)
+                .filter_map(|(authored_match, shared, in_scope, occurrence)| {
+                    (authored_match == best.0 && shared == best.1 && in_scope == best.2)
+                        .then_some(occurrence)
                 })
                 .collect::<Vec<_>>();
             if let [occurrence] = best.as_slice() {
@@ -2097,6 +2373,52 @@ fn sequence_scene(
         .map(|(index, element)| (index as u32, element))
         .collect::<Vec<_>>();
 
+    // A flow the scene cannot place is omitted scenario content only when it sits in nested
+    // behaviour (a sub-scenario or structured action). A flow inside a lifeline's own structure,
+    // or inside any definition, is that participant's internals, not a message of this
+    // interaction, so it is not reported.
+    let by_occurrence = elements
+        .iter()
+        .map(|element| (&element.occurrence_id, element))
+        .collect::<BTreeMap<_, _>>();
+    let in_structure = |element: &DiagramElement| {
+        let mut owner = element.owner.as_ref();
+        while let Some(current) = owner {
+            if roots.contains(&current.semantic_id()) {
+                return false;
+            }
+            let Some(entry) = by_occurrence.get(current) else {
+                return false;
+            };
+            if lifeline_set.contains(current)
+                || [
+                    ElementKind::Definition,
+                    ElementKind::PartUsage,
+                    ElementKind::PortUsage,
+                    ElementKind::ItemUsage,
+                ]
+                .into_iter()
+                .any(|kind| entry.kind.conforms_to(kind))
+            {
+                return true;
+            }
+            owner = entry.owner.as_ref();
+        }
+        false
+    };
+    let omitted = elements
+        .iter()
+        .filter(|element| element.kind.conforms_to(ElementKind::FlowConnectionUsage))
+        .filter(|element| !is_direct_member(element))
+        .filter(|element| !in_structure(element))
+        .map(|element| element.occurrence_id.clone())
+        .collect::<BTreeSet<_>>();
+    if !omitted.is_empty() {
+        reasons.insert(DiagramIncompleteReason::SequenceContentOmitted {
+            elements: omitted.into_iter().collect::<Vec<_>>().into_boxed_slice(),
+        });
+    }
+
     let owner_by_occurrence = elements
         .iter()
         .filter_map(|element| {
@@ -2179,14 +2501,28 @@ fn sequence_scene(
             .and_then(|relationship| resolved_target(&relationship.target))
             .cloned()
     };
+    // Only event occurrences order messages. A lifeline, or a port or part of one, is structure
+    // that every message to it shares; treating it as an event would order repeated or reply
+    // messages through it into a false cycle.
+    let kind_by_occurrence = elements
+        .iter()
+        .map(|element| (&element.occurrence_id, element.kind))
+        .collect::<BTreeMap<_, _>>();
+    let is_event = |occurrence: &DiagramOccurrenceIdentity| {
+        !lifeline_set.contains(occurrence)
+            && !matches!(
+                kind_by_occurrence.get(occurrence),
+                Some(ElementKind::PartUsage | ElementKind::PortUsage | ElementKind::ItemUsage)
+            )
+    };
     let message_events = messages
         .iter()
-        .filter_map(|(index, message)| {
-            Some((
+        .map(|(index, message)| {
+            (
                 *index,
-                event_end(message, DiagramRelationshipKind::FlowSource)?,
-                event_end(message, DiagramRelationshipKind::FlowTarget)?,
-            ))
+                event_end(message, DiagramRelationshipKind::FlowSource).filter(is_event),
+                event_end(message, DiagramRelationshipKind::FlowTarget).filter(is_event),
+            )
         })
         .collect::<Vec<_>>();
     let mut event_successors =
@@ -2201,46 +2537,125 @@ fn sequence_scene(
             .insert(edge.target.clone());
     }
     for (_, source, target) in &message_events {
+        let (Some(source), Some(target)) = (source, target) else {
+            continue;
+        };
         event_successors
             .entry(source.clone())
             .or_default()
             .insert(target.clone());
     }
-    for (index, source, target) in &message_events {
-        let mut reachable = BTreeSet::new();
-        for start in [source, target] {
-            let mut seen = BTreeSet::new();
-            let mut pending = event_successors
-                .get(start)
-                .into_iter()
-                .flatten()
-                .cloned()
-                .collect::<Vec<_>>();
-            while let Some(event) = pending.pop() {
-                if seen.insert(event.clone()) {
-                    pending.extend(event_successors.get(&event).into_iter().flatten().cloned());
-                }
-            }
-            // A cycle through one message's own endpoint must not acquire a guessed order,
-            // even when no second message exists to produce a pairwise ordering cycle.
-            if seen.contains(start) {
-                precedence.insert((*index, *index));
-            }
-            reachable.extend(seen);
+    // A row is a deterministic display position respecting known precedence, not a claim
+    // that unrelated messages have an authored temporal order. A message precedes another when
+    // one of its events (send or receive) reaches one of the other's events. An event the two
+    // share carries no order between them, so a path may neither start nor end at one.
+    let mut evidence = precedence
+        .iter()
+        .map(|pair| (*pair, None))
+        .collect::<BTreeMap<_, Option<(DiagramOccurrenceIdentity, DiagramOccurrenceIdentity)>>>();
+    let events_of = |source: &Option<DiagramOccurrenceIdentity>,
+                     target: &Option<DiagramOccurrenceIdentity>| {
+        [source.as_ref(), target.as_ref()]
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect::<BTreeSet<_>>()
+    };
+    let message_event_sets = message_events
+        .iter()
+        .map(|(index, source, target)| (*index, events_of(source, target)))
+        .collect::<BTreeMap<_, _>>();
+    let mut messages_by_event = BTreeMap::<&DiagramOccurrenceIdentity, Vec<u32>>::new();
+    for (index, events) in &message_event_sets {
+        for event in events {
+            messages_by_event.entry(event).or_default().push(*index);
         }
-        for (next, next_source, next_target) in &message_events {
-            if index != next
-                && (target == next_source
-                    || reachable.contains(next_source)
-                    || reachable.contains(next_target))
-            {
-                precedence.insert((*index, *next));
+    }
+    let mut cyclic_events = BTreeSet::new();
+    // Visit each distinct endpoint once and discard its search tree after use, rather than
+    // retaining a potentially graph-sized predecessor map for every event.
+    for (event, indexes) in &messages_by_event {
+        let reachable = directed_sequence_parents(&event_successors, *event);
+        if reachable.contains_key(*event) {
+            cyclic_events.insert(*event);
+        }
+        for (next, next_events) in &message_event_sets {
+            if next_events.contains(*event) {
+                continue;
+            }
+            for next_event in next_events {
+                if !reachable.contains_key(next_event) {
+                    continue;
+                }
+                for index in indexes {
+                    if index == next || message_event_sets[index].contains(next_event) {
+                        continue;
+                    }
+                    let pair = (*index, *next);
+                    precedence.insert(pair);
+                    evidence
+                        .entry(pair)
+                        .or_insert_with(|| Some(((*event).clone(), next_event.clone())));
+                }
             }
         }
     }
-    let order = canonical_sequence_order(&message_indexes, precedence);
-    if order.len() != messages.len() {
-        reasons.insert(DiagramIncompleteReason::SequenceOrderingCycle);
+    for (index, source, target) in &message_events {
+        // A receive-only event cycle is contradictory even if it cannot return to the send.
+        for event in [source.as_ref(), target.as_ref()].into_iter().flatten() {
+            if cyclic_events.contains(event) {
+                let pair = (*index, *index);
+                precedence.insert(pair);
+                evidence
+                    .entry(pair)
+                    .or_insert_with(|| Some((event.clone(), event.clone())));
+            }
+        }
+    }
+    let order = canonical_sequence_order(&message_indexes, precedence.iter().copied());
+    let graph = precedence.iter().fold(
+        BTreeMap::<u32, BTreeSet<u32>>::new(),
+        |mut graph, (a, b)| {
+            graph.entry(*a).or_default().insert(*b);
+            graph
+        },
+    );
+    let cyclic = message_indexes
+        .iter()
+        .copied()
+        .filter(|index| !order.contains_key(index))
+        .filter(|index| directed_sequence_path(&graph, index, index).is_some())
+        .collect::<BTreeSet<_>>();
+    // Publish a real closed path for each cycle not already witnessed. Downstream messages
+    // blocked by a cycle are distinct from messages that belong to it.
+    let mut witnessed = BTreeSet::new();
+    for index in &cyclic {
+        if witnessed.contains(index) {
+            continue;
+        }
+        let path = directed_sequence_path(&graph, index, index).expect("cyclic member has a path");
+        witnessed.extend(path.iter().copied());
+        let witness = path
+            .windows(2)
+            .map(|pair| {
+                let event_ends = &evidence[&(pair[0], pair[1])];
+                let events = event_ends
+                    .as_ref()
+                    .map(|(source, target)| {
+                        directed_sequence_path(&event_successors, source, target)
+                            .expect("precedence has an event path")
+                    })
+                    .unwrap_or_default();
+                DiagramSequenceCycleStep {
+                    source: elements[pair[0] as usize].occurrence_id.clone(),
+                    target: elements[pair[1] as usize].occurrence_id.clone(),
+                    authored: event_ends.is_none(),
+                    events: events.into_boxed_slice(),
+                }
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice();
+        reasons.insert(DiagramIncompleteReason::SequenceOrderingCycle { witness });
     }
 
     let messages = messages
@@ -2262,7 +2677,13 @@ fn sequence_scene(
                     .get(&index)
                     .copied()
                     .map(DiagramSequenceOrder::Resolved)
-                    .unwrap_or(DiagramSequenceOrder::Cyclic),
+                    .unwrap_or_else(|| {
+                        if cyclic.contains(&index) {
+                            DiagramSequenceOrder::Cyclic
+                        } else {
+                            DiagramSequenceOrder::BlockedByCycle
+                        }
+                    }),
                 provenance: if relationships
                     .iter()
                     .filter(|relationship| {
@@ -2287,6 +2708,47 @@ fn sequence_scene(
         lifelines: lifelines.into_boxed_slice(),
         messages: messages.into_boxed_slice(),
     }
+}
+
+/// Breadth-first predecessor tree. The source has a predecessor only for a real nonempty cycle.
+fn directed_sequence_parents<N: Ord + Clone>(
+    graph: &BTreeMap<N, BTreeSet<N>>,
+    source: &N,
+) -> BTreeMap<N, N> {
+    let mut pending = VecDeque::from([source.clone()]);
+    let mut parents = BTreeMap::new();
+    let mut seen = BTreeSet::from([source.clone()]);
+    while let Some(current) = pending.pop_front() {
+        for next in graph.get(&current).into_iter().flatten() {
+            if next == source {
+                parents
+                    .entry(next.clone())
+                    .or_insert_with(|| current.clone());
+            }
+            if seen.insert(next.clone()) {
+                parents.insert(next.clone(), current.clone());
+                pending.push_back(next.clone());
+            }
+        }
+    }
+    parents
+}
+
+/// A shortest nonempty directed path, with stable neighbor order. Identity alone is not a path.
+fn directed_sequence_path<N: Ord + Clone>(
+    graph: &BTreeMap<N, BTreeSet<N>>,
+    source: &N,
+    target: &N,
+) -> Option<Vec<N>> {
+    let parents = directed_sequence_parents(graph, source);
+    let mut current = parents.get(target)?.clone();
+    let mut path = vec![target.clone(), current.clone()];
+    while &current != source {
+        current = parents.get(&current)?.clone();
+        path.push(current.clone());
+    }
+    path.reverse();
+    Some(path)
 }
 
 fn canonical_sequence_order(
@@ -2633,8 +3095,8 @@ mod tests {
     use std::collections::BTreeSet;
 
     use super::{
-        authored_chain_score, canonical_sequence_order, compartment_kind, usable_value,
-        DiagramCompartmentKind,
+        authored_chain_score, canonical_sequence_order, compartment_kind, directed_sequence_path,
+        usable_value, DiagramCompartmentKind,
     };
     use crate::{
         ElementKind, PublicationCompleteness, PublicationObstacle, QueryAnswer, QueryOutcome,
@@ -2719,6 +3181,28 @@ mod tests {
         let messages = BTreeSet::from([0, 1, 2]);
         let order = canonical_sequence_order(&messages, [(0, 1), (1, 0)]);
         assert_eq!(order, [(2, 1)].into_iter().collect());
+    }
+
+    #[test]
+    fn a_shared_endpoint_is_not_a_nonempty_ordering_path() {
+        let graph = [(0, BTreeSet::from([1, 2])), (3, BTreeSet::from([1]))]
+            .into_iter()
+            .collect();
+        assert_eq!(directed_sequence_path(&graph, &0, &0), None);
+        assert_eq!(directed_sequence_path(&graph, &0, &3), None);
+        assert_eq!(directed_sequence_path(&graph, &3, &0), None);
+        assert_eq!(directed_sequence_path(&graph, &0, &1), Some(vec![0, 1]));
+    }
+
+    #[test]
+    fn cycle_witness_is_closed_and_does_not_include_a_blocked_successor() {
+        let graph = [(0, BTreeSet::from([1])), (1, BTreeSet::from([0, 2]))]
+            .into_iter()
+            .collect();
+        assert_eq!(directed_sequence_path(&graph, &0, &0), Some(vec![0, 1, 0]));
+        assert_eq!(directed_sequence_path(&graph, &2, &2), None);
+        let graph = [(0, BTreeSet::from([0]))].into_iter().collect();
+        assert_eq!(directed_sequence_path(&graph, &0, &0), Some(vec![0, 0]));
     }
 
     #[test]

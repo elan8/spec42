@@ -230,24 +230,24 @@ fn unconnected_second_monitor_preserves_first_monitor_connections() {
         "../../../tests/snapshots/generation/diagram_office_two_monitors.md"
     ));
     let input = draw_input_from_payload(&payload).expect("typed interconnection lays out");
-    let port_types = input["edges"]
+    let port_families = input["edges"]
         .as_array()
         .expect("prepared connectors")
         .iter()
-        .map(|edge| edge["attributes"]["portTypeIdentity"].as_str().unwrap())
+        .map(|edge| edge["attributes"]["portFamilyLabel"].as_str().unwrap())
         .collect::<Vec<_>>();
-    assert_eq!(port_types.len(), 3);
+    assert_eq!(port_families.len(), 3);
     assert_eq!(
-        port_types
+        port_families
             .iter()
-            .filter(|key| key.ends_with("PowerPort"))
+            .filter(|label| **label == "PowerPort")
             .count(),
         2
     );
     assert_eq!(
-        port_types
+        port_families
             .iter()
-            .filter(|key| key.ends_with("VideoPort"))
+            .filter(|label| **label == "VideoPort")
             .count(),
         1
     );
@@ -278,6 +278,9 @@ fn unconnected_second_monitor_preserves_first_monitor_connections() {
     assert!(!svg.contains("marker-start: url(#ibd-connection-dot)"));
     assert!(!svg.contains("viz-edge-label--connection"));
     assert_eq!(svg.matches("data-port-type=").count(), 3);
+    // One legend entry per family, and no neutral entry: every connector has a family.
+    assert_eq!(svg.matches("class=\"ibd-port-legend-label\"").count(), 2);
+    assert!(!svg.contains("No common port type"));
 }
 
 #[test]
@@ -472,7 +475,7 @@ fn interconnection_golden_payload() -> serde_json::Value {
 
 fn schema6_sequence_payload() -> serde_json::Value {
     json!({
-        "schemaVersion": 7,
+        "schemaVersion": diagram_product::SCHEMA_VERSION,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -653,7 +656,7 @@ fn schema6_state_transition_payload(
     transitions: Vec<serde_json::Value>,
 ) -> serde_json::Value {
     json!({
-        "schemaVersion": 7,
+        "schemaVersion": diagram_product::SCHEMA_VERSION,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -765,9 +768,9 @@ fn an_action_flow_written_with_then_draws_its_whole_flow() {
         id_of("finish", "ActionUsage"),
     );
     let (split, joined, choice) = (
-        id_of("split", "ForkNodeUsage"),
-        id_of("joined", "JoinNodeUsage"),
-        id_of("choice", "DecisionNodeUsage"),
+        id_of("split", "ForkNode"),
+        id_of("joined", "JoinNode"),
+        id_of("choice", "DecisionNode"),
     );
     let accept = id_of("waitForPayment", "AcceptActionUsage");
     // `then accept ...;` declares an accept action without a name of its own.
@@ -924,7 +927,7 @@ fn conditional_successions_carry_their_guards() {
             .unwrap()
             .to_owned()
     };
-    let outcome = id_of("outcome", "DecisionNodeUsage");
+    let outcome = id_of("outcome", "DecisionNode");
     let (ship, repair, expedite, check) = (
         id_of("ship", "ActionUsage"),
         id_of("repair", "ActionUsage"),
@@ -1100,7 +1103,7 @@ fn general_view_disclosure_hides_nested_nodes_until_expanded() {
     use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
 
     let payload = json!({
-        "schemaVersion": 7,
+        "schemaVersion": diagram_product::SCHEMA_VERSION,
         "documents": [{ "uri": "file:///model.sysml" }],
         "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
         "references": [{ "kind": "qualified-name" }],
@@ -1515,4 +1518,75 @@ fn a_grid_view_draws_its_relationship_matrix() {
         .filter(|cell| cell.attrs.contains_key("data-edge-ids"))
         .count();
     assert_eq!(filled, 4, "{svg}");
+}
+
+#[test]
+fn connectors_are_coloured_by_port_family_with_a_column_legend() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_port_families.md"
+    ));
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw interconnection");
+    let connectors: Vec<(Option<String>, String)> = svg
+        .split("<path class=\"ibd-connector")
+        .skip(1)
+        .map(|rest| {
+            let tag = &rest[..rest.find('>').unwrap()];
+            let attribute = |name: &str| {
+                tag.split(&format!("{name}=\""))
+                    .nth(1)
+                    .map(|value| value[..value.find('"').unwrap()].to_string())
+            };
+            let stroke = tag.split("stroke: ").nth(1).unwrap();
+            (
+                attribute("data-port-type"),
+                stroke[..stroke.find(';').unwrap()].to_string(),
+            )
+        })
+        .collect();
+    let colour_of = |family: &str| -> Vec<&String> {
+        connectors
+            .iter()
+            .filter(|(label, _)| label.as_deref() == Some(family))
+            .map(|(_, stroke)| stroke)
+            .collect()
+    };
+    // The pass-through and both connectors on `mcu.bus` share the BusPort family colour.
+    let bus = colour_of("BusPort");
+    assert_eq!(bus.len(), 3);
+    assert!(bus.iter().all(|stroke| *stroke == bus[0]));
+    let power = colour_of("PowerPort");
+    let smart = colour_of("ActuatorPort / SensorPort");
+    assert_eq!((power.len(), smart.len()), (1, 1));
+    // Each family has its own colour; connectors without a family are neutral.
+    let neutral: Vec<&String> = connectors
+        .iter()
+        .filter(|(label, _)| label.is_none())
+        .map(|(_, stroke)| stroke)
+        .collect();
+    assert_eq!(neutral.len(), 3);
+    let mut distinct = vec![bus[0], power[0], smart[0], neutral[0]];
+    distinct.sort();
+    distinct.dedup();
+    assert_eq!(distinct.len(), 4);
+    assert!(neutral.iter().all(|stroke| *stroke == neutral[0]));
+    // The legend lists the families in family order, then the neutral entry, one per row.
+    let entries: Vec<(f64, &str)> = svg
+        .split("class=\"ibd-port-legend-label\"")
+        .skip(1)
+        .map(|rest| {
+            let x = rest.split("x=\"").nth(1).unwrap();
+            let text = &rest[rest.find('>').unwrap() + 1..rest.find('<').unwrap()];
+            (x[..x.find('"').unwrap()].parse().unwrap(), text)
+        })
+        .collect();
+    assert_eq!(
+        entries.iter().map(|(_, text)| *text).collect::<Vec<_>>(),
+        [
+            "ActuatorPort / SensorPort",
+            "BusPort",
+            "PowerPort",
+            "No common port type"
+        ]
+    );
+    assert!(entries.iter().all(|(x, _)| *x == entries[0].0));
 }
