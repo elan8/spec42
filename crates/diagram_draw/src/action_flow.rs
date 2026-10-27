@@ -80,8 +80,40 @@ fn parameter_name(item: &Value) -> String {
     }
 }
 
-/// Side of the square a parameter is drawn as.
-const PARAMETER_SIZE: f64 = 10.0;
+/// The direction mark inside a parameter's box (SysML v2 8.2.3.17 `pdh`): an arrow into the
+/// action for `in`, out of it for `out`, both ways for `inout`. The box of an input stands on the
+/// left of its action and that of an output on the right, so `in` and `out` both point right.
+/// A parameter without an authored direction has no mark.
+fn parameter_direction_mark(direction: &str, centre: (f64, f64)) -> Option<String> {
+    let (cx, cy) = centre;
+    let half = crate::layout::PARAMETER_SIZE / 2.0 - 2.5;
+    let head = 2.5;
+    let (left, right) = (cx - half, cx + half);
+    let shaft = format!("M{},{} L{},{}", n(left), n(cy), n(right), n(cy));
+    let right_head = format!(
+        " M{},{} L{},{} L{},{}",
+        n(right - head),
+        n(cy - head),
+        n(right),
+        n(cy),
+        n(right - head),
+        n(cy + head)
+    );
+    let left_head = format!(
+        " M{},{} L{},{} L{},{}",
+        n(left + head),
+        n(cy - head),
+        n(left),
+        n(cy),
+        n(left + head),
+        n(cy + head)
+    );
+    match direction {
+        "in" | "out" => Some(shaft + &right_head),
+        "inout" => Some(shaft + &right_head + &left_head),
+        _ => None,
+    }
+}
 
 fn draw_parameters(
     mut g: Element,
@@ -91,39 +123,66 @@ fn draw_parameters(
     layout: &crate::behavior_common::LaidOutRect,
     theme: &Theme,
 ) -> Element {
+    let size = crate::layout::PARAMETER_SIZE;
     for (index, item) in items.iter().enumerate() {
         let name = parameter_name(item);
         let y = crate::layout::parameter_offset(index, container);
-        let boundary = if side == "input" { 0.0 } else { layout.width };
-        let x = if side == "input" {
-            -PARAMETER_SIZE / 2.0
-        } else {
-            layout.width + PARAMETER_SIZE / 2.0
-        };
-        // SysML 8.2.3.17: a parameter is a small square on the boundary of its action.
+        // SysML 8.2.3.17 `param-l`/`param-r`: a parameter is a small rounded box standing against
+        // the boundary of its action on the outside, holding its direction mark. (A port's
+        // square straddles the boundary; an action flow view draws no ports.)
+        let left = if side == "input" { -size } else { layout.width };
         g = g.child(
             Element::new("rect")
                 .attr(
                     "class",
                     format!("action-parameter-badge action-parameter-{side}"),
                 )
-                .attr_f("x", boundary - PARAMETER_SIZE / 2.0)
-                .attr_f("y", y - PARAMETER_SIZE / 2.0)
-                .attr_f("width", PARAMETER_SIZE)
-                .attr_f("height", PARAMETER_SIZE)
-                .attr("rx", "2")
+                .attr_f("x", left)
+                .attr_f("y", y - size / 2.0)
+                .attr_f("width", size)
+                .attr_f("height", size)
+                .attr("rx", "3")
                 .style("fill", theme.canvas_background)
                 .style("stroke", theme.node_border)
                 .style("stroke-width", "1.5px"),
         );
+        let direction = item
+            .get("direction")
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+        if let Some(mark) = parameter_direction_mark(direction, (left + size / 2.0, y)) {
+            g = g.child(
+                Element::new("path")
+                    .attr(
+                        "class",
+                        format!(
+                            "action-parameter-direction action-parameter-direction-{direction}"
+                        ),
+                    )
+                    .attr("d", mark)
+                    .style("fill", "none")
+                    .style("stroke", theme.node_border)
+                    .style("stroke-width", "1.2px")
+                    .style("stroke-linecap", "round")
+                    .style("stroke-linejoin", "round"),
+            );
+        }
         g = g.child(
             Element::new("text")
                 .attr(
                     "class",
                     format!("action-parameter-label action-parameter-{side}-label"),
                 )
-                // Above the square, so that a flow leaving it does not run through the name.
-                .attr_f("x", if side == "input" { x - 4.0 } else { x + 4.0 })
+                // Above the box and beyond it, so that a flow leaving the box does not run
+                // through the name.
+                .attr_f(
+                    "x",
+                    if side == "input" {
+                        -size - 3.0
+                    } else {
+                        layout.width + size + 3.0
+                    },
+                )
                 .attr_f("y", y - 6.0)
                 .attr("text-anchor", if side == "input" { "end" } else { "start" })
                 .style("font-size", "8px")

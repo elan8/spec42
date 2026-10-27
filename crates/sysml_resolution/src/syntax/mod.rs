@@ -139,10 +139,11 @@ mod tests {
                 .collect();
             assert_eq!(actual, expected, "typing tokens on line {line}");
         }
+        // A state action names a usage, like a plain `action named : A;` (spec42 #356).
         let named = source.lines().nth(5).unwrap().find("named").unwrap() as u32;
         assert!(roles
             .iter()
-            .any(|(range, role)| *role == SyntaxRole::Function
+            .any(|(range, role)| *role == SyntaxRole::Property
                 && range.start_line == 5
                 && range.start_character == named
                 && range.end_character == named + 5));

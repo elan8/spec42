@@ -1,4 +1,4 @@
-//! The schema-9 diagram product: a typed diagram view projection
+//! The schema-10 diagram product: a typed diagram view projection
 //! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
 //! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
 //! once and referenced by index.
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 use spec42_generator_protocol as model;
 
 /// Version of the product format `diagram_draw` consumes.
-pub const SCHEMA_VERSION: u32 = 9;
+pub const SCHEMA_VERSION: u32 = 10;
 
 /// The file name under which generators publish the product.
 pub const ARTIFACT_PATH: &str = "diagram.json";
@@ -542,8 +542,27 @@ impl NormalizedProduct {
                 parts,
                 ports,
                 connectors,
+                port_families,
             } => {
-                json!({ "parts": nodes(parts)?, "ports": nodes(ports)?, "connectors": nodes(connectors)? })
+                let types = |values: &[model::DiagramElementType]| {
+                    values
+                        .iter()
+                        .map(|value| {
+                            Ok(json!({ "reference": self.reference(&value.reference)?, "label": value.label }))
+                        })
+                        .collect::<Result<Vec<Value>, String>>()
+                };
+                let families = port_families
+                    .iter()
+                    .map(|family| {
+                        Ok(json!({
+                            "general": types(&family.general)?,
+                            "types": types(&family.types)?,
+                            "connectors": nodes(&family.connectors)?,
+                        }))
+                    })
+                    .collect::<Result<Vec<Value>, String>>()?;
+                json!({ "parts": nodes(parts)?, "ports": nodes(ports)?, "connectors": nodes(connectors)?, "portFamilies": families })
             }
             model::DiagramViewMetadata::ActionFlow {
                 actions,
@@ -967,10 +986,19 @@ fn collect_metadata_references(
             parts,
             ports,
             connectors,
+            port_families,
         } => {
             add(parts);
             add(ports);
             add(connectors);
+            for family in port_families {
+                for occurrence in &family.connectors {
+                    collect_occurrence_references(values, occurrence);
+                }
+                for ty in family.general.iter().chain(&family.types) {
+                    collect_reference(values, &ty.reference);
+                }
+            }
         }
         model::DiagramViewMetadata::ActionFlow {
             actions,

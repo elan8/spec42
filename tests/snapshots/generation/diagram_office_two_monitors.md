@@ -731,7 +731,7 @@ package Office {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:4b0ad4e62a759b72600132e8b1baae6dec3924bd5f8b6b7100970ff9294b00ff",
   "documents": [
     {
@@ -1496,6 +1496,43 @@ package Office {
         7,
         9,
         12
+      ],
+      "portFamilies": [
+        {
+          "connectors": [
+            2,
+            3
+          ],
+          "general": [
+            {
+              "label": "PowerPort",
+              "reference": 6
+            }
+          ],
+          "types": [
+            {
+              "label": "PowerPort",
+              "reference": 6
+            }
+          ]
+        },
+        {
+          "connectors": [
+            1
+          ],
+          "general": [
+            {
+              "label": "VideoPort",
+              "reference": 9
+            }
+          ],
+          "types": [
+            {
+              "label": "VideoPort",
+              "reference": 9
+            }
+          ]
+        }
       ],
       "ports": [
         5,

@@ -205,7 +205,7 @@ package RecursiveExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:5b08064733bd8c84742bac445519ba074d054144b5680c125f099a43a9de9d73",
   "documents": [
     {

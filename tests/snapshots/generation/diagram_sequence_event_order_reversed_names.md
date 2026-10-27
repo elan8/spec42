@@ -667,7 +667,7 @@ package Seq {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:5717099935bcc5bb034981e313aba25807f797261c6ea3c93d51d901318c6c18",
   "documents": [
     {

@@ -6858,7 +6858,7 @@ package TimerGeometry {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:f3b5e08ff83cfea43d74efa74539a99cbcc5787b1079b1a22b9cd1db9c254a95",
   "documents": [
     {

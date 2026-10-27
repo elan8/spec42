@@ -168,7 +168,7 @@ package BrowserExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:ee95d2d6bf8a0a782a580d3cab96eb381030b6985f25e1f3043b046cd837a627",
   "documents": [
     {

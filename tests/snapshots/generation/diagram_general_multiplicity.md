@@ -1063,7 +1063,7 @@ package Product {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:c8500fd715a8367eb43e890b0af471634771532b37ba7d0e423432636ad55b90",
   "documents": [
     {

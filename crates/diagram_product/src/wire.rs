@@ -1,4 +1,4 @@
-//! The schema-9 JSON wire contract. The Rust writer validates against these types before
+//! The schema-10 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -366,10 +366,23 @@ pub enum BrowserMembers {
 }
 
 #[derive(Deserialize, TS)]
-#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct InterconnectionMetadata {
     pub parts: Vec<usize>,
     pub ports: Vec<usize>,
+    pub connectors: Vec<usize>,
+    /// Connectors grouped by the family of related port definitions their ends share, in
+    /// family-name order; a connector in no family has no common port type.
+    pub port_families: Vec<PortFamily>,
+}
+
+/// One port family: its naming (most general) types, every connector port type in it, and its
+/// connector nodes.
+#[derive(Deserialize, TS)]
+#[serde(deny_unknown_fields)]
+pub struct PortFamily {
+    pub general: Vec<TypeReference>,
+    pub types: Vec<TypeReference>,
     pub connectors: Vec<usize>,
 }
 

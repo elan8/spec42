@@ -552,7 +552,7 @@ package Repro {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:6850fd27e8035d6dc39fcb1bb00d7a25d820aa0357c75e5700a0d3024d2d0435",
   "documents": [
     {
