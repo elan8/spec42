@@ -2111,20 +2111,31 @@ fn contextual_endpoint<'a>(
                 .zip(element.occurrence_id.semantic_path.iter())
                 .take_while(|(left, right)| left == right)
                 .count();
-            (authored_match, shared, element.occurrence_id.clone())
+            // Of two occurrences equally close to the source, one that is a member of their
+            // common owner is the one the source's scope names: `first start then propel;` in
+            // `Drive` means `Drive`'s own `start`, not the `start` of its nested `propel`. Two
+            // occurrences that are both deeper stay ambiguous.
+            let in_scope = element.occurrence_id.semantic_path.len() == shared + 1;
+            (
+                authored_match,
+                shared,
+                in_scope,
+                element.occurrence_id.clone(),
+            )
         })
         .collect::<Vec<_>>();
     candidates.sort();
     let occurrence = match candidates
         .last()
-        .map(|candidate| (candidate.0, candidate.1))
+        .map(|candidate| (candidate.0, candidate.1, candidate.2))
     {
         None => DiagramEndpointOccurrence::OutsideProjection,
         Some(best) => {
             let best = candidates
                 .into_iter()
-                .filter_map(|(authored_match, shared, occurrence)| {
-                    (authored_match == best.0 && shared == best.1).then_some(occurrence)
+                .filter_map(|(authored_match, shared, in_scope, occurrence)| {
+                    (authored_match == best.0 && shared == best.1 && in_scope == best.2)
+                        .then_some(occurrence)
                 })
                 .collect::<Vec<_>>();
             if let [occurrence] = best.as_slice() {

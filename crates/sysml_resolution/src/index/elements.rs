@@ -1051,16 +1051,14 @@ impl<D> SemanticModel<D> {
             .into_iter()
             .chain(self.inherited_feature_members(declaration))
             .collect::<std::collections::BTreeSet<_>>();
-        // A usage's effective feature set starts with the definitions it is typed by. Keeping the
-        // usage itself first also preserves any direct nested features it authors.
-        let mut direct_types = self
-            .types
-            .direct_types(declaration)
-            .iter()
-            .map(|(target, _)| *target)
-            .collect::<Vec<_>>();
-        direct_types.sort_by_key(|target| self.symbol_id(*target));
-        queue.extend(direct_types);
+        // A usage's effective feature set starts with the types it has: those it is typed by and
+        // those it inherits through the features it subsets (KerML 8.3.3.3.3). An untyped nested
+        // `action a { ... }` subsets `Actions::Action::subactions` and so is an `Action`, with
+        // its own `start` and `done`. Keeping the usage itself first also preserves any direct
+        // nested features it authors.
+        let mut feature_types = self.types.feature_types(declaration);
+        feature_types.sort_by_key(|target| self.symbol_id(*target));
+        queue.extend(feature_types);
 
         let mut visited = std::collections::BTreeSet::new();
         let mut names = std::collections::BTreeSet::<ShadowKey>::new();
