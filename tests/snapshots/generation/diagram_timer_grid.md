@@ -6859,7 +6859,7 @@ package TimerGrid {
 ~~~json
 {
   "schemaVersion": 10,
-  "modelDigest": "blake3:50ec05354315c58d11437a584176b95f775e9b316b9abf1230d504ded861c060",
+  "modelDigest": "blake3:6471acc4ff37c901bec1eef9a56e51468f8974373792f6b5b409800559b71c23",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_grid.md",

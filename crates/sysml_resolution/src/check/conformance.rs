@@ -478,32 +478,86 @@ impl<D> SemanticModel<D> {
             )?);
             return Ok(());
         }
+        let metaclass = |declaration: DeclarationId| {
+            self.storage
+                .declaration(declaration)
+                .map(|declaration| element_kind(declaration.kind))
+        };
+        let conforms = |declaration: DeclarationId, general: ElementKind| {
+            metaclass(declaration).is_some_and(|kind| kind.conforms_to(general))
+        };
+        // KerML 8.3.3.2 `Subclassification::superclassifier : Classifier`. `part def V8 :>
+        // engine;`, where `engine` is a part usage, names a feature where a classifier's `:>`
+        // names the classifiers it specializes.
+        if reference.kind == ReferenceKind::Subclassification
+            && conforms(reference.source, ElementKind::Classifier)
+            && conforms(target, ElementKind::Feature)
+        {
+            diagnostics.push(self.reference_message_diagnostic(
+                reference,
+                DiagnosticCode::IncompatibleSpecializationKind,
+                DiagnosticSeverity::Error,
+                format!(
+                    "A definition specializes definitions, but '{}' is a usage. Specialize its \
+                     definition, or declare a usage that subsets it.",
+                    self.display_name(target)
+                ),
+                Some((target, RELATED_DECLARED)),
+            )?);
+            return Ok(());
+        }
+        // KerML 8.3.3.3.10 `Subsetting::subsettedFeature : Feature`, which `Redefinition`,
+        // `ReferenceSubsetting` and `CrossSubsetting` inherit. `part engine :> Engine;`, where
+        // `Engine` is a part definition, names a classifier where a usage's `:>` names the
+        // features it subsets.
+        if matches!(
+            reference.kind,
+            ReferenceKind::Subsetting
+                | ReferenceKind::Redefinition
+                | ReferenceKind::References
+                | ReferenceKind::Crosses
+        ) && conforms(reference.source, ElementKind::Feature)
+            && conforms(target, ElementKind::Classifier)
+        {
+            let relationship = match reference.kind {
+                ReferenceKind::Redefinition => "redefines",
+                ReferenceKind::References => "references",
+                ReferenceKind::Crosses => "crosses",
+                _ => "subsets",
+            };
+            diagnostics.push(self.reference_message_diagnostic(
+                reference,
+                DiagnosticCode::IncompatibleSubsettingKind,
+                DiagnosticSeverity::Error,
+                format!(
+                    "A usage {relationship} usages, but '{}' is a definition. Use ':' to type \
+                     it by the definition.",
+                    self.display_name(target)
+                ),
+                Some((target, RELATED_DECLARED)),
+            )?);
+            return Ok(());
+        }
         // SysML `Usage::definition : Classifier` redefines `Feature::type`, so every type of a
         // usage is a classifier. `out power : electricPower;`, where `electricPower` is an
         // attribute usage, types a feature by a feature. KerML has no such restriction (a
         // Feature is a Type), so this applies to SysML usages only.
-        if reference.kind == ReferenceKind::FeatureTyping {
-            let metaclass = |declaration: DeclarationId| {
-                self.storage
-                    .declaration(declaration)
-                    .map(|declaration| element_kind(declaration.kind))
-            };
-            if metaclass(reference.source).is_some_and(|kind| kind.conforms_to(ElementKind::Usage))
-                && metaclass(target).is_some_and(|kind| kind.conforms_to(ElementKind::Feature))
-            {
-                diagnostics.push(self.reference_message_diagnostic(
-                    reference,
-                    DiagnosticCode::IncompatibleTypeKind,
-                    DiagnosticSeverity::Error,
-                    format!(
-                        "A usage is typed by a definition, but '{}' is a usage. Use ':>' to \
-                         specialize it, or type by its definition.",
-                        self.display_name(target)
-                    ),
-                    Some((target, RELATED_DECLARED)),
-                )?);
-                return Ok(());
-            }
+        if reference.kind == ReferenceKind::FeatureTyping
+            && conforms(reference.source, ElementKind::Usage)
+            && conforms(target, ElementKind::Feature)
+        {
+            diagnostics.push(self.reference_message_diagnostic(
+                reference,
+                DiagnosticCode::IncompatibleTypeKind,
+                DiagnosticSeverity::Error,
+                format!(
+                    "A usage is typed by a definition, but '{}' is a usage. Use ':>' to \
+                     specialize it, or type by its definition.",
+                    self.display_name(target)
+                ),
+                Some((target, RELATED_DECLARED)),
+            )?);
+            return Ok(());
         }
         let (Some((source_family, source_role)), Some((target_family, target_role))) = (
             self.declaration_family(reference.source),
