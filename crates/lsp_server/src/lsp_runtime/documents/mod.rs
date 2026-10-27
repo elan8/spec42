@@ -139,11 +139,21 @@ pub(crate) fn semantic_index_ready_notification(
 /// Sends the `spec42/semanticIndexReady` LSP notification to the client.
 /// The session must already be in `Ready` state before calling this.
 ///
-/// Concurrent handlers may publish diagnostics as soon as the session is `Ready`, so nothing is
-/// awaited before the notification: the failure report follows it, keeping that window minimal.
-async fn send_semantic_ready_notification(client: &Client, handle: &WorkspaceHandle) {
-    let params = semantic_index_ready_notification(&handle.snapshot());
+/// Diagnostics stay deferred until this send completes and the actor accepts its epoch.
+/// Semantic edits do not reset this host-only barrier; startup and library replacement do.
+async fn send_semantic_ready_notification(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    token: crate::session::ReadinessToken,
+) {
+    let snapshot = handle.snapshot();
+    if !snapshot.diagnostic_readiness.is_current(&token) {
+        return;
+    }
+    let params = semantic_index_ready_notification(&snapshot);
+    drop(snapshot);
     client.send_notification::<SemanticIndexReady>(params).await;
+    let _ = handle.announce_readiness(token).await;
     report_publication_failure(client, handle).await;
 }
 

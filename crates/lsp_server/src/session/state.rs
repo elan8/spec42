@@ -72,6 +72,8 @@ pub(crate) struct ServerState {
     pub(crate) services: Services,
     /// The publication lifecycle and the current immutable publication.
     pub(crate) session: PublicationSession,
+    /// Whether the host has sent readiness for this startup/library-reindex epoch.
+    pub(crate) diagnostic_readiness: super::readiness::DiagnosticReadiness,
     /// Changes only when admitted semantic inputs/reporting change. Guards model mirroring from
     /// edits that race construction without treating search-only bookkeeping as semantic change.
     pub(crate) semantic_revision: u64,
@@ -112,6 +114,7 @@ impl ServerState {
             standard_library_availability: StandardLibraryAvailability::Unavailable,
             services,
             session,
+            diagnostic_readiness: super::readiness::DiagnosticReadiness::default(),
             semantic_revision: 0,
             index: std::collections::HashMap::new(),
             semantic_symbols: Vec::new(),
@@ -136,6 +139,7 @@ impl TracksRelink for ServerState {
 
     fn rekey_for_actor(&mut self) {
         self.session.rekey_for_owner();
+        self.diagnostic_readiness.rekey_for_owner();
     }
 }
 

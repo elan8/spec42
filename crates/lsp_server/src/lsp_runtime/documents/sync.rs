@@ -7,6 +7,16 @@ pub(crate) async fn did_open(
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidOpenTextDocumentParams,
 ) {
+    // Loose projects created after initialize do not run initialized_handle. Announce their
+    // initial readiness here, while a library-reindex epoch remains owned by its scan task.
+    let snapshot = handle.snapshot();
+    let announce_initial = snapshot.diagnostic_readiness.needs_initial_notification()
+        && crate::session::state::supports_semantic_queries(snapshot.session.lifecycle());
+    let readiness_token = snapshot.diagnostic_readiness.token();
+    drop(snapshot);
+    if announce_initial {
+        send_semantic_ready_notification(client, handle, readiness_token).await;
+    }
     let uri = params.text_document.uri.clone();
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
@@ -415,13 +425,13 @@ pub(crate) async fn did_change_configuration(
         &config.default_library_paths,
         client_library_paths,
     );
-    let changed = handle
+    let readiness_token = handle
         .begin_library_reindex_if_changed(new_library_paths.clone())
         .await
-        .unwrap_or(false);
-    if !changed {
+        .unwrap_or(None);
+    let Some(readiness_token) = readiness_token else {
         return;
-    }
+    };
 
     let handle = handle.clone();
     let runtime_config = Arc::clone(runtime_config);
@@ -481,7 +491,7 @@ pub(crate) async fn did_change_configuration(
         for warning in warnings {
             client.log_message(MessageType::WARNING, warning).await;
         }
-        send_semantic_ready_notification(&client, &handle).await;
+        send_semantic_ready_notification(&client, &handle, readiness_token).await;
         let diagnostics_start = Instant::now();
         publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
         log_perf(

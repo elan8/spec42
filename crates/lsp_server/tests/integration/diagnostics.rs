@@ -842,19 +842,7 @@ fn startup_defers_diagnostics_until_semantic_index_ready() {
         }
     }
 
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "textDocument/didChange",
-            "params": {
-                "textDocument": { "uri": bad_uri, "version": 2 },
-                "contentChanges": [{ "text": bad_text }]
-            }
-        })
-        .to_string(),
-    );
-
+    // No second edit may be necessary to recover diagnostics deferred during startup.
     let mut saw_ready_diagnostics = false;
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);
     while std::time::Instant::now() < deadline && !saw_ready_diagnostics {

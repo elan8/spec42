@@ -532,6 +532,7 @@ impl WorkspaceHandle {
                 s.standard_library_paths = standard_library_paths;
                 s.standard_library_availability = standard_library_availability;
                 s.session.reset();
+                s.diagnostic_readiness.reset(true);
             })
             .await
     }
@@ -542,6 +543,22 @@ impl WorkspaceHandle {
 
     pub(crate) async fn complete_startup(&self) -> Result<u64, MutatePanicked> {
         self.actor.mutate(|s| s.session.complete_startup()).await
+    }
+
+    pub(crate) async fn announce_readiness(
+        &self,
+        token: super::readiness::ReadinessToken,
+    ) -> Result<bool, MutatePanicked> {
+        self.actor
+            .mutate_if_changed(move |s| {
+                if s.diagnostic_readiness.announce(&token) {
+                    Mutation::Changed(true)
+                } else {
+                    Mutation::Unchanged(false)
+                }
+            })
+            .await
+            .map(|outcome| outcome.value)
     }
 
     pub(crate) async fn ingest_startup_scan(
@@ -805,18 +822,19 @@ impl WorkspaceHandle {
     pub(crate) async fn begin_library_reindex_if_changed(
         &self,
         new_library_paths: Vec<Url>,
-    ) -> Result<bool, MutatePanicked> {
+    ) -> Result<Option<super::readiness::ReadinessToken>, MutatePanicked> {
         self.actor
             .mutate_if_changed(move |s| {
                 let old = std::mem::take(&mut s.library_paths);
                 if new_library_paths == old {
                     s.library_paths = old;
-                    Mutation::Unchanged(false)
+                    Mutation::Unchanged(None)
                 } else {
                     let _ = crate::session::services::clear_documents_under_roots(s, &old);
+                    s.diagnostic_readiness.reset(false);
                     s.library_paths = new_library_paths.clone();
                     s.session.invalidate_inputs();
-                    Mutation::Changed(true)
+                    Mutation::Changed(Some(s.diagnostic_readiness.token()))
                 }
             })
             .await
