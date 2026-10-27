@@ -1,4 +1,4 @@
-//! Generate and verify the TypeScript bindings for the schema-9 diagram product.
+//! Generate and verify the TypeScript bindings for the schema-10 diagram product.
 
 use std::collections::BTreeMap;
 use std::fs;

@@ -247,7 +247,7 @@ package Filters {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:7987f485102869a6883c1e1e4f783a140488695933cdd6d9e9586004e34d3ec7",
   "documents": [
     {
@@ -377,6 +377,7 @@ package Filters {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
@@ -394,6 +395,7 @@ package Filters {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "child",
         "notationRole": "usage",
         "owner": 0,

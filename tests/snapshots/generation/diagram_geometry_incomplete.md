@@ -120,7 +120,7 @@ package GeometryExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:9ae5d94e47f9bf43a55491b091deed25cfb986968b08301863fc28ab1f7c8a98",
   "documents": [
     {
@@ -193,6 +193,7 @@ package GeometryExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Shape",
         "notationRole": "definition",
         "owner": null,

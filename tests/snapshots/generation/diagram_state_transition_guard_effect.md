@@ -1180,7 +1180,7 @@ package Door {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:b2c5494565232da3714a7757939f7bce8845a648ff4f4c3609d7f7898e4e09ac",
   "documents": [
     {
@@ -1340,33 +1340,6 @@ package Door {
     {
       "document": 0,
       "range": [
-        15,
-        15,
-        15,
-        23
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        15,
-        15,
-        15,
-        31
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        15,
-        26,
-        15,
-        31
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
         16,
         22,
         16,
@@ -1425,33 +1398,6 @@ package Door {
         46,
         18,
         57
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        18,
-        61,
-        18,
-        69
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        18,
-        61,
-        18,
-        78
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        18,
-        73,
-        18,
-        78
       ]
     },
     {
@@ -1637,35 +1583,28 @@ package Door {
       "kind": "source-anchor",
       "metaclass": "AcceptActionUsage",
       "ownerQualifiedName": "Door::Cycle::nudge",
-      "source": 22,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "BooleanExpression",
-      "ownerQualifiedName": "Door::Cycle::nudge",
-      "source": 27,
+      "source": 19,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ReferenceUsage",
       "ownerQualifiedName": "Door::Cycle::nudge",
-      "source": 22,
+      "source": 19,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Door::Cycle::nudge",
-      "source": 22,
+      "source": 19,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ReferenceUsage",
       "ownerQualifiedName": "Door::Cycle::nudge::",
-      "source": 22,
+      "source": 19,
       "sourceDomain": "workspace"
     },
     {
@@ -1673,13 +1612,6 @@ package Door {
       "metaclass": "AcceptActionUsage",
       "ownerQualifiedName": "Door::Cycle::reopen",
       "source": 12,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "BooleanExpression",
-      "ownerQualifiedName": "Door::Cycle::reopen",
-      "source": 17,
       "sourceDomain": "workspace"
     },
     {
@@ -1707,28 +1639,28 @@ package Door {
       "kind": "source-anchor",
       "metaclass": "AcceptActionUsage",
       "ownerQualifiedName": "Door::Cycle::shut",
-      "source": 30,
+      "source": 24,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ReferenceUsage",
       "ownerQualifiedName": "Door::Cycle::shut",
-      "source": 30,
+      "source": 24,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Door::Cycle::shut",
-      "source": 30,
+      "source": 24,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ReferenceUsage",
       "ownerQualifiedName": "Door::Cycle::shut::",
-      "source": 30,
+      "source": 24,
       "sourceDomain": "workspace"
     },
     {
@@ -1781,19 +1713,19 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "ordinal": 25,
       "relationshipKind": "containment",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "ordinal": 35,
       "relationshipKind": "containment",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 38,
+      "ordinal": 36,
       "relationshipKind": "containment",
       "source": 2
     },
@@ -1811,7 +1743,7 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 100,
+      "ordinal": 90,
       "relationshipKind": "typing",
       "source": 4
     },
@@ -1823,7 +1755,7 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
+      "ordinal": 31,
       "relationshipKind": "succession",
       "source": 6
     },
@@ -1835,7 +1767,7 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "ordinal": 26,
       "relationshipKind": "transition",
       "source": 6
     },
@@ -1877,12 +1809,6 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "containment",
-      "source": 8
-    },
-    {
-      "kind": "relationship",
       "ordinal": 47,
       "relationshipKind": "transitionSource",
       "source": 8
@@ -1903,18 +1829,6 @@ package Door {
       "kind": "relationship",
       "ordinal": 24,
       "relationshipKind": "containment",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "expressionOperand",
-      "source": 9
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "expressionOperand",
       "source": 9
     },
     {
@@ -1943,6 +1857,12 @@ package Door {
     },
     {
       "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "containment",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
       "ordinal": 28,
       "relationshipKind": "containment",
       "source": 12
@@ -1961,79 +1881,55 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "ordinal": 32,
       "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
-      "relationshipKind": "transitionSource",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "transitionTarget",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "transitionTrigger",
       "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 34,
       "relationshipKind": "containment",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
+      "relationshipKind": "transitionSource",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "transitionTarget",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 70,
+      "relationshipKind": "transitionTrigger",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "containment",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 95,
-      "relationshipKind": "expressionOperand",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 96,
-      "relationshipKind": "expressionOperand",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
+      "ordinal": 80,
       "relationshipKind": "succession",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 86,
+      "ordinal": 81,
       "relationshipKind": "succession",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 93,
+      "ordinal": 88,
       "relationshipKind": "transitionEffect",
       "source": 14
     },
@@ -2108,7 +2004,7 @@ package Door {
     "reference": 18,
     "kind": "state-transition-view",
     "name": "cycle",
-    "source": 35
+    "source": 29
   },
   "completeness": {
     "status": "complete",
@@ -2119,33 +2015,51 @@ package Door {
       {
         "kind": "containment",
         "navigation": 11,
-        "origin": 27,
+        "origin": 25,
+        "provenance": "authored",
+        "reference": 34,
+        "source": 0,
+        "target": 25
+      },
+      {
+        "kind": "containment",
+        "navigation": 6,
+        "origin": 23,
+        "provenance": "authored",
+        "reference": 35,
+        "source": 0,
+        "target": 23
+      },
+      {
+        "kind": "initial-state",
+        "navigation": 7,
+        "origin": 23,
+        "provenance": "authored",
+        "reference": 45,
+        "source": 23,
+        "target": 26
+      },
+      {
+        "kind": "containment",
+        "navigation": 8,
+        "origin": 26,
         "provenance": "authored",
         "reference": 36,
+        "source": 0,
+        "target": 26
+      },
+      {
+        "kind": "containment",
+        "navigation": 10,
+        "origin": 27,
+        "provenance": "authored",
+        "reference": 37,
         "source": 0,
         "target": 27
       },
       {
         "kind": "containment",
-        "navigation": 6,
-        "origin": 25,
-        "provenance": "authored",
-        "reference": 37,
-        "source": 0,
-        "target": 25
-      },
-      {
-        "kind": "initial-state",
-        "navigation": 7,
-        "origin": 25,
-        "provenance": "authored",
-        "reference": 47,
-        "source": 25,
-        "target": 28
-      },
-      {
-        "kind": "containment",
-        "navigation": 8,
+        "navigation": 9,
         "origin": 28,
         "provenance": "authored",
         "reference": 38,
@@ -2154,7 +2068,7 @@ package Door {
       },
       {
         "kind": "containment",
-        "navigation": 10,
+        "navigation": 3,
         "origin": 29,
         "provenance": "authored",
         "reference": 39,
@@ -2163,255 +2077,237 @@ package Door {
       },
       {
         "kind": "containment",
-        "navigation": 9,
-        "origin": 30,
-        "provenance": "authored",
-        "reference": 40,
-        "source": 0,
-        "target": 30
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 31,
-        "provenance": "authored",
-        "reference": 41,
-        "source": 0,
-        "target": 31
-      },
-      {
-        "kind": "containment",
-        "navigation": 31,
+        "navigation": 25,
         "origin": 1,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 40,
         "source": 0,
         "target": 1
       },
       {
         "kind": "transition",
-        "navigation": 32,
+        "navigation": 26,
         "origin": 1,
         "provenance": "implied",
-        "reference": 70,
-        "source": 29,
-        "target": 27
+        "reference": 65,
+        "source": 27,
+        "target": 25
       },
       {
         "kind": "containment",
-        "navigation": 30,
+        "navigation": 24,
         "origin": 7,
         "provenance": "authored",
-        "reference": 87,
+        "reference": 79,
         "source": 1,
         "target": 7
       },
       {
         "kind": "containment",
-        "navigation": 30,
+        "navigation": 24,
         "origin": 7,
         "provenance": "authored",
-        "reference": 88,
+        "reference": 80,
         "source": 1,
         "target": 7
       },
       {
         "kind": "containment",
-        "navigation": 30,
+        "navigation": 24,
         "origin": 7,
         "provenance": "authored",
-        "reference": 89,
+        "reference": 81,
         "source": 1,
         "target": 7
       },
       {
         "kind": "containment",
-        "navigation": 30,
+        "navigation": 24,
         "origin": 2,
         "provenance": "authored",
-        "reference": 90,
+        "reference": 82,
         "source": 1,
         "target": 2
       },
       {
         "kind": "succession",
-        "navigation": 32,
+        "navigation": 26,
         "origin": 2,
         "provenance": "implied",
-        "reference": 69,
-        "source": 29,
-        "target": 27
+        "reference": 64,
+        "source": 27,
+        "target": 25
       },
       {
         "kind": "containment",
-        "navigation": 30,
+        "navigation": 24,
         "origin": 3,
         "provenance": "authored",
-        "reference": 91,
+        "reference": 83,
         "source": 1,
         "target": 3
       },
       {
         "kind": "containment",
-        "navigation": 30,
+        "navigation": 24,
         "origin": 4,
         "provenance": "authored",
-        "reference": 95,
+        "reference": 87,
         "source": 3,
         "target": 4
       },
       {
         "kind": "containment",
-        "navigation": 23,
+        "navigation": 20,
         "origin": 8,
         "provenance": "authored",
-        "reference": 43,
+        "reference": 41,
         "source": 0,
         "target": 8
       },
       {
         "kind": "transition",
-        "navigation": 24,
+        "navigation": 21,
         "origin": 8,
         "provenance": "implied",
-        "reference": 52,
-        "source": 28,
-        "target": 29
+        "reference": 50,
+        "source": 26,
+        "target": 27
       },
       {
         "kind": "containment",
-        "navigation": 22,
-        "origin": 15,
+        "navigation": 19,
+        "origin": 14,
+        "provenance": "authored",
+        "reference": 53,
+        "source": 8,
+        "target": 14
+      },
+      {
+        "kind": "containment",
+        "navigation": 19,
+        "origin": 14,
+        "provenance": "authored",
+        "reference": 54,
+        "source": 8,
+        "target": 14
+      },
+      {
+        "kind": "containment",
+        "navigation": 19,
+        "origin": 14,
         "provenance": "authored",
         "reference": 55,
         "source": 8,
-        "target": 15
+        "target": 14
       },
       {
         "kind": "containment",
-        "navigation": 22,
-        "origin": 15,
-        "provenance": "authored",
-        "reference": 56,
-        "source": 8,
-        "target": 15
-      },
-      {
-        "kind": "containment",
-        "navigation": 22,
-        "origin": 15,
-        "provenance": "authored",
-        "reference": 57,
-        "source": 8,
-        "target": 15
-      },
-      {
-        "kind": "containment",
-        "navigation": 22,
+        "navigation": 19,
         "origin": 9,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 56,
         "source": 8,
         "target": 9
       },
       {
         "kind": "succession",
-        "navigation": 24,
+        "navigation": 21,
         "origin": 9,
         "provenance": "implied",
-        "reference": 50,
-        "source": 28,
-        "target": 29
+        "reference": 48,
+        "source": 26,
+        "target": 27
       },
       {
         "kind": "containment",
-        "navigation": 22,
+        "navigation": 19,
         "origin": 10,
         "provenance": "authored",
-        "reference": 59,
+        "reference": 57,
         "source": 8,
         "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 22,
+        "navigation": 19,
         "origin": 11,
         "provenance": "authored",
-        "reference": 64,
+        "reference": 61,
         "source": 10,
         "target": 11
       },
       {
         "kind": "containment",
-        "navigation": 27,
-        "origin": 12,
-        "provenance": "authored",
-        "reference": 60,
-        "source": 8,
-        "target": 12
-      },
-      {
-        "kind": "containment",
         "navigation": 13,
-        "origin": 16,
+        "origin": 15,
         "provenance": "authored",
-        "reference": 44,
+        "reference": 42,
         "source": 0,
-        "target": 16
+        "target": 15
       },
       {
         "kind": "transition",
         "navigation": 14,
-        "origin": 16,
+        "origin": 15,
         "provenance": "implied",
-        "reference": 53,
-        "source": 28,
-        "target": 30
+        "reference": 51,
+        "source": 26,
+        "target": 28
       },
       {
         "kind": "containment",
         "navigation": 12,
-        "origin": 24,
+        "origin": 22,
         "provenance": "authored",
-        "reference": 71,
-        "source": 16,
-        "target": 24
+        "reference": 66,
+        "source": 15,
+        "target": 22
       },
       {
         "kind": "containment",
         "navigation": 12,
-        "origin": 24,
+        "origin": 22,
         "provenance": "authored",
-        "reference": 72,
-        "source": 16,
-        "target": 24
+        "reference": 67,
+        "source": 15,
+        "target": 22
       },
       {
         "kind": "containment",
         "navigation": 12,
-        "origin": 24,
+        "origin": 22,
         "provenance": "authored",
-        "reference": 73,
-        "source": 16,
-        "target": 24
+        "reference": 68,
+        "source": 15,
+        "target": 22
       },
       {
         "kind": "containment",
         "navigation": 12,
-        "origin": 17,
+        "origin": 16,
         "provenance": "authored",
-        "reference": 74,
-        "source": 16,
-        "target": 17
+        "reference": 69,
+        "source": 15,
+        "target": 16
       },
       {
         "kind": "succession",
         "navigation": 14,
-        "origin": 17,
+        "origin": 16,
         "provenance": "implied",
-        "reference": 51,
-        "source": 28,
-        "target": 30
+        "reference": 49,
+        "source": 26,
+        "target": 28
+      },
+      {
+        "kind": "containment",
+        "navigation": 12,
+        "origin": 17,
+        "provenance": "authored",
+        "reference": 70,
+        "source": 15,
+        "target": 17
       },
       {
         "kind": "containment",
@@ -2419,53 +2315,35 @@ package Door {
         "origin": 18,
         "provenance": "authored",
         "reference": 75,
-        "source": 16,
+        "source": 17,
         "target": 18
       },
       {
         "kind": "containment",
-        "navigation": 12,
+        "navigation": 16,
         "origin": 19,
         "provenance": "authored",
-        "reference": 81,
-        "source": 18,
+        "reference": 71,
+        "source": 15,
         "target": 19
       },
       {
         "kind": "containment",
-        "navigation": 19,
-        "origin": 20,
-        "provenance": "authored",
-        "reference": 76,
-        "source": 16,
-        "target": 20
-      },
-      {
-        "kind": "containment",
-        "navigation": 17,
-        "origin": 21,
-        "provenance": "authored",
-        "reference": 77,
-        "source": 16,
-        "target": 21
-      },
-      {
-        "kind": "containment",
         "navigation": 1,
-        "origin": 32,
+        "origin": 30,
         "provenance": "authored",
-        "reference": 45,
+        "reference": 43,
         "source": 0,
-        "target": 32
+        "target": 30
       },
       {
         "kind": "containment",
         "navigation": 5,
-        "origin": 26,
+        "origin": 24,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 44,
         "source": 0,
-        "target": 26
+        "target": 24
       }
     ],
     "exposedRoots": [
@@ -2475,14 +2353,14 @@ package Door {
     "metadata": {
       "finalNodes": [],
       "initialNodes": [
-        25
+        23
       ],
       "states": [
         0,
+        25,
+        26,
         27,
-        28,
-        29,
-        30
+        28
       ]
     },
     "nodes": [
@@ -2491,25 +2369,25 @@ package Door {
           {
             "kind": "attributes",
             "members": [
-              31,
-              32
+              29,
+              30
             ],
             "provenance": "direct"
           },
           {
             "kind": "actions",
             "members": [
-              26
+              24
             ],
             "provenance": "direct"
           },
           {
             "kind": "states",
             "members": [
+              25,
+              26,
               27,
-              28,
-              29,
-              30
+              28
             ],
             "provenance": "direct"
           }
@@ -2518,6 +2396,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "StateDefinition",
+        "multiplicity": null,
         "name": "Cycle",
         "notationRole": "definition",
         "owner": null,
@@ -2552,11 +2431,12 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "TransitionUsage",
+        "multiplicity": null,
         "name": "shut",
         "notationRole": "usage",
         "owner": 0,
         "reference": 15,
-        "source": 31,
+        "source": 25,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2569,11 +2449,12 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 34,
-        "source": 30,
+        "reference": 32,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2594,11 +2475,12 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AcceptActionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 1,
-        "reference": 32,
-        "source": 30,
+        "reference": 30,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2611,11 +2493,12 @@ package Door {
         "direction": "inout",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
         "owner": 3,
-        "reference": 35,
-        "source": 30,
+        "reference": 33,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2628,11 +2511,12 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 33,
-        "source": 30,
+        "reference": 31,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2645,11 +2529,12 @@ package Door {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 33,
-        "source": 30,
+        "reference": 31,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2662,11 +2547,12 @@ package Door {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 33,
-        "source": 30,
+        "reference": 31,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2678,9 +2564,9 @@ package Door {
           {
             "kind": "attributes",
             "members": [
-              15,
-              15,
-              15
+              14,
+              14,
+              14
             ],
             "provenance": "direct"
           },
@@ -2696,11 +2582,12 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "TransitionUsage",
+        "multiplicity": null,
         "name": "nudge",
         "notationRole": "usage",
         "owner": 0,
         "reference": 8,
-        "source": 23,
+        "source": 20,
         "stateSubaction": null,
         "successionGuard": "attempts >= limit",
         "typing": {
@@ -2713,11 +2600,12 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
-        "reference": 25,
-        "source": 22,
+        "reference": 24,
+        "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2738,11 +2626,12 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AcceptActionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 8,
         "reference": 22,
-        "source": 22,
+        "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2755,11 +2644,12 @@ package Door {
         "direction": "inout",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
         "owner": 10,
-        "reference": 26,
-        "source": 22,
+        "reference": 25,
+        "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2771,29 +2661,13 @@ package Door {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "BooleanExpression",
+        "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "reference-usage",
         "owner": 8,
         "reference": 23,
-        "source": 27,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 8,
-        "reference": 24,
-        "source": 22,
+        "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2806,11 +2680,12 @@ package Door {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 24,
-        "source": 22,
+        "reference": 23,
+        "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2823,11 +2698,12 @@ package Door {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 24,
-        "source": 22,
+        "reference": 23,
+        "source": 19,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2839,17 +2715,17 @@ package Door {
           {
             "kind": "attributes",
             "members": [
-              24,
-              24,
-              24
+              22,
+              22,
+              22
             ],
             "provenance": "direct"
           },
           {
             "kind": "actions",
             "members": [
-              18,
-              20
+              17,
+              19
             ],
             "provenance": "direct"
           }
@@ -2858,6 +2734,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "TransitionUsage",
+        "multiplicity": null,
         "name": "reopen",
         "notationRole": "usage",
         "owner": 0,
@@ -2875,10 +2752,11 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 16,
-        "reference": 30,
+        "owner": 15,
+        "reference": 28,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2891,7 +2769,7 @@ package Door {
           {
             "kind": "attributes",
             "members": [
-              19
+              18
             ],
             "provenance": "direct"
           }
@@ -2900,10 +2778,11 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AcceptActionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
-        "owner": 16,
-        "reference": 27,
+        "owner": 15,
+        "reference": 26,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2917,10 +2796,11 @@ package Door {
         "direction": "inout",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 18,
-        "reference": 31,
+        "owner": 17,
+        "reference": 29,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2934,28 +2814,12 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PerformActionUsage",
+        "multiplicity": null,
         "name": "count",
         "notationRole": "usage",
-        "owner": 16,
+        "owner": 15,
         "reference": 14,
-        "source": 19,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "BooleanExpression",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 16,
-        "reference": 28,
-        "source": 17,
+        "source": 16,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2968,10 +2832,11 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 16,
-        "reference": 29,
+        "owner": 15,
+        "reference": 27,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2985,10 +2850,11 @@ package Door {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 16,
-        "reference": 29,
+        "owner": 15,
+        "reference": 27,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3002,10 +2868,11 @@ package Door {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "ReferenceUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 16,
-        "reference": 29,
+        "owner": 15,
+        "reference": 27,
         "source": 12,
         "stateSubaction": null,
         "successionGuard": null,
@@ -3019,6 +2886,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -3036,6 +2904,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -3053,6 +2922,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "StateUsage",
+        "multiplicity": null,
         "name": "closed",
         "notationRole": "usage",
         "owner": 0,
@@ -3070,6 +2940,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "StateUsage",
+        "multiplicity": null,
         "name": "closing",
         "notationRole": "usage",
         "owner": 0,
@@ -3087,6 +2958,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "StateUsage",
+        "multiplicity": null,
         "name": "nudging",
         "notationRole": "usage",
         "owner": 0,
@@ -3104,6 +2976,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "StateUsage",
+        "multiplicity": null,
         "name": "opening",
         "notationRole": "usage",
         "owner": 0,
@@ -3121,6 +2994,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "limit",
         "notationRole": "usage",
         "owner": 0,
@@ -3144,6 +3018,7 @@ package Door {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "attempts",
         "notationRole": "usage",
         "owner": 0,
@@ -3167,10 +3042,10 @@ package Door {
         "kind": "initialState",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 48,
-        "source": 25,
+        "reference": 46,
+        "source": 23,
         "target": {
-          "node": 28,
+          "node": 26,
           "status": "resolved"
         }
       },
@@ -3178,8 +3053,8 @@ package Door {
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 54,
-        "source": 31,
+        "reference": 52,
+        "source": 29,
         "target": {
           "reference": 19,
           "status": "resolved"
@@ -3187,20 +3062,9 @@ package Door {
       },
       {
         "kind": "transitionSource",
-        "navigation": 32,
+        "navigation": 26,
         "provenance": "authored",
-        "reference": 92,
-        "source": 1,
-        "target": {
-          "node": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 34,
-        "provenance": "authored",
-        "reference": 93,
+        "reference": 84,
         "source": 1,
         "target": {
           "node": 27,
@@ -3208,10 +3072,21 @@ package Door {
         }
       },
       {
-        "kind": "transitionTrigger",
-        "navigation": 33,
+        "kind": "transitionTarget",
+        "navigation": 28,
         "provenance": "authored",
-        "reference": 94,
+        "reference": 85,
+        "source": 1,
+        "target": {
+          "node": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 27,
+        "provenance": "authored",
+        "reference": 86,
         "source": 1,
         "target": {
           "reference": 0,
@@ -3220,20 +3095,9 @@ package Door {
       },
       {
         "kind": "succession",
-        "navigation": 32,
+        "navigation": 26,
         "provenance": "authored",
-        "reference": 96,
-        "source": 2,
-        "target": {
-          "node": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 34,
-        "provenance": "authored",
-        "reference": 97,
+        "reference": 88,
         "source": 2,
         "target": {
           "node": 27,
@@ -3241,32 +3105,43 @@ package Door {
         }
       },
       {
-        "kind": "transitionSource",
-        "navigation": 24,
+        "kind": "succession",
+        "navigation": 28,
         "provenance": "authored",
-        "reference": 61,
+        "reference": 89,
+        "source": 2,
+        "target": {
+          "node": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 21,
+        "provenance": "authored",
+        "reference": 58,
         "source": 8,
         "target": {
-          "node": 28,
+          "node": 26,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTarget",
-        "navigation": 29,
+        "navigation": 23,
         "provenance": "authored",
-        "reference": 62,
+        "reference": 59,
         "source": 8,
         "target": {
-          "node": 29,
+          "node": 27,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTrigger",
-        "navigation": 25,
+        "navigation": 22,
         "provenance": "authored",
-        "reference": 63,
+        "reference": 60,
         "source": 8,
         "target": {
           "reference": 17,
@@ -3275,45 +3150,23 @@ package Door {
       },
       {
         "kind": "succession",
-        "navigation": 24,
+        "navigation": 21,
         "provenance": "authored",
-        "reference": 67,
+        "reference": 62,
         "source": 9,
         "target": {
-          "node": 28,
+          "node": 26,
           "status": "resolved"
         }
       },
       {
         "kind": "succession",
-        "navigation": 29,
+        "navigation": 23,
         "provenance": "authored",
-        "reference": 68,
+        "reference": 63,
         "source": 9,
         "target": {
-          "node": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 65,
-        "source": 12,
-        "target": {
-          "node": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
-        "navigation": 28,
-        "provenance": "authored",
-        "reference": 66,
-        "source": 12,
-        "target": {
-          "node": 31,
+          "node": 27,
           "status": "resolved"
         }
       },
@@ -3321,21 +3174,21 @@ package Door {
         "kind": "transitionSource",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 78,
-        "source": 16,
+        "reference": 72,
+        "source": 15,
         "target": {
-          "node": 28,
+          "node": 26,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTarget",
-        "navigation": 21,
+        "navigation": 18,
         "provenance": "authored",
-        "reference": 79,
-        "source": 16,
+        "reference": 73,
+        "source": 15,
         "target": {
-          "node": 30,
+          "node": 28,
           "status": "resolved"
         }
       },
@@ -3343,8 +3196,8 @@ package Door {
         "kind": "transitionTrigger",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 80,
-        "source": 16,
+        "reference": 74,
+        "source": 15,
         "target": {
           "reference": 17,
           "status": "resolved"
@@ -3354,54 +3207,32 @@ package Door {
         "kind": "succession",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 84,
-        "source": 17,
+        "reference": 76,
+        "source": 16,
+        "target": {
+          "node": 26,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 77,
+        "source": 16,
         "target": {
           "node": 28,
           "status": "resolved"
         }
       },
       {
-        "kind": "succession",
-        "navigation": 21,
-        "provenance": "authored",
-        "reference": 85,
-        "source": 17,
-        "target": {
-          "node": 30,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "transitionEffect",
-        "navigation": 20,
+        "navigation": 17,
         "provenance": "authored",
-        "reference": 86,
-        "source": 20,
+        "reference": 78,
+        "source": 19,
         "target": {
           "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
-        "navigation": 16,
-        "provenance": "authored",
-        "reference": 82,
-        "source": 21,
-        "target": {
-          "node": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
-        "navigation": 18,
-        "provenance": "authored",
-        "reference": 83,
-        "source": 21,
-        "target": {
-          "node": 31,
           "status": "resolved"
         }
       },
@@ -3409,8 +3240,8 @@ package Door {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 49,
-        "source": 32,
+        "reference": 47,
+        "source": 30,
         "target": {
           "reference": 19,
           "status": "resolved"
@@ -3451,13 +3282,13 @@ package Door {
           },
           "id": "transition-1",
           "label": "shut",
-          "navigation": 32,
+          "navigation": 26,
           "provenance": "implied",
           "source": 3,
           "target": 1,
           "trigger": {
             "label": "Closed",
-            "navigation": 33,
+            "navigation": 27,
             "status": "accept",
             "target": {
               "id": "element/v129:memory://snapshot/model.sysml7:packagen4:Door1:013:attribute-defn6:Closed1:0",
@@ -3471,18 +3302,18 @@ package Door {
           },
           "guard": {
             "label": "attempts >= limit",
-            "navigation": 23,
+            "navigation": 20,
             "status": "supported"
           },
           "id": "transition-2",
           "label": "nudge",
-          "navigation": 24,
+          "navigation": 21,
           "provenance": "implied",
           "source": 2,
           "target": 3,
           "trigger": {
             "label": "Interrupted",
-            "navigation": 25,
+            "navigation": 22,
             "status": "accept",
             "target": {
               "id": "element/v129:memory://snapshot/model.sysml7:packagen4:Door1:013:attribute-defn11:Interrupted1:0",
@@ -3493,7 +3324,7 @@ package Door {
         {
           "effect": {
             "label": "count",
-            "navigation": 20,
+            "navigation": 17,
             "status": "supported"
           },
           "guard": {

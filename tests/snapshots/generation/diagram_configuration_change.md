@@ -379,7 +379,7 @@ package ScenarioViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:c0570790a9ef6e3f46ed97b8f105d549df2bc0303ee377c7c546410f0b0e68f0",
   "documents": [
     {
@@ -813,6 +813,7 @@ package ScenarioViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "configurationChange",
         "notationRole": "usage",
         "owner": null,
@@ -830,6 +831,7 @@ package ScenarioViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -847,6 +849,7 @@ package ScenarioViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -864,6 +867,7 @@ package ScenarioViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
@@ -881,6 +885,7 @@ package ScenarioViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "authenticate",
         "notationRole": "usage",
         "owner": 0,
@@ -898,6 +903,7 @@ package ScenarioViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "proveRestart",
         "notationRole": "usage",
         "owner": 0,
@@ -915,6 +921,7 @@ package ScenarioViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "reviewCompatibility",
         "notationRole": "usage",
         "owner": 0,
@@ -932,6 +939,7 @@ package ScenarioViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "commit",
         "notationRole": "usage",
         "owner": 0,

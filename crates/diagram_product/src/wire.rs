@@ -1,4 +1,4 @@
-//! The schema-9 JSON wire contract. The Rust writer validates against these types before
+//! The schema-10 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -182,6 +182,9 @@ pub struct DiagramNode {
     pub owner: Option<usize>,
     pub source: usize,
     pub compartments: Vec<Compartment>,
+    /// The authored multiplicity as written in a label (`"[6]"`, `"[0..*]"`), or `null` when none
+    /// was authored or a bound is an expression.
+    pub multiplicity: Option<String>,
     pub direction: Option<String>,
     pub conjugated: bool,
     /// `"entry"`, `"do"` or `"exit"` for the action a state owns in that role.

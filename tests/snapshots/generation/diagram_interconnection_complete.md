@@ -368,7 +368,7 @@ package InterconnectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:1ab1c109e59216347a68f9d7005975725447ab604839767c9a27677da16f1f1c",
   "documents": [
     {
@@ -745,6 +745,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
@@ -762,6 +763,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -779,6 +781,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -804,6 +807,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "nested",
         "notationRole": "usage",
         "owner": 0,
@@ -821,6 +825,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "tap",
         "notationRole": "usage",
         "owner": 3,
@@ -838,6 +843,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "input",
         "notationRole": "usage",
         "owner": 0,
@@ -855,6 +861,7 @@ package InterconnectionExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "output",
         "notationRole": "usage",
         "owner": 0,

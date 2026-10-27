@@ -641,7 +641,7 @@ package Dispatch {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:e9597d3eef16cb121b9addf079884965afbcea8f6bc0a32e8dc746911547e1f1",
   "documents": [
     {
@@ -1190,6 +1190,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "service",
         "notationRole": "usage",
         "owner": null,
@@ -1207,6 +1208,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1224,6 +1226,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1241,6 +1244,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -1266,6 +1270,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "car",
         "notationRole": "usage",
         "owner": 0,
@@ -1289,6 +1294,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": "inout",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "group",
         "notationRole": "usage",
         "owner": 4,
@@ -1320,6 +1326,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "group",
         "notationRole": "usage",
         "owner": 0,
@@ -1343,6 +1350,7 @@ package Dispatch {
         "direction": null,
         "featureDirection": "inout",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "car",
         "notationRole": "usage",
         "owner": 6,

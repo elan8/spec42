@@ -918,6 +918,7 @@ impl GeneratorModelView {
                     .map(|owner| self.diagram_occurrence(owner))
                     .transpose()?,
                 source: source_reference(&element.source, self.model.document_identity(element.source.document).unwrap_or_default()),
+                multiplicity: diagram_multiplicity(element.multiplicity),
                 compartments: element.compartments.iter().map(|compartment| {
                     Ok(DiagramCompartment {
                         kind: match compartment.kind {
@@ -2513,6 +2514,27 @@ fn source_range(range: sysml_query::resolved_slice::TextRange) -> SourceRange {
         start_character: range.start.character,
         end_line: range.end.line,
         end_character: range.end.character,
+    }
+}
+/// The multiplicity a diagram label shows, when both bounds are literal or unbounded. A diagram is
+/// never refused for an expression bound; it is drawn without the multiplicity instead.
+fn diagram_multiplicity(
+    value: MultiplicityFacts,
+) -> Option<spec42_generator_protocol::Multiplicity> {
+    match value {
+        MultiplicityFacts::Absent => None,
+        MultiplicityFacts::Declared {
+            lower,
+            upper,
+            ordered,
+            nonunique,
+        } => Some(spec42_generator_protocol::Multiplicity {
+            lower: bound(lower).ok()?,
+            upper: bound(upper).ok()?,
+            ordered,
+            unique: Some(!nonunique),
+            implied: false,
+        }),
     }
 }
 fn bound(value: MultiplicityBound) -> Result<Option<String>, ModelQueryError> {

@@ -271,6 +271,7 @@ mod tests {
             stereotype: "part def".to_string(),
             name: "Node".to_string(),
             typed_by_name: None,
+            multiplicity: None,
             attributes: Vec::new(),
             parts: Vec::new(),
             ports: Vec::new(),

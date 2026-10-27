@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-9 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-10 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};
@@ -3319,6 +3319,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "owner": field(element, "owner"),
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
+                    "multiplicity": field(element, "multiplicity"),
                     "direction": field(element, "direction"),
                     "conjugated": field(element, "conjugated"),
                     "referenceMembership": reference_membership,
@@ -3345,6 +3346,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                             "typeName": field(field(node, "attributes"), "typedByName")
                                 .as_str()
                                 .map(str::to_string),
+                            "multiplicity": field(field(node, "attributes"), "multiplicity"),
                         }))
                     })
                     .collect();

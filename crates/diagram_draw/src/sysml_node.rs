@@ -110,6 +110,8 @@ struct CompartmentsWire {
     #[serde(rename = "typedByName", default)]
     typed_by_name: Option<String>,
     #[serde(default)]
+    multiplicity: Option<String>,
+    #[serde(default)]
     attributes: Vec<DetailItemWire>,
     #[serde(default)]
     parts: Vec<DetailItemWire>,
@@ -125,10 +127,25 @@ pub struct Compartments {
     pub stereotype: String,
     pub name: String,
     pub typed_by_name: Option<String>,
+    /// The authored multiplicity as the diagram product writes it (`[6]`, `[0..*]`).
+    pub multiplicity: Option<String>,
     pub attributes: Vec<DetailItem>,
     pub parts: Vec<DetailItem>,
     pub ports: Vec<DetailItem>,
     pub collapsible_sections: Vec<Section>,
+}
+
+impl Compartments {
+    /// The line under the name: the type and multiplicity of a usage as SysML writes them
+    /// (`: Motor [6]`), the multiplicity alone for an untyped usage (`[3]`), or nothing.
+    pub fn typing_line(&self) -> Option<String> {
+        match (&self.typed_by_name, &self.multiplicity) {
+            (Some(typed), Some(multiplicity)) => Some(format!(": {typed} {multiplicity}")),
+            (Some(typed), None) => Some(format!(": {typed}")),
+            (None, Some(multiplicity)) => Some(multiplicity.clone()),
+            (None, None) => None,
+        }
+    }
 }
 
 impl From<CompartmentsWire> for Compartments {
@@ -137,6 +154,7 @@ impl From<CompartmentsWire> for Compartments {
             stereotype: wire.header.stereotype,
             name: wire.header.name,
             typed_by_name: wire.typed_by_name.filter(|s| !s.is_empty()),
+            multiplicity: wire.multiplicity.filter(|s| !s.is_empty()),
             attributes: wire.attributes.into_iter().map(Into::into).collect(),
             parts: wire.parts.into_iter().map(Into::into).collect(),
             ports: wire.ports.into_iter().map(Into::into).collect(),
@@ -301,10 +319,15 @@ pub fn collect_compartments(
                         type_name,
                         record.and_then(|r| r.get("conjugated")) == Some(&Value::Bool(true)),
                     );
+                    let multiplicity = record
+                        .and_then(|r| r.get("multiplicity"))
+                        .and_then(Value::as_str)
+                        .map(|multiplicity| format!(" {multiplicity}"))
+                        .unwrap_or_default();
                     let display_text = if type_name.is_empty() {
-                        name
+                        format!("{name}{multiplicity}")
                     } else {
-                        format!("{name} : {type_name}")
+                        format!("{name} : {type_name}{multiplicity}")
                     };
                     normalize_detail_item(&Value::String(display_text))
                 })
@@ -394,6 +417,7 @@ pub fn collect_compartments(
             attributes.get("direction").and_then(Value::as_str),
         ),
         typed_by_name,
+        multiplicity: attr_str(attributes, "multiplicity"),
         attributes: if !direct_attributes.is_empty() {
             direct_attributes
         } else {
@@ -559,8 +583,7 @@ pub fn layout_node_header(
         max_chars(available_text, NAME_FONT_SIZE, 0.6),
         NAME_MAX_LINES,
     );
-    let typing_text = compartments.typed_by_name.as_ref().map(|typed| {
-        let raw = format!(": {typed}");
+    let typing_text = compartments.typing_line().map(|raw| {
         truncate_to_chars(
             &raw,
             max_chars(
@@ -824,9 +847,8 @@ pub fn compute_node_width(compartments: &Compartments, state: &NodeChromeState) 
         .unwrap_or(name_length) as f64;
     let stereotype = format_stereotype(&compartments.stereotype);
     let typing_width = compartments
-        .typed_by_name
-        .as_ref()
-        .map(|typed| (utf16_len(typed) + 2) as f64 * TYPING_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR)
+        .typing_line()
+        .map(|line| utf16_len(&line) as f64 * TYPING_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR)
         .unwrap_or(0.0);
     // The drawing fits a name line at 0.6 of the font size for each character.
     let header_content = ((per_name_line + 1.0) * NAME_FONT_SIZE * 0.6)
@@ -898,6 +920,7 @@ pub fn compartments_to_value(compartments: &Compartments) -> Value {
             "name": compartments.name,
         },
         "typedByName": compartments.typed_by_name,
+        "multiplicity": compartments.multiplicity,
         "attributes": compartments.attributes.iter().map(item).collect::<Vec<_>>(),
         "parts": compartments.parts.iter().map(item).collect::<Vec<_>>(),
         "ports": compartments.ports.iter().map(item).collect::<Vec<_>>(),
@@ -1205,10 +1228,7 @@ pub fn render_node(compartments: &Compartments, options: RenderNodeOptions<'_>) 
             .style("font-size", format!("{}px", n(TYPING_FONT_SIZE)))
             .style("font-style", "italic")
             .style("fill", theme.text_secondary)
-            .child(Element::new("title").text(format!(
-                ": {}",
-                compartments.typed_by_name.clone().unwrap_or_default()
-            )));
+            .child(Element::new("title").text(compartments.typing_line().unwrap_or_default()));
         node = node.child(typing);
     }
 
@@ -1391,4 +1411,42 @@ pub fn render_node(compartments: &Compartments, options: RenderNodeOptions<'_>) 
     }
 
     node
+}
+
+#[cfg(test)]
+mod typing_line_tests {
+    use super::*;
+
+    fn compartments(typed: Option<&str>, multiplicity: Option<&str>) -> Compartments {
+        let mut attributes = BTreeMap::new();
+        if let Some(typed) = typed {
+            attributes.insert("typedByName".to_owned(), Value::String(typed.to_owned()));
+        }
+        if let Some(multiplicity) = multiplicity {
+            attributes.insert(
+                "multiplicity".to_owned(),
+                Value::String(multiplicity.to_owned()),
+            );
+        }
+        collect_compartments("joints", "part", &attributes)
+    }
+
+    #[test]
+    fn a_usage_label_shows_its_type_and_multiplicity_as_sysml_writes_them() {
+        assert_eq!(
+            compartments(Some("Motor"), Some("[6]"))
+                .typing_line()
+                .as_deref(),
+            Some(": Motor [6]")
+        );
+        assert_eq!(
+            compartments(Some("Motor"), None).typing_line().as_deref(),
+            Some(": Motor")
+        );
+        assert_eq!(
+            compartments(None, Some("[0..*]")).typing_line().as_deref(),
+            Some("[0..*]")
+        );
+        assert_eq!(compartments(None, None).typing_line(), None);
+    }
 }

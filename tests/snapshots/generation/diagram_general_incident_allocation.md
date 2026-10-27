@@ -632,7 +632,7 @@ package Deployment {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:258750d669b6cd0d5b7196a1a09bd0c18d960061298159dc7d7b1ea3e94cd315",
   "documents": [
     {
@@ -915,6 +915,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "workerA",
         "notationRole": "usage",
         "owner": null,
@@ -938,6 +939,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "workerB",
         "notationRole": "usage",
         "owner": null,
@@ -961,6 +963,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "cpu",
         "notationRole": "usage",
         "owner": null,
@@ -984,6 +987,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AllocationUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,
@@ -1001,6 +1005,7 @@ package Deployment {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AllocationUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,

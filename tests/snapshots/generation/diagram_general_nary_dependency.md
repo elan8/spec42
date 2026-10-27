@@ -262,7 +262,7 @@ package Trace {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:2108ad016e9a236f2f9f29a6b2efbb0a600c1e3137863cd9aa22546d2209363d",
   "documents": [
     {
@@ -479,6 +479,7 @@ package Trace {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Dependency",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,
@@ -496,6 +497,7 @@ package Trace {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "b",
         "notationRole": "usage",
         "owner": null,
@@ -513,6 +515,7 @@ package Trace {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "c",
         "notationRole": "usage",
         "owner": null,
@@ -530,6 +533,7 @@ package Trace {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "d",
         "notationRole": "usage",
         "owner": null,

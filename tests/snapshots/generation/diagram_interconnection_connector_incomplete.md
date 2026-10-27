@@ -234,7 +234,7 @@ package ConnectorIncomplete {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:72a11fa3e75e0dbb45e4c61e6f00e8fa9c188f0aae15aa3a98aa4a7811803b3f",
   "documents": [
     {
@@ -425,6 +425,7 @@ package ConnectorIncomplete {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
@@ -442,6 +443,7 @@ package ConnectorIncomplete {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
@@ -459,6 +461,7 @@ package ConnectorIncomplete {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "input",
         "notationRole": "usage",
         "owner": 0,

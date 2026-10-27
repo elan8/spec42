@@ -295,7 +295,7 @@ package Membership {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:96cdedcdd7c17673da9666731852a5ba83abf665b87ea6405f35ca7d802767a0",
   "documents": [
     {
@@ -582,6 +582,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Vehicle",
         "notationRole": "definition",
         "owner": null,
@@ -599,6 +600,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "owned",
         "notationRole": "usage",
         "owner": 0,
@@ -622,6 +624,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "borrowed",
         "notationRole": "usage",
         "owner": 0,
@@ -645,6 +648,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "forwarded",
         "notationRole": "usage",
         "owner": 0,
@@ -662,6 +666,7 @@ package Membership {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "socket",
         "notationRole": "usage",
         "owner": 0,

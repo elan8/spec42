@@ -258,7 +258,7 @@ package Garage {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "modelDigest": "blake3:8a7611d6ade3483c287500ec35560ed6caa63331cfbe1709ce8f6ab9fc8cefde",
   "documents": [
     {
@@ -399,6 +399,7 @@ package Garage {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Car",
         "notationRole": "definition",
         "owner": null,
@@ -416,6 +417,7 @@ package Garage {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": "[4]",
         "name": "wheel",
         "notationRole": "usage",
         "owner": 0,
@@ -433,6 +435,7 @@ package Garage {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "engine",
         "notationRole": "usage",
         "owner": 0,
