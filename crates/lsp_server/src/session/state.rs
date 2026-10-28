@@ -140,6 +140,15 @@ impl Default for ServerState {
 }
 
 impl ServerState {
+    /// Source discovery failure belongs to its configuration epoch. Editing a buffer cannot
+    /// make those missing inputs ready or discard the retained failure.
+    pub(crate) fn invalidate_inputs(&mut self) {
+        self.session.invalidate_inputs();
+        if self.diagnostic_readiness.source_inputs_pending() && self.publication_failure.is_some() {
+            self.session.finish_preparation_failure();
+        }
+    }
+
     pub(crate) fn new(services: Services) -> Self {
         let session = services.publication.session_empty();
         Self::with_session(services, session)
@@ -271,8 +280,11 @@ pub(crate) fn publication_inputs(
     entries.sort_by(|(left, _), (right, _)| left.as_str().cmp(right.as_str()));
     let mut reported: Vec<Box<str>> = Vec::new();
     for (uri, entry) in entries {
-        let standard = crate::common::util::uri_under_any_library(uri, standard_library_paths);
-        let library = standard || crate::common::util::uri_under_any_library(uri, library_paths);
+        let standard = entry.document.kind() == SourceKind::StandardLibrary
+            || crate::common::util::uri_under_any_library(uri, standard_library_paths);
+        let library = standard
+            || entry.document.kind().is_library()
+            || crate::common::util::uri_under_any_library(uri, library_paths);
         // A library file the editor has open is being authored, so its diagnostics are reported
         // even though its provenance keeps it out of the workspace's own set.
         if library && state.is_editor_open(uri) {

@@ -240,7 +240,9 @@ pub(crate) async fn did_close(
     // through the client's own file watcher -- so synthesizing a DELETED event here would remove
     // it from the index on nothing more than a race with that watcher, or on every close of a
     // buffer that was never saved at all.
-    if uri.to_file_path().ok().is_some_and(|path| path.is_file()) {
+    if (!library || handle.snapshot().index.contains_key(&uri_norm))
+        && uri.to_file_path().ok().is_some_and(|path| path.is_file())
+    {
         did_change_watched_files(
             client,
             handle,
@@ -432,9 +434,21 @@ pub(crate) async fn did_change_configuration(
         let total_start = Instant::now();
         let discover_read_start = Instant::now();
         let (entries, summary) =
-            tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths, &source))
+            match tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths, &source))
                 .await
-                .unwrap_or_default();
+            {
+                Ok(result) => result,
+                Err(error) => {
+                    fail_library_scan(
+                        &client,
+                        &handle,
+                        readiness_token,
+                        format!("Library discovery worker failed: {error}"),
+                    )
+                    .await;
+                    return;
+                }
+            };
         let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
         let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
         let parallel_parse_min_files =
@@ -443,17 +457,38 @@ pub(crate) async fn did_change_configuration(
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let parse_worker_start = Instant::now();
         let services = handle.snapshot().services.clone();
-        let parsed_entries = tokio::task::spawn_blocking(move || {
+        let parsed_entries = match tokio::task::spawn_blocking(move || {
             parse_scanned_documents(entries, should_parallel_parse, &services)
         })
         .await
-        .unwrap_or_default();
+        {
+            Ok(result) => result,
+            Err(error) => {
+                fail_library_scan(
+                    &client,
+                    &handle,
+                    readiness_token,
+                    format!("Library syntax worker failed: {error}"),
+                )
+                .await;
+                return;
+            }
+        };
         let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
         let ingest_start = Instant::now();
-        let (ingest_results, relink_metrics) = handle
-            .complete_library_reindex(parsed_entries)
+        let (ingest_results, relink_metrics) = match handle
+            .complete_library_reindex(readiness_token.clone(), parsed_entries)
             .await
-            .unwrap_or_default();
+        {
+            Ok(crate::session::handle::LibraryReindexCompletion::Admitted(results, metrics)) => {
+                (results, metrics)
+            }
+            Ok(crate::session::handle::LibraryReindexCompletion::Superseded) => return,
+            Err(error) => {
+                client.log_message(MessageType::ERROR, format!("Library source admission failed; retaining the previous publication: {error:?}")).await;
+                return;
+            }
+        };
         let mut warnings = Vec::new();
         for (_uri_norm, warning) in ingest_results {
             if let Some(message) = warning {
@@ -523,4 +558,25 @@ pub(crate) async fn did_change_configuration(
         )
         .await;
     });
+}
+
+async fn fail_library_scan(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    expected: crate::session::ReadinessToken,
+    message: String,
+) {
+    let failure = sysml_query::publication::PublicationBuildFailure::preparation_worker(message);
+    match handle.fail_library_reindex(expected, failure).await {
+        Ok(true) => report_publication_failure(client, handle).await,
+        Ok(false) => {} // An obsolete scan cannot report a failure for its replacement.
+        Err(error) => {
+            client
+                .log_message(
+                    MessageType::ERROR,
+                    format!("Library failure admission failed: {error:?}"),
+                )
+                .await
+        }
+    }
 }

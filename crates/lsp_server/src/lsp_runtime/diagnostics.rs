@@ -416,7 +416,10 @@ mod tests {
             &handle,
             handle.snapshot().session.publication()
         ));
-        handle.complete_library_reindex(Vec::new()).await.unwrap();
+        handle
+            .complete_library_reindex(replacement.clone(), Vec::new())
+            .await
+            .unwrap();
         assert!(handle.announce_readiness(replacement).await.unwrap());
         assert!(may_publish(
             &handle,

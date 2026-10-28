@@ -43,10 +43,20 @@ pub(crate) fn clear_documents_under_roots(
     state: &mut impl DocumentStore,
     roots: &[Url],
 ) -> Vec<Url> {
+    // Open library buffers remain authoring inputs until didClose. Preserve their provenance
+    // even when the removed root originally supplied workspace-classified scan entries.
+    for (uri, entry) in state.index_mut().iter_mut() {
+        if util::uri_under_any_library(uri, roots)
+            && entry.is_editor_open()
+            && !entry.document.kind().is_library()
+        {
+            entry.document = entry.document.with_kind(SourceKind::Library);
+        }
+    }
     let uris_to_remove: Vec<Url> = state
         .index()
         .keys()
-        .filter(|uri| util::uri_under_any_library(uri, roots))
+        .filter(|uri| util::uri_under_any_library(uri, roots) && !state.is_editor_open(uri))
         .cloned()
         .collect();
     for uri in &uris_to_remove {

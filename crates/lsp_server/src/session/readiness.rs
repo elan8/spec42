@@ -1,4 +1,4 @@
-//! Host notification ordering, separate from the semantic publication lifecycle.
+//! Host source-discovery and notification epochs, separate from semantic construction.
 
 use std::sync::Arc;
 
@@ -10,6 +10,7 @@ pub(crate) struct DiagnosticReadiness {
     token: ReadinessToken,
     announced: bool,
     initial: bool,
+    source_inputs_pending: bool,
 }
 
 impl Default for DiagnosticReadiness {
@@ -18,6 +19,7 @@ impl Default for DiagnosticReadiness {
             token: ReadinessToken(Arc::new(())),
             announced: false,
             initial: true,
+            source_inputs_pending: false,
         }
     }
 }
@@ -30,8 +32,22 @@ impl DiagnosticReadiness {
     pub(crate) fn reset(&mut self, initial: bool) {
         *self = Self {
             initial,
+            source_inputs_pending: !initial,
             ..Self::default()
         };
+    }
+
+    pub(crate) fn source_inputs_pending(&self) -> bool {
+        self.source_inputs_pending
+    }
+
+    /// Configured library source discovery completes before semantic construction can run.
+    pub(crate) fn admit_source_inputs(&mut self, token: &ReadinessToken) -> bool {
+        if !self.is_current(token) || !self.source_inputs_pending {
+            return false;
+        }
+        self.source_inputs_pending = false;
+        true
     }
 
     pub(crate) fn token(&self) -> ReadinessToken {
@@ -53,7 +69,7 @@ impl DiagnosticReadiness {
     /// A send completed for this exact project/notification epoch. An older startup or
     /// reindex notification must never unlock diagnostics for its replacement.
     pub(crate) fn announce(&mut self, token: &ReadinessToken) -> bool {
-        if !self.is_current(token) {
+        if !self.is_current(token) || self.source_inputs_pending {
             return false;
         }
         self.announced = true;
@@ -77,6 +93,9 @@ mod tests {
         assert!(!readiness.needs_initial_notification());
         let foreign = DiagnosticReadiness::default().token();
         assert!(!readiness.announce(&foreign));
+        assert!(!readiness.announce(&readiness.token()));
+        assert!(!readiness.admit_source_inputs(&old));
+        assert!(readiness.admit_source_inputs(&readiness.token()));
         assert!(readiness.announce(&readiness.token()));
         assert!(readiness.announced());
     }
