@@ -102,11 +102,18 @@ pub(crate) async fn publish_document_diagnostics(
 /// point. Holding the publication by `Arc` keeps a computation internally coherent; it says nothing
 /// about whether the model state it describes is still the one the author is looking at.
 ///
+/// The publication must also have been built from the *current* inputs. A document opened or
+/// edited after its build started is stamped with its new editor version when published, so
+/// diagnostics from the older build would claim to describe text that build never saw. That
+/// window is short: the change has already requested the rebuild that publishes them.
+///
 /// Separate from the publish itself so the decision is testable without a `Client`: the publish is
 /// a side effect, this is the rule.
 fn may_publish(handle: &WorkspaceHandle, publication: PublicationToken) -> bool {
     let snap = handle.snapshot();
-    snap.diagnostic_readiness.announced() && snap.session.is_publication_current(&publication)
+    snap.diagnostic_readiness.announced()
+        && snap.session.is_publication_current(&publication)
+        && snap.session.analysis_status() == sysml_query::publication::AnalysisStatus::Current
 }
 
 /// Publishes `diagnostics` only while `publication` still names the live session's state.

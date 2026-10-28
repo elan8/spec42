@@ -777,7 +777,7 @@ mod tests {
             let cancellation = BuildCancellation::at_phase(phase);
             let result = authority
                 .prepare_cancellable(
-                    &[workspace.clone()],
+                    std::slice::from_ref(&workspace),
                     StandardLibraryAvailability::Unavailable,
                     [],
                     &cancellation,
@@ -809,7 +809,7 @@ mod tests {
         let cancellation = BuildCancellation::at_phase(crate::ConstructionPhase::LibrarySeed);
         let error = authority
             .prepare_cancellable(
-                &[library.clone()],
+                std::slice::from_ref(&library),
                 StandardLibraryAvailability::Unavailable,
                 [],
                 &cancellation,

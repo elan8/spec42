@@ -635,7 +635,9 @@ enum PreparedPublicationAdmission {
 
 struct PreparedInputs {
     publication: PreparedPublication,
-    syntax: Vec<(SourceDocument, ParsedSource)>,
+    /// The documents parsed off the actor. Their trees stay with the syntax authority, whose
+    /// memo keeps every revision parsed since its last `retain`; admission asks it again.
+    parsed: Vec<SourceDocument>,
     parsing: std::time::Duration,
 }
 
@@ -651,8 +653,8 @@ fn prepare_publication(
         if cancellation.is_cancelled() {
             return Err(PublicationBuildFailure::cancelled());
         }
-        let parsed = snapshot.services.syntax.parse(document);
-        syntax.push((document.clone(), parsed));
+        snapshot.services.syntax.parse(document);
+        syntax.push(document.clone());
     }
     let parsing = parse_started.elapsed();
     let publication = snapshot.services.publication.prepare_cancellable(
@@ -663,7 +665,7 @@ fn prepare_publication(
     )?;
     Ok(PreparedInputs {
         publication,
-        syntax,
+        parsed: syntax,
         parsing,
     })
 }
@@ -678,18 +680,19 @@ fn admit_prepared_publication(
     }
     match prepared {
         Ok(prepared) => {
-            // Source and parse identity are checked as a complete set before installing leases.
+            // Source identity is checked as a complete set before installing leases.
             assert!(
-                prepared.syntax.iter().all(|(document, parsed)| {
+                prepared.parsed.iter().all(|document| {
                     state.index.get(document.uri()).is_some_and(|entry| {
                         entry.document.digest() == document.digest()
                             && entry.document.language() == document.language()
-                            && parsed.digest() == document.digest()
                     })
                 }),
                 "prepared syntax must belong to the guarded desired source"
             );
-            for (document, parsed) in prepared.syntax {
+            // A memo hit: preparation parsed each of these off the actor.
+            for document in prepared.parsed {
+                let parsed = state.services.syntax.parse(&document);
                 state.index.get_mut(document.uri()).unwrap().parsed = Some(parsed);
             }
             let prepared = prepared.publication;
