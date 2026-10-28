@@ -16,8 +16,8 @@ use crate::syntax::SyntaxService;
 use crate::StandardLibraryAvailability;
 
 pub use sysml_resolution::publication::{
-    BuildToken, PublicationBuildFailure, PublicationFailureStage, PublicationOutcome,
-    PublicationToken, Published, SessionLifecycle,
+    BuildToken, InputRevisionToken, PublicationBuildFailure, PublicationFailureStage,
+    PublicationOutcome, PublicationToken, Published, SessionLifecycle,
 };
 
 /// The lifecycle and publication barrier of one host session, publishing [`PublishedModel`]s.

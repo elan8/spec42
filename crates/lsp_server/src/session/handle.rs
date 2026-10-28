@@ -13,7 +13,10 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 
 use session_actor::{MutatePanicked, Mutation, SessionActor, SnapshotHandle};
-use sysml_query::publication::{PublicationBuildFailure, PublicationOutcome, SemanticBuild};
+use sysml_query::publication::{
+    InputRevisionToken, PreparedPublication, PublicationBuildFailure, PublicationOutcome,
+    SemanticBuild,
+};
 use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
@@ -553,6 +556,157 @@ pub(crate) enum ParsedDocumentUpdate {
     Superseded,
 }
 
+/// A preparation is not a build until its captured input revision passes the actor barrier.
+enum PreparedPublicationAdmission {
+    Build(Box<SemanticBuild>),
+    Superseded,
+    Failed(Arc<PublicationBuildFailure>),
+}
+
+fn prepare_publication(
+    snapshot: Arc<ServerState>,
+) -> Result<PreparedPublication, PublicationBuildFailure> {
+    let (documents, reported, availability) = crate::session::state::publication_inputs(&*snapshot);
+    snapshot
+        .services
+        .publication
+        .prepare_with_standard_library_availability(&documents, availability, reported)
+}
+
+fn admit_prepared_publication(
+    state: &mut ServerState,
+    expected: &InputRevisionToken,
+    prepared: Result<PreparedPublication, PublicationBuildFailure>,
+) -> Mutation<PreparedPublicationAdmission> {
+    if !state.session.is_input_current(expected) {
+        return Mutation::Unchanged(PreparedPublicationAdmission::Superseded);
+    }
+    match prepared {
+        Ok(prepared) => {
+            let token = state.session.begin_build(prepared.identity().clone());
+            Mutation::Changed(PreparedPublicationAdmission::Build(Box::new(
+                SemanticBuild::new(token, prepared),
+            )))
+        }
+        Err(failure) => {
+            state.session.finish_preparation_failure();
+            let failure = Arc::new(failure);
+            state.publication_failure = Some(Arc::clone(&failure));
+            Mutation::Changed(PreparedPublicationAdmission::Failed(failure))
+        }
+    }
+}
+
+#[cfg(test)]
+mod preparation_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn slow_preparation_does_not_block_the_actor_and_rejects_superseded_inputs() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let handle = WorkspaceHandle::spawn(state);
+        let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+        let (resume_tx, resume_rx) = std::sync::mpsc::channel();
+        let preparing = handle.clone();
+        let rebuild = tokio::spawn(async move {
+            preparing
+                .rebuild_with_preparer(move |snapshot| {
+                    let _ = started_tx.send(());
+                    // Dropping the sender on a failed assertion also releases this worker.
+                    let _ = resume_rx.recv();
+                    prepare_publication(snapshot)
+                })
+                .await
+        });
+        started_rx.await.unwrap();
+        tokio::time::timeout(
+            std::time::Duration::from_secs(5),
+            handle.actor.mutate(|state| {
+                state.session.invalidate_inputs();
+            }),
+        )
+        .await
+        .expect("preparation must leave the source actor responsive")
+        .unwrap();
+        resume_tx.send(()).unwrap();
+        let report = rebuild.await.unwrap().unwrap();
+        assert_eq!(report.outcome, PublicationOutcome::Superseded);
+        assert!(handle.snapshot().publication_failure.is_none());
+        assert!(handle.rebuild_publication().await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn preparation_worker_panic_retains_the_last_good_publication_with_its_stage() {
+        let handle = WorkspaceHandle::spawn(ServerState::default());
+        let last_good = Arc::clone(handle.snapshot().session.current());
+        let report = handle
+            .rebuild_with_preparer(|_| panic!("preparation worker failed"))
+            .await
+            .unwrap();
+        assert_eq!(report.outcome, PublicationOutcome::Failed);
+        let snapshot = handle.snapshot();
+        assert!(Arc::ptr_eq(snapshot.session.current(), &last_good));
+        assert_eq!(
+            snapshot.publication_failure.as_ref().unwrap().stage(),
+            sysml_query::publication::PublicationFailureStage::PreparationWorker
+        );
+    }
+
+    #[test]
+    fn older_preparation_cannot_supersede_a_build_for_newer_inputs() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let older_inputs = state.session.inputs();
+        let older = state.services.publication.prepare(&[], []).unwrap();
+        state.session.invalidate_inputs();
+        let current_inputs = state.session.inputs();
+        let current = state.services.publication.prepare(&[], []).unwrap();
+        let Mutation::Changed(PreparedPublicationAdmission::Build(current)) =
+            admit_prepared_publication(&mut state, &current_inputs, Ok(current))
+        else {
+            panic!("current preparation must start a build")
+        };
+        assert!(matches!(
+            admit_prepared_publication(&mut state, &older_inputs, Ok(older)),
+            Mutation::Unchanged(PreparedPublicationAdmission::Superseded)
+        ));
+        let completion = state.services.publication.construct(*current);
+        assert_eq!(
+            completion.admit(&mut state.session),
+            PublicationOutcome::Published
+        );
+    }
+
+    #[test]
+    fn preparation_failures_are_retained_only_for_current_owner_and_inputs() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let older = state.session.inputs();
+        state.session.invalidate_inputs();
+        let failure = || PublicationBuildFailure::preparation_worker("preparation panicked");
+        assert!(matches!(
+            admit_prepared_publication(&mut state, &older, Err(failure())),
+            Mutation::Unchanged(PreparedPublicationAdmission::Superseded)
+        ));
+        let foreign = ServerState::default().session.inputs();
+        assert!(matches!(
+            admit_prepared_publication(&mut state, &foreign, Err(failure())),
+            Mutation::Unchanged(PreparedPublicationAdmission::Superseded)
+        ));
+        assert!(state.publication_failure.is_none());
+        let current = state.session.inputs();
+        assert!(matches!(
+            admit_prepared_publication(&mut state, &current, Err(failure())),
+            Mutation::Changed(PreparedPublicationAdmission::Failed(_))
+        ));
+        assert_eq!(
+            state.publication_failure.as_ref().unwrap().stage(),
+            sysml_query::publication::PublicationFailureStage::PreparationWorker
+        );
+    }
+}
+
 /// Host boundary costs plus the canonical phase owner's complete construction measurements.
 /// Timings are observations only; they do not participate in publication identity or admission.
 pub(crate) struct PublicationRebuildReport {
@@ -637,25 +791,10 @@ impl WorkspaceHandle {
         self.snapshot.current()
     }
 
-    /// Runs canonical semantic construction outside the ServerState actor and admits the result
-    /// at the session's publication barrier, mirroring it into the reader snapshot atomically.
-    ///
-    /// Reading the inputs, preparing them, and taking the build token all happen inside **one**
-    /// actor turn, and that is a correctness requirement, not a tidiness one. The session admits
-    /// only the newest build generation (`Session::admit` supersedes every older token), so build
-    /// generation order must equal input order: if a build could be prepared from one revision of
-    /// the index and then be handed a *newer* generation than a concurrently running build that
-    /// saw more documents, the fresher build would be superseded by the staler one and its
-    /// documents would silently never enter the publication — a document present in `index` but
-    /// absent from `session.current()`, which is exactly what makes `textDocument/references`
-    /// answer empty for a document the host has already accepted. Preparing under the same
-    /// mutation that calls `begin_build` makes that inversion unrepresentable.
-    ///
-    /// `prepare` never parses, so it is cheap enough to run on the actor; `construct` parses
-    /// whatever the syntax memo does not hold and resolves the model on a blocking thread. A
-    /// `Superseded` outcome is therefore always benign: the superseding build was prepared from
-    /// inputs at least as new as this one's. After admission the memo is swept to the revisions
-    /// the index still holds.
+    /// Prepare and construct from an immutable source snapshot outside the actor. Preparation
+    /// can build a cold library stratum; it must not block ordered source ingestion. At the actor
+    /// barrier, verify the captured owner/revision before assigning a build generation. This keeps
+    /// a slow preparation for older inputs from superseding a newer build.
     pub(crate) async fn rebuild_publication(&self) -> Result<bool, MutatePanicked> {
         self.rebuild_publication_measured()
             .await
@@ -665,35 +804,36 @@ impl WorkspaceHandle {
     pub(crate) async fn rebuild_publication_measured(
         &self,
     ) -> Result<PublicationRebuildReport, MutatePanicked> {
+        self.rebuild_with_preparer(prepare_publication).await
+    }
+
+    async fn rebuild_with_preparer(
+        &self,
+        prepare: impl FnOnce(Arc<ServerState>) -> Result<PreparedPublication, PublicationBuildFailure>
+            + Send
+            + 'static,
+    ) -> Result<PublicationRebuildReport, MutatePanicked> {
         let preparation_started = std::time::Instant::now();
-        let (staged, preparation) = self
+        let snapshot = self.snapshot();
+        let expected = snapshot.session.inputs();
+        let prepared = tokio::task::spawn_blocking(move || {
+            let started = std::time::Instant::now();
+            let result = prepare(snapshot);
+            (result, started.elapsed())
+        })
+        .await;
+        let (prepared, preparation) = match prepared {
+            Ok(result) => result,
+            Err(error) => (
+                Err(PublicationBuildFailure::preparation_worker(error)),
+                std::time::Duration::ZERO,
+            ),
+        };
+        let staged = self
             .actor
-            .mutate(move |state| {
-                let started = std::time::Instant::now();
-                let (documents, reported, standard_library_availability) =
-                    crate::session::state::publication_inputs(state);
-                let result = match state
-                    .services
-                    .publication
-                    .prepare_with_standard_library_availability(
-                        &documents,
-                        standard_library_availability,
-                        reported,
-                    ) {
-                    Ok(prepared) => {
-                        let token = state.session.begin_build(prepared.identity().clone());
-                        Ok(SemanticBuild::new(token, prepared))
-                    }
-                    Err(failure) => {
-                        state.session.finish_preparation_failure();
-                        let failure = Arc::new(failure);
-                        state.publication_failure = Some(Arc::clone(&failure));
-                        Err(failure)
-                    }
-                };
-                (result, started.elapsed())
-            })
-            .await?;
+            .mutate_if_changed(move |state| admit_prepared_publication(state, &expected, prepared))
+            .await?
+            .value;
         let preparation_queue = preparation_started.elapsed().saturating_sub(preparation);
         let mut report = PublicationRebuildReport {
             outcome: PublicationOutcome::Failed,
@@ -704,8 +844,12 @@ impl WorkspaceHandle {
             phases: None,
         };
         let build = match staged {
-            Ok(build) => build,
-            Err(failure) => {
+            PreparedPublicationAdmission::Build(build) => *build,
+            PreparedPublicationAdmission::Superseded => {
+                report.outcome = PublicationOutcome::Superseded;
+                return Ok(report);
+            }
+            PreparedPublicationAdmission::Failed(failure) => {
                 tracing::error!(stage = ?failure.stage(), message = %failure.message(), "semantic publication preparation failed; retaining last good publication");
                 return Ok(report);
             }

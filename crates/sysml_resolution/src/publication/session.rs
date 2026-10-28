@@ -37,6 +37,15 @@ impl PublicationToken {
     }
 }
 
+/// Owner-scoped revision of semantic construction inputs, captured before preparation.
+/// Lifecycle/reporting notifications and successful admissions do not change these inputs;
+/// invalidation, reset, library replacement, owner replacement and close reject old captures.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct InputRevisionToken {
+    owner: u64,
+    revision: u64,
+}
+
 /// Token carried by a background build: the owner it was started in, its place in the build
 /// order, and the identity it must produce.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -160,6 +169,21 @@ impl<P: Published> Session<P> {
     pub fn is_publication_current(&self, token: &PublicationToken) -> bool {
         self.owner == token.owner
             && self.version == token.version
+            && self.lifecycle != SessionLifecycle::Closed
+    }
+
+    /// Capture the immutable input revision before potentially expensive request preparation.
+    pub fn inputs(&self) -> InputRevisionToken {
+        InputRevisionToken {
+            owner: self.owner,
+            revision: self.input_revision,
+        }
+    }
+
+    /// Preparation may enter the build-generation order only while its inputs remain current.
+    pub fn is_input_current(&self, token: &InputRevisionToken) -> bool {
+        self.owner == token.owner
+            && self.input_revision == token.revision
             && self.lifecycle != SessionLifecycle::Closed
     }
 
@@ -355,6 +379,42 @@ mod tests {
         let version = session.complete_startup();
         assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
         assert_eq!(version, session.version());
+    }
+
+    #[test]
+    fn preparation_tokens_follow_inputs_instead_of_publication_transitions() {
+        let mut session = Session::new(Arc::new(Fake(identity("initial"))));
+        let inputs = session.inputs();
+        session.begin_startup();
+        session.complete_startup();
+        assert!(session.is_input_current(&inputs));
+        let token = session.begin_build(identity("new"));
+        assert_eq!(
+            session.admit::<()>(&token, Ok(Arc::new(Fake(identity("new"))))),
+            PublicationOutcome::Published
+        );
+        assert!(session.is_input_current(&inputs));
+        session.invalidate_inputs();
+        assert!(!session.is_input_current(&inputs));
+    }
+
+    #[test]
+    fn preparation_tokens_reject_other_owners_resets_library_replacement_and_close() {
+        let mut session = ready();
+        assert!(!session.is_input_current(&ready().inputs()));
+        let before_reset = session.inputs();
+        session.reset();
+        assert!(!session.is_input_current(&before_reset));
+        session.complete_startup();
+        let before_library = session.inputs();
+        session.begin_library_reindex();
+        assert!(!session.is_input_current(&before_library));
+        let before_rekey = session.inputs();
+        session.rekey_for_owner();
+        assert!(!session.is_input_current(&before_rekey));
+        let before_close = session.inputs();
+        session.close();
+        assert!(!session.is_input_current(&before_close));
     }
 
     #[test]

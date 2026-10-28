@@ -23,7 +23,8 @@ use crate::{
 };
 
 pub use session::{
-    BuildToken, PublicationOutcome, PublicationToken, Published, Session, SessionLifecycle,
+    BuildToken, InputRevisionToken, PublicationOutcome, PublicationToken, Published, Session,
+    SessionLifecycle,
 };
 
 /// The semantic phase which rejected a publication request.
@@ -33,6 +34,7 @@ pub enum PublicationFailureStage {
     LibraryConstruction,
     RequestConstruction,
     ModelConstruction,
+    PreparationWorker,
     ConstructionWorker,
     PublicationAdmission,
 }
@@ -68,6 +70,11 @@ impl PublicationBuildFailure {
         )
     }
 
+    /// Preparation worker failed before returning its request or typed preparation error.
+    pub fn preparation_worker(error: impl std::fmt::Display) -> Self {
+        Self::at(PublicationFailureStage::PreparationWorker, error)
+    }
+
     /// Construction worker failed before it could return its typed semantic result.
     pub fn construction_worker(error: impl std::fmt::Display) -> Self {
         Self::at(PublicationFailureStage::ConstructionWorker, error)
@@ -84,9 +91,9 @@ impl std::error::Error for PublicationBuildFailure {}
 
 /// An immutable, dependency-complete request prepared by [`PublicationAuthority::prepare`].
 ///
-/// Preparing never parses: the identity is computed from document digests, and the documents are
-/// parsed (a memo hit, or one parse) when the request is built. A host therefore captures the
-/// identity on its executor and does the work on a blocking thread.
+/// Workspace documents are parsed when the request is built. Preparing can construct a missing
+/// library stratum, including parsing and solving its sources. Hosts perform preparation off their
+/// executor and verify their captured input revision before starting the prepared build.
 #[derive(Debug)]
 pub struct PreparedPublication {
     request: BuildRequest,
@@ -233,8 +240,8 @@ impl PublicationAuthority {
         .and_then(PreparedPublication::build_measured)
     }
 
-    /// Prepares the canonical request without parsing or building it, so an atomic publication
-    /// owner can capture its dependency-complete identity before background construction starts.
+    /// Prepares the canonical request and its dependency-complete identity. A cache miss can
+    /// construct a library stratum; this operation belongs on a blocking worker in async hosts.
     pub fn prepare(
         &self,
         documents: &[SourceDocument],
@@ -677,6 +684,13 @@ mod tests {
             .clone();
         assert!(identities.iter().all(|identity| identity == &warm));
         assert_eq!(warm, cold);
+    }
+
+    #[test]
+    fn preparation_worker_failure_has_a_distinct_typed_stage() {
+        let failure = PublicationBuildFailure::preparation_worker("worker panicked");
+        assert_eq!(failure.stage(), PublicationFailureStage::PreparationWorker);
+        assert_eq!(failure.message(), "worker panicked");
     }
 
     #[test]
