@@ -177,6 +177,9 @@ pub struct BuildMeasurements {
     pub evaluation: std::time::Duration,
     pub indexing: std::time::Duration,
     pub diagnostics: std::time::Duration,
+    /// Namespace membership-identity checks, measured inside `diagnostics` by their owner.
+    /// This observation is excluded from publication identity and semantic results.
+    pub namespace_checks: std::time::Duration,
     /// How many admitted documents this build lowered itself: a memo miss, or no memo at all.
     ///
     /// `documents_lowered + documents_reused` is every admitted document, library and workspace
@@ -824,6 +827,7 @@ fn build_parts(
             evaluation: measurements.semantic.evaluation,
             indexing: measurements.semantic.indexing,
             diagnostics: measurements.semantic.diagnostics,
+            namespace_checks: measurements.semantic.namespace_checks,
             sources_parsed: measurements.sources_parsed,
             documents_lowered: measurements.documents_lowered,
             documents_reused: measurements.documents_reused,

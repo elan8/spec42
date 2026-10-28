@@ -94,6 +94,7 @@ async fn publish_semantic_change(
                     ("evaluationMs", ms(phases.evaluation)),
                     ("indexingMs", ms(phases.indexing)),
                     ("checksMs", ms(phases.diagnostics)),
+                    ("namespaceChecksMs", ms(phases.namespace_checks)),
                     ("documentsLowered", phases.documents_lowered.to_string()),
                     ("documentsReused", phases.documents_reused.to_string()),
                     ("sourcesParsed", phases.sources_parsed.to_string()),

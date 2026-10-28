@@ -78,6 +78,7 @@ fn edit_performance_reports_correlated_owner_phase_measurements() {
         "evaluationMs",
         "indexingMs",
         "checksMs",
+        "namespaceChecksMs",
         "diagnosticFanoutMs",
     ] {
         assert!(
@@ -98,4 +99,8 @@ fn edit_performance_reports_correlated_owner_phase_measurements() {
         .map(|field| publication[field].as_f64().unwrap())
         .sum();
     assert!(publication["resolutionTotalMs"].as_f64().unwrap() >= subphases);
+    assert!(
+        publication["checksMs"].as_f64().unwrap()
+            >= publication["namespaceChecksMs"].as_f64().unwrap()
+    );
 }

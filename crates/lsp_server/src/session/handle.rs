@@ -52,6 +52,7 @@ mod publication_tests {
                 >= phases.resolve + phases.evaluation + phases.indexing + phases.diagnostics
         );
         assert!(report.construction >= phases.parse + phases.lowering + phases.resolution);
+        assert!(phases.diagnostics >= phases.namespace_checks);
         let snapshot = handle.snapshot();
         assert!(!snapshot.session.is_publication_current(&previous));
         assert!(snapshot.publication_failure.is_none());

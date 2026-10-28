@@ -378,7 +378,9 @@ records provide phase measurements for the same URI and document version: prepar
 queue, construction wall time, canonical parse/lower/resolve/evaluate/index/check costs, admission,
 and diagnostic fanout. Handler records separately measure source ingestion, parsing and source
 commit. The construction `resolutionTotalMs` contains its resolve/evaluate/index/check subphases;
-do not add it to those subphases. Missing phase records remain explicit `null` values.
+do not add it to those subphases. `namespaceChecksMs` is measured inside `checksMs` and isolates
+namespace membership-identity validation, including inherited-member traversal; do not add it to
+the containing check duration. Missing phase records remain explicit `null` values.
 
 On Windows the runner records cumulative process user/kernel CPU time, working set, commit charge
 and process-lifetime peaks after receiving each completion. The resource observation has its own

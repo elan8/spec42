@@ -246,8 +246,10 @@ impl<D> SemanticModel<D> {
         document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
-    ) -> Result<(), ResolutionError> {
+    ) -> Result<std::time::Duration, ResolutionError> {
+        let namespace_started = std::time::Instant::now();
         self.collect_namespace_identity(declared, diagnostics)?;
+        let namespace_checks = namespace_started.elapsed();
         self.collect_connection_structure(declared, diagnostics)?;
         self.collect_behavior_structure(document, declared, diagnostics)?;
         self.collect_requirement_case_structure(declared, diagnostics)?;
@@ -255,7 +257,7 @@ impl<D> SemanticModel<D> {
         self.collect_declaration_rules(document, declared, diagnostics)?;
         self.collect_inherited_value_rules(document, diagnostics)?;
         self.collect_analysis_status(declared, diagnostics)?;
-        Ok(())
+        Ok(namespace_checks)
     }
 
     /// The declaration kind of one declaration, or `None` when storage does not hold it.
