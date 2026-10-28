@@ -42,7 +42,16 @@ mod publication_tests {
         let handle = WorkspaceHandle::spawn(state);
 
         let previous = handle.snapshot().session.publication();
-        assert!(handle.rebuild_publication().await.unwrap());
+        let report = handle.rebuild_publication_measured().await.unwrap();
+        assert_eq!(report.outcome, PublicationOutcome::Published);
+        let phases = report
+            .phases
+            .expect("a successful build reports complete owning-phase measurements");
+        assert!(
+            phases.resolution
+                >= phases.resolve + phases.evaluation + phases.indexing + phases.diagnostics
+        );
+        assert!(report.construction >= phases.parse + phases.lowering + phases.resolution);
         let snapshot = handle.snapshot();
         assert!(!snapshot.session.is_publication_current(&previous));
         assert!(snapshot.publication_failure.is_none());
@@ -323,6 +332,17 @@ pub(crate) struct PreparedDocumentEdit {
     pub(crate) content: String,
 }
 
+/// Host boundary costs plus the canonical phase owner's complete construction measurements.
+/// Timings are observations only; they do not participate in publication identity or admission.
+pub(crate) struct PublicationRebuildReport {
+    pub(crate) outcome: PublicationOutcome,
+    pub(crate) preparation: std::time::Duration,
+    pub(crate) preparation_queue: std::time::Duration,
+    pub(crate) construction: std::time::Duration,
+    pub(crate) admission: std::time::Duration,
+    pub(crate) phases: Option<sysml_query::resolved_slice::BuildMeasurements>,
+}
+
 impl PreparedDocumentEdit {
     /// Admit and parse prospective text through the host's services, off the actor.
     pub(crate) fn admit_text(
@@ -418,12 +438,22 @@ impl WorkspaceHandle {
     /// inputs at least as new as this one's. After admission the memo is swept to the revisions
     /// the index still holds.
     pub(crate) async fn rebuild_publication(&self) -> Result<bool, MutatePanicked> {
-        let staged = self
+        self.rebuild_publication_measured()
+            .await
+            .map(|report| report.outcome == PublicationOutcome::Published)
+    }
+
+    pub(crate) async fn rebuild_publication_measured(
+        &self,
+    ) -> Result<PublicationRebuildReport, MutatePanicked> {
+        let preparation_started = std::time::Instant::now();
+        let (staged, preparation) = self
             .actor
             .mutate(move |state| {
+                let started = std::time::Instant::now();
                 let (documents, reported, standard_library_availability) =
                     crate::session::state::publication_inputs(state);
-                match state
+                let result = match state
                     .services
                     .publication
                     .prepare_with_standard_library_availability(
@@ -441,18 +471,29 @@ impl WorkspaceHandle {
                         state.publication_failure = Some(Arc::clone(&failure));
                         Err(failure)
                     }
-                }
+                };
+                (result, started.elapsed())
             })
             .await?;
+        let preparation_queue = preparation_started.elapsed().saturating_sub(preparation);
+        let mut report = PublicationRebuildReport {
+            outcome: PublicationOutcome::Failed,
+            preparation,
+            preparation_queue,
+            construction: std::time::Duration::ZERO,
+            admission: std::time::Duration::ZERO,
+            phases: None,
+        };
         let build = match staged {
             Ok(build) => build,
             Err(failure) => {
                 tracing::error!(stage = ?failure.stage(), message = %failure.message(), "semantic publication preparation failed; retaining last good publication");
-                return Ok(false);
+                return Ok(report);
             }
         };
         let token = build.token().clone();
         let publication = self.snapshot().services.publication.clone();
+        let construction_started = std::time::Instant::now();
         let completion = match tokio::task::spawn_blocking(move || publication.construct(build))
             .await
         {
@@ -460,7 +501,9 @@ impl WorkspaceHandle {
             Err(join_error) => {
                 let failure = Arc::new(PublicationBuildFailure::construction_worker(join_error));
                 let admitted_failure = Arc::clone(&failure);
-                self.actor
+                report.construction = construction_started.elapsed();
+                let admission_started = std::time::Instant::now();
+                report.outcome = self.actor
                     .mutate_if_changed(move |state| {
                         let outcome = state.session.admit(
                             &token,
@@ -470,19 +513,23 @@ impl WorkspaceHandle {
                         );
                         tracing::error!(stage = ?admitted_failure.stage(), message = %admitted_failure.message(), ?outcome, "semantic construction worker failed; retaining last good publication");
                         match outcome {
-                            PublicationOutcome::Superseded => Mutation::Unchanged(false),
+                            PublicationOutcome::Superseded => Mutation::Unchanged(outcome),
                             PublicationOutcome::IdentityMismatch | PublicationOutcome::Failed => {
                                 state.publication_failure = Some(admitted_failure);
-                                Mutation::Changed(false)
+                                Mutation::Changed(outcome)
                             }
                             PublicationOutcome::Published => unreachable!("a failed build cannot publish"),
                         }
                     })
-                    .await?;
-                return Ok(false);
+                    .await?.value;
+                report.admission = admission_started.elapsed();
+                return Ok(report);
             }
         };
+        report.construction = construction_started.elapsed();
+        report.phases = completion.measurements().copied();
         let failure = completion.failure().cloned().map(Arc::new);
+        let admission_started = std::time::Instant::now();
         let mirrored = self
             .actor
             .mutate_if_changed(move |state| {
@@ -498,22 +545,24 @@ impl WorkspaceHandle {
                             .services
                             .syntax
                             .retain(state.index.values().map(|entry| entry.parsed.digest()));
-                        Mutation::Changed(true)
+                        Mutation::Changed(outcome)
                     }
-                    PublicationOutcome::Superseded => Mutation::Unchanged(false),
+                    PublicationOutcome::Superseded => Mutation::Unchanged(outcome),
                     PublicationOutcome::IdentityMismatch => {
                         state.publication_failure = Some(Arc::new(PublicationBuildFailure::admission_identity_mismatch()));
-                        Mutation::Changed(false)
+                        Mutation::Changed(outcome)
                     }
                     PublicationOutcome::Failed => {
                         state.publication_failure = failure;
-                        Mutation::Changed(false)
+                        Mutation::Changed(outcome)
                     }
                 }
             })
             .await?
             .value;
-        Ok(mirrored)
+        report.outcome = mirrored;
+        report.admission = admission_started.elapsed();
+        Ok(report)
     }
 
     // --- Startup ---------------------------------------------------------------------
@@ -532,6 +581,7 @@ impl WorkspaceHandle {
                 s.standard_library_paths = standard_library_paths;
                 s.standard_library_availability = standard_library_availability;
                 s.session.reset();
+                s.diagnostic_readiness.reset(true);
             })
             .await
     }
@@ -542,6 +592,22 @@ impl WorkspaceHandle {
 
     pub(crate) async fn complete_startup(&self) -> Result<u64, MutatePanicked> {
         self.actor.mutate(|s| s.session.complete_startup()).await
+    }
+
+    pub(crate) async fn announce_readiness(
+        &self,
+        token: super::readiness::ReadinessToken,
+    ) -> Result<bool, MutatePanicked> {
+        self.actor
+            .mutate_if_changed(move |s| {
+                if s.diagnostic_readiness.announce(&token) {
+                    Mutation::Changed(true)
+                } else {
+                    Mutation::Unchanged(false)
+                }
+            })
+            .await
+            .map(|outcome| outcome.value)
     }
 
     pub(crate) async fn ingest_startup_scan(
@@ -805,18 +871,19 @@ impl WorkspaceHandle {
     pub(crate) async fn begin_library_reindex_if_changed(
         &self,
         new_library_paths: Vec<Url>,
-    ) -> Result<bool, MutatePanicked> {
+    ) -> Result<Option<super::readiness::ReadinessToken>, MutatePanicked> {
         self.actor
             .mutate_if_changed(move |s| {
                 let old = std::mem::take(&mut s.library_paths);
                 if new_library_paths == old {
                     s.library_paths = old;
-                    Mutation::Unchanged(false)
+                    Mutation::Unchanged(None)
                 } else {
                     let _ = crate::session::services::clear_documents_under_roots(s, &old);
+                    s.diagnostic_readiness.reset(false);
                     s.library_paths = new_library_paths.clone();
                     s.session.invalidate_inputs();
-                    Mutation::Changed(true)
+                    Mutation::Changed(Some(s.diagnostic_readiness.token()))
                 }
             })
             .await

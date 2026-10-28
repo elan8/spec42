@@ -21,6 +21,7 @@ mod hover;
 mod layout;
 mod library_identity;
 mod lifecycle;
+mod performance;
 mod project_diagnostics;
 mod project_workspaces;
 mod publication_parity;

@@ -58,7 +58,9 @@ pub(crate) async fn publish_document_diagnostics(
     // meant editing a library file directly (e.g. via `spec42.kparLibraryPaths` local-dev
     // overrides) never showed diagnostics at all, even though hover still flagged
     // unresolved references for the same file.
-    if !supports_semantic_queries(snap.session.lifecycle()) {
+    if !supports_semantic_queries(snap.session.lifecycle())
+        || !snap.diagnostic_readiness.announced()
+    {
         if perf_logging_enabled(runtime_config) {
             info!(
                 event = "diagnostics:document:deferred",
@@ -103,10 +105,8 @@ pub(crate) async fn publish_document_diagnostics(
 /// Separate from the publish itself so the decision is testable without a `Client`: the publish is
 /// a side effect, this is the rule.
 fn may_publish(handle: &WorkspaceHandle, publication: PublicationToken) -> bool {
-    handle
-        .snapshot()
-        .session
-        .is_publication_current(&publication)
+    let snap = handle.snapshot();
+    snap.diagnostic_readiness.announced() && snap.session.is_publication_current(&publication)
 }
 
 /// Publishes `diagnostics` only while `publication` still names the live session's state.
@@ -139,7 +139,9 @@ pub(crate) async fn publish_workspace_diagnostics(
     // concurrent relink landing mid-flight can't make different documents in the same publish
     // call disagree about what state they were diagnosed against.
     let snap = handle.snapshot();
-    if !supports_semantic_queries(snap.session.lifecycle()) {
+    if !supports_semantic_queries(snap.session.lifecycle())
+        || !snap.diagnostic_readiness.announced()
+    {
         if perf_logging_enabled(runtime_config) {
             info!(
                 event = "diagnostics:workspace:deferred",
@@ -313,6 +315,14 @@ mod tests {
 
         let captured = handle.snapshot().session.publication();
         assert!(
+            !may_publish(&handle, captured),
+            "semantic readiness alone must not unlock diagnostic publication"
+        );
+        handle
+            .announce_readiness(handle.snapshot().diagnostic_readiness.token())
+            .await
+            .unwrap();
+        assert!(
             may_publish(&handle, captured),
             "work captured against the live publication may publish"
         );
@@ -335,11 +345,71 @@ mod tests {
     /// the owner in the token, a stale result from one workspace could publish into another.
     #[tokio::test]
     async fn diagnostics_from_another_session_are_never_published() {
-        let first = WorkspaceHandle::spawn(crate::session::state::ServerState::default());
-        let second = WorkspaceHandle::spawn(crate::session::state::ServerState::default());
+        let seed = crate::session::state::ServerState::default();
+        let first = WorkspaceHandle::spawn(seed.clone());
+        let second = WorkspaceHandle::spawn(seed);
         let foreign = first.snapshot().session.publication();
 
         assert!(!may_publish(&second, foreign));
+        assert!(!second
+            .announce_readiness(first.snapshot().diagnostic_readiness.token())
+            .await
+            .unwrap());
+    }
+
+    #[tokio::test]
+    async fn library_reindex_requires_its_own_notification_and_ordinary_edits_do_not() {
+        let handle = WorkspaceHandle::spawn(crate::session::state::ServerState::default());
+        handle.complete_startup().await.unwrap();
+        let initial = handle.snapshot().diagnostic_readiness.token();
+        assert!(handle.announce_readiness(initial.clone()).await.unwrap());
+        assert!(may_publish(
+            &handle,
+            handle.snapshot().session.publication()
+        ));
+
+        handle.invalidate_semantic_inputs_if_ready().await.unwrap();
+        assert!(handle.snapshot().diagnostic_readiness.announced());
+        let reindex = handle
+            .begin_library_reindex_if_changed(vec![Url::parse("file:///libraries/one/").unwrap()])
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(!may_publish(
+            &handle,
+            handle.snapshot().session.publication()
+        ));
+        assert!(!handle.announce_readiness(initial).await.unwrap());
+        assert!(!handle
+            .snapshot()
+            .diagnostic_readiness
+            .needs_initial_notification());
+
+        let replacement = handle
+            .begin_library_reindex_if_changed(vec![Url::parse("file:///libraries/two/").unwrap()])
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(!handle.announce_readiness(reindex).await.unwrap());
+        assert!(!may_publish(
+            &handle,
+            handle.snapshot().session.publication()
+        ));
+        handle.complete_library_reindex(Vec::new()).await.unwrap();
+        assert!(handle.announce_readiness(replacement).await.unwrap());
+        assert!(may_publish(
+            &handle,
+            handle.snapshot().session.publication()
+        ));
+        assert!(handle
+            .begin_library_reindex_if_changed(vec![Url::parse("file:///libraries/two/").unwrap()])
+            .await
+            .unwrap()
+            .is_none());
+        assert!(may_publish(
+            &handle,
+            handle.snapshot().session.publication()
+        ));
     }
 
     /// The `spec42/publicationChanged` payload serializes to the camelCase wire shape the VS Code

@@ -351,6 +351,45 @@ Spec42 emits structured performance logs when `spec42.performanceLogging.enabled
 Performance measurements are gathered locally on controlled hardware and reviewed with the change;
 they are not CI gates.
 
+### Editor notification baseline
+
+Build the optimized normal LSP host with its pinned libraries, then measure single full-text edits and bursts without
+writing the edited source file:
+
+```powershell
+cargo build --offline --release -p server --bin spec42
+python scripts/benchmark-editor.py --server target/release/spec42.exe --server-arg=lsp --profile release --workspace ../sysml-robot-vacuum-cleaner --document ../sysml-robot-vacuum-cleaner/model/Root.sysml --iterations 20 --burst-size 10 --output target/editor-robot-vacuum.json
+```
+
+Choose an existing source document in the workspace for `--document`.
+Use `--change-kind incremental` to send ordered UTF-16 range edits instead of full-text updates.
+For another host, use `--server-arg` for its LSP command-line arguments.
+The report keeps raw messages, per-version samples, p50/p95/max, binary/input/configuration hashes,
+revision, dirty-tree state, build-profile label and host metadata. Check the profile against the
+actual binary build; the runner does not build or download anything.
+The normal host's `sysml/libraryStatus` response is retained and must confirm the pinned standard
+library is available. Missing-library-context diagnostics fail a representative run. The core test
+host intentionally has no libraries by default: use `--allow-missing-libraries` only for explicitly
+labelled discovery/negative-control runs, which do not establish representative editor performance.
+
+The #192 probe measures client send to the matching `backend:didChange` completion event,
+including transport and queueing behind earlier handlers. Hosts that emit `backend:publication`
+records provide phase measurements for the same URI and document version: preparation and its actor
+queue, construction wall time, canonical parse/lower/resolve/evaluate/index/check costs, admission,
+and diagnostic fanout. Handler records separately measure source ingestion, parsing and source
+commit. The construction `resolutionTotalMs` contains its resolve/evaluate/index/check subphases;
+do not add it to those subphases. Missing phase records remain explicit `null` values.
+
+On Windows the runner records cumulative process user/kernel CPU time, working set, commit charge
+and process-lifetime peaks after receiving each completion. The resource observation has its own
+timestamp; it is not synchronized with a semantic phase. Unsupported platforms or counter errors
+stay explicit as unavailable. Compare CPU deltas with `resources_before_edits`, rather than treating
+the cumulative counters as per-edit CPU time.
+
+Version-correlated diagnostic latency and VS Code view-refresh costs remain release acceptance
+work. Failed or timed-out runs retain a failed report and stderr; timings from debug runs are
+smoke-test evidence only.
+
 ### Query benchmarks
 
 A representation change is admitted with a benchmark showing it neutral-or-better on the bundled standard-library corpus. The six cases are the cold build, the warm relink one keystroke costs, and the four keystroke-path queries:

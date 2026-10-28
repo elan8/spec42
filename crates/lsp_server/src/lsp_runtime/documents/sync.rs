@@ -7,6 +7,16 @@ pub(crate) async fn did_open(
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidOpenTextDocumentParams,
 ) {
+    // Loose projects created after initialize do not run initialized_handle. Announce their
+    // initial readiness here, while a library-reindex epoch remains owned by its scan task.
+    let snapshot = handle.snapshot();
+    let announce_initial = snapshot.diagnostic_readiness.needs_initial_notification()
+        && crate::session::state::supports_semantic_queries(snapshot.session.lifecycle());
+    let readiness_token = snapshot.diagnostic_readiness.token();
+    drop(snapshot);
+    if announce_initial {
+        send_semantic_ready_notification(client, handle, readiness_token).await;
+    }
     let uri = params.text_document.uri.clone();
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
@@ -61,7 +71,14 @@ pub(crate) async fn did_open(
             .unwrap_or_default();
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let scheduled_relink = true;
-        publish_semantic_change(client, handle, runtime_config, uri_norm.clone()).await;
+        publish_semantic_change(
+            client,
+            handle,
+            runtime_config,
+            uri_norm.clone(),
+            params.text_document.version,
+        )
+        .await;
         (warning, lock_wait_ms, scheduled_relink)
     };
 
@@ -130,6 +147,9 @@ pub(crate) async fn did_change(
         .prepare_document_content_edit(uri_norm.clone(), version, params.content_changes)
         .await
         .unwrap_or_default();
+    let source_ingest_ms = apply_start.elapsed().as_secs_f64() * 1000.0;
+    let mut parse_worker_ms = 0.0;
+    let mut source_commit_ms = 0.0;
 
     // Phase 2: parse the new content WITHOUT holding up the actor. Malformed or
     // incomplete syntax (e.g. an unterminated view/viewpoint) can make error
@@ -146,13 +166,16 @@ pub(crate) async fn did_change(
             crate::session::handle::PreparedDocumentEdit::admit_text(admit_uri, &content, &services)
         })
         .await;
+        parse_worker_ms = parse_start.elapsed().as_secs_f64() * 1000.0;
         let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
         match parse_outcome {
             Ok((document, parsed)) => {
+                let commit_started = Instant::now();
                 let parse_warnings = handle
                     .apply_parsed_document_update(edit, document, parsed, parse_time_ms)
                     .await
                     .unwrap_or_default();
+                source_commit_ms = commit_started.elapsed().as_secs_f64() * 1000.0;
                 semantic_inputs_changed = true;
                 warnings.extend(parse_warnings);
             }
@@ -184,7 +207,7 @@ pub(crate) async fn did_change(
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
     if semantic_inputs_changed {
-        publish_semantic_change(client, handle, runtime_config, uri_norm.clone()).await;
+        publish_semantic_change(client, handle, runtime_config, uri_norm.clone(), version).await;
     }
     log_perf(
         client,
@@ -194,6 +217,14 @@ pub(crate) async fn did_change(
             ("uri", format!("{:?}", uri_norm.as_str())),
             ("version", version.to_string()),
             ("applyChangesMs", apply_ms.to_string()),
+            ("sourceIngestWallMs", source_ingest_ms.to_string()),
+            ("parseWorkerWallMs", parse_worker_ms.to_string()),
+            ("sourceCommitWallMs", source_commit_ms.to_string()),
+            ("sourceChanged", semantic_inputs_changed.to_string()),
+            (
+                "handlerTotalMs",
+                (apply_start.elapsed().as_secs_f64() * 1000.0).to_string(),
+            ),
         ],
     )
     .await;
@@ -415,13 +446,13 @@ pub(crate) async fn did_change_configuration(
         &config.default_library_paths,
         client_library_paths,
     );
-    let changed = handle
+    let readiness_token = handle
         .begin_library_reindex_if_changed(new_library_paths.clone())
         .await
-        .unwrap_or(false);
-    if !changed {
+        .unwrap_or(None);
+    let Some(readiness_token) = readiness_token else {
         return;
-    }
+    };
 
     let handle = handle.clone();
     let runtime_config = Arc::clone(runtime_config);
@@ -481,7 +512,7 @@ pub(crate) async fn did_change_configuration(
         for warning in warnings {
             client.log_message(MessageType::WARNING, warning).await;
         }
-        send_semantic_ready_notification(&client, &handle).await;
+        send_semantic_ready_notification(&client, &handle, readiness_token).await;
         let diagnostics_start = Instant::now();
         publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
         log_perf(

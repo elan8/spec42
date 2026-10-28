@@ -180,7 +180,7 @@ impl SemanticModelBuildCoordinator {
         let (storage, sources) = builder.freeze();
         let lowering = lowering_started.elapsed();
         let resolution_started = Instant::now();
-        let (model, sources) = phase::build_model(
+        let (model, sources, semantic) = phase::build_model(
             storage,
             sources,
             policy,
@@ -196,6 +196,7 @@ impl SemanticModelBuildCoordinator {
                 parse,
                 lowering,
                 resolution,
+                semantic,
                 sources_parsed,
                 documents_lowered,
                 documents_reused,
