@@ -1,6 +1,6 @@
 # Upstream sysml-v2-parser gaps
 
-The parser baseline is `elan8/sysml-v2-parser@b88af9da7d91fe76d94217b1808a218dd937589a`
+The parser baseline is `elan8/sysml-v2-parser@8cee8c16e5bb26327bb5062a4e54767610f943ef`
 (v0.58.0, AST 284). This file records remaining parser and lowering gaps. The immutable dependency
 pin is owned by `Cargo.toml`; consumed parser changes are covered by the semantic snapshot corpus.
 

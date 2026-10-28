@@ -102,14 +102,17 @@ fn is_ident_byte(b: Option<u8>) -> bool {
     b.is_some_and(|b| b.is_ascii_alphanumeric() || b == b'_')
 }
 
-/// Push the parser's declared name span. Anonymous declarations contribute no name token.
+/// Push both parser-owned declared name spans. Anonymous declarations contribute no name token.
 pub fn push_identification_definition_spans(
     identification: &Identification,
     specializes_span: Option<&Span>,
     role: SyntaxRole,
     out: &mut Vec<(SyntaxRange, SyntaxRole)>,
 ) {
-    if let Some(name) = identification.name.or(identification.short_name) {
+    for name in [identification.name, identification.short_name]
+        .into_iter()
+        .flatten()
+    {
         out.push((span_to_source_range(name.span()), role));
     }
     if let Some(s) = specializes_span {

@@ -1510,8 +1510,8 @@ impl SemanticModelBuilder {
 
     /// Lowers an `assign <target> := <value>;` reassignment statement (BNF `AssignStmt`, `ast::
     /// AssignStmt`; a `then assign ...;` also carries the source of its succession, like any other
-    /// `then` node) as its own anonymous `DeclarationKind::Assign` feature
-    /// owned by `owner`, mirroring `lower_bind`'s "statement, not a new named usage" shape: `lhs`
+    /// `then` node) as one `DeclarationKind::Assign` feature with its authored action-node
+    /// declaration, when present. `lhs`
     /// is lowered as an `AssignTarget` reference through the exact `lower_succession_end` `FeatureRef`/
     /// `MemberAccess` dispatch every other paired/single-operand control-flow reference kind uses,
     /// and `rhs` is lowered through the shared value-assignment pipeline (`classify_constraint_
@@ -1531,22 +1531,14 @@ impl SemanticModelBuilder {
             .is_then
             .then(|| self.then_source(owner, self.declarations.len()))
             .flatten();
-        let declaration = self.push_typed_declaration(
+        let declaration = self.lower_structured_action_declaration(
             document,
-            Some(owner),
+            owner,
             DeclarationKind::Assign,
-            None,
             span,
-            // A synthesized scope for the assignment's target/value references.
-            DeclarationFacts::none(),
+            &node.prefix,
         )?;
         self.declaration_facts[declaration.index()].then_source = then_source;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
         self.lower_assignment_operands(document, declaration, family, &node.lhs, &node.rhs)
     }
 
@@ -1627,7 +1619,7 @@ impl SemanticModelBuilder {
         self.lower_constraint_expression(document, declaration, family, rhs)
     }
 
-    /// Preserve the shared ActionNodePrefix on for/while/loop declarations, and record the node's
+    /// Preserve the shared ActionNodePrefix on action-node declarations, and record the node's
     /// own feature membership.
     fn lower_structured_action_declaration(
         &mut self,
@@ -2303,7 +2295,7 @@ impl SemanticModelBuilder {
     /// Lowers a `terminate <target>;`/bare `terminate;` body element (BNF `TerminateStmt`, `ast::
     /// TerminateStmt`) found inside an action def/usage body. The optional `target` is resolved as
     /// a `TerminateTarget` reference through the shared `lower_satisfy_operand`
-    /// `DeclarationDomain::Any` lexical lookup. The statement owns a distinct anonymous
+    /// `DeclarationDomain::Any` lexical lookup. The statement owns a distinct, optionally named
     /// `TerminateActionUsage` identity; lexical resolution from that child still reaches sibling
     /// declarations through its owner. A bare `terminate;` has an implicit self argument and no
     /// authored reference, but retains the same action identity and argument position.
@@ -2314,20 +2306,19 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<TerminateStmt>,
     ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
+        let then_source = node
+            .value
+            .is_then
+            .then(|| self.then_source(owner, self.declarations.len()))
+            .flatten();
+        let declaration = self.lower_structured_action_declaration(
             document,
-            Some(owner),
+            owner,
             DeclarationKind::TerminateActionUsage,
-            None,
             node.span,
-            DeclarationFacts::none(),
+            &node.value.prefix,
         )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span,
-        )?;
+        self.declaration_facts[declaration.index()].then_source = then_source;
         if let Some(target) = &node.value.target {
             self.lower_satisfy_operand(
                 document,

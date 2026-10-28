@@ -1824,13 +1824,40 @@ fn collect_semantic_ranges_perform(
     }
 }
 
+/// Preserve name and type-reference roles from the optional shared action-node declaration.
+fn collect_semantic_ranges_action_node_prefix(
+    ctx: &RangeCtx<'_>,
+    prefix: &sysml_v2_parser::ast::ActionNodePrefix,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if let Some(action) = &prefix.action_declaration {
+        if let Some(declaration) = &action.value.declaration {
+            push_usage_declaration(ctx, &declaration.value, out);
+        }
+    }
+}
+
 /// `assign target := value;`: both sides are feature expressions; `assign` stays a keyword.
 fn collect_semantic_ranges_assign(
+    ctx: &RangeCtx<'_>,
     node: &sysml_v2_parser::Node<sysml_v2_parser::ast::AssignStmt>,
     out: &mut Vec<(SyntaxRange, SyntaxRole)>,
 ) {
+    collect_semantic_ranges_action_node_prefix(ctx, &node.value.prefix, out);
     for side in [&node.value.lhs, &node.value.rhs] {
         out.push((span_to_source_range(&side.span), SyntaxRole::Property));
+    }
+}
+
+/// The terminate target is a feature expression, including the library's `self` feature.
+fn collect_semantic_ranges_terminate(
+    ctx: &RangeCtx<'_>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::TerminateStmt>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    collect_semantic_ranges_action_node_prefix(ctx, &node.value.prefix, out);
+    if let Some(target) = &node.value.target {
+        out.push((span_to_source_range(&target.span), SyntaxRole::Property));
     }
 }
 
@@ -2099,7 +2126,8 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
         ADBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         ADBE::Perform(perform) => collect_semantic_ranges_perform(ctx, perform, out),
-        ADBE::Assign(assign) => collect_semantic_ranges_assign(assign, out),
+        ADBE::Assign(assign) => collect_semantic_ranges_assign(ctx, assign, out),
+        ADBE::TerminateStmt(node) => collect_semantic_ranges_terminate(ctx, node, out),
         ADBE::ForLoop(for_loop) => collect_semantic_ranges_for_loop(ctx, for_loop, out),
         ADBE::DefaultReferenceUsage(default_ref) => {
             push_usage_name_type_spans(
@@ -2122,7 +2150,6 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::JoinStmt(_)
         | ADBE::ForkStmt(_)
         | ADBE::Error(_)
-        | ADBE::TerminateStmt(_)
         | ADBE::WhileStmt(_)
         | ADBE::LoopStmt(_)
         | ADBE::IfStmt(_) => {}
@@ -2235,7 +2262,8 @@ fn collect_semantic_ranges_action_usage_body_element(
         AUBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
         AUBE::Perform(perform) => collect_semantic_ranges_perform(ctx, perform, out),
         AUBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
-        AUBE::Assign(assign) => collect_semantic_ranges_assign(assign, out),
+        AUBE::Assign(assign) => collect_semantic_ranges_assign(ctx, assign, out),
+        AUBE::TerminateStmt(node) => collect_semantic_ranges_terminate(ctx, node, out),
         AUBE::ForLoop(for_loop) => collect_semantic_ranges_for_loop(ctx, for_loop, out),
         AUBE::DefaultReferenceUsage(default_ref) => {
             push_usage_name_type_spans(
@@ -2257,7 +2285,6 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::JoinStmt(_)
         | AUBE::ForkStmt(_)
         | AUBE::Error(_)
-        | AUBE::TerminateStmt(_)
         | AUBE::WhileStmt(_)
         | AUBE::LoopStmt(_)
         | AUBE::IfStmt(_) => {}
