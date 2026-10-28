@@ -137,13 +137,29 @@ impl Guest for QueryAll {
                         items.len()
                     );
                     for edge in items {
+                        let target = match &edge.target {
+                            model::RelationshipTarget::Resolved(target) => {
+                                target.qualified_name.clone()
+                            }
+                            model::RelationshipTarget::Ambiguous(candidates) => format!(
+                                "<ambiguous: {}>",
+                                candidates
+                                    .iter()
+                                    .map(|c| c.qualified_name.as_str())
+                                    .collect::<Vec<_>>()
+                                    .join(", ")
+                            ),
+                            model::RelationshipTarget::Unresolved { authored } => {
+                                format!("<unresolved: {}>", authored.as_deref().unwrap_or("?"))
+                            }
+                            model::RelationshipTarget::Unsupported { authored } => {
+                                format!("<unsupported: {}>", authored.as_deref().unwrap_or("?"))
+                            }
+                        };
                         let _ = writeln!(
                             out,
                             "  {} {} -> {} implied={}",
-                            edge.kind,
-                            edge.source.qualified_name,
-                            edge.target.qualified_name,
-                            edge.implied
+                            edge.kind, edge.source.qualified_name, target, edge.implied
                         );
                     }
                 }

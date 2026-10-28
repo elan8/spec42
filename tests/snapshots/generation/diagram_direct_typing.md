@@ -230,7 +230,7 @@ package DirectTypingExample {
 ~~~json
 {
   "schemaVersion": 10,
-  "modelDigest": "blake3:d1a1f15b29bcf5a8c4bd9ed560ee2e1e54c52a7b5e234784e993498194c31198",
+  "modelDigest": "blake3:fd8cf8a3fc1658c6d85389e7a88fec0f15dc252043a5522414caf2ff42dc5dfb",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_direct_typing.md",

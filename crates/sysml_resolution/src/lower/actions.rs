@@ -1531,22 +1531,16 @@ impl SemanticModelBuilder {
             .is_then
             .then(|| self.then_source(owner, self.declarations.len()))
             .flatten();
-        let declaration = self.push_typed_declaration(
+        // `AssignmentNodeDeclaration = ActionNodeUsageDeclaration? 'assign' ...`: a named
+        // `action inc assign x := 1;` is one assignment node called `inc`.
+        let declaration = self.lower_structured_action_declaration(
             document,
-            Some(owner),
+            owner,
             DeclarationKind::Assign,
-            None,
             span,
-            // A synthesized scope for the assignment's target/value references.
-            DeclarationFacts::none(),
+            &node.prefix,
         )?;
         self.declaration_facts[declaration.index()].then_source = then_source;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
         self.lower_assignment_operands(document, declaration, family, &node.lhs, &node.rhs)
     }
 
@@ -2301,7 +2295,8 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a `terminate <target>;`/bare `terminate;` body element (BNF `TerminateStmt`, `ast::
-    /// TerminateStmt`) found inside an action def/usage body. The optional `target` is resolved as
+    /// TerminateStmt`), named or not and optionally after `then`, found inside an action def/usage
+    /// body. The optional `target` is resolved as
     /// a `TerminateTarget` reference through the shared `lower_satisfy_operand`
     /// `DeclarationDomain::Any` lexical lookup. The statement owns a distinct anonymous
     /// `TerminateActionUsage` identity; lexical resolution from that child still reaches sibling
@@ -2314,20 +2309,23 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<TerminateStmt>,
     ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
+        // `then terminate` is a succession from the preceding member to this node, as for every
+        // `then` node (SysML 8.2.2.17.1).
+        let then_source = node
+            .value
+            .is_then
+            .then(|| self.then_source(owner, self.declarations.len()))
+            .flatten();
+        // `TerminateNode = OccurrenceUsagePrefix ActionNodeUsageDeclaration? 'terminate' ...`: a
+        // named `action stop terminate;` is one terminate node called `stop`.
+        let declaration = self.lower_structured_action_declaration(
             document,
-            Some(owner),
+            owner,
             DeclarationKind::TerminateActionUsage,
-            None,
             node.span,
-            DeclarationFacts::none(),
+            &node.value.prefix,
         )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span,
-        )?;
+        self.declaration_facts[declaration.index()].then_source = then_source;
         if let Some(target) = &node.value.target {
             self.lower_satisfy_operand(
                 document,

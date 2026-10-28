@@ -10,7 +10,7 @@ use serde::{de::DeserializeOwned, Serialize};
 pub use spec42_generator_protocol as protocol;
 pub use spec42_generator_protocol::{
     Artifact, DiagramViewProjection, DiagramViewSummary, ElementDetail, ElementSummary,
-    Multiplicity, Relationship,
+    Multiplicity, Relationship, RelationshipTarget,
 };
 
 /// Starting size of the query response buffer. Responses larger than this cost one extra
@@ -142,11 +142,11 @@ pub mod model {
         DiagramSemanticReference, DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata,
         DiagramViewProjection, DiagramViewSummary, ElementDetail, ElementIdentity, ElementSummary,
         Metaclass, ModelInfo, Multiplicity, ProjectionCompleteness, ProjectionFeature,
-        Relationship, RelationshipKind, RelationshipProvenance, RequirementUsageTyping,
-        RequirementVerification, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship,
-        SequenceEndpoint, SequenceMessage, SequenceOrder, SequenceScene, SourceRange,
-        SourceReference, StateMachineIdentity, StateMachineSummary, StateTransitionEdge,
-        StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
+        Relationship, RelationshipKind, RelationshipProvenance, RelationshipTarget,
+        RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
+        SatisfyRelationship, SequenceEndpoint, SequenceMessage, SequenceOrder, SequenceScene,
+        SourceRange, SourceReference, StateMachineIdentity, StateMachineSummary,
+        StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
         StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
         TypingProvenance, UnsupportedReason, VerificationOutcome, VerificationRequirement,
     };

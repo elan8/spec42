@@ -121,6 +121,7 @@ pub use inspection::{EffectiveIdentification, EffectiveName};
 pub use metadata_query::{
     MetadataAnnotationForm, MetadataAnnotationValue, PublishedMetadataAnnotation,
 };
+pub use model::published_relationship_kinds;
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
