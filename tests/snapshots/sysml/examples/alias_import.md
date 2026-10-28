@@ -50,11 +50,11 @@ package AliasImport {
       (outcome (status resolved) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")))))
     (reference (id (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle"))) (kind featureTyping) (ordinal 0))
       (authored-target "Car")
-      (outcome (status resolved) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")))))
+      (outcome (status resolved) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")))))
   )
   (relationships
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car"))) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car"))) (kind aliasBinding) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle"))) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle"))) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle"))) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle"))) (provenance implied))
   )
   (evaluation
@@ -64,18 +64,13 @@ package AliasImport {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")))
-      (subtype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle")) (scopes any))
-    )
     (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")))
       (subtype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle")))
-      (type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")) (provenance authored))
+      (type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")) (provenance authored))
       (type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")) (provenance implied))
-      (effective-type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")) (source direct))
       (effective-type (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")) (source direct))
-      (supertype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")) (scopes any))
       (supertype (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")) (scopes any))
     )
 )
@@ -95,7 +90,7 @@ package AliasImport {
   )
   (query (document "memory://snapshot/alias_import.md") (range (start 10 20) (end 10 23)) (probe (position 10 20))
     (reference (id (source (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Usages::vehicle"))) (kind featureTyping) (ordinal 0) (authored-target "Car")
-      (outcome (status resolved) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Car")))))
+      (outcome (status resolved) (target (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions::Vehicle")))))
     )
   )
 )
