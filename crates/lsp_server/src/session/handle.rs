@@ -13,7 +13,10 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 
 use session_actor::{MutatePanicked, Mutation, SessionActor, SnapshotHandle};
-use sysml_query::publication::{PublicationBuildFailure, PublicationOutcome, SemanticBuild};
+use sysml_query::publication::{
+    InputRevisionToken, PreparedPublication, PublicationBuildFailure, PublicationOutcome,
+    SemanticBuild,
+};
 use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
@@ -326,11 +329,382 @@ mod publication_tests {
     }
 }
 
+#[derive(Debug)]
 pub(crate) struct PreparedDocumentEdit {
     pub(crate) uri: Url,
     pub(crate) version: i32,
     pub(crate) base_content: String,
     pub(crate) content: String,
+    pub(crate) source_kind: sysml_query::source::SourceKind,
+    editor_revision: super::editor_documents::EditorRevision,
+}
+
+#[cfg(test)]
+mod editor_update_tests {
+    use super::*;
+    use crate::session::editor_documents::EditorEditRejection;
+
+    fn opened(source: &str) -> (WorkspaceHandle, Url) {
+        let uri = Url::parse("memory://editor/model.sysml").unwrap();
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        state.index.insert(
+            uri.clone(),
+            crate::session::state::IndexEntry::for_test(&uri, source),
+        );
+        state.index.get_mut(&uri).unwrap().open_editor(Some(1));
+        (WorkspaceHandle::spawn(state), uri)
+    }
+
+    async fn edit(
+        handle: &WorkspaceHandle,
+        uri: &Url,
+        version: i32,
+        text: &str,
+    ) -> PreparedDocumentEdit {
+        let (prepared, warnings) = handle
+            .prepare_document_content_edit(
+                uri.clone(),
+                version,
+                vec![TextDocumentContentChangeEvent {
+                    range: None,
+                    range_length: None,
+                    text: text.to_owned(),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(warnings.is_empty());
+        let DocumentChangePreparation::Changed(edit) = prepared else {
+            panic!("expected a changed source")
+        };
+        edit
+    }
+
+    async fn apply(handle: &WorkspaceHandle, edit: PreparedDocumentEdit) -> ParsedDocumentUpdate {
+        let (document, parsed) = PreparedDocumentEdit::admit_text(
+            edit.uri.clone(),
+            &edit.content,
+            edit.source_kind,
+            &handle.snapshot().services,
+        );
+        handle
+            .apply_parsed_document_update(edit, document, parsed, 0)
+            .await
+            .unwrap()
+    }
+
+    #[tokio::test]
+    async fn no_op_advances_version_and_rejects_stale_edits_without_republishing() {
+        let source = "package P { part def A; }";
+        let (handle, uri) = opened(source);
+        handle.rebuild_publication().await.unwrap();
+        let publication = handle.snapshot().session.publication();
+        let (prepared, _) = handle
+            .prepare_document_content_edit(
+                uri.clone(),
+                4,
+                vec![TextDocumentContentChangeEvent {
+                    range: None,
+                    range_length: None,
+                    text: source.to_owned(),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(matches!(prepared, DocumentChangePreparation::Unchanged));
+        assert_eq!(handle.snapshot().index[&uri].editor_version(), Some(4));
+        let (stale, _) = handle
+            .prepare_document_content_edit(
+                uri.clone(),
+                3,
+                vec![TextDocumentContentChangeEvent {
+                    range: None,
+                    range_length: None,
+                    text: "package Stale;".to_owned(),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(matches!(
+            stale,
+            DocumentChangePreparation::Rejected(EditorEditRejection::StaleVersion {
+                current: 4,
+                received: 3
+            })
+        ));
+        let snapshot = handle.snapshot();
+        assert_eq!(snapshot.index[&uri].content(), source);
+        assert!(snapshot.session.is_publication_current(&publication));
+    }
+
+    #[tokio::test]
+    async fn parsed_updates_reject_out_of_order_completion_and_old_open_intervals() {
+        let (handle, uri) = opened("package Initial;");
+        let older = edit(&handle, &uri, 2, "package Older;").await;
+        let newer = edit(&handle, &uri, 3, "package Newer;").await;
+        assert!(matches!(
+            apply(&handle, newer).await,
+            ParsedDocumentUpdate::Applied(_)
+        ));
+        assert!(matches!(
+            apply(&handle, older).await,
+            ParsedDocumentUpdate::Superseded
+        ));
+        let old_open = edit(&handle, &uri, 4, "package OldOpen;").await;
+        handle.set_document_open(uri.clone(), false).await.unwrap();
+        handle
+            .set_editor_document_open(uri.clone(), 1)
+            .await
+            .unwrap();
+        assert!(matches!(
+            apply(&handle, old_open).await,
+            ParsedDocumentUpdate::Superseded
+        ));
+        let snapshot = handle.snapshot();
+        assert_eq!(snapshot.index[&uri].content(), "package Newer;");
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(1));
+    }
+
+    #[tokio::test]
+    async fn parsing_an_edit_preserves_its_admitted_source_kind() {
+        let (handle, uri) = opened("package Initial;");
+        handle
+            .actor
+            .mutate({
+                let uri = uri.clone();
+                move |state| {
+                    let document = state.services.source.admit_url(
+                        uri.clone(),
+                        "package Initial;",
+                        sysml_query::source::SourceKind::Library,
+                    );
+                    let parsed = state.services.syntax.parse(&document);
+                    let entry = state.index.get_mut(&uri).unwrap();
+                    entry.document = document;
+                    entry.parsed = parsed;
+                }
+            })
+            .await
+            .unwrap();
+        let prepared = edit(&handle, &uri, 2, "package Changed;").await;
+        assert_eq!(
+            prepared.source_kind,
+            sysml_query::source::SourceKind::Library
+        );
+        assert!(matches!(
+            apply(&handle, prepared).await,
+            ParsedDocumentUpdate::Applied(_)
+        ));
+        assert_eq!(
+            handle.snapshot().index[&uri].document.kind(),
+            sysml_query::source::SourceKind::Library
+        );
+    }
+
+    #[tokio::test]
+    async fn newer_no_op_supersedes_a_parse_even_when_base_bytes_match() {
+        let source = "package Initial;";
+        let (handle, uri) = opened(source);
+        let pending = edit(&handle, &uri, 2, "package Stale;").await;
+        let (preparation, _) = handle
+            .prepare_document_content_edit(
+                uri.clone(),
+                3,
+                vec![TextDocumentContentChangeEvent {
+                    range: None,
+                    range_length: None,
+                    text: source.to_owned(),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(matches!(preparation, DocumentChangePreparation::Unchanged));
+        assert!(matches!(
+            apply(&handle, pending).await,
+            ParsedDocumentUpdate::Superseded
+        ));
+        let snapshot = handle.snapshot();
+        assert_eq!(snapshot.index[&uri].content(), source);
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(3));
+    }
+
+    #[tokio::test]
+    async fn opening_new_source_records_membership_and_version_atomically() {
+        let handle = WorkspaceHandle::spawn(ServerState::default());
+        let uri = Url::parse("memory://editor/new.sysml").unwrap();
+        handle
+            .store_document_text_fast(uri.clone(), "package Unsaved;".into(), Some(9))
+            .await
+            .unwrap();
+        let snapshot = handle.snapshot();
+        assert!(snapshot.is_editor_open(&uri));
+        assert_eq!(snapshot.index[&uri].content(), "package Unsaved;");
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(9));
+    }
+}
+
+#[derive(Debug)]
+pub(crate) enum DocumentChangePreparation {
+    Changed(PreparedDocumentEdit),
+    Unchanged,
+    Rejected(super::editor_documents::EditorEditRejection),
+}
+
+pub(crate) enum ParsedDocumentUpdate {
+    Applied(Vec<(MessageType, String)>),
+    Superseded,
+}
+
+/// A preparation is not a build until its captured input revision passes the actor barrier.
+enum PreparedPublicationAdmission {
+    Build(Box<SemanticBuild>),
+    Superseded,
+    Failed(Arc<PublicationBuildFailure>),
+}
+
+fn prepare_publication(
+    snapshot: Arc<ServerState>,
+) -> Result<PreparedPublication, PublicationBuildFailure> {
+    let (documents, reported, availability) = crate::session::state::publication_inputs(&*snapshot);
+    snapshot
+        .services
+        .publication
+        .prepare_with_standard_library_availability(&documents, availability, reported)
+}
+
+fn admit_prepared_publication(
+    state: &mut ServerState,
+    expected: &InputRevisionToken,
+    prepared: Result<PreparedPublication, PublicationBuildFailure>,
+) -> Mutation<PreparedPublicationAdmission> {
+    if !state.session.is_input_current(expected) {
+        return Mutation::Unchanged(PreparedPublicationAdmission::Superseded);
+    }
+    match prepared {
+        Ok(prepared) => {
+            let token = state.session.begin_build(prepared.identity().clone());
+            Mutation::Changed(PreparedPublicationAdmission::Build(Box::new(
+                SemanticBuild::new(token, prepared),
+            )))
+        }
+        Err(failure) => {
+            state.session.finish_preparation_failure();
+            let failure = Arc::new(failure);
+            state.publication_failure = Some(Arc::clone(&failure));
+            Mutation::Changed(PreparedPublicationAdmission::Failed(failure))
+        }
+    }
+}
+
+#[cfg(test)]
+mod preparation_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn slow_preparation_does_not_block_the_actor_and_rejects_superseded_inputs() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let handle = WorkspaceHandle::spawn(state);
+        let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+        let (resume_tx, resume_rx) = std::sync::mpsc::channel();
+        let preparing = handle.clone();
+        let rebuild = tokio::spawn(async move {
+            preparing
+                .rebuild_with_preparer(move |snapshot| {
+                    let _ = started_tx.send(());
+                    // Dropping the sender on a failed assertion also releases this worker.
+                    let _ = resume_rx.recv();
+                    prepare_publication(snapshot)
+                })
+                .await
+        });
+        started_rx.await.unwrap();
+        tokio::time::timeout(
+            std::time::Duration::from_secs(5),
+            handle.actor.mutate(|state| {
+                state.session.invalidate_inputs();
+            }),
+        )
+        .await
+        .expect("preparation must leave the source actor responsive")
+        .unwrap();
+        resume_tx.send(()).unwrap();
+        let report = rebuild.await.unwrap().unwrap();
+        assert_eq!(report.outcome, PublicationOutcome::Superseded);
+        assert!(handle.snapshot().publication_failure.is_none());
+        assert!(handle.rebuild_publication().await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn preparation_worker_panic_retains_the_last_good_publication_with_its_stage() {
+        let handle = WorkspaceHandle::spawn(ServerState::default());
+        let last_good = Arc::clone(handle.snapshot().session.current());
+        let report = handle
+            .rebuild_with_preparer(|_| panic!("preparation worker failed"))
+            .await
+            .unwrap();
+        assert_eq!(report.outcome, PublicationOutcome::Failed);
+        let snapshot = handle.snapshot();
+        assert!(Arc::ptr_eq(snapshot.session.current(), &last_good));
+        assert_eq!(
+            snapshot.publication_failure.as_ref().unwrap().stage(),
+            sysml_query::publication::PublicationFailureStage::PreparationWorker
+        );
+    }
+
+    #[test]
+    fn older_preparation_cannot_supersede_a_build_for_newer_inputs() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let older_inputs = state.session.inputs();
+        let older = state.services.publication.prepare(&[], []).unwrap();
+        state.session.invalidate_inputs();
+        let current_inputs = state.session.inputs();
+        let current = state.services.publication.prepare(&[], []).unwrap();
+        let Mutation::Changed(PreparedPublicationAdmission::Build(current)) =
+            admit_prepared_publication(&mut state, &current_inputs, Ok(current))
+        else {
+            panic!("current preparation must start a build")
+        };
+        assert!(matches!(
+            admit_prepared_publication(&mut state, &older_inputs, Ok(older)),
+            Mutation::Unchanged(PreparedPublicationAdmission::Superseded)
+        ));
+        let completion = state.services.publication.construct(*current);
+        assert_eq!(
+            completion.admit(&mut state.session),
+            PublicationOutcome::Published
+        );
+    }
+
+    #[test]
+    fn preparation_failures_are_retained_only_for_current_owner_and_inputs() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let older = state.session.inputs();
+        state.session.invalidate_inputs();
+        let failure = || PublicationBuildFailure::preparation_worker("preparation panicked");
+        assert!(matches!(
+            admit_prepared_publication(&mut state, &older, Err(failure())),
+            Mutation::Unchanged(PreparedPublicationAdmission::Superseded)
+        ));
+        let foreign = ServerState::default().session.inputs();
+        assert!(matches!(
+            admit_prepared_publication(&mut state, &foreign, Err(failure())),
+            Mutation::Unchanged(PreparedPublicationAdmission::Superseded)
+        ));
+        assert!(state.publication_failure.is_none());
+        let current = state.session.inputs();
+        assert!(matches!(
+            admit_prepared_publication(&mut state, &current, Err(failure())),
+            Mutation::Changed(PreparedPublicationAdmission::Failed(_))
+        ));
+        assert_eq!(
+            state.publication_failure.as_ref().unwrap().stage(),
+            sysml_query::publication::PublicationFailureStage::PreparationWorker
+        );
+    }
 }
 
 /// Host boundary costs plus the canonical phase owner's complete construction measurements.
@@ -349,12 +723,10 @@ impl PreparedDocumentEdit {
     pub(crate) fn admit_text(
         uri: Url,
         content: &str,
+        kind: sysml_query::source::SourceKind,
         services: &sysml_query::Services,
     ) -> (SourceDocument, ParsedSource) {
-        let document =
-            services
-                .source
-                .admit_url(uri, content, sysml_query::source::SourceKind::Workspace);
+        let document = services.source.admit_url(uri, content, kind);
         let parsed = services.syntax.parse(&document);
         (document, parsed)
     }
@@ -419,25 +791,10 @@ impl WorkspaceHandle {
         self.snapshot.current()
     }
 
-    /// Runs canonical semantic construction outside the ServerState actor and admits the result
-    /// at the session's publication barrier, mirroring it into the reader snapshot atomically.
-    ///
-    /// Reading the inputs, preparing them, and taking the build token all happen inside **one**
-    /// actor turn, and that is a correctness requirement, not a tidiness one. The session admits
-    /// only the newest build generation (`Session::admit` supersedes every older token), so build
-    /// generation order must equal input order: if a build could be prepared from one revision of
-    /// the index and then be handed a *newer* generation than a concurrently running build that
-    /// saw more documents, the fresher build would be superseded by the staler one and its
-    /// documents would silently never enter the publication — a document present in `index` but
-    /// absent from `session.current()`, which is exactly what makes `textDocument/references`
-    /// answer empty for a document the host has already accepted. Preparing under the same
-    /// mutation that calls `begin_build` makes that inversion unrepresentable.
-    ///
-    /// `prepare` never parses, so it is cheap enough to run on the actor; `construct` parses
-    /// whatever the syntax memo does not hold and resolves the model on a blocking thread. A
-    /// `Superseded` outcome is therefore always benign: the superseding build was prepared from
-    /// inputs at least as new as this one's. After admission the memo is swept to the revisions
-    /// the index still holds.
+    /// Prepare and construct from an immutable source snapshot outside the actor. Preparation
+    /// can build a cold library stratum; it must not block ordered source ingestion. At the actor
+    /// barrier, verify the captured owner/revision before assigning a build generation. This keeps
+    /// a slow preparation for older inputs from superseding a newer build.
     pub(crate) async fn rebuild_publication(&self) -> Result<bool, MutatePanicked> {
         self.rebuild_publication_measured()
             .await
@@ -447,35 +804,36 @@ impl WorkspaceHandle {
     pub(crate) async fn rebuild_publication_measured(
         &self,
     ) -> Result<PublicationRebuildReport, MutatePanicked> {
+        self.rebuild_with_preparer(prepare_publication).await
+    }
+
+    async fn rebuild_with_preparer(
+        &self,
+        prepare: impl FnOnce(Arc<ServerState>) -> Result<PreparedPublication, PublicationBuildFailure>
+            + Send
+            + 'static,
+    ) -> Result<PublicationRebuildReport, MutatePanicked> {
         let preparation_started = std::time::Instant::now();
-        let (staged, preparation) = self
+        let snapshot = self.snapshot();
+        let expected = snapshot.session.inputs();
+        let prepared = tokio::task::spawn_blocking(move || {
+            let started = std::time::Instant::now();
+            let result = prepare(snapshot);
+            (result, started.elapsed())
+        })
+        .await;
+        let (prepared, preparation) = match prepared {
+            Ok(result) => result,
+            Err(error) => (
+                Err(PublicationBuildFailure::preparation_worker(error)),
+                std::time::Duration::ZERO,
+            ),
+        };
+        let staged = self
             .actor
-            .mutate(move |state| {
-                let started = std::time::Instant::now();
-                let (documents, reported, standard_library_availability) =
-                    crate::session::state::publication_inputs(state);
-                let result = match state
-                    .services
-                    .publication
-                    .prepare_with_standard_library_availability(
-                        &documents,
-                        standard_library_availability,
-                        reported,
-                    ) {
-                    Ok(prepared) => {
-                        let token = state.session.begin_build(prepared.identity().clone());
-                        Ok(SemanticBuild::new(token, prepared))
-                    }
-                    Err(failure) => {
-                        state.session.finish_preparation_failure();
-                        let failure = Arc::new(failure);
-                        state.publication_failure = Some(Arc::clone(&failure));
-                        Err(failure)
-                    }
-                };
-                (result, started.elapsed())
-            })
-            .await?;
+            .mutate_if_changed(move |state| admit_prepared_publication(state, &expected, prepared))
+            .await?
+            .value;
         let preparation_queue = preparation_started.elapsed().saturating_sub(preparation);
         let mut report = PublicationRebuildReport {
             outcome: PublicationOutcome::Failed,
@@ -486,8 +844,12 @@ impl WorkspaceHandle {
             phases: None,
         };
         let build = match staged {
-            Ok(build) => build,
-            Err(failure) => {
+            PreparedPublicationAdmission::Build(build) => *build,
+            PreparedPublicationAdmission::Superseded => {
+                report.outcome = PublicationOutcome::Superseded;
+                return Ok(report);
+            }
+            PreparedPublicationAdmission::Failed(failure) => {
                 tracing::error!(stage = ?failure.stage(), message = %failure.message(), "semantic publication preparation failed; retaining last good publication");
                 return Ok(report);
             }
@@ -622,7 +984,7 @@ impl WorkspaceHandle {
                 // was already published; never replace that revision at the scan barrier.
                 entries.retain(|entry| {
                     let uri = crate::common::util::normalize_file_uri(&entry.uri);
-                    !s.open_in_editor.contains(&uri)
+                    !s.is_editor_open(&uri)
                 });
                 let results =
                     crate::session::services::ingest_parsed_scan_entries_batch(s, entries);
@@ -638,8 +1000,9 @@ impl WorkspaceHandle {
     ) -> Result<(), MutatePanicked> {
         self.actor
             .mutate(move |state| {
-                for (uri, entry) in documents {
-                    state.open_in_editor.insert(uri.clone());
+                for (uri, mut entry) in documents {
+                    entry.open_editor(None);
+                    entry.rekey_editor_owner();
                     state.index.insert(uri, entry);
                 }
                 state.session.invalidate_inputs();
@@ -677,15 +1040,38 @@ impl WorkspaceHandle {
         uri: Url,
         open: bool,
     ) -> Result<bool, MutatePanicked> {
+        self.set_document_presence(uri, open, None).await
+    }
+
+    pub(crate) async fn set_editor_document_open(
+        &self,
+        uri: Url,
+        version: i32,
+    ) -> Result<bool, MutatePanicked> {
+        self.set_document_presence(uri, true, Some(version)).await
+    }
+
+    async fn set_document_presence(
+        &self,
+        uri: Url,
+        open: bool,
+        version: Option<i32>,
+    ) -> Result<bool, MutatePanicked> {
         let library = self
             .actor
             .mutate_if_changed(move |s| {
+                let Some(entry) = s.index.get_mut(&uri) else {
+                    return Mutation::Unchanged(false);
+                };
                 let changed = if open {
-                    s.open_in_editor.insert(uri.clone())
+                    entry.open_editor(version)
                 } else {
-                    s.open_in_editor.remove(&uri)
+                    entry.close_editor()
                 };
                 if !changed {
+                    if open && version.is_some() {
+                        return Mutation::Changed(false);
+                    }
                     return Mutation::Unchanged(false);
                 }
                 // Only a library file's reporting depends on this; a workspace document is
@@ -715,21 +1101,36 @@ impl WorkspaceHandle {
         Ok(library)
     }
 
+    /// Store admitted source, optionally establishing an editor open interval atomically.
     pub(crate) async fn store_document_text_fast(
         &self,
         uri: Url,
         text: String,
+        editor_version: Option<i32>,
     ) -> Result<Option<String>, MutatePanicked> {
         self.actor
-            .mutate_if_changed(move |s| {
-                if s.index
-                    .get(&uri)
-                    .is_some_and(|entry| entry.content() == text)
+            .mutate_if_changed(move |state| {
+                if editor_version.is_none()
+                    && state
+                        .index
+                        .get(&uri)
+                        .is_some_and(|entry| entry.content() == text)
                 {
                     return Mutation::Unchanged(None);
                 }
-                let warning = crate::session::services::store_document_text_fast(s, &uri, text);
-                s.session.invalidate_inputs();
+                let warning = crate::session::services::store_document_text_fast(state, &uri, text);
+                if let Some(version) = editor_version {
+                    state
+                        .index
+                        .get_mut(&uri)
+                        .expect("stored source")
+                        .open_editor(Some(version));
+                    state
+                        .recovery_search_symbols
+                        .retain(|symbol| symbol.uri != uri);
+                }
+                state.semantic_revision = state.semantic_revision.wrapping_add(1);
+                state.session.invalidate_inputs();
                 Mutation::Changed(warning)
             })
             .await
@@ -741,26 +1142,70 @@ impl WorkspaceHandle {
         uri: Url,
         version: i32,
         changes: Vec<TextDocumentContentChangeEvent>,
-    ) -> Result<(Option<PreparedDocumentEdit>, Vec<(MessageType, String)>), MutatePanicked> {
-        let snapshot = self.snapshot();
-        let Some(entry) = snapshot.index.get(&uri) else {
-            return Ok((
-                None,
-                vec![(MessageType::WARNING, format!("didChange: document {uri} was not in the server index (version {version}). Change was ignored until a full open/watch refresh occurs."))],
-            ));
-        };
-        let base_content = entry.content().to_owned();
-        let (content, changed, warnings) =
-            crate::session::services::apply_content_changes(&base_content, &uri, version, changes);
-        Ok((
-            changed.then_some(PreparedDocumentEdit {
-                uri,
-                version,
-                base_content,
-                content,
-            }),
-            warnings,
-        ))
+    ) -> Result<(DocumentChangePreparation, Vec<(MessageType, String)>), MutatePanicked> {
+        use super::editor_documents::EditorEditRejection;
+        self.actor
+            .mutate_if_changed(move |state| {
+                let Some(entry) = state.index.get(&uri) else {
+                    return Mutation::Unchanged((
+                        DocumentChangePreparation::Rejected(EditorEditRejection::NotIndexed),
+                        Vec::new(),
+                    ));
+                };
+                let editor_revision = match entry
+                    .editor_revision
+                    .as_ref()
+                    .ok_or(EditorEditRejection::NotOpen)
+                    .and_then(|revision| revision.prepare(version))
+                {
+                    Ok(revision) => revision,
+                    Err(reason) => {
+                        return Mutation::Unchanged((
+                            DocumentChangePreparation::Rejected(reason),
+                            Vec::new(),
+                        ))
+                    }
+                };
+                let base_content = entry.content().to_owned();
+                let source_kind = entry.document.kind();
+                let (content, changed, warnings) = crate::session::services::apply_content_changes(
+                    &base_content,
+                    &uri,
+                    version,
+                    changes,
+                );
+                if changed {
+                    Mutation::Unchanged((
+                        DocumentChangePreparation::Changed(PreparedDocumentEdit {
+                            uri,
+                            version,
+                            base_content,
+                            content,
+                            source_kind,
+                            editor_revision,
+                        }),
+                        warnings,
+                    ))
+                } else {
+                    match state
+                        .index
+                        .get_mut(&uri)
+                        .and_then(|entry| entry.editor_revision.as_mut())
+                        .ok_or(EditorEditRejection::NotOpen)
+                        .and_then(|revision| revision.advance(&editor_revision, version))
+                    {
+                        Ok(()) => {
+                            Mutation::Changed((DocumentChangePreparation::Unchanged, warnings))
+                        }
+                        Err(reason) => Mutation::Unchanged((
+                            DocumentChangePreparation::Rejected(reason),
+                            warnings,
+                        )),
+                    }
+                }
+            })
+            .await
+            .map(|outcome| outcome.value)
     }
 
     pub(crate) async fn apply_parsed_document_update(
@@ -769,13 +1214,26 @@ impl WorkspaceHandle {
         document: SourceDocument,
         parsed: ParsedSource,
         parse_time_ms: u32,
-    ) -> Result<Vec<(MessageType, String)>, MutatePanicked> {
+    ) -> Result<ParsedDocumentUpdate, MutatePanicked> {
         self.actor
             .mutate_if_changed(move |s| {
                 if s.index.get(&edit.uri).map(|entry| entry.content())
                     != Some(edit.base_content.as_str())
+                    || s.index.get(&edit.uri).map(|entry| entry.document.kind())
+                        != Some(edit.source_kind)
                 {
-                    return Mutation::Unchanged(Vec::new());
+                    return Mutation::Unchanged(ParsedDocumentUpdate::Superseded);
+                }
+                if s.index
+                    .get_mut(&edit.uri)
+                    .and_then(|entry| entry.editor_revision.as_mut())
+                    .is_none_or(|revision| {
+                        revision
+                            .advance(&edit.editor_revision, edit.version)
+                            .is_err()
+                    })
+                {
+                    return Mutation::Unchanged(ParsedDocumentUpdate::Superseded);
                 }
                 let warnings = crate::session::services::apply_parsed_document_update(
                     s,
@@ -787,7 +1245,7 @@ impl WorkspaceHandle {
                     false,
                 );
                 s.session.invalidate_inputs();
-                Mutation::Changed(warnings)
+                Mutation::Changed(ParsedDocumentUpdate::Applied(warnings))
             })
             .await
             .map(|outcome| outcome.value)

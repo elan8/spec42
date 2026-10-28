@@ -12,6 +12,7 @@ mod definition;
 mod diagnostics;
 mod diagram_views;
 mod draw;
+mod editor_versions;
 mod experimental_capabilities;
 mod experimental_requests;
 mod feature_inspector;

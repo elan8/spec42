@@ -33,9 +33,6 @@ pub(crate) async fn did_open(
             "resolved document project boundary"
         );
     }
-    // Recorded before diagnostics are computed: an opened library file is an authoring surface,
-    // and the publication only reports one it was told about.
-    let _ = handle.set_document_open(uri_norm.clone(), true).await;
     let perf_logging_enabled = runtime_config
         .get()
         .expect("initialize precedes all other LSP requests")
@@ -58,6 +55,15 @@ pub(crate) async fn did_open(
     let (warning, lock_wait_ms, scheduled_relink) = if already_indexed {
         // Fast path: content unchanged — skip re-parse and re-evaluation entirely.
         let lock_start = Instant::now();
+        if let Err(error) = handle
+            .set_editor_document_open(uri_norm.clone(), params.text_document.version)
+            .await
+        {
+            client
+                .log_message(MessageType::ERROR, format!("didOpen failed: {error:?}"))
+                .await;
+            return;
+        }
         let lock_wait_ms = lock_start.elapsed().as_millis();
         (None, lock_wait_ms, false)
     } else {
@@ -66,9 +72,21 @@ pub(crate) async fn did_open(
         // edges and expression evaluation happen outside the lock.
         let lock_start = Instant::now();
         let warning = handle
-            .store_document_text_fast(uri_norm.clone(), text.clone())
-            .await
-            .unwrap_or_default();
+            .store_document_text_fast(
+                uri_norm.clone(),
+                text.clone(),
+                Some(params.text_document.version),
+            )
+            .await;
+        let warning = match warning {
+            Ok(warning) => warning,
+            Err(error) => {
+                client
+                    .log_message(MessageType::ERROR, format!("didOpen failed: {error:?}"))
+                    .await;
+                return;
+            }
+        };
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let scheduled_relink = true;
         publish_semantic_change(
@@ -143,10 +161,19 @@ pub(crate) async fn did_change(
     // Phase 1: derive prospective text from the currently published source. This does not
     // publish anything: readers continue to observe the prior coherent snapshot until parsing
     // and the local semantic patch can be committed together.
-    let (edit, mut warnings) = handle
+    use crate::session::handle::{DocumentChangePreparation, ParsedDocumentUpdate};
+    let (preparation, mut warnings) = match handle
         .prepare_document_content_edit(uri_norm.clone(), version, params.content_changes)
         .await
-        .unwrap_or_default();
+    {
+        Ok(prepared) => prepared,
+        Err(error) => {
+            client.log_message(MessageType::ERROR, format!(
+                "didChange for {uri_norm} (version {version}) failed in the source actor; retaining the previous source: {error:?}"
+            )).await;
+            return;
+        }
+    };
     let source_ingest_ms = apply_start.elapsed().as_secs_f64() * 1000.0;
     let mut parse_worker_ms = 0.0;
     let mut source_commit_ms = 0.0;
@@ -158,12 +185,24 @@ pub(crate) async fn did_change(
     // (hover, completion, further edits) behind it. `spawn_blocking` also
     // keeps this off the async executor thread.
     let mut semantic_inputs_changed = false;
-    if let Some(edit) = edit {
+    if let DocumentChangePreparation::Rejected(reason) = &preparation {
+        warnings.push((
+            MessageType::LOG,
+            format!("didChange for {uri_norm} (version {version}) was rejected: {reason:?}"),
+        ));
+    }
+    if let DocumentChangePreparation::Changed(edit) = preparation {
         let services = handle.snapshot().services.clone();
         let (admit_uri, content) = (edit.uri.clone(), edit.content.clone());
+        let source_kind = edit.source_kind;
         let parse_start = Instant::now();
         let parse_outcome = tokio::task::spawn_blocking(move || {
-            crate::session::handle::PreparedDocumentEdit::admit_text(admit_uri, &content, &services)
+            crate::session::handle::PreparedDocumentEdit::admit_text(
+                admit_uri,
+                &content,
+                source_kind,
+                &services,
+            )
         })
         .await;
         parse_worker_ms = parse_start.elapsed().as_secs_f64() * 1000.0;
@@ -171,13 +210,20 @@ pub(crate) async fn did_change(
         match parse_outcome {
             Ok((document, parsed)) => {
                 let commit_started = Instant::now();
-                let parse_warnings = handle
+                let update = handle
                     .apply_parsed_document_update(edit, document, parsed, parse_time_ms)
-                    .await
-                    .unwrap_or_default();
+                    .await;
                 source_commit_ms = commit_started.elapsed().as_secs_f64() * 1000.0;
-                semantic_inputs_changed = true;
-                warnings.extend(parse_warnings);
+                match update {
+                    Ok(ParsedDocumentUpdate::Applied(parse_warnings)) => {
+                        semantic_inputs_changed = true;
+                        warnings.extend(parse_warnings);
+                    }
+                    Ok(ParsedDocumentUpdate::Superseded) => {}
+                    Err(error) => warnings.push((MessageType::ERROR, format!(
+                        "didChange for {uri_norm} (version {version}) could not commit its parsed source: {error:?}"
+                    ))),
+                }
             }
             Err(_) => {
                 warnings.push((

@@ -124,12 +124,17 @@ pub(crate) fn store_parsed_document_text(
     context: &str,
     _evaluate: bool,
 ) -> Option<String> {
+    let editor_revision = state
+        .index()
+        .get(uri_norm)
+        .and_then(|entry| entry.editor_revision.clone());
     state.index_mut().insert(
         uri_norm.clone(),
         IndexEntry {
             document,
             parsed,
             admitted_to_publication: true,
+            editor_revision,
         },
     );
     warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
@@ -142,11 +147,14 @@ pub(crate) fn store_document_text_fast(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let document =
-        state
-            .services()
-            .source
-            .admit_url(uri_norm.clone(), &text, SourceKind::Workspace);
+    let kind = state
+        .index()
+        .get(uri_norm)
+        .map_or(SourceKind::Workspace, |entry| entry.document.kind());
+    let document = state
+        .services()
+        .source
+        .admit_url(uri_norm.clone(), &text, kind);
     let parsed = state.services().syntax.parse(&document);
     let parse_errors = parsed
         .diagnostics()
@@ -198,12 +206,17 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
     let mut loaded = Vec::with_capacity(entries.len());
     for entry in entries {
         let uri_norm = util::normalize_file_uri(&entry.uri);
+        let editor_revision = state
+            .index()
+            .get(&uri_norm)
+            .and_then(|entry| entry.editor_revision.clone());
         state.index_mut().insert(
             uri_norm.clone(),
             IndexEntry {
                 document: entry.document,
                 parsed: entry.parsed,
                 admitted_to_publication: true,
+                editor_revision,
             },
         );
         let warning = warning_from_parse_errors(

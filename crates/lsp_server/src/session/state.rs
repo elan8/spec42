@@ -20,11 +20,43 @@ pub(crate) struct IndexEntry {
     pub(crate) parsed: ParsedSource,
     /// When `false`, the file is indexed for `sysml/librarySearch` only and is not admitted.
     pub(crate) admitted_to_publication: bool,
+    /// Editor membership, version and open-interval identity travel with their source entry.
+    /// Opening a library makes it an authoring surface without changing its provenance.
+    pub(crate) editor_revision: Option<super::editor_documents::EditorRevision>,
 }
 
 impl IndexEntry {
     pub(crate) fn content(&self) -> &str {
         self.document.content()
+    }
+
+    pub(crate) fn is_editor_open(&self) -> bool {
+        self.editor_revision.is_some()
+    }
+
+    #[cfg(test)]
+    pub(crate) fn editor_version(&self) -> Option<i32> {
+        self.editor_revision
+            .as_ref()
+            .and_then(|revision| revision.version())
+    }
+
+    pub(crate) fn open_editor(&mut self, version: Option<i32>) -> bool {
+        let changed = !self.is_editor_open();
+        if changed || version.is_some() {
+            self.editor_revision = Some(super::editor_documents::EditorRevision::new(version));
+        }
+        changed
+    }
+
+    pub(crate) fn close_editor(&mut self) -> bool {
+        self.editor_revision.take().is_some()
+    }
+
+    pub(crate) fn rekey_editor_owner(&mut self) {
+        if let Some(revision) = &mut self.editor_revision {
+            revision.rekey_for_owner();
+        }
     }
 
     #[cfg(test)]
@@ -40,6 +72,7 @@ impl IndexEntry {
             document,
             parsed,
             admitted_to_publication: true,
+            editor_revision: None,
         }
     }
 }
@@ -82,14 +115,6 @@ pub(crate) struct ServerState {
     pub(crate) semantic_symbols: Vec<SymbolEntry>,
     /// Parser-recovery search entries for documents deliberately excluded from publication.
     pub(crate) recovery_search_symbols: Vec<SymbolEntry>,
-    /// Documents the editor currently has open.
-    ///
-    /// A library file is a library by *provenance* -- that is what decides how its names resolve.
-    /// Opening one makes it an authoring surface as well, which is a different fact and one only
-    /// the editor knows. The publication reports diagnostics for the documents named here in
-    /// addition to the workspace's own, so an author editing a library file sees its diagnostics
-    /// without every workspace inheriting the whole library's.
-    pub(crate) open_in_editor: std::collections::BTreeSet<Url>,
     /// Last explicitly observed construction failure. The last good model remains readable.
     pub(crate) publication_failure: Option<Arc<PublicationBuildFailure>>,
 }
@@ -119,9 +144,18 @@ impl ServerState {
             index: std::collections::HashMap::new(),
             semantic_symbols: Vec::new(),
             recovery_search_symbols: Vec::new(),
-            open_in_editor: std::collections::BTreeSet::new(),
             publication_failure: None,
         }
+    }
+
+    pub(crate) fn is_editor_open(&self, uri: &Url) -> bool {
+        self.index.get(uri).is_some_and(IndexEntry::is_editor_open)
+    }
+
+    pub(crate) fn editor_documents(&self) -> impl Iterator<Item = (&Url, &IndexEntry)> {
+        self.index
+            .iter()
+            .filter(|(_, entry)| entry.is_editor_open())
     }
 
     /// The current immutable publication.
@@ -140,6 +174,9 @@ impl TracksRelink for ServerState {
     fn rekey_for_actor(&mut self) {
         self.session.rekey_for_owner();
         self.diagnostic_readiness.rekey_for_owner();
+        for entry in self.index.values_mut() {
+            entry.rekey_editor_owner();
+        }
     }
 }
 
@@ -156,7 +193,11 @@ pub(crate) trait DocumentStore {
     fn library_roots(&self) -> (&[Url], &[Url]);
     fn standard_library_availability(&self) -> StandardLibraryAvailability;
     /// Documents the editor has open, whose diagnostics are reported whatever their provenance.
-    fn open_in_editor(&self) -> &std::collections::BTreeSet<Url>;
+    fn is_editor_open(&self, uri: &Url) -> bool {
+        self.index()
+            .get(uri)
+            .is_some_and(IndexEntry::is_editor_open)
+    }
 }
 
 impl DocumentStore for ServerState {
@@ -177,9 +218,6 @@ impl DocumentStore for ServerState {
     }
     fn standard_library_availability(&self) -> StandardLibraryAvailability {
         self.standard_library_availability
-    }
-    fn open_in_editor(&self) -> &std::collections::BTreeSet<Url> {
-        &self.open_in_editor
     }
 }
 
@@ -214,7 +252,7 @@ pub(crate) fn publication_inputs(
         let library = standard || crate::common::util::uri_under_any_library(uri, library_paths);
         // A library file the editor has open is being authored, so its diagnostics are reported
         // even though its provenance keeps it out of the workspace's own set.
-        if library && state.open_in_editor().contains(uri) {
+        if library && state.is_editor_open(uri) {
             reported.push(uri.as_str().into());
         }
         let kind = if standard {
