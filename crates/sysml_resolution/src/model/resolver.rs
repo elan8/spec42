@@ -1219,6 +1219,7 @@ mod tests {
 
     fn resolution_with_status(status: SolverStatus) -> ResolutionResults {
         ResolutionResults {
+            alias_failures: std::collections::BTreeSet::new(),
             member_access_paths: Default::default(),
             outcomes: Box::new([]),
             ambiguous_candidates: Box::new([]),

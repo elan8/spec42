@@ -53,10 +53,9 @@ package P {
       (outcome (status nonConverged)))
     (reference (id (source (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::uses"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
-      (outcome (status resolved) (target (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::A")))))
+      (outcome (status nonConverged)))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::uses"))) (target (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::uses"))) (kind featureTyping) (ordinal 0)))
   )
   (evaluation
   )
@@ -65,14 +64,6 @@ package P {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::A")))
-      (subtype (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::uses")) (scopes any))
-    )
-    (declaration (id (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::uses")))
-      (type (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::A")) (provenance authored))
-      (effective-type (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::A")) (source direct))
-      (supertype (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::A")) (scopes any))
-    )
 )
 ~~~
 # NAVIGATION
@@ -90,7 +81,7 @@ package P {
   )
   (query (document "memory://snapshot/cyclic_alias_non_convergence.md") (range (start 4 16) (end 4 17)) (probe (position 4 16))
     (reference (id (source (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::uses"))) (kind featureTyping) (ordinal 0) (authored-target "A")
-      (outcome (status resolved) (target (node (document "memory://snapshot/cyclic_alias_non_convergence.md") (qualified-name "P::A")))))
+      (outcome (status nonConverged)))
     )
   )
 )
