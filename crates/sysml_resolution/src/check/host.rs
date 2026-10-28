@@ -240,14 +240,13 @@ pub(crate) fn is_action_body_kind(kind: DeclarationKind) -> bool {
 }
 
 impl<D> SemanticModel<D> {
-    /// Appends every host-reported conformance diagnostic authored in `document`.
+    /// Appends host-reported checks other than the pass-scoped namespace identity check.
     pub(crate) fn collect_host_conformance(
         &self,
         document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        self.collect_namespace_identity(declared, diagnostics)?;
         self.collect_connection_structure(declared, diagnostics)?;
         self.collect_behavior_structure(document, declared, diagnostics)?;
         self.collect_requirement_case_structure(declared, diagnostics)?;
@@ -398,12 +397,15 @@ impl<D> SemanticModel<D> {
     /// library structure. Each colliding pair is reported once, however many of its names and
     /// short names coincide, and always on the owned member, where the author can fix it.
     pub(crate) fn collect_namespace_identity(
-        &self,
+        queries: &mut crate::model::query::InheritedFeatureQueries<'_, D>,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
+        let model = queries.model();
         for owner in declared.iter().copied() {
-            let owner_kind = self.kind_of(owner).ok_or(ResolutionError::InvalidStorage)?;
+            let owner_kind = model
+                .kind_of(owner)
+                .ok_or(ResolutionError::InvalidStorage)?;
             if !crate::model::element_kind::element_kind(owner_kind)
                 .conforms_to(sysml_contract::ElementKind::Namespace)
             {
@@ -416,11 +418,11 @@ impl<D> SemanticModel<D> {
             if crate::resolve::parameter_positions::has_unlowered_grammar_parameters(owner_kind) {
                 continue;
             }
-            let owned = self.child_declarations(owner);
-            let inherited = self.inherited_feature_members(owner);
+            let owned = model.child_declarations(owner);
+            let inherited = queries.members(owner);
             let mut by_identifier: BTreeMap<&str, Vec<DeclarationId>> = BTreeMap::new();
             for child in owned.iter().chain(inherited.iter()) {
-                let declaration = self
+                let declaration = model
                     .storage
                     .declaration(*child)
                     .ok_or(ResolutionError::InvalidStorage)?;
@@ -430,7 +432,7 @@ impl<D> SemanticModel<D> {
                 ) {
                     continue;
                 }
-                let Some(identification) = self.resolution.effective_names.get(child.index())
+                let Some(identification) = model.resolution.effective_names.get(child.index())
                 else {
                     continue;
                 };
@@ -442,7 +444,7 @@ impl<D> SemanticModel<D> {
                         | crate::resolve::results::EffectiveNameOutcome::Unresolved
                         | crate::resolve::results::EffectiveNameOutcome::NonConverged => None,
                     })
-                    .filter_map(|name| self.storage.symbol(name))
+                    .filter_map(|name| model.storage.symbol(name))
                 {
                     let entry = by_identifier.entry(name).or_default();
                     if !entry.contains(child) {
@@ -450,7 +452,7 @@ impl<D> SemanticModel<D> {
                     }
                 }
             }
-            let document = self
+            let document = model
                 .storage
                 .declaration(owner)
                 .ok_or(ResolutionError::InvalidStorage)?
@@ -467,28 +469,28 @@ impl<D> SemanticModel<D> {
                 members.sort_by_key(|member| {
                     (
                         owned_set.contains(member),
-                        self.storage.declaration(*member).map(|declaration| {
-                            writer::document_identity(self, declaration.document)
+                        model.storage.declaration(*member).map(|declaration| {
+                            writer::document_identity(model, declaration.document)
                         }),
-                        self.declaration_range(*member),
+                        model.declaration_range(*member),
                     )
                 });
-                let Some((first, duplicate)) = self.first_owned_collision(&members, &owned_set)
+                let Some((first, duplicate)) = model.first_owned_collision(&members, &owned_set)
                 else {
                     continue;
                 };
                 if reported.insert((first, duplicate)) {
-                    let mut diagnostic = self.declaration_message_diagnostic(
+                    let mut diagnostic = model.declaration_message_diagnostic(
                         duplicate,
                         DiagnosticCode::DuplicateNamespaceMember,
                         DiagnosticSeverity::Warning,
                         Some(format!(
                             "'{}' has indistinguishable memberships named '{name}'.",
-                            self.display_name(owner)
+                            model.display_name(owner)
                         )),
                     )?;
                     diagnostic.related =
-                        Box::from([self.related_declaration(first, RELATED_FIRST_DECLARATION)?]);
+                        Box::from([model.related_declaration(first, RELATED_FIRST_DECLARATION)?]);
                     diagnostics.push(diagnostic);
                 }
                 for local in members
@@ -501,10 +503,10 @@ impl<D> SemanticModel<D> {
                         .copied()
                         .filter(|member| !owned_set.contains(member))
                     {
-                        if self.first_collision(&[ancestor, local]).is_some()
+                        if model.first_collision(&[ancestor, local]).is_some()
                             && value_pairs.insert((local, ancestor))
                         {
-                            self.collect_inherited_value_pair(
+                            model.collect_inherited_value_pair(
                                 local,
                                 ancestor,
                                 document,

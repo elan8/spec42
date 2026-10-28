@@ -105,6 +105,7 @@ pub(crate) struct Evaluated {
 /// Phase 8's product: the only value a `ResolvedSemanticModel` can be taken out of.
 pub(crate) struct Complete {
     model: ResolvedSemanticModel,
+    namespace_checks: std::time::Duration,
     /// Kept only so a library-stratum build can hand the trees to the next publication; a
     /// workspace build drops them with this value.
     sources: ParsedSources,
@@ -789,12 +790,16 @@ impl Indexed {
         reported: &[Box<str>],
         standard_library_availability: sysml_contract::StandardLibraryAvailability,
     ) -> Result<Complete, ResolutionError> {
-        let (diagnostics, by_document) =
-            self.derive_diagnostics(&sources, reported, standard_library_availability)?;
+        let crate::diagnose::DerivedDiagnostics {
+            diagnostics,
+            by_document,
+            namespace_checks,
+        } = self.derive_diagnostics(&sources, reported, standard_library_availability)?;
         // The parse product is consumed here and goes no further: this is the barrier that makes
         // "a sealed publication holds no parse tree" true by construction rather than by review.
         Ok(Complete {
             sources,
+            namespace_checks,
             model: ResolvedSemanticModel {
                 storage: self.storage,
                 direct_names: self.direct_names,
@@ -835,6 +840,7 @@ pub(crate) struct SemanticPhaseDurations {
     pub(crate) evaluation: std::time::Duration,
     pub(crate) indexing: std::time::Duration,
     pub(crate) diagnostics: std::time::Duration,
+    pub(crate) namespace_checks: std::time::Duration,
 }
 
 /// The whole phase order, with measurements taken at its owning barriers.
@@ -868,9 +874,10 @@ pub(crate) fn build_model(
     let started = std::time::Instant::now();
     let complete = indexed
         .diagnose(sources, reported, standard_library_availability)
-        .map_err(|error| failure(crate::ConstructionPhase::Diagnostics, error))?
-        .into_parts();
+        .map_err(|error| failure(crate::ConstructionPhase::Diagnostics, error))?;
     let diagnostics = started.elapsed();
+    let namespace_checks = complete.namespace_checks;
+    let complete = complete.into_parts();
     Ok((
         complete.0,
         complete.1,
@@ -879,6 +886,7 @@ pub(crate) fn build_model(
             evaluation,
             indexing,
             diagnostics,
+            namespace_checks,
         },
     ))
 }
