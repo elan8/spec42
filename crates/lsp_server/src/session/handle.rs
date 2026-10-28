@@ -9,7 +9,7 @@
 //! This is the publication boundary for the live workspace: document and configuration updates
 //! enter through its named methods, and readers consume its immutable snapshots.
 
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
 use session_actor::{MutatePanicked, Mutation, SessionActor, SnapshotHandle};
@@ -134,6 +134,7 @@ mod publication_tests {
             ])
             .await
             .unwrap();
+        handle.rebuild_publication().await.unwrap();
 
         let snapshot = handle.snapshot();
         assert!(!snapshot.index.contains_key(&old_uri));
@@ -188,6 +189,7 @@ mod publication_tests {
             ])
             .await
             .unwrap();
+        handle.rebuild_publication().await.unwrap();
 
         let snapshot = handle.snapshot();
         assert_eq!(
@@ -243,6 +245,7 @@ mod publication_tests {
             });
             bare.await.unwrap().expect("bare rebuild");
             refresh.await.unwrap().expect("document refresh");
+            handle.rebuild_publication().await.unwrap();
 
             let snapshot = handle.snapshot();
             assert!(
@@ -330,13 +333,10 @@ mod publication_tests {
 }
 
 #[derive(Debug)]
-pub(crate) struct PreparedDocumentEdit {
-    pub(crate) uri: Url,
-    pub(crate) version: i32,
-    pub(crate) base_content: String,
-    pub(crate) content: String,
-    pub(crate) source_kind: sysml_query::source::SourceKind,
-    editor_revision: super::editor_documents::EditorRevision,
+pub(crate) enum DocumentChange {
+    Changed,
+    Unchanged,
+    Rejected(super::editor_documents::EditorEditRejection),
 }
 
 #[cfg(test)]
@@ -348,50 +348,27 @@ mod editor_update_tests {
         let uri = Url::parse("memory://editor/model.sysml").unwrap();
         let mut state = ServerState::default();
         state.session.complete_startup();
-        state.index.insert(
-            uri.clone(),
-            crate::session::state::IndexEntry::for_test(&uri, source),
-        );
-        state.index.get_mut(&uri).unwrap().open_editor(Some(1));
+        let mut entry = crate::session::state::IndexEntry::for_test(&uri, source);
+        entry.open_editor(Some(1));
+        state.index.insert(uri.clone(), entry);
         (WorkspaceHandle::spawn(state), uri)
     }
 
-    async fn edit(
-        handle: &WorkspaceHandle,
-        uri: &Url,
-        version: i32,
-        text: &str,
-    ) -> PreparedDocumentEdit {
-        let (prepared, warnings) = handle
-            .prepare_document_content_edit(
+    async fn edit(handle: &WorkspaceHandle, uri: &Url, version: i32, text: &str) -> DocumentChange {
+        let (change, warnings) = handle
+            .apply_document_content_edit(
                 uri.clone(),
                 version,
                 vec![TextDocumentContentChangeEvent {
                     range: None,
                     range_length: None,
-                    text: text.to_owned(),
+                    text: text.into(),
                 }],
             )
             .await
             .unwrap();
         assert!(warnings.is_empty());
-        let DocumentChangePreparation::Changed(edit) = prepared else {
-            panic!("expected a changed source")
-        };
-        edit
-    }
-
-    async fn apply(handle: &WorkspaceHandle, edit: PreparedDocumentEdit) -> ParsedDocumentUpdate {
-        let (document, parsed) = PreparedDocumentEdit::admit_text(
-            edit.uri.clone(),
-            &edit.content,
-            edit.source_kind,
-            &handle.snapshot().services,
-        );
-        handle
-            .apply_parsed_document_update(edit, document, parsed, 0)
-            .await
-            .unwrap()
+        change
     }
 
     #[tokio::test]
@@ -400,137 +377,154 @@ mod editor_update_tests {
         let (handle, uri) = opened(source);
         handle.rebuild_publication().await.unwrap();
         let publication = handle.snapshot().session.publication();
-        let (prepared, _) = handle
-            .prepare_document_content_edit(
-                uri.clone(),
-                4,
-                vec![TextDocumentContentChangeEvent {
-                    range: None,
-                    range_length: None,
-                    text: source.to_owned(),
-                }],
-            )
-            .await
-            .unwrap();
-        assert!(matches!(prepared, DocumentChangePreparation::Unchanged));
-        assert_eq!(handle.snapshot().index[&uri].editor_version(), Some(4));
-        let (stale, _) = handle
-            .prepare_document_content_edit(
-                uri.clone(),
-                3,
-                vec![TextDocumentContentChangeEvent {
-                    range: None,
-                    range_length: None,
-                    text: "package Stale;".to_owned(),
-                }],
-            )
-            .await
-            .unwrap();
         assert!(matches!(
-            stale,
-            DocumentChangePreparation::Rejected(EditorEditRejection::StaleVersion {
+            edit(&handle, &uri, 4, source).await,
+            DocumentChange::Unchanged
+        ));
+        assert!(matches!(
+            edit(&handle, &uri, 3, "package Stale;").await,
+            DocumentChange::Rejected(EditorEditRejection::StaleVersion {
                 current: 4,
                 received: 3
             })
         ));
         let snapshot = handle.snapshot();
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(4));
         assert_eq!(snapshot.index[&uri].content(), source);
         assert!(snapshot.session.is_publication_current(&publication));
+        assert!(snapshot.index[&uri].parsed.is_some());
     }
 
     #[tokio::test]
-    async fn parsed_updates_reject_out_of_order_completion_and_old_open_intervals() {
+    async fn incremental_edits_are_saved_before_parsing_and_survive_preparation_failure() {
+        use tower_lsp::lsp_types::{Position, Range};
         let (handle, uri) = opened("package Initial;");
-        let older = edit(&handle, &uri, 2, "package Older;").await;
-        let newer = edit(&handle, &uri, 3, "package Newer;").await;
+        handle.rebuild_publication().await.unwrap();
         assert!(matches!(
-            apply(&handle, newer).await,
-            ParsedDocumentUpdate::Applied(_)
+            edit(&handle, &uri, 2, "package Changed;").await,
+            DocumentChange::Changed
         ));
-        assert!(matches!(
-            apply(&handle, older).await,
-            ParsedDocumentUpdate::Superseded
-        ));
-        let old_open = edit(&handle, &uri, 4, "package OldOpen;").await;
-        handle.set_document_open(uri.clone(), false).await.unwrap();
-        handle
-            .set_editor_document_open(uri.clone(), 1)
+        assert!(handle.snapshot().index[&uri].parsed.is_none());
+        let failed = handle
+            .rebuild_with_preparer(|_| Err(PublicationBuildFailure::preparation_worker("injected")))
             .await
             .unwrap();
-        assert!(matches!(
-            apply(&handle, old_open).await,
-            ParsedDocumentUpdate::Superseded
-        ));
+        assert_eq!(failed.outcome, PublicationOutcome::Failed);
+        assert_eq!(
+            handle.snapshot().published_index[&uri].content(),
+            "package Initial;"
+        );
+        let (change, warnings) = handle
+            .apply_document_content_edit(
+                uri.clone(),
+                5,
+                vec![TextDocumentContentChangeEvent {
+                    range: Some(Range::new(Position::new(0, 8), Position::new(0, 15))),
+                    range_length: None,
+                    text: "Latest".into(),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(warnings.is_empty());
+        assert!(matches!(change, DocumentChange::Changed));
+        assert_eq!(handle.snapshot().index[&uri].content(), "package Latest;");
+        assert!(handle.rebuild_publication().await.unwrap());
         let snapshot = handle.snapshot();
-        assert_eq!(snapshot.index[&uri].content(), "package Newer;");
-        assert_eq!(snapshot.index[&uri].editor_version(), Some(1));
+        assert_eq!(snapshot.published_index[&uri].content(), "package Latest;");
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(5));
+        assert!(snapshot.index[&uri].parsed.is_some());
     }
 
     #[tokio::test]
-    async fn parsing_an_edit_preserves_its_admitted_source_kind() {
+    async fn preparation_cannot_overwrite_a_newer_edit_or_reopened_editor_metadata() {
         let (handle, uri) = opened("package Initial;");
+        edit(&handle, &uri, 2, "package Older;").await;
+        let old_inputs = handle.snapshot().session.inputs();
+        let old_prepared = prepare_publication(handle.snapshot()).unwrap();
+        edit(&handle, &uri, 3, "package Newer;").await;
+        let key = uri.clone();
+        assert!(handle
+            .actor
+            .mutate(move |state| matches!(
+                admit_prepared_publication(state, &old_inputs, Ok(old_prepared)),
+                Mutation::Unchanged(PreparedPublicationAdmission::Superseded)
+            ))
+            .await
+            .unwrap());
+        assert_eq!(handle.snapshot().index[&key].content(), "package Newer;");
+        handle.set_document_open(uri.clone(), false).await.unwrap();
+        handle
+            .set_editor_document_open(uri.clone(), -8)
+            .await
+            .unwrap();
+        // Opening can invalidate reporting policy. Prepare for the actual input owner/revision,
+        // then change only the no-op editor version while parsing is in flight.
+        let inputs = handle.snapshot().session.inputs();
+        let prepared = prepare_publication(handle.snapshot()).unwrap();
+        assert!(matches!(
+            edit(&handle, &uri, -2, "package Newer;").await,
+            DocumentChange::Unchanged
+        ));
         handle
             .actor
-            .mutate({
-                let uri = uri.clone();
-                move |state| {
-                    let document = state.services.source.admit_url(
-                        uri.clone(),
-                        "package Initial;",
-                        sysml_query::source::SourceKind::Library,
-                    );
-                    let parsed = state.services.syntax.parse(&document);
-                    let entry = state.index.get_mut(&uri).unwrap();
-                    entry.document = document;
-                    entry.parsed = parsed;
-                }
+            .mutate(move |state| {
+                assert!(matches!(
+                    admit_prepared_publication(state, &inputs, Ok(prepared)),
+                    Mutation::Changed(PreparedPublicationAdmission::Build(_))
+                ));
             })
             .await
             .unwrap();
-        let prepared = edit(&handle, &uri, 2, "package Changed;").await;
-        assert_eq!(
-            prepared.source_kind,
-            sysml_query::source::SourceKind::Library
-        );
+        assert_eq!(handle.snapshot().index[&uri].editor_version(), Some(-2));
+    }
+
+    #[tokio::test]
+    async fn watched_updates_cannot_replace_open_editor_text_or_its_version() {
+        let (handle, uri) = opened("package Unsaved;");
+        let inputs = handle.snapshot().session.inputs();
+        let (changed, warnings) = handle
+            .apply_watched_file_changes(vec![
+                (uri.clone(), None),
+                (uri.clone(), Some("package Disk;".into())),
+            ])
+            .await
+            .unwrap();
+        assert!(!changed);
+        assert!(warnings.is_empty());
+        let snapshot = handle.snapshot();
+        assert_eq!(snapshot.index[&uri].content(), "package Unsaved;");
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(1));
+        assert!(snapshot.session.is_input_current(&inputs));
+    }
+
+    #[tokio::test]
+    async fn raw_editor_changes_preserve_admitted_library_provenance() {
+        let (handle, uri) = opened("package Library;");
+        let key = uri.clone();
+        handle
+            .actor
+            .mutate(move |state| {
+                let entry = state.index.get_mut(&key).unwrap();
+                entry.document = entry
+                    .document
+                    .with_kind(sysml_query::source::SourceKind::Library);
+            })
+            .await
+            .unwrap();
         assert!(matches!(
-            apply(&handle, prepared).await,
-            ParsedDocumentUpdate::Applied(_)
+            edit(&handle, &uri, 2, "package Changed;").await,
+            DocumentChange::Changed
         ));
         assert_eq!(
             handle.snapshot().index[&uri].document.kind(),
             sysml_query::source::SourceKind::Library
         );
+        assert!(handle.snapshot().index[&uri].parsed.is_none());
     }
 
     #[tokio::test]
-    async fn newer_no_op_supersedes_a_parse_even_when_base_bytes_match() {
-        let source = "package Initial;";
-        let (handle, uri) = opened(source);
-        let pending = edit(&handle, &uri, 2, "package Stale;").await;
-        let (preparation, _) = handle
-            .prepare_document_content_edit(
-                uri.clone(),
-                3,
-                vec![TextDocumentContentChangeEvent {
-                    range: None,
-                    range_length: None,
-                    text: source.to_owned(),
-                }],
-            )
-            .await
-            .unwrap();
-        assert!(matches!(preparation, DocumentChangePreparation::Unchanged));
-        assert!(matches!(
-            apply(&handle, pending).await,
-            ParsedDocumentUpdate::Superseded
-        ));
-        let snapshot = handle.snapshot();
-        assert_eq!(snapshot.index[&uri].content(), source);
-        assert_eq!(snapshot.index[&uri].editor_version(), Some(3));
-    }
-
-    #[tokio::test]
-    async fn opening_new_source_records_membership_and_version_atomically() {
+    async fn opening_new_source_records_membership_version_and_pending_syntax_atomically() {
         let handle = WorkspaceHandle::spawn(ServerState::default());
         let uri = Url::parse("memory://editor/new.sysml").unwrap();
         handle
@@ -541,19 +535,94 @@ mod editor_update_tests {
         assert!(snapshot.is_editor_open(&uri));
         assert_eq!(snapshot.index[&uri].content(), "package Unsaved;");
         assert_eq!(snapshot.index[&uri].editor_version(), Some(9));
+        assert!(snapshot.index[&uri].parsed.is_none());
     }
 }
 
-#[derive(Debug)]
-pub(crate) enum DocumentChangePreparation {
-    Changed(PreparedDocumentEdit),
-    Unchanged,
-    Rejected(super::editor_documents::EditorEditRejection),
-}
+#[cfg(test)]
+mod coherence_tests {
+    use super::*;
+    use crate::session::snapshot::ServerStateSnapshot;
+    use crate::session::state::IndexEntry;
+    use language_service::WorkspaceSnapshot;
+    use sysml_query::publication::AnalysisStatus;
 
-pub(crate) enum ParsedDocumentUpdate {
-    Applied(Vec<(MessageType, String)>),
-    Superseded,
+    #[tokio::test]
+    async fn pending_and_failed_work_retain_the_paired_source_until_successful_admission() {
+        let uri = Url::parse("memory://coherence/model.sysml").unwrap();
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        state
+            .index
+            .insert(uri.clone(), IndexEntry::for_test(&uri, "package Initial;"));
+        state.session.invalidate_inputs();
+        let handle = WorkspaceHandle::spawn(state);
+        assert!(handle.rebuild_publication().await.unwrap());
+        let initial = handle.snapshot();
+        let model = Arc::clone(initial.session.current());
+        let sources = Arc::clone(&initial.published_index);
+        let initial_parse = initial.published_index[&uri]
+            .parsed
+            .as_ref()
+            .unwrap()
+            .digest();
+        let library_root = Url::parse("file:///configured/new-library/").unwrap();
+        handle
+            .actor
+            .mutate({
+                let uri = uri.clone();
+                let library_root = library_root.clone();
+                move |state| {
+                    state
+                        .index
+                        .insert(uri.clone(), IndexEntry::for_test(&uri, "package Changed;"));
+                    state.library_paths = vec![library_root];
+                    state.session.invalidate_inputs();
+                }
+            })
+            .await
+            .unwrap();
+        let pending = handle.snapshot();
+        assert_eq!(pending.session.analysis_status(), AnalysisStatus::Updating);
+        assert_eq!(pending.index[&uri].content(), "package Changed;");
+        assert!(Arc::ptr_eq(&pending.published_index, &sources));
+        let reader = ServerStateSnapshot::new(&pending, false);
+        assert_eq!(reader.document_text(&uri), Some("package Initial;"));
+        assert_eq!(reader.parsed(&uri).unwrap().digest(), initial_parse);
+        assert!(reader.library_paths().is_empty());
+        let failed = handle
+            .rebuild_with_preparer(|_| {
+                Err(PublicationBuildFailure::preparation_worker(
+                    "cannot prepare inputs",
+                ))
+            })
+            .await
+            .unwrap();
+        assert_eq!(failed.outcome, PublicationOutcome::Failed);
+        let retained = handle.snapshot();
+        assert_eq!(
+            retained.session.analysis_status(),
+            AnalysisStatus::FailedRetained
+        );
+        assert!(Arc::ptr_eq(retained.session.current(), &model));
+        assert!(Arc::ptr_eq(&retained.published_index, &sources));
+        assert_eq!(
+            ServerStateSnapshot::new(&retained, false).document_text(&uri),
+            Some("package Initial;")
+        );
+        assert!(handle.rebuild_publication().await.unwrap());
+        let current = handle.snapshot();
+        assert_eq!(current.session.analysis_status(), AnalysisStatus::Current);
+        assert_eq!(
+            ServerStateSnapshot::new(&current, false).document_text(&uri),
+            Some("package Changed;")
+        );
+        assert_eq!(
+            ServerStateSnapshot::new(&current, false).library_paths(),
+            &[library_root]
+        );
+        assert!(!Arc::ptr_eq(&current.published_index, &sources));
+    }
 }
 
 /// A preparation is not a build until its captured input revision passes the actor barrier.
@@ -561,32 +630,81 @@ enum PreparedPublicationAdmission {
     Build(Box<SemanticBuild>),
     Superseded,
     Failed(Arc<PublicationBuildFailure>),
+    Cancelled,
+}
+
+struct PreparedInputs {
+    publication: PreparedPublication,
+    /// The documents parsed off the actor. Their trees stay with the syntax authority, whose
+    /// memo keeps every revision parsed since its last `retain`; admission asks it again.
+    parsed: Vec<SourceDocument>,
+    parsing: std::time::Duration,
 }
 
 fn prepare_publication(
     snapshot: Arc<ServerState>,
-) -> Result<PreparedPublication, PublicationBuildFailure> {
+) -> Result<PreparedInputs, PublicationBuildFailure> {
     let (documents, reported, availability) = crate::session::state::publication_inputs(&*snapshot);
-    snapshot
-        .services
-        .publication
-        .prepare_with_standard_library_availability(&documents, availability, reported)
+    let inputs = snapshot.session.inputs();
+    let cancellation = inputs.cancellation();
+    let parse_started = std::time::Instant::now();
+    let mut syntax = Vec::with_capacity(documents.len());
+    for document in &documents {
+        if cancellation.is_cancelled() {
+            return Err(PublicationBuildFailure::cancelled());
+        }
+        snapshot.services.syntax.parse(document);
+        syntax.push(document.clone());
+    }
+    let parsing = parse_started.elapsed();
+    let publication = snapshot.services.publication.prepare_cancellable(
+        &documents,
+        availability,
+        reported,
+        cancellation,
+    )?;
+    Ok(PreparedInputs {
+        publication,
+        parsed: syntax,
+        parsing,
+    })
 }
 
 fn admit_prepared_publication(
     state: &mut ServerState,
     expected: &InputRevisionToken,
-    prepared: Result<PreparedPublication, PublicationBuildFailure>,
+    prepared: Result<PreparedInputs, PublicationBuildFailure>,
 ) -> Mutation<PreparedPublicationAdmission> {
     if !state.session.is_input_current(expected) {
         return Mutation::Unchanged(PreparedPublicationAdmission::Superseded);
     }
     match prepared {
         Ok(prepared) => {
+            // Source identity is checked as a complete set before installing leases.
+            assert!(
+                prepared.parsed.iter().all(|document| {
+                    state.index.get(document.uri()).is_some_and(|entry| {
+                        entry.document.digest() == document.digest()
+                            && entry.document.language() == document.language()
+                    })
+                }),
+                "prepared syntax must belong to the guarded desired source"
+            );
+            // A memo hit: preparation parsed each of these off the actor.
+            for document in prepared.parsed {
+                let parsed = state.services.syntax.parse(&document);
+                state.index.get_mut(document.uri()).unwrap().parsed = Some(parsed);
+            }
+            let prepared = prepared.publication;
             let token = state.session.begin_build(prepared.identity().clone());
             Mutation::Changed(PreparedPublicationAdmission::Build(Box::new(
                 SemanticBuild::new(token, prepared),
             )))
+        }
+        Err(failure) if failure.is_cancelled() => {
+            state.session.finish_preparation_cancelled();
+            state.publication_failure = None;
+            Mutation::Changed(PreparedPublicationAdmission::Cancelled)
         }
         Err(failure) => {
             state.session.finish_preparation_failure();
@@ -658,10 +776,10 @@ mod preparation_tests {
         let mut state = ServerState::default();
         state.session.complete_startup();
         let older_inputs = state.session.inputs();
-        let older = state.services.publication.prepare(&[], []).unwrap();
+        let older = prepare_publication(Arc::new(state.clone())).unwrap();
         state.session.invalidate_inputs();
         let current_inputs = state.session.inputs();
-        let current = state.services.publication.prepare(&[], []).unwrap();
+        let current = prepare_publication(Arc::new(state.clone())).unwrap();
         let Mutation::Changed(PreparedPublicationAdmission::Build(current)) =
             admit_prepared_publication(&mut state, &current_inputs, Ok(current))
         else {
@@ -707,28 +825,158 @@ mod preparation_tests {
     }
 }
 
+#[cfg(test)]
+mod scheduler_tests {
+    use super::*;
+    use crate::session::latest_work::Submission;
+    use crate::session::state::IndexEntry;
+    use sysml_query::publication::AnalysisStatus;
+
+    #[tokio::test]
+    async fn a_reserved_active_interval_coalesces_a_burst_into_the_latest_complete_sources() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let handle = WorkspaceHandle::spawn(state);
+        // Reserve an interval without running it: edits and requests race a paused worker,
+        // deterministically, without relying on wall-clock sleeps or parser workload size.
+        let reserved = {
+            let snapshot = handle.snapshot();
+            let mut scheduler = handle.analysis_queue.lock().unwrap();
+            scheduler.newest = Some(snapshot.session.inputs());
+            let Submission::Start(work) = scheduler.work.submit(snapshot) else {
+                panic!("idle queue")
+            };
+            work
+        };
+        let uri = Url::parse("memory://scheduler/model.sysml").unwrap();
+        for revision in 0..100 {
+            handle
+                .actor
+                .mutate({
+                    let uri = uri.clone();
+                    move |state| {
+                        state.index.insert(
+                            uri.clone(),
+                            IndexEntry::for_test(&uri, &format!("package P{revision};")),
+                        );
+                        state.session.invalidate_inputs();
+                    }
+                })
+                .await
+                .unwrap();
+            handle.queue_analysis(handle.snapshot());
+            assert_eq!(
+                handle.analysis_queue.lock().unwrap().work.occupancy(),
+                (true, true)
+            );
+        }
+        let active = handle.clone();
+        let driver = tokio::spawn(async move {
+            active.run_analysis(reserved).await;
+        });
+        let report = handle.rebuild_publication_measured().await.unwrap();
+        assert_eq!(report.outcome, PublicationOutcome::Published);
+        driver.await.unwrap();
+        let current = handle.snapshot();
+        assert_eq!(current.session.analysis_status(), AnalysisStatus::Current);
+        assert_eq!(current.published_index[&uri].content(), "package P99;");
+        assert_eq!(
+            handle.analysis_queue.lock().unwrap().work.occupancy(),
+            (false, false)
+        );
+        let (documents, reported, availability) =
+            crate::session::state::publication_inputs(&*current);
+        let fresh = sysml_query::Services::default()
+            .publication
+            .publish_with_standard_library_availability(&documents, availability, reported)
+            .unwrap();
+        assert_eq!(
+            current.session.current().publication().identity(),
+            fresh.publication().identity()
+        );
+    }
+
+    #[tokio::test]
+    async fn closing_an_owner_discards_pending_work_and_keeps_its_last_coherent_pair() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let handle = WorkspaceHandle::spawn(state);
+        let reserved = {
+            let snapshot = handle.snapshot();
+            let mut scheduler = handle.analysis_queue.lock().unwrap();
+            let Submission::Start(work) = scheduler.work.submit(snapshot) else {
+                panic!("idle queue")
+            };
+            work
+        };
+        handle
+            .actor
+            .mutate(|state| {
+                state.session.invalidate_inputs();
+            })
+            .await
+            .unwrap();
+        handle.queue_analysis(handle.snapshot());
+        let model = Arc::clone(handle.snapshot().session.current());
+        let sources = Arc::clone(&handle.snapshot().published_index);
+        handle.close_session().await.unwrap();
+        handle.run_analysis(reserved).await;
+        assert_eq!(
+            handle.rebuild_publication_measured().await.unwrap().outcome,
+            PublicationOutcome::Superseded
+        );
+        let closed = handle.snapshot();
+        assert!(Arc::ptr_eq(closed.session.current(), &model));
+        assert!(Arc::ptr_eq(&closed.published_index, &sources));
+        assert_eq!(
+            handle.analysis_queue.lock().unwrap().work.occupancy(),
+            (false, false)
+        );
+    }
+}
+
+#[derive(Clone)]
+pub(crate) enum AnalysisEvent {
+    Idle,
+    Requested,
+    Completed {
+        inputs: InputRevisionToken,
+        result: Result<Arc<PublicationRebuildReport>, Arc<MutatePanicked>>,
+    },
+    Closed,
+}
+
+#[derive(Default)]
+struct AnalysisScheduler {
+    work: super::latest_work::LatestWork<Arc<ServerState>>,
+    newest: Option<InputRevisionToken>,
+}
+
 /// Host boundary costs plus the canonical phase owner's complete construction measurements.
 /// Timings are observations only; they do not participate in publication identity or admission.
+#[derive(Clone)]
 pub(crate) struct PublicationRebuildReport {
     pub(crate) outcome: PublicationOutcome,
     pub(crate) preparation: std::time::Duration,
     pub(crate) preparation_queue: std::time::Duration,
+    /// Syntax acquisition within preparation, including canonical memo hits.
+    pub(crate) source_parsing: std::time::Duration,
     pub(crate) construction: std::time::Duration,
     pub(crate) admission: std::time::Duration,
     pub(crate) phases: Option<sysml_query::resolved_slice::BuildMeasurements>,
 }
 
-impl PreparedDocumentEdit {
-    /// Admit and parse prospective text through the host's services, off the actor.
-    pub(crate) fn admit_text(
-        uri: Url,
-        content: &str,
-        kind: sysml_query::source::SourceKind,
-        services: &sysml_query::Services,
-    ) -> (SourceDocument, ParsedSource) {
-        let document = services.source.admit_url(uri, content, kind);
-        let parsed = services.syntax.parse(&document);
-        (document, parsed)
+impl PublicationRebuildReport {
+    fn superseded() -> Self {
+        Self {
+            outcome: PublicationOutcome::Superseded,
+            preparation: std::time::Duration::ZERO,
+            preparation_queue: std::time::Duration::ZERO,
+            source_parsing: std::time::Duration::ZERO,
+            construction: std::time::Duration::ZERO,
+            admission: std::time::Duration::ZERO,
+            phases: None,
+        }
     }
 }
 
@@ -737,9 +985,11 @@ pub(crate) struct WorkspaceHandle {
     identity: Arc<()>,
     actor: SessionActor<ServerState>,
     snapshot: SnapshotHandle<ServerState>,
-    diagnostics_debounce_generation: Arc<AtomicU64>,
     /// The retained failure last shown to the user, so one failure is announced once.
     reported_publication_failure: Arc<std::sync::Mutex<Option<String>>>,
+    analysis_queue: Arc<std::sync::Mutex<AnalysisScheduler>>,
+    analysis_events: tokio::sync::watch::Sender<AnalysisEvent>,
+    analysis_notifications_started: Arc<std::sync::atomic::AtomicBool>,
 }
 
 impl WorkspaceHandle {
@@ -749,13 +999,40 @@ impl WorkspaceHandle {
 
     pub(crate) fn spawn(initial: ServerState) -> Self {
         let (actor, snapshot) = SessionActor::spawn(initial);
+        let (analysis_events, _) = tokio::sync::watch::channel(AnalysisEvent::Idle);
         Self {
             identity: Arc::new(()),
             actor,
             snapshot,
-            diagnostics_debounce_generation: Arc::new(AtomicU64::new(0)),
             reported_publication_failure: Arc::default(),
+            analysis_queue: Arc::default(),
+            analysis_events,
+            analysis_notifications_started: Arc::default(),
         }
+    }
+
+    pub(crate) fn analysis_events(&self) -> tokio::sync::watch::Receiver<AnalysisEvent> {
+        self.analysis_events.subscribe()
+    }
+
+    pub(crate) fn claim_analysis_notifications(&self) -> bool {
+        self.analysis_notifications_started
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_ok()
+    }
+
+    pub(crate) fn analysis_occupancy(&self) -> (usize, usize) {
+        let (active, pending) = self
+            .analysis_queue
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .work
+            .occupancy();
+        (usize::from(active), usize::from(pending))
+    }
+
+    pub(crate) fn request_rebuild(&self) {
+        self.queue_analysis(self.snapshot());
     }
 
     /// The retained publication failure, unless this same failure was already returned.
@@ -776,16 +1053,6 @@ impl WorkspaceHandle {
         failure
     }
 
-    pub(crate) fn next_diagnostics_debounce_generation(&self) -> u64 {
-        self.diagnostics_debounce_generation
-            .fetch_add(1, Ordering::SeqCst)
-            + 1
-    }
-
-    pub(crate) fn is_current_diagnostics_debounce_generation(&self, generation: u64) -> bool {
-        self.diagnostics_debounce_generation.load(Ordering::SeqCst) == generation
-    }
-
     /// Latest published snapshot. Non-blocking, never awaits — the whole point.
     pub(crate) fn snapshot(&self) -> Arc<ServerState> {
         self.snapshot.current()
@@ -804,17 +1071,122 @@ impl WorkspaceHandle {
     pub(crate) async fn rebuild_publication_measured(
         &self,
     ) -> Result<PublicationRebuildReport, MutatePanicked> {
-        self.rebuild_with_preparer(prepare_publication).await
+        let snapshot = self.snapshot();
+        let expected = snapshot.session.inputs();
+        let mut events = self.analysis_events();
+        self.queue_analysis(snapshot);
+        loop {
+            if !self.snapshot().session.is_input_current(&expected) {
+                return Ok(PublicationRebuildReport::superseded());
+            }
+            match events.borrow_and_update().clone() {
+                AnalysisEvent::Completed { inputs, result } if inputs == expected => {
+                    return result
+                        .map(|report| (*report).clone())
+                        .map_err(|_| MutatePanicked);
+                }
+                AnalysisEvent::Closed => return Ok(PublicationRebuildReport::superseded()),
+                _ => {}
+            }
+            if events.changed().await.is_err() {
+                return Ok(PublicationRebuildReport::superseded());
+            }
+        }
     }
 
+    /// Queue complete immutable inputs. The only spawned driver runs one active job and takes
+    /// at most one replacement snapshot after it finishes; repeated requests cannot spawn jobs.
+    fn queue_analysis(&self, snapshot: Arc<ServerState>) {
+        use super::latest_work::Submission;
+        let inputs = snapshot.session.inputs();
+        let submission = {
+            let mut scheduler = self
+                .analysis_queue
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            if scheduler.newest.as_ref() == Some(&inputs) || scheduler.work.is_closed() {
+                return;
+            }
+            let submission = scheduler.work.submit(snapshot);
+            if !matches!(submission, Submission::Closed) {
+                scheduler.newest = Some(inputs.clone());
+                self.analysis_events.send_replace(AnalysisEvent::Requested);
+            }
+            submission
+        };
+        if let Submission::Start(work) = submission {
+            let handle = self.clone();
+            tokio::spawn(async move {
+                handle.run_analysis(work).await;
+            });
+        }
+    }
+
+    async fn run_analysis(&self, mut work: super::latest_work::Work<Arc<ServerState>>) {
+        loop {
+            let (token, snapshot) = work.into_parts();
+            let inputs = snapshot.session.inputs();
+            let result = self
+                .rebuild_snapshot_with_preparer(snapshot, prepare_publication)
+                .await
+                .map(Arc::new)
+                .map_err(Arc::new);
+            let next = {
+                let mut scheduler = self
+                    .analysis_queue
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
+                let next = match scheduler.work.complete(&token) {
+                    Ok(next) => next,
+                    Err(_) => return,
+                };
+                if next.is_none() {
+                    scheduler.newest = None;
+                }
+                if !scheduler.work.is_closed() {
+                    self.analysis_events
+                        .send_replace(AnalysisEvent::Completed { inputs, result });
+                }
+                next
+            };
+            match next {
+                Some(next) => work = next,
+                None => return,
+            }
+        }
+    }
+
+    pub(crate) async fn close_session(&self) -> Result<(), MutatePanicked> {
+        self.actor.mutate(|state| state.session.close()).await?;
+        let mut scheduler = self
+            .analysis_queue
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        scheduler.work.close();
+        scheduler.newest = None;
+        self.analysis_events.send_replace(AnalysisEvent::Closed);
+        Ok(())
+    }
+
+    #[cfg(test)]
     async fn rebuild_with_preparer(
         &self,
-        prepare: impl FnOnce(Arc<ServerState>) -> Result<PreparedPublication, PublicationBuildFailure>
+        prepare: impl FnOnce(Arc<ServerState>) -> Result<PreparedInputs, PublicationBuildFailure>
+            + Send
+            + 'static,
+    ) -> Result<PublicationRebuildReport, MutatePanicked> {
+        self.rebuild_snapshot_with_preparer(self.snapshot(), prepare)
+            .await
+    }
+
+    async fn rebuild_snapshot_with_preparer(
+        &self,
+        snapshot: Arc<ServerState>,
+        prepare: impl FnOnce(Arc<ServerState>) -> Result<PreparedInputs, PublicationBuildFailure>
             + Send
             + 'static,
     ) -> Result<PublicationRebuildReport, MutatePanicked> {
         let preparation_started = std::time::Instant::now();
-        let snapshot = self.snapshot();
         let expected = snapshot.session.inputs();
         let prepared = tokio::task::spawn_blocking(move || {
             let started = std::time::Instant::now();
@@ -829,6 +1201,9 @@ impl WorkspaceHandle {
                 std::time::Duration::ZERO,
             ),
         };
+        let source_parsing = prepared
+            .as_ref()
+            .map_or(std::time::Duration::ZERO, |inputs| inputs.parsing);
         let staged = self
             .actor
             .mutate_if_changed(move |state| admit_prepared_publication(state, &expected, prepared))
@@ -839,6 +1214,7 @@ impl WorkspaceHandle {
             outcome: PublicationOutcome::Failed,
             preparation,
             preparation_queue,
+            source_parsing,
             construction: std::time::Duration::ZERO,
             admission: std::time::Duration::ZERO,
             phases: None,
@@ -847,6 +1223,10 @@ impl WorkspaceHandle {
             PreparedPublicationAdmission::Build(build) => *build,
             PreparedPublicationAdmission::Superseded => {
                 report.outcome = PublicationOutcome::Superseded;
+                return Ok(report);
+            }
+            PreparedPublicationAdmission::Cancelled => {
+                report.outcome = PublicationOutcome::Cancelled;
                 return Ok(report);
             }
             PreparedPublicationAdmission::Failed(failure) => {
@@ -881,7 +1261,7 @@ impl WorkspaceHandle {
                                 state.publication_failure = Some(admitted_failure);
                                 Mutation::Changed(outcome)
                             }
-                            PublicationOutcome::Published => unreachable!("a failed build cannot publish"),
+                            PublicationOutcome::Published | PublicationOutcome::Cancelled => unreachable!("a failed construction worker cannot publish or cancel a completed model"),
                         }
                     })
                     .await?.value;
@@ -902,15 +1282,20 @@ impl WorkspaceHandle {
                 }
                 match outcome {
                     PublicationOutcome::Published => {
+                        state.publish_source_snapshot();
                         state.publication_failure = None;
                         crate::session::state::refresh_symbol_table_from_publication(state);
                         state
                             .services
                             .syntax
-                            .retain(state.index.values().map(|entry| entry.parsed.digest()));
+                            .retain(state.index.values().filter_map(|entry| entry.parsed.as_ref().map(ParsedSource::digest)));
                         Mutation::Changed(outcome)
                     }
                     PublicationOutcome::Superseded => Mutation::Unchanged(outcome),
+                    PublicationOutcome::Cancelled => {
+                        state.publication_failure = None;
+                        Mutation::Changed(outcome)
+                    }
                     PublicationOutcome::IdentityMismatch => {
                         state.publication_failure = Some(Arc::new(PublicationBuildFailure::admission_identity_mismatch()));
                         Mutation::Changed(outcome)
@@ -1096,7 +1481,7 @@ impl WorkspaceHandle {
             .await
             .map(|outcome| outcome.value)?;
         if library {
-            self.rebuild_publication().await?;
+            self.request_rebuild();
         }
         Ok(library)
     }
@@ -1131,121 +1516,73 @@ impl WorkspaceHandle {
                 }
                 state.semantic_revision = state.semantic_revision.wrapping_add(1);
                 state.session.invalidate_inputs();
+                state.services.syntax.retain(
+                    state
+                        .index
+                        .values()
+                        .filter_map(|entry| entry.parsed.as_ref().map(ParsedSource::digest)),
+                );
                 Mutation::Changed(warning)
             })
             .await
             .map(|outcome| outcome.value)
     }
 
-    pub(crate) async fn prepare_document_content_edit(
+    /// Save ordered editor deltas before any fallible or cancellable worker starts.
+    pub(crate) async fn apply_document_content_edit(
         &self,
         uri: Url,
         version: i32,
         changes: Vec<TextDocumentContentChangeEvent>,
-    ) -> Result<(DocumentChangePreparation, Vec<(MessageType, String)>), MutatePanicked> {
+    ) -> Result<(DocumentChange, Vec<(MessageType, String)>), MutatePanicked> {
         use super::editor_documents::EditorEditRejection;
         self.actor
             .mutate_if_changed(move |state| {
                 let Some(entry) = state.index.get(&uri) else {
                     return Mutation::Unchanged((
-                        DocumentChangePreparation::Rejected(EditorEditRejection::NotIndexed),
+                        DocumentChange::Rejected(EditorEditRejection::NotIndexed),
                         Vec::new(),
                     ));
                 };
-                let editor_revision = match entry
+                let captured = match entry
                     .editor_revision
                     .as_ref()
                     .ok_or(EditorEditRejection::NotOpen)
                     .and_then(|revision| revision.prepare(version))
                 {
-                    Ok(revision) => revision,
+                    Ok(captured) => captured,
                     Err(reason) => {
-                        return Mutation::Unchanged((
-                            DocumentChangePreparation::Rejected(reason),
-                            Vec::new(),
-                        ))
+                        return Mutation::Unchanged((DocumentChange::Rejected(reason), Vec::new()))
                     }
                 };
-                let base_content = entry.content().to_owned();
-                let source_kind = entry.document.kind();
                 let (content, changed, warnings) = crate::session::services::apply_content_changes(
-                    &base_content,
+                    entry.content(),
                     &uri,
                     version,
                     changes,
                 );
+                state
+                    .index
+                    .get_mut(&uri)
+                    .unwrap()
+                    .editor_revision
+                    .as_mut()
+                    .unwrap()
+                    .advance(&captured, version)
+                    .expect("validated in the same actor mutation");
                 if changed {
-                    Mutation::Unchanged((
-                        DocumentChangePreparation::Changed(PreparedDocumentEdit {
-                            uri,
-                            version,
-                            base_content,
-                            content,
-                            source_kind,
-                            editor_revision,
-                        }),
-                        warnings,
-                    ))
+                    crate::session::services::store_document_text_fast(state, &uri, content);
+                    state.session.invalidate_inputs();
+                    state.services.syntax.retain(
+                        state
+                            .index
+                            .values()
+                            .filter_map(|entry| entry.parsed.as_ref().map(ParsedSource::digest)),
+                    );
+                    Mutation::Changed((DocumentChange::Changed, warnings))
                 } else {
-                    match state
-                        .index
-                        .get_mut(&uri)
-                        .and_then(|entry| entry.editor_revision.as_mut())
-                        .ok_or(EditorEditRejection::NotOpen)
-                        .and_then(|revision| revision.advance(&editor_revision, version))
-                    {
-                        Ok(()) => {
-                            Mutation::Changed((DocumentChangePreparation::Unchanged, warnings))
-                        }
-                        Err(reason) => Mutation::Unchanged((
-                            DocumentChangePreparation::Rejected(reason),
-                            warnings,
-                        )),
-                    }
+                    Mutation::Changed((DocumentChange::Unchanged, warnings))
                 }
-            })
-            .await
-            .map(|outcome| outcome.value)
-    }
-
-    pub(crate) async fn apply_parsed_document_update(
-        &self,
-        edit: PreparedDocumentEdit,
-        document: SourceDocument,
-        parsed: ParsedSource,
-        parse_time_ms: u32,
-    ) -> Result<ParsedDocumentUpdate, MutatePanicked> {
-        self.actor
-            .mutate_if_changed(move |s| {
-                if s.index.get(&edit.uri).map(|entry| entry.content())
-                    != Some(edit.base_content.as_str())
-                    || s.index.get(&edit.uri).map(|entry| entry.document.kind())
-                        != Some(edit.source_kind)
-                {
-                    return Mutation::Unchanged(ParsedDocumentUpdate::Superseded);
-                }
-                if s.index
-                    .get_mut(&edit.uri)
-                    .and_then(|entry| entry.editor_revision.as_mut())
-                    .is_none_or(|revision| {
-                        revision
-                            .advance(&edit.editor_revision, edit.version)
-                            .is_err()
-                    })
-                {
-                    return Mutation::Unchanged(ParsedDocumentUpdate::Superseded);
-                }
-                let warnings = crate::session::services::apply_parsed_document_update(
-                    s,
-                    &edit.uri,
-                    edit.version,
-                    document,
-                    parsed,
-                    parse_time_ms,
-                    false,
-                );
-                s.session.invalidate_inputs();
-                Mutation::Changed(ParsedDocumentUpdate::Applied(warnings))
             })
             .await
             .map(|outcome| outcome.value)
@@ -1272,56 +1609,63 @@ impl WorkspaceHandle {
 
     // --- did_change_watched_files --------------------------------------------------------
 
-    /// Applies one watched-file notification as a single source revision and rebuilds once.
+    /// Ingest one watched-file batch as a single desired revision; the caller schedules analysis.
     /// Rename notifications commonly contain a delete and a create in the same batch.
     pub(crate) async fn apply_watched_file_changes(
         &self,
         changes: Vec<(Url, Option<String>)>,
     ) -> Result<(bool, Vec<String>), MutatePanicked> {
-        let outcome = self
-            .actor
-            .mutate_if_changed(move |state| {
-                let mut warnings = Vec::new();
-                let mut changed = false;
-                for (uri, content) in changes {
-                    match content {
-                        Some(content) => {
-                            if state
-                                .index
-                                .get(&uri)
-                                .is_some_and(|entry| entry.content() == content)
-                            {
-                                continue;
+        let outcome =
+            self.actor
+                .mutate_if_changed(move |state| {
+                    let mut warnings = Vec::new();
+                    let mut changed = false;
+                    for (uri, content) in changes {
+                        // The editor remains authoritative until didClose, including across saves,
+                        // renames and a delayed disk-read completion.
+                        if state.is_editor_open(&uri) {
+                            continue;
+                        }
+                        match content {
+                            Some(content) => {
+                                if state
+                                    .index
+                                    .get(&uri)
+                                    .is_some_and(|entry| entry.content() == content)
+                                {
+                                    continue;
+                                }
+                                if let Some(warning) =
+                                    crate::session::services::store_document_text_fast(
+                                        state, &uri, content,
+                                    )
+                                {
+                                    warnings.push(warning);
+                                }
                             }
-                            if let Some(warning) =
-                                crate::session::services::store_document_text_fast(
-                                    state, &uri, content,
-                                )
-                            {
-                                warnings.push(warning);
+                            None => {
+                                if !state.index.contains_key(&uri) {
+                                    continue;
+                                }
+                                crate::session::services::remove_document(state, &uri);
                             }
                         }
-                        None => {
-                            if !state.index.contains_key(&uri) {
-                                continue;
-                            }
-                            crate::session::services::remove_document(state, &uri);
-                        }
+                        changed = true;
                     }
-                    changed = true;
-                }
-                if changed {
-                    state.semantic_revision = state.semantic_revision.wrapping_add(1);
-                    state.session.invalidate_inputs();
-                    Mutation::Changed(warnings)
-                } else {
-                    Mutation::Unchanged(warnings)
-                }
-            })
-            .await?;
-        if outcome.published {
-            self.rebuild_publication().await?;
-        }
+                    if changed {
+                        state.semantic_revision = state.semantic_revision.wrapping_add(1);
+                        state.session.invalidate_inputs();
+                        state.services.syntax.retain(
+                            state.index.values().filter_map(|entry| {
+                                entry.parsed.as_ref().map(ParsedSource::digest)
+                            }),
+                        );
+                        Mutation::Changed(warnings)
+                    } else {
+                        Mutation::Unchanged(warnings)
+                    }
+                })
+                .await?;
         Ok((outcome.published, outcome.value))
     }
 

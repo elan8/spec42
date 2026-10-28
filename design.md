@@ -242,6 +242,39 @@ publication lifecycle state outside a `PublicationSession`.
 | CLI / MCP (`server`) | thin adapters over the batch host: validation, reports, generation; reaches `lsp_server` only to launch the editor host (`run_lsp`, config, tracing, custom RPC); one `Services` shared by both |
 | Generators | receive an immutable `PublishedModel` and typed queries; never source text |
 
+### Desired inputs and coherent editor publications
+
+The editor ingests source changes in protocol order into its desired source state. Background
+analysis may coalesce complete desired snapshots, never incremental text deltas. Each project
+bounds analysis to one active construction and one replaceable pending desired state.
+
+A host publication pairs the canonical sealed model with the opaque source/syntax handles and
+source-scope configuration from the inputs it admitted. These source handles remain host-owned:
+the sealed model still holds no parsed tree. Desired inputs may advance independently, while
+semantic readers retain the prior coherent source/model pair. The session's input-revision token
+guards preparation before it receives a build generation; the build token guards final admission.
+Source handles, model and dependent projections cross that final barrier together. A failed or
+superseded build leaves the previous pair intact. Input freshness and retained failures are owned
+by `PublicationSession`, separately from startup readiness.
+
+Accepted editor deltas and versions enter desired source state before parsing. Missing syntax is
+explicitly pending. A preparation worker holds canonical syntax leases and installs them only after
+its captured input revision passes the actor barrier; it never replaces newer editor membership or
+version metadata. Syntax-only requests may use matching desired syntax. Semantic positional requests
+return `ContentModified` while analysis is pending, and an explicit failure when the current build
+failed, rather than applying old semantic ranges to new text.
+
+Each input revision owns cancellation shared with its child build generations. Invalidation and
+close cancel obsolete work; phase boundaries cooperate without treating cancellation as a fault.
+Cancelled/failed work cannot install a partial library stratum or semantic publication. Syntax memo
+retention respects live source and AST leases across projects and sweeps replaced edit history.
+Completion delivery is independent of ordered source ingestion. Diagnostics are versioned, bounded
+in fanout and checked against the current publication; editor refresh and status notifications are
+wakes to requery the current owner, not independent stores of semantic freshness. A coalesced
+completion republishes workspace diagnostics and open library diagnostics once, replacing the old
+per-edit selective delivery plus a later full sweep. This is reporting scope over already-owned
+diagnostics, not a host implementation of dependency semantics.
+
 ### Project boundaries and library admission
 
 A filesystem model is owned by its nearest ancestor `.project.json`, bounded by the host's

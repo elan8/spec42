@@ -7,6 +7,7 @@ pub(crate) async fn did_open(
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidOpenTextDocumentParams,
 ) {
+    ensure_analysis_notifications(client, handle, runtime_config);
     // Loose projects created after initialize do not run initialized_handle. Announce their
     // initial readiness here, while a library-reindex epoch remains owned by its scan task.
     let snapshot = handle.snapshot();
@@ -16,6 +17,7 @@ pub(crate) async fn did_open(
     drop(snapshot);
     if announce_initial {
         send_semantic_ready_notification(client, handle, readiness_token).await;
+        refresh_semantic_tokens(client, runtime_config).await;
     }
     let uri = params.text_document.uri.clone();
     let uri_norm = util::normalize_file_uri(&uri);
@@ -158,86 +160,30 @@ pub(crate) async fn did_change(
     let version = params.text_document.version;
     let apply_start = Instant::now();
 
-    // Phase 1: derive prospective text from the currently published source. This does not
-    // publish anything: readers continue to observe the prior coherent snapshot until parsing
-    // and the local semantic patch can be committed together.
-    use crate::session::handle::{DocumentChangePreparation, ParsedDocumentUpdate};
-    let (preparation, mut warnings) = match handle
-        .prepare_document_content_edit(uri_norm.clone(), version, params.content_changes)
+    use crate::session::handle::DocumentChange;
+    let (change, mut warnings) = match handle
+        .apply_document_content_edit(uri_norm.clone(), version, params.content_changes)
         .await
     {
-        Ok(prepared) => prepared,
+        Ok(change) => change,
         Err(error) => {
-            client.log_message(MessageType::ERROR, format!(
-                "didChange for {uri_norm} (version {version}) failed in the source actor; retaining the previous source: {error:?}"
-            )).await;
+            client
+                .log_message(
+                    MessageType::ERROR,
+                    format!("didChange source ingestion failed for {uri_norm}: {error:?}"),
+                )
+                .await;
             return;
         }
     };
     let source_ingest_ms = apply_start.elapsed().as_secs_f64() * 1000.0;
-    let mut parse_worker_ms = 0.0;
-    let mut source_commit_ms = 0.0;
-
-    // Phase 2: parse the new content WITHOUT holding up the actor. Malformed or
-    // incomplete syntax (e.g. an unterminated view/viewpoint) can make error
-    // recovery in the parser noticeably slower than the happy path; running
-    // it as a `mutate` closure would stall every other in-flight request
-    // (hover, completion, further edits) behind it. `spawn_blocking` also
-    // keeps this off the async executor thread.
-    let mut semantic_inputs_changed = false;
-    if let DocumentChangePreparation::Rejected(reason) = &preparation {
+    let semantic_inputs_changed = matches!(change, DocumentChange::Changed);
+    if let DocumentChange::Rejected(reason) = change {
         warnings.push((
             MessageType::LOG,
             format!("didChange for {uri_norm} (version {version}) was rejected: {reason:?}"),
         ));
     }
-    if let DocumentChangePreparation::Changed(edit) = preparation {
-        let services = handle.snapshot().services.clone();
-        let (admit_uri, content) = (edit.uri.clone(), edit.content.clone());
-        let source_kind = edit.source_kind;
-        let parse_start = Instant::now();
-        let parse_outcome = tokio::task::spawn_blocking(move || {
-            crate::session::handle::PreparedDocumentEdit::admit_text(
-                admit_uri,
-                &content,
-                source_kind,
-                &services,
-            )
-        })
-        .await;
-        parse_worker_ms = parse_start.elapsed().as_secs_f64() * 1000.0;
-        let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
-        match parse_outcome {
-            Ok((document, parsed)) => {
-                let commit_started = Instant::now();
-                let update = handle
-                    .apply_parsed_document_update(edit, document, parsed, parse_time_ms)
-                    .await;
-                source_commit_ms = commit_started.elapsed().as_secs_f64() * 1000.0;
-                match update {
-                    Ok(ParsedDocumentUpdate::Applied(parse_warnings)) => {
-                        semantic_inputs_changed = true;
-                        warnings.extend(parse_warnings);
-                    }
-                    Ok(ParsedDocumentUpdate::Superseded) => {}
-                    Err(error) => warnings.push((MessageType::ERROR, format!(
-                        "didChange for {uri_norm} (version {version}) could not commit its parsed source: {error:?}"
-                    ))),
-                }
-            }
-            Err(_) => {
-                warnings.push((
-                        MessageType::WARNING,
-                        format!(
-                            "didChange: parse task for {} (version {}) failed unexpectedly; document kept at its previous parsed state.",
-                            uri_norm, version
-                        ),
-                    ));
-            }
-        }
-    }
-
-    // Phase 3: the atomic parse/graph commit above already scheduled its relink token.
     let perf_logging_enabled = runtime_config
         .get()
         .expect("initialize precedes all other LSP requests")
@@ -264,8 +210,6 @@ pub(crate) async fn did_change(
             ("version", version.to_string()),
             ("applyChangesMs", apply_ms.to_string()),
             ("sourceIngestWallMs", source_ingest_ms.to_string()),
-            ("parseWorkerWallMs", parse_worker_ms.to_string()),
-            ("sourceCommitWallMs", source_commit_ms.to_string()),
             ("sourceChanged", semantic_inputs_changed.to_string()),
             (
                 "handlerTotalMs",
@@ -274,7 +218,6 @@ pub(crate) async fn did_change(
         ],
     )
     .await;
-    schedule_workspace_diagnostics_republish(client, handle, runtime_config);
 }
 
 pub(crate) async fn did_close(
@@ -382,16 +325,7 @@ pub(crate) async fn did_change_watched_files(
             deleted_client_uris.push(event.uri);
         }
     }
-    let event_uris: Vec<Url> = changed_or_created_uris
-        .iter()
-        .chain(deleted_uris.iter())
-        .cloned()
-        .collect();
-    // Cheap: an `Arc` clone of the current state, not the fanout scan below. Held so the old
-    // side of the fanout is still available after the mutation, but the scan itself is deferred
-    // until we know the batch actually changed anything -- a batch of redundant save echoes
-    // must not pay for it.
-    let old = handle.snapshot();
+    ensure_analysis_notifications(client, handle, runtime_config);
     let refresh_start = Instant::now();
     let changed = match handle.apply_watched_file_changes(changes).await {
         Ok((changed, warnings)) => {
@@ -415,22 +349,9 @@ pub(crate) async fn did_change_watched_files(
         client.log_message(MessageType::WARNING, msg).await;
     }
     report_publication_failure(client, handle).await;
-    let diagnostics_start = Instant::now();
     if changed {
-        let mut diagnostic_uris = event_uris
-            .iter()
-            .flat_map(|uri| diagnostic_fanout(&old, uri))
-            .collect::<Vec<_>>();
-        drop(old);
-        let new = handle.snapshot();
-        for uri in &event_uris {
-            diagnostic_uris =
-                merge_diagnostic_fanout(diagnostic_uris, diagnostic_fanout(&new, uri));
-        }
-        drop(new);
-        publish_workspace_diagnostics(client, handle, runtime_config, Some(&diagnostic_uris)).await;
+        handle.request_rebuild();
     }
-    let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
     let deleted_uri_count = deleted_uris.len();
     let current = handle.snapshot();
     let removed_uris = deleted_uris
@@ -464,7 +385,6 @@ pub(crate) async fn did_change_watched_files(
             ),
             ("deletedUris", deleted_uri_count.to_string()),
             ("refreshDocumentMs", refresh_document_ms.to_string()),
-            ("diagnosticsMs", diagnostics_ms.to_string()),
             ("totalMs", total_start.elapsed().as_millis().to_string()),
         ],
     )
@@ -559,6 +479,7 @@ pub(crate) async fn did_change_configuration(
             client.log_message(MessageType::WARNING, warning).await;
         }
         send_semantic_ready_notification(&client, &handle, readiness_token).await;
+        refresh_semantic_tokens(&client, &runtime_config).await;
         let diagnostics_start = Instant::now();
         publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
         log_perf(

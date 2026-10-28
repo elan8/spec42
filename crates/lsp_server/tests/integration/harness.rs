@@ -292,15 +292,23 @@ pub fn next_id() -> i64 {
 /// Sends a cheap request and waits for the response so prior notifications
 /// (such as didOpen/didChange) are processed before assertions.
 pub fn lsp_barrier(stdin: &mut std::process::ChildStdin, stdout: &mut std::process::ChildStdout) {
-    let id = next_id();
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": id,
-        "method": "workspace/symbol",
-        "params": { "query": "" }
-    });
-    send_message(stdin, &req.to_string());
-    let _ = read_response(stdout, id).expect("workspace barrier response");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    loop {
+        let id = next_id();
+        let req = serde_json::json!({"jsonrpc":"2.0", "id":id, "method":"workspace/symbol", "params":{"query":""}});
+        send_message(stdin, &req.to_string());
+        let response: serde_json::Value =
+            serde_json::from_str(&read_response(stdout, id).expect("workspace barrier response"))
+                .unwrap();
+        if response["error"]["code"] != -32801 {
+            break;
+        }
+        assert!(
+            std::time::Instant::now() < deadline,
+            "analysis did not settle: {response}"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(2));
+    }
 }
 
 /// Deterministic publication barrier: block until the server publishes diagnostics for `uri`.
@@ -480,7 +488,23 @@ impl TestSession {
         );
     }
 
+    /// A client request that waits for explicit pending analysis without accepting stale success.
     pub fn request(&mut self, method: &str, params: serde_json::Value) -> serde_json::Value {
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+        loop {
+            let response = self.request_once(method, params.clone());
+            if response["error"]["code"] != -32801 {
+                return response;
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "analysis did not settle: {response}"
+            );
+            std::thread::sleep(std::time::Duration::from_millis(2));
+        }
+    }
+
+    pub fn request_once(&mut self, method: &str, params: serde_json::Value) -> serde_json::Value {
         let id = next_id();
         let mut req = serde_json::json!({
             "jsonrpc":"2.0",
@@ -501,6 +525,23 @@ impl TestSession {
     /// (e.g. didOpen/didChange) are processed in-order before assertions.
     pub fn barrier(&mut self) {
         let _ = self.request("workspace/symbol", serde_json::json!({ "query": "" }));
+    }
+
+    pub fn wait_for_diagnostics_version(&mut self, uri: &str, version: i32) -> serde_json::Value {
+        loop {
+            let message: serde_json::Value = serde_json::from_str(
+                &read_message(&mut self.stdout).expect("versioned diagnostic publication"),
+            )
+            .expect("JSON-RPC message");
+            if message["method"] == "textDocument/publishDiagnostics"
+                && message["params"]["uri"]
+                    .as_str()
+                    .is_some_and(|value| value.eq_ignore_ascii_case(uri))
+                && message["params"]["version"] == version
+            {
+                return message["params"].clone();
+            }
+        }
     }
 
     pub fn wait_for_diagnostics(&mut self, uri: &str) -> Vec<serde_json::Value> {

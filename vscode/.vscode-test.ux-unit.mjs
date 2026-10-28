@@ -11,6 +11,7 @@ export default defineConfig({
     path.join(__dirname, testOut, "test/suite/examplesViewProvider.test.js"),
     path.join(__dirname, testOut, "test/suite/snippets.test.js"),
     path.join(__dirname, testOut, "test/suite/statusBar.test.js"),
+    path.join(__dirname, testOut, "test/suite/pendingAnalysis.test.js"),
     path.join(__dirname, testOut, "test/suite/workspaceDiagnostics.test.js"),
     path.join(__dirname, testOut, "test/suite/featureInspectorViewProvider.test.js"),
     path.join(__dirname, testOut, "test/suite/featureInspectorViewModel.test.js"),

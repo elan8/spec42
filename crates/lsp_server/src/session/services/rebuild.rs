@@ -28,7 +28,7 @@ pub(crate) fn index_library_paths_for_search(
             uri_norm.clone(),
             IndexEntry {
                 document: entry.document.clone(),
-                parsed: entry.parsed,
+                parsed: Some(entry.parsed),
                 admitted_to_publication: false,
                 editor_revision: None,
             },

@@ -1,5 +1,6 @@
 mod editor_documents;
 pub(crate) mod handle;
+mod latest_work;
 mod readiness;
 pub(crate) mod services;
 pub(crate) mod snapshot;

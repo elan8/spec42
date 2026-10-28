@@ -60,7 +60,7 @@ pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<
         Some(entry) => entry,
         None => return Ok(None),
     };
-    let imports = entry.parsed.imports();
+    let imports = entry.syntax()?.imports();
     let links = navigation::collect_document_links(&imports, |import_name| {
         state
             .semantic_symbols
@@ -112,7 +112,7 @@ pub(crate) fn selection_range(
     };
     Ok(Some(navigation::selection_ranges_for_positions(
         entry.content(),
-        &entry.parsed,
+        entry.syntax()?,
         &positions,
     )))
 }

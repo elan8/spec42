@@ -149,8 +149,11 @@ fn diagnostic_dependency_guessing_remains_explicitly_recovery_only() {
         0,
         "LSP code must not reconstruct semantic dependencies by walking parser imports"
     );
-    // The selection itself is the facade's `workspace_documents_affected_by`; the host owns no
-    // second one, not even a wrapper that re-decides when to over-invalidate.
+    // A coalesced publication may contain edits to several documents. Completion delivery
+    // deliberately sweeps workspace diagnostics and open libraries, once per completed model,
+    // replacing the old per-edit selective publish plus debounced full sweep. It must not
+    // reconstruct dependencies to decide which semantic results exist. Any future selective
+    // fanout must consume the facade's dependency query, with both sides of the publication.
     assert_eq!(
         count_occurrences(&root, "fn affected_diagnostic_documents"),
         0,
@@ -158,8 +161,8 @@ fn diagnostic_dependency_guessing_remains_explicitly_recovery_only() {
     );
     assert_eq!(
         count_occurrences(&root, "workspace_documents_affected_by"),
-        1,
-        "one call site decides what a relink republishes"
+        0,
+        "coalesced completion delivery uses a complete reporting sweep, not per-edit dependency selection"
     );
 }
 

@@ -1377,6 +1377,7 @@ dependencies = [
  "tower-lsp",
  "tracing",
  "tracing-subscriber",
+ "ts-rs",
  "url",
  "wat",
 ]

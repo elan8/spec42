@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Report LSP edit-to-handler latency, including transport and queued obsolete work.
+"""Report LSP edit ingestion and version-correlated diagnostic latency.
 
 It records Windows process CPU/memory counters after completions, but does not measure
-VS Code rendering or claim version-correlated diagnostic latency. It never writes the edited file.
+VS Code rendering. It never writes the edited file.
 """
 import argparse
 import hashlib
@@ -112,6 +112,7 @@ class Lsp:
         self.messages = queue.Queue()
         self.events = []
         self.publications = {}
+        self.diagnostics = {}
         self.allow_missing_libraries = allow_missing_libraries
         self.process = subprocess.Popen(command, cwd=cwd, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=stderr)
@@ -177,6 +178,10 @@ class Lsp:
                 raise item
             received, message = item
             self.events.append({"received_ns": received, "message": message})
+            if message.get("method") == "textDocument/publishDiagnostics":
+                params = message["params"]
+                if isinstance(params.get("version"), int):
+                    self.diagnostics[(params["uri"].lower(), params["version"])] = received
             if message.get("method") == "textDocument/publishDiagnostics" and not self.allow_missing_libraries:
                 if any(diagnostic.get("code") == "missing_library_context" for diagnostic in message["params"]["diagnostics"]):
                     raise RuntimeError("Missing library context: this run cannot be used as a representative editor baseline")
@@ -184,7 +189,11 @@ class Lsp:
             if raw.startswith("[SysML][perf] "):
                 event = json.loads(raw[len("[SysML][perf] "):])
                 if event.get("event") == "backend:publication":
-                    self.publications[(event["uri"].lower(), event["version"])] = event
+                    versions = event.get("editorVersions")
+                    if versions is None:
+                        versions = {event["uri"]: event["version"]}  # retained handler-only baseline contract
+                    for source_uri, version in versions.items():
+                        self.publications[(source_uri.lower(), version)] = event
             if "error" in message:
                 raise RuntimeError(message["error"])
             if predicate(message):
@@ -214,6 +223,8 @@ def main():
     parser.add_argument("--document", type=Path, required=True)
     parser.add_argument("--iterations", type=int, default=20)
     parser.add_argument("--burst-size", type=int, default=10)
+    parser.add_argument("--completion-scope", choices=["diagnostics", "handler"], default="diagnostics",
+                        help="Require final versioned diagnostics, or explicitly retain the older handler-only baseline scope")
     parser.add_argument("--change-kind", choices=["full", "incremental"], default="full")
     parser.add_argument("--allow-missing-libraries", action="store_true",
                         help="Permit a discovery run without library admission evidence; not a representative editor baseline")
@@ -230,9 +241,10 @@ def main():
     uri = document.as_uri()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     command = [str(server), *args.server_arg]
-    report = {"schema_version": 2, "benchmark": "lsp-edit-to-handler",
+    report = {"schema_version": 3, "benchmark": "lsp-edit-ingestion-and-diagnostics",
               "scope": "discovery-with-missing-libraries-permitted" if args.allow_missing_libraries else "editor-with-library-admission",
-              "limitations": ["Not version-correlated diagnostic latency", "No view refresh measurement",
+              "limitations": ["No view refresh measurement",
+                              "Unobserved intermediate burst diagnostics are not assigned the final version latency",
                               "CPU times are cumulative child-process times; resource snapshots are taken after completion receipt, not at a semantic barrier",
                               "Client timestamps include transport, queueing and handler work",
                               "Workspace digest covers rg-visible source/manifests; external libraries identified by binary/config/environment"],
@@ -272,8 +284,13 @@ def main():
             lsp.send("initialized", {})
             lsp.until(lambda m: m.get("method") == "spec42/semanticIndexReady", args.timeout_seconds)
             lsp.send("textDocument/didOpen", {"textDocument": {"uri": uri, "languageId": "sysml", "version": 1, "text": text}})
-            lsp.send("textDocument/hover", {"textDocument": {"uri": uri}, "position": {"line": 0, "character": 0}}, 2)
-            lsp.until(lambda m: m.get("id") == 2, args.timeout_seconds)
+            if args.completion_scope == "diagnostics":
+                lsp.until(lambda m: m.get("method") == "textDocument/publishDiagnostics"
+                          and m["params"].get("uri", "").lower() == uri.lower()
+                          and m["params"].get("version") == 1, args.timeout_seconds)
+            else:
+                lsp.send("textDocument/hover", {"textDocument": {"uri": uri}, "position": {"line": 0, "character": 0}}, 2)
+                lsp.until(lambda m: m.get("id") == 2, args.timeout_seconds)
             report["resources_before_edits"] = lsp.resource_sample()
             version = 1
             current_text = text
@@ -307,7 +324,26 @@ def main():
                                                   "send_to_handler_complete_ms": (received - sent[completed_version]) / 1e6,
                                                   "handler_fields": event,
                                                   "resources": lsp.resource_sample(),
-                                                  "publication_fields": lsp.publications.pop((uri.lower(), completed_version), None)})
+                                                  "publication_fields": lsp.publications.get((uri.lower(), completed_version))})
+                    if args.completion_scope == "diagnostics":
+                        latest = (uri.lower(), version)
+                        if latest not in lsp.diagnostics:
+                            lsp.until(lambda _: latest in lsp.diagnostics, args.timeout_seconds)
+                        if latest not in lsp.publications:
+                            lsp.until(lambda _: latest in lsp.publications, args.timeout_seconds)
+                    for sample in report["samples"][-count:]:
+                        key = (uri.lower(), sample["version"])
+                        observed = lsp.diagnostics.get(key)
+                        sample["send_to_diagnostics_ms"] = ((observed - sent[sample["version"]]) / 1e6
+                                                            if observed is not None else None)
+                        sample["analysis_observation"] = "versioned_diagnostics" if observed is not None else "coalesced_or_unobserved"
+                        sample["publication_fields"] = lsp.publications.pop(key, sample["publication_fields"])
+                        sample["resources_after_batch"] = lsp.resource_sample()
+            report["diagnostic_summary_ms"] = {}
+            for workload in ["single", "burst"]:
+                values = [sample["send_to_diagnostics_ms"] for sample in report["samples"]
+                          if sample["workload"] == workload and sample["send_to_diagnostics_ms"] is not None]
+                report["diagnostic_summary_ms"][workload] = distribution(values) if values else None
             report["summary_ms"] = {workload: distribution([sample["send_to_handler_complete_ms"] for sample in report["samples"] if sample["workload"] == workload])
                                     for workload in ["single", "burst"]}
             report["phase_summary_ms"] = {}

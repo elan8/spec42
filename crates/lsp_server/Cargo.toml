@@ -31,6 +31,7 @@ tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
+ts-rs = { workspace = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
 clap = { workspace = true }

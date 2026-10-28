@@ -10,14 +10,14 @@ use sysml_query::Services;
 use sysml_query::StandardLibraryAvailability;
 use tower_lsp::lsp_types::Url;
 
-/// One indexed document: its admitted source and the tree the syntax service parsed for it.
+/// Desired source plus an optional matching syntax lease. `None` means parsing is pending.
 ///
 /// Both are reference-counted handles, so the actor's copy-on-write clone of the whole index
 /// on every mutation costs a refcount bump per entry, not a copy of every file's text and tree.
 #[derive(Debug, Clone)]
 pub(crate) struct IndexEntry {
     pub(crate) document: SourceDocument,
-    pub(crate) parsed: ParsedSource,
+    pub(crate) parsed: Option<ParsedSource>,
     /// When `false`, the file is indexed for `sysml/librarySearch` only and is not admitted.
     pub(crate) admitted_to_publication: bool,
     /// Editor membership, version and open-interval identity travel with their source entry.
@@ -30,11 +30,20 @@ impl IndexEntry {
         self.document.content()
     }
 
+    pub(crate) fn syntax(&self) -> tower_lsp::jsonrpc::Result<&ParsedSource> {
+        self.parsed
+            .as_ref()
+            .ok_or_else(|| tower_lsp::jsonrpc::Error {
+                code: tower_lsp::jsonrpc::ErrorCode::ContentModified,
+                message: "Source syntax is being updated".into(),
+                data: None,
+            })
+    }
+
     pub(crate) fn is_editor_open(&self) -> bool {
         self.editor_revision.is_some()
     }
 
-    #[cfg(test)]
     pub(crate) fn editor_version(&self) -> Option<i32> {
         self.editor_revision
             .as_ref()
@@ -70,7 +79,7 @@ impl IndexEntry {
         let parsed = services.syntax.parse(&document);
         Self {
             document,
-            parsed,
+            parsed: Some(parsed),
             admitted_to_publication: true,
             editor_revision: None,
         }
@@ -85,6 +94,7 @@ pub(crate) struct RuntimeConfig {
     pub(crate) perf_logging_enabled: bool,
     /// Opt-in semantic-token merge traces (`spec42.semanticTokens.debug`).
     pub(crate) semantic_tokens_debug: bool,
+    pub(crate) semantic_tokens_refresh_supported: bool,
     /// Development-only: include library paths in the debounced workspace-wide diagnostics
     /// sweep. See `spec42.development.diagnoseLibraryPaths` and
     /// `publish_workspace_diagnostics`'s comment.
@@ -110,7 +120,11 @@ pub(crate) struct ServerState {
     /// Changes only when admitted semantic inputs/reporting change. Guards model mirroring from
     /// edits that race construction without treating search-only bookkeeping as semantic change.
     pub(crate) semantic_revision: u64,
+    /// Ordered desired source state; ingestion can advance ahead of semantic construction.
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
+    /// Opaque source/syntax handles paired with `session.current()`, replaced only at admission.
+    pub(crate) published_index: Arc<std::collections::HashMap<Url, IndexEntry>>,
+    pub(crate) published_library_paths: Arc<[Url]>,
     /// Presentation projection derived only from `session.current()` at the admission barrier.
     pub(crate) semantic_symbols: Vec<SymbolEntry>,
     /// Parser-recovery search entries for documents deliberately excluded from publication.
@@ -142,6 +156,8 @@ impl ServerState {
             diagnostic_readiness: super::readiness::DiagnosticReadiness::default(),
             semantic_revision: 0,
             index: std::collections::HashMap::new(),
+            published_index: Arc::default(),
+            published_library_paths: Arc::default(),
             semantic_symbols: Vec::new(),
             recovery_search_symbols: Vec::new(),
             publication_failure: None,
@@ -156,6 +172,13 @@ impl ServerState {
         self.index
             .iter()
             .filter(|(_, entry)| entry.is_editor_open())
+    }
+
+    /// Called in the same actor turn that admits the matching model. These are source inputs,
+    /// not cached semantic derivations; failed/superseded work never changes this reader pair.
+    pub(crate) fn publish_source_snapshot(&mut self) {
+        self.published_index = Arc::new(self.index.clone());
+        self.published_library_paths = self.library_paths.clone().into();
     }
 
     /// The current immutable publication.
@@ -403,6 +426,7 @@ mod tests {
             completion.admit(&mut state.session),
             PublicationOutcome::Published
         );
+        state.publish_source_snapshot();
     }
 
     /// Without the configured libraries in the publication, every reference into them is

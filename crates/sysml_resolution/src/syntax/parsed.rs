@@ -290,18 +290,22 @@ impl SyntaxAuthority {
         parsed
     }
 
-    /// Keep only the revisions in `keep` plus everything touched since the last sweep.
+    /// Keep explicitly retained revisions, live source/tree leases and recent touches.
     ///
     /// The host passes the digests of every handle it still holds, admitted or not. Anything else
-    /// is a superseded revision and is dropped; the sweep and the clearing of the touched set are
-    /// one operation under the lock, so a parse racing the sweep is never lost.
+    /// is a superseded revision and is dropped. A different project's sweep must not evict a
+    /// still-live handle or a tree leased by an active build/library stratum and cause a second
+    /// parse of the same revision. The sweep and touch clearing are one operation under the lock.
     pub fn retain(&self, keep: impl IntoIterator<Item = ContentDigest>) {
         let mut state = self.lock();
         let survivors: HashSet<ContentDigest> = keep.into_iter().collect();
         let touched = state.touched.drain().collect::<HashSet<_>>();
-        state
-            .map
-            .retain(|identity, _| survivors.contains(&identity.1) || touched.contains(identity));
+        state.map.retain(|identity, parsed| {
+            survivors.contains(&identity.1)
+                || touched.contains(identity)
+                || Arc::strong_count(&parsed.0) > 1
+                || Arc::strong_count(&parsed.0.document) > 1
+        });
     }
 
     pub fn memo_len(&self) -> usize {
@@ -331,6 +335,56 @@ mod tests {
         fn assert_send_sync<T: Send + Sync>() {}
         assert_send_sync::<ParsedSource>();
         assert_send_sync::<SyntaxAuthority>();
+    }
+
+    #[test]
+    fn unrelated_sweeps_keep_live_source_handles_without_reparsing() {
+        let authority = SyntaxAuthority::new();
+        let source = document("memory://leases/model.sysml", "package P;");
+        let held = authority.parse(&source);
+        authority.retain([]);
+        authority.retain([]);
+        let again = authority.parse(&source);
+        assert!(Arc::ptr_eq(&held.0, &again.0));
+        drop((held, again));
+        authority.retain([]);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
+    }
+
+    #[test]
+    fn admitted_tree_leases_survive_an_unrelated_project_sweep() {
+        let authority = SyntaxAuthority::new();
+        let source = document("memory://leases/model.sysml", "package P;");
+        let held = authority.parse(&source);
+        let (tree, _) = held.admission_parts();
+        drop(held);
+        authority.retain([]);
+        authority.retain([]);
+        let again = authority.parse(&source);
+        assert!(Arc::ptr_eq(&again.0.document, &tree));
+        drop((tree, again));
+        authority.retain([]);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
+    }
+
+    #[test]
+    fn continuous_edits_bound_history_while_the_previous_publication_stays_live() {
+        let authority = SyntaxAuthority::new();
+        let published =
+            authority.parse(&document("memory://edits/model.sysml", "package Initial;"));
+        let mut desired = published.clone();
+        for revision in 0..300 {
+            let replacement = authority.parse(&document(
+                "memory://edits/model.sysml",
+                &format!("package P{revision};"),
+            ));
+            drop(std::mem::replace(&mut desired, replacement));
+            authority.retain([published.digest(), desired.digest()]);
+            assert!(authority.memo_len() <= 2);
+        }
+        assert_ne!(published.digest(), desired.digest());
     }
 
     #[test]
@@ -365,6 +419,13 @@ mod tests {
         authority.retain([]);
         authority.retain([source.digest()]);
         assert_eq!(authority.memo_len(), 2);
+        authority.retain([]);
+        assert_eq!(
+            authority.memo_len(),
+            2,
+            "live language-specific handles remain leased"
+        );
+        drop((sysml, kerml));
         authority.retain([]);
         assert_eq!(authority.memo_len(), 0);
     }
@@ -471,8 +532,8 @@ mod tests {
         authority.retain([admitted.digest()]);
         assert_eq!(
             authority.memo_len(),
-            2,
-            "admitted plus the in-flight revision"
+            3,
+            "admitted, in-flight, and the live search-only handle"
         );
         assert!(Arc::ptr_eq(
             &authority
@@ -487,8 +548,11 @@ mod tests {
             &authority.parse(&admitted).0,
             &admitted_parsed.0
         ));
-        // The search-only file was neither kept nor touched and is gone; the host's own handle
-        // keeps its tree alive regardless.
-        assert!(!Arc::ptr_eq(&authority.parse(&search_only).0, &held.0));
+        // An independent owner's sweep cannot evict a still-leased revision and reparse it.
+        assert!(Arc::ptr_eq(&authority.parse(&search_only).0, &held.0));
+        drop((held, in_flight, admitted_parsed));
+        authority.retain([]);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
     }
 }

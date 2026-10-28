@@ -132,7 +132,7 @@ pub(crate) fn store_parsed_document_text(
         uri_norm.clone(),
         IndexEntry {
             document,
-            parsed,
+            parsed: Some(parsed),
             admitted_to_publication: true,
             editor_revision,
         },
@@ -140,8 +140,7 @@ pub(crate) fn store_parsed_document_text(
     warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
 }
 
-/// Parses and stores source without evaluating cross-document edges. The caller rebuilds the
-/// semantic publication after all source changes in the batch have been applied.
+/// Admit desired source immediately. The bounded analysis worker owns parsing and publication.
 pub(crate) fn store_document_text_fast(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
@@ -155,24 +154,24 @@ pub(crate) fn store_document_text_fast(
         .services()
         .source
         .admit_url(uri_norm.clone(), &text, kind);
-    let parsed = state.services().syntax.parse(&document);
-    let parse_errors = parsed
-        .diagnostics()
-        .iter()
-        .take(5)
-        .map(|e| e.message.clone())
-        .collect::<Vec<_>>();
-    let diagnostic_count = parsed.diagnostics().len();
-    store_parsed_document_text(
-        state,
-        uri_norm,
-        document,
-        parsed,
-        &parse_errors,
-        diagnostic_count,
-        "store_document_text_fast",
-        false,
-    )
+    let previous = state.index().get(uri_norm);
+    let parsed = previous
+        .filter(|entry| {
+            entry.document.digest() == document.digest()
+                && entry.document.language() == document.language()
+        })
+        .and_then(|entry| entry.parsed.clone());
+    let editor_revision = previous.and_then(|entry| entry.editor_revision.clone());
+    state.index_mut().insert(
+        uri_norm.clone(),
+        IndexEntry {
+            document,
+            parsed,
+            admitted_to_publication: true,
+            editor_revision,
+        },
+    );
+    None
 }
 
 pub(crate) fn ingest_parsed_scan_entries(
@@ -214,7 +213,7 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
             uri_norm.clone(),
             IndexEntry {
                 document: entry.document,
-                parsed: entry.parsed,
+                parsed: Some(entry.parsed),
                 admitted_to_publication: true,
                 editor_revision,
             },
@@ -236,5 +235,5 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
 /// can decide whether a (potentially slow) parse is needed.
 mod edits;
 mod rebuild;
-pub(crate) use edits::{apply_content_changes, apply_parsed_document_update, remove_document};
+pub(crate) use edits::{apply_content_changes, remove_document};
 pub(crate) use rebuild::{clear_documents_under_roots, index_library_paths_for_search};

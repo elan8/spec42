@@ -102,11 +102,18 @@ pub(crate) async fn publish_document_diagnostics(
 /// point. Holding the publication by `Arc` keeps a computation internally coherent; it says nothing
 /// about whether the model state it describes is still the one the author is looking at.
 ///
+/// The publication must also have been built from the *current* inputs. A document opened or
+/// edited after its build started is stamped with its new editor version when published, so
+/// diagnostics from the older build would claim to describe text that build never saw. That
+/// window is short: the change has already requested the rebuild that publishes them.
+///
 /// Separate from the publish itself so the decision is testable without a `Client`: the publish is
 /// a side effect, this is the rule.
 fn may_publish(handle: &WorkspaceHandle, publication: PublicationToken) -> bool {
     let snap = handle.snapshot();
-    snap.diagnostic_readiness.announced() && snap.session.is_publication_current(&publication)
+    snap.diagnostic_readiness.announced()
+        && snap.session.is_publication_current(&publication)
+        && snap.session.analysis_status() == sysml_query::publication::AnalysisStatus::Current
 }
 
 /// Publishes `diagnostics` only while `publication` still names the live session's state.
@@ -123,7 +130,12 @@ async fn publish_if_current(
     if !may_publish(handle, publication) {
         return false;
     }
-    client.publish_diagnostics(uri, diagnostics, None).await;
+    let version = handle
+        .snapshot()
+        .index
+        .get(&util::normalize_file_uri(&uri))
+        .and_then(|entry| entry.editor_version());
+    client.publish_diagnostics(uri, diagnostics, version).await;
     true
 }
 
@@ -181,20 +193,29 @@ pub(crate) async fn publish_workspace_diagnostics(
     // state the author has already moved past.
     let publication = snap.session.publication();
     let mut join_set = tokio::task::JoinSet::new();
-    for uri in docs {
-        let model = Some(Arc::clone(snap.session.current()));
-        let client = client.clone();
-        let handle = handle.clone();
-        join_set.spawn(async move {
-            let diagnostics = collect_diagnostics_for_document(model, &uri).await;
-            let count = diagnostics.len();
-            let published =
-                publish_if_current(&client, &handle, publication, uri, diagnostics).await;
-            (published, count)
-        });
-    }
-
-    while let Some(res) = join_set.join_next().await {
+    let mut remaining = docs.into_iter();
+    loop {
+        while join_set.len() < 8 && may_publish(handle, publication) {
+            let Some(uri) = remaining.next() else {
+                break;
+            };
+            let model = Some(Arc::clone(snap.session.current()));
+            let client = client.clone();
+            let handle = handle.clone();
+            join_set.spawn(async move {
+                if !may_publish(&handle, publication) {
+                    return (false, 0);
+                }
+                let diagnostics = collect_diagnostics_for_document(model, &uri).await;
+                let count = diagnostics.len();
+                let published =
+                    publish_if_current(&client, &handle, publication, uri, diagnostics).await;
+                (published, count)
+            });
+        }
+        let Some(res) = join_set.join_next().await else {
+            break;
+        };
         if let Ok((true, count)) = res {
             diagnostic_count += count;
             published_count += 1;
