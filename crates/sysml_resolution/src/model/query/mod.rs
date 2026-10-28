@@ -156,6 +156,30 @@ use spec42_constraint_manifest::ElementDerivedOwnerKind;
 use spec42_constraint_manifest::NamespaceImportDerivedElementKind;
 use sysml_contract::{DocumentId, DocumentToken};
 
+/// Disposable query state for one immutable model. The borrow covers every prerequisite of the
+/// inherited-member closure: storage, memberships, specialization and redefinition outcomes.
+/// Cyclic declarations retain the canonical exclusion-context traversal and are never memoized.
+/// An excluded ancestor could affect an acyclic entry only if a general led back to that ancestor,
+/// making the entry cyclic; the specialization graph includes typing and feature specialization.
+pub(crate) struct InheritedFeatureQueries<'m, D> {
+    model: &'m SemanticModel<D>,
+    memo: std::collections::BTreeMap<DeclarationId, Vec<DeclarationId>>,
+}
+
+impl<'m, D> InheritedFeatureQueries<'m, D> {
+    pub(crate) fn model(&self) -> &'m SemanticModel<D> {
+        self.model
+    }
+
+    pub(crate) fn members(&mut self, declaration: DeclarationId) -> Vec<DeclarationId> {
+        self.model.inherited_feature_members_excluding(
+            declaration,
+            &mut std::collections::BTreeSet::new(),
+            &mut self.memo,
+        )
+    }
+}
+
 impl<D> SemanticModel<D> {
     pub(crate) fn completeness(&self) -> PublicationCompleteness {
         self.metadata.completeness
@@ -1230,11 +1254,14 @@ impl<D> SemanticModel<D> {
         &self,
         declaration: DeclarationId,
     ) -> Vec<DeclarationId> {
-        self.inherited_feature_members_excluding(
-            declaration,
-            &mut std::collections::BTreeSet::new(),
-            &mut std::collections::BTreeMap::new(),
-        )
+        self.inherited_feature_queries().members(declaration)
+    }
+
+    pub(crate) fn inherited_feature_queries(&self) -> InheritedFeatureQueries<'_, D> {
+        InheritedFeatureQueries {
+            model: self,
+            memo: std::collections::BTreeMap::new(),
+        }
     }
 
     fn inherited_feature_members_excluding(
@@ -6069,5 +6096,69 @@ pub(crate) fn connector_kind(kind: DeclarationKind) -> Option<ConnectorKind> {
             Some(ConnectorKind::Interface)
         }
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod inherited_query_tests {
+    use super::*;
+
+    const SOURCE: &str = r#"
+        part def Root { private part hidden; part slot; }
+        part def Left :> Root { part redefines slot; }
+        part def Right :> Root;
+        part def Diamond :> Left, Right;
+        part def CycleA :> CycleB { part a; }
+        part def CycleB :> CycleA { part b; }
+        part def CycleUser :> CycleA;
+        part firstUse : Diamond;
+        part secondUse : Diamond;
+    "#;
+
+    #[test]
+    fn inherited_queries_agree_cold_warm_and_in_reverse_order_for_each_model() {
+        // These sources exercise cache mechanics, not another implementation of inheritance.
+        // The existing typed snapshot corpus owns the semantic expectations. Changing visibility
+        // while keeping declaration ordinals also catches accidental cross-model memo sharing.
+        for source in [
+            SOURCE.to_owned(),
+            SOURCE.replace("private part", "public part"),
+        ] {
+            let request = crate::BuildRequest::new(
+                vec![crate::SourceInput::new(
+                    "memory://inherited-cache.sysml",
+                    source,
+                    crate::SourceKind::Workspace,
+                )],
+                crate::ConstructionSchedule::Sequential,
+                sysml_contract::SEMANTIC_CONTRACT_VERSION.as_str(),
+            )
+            .unwrap();
+            let publication = crate::build(request).unwrap();
+            let model = &publication.model;
+            let declarations: Vec<_> = (0..model.storage.declarations.len())
+                .map(|index| DeclarationId(u32::try_from(index).unwrap()))
+                .collect();
+            let cold: Vec<_> = declarations
+                .iter()
+                .map(|declaration| model.inherited_feature_members(*declaration))
+                .collect();
+            let mut queries = model.inherited_feature_queries();
+            for declaration in declarations.iter().chain(declarations.iter().rev()) {
+                assert_eq!(queries.members(*declaration), cold[declaration.index()]);
+            }
+            assert!(!queries.memo.is_empty(), "the warm path must be exercised");
+            let cyclic: Vec<_> = declarations
+                .iter()
+                .filter(|declaration| model.types.specialization().is_cyclic(**declaration))
+                .collect();
+            assert!(
+                !cyclic.is_empty(),
+                "the cycle exclusion path must be exercised"
+            );
+            for declaration in cyclic {
+                assert!(!queries.memo.contains_key(declaration));
+            }
+        }
     }
 }

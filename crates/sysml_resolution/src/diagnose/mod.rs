@@ -42,6 +42,7 @@ impl<D> SemanticModel<D> {
         let mut diagnostics = Vec::new();
         let mut by_document = vec![(0u32, 0u32); self.storage.documents.len()];
         let mut namespace_checks = std::time::Duration::ZERO;
+        let mut inherited_members = self.inherited_feature_queries();
         // Built once, then sliced per document. Every rule below asks "what did this document
         // declare", and answering that by scanning every declaration each time made the barrier
         // quadratic in the admitted corpus -- invisible while only workspace documents were
@@ -169,8 +170,14 @@ impl<D> SemanticModel<D> {
                 self.collect_conformance(document_id, declared, &mut diagnostics)?;
                 self.collect_structural_conformance(document_id, declared, &mut diagnostics)?;
                 self.collect_expression_conformance(document_id, declared, &mut diagnostics)?;
-                namespace_checks +=
-                    self.collect_host_conformance(document_id, declared, &mut diagnostics)?;
+                let namespace_started = std::time::Instant::now();
+                Self::collect_namespace_identity(
+                    &mut inherited_members,
+                    declared,
+                    &mut diagnostics,
+                )?;
+                namespace_checks += namespace_started.elapsed();
+                self.collect_host_conformance(document_id, declared, &mut diagnostics)?;
                 self.collect_library_context(
                     document_id,
                     first,
