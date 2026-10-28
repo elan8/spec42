@@ -2472,6 +2472,7 @@ mod tests {
             sysml_contract::StandardLibraryAvailability::Unavailable,
             None,
             &[],
+            crate::pipeline::BuildControls::default(),
         )
         .unwrap();
         let mut output = String::new();

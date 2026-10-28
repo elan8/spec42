@@ -31,34 +31,6 @@ pub(crate) fn apply_content_changes(
     (content, changed, warnings)
 }
 
-/// Commits an already-computed parse result and replaces the immutable publication.
-pub(crate) fn apply_parsed_document_update(
-    state: &mut impl DocumentStore,
-    uri_norm: &Url,
-    version: i32,
-    document: sysml_query::source::SourceDocument,
-    parsed: sysml_query::syntax::ParsedSource,
-    _parse_time_ms: u32,
-    _evaluate: bool,
-) -> Vec<(MessageType, String)> {
-    let mut warnings = Vec::new();
-    let Some(entry) = state.index_mut().get_mut(uri_norm) else {
-        return warnings;
-    };
-    let diagnostic_count = parsed.diagnostics().len();
-    entry.document = document;
-    entry.parsed = parsed;
-    if diagnostic_count > 0 {
-        warnings.push((
-            MessageType::LOG,
-            format!(
-                "sysml parse for editor produced {diagnostic_count} diagnostic(s) after didChange for {uri_norm} (version {version})."
-            ),
-        ));
-    }
-    warnings
-}
-
 pub(crate) fn remove_document(state: &mut impl DocumentStore, uri_norm: &Url) {
     state.index_mut().remove(uri_norm);
     state

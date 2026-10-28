@@ -77,7 +77,6 @@ impl<T> LatestWork<T> {
         })
     }
 
-    #[cfg(test)]
     pub(crate) fn occupancy(&self) -> (bool, bool) {
         (self.active.is_some(), self.pending.is_some())
     }

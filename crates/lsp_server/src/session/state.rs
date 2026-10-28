@@ -10,14 +10,14 @@ use sysml_query::Services;
 use sysml_query::StandardLibraryAvailability;
 use tower_lsp::lsp_types::Url;
 
-/// One indexed document: its admitted source and the tree the syntax service parsed for it.
+/// Desired source plus an optional matching syntax lease. `None` means parsing is pending.
 ///
 /// Both are reference-counted handles, so the actor's copy-on-write clone of the whole index
 /// on every mutation costs a refcount bump per entry, not a copy of every file's text and tree.
 #[derive(Debug, Clone)]
 pub(crate) struct IndexEntry {
     pub(crate) document: SourceDocument,
-    pub(crate) parsed: ParsedSource,
+    pub(crate) parsed: Option<ParsedSource>,
     /// When `false`, the file is indexed for `sysml/librarySearch` only and is not admitted.
     pub(crate) admitted_to_publication: bool,
     /// Editor membership, version and open-interval identity travel with their source entry.
@@ -30,11 +30,20 @@ impl IndexEntry {
         self.document.content()
     }
 
+    pub(crate) fn syntax(&self) -> tower_lsp::jsonrpc::Result<&ParsedSource> {
+        self.parsed
+            .as_ref()
+            .ok_or_else(|| tower_lsp::jsonrpc::Error {
+                code: tower_lsp::jsonrpc::ErrorCode::ContentModified,
+                message: "Source syntax is being updated".into(),
+                data: None,
+            })
+    }
+
     pub(crate) fn is_editor_open(&self) -> bool {
         self.editor_revision.is_some()
     }
 
-    #[cfg(test)]
     pub(crate) fn editor_version(&self) -> Option<i32> {
         self.editor_revision
             .as_ref()
@@ -70,7 +79,7 @@ impl IndexEntry {
         let parsed = services.syntax.parse(&document);
         Self {
             document,
-            parsed,
+            parsed: Some(parsed),
             admitted_to_publication: true,
             editor_revision: None,
         }
@@ -85,6 +94,7 @@ pub(crate) struct RuntimeConfig {
     pub(crate) perf_logging_enabled: bool,
     /// Opt-in semantic-token merge traces (`spec42.semanticTokens.debug`).
     pub(crate) semantic_tokens_debug: bool,
+    pub(crate) semantic_tokens_refresh_supported: bool,
     /// Development-only: include library paths in the debounced workspace-wide diagnostics
     /// sweep. See `spec42.development.diagnoseLibraryPaths` and
     /// `publish_workspace_diagnostics`'s comment.

@@ -24,7 +24,6 @@ impl EditorRevision {
         }
     }
 
-    #[cfg(test)]
     pub(crate) fn version(&self) -> Option<i32> {
         self.version
     }

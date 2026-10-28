@@ -107,6 +107,7 @@ if wants lint; then
   node scripts/sync-generator-abi.mjs --check
   node scripts/sync-docs-meta.mjs --check
   cargo run -p diagram_product --bin diagram_bindings -- --check
+  cargo run -p lsp_server --example editor_status_bindings -- --check
 
   abi_manifest="$(mktemp "${TMPDIR:-/tmp}/spec42-generator-abi.XXXXXX")"
   trap 'rm -f "$abi_manifest"' EXIT

@@ -1171,6 +1171,7 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "tower-lsp",
             "tracing",
             "tracing-subscriber",
+            "ts-rs",
         ]),
         "lsp_server is the editor host and owns no batch path: it must not depend on \
          `workspace`; `diagram_layout` is the native layout boundary behind `spec42/layout` \

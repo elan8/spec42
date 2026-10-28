@@ -39,6 +39,7 @@ fn edit_performance_reports_correlated_owner_phase_measurements() {
         "textDocument":{"uri":uri,"version":2}, "contentChanges":[{"text":"package P { part def B; }"}]
     }}).to_string());
     let mut publication = None;
+    let mut ingested = false;
     loop {
         let message: Value =
             serde_json::from_str(&read_message(&mut stdout).expect("performance observation"))
@@ -50,21 +51,27 @@ fn edit_performance_reports_correlated_owner_phase_measurements() {
             continue;
         };
         let record: Value = serde_json::from_str(raw).expect("structured performance record");
-        if record["version"] != 2 {
-            continue;
-        }
-        if record["event"] == "backend:publication" {
+        if record["event"] == "backend:publication"
+            && record["editorVersions"]
+                .as_object()
+                .is_some_and(|versions| {
+                    versions
+                        .iter()
+                        .any(|(key, value)| key.eq_ignore_ascii_case(&uri) && value == 2)
+                })
+        {
             publication = Some(record);
-        } else if record["event"] == "backend:didChange" {
+        } else if record["event"] == "backend:didChange" && record["version"] == 2 {
+            ingested = true;
+        }
+        if ingested && publication.is_some() {
             break;
         }
     }
-    let publication =
-        publication.expect("phase record must precede completion for the same version");
-    assert!(publication["uri"]
+    let publication = publication.expect("a completed publication reports its source versions");
+    assert!(publication["modelDigest"]
         .as_str()
-        .unwrap()
-        .eq_ignore_ascii_case(&uri));
+        .is_some_and(|digest| !digest.is_empty()));
     assert_eq!(publication["outcome"], "Published");
     for field in [
         "rebuildMs",

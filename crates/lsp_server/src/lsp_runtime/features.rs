@@ -76,7 +76,7 @@ pub(crate) fn semantic_tokens_full_request(
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
         Some(entry) => {
             let text = entry.content().to_owned();
-            let ast_ranges = Some(ast_semantic_ranges(&entry.parsed, &text));
+            let ast_ranges = Some(ast_semantic_ranges(entry.syntax()?, &text));
             (text, ast_ranges)
         }
         None => return Ok(None),
@@ -111,7 +111,7 @@ pub(crate) fn semantic_tokens_range_request(
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
         Some(entry) => {
             let text = entry.content().to_owned();
-            let ast_ranges = Some(ast_semantic_ranges(&entry.parsed, &text));
+            let ast_ranges = Some(ast_semantic_ranges(entry.syntax()?, &text));
             (text, ast_ranges)
         }
         None => return Ok(None),
@@ -154,7 +154,7 @@ pub(crate) fn linked_editing_range(
         Some(entry) => entry,
         None => return Ok(None),
     };
-    let Some(token) = entry.parsed.token_at(pos.line, pos.character) else {
+    let Some(token) = entry.syntax()?.token_at(pos.line, pos.character) else {
         return Ok(None);
     };
     if token.is_keyword {
@@ -165,7 +165,7 @@ pub(crate) fn linked_editing_range(
     // which line that is; this used to guess from the line's leading keyword, which both missed
     // declaration forms it had not enumerated and fired inside comments and strings.
     let on_declaration_header = entry
-        .parsed
+        .syntax()?
         .declaration_at(line)
         .is_some_and(|declaration| declaration.head_range.start_line == line);
     if !on_declaration_header {
@@ -174,7 +174,7 @@ pub(crate) fn linked_editing_range(
     // Occurrences the syntax service found in code. The substring scan this replaced also
     // matched inside comments and string literals, so editing a name could rewrite prose.
     let ranges: Vec<_> = entry
-        .parsed
+        .syntax()?
         .occurrences_of(token.text)
         .into_iter()
         .filter(|range| range.start_line == line)

@@ -851,6 +851,7 @@ pub(crate) fn build_model(
     standard_library_availability: sysml_contract::StandardLibraryAvailability,
     library: Option<&SettledLibrary>,
     reported: &[Box<str>],
+    controls: super::BuildControls<'_>,
 ) -> Result<(ResolvedSemanticModel, ParsedSources, SemanticPhaseDurations), crate::BuildFailure> {
     let identities: Vec<_> = storage
         .documents
@@ -858,24 +859,29 @@ pub(crate) fn build_model(
         .map(|document| document.identity.clone())
         .collect();
     let failure = |phase, error| resolution_failure(phase, &identities, error);
+    controls.checkpoint(crate::ConstructionPhase::Resolution)?;
     let started = std::time::Instant::now();
     let resolved = Lowered::from((storage, sources))
         .resolve(library)
         .map_err(|error| failure(crate::ConstructionPhase::Resolution, error))?;
     let resolve = started.elapsed();
     let started = std::time::Instant::now();
+    controls.checkpoint(crate::ConstructionPhase::Evaluation)?;
     let evaluated = resolved.evaluate(policy);
     let evaluation = started.elapsed();
     let started = std::time::Instant::now();
+    controls.checkpoint(crate::ConstructionPhase::Indexing)?;
     let (indexed, sources) = evaluated
         .index()
         .map_err(|error| failure(crate::ConstructionPhase::Indexing, error))?;
     let indexing = started.elapsed();
     let started = std::time::Instant::now();
+    controls.checkpoint(crate::ConstructionPhase::Diagnostics)?;
     let complete = indexed
         .diagnose(sources, reported, standard_library_availability)
         .map_err(|error| failure(crate::ConstructionPhase::Diagnostics, error))?;
     let diagnostics = started.elapsed();
+    controls.checkpoint(crate::ConstructionPhase::Diagnostics)?;
     let namespace_checks = complete.namespace_checks;
     let complete = complete.into_parts();
     Ok((

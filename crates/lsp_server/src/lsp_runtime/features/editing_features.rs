@@ -38,7 +38,7 @@ pub(crate) fn signature_help(
     // prompt from a keyword in a comment, and from the *enclosing* declaration's keyword when
     // the cursor sat on a nested member.
     let label = match entry
-        .parsed
+        .syntax()?
         .declaration_at(pos.line)
         .map(|declaration| declaration.kind)
     {
@@ -161,7 +161,7 @@ pub(crate) fn document_symbol(
         None => return Ok(None),
     };
     Ok(Some(DocumentSymbolResponse::Nested(
-        collect_document_symbols(&entry.parsed),
+        collect_document_symbols(entry.syntax()?),
     )))
 }
 
@@ -174,7 +174,7 @@ pub(crate) fn folding_range(state: &ServerState, uri: Url) -> Result<Option<Vec<
     // One derivation: the syntax service's folding regions, which already survive parser
     // recovery. An empty answer means the document has no foldable region, not that a second
     // heuristic should guess one.
-    Ok(Some(collect_folding_ranges(&entry.parsed)))
+    Ok(Some(collect_folding_ranges(entry.syntax()?)))
 }
 
 #[allow(deprecated)]
@@ -216,7 +216,7 @@ pub(crate) fn code_action(
         None => return Ok(None),
     };
     let text = entry.content();
-    let parsed = &entry.parsed;
+    let parsed = entry.syntax()?;
     let model = state.published_model();
     let mut actions = Vec::new();
     if let Some(action) = suggest_wrap_in_package(text, parsed, &uri) {

@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import os
+import queue
 from pathlib import Path
 import sys
 import tempfile
@@ -56,6 +57,22 @@ class EditorBenchmarkTests(unittest.TestCase):
                 lsp.close()
             self.assertIsNotNone(lsp.process.returncode)
             self.assertFalse(lsp.reader.is_alive())
+
+    def test_coalesced_publication_and_early_diagnostics_keep_exact_version_identity(self):
+        lsp = benchmark.Lsp.__new__(benchmark.Lsp)
+        lsp.messages, lsp.events, lsp.publications, lsp.diagnostics = queue.Queue(), [], {}, {}
+        lsp.allow_missing_libraries = False
+        uri = "file:///model.sysml"
+        lsp.messages.put((200, {"method": "textDocument/publishDiagnostics", "params": {
+            "uri": uri, "version": 9, "diagnostics": []}}))
+        event = {"event": "backend:publication", "editorVersions": {uri: 9}, "modelDigest": "current"}
+        lsp.messages.put((300, {"method": "window/logMessage", "params": {
+            "message": "[SysML][perf] " + json.dumps(event)}}))
+        lsp.until(lambda _: (uri, 9) in lsp.publications, 1)
+        self.assertEqual(lsp.diagnostics, {(uri, 9): 200})
+        self.assertEqual(lsp.publications[(uri, 9)], event)
+        self.assertNotIn((uri, 8), lsp.diagnostics)
+        self.assertNotIn((uri, 8), lsp.publications)
 
     @unittest.skipUnless(os.name == "nt", "Windows process resource API contract")
     def test_windows_resource_counters_are_monotonic_and_have_valid_memory_units(self):

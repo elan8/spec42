@@ -70,3 +70,26 @@ fn editor_versions_ignore_stale_changes_advance_no_ops_and_reset_on_reopen() {
     }
     assert_current_symbol(&mut session, uri, "Edited");
 }
+
+#[test]
+fn an_incremental_burst_converges_to_its_final_versioned_diagnostics_and_current_status() {
+    let uri = "file:///c:/spec42-lsp-tests/bounded-editor.sysml";
+    let mut session = TestSession::new();
+    session.initialize_default("bounded-editor");
+    session.did_open(uri, "part def A;", 1);
+    for version in 2..=80 {
+        let name = if version % 2 == 0 { "B" } else { "A" };
+        session.notify("textDocument/didChange", json!({
+            "textDocument":{"uri":uri,"version":version},
+            "contentChanges":[{"range":{"start":{"line":0,"character":9},"end":{"line":0,"character":10}},"text":name}]
+        }));
+    }
+    // Observe the final notification itself. Older/unversioned diagnostics cannot satisfy it.
+    let diagnostics = session.wait_for_diagnostics_version(uri, 80);
+    assert!(diagnostics["diagnostics"].is_array());
+    assert_current_symbol(&mut session, uri, "B");
+    let stats = session.request("sysml/serverStats", json!({}));
+    assert_eq!(stats["result"]["analysis"]["state"], "current");
+    assert!(stats["result"]["analysis"]["activeJobs"].as_u64().unwrap() <= 1);
+    assert!(stats["result"]["analysis"]["pendingJobs"].as_u64().unwrap() <= 1);
+}

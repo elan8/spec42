@@ -372,15 +372,19 @@ library is available. Missing-library-context diagnostics fail a representative 
 host intentionally has no libraries by default: use `--allow-missing-libraries` only for explicitly
 labelled discovery/negative-control runs, which do not establish representative editor performance.
 
-The #192 probe measures client send to the matching `backend:didChange` completion event,
-including transport and queueing behind earlier handlers. Hosts that emit `backend:publication`
-records provide phase measurements for the same URI and document version: preparation and its actor
-queue, construction wall time, canonical parse/lower/resolve/evaluate/index/check costs, admission,
-and diagnostic fanout. Handler records separately measure source ingestion, parsing and source
-commit. The construction `resolutionTotalMs` contains its resolve/evaluate/index/check subphases;
-do not add it to those subphases. `namespaceChecksMs` is measured inside `checksMs` and isolates
-namespace membership-identity validation, including inherited-member traversal; do not add it to
-the containing check duration. Missing phase records remain explicit `null` values.
+The #192 probe records edit ingestion separately from version-correlated diagnostic delivery.
+By default, each single edit and the final version of each burst must receive matching versioned
+`publishDiagnostics` and a publication phase record. Intermediate burst versions without an observed
+notification remain `coalesced_or_unobserved`; their diagnostic latency is `null`, never the final
+version's latency. `--completion-scope handler` explicitly retains the older handler-only baseline
+scope for binaries that predate versioned diagnostic delivery.
+
+Hosts emit `backend:publication` records with a complete `editorVersions` map and model digest, plus
+preparation and queue time, construction wall time, canonical parse/lower/resolve/evaluate/index/check
+costs, admission and diagnostic fanout. The construction `resolutionTotalMs` contains its
+resolve/evaluate/index/check subphases; do not add it to those subphases. `namespaceChecksMs` is
+measured inside `checksMs`; do not add it to the containing check duration. Missing phase records
+remain explicit `null` values.
 
 On Windows the runner records cumulative process user/kernel CPU time, working set, commit charge
 and process-lifetime peaks after receiving each completion. The resource observation has its own
@@ -388,8 +392,8 @@ timestamp; it is not synchronized with a semantic phase. Unsupported platforms o
 stay explicit as unavailable. Compare CPU deltas with `resources_before_edits`, rather than treating
 the cumulative counters as per-edit CPU time.
 
-Version-correlated diagnostic latency and VS Code view-refresh costs remain release acceptance
-work. Failed or timed-out runs retain a failed report and stderr; timings from debug runs are
+Representative version-correlated diagnostic measurements and VS Code view-refresh costs remain
+release acceptance work. Failed or timed-out runs retain a failed report and stderr; timings from debug runs are
 smoke-test evidence only.
 
 ### Query benchmarks

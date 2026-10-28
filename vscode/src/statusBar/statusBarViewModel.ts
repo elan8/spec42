@@ -1,3 +1,4 @@
+import type { SysmlAnalysisSummaryDto } from "../generated/editor-status";
 import type { WorkspaceLifecyclePhase } from "../activation/workspaceLifecycle";
 
 export type ServerHealthState =
@@ -90,4 +91,15 @@ export function formatSpec42StatusBar(
           .filter(Boolean)
           .join("\n"),
   };
+}
+
+/** Freshness is reported by the canonical server session, independently of diagnostics counts. */
+export function analysisStatusText(analysis: SysmlAnalysisSummaryDto | undefined, errors: number, warnings: number): string | undefined {
+  if (!analysis) return "$(question) SysML: Analysis status unavailable";
+  switch (analysis.state) {
+    case "current": return undefined;
+    case "updating": return `$(sync~spin) SysML: Updating · ${errors}E ${warnings}W`;
+    case "failedRetained": return `$(error) SysML: Analysis failed · ${errors}E ${warnings}W`;
+    case "cancelledRetained": return `$(circle-slash) SysML: Analysis cancelled · ${errors}E ${warnings}W`;
+  }
 }

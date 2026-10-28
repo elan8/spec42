@@ -58,7 +58,7 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
         self.state
             .published_index
             .get(&util::normalize_file_uri(uri))
-            .map(|entry| entry.parsed.clone())
+            .and_then(|entry| entry.parsed.clone())
     }
 
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {

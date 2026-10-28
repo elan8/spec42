@@ -54,6 +54,13 @@ pub(crate) async fn initialize(
             code_lens_enabled,
             perf_logging_enabled,
             semantic_tokens_debug,
+            semantic_tokens_refresh_supported: params
+                .capabilities
+                .workspace
+                .as_ref()
+                .and_then(|workspace| workspace.semantic_tokens.as_ref())
+                .and_then(|tokens| tokens.refresh_support)
+                .unwrap_or(false),
             diagnose_library_paths,
         })
         .expect("initialize called twice");
@@ -94,6 +101,7 @@ async fn initialized_handle(
     server_name: &str,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
+    ensure_analysis_notifications(client, handle, runtime_config);
     let (workspace_roots, library_paths) = {
         let snap = handle.snapshot();
         (snap.workspace_roots.clone(), snap.library_paths.clone())
@@ -280,7 +288,7 @@ async fn initialized_handle(
                     if snap
                         .index
                         .get(uri_norm)
-                        .map(|entry| &entry.parsed)
+                        .and_then(|entry| entry.parsed.as_ref())
                         .is_some()
                         && symbol_entries_count <= 2
                     {
@@ -326,6 +334,7 @@ async fn initialized_handle(
         let diagnostics_start = Instant::now();
         handle.complete_startup().await.ok();
         send_semantic_ready_notification(&client, &handle, readiness_token).await;
+        refresh_semantic_tokens(&client, &runtime_config).await;
         publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
         let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
         log_perf(

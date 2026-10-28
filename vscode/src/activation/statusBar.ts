@@ -9,6 +9,7 @@ import type { LspModelProvider } from "../providers/lspModelProvider";
 import { log } from "../logger";
 import {
   formatSpec42StatusBar,
+  analysisStatusText,
   ServerHealthState,
 } from "../statusBar/statusBarViewModel";
 import { getWorkspaceLifecycle } from "./workspaceLifecycle";
@@ -22,6 +23,9 @@ let statusItem: vscode.StatusBarItem | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
+let statusRequestGeneration = 0;
+let statsInFlight = false;
+let statsRefreshPending = false;
 
 export function getServerHealthState(): ServerHealthState {
   return serverHealthState;
@@ -74,6 +78,7 @@ export function setServerHealth(
 }
 
 export function updateStatusBar(context: vscode.ExtensionContext): void {
+  const generation = ++statusRequestGeneration;
   const enabled = getConfigBoolean("statusBar.enabled", true);
   if (!enabled) {
     statusItem?.hide();
@@ -116,18 +121,37 @@ export function updateStatusBar(context: vscode.ExtensionContext): void {
 
   const provider = lspModelProviderForStatus;
   if (provider) {
+    if (statsInFlight) {
+      statsRefreshPending = true;
+      return;
+    }
+    statsInFlight = true;
     provider
       .getServerStats()
       .then((stats) => {
-        if (!stats || !statusItem) return;
+        if (!stats || !statusItem || generation !== statusRequestGeneration) return;
+        const analysis = stats.analysis;
+        if (serverHealthState === "ready" && lifecycle.phase === "workspaceReady") {
+          item.text = analysisStatusText(analysis, errors, warnings) ?? status.text;
+        }
+        const analysisDetail = analysis
+          ? `Analysis: ${analysis.state} (${analysis.activeJobs} active, ${analysis.pendingJobs} pending)${analysis.failure ? `\n${analysis.failure}` : ""}`
+          : "Analysis status unavailable";
         const uptimeStr =
           stats.uptime >= 60
             ? `${Math.floor(stats.uptime / 60)}m ${stats.uptime % 60}s`
             : `${stats.uptime}s`;
         const caches = stats.caches;
-        item.tooltip = `${baseTooltip}\n\n-- LSP Server --\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
+        item.tooltip = `${baseTooltip}\n${analysisDetail}\n\n-- LSP Server --\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        statsInFlight = false;
+        if (statsRefreshPending) {
+          statsRefreshPending = false;
+          updateStatusBar(context);
+        }
+      });
   }
 }
 
@@ -153,7 +177,8 @@ export function registerStatusBar(context: vscode.ExtensionContext): void {
     })
   );
   context.subscriptions.push(
-    vscode.languages.onDidChangeDiagnostics(() => updateStatusBar(context))
+    vscode.languages.onDidChangeDiagnostics(() => updateStatusBar(context)),
+    vscode.workspace.onDidChangeTextDocument((event) => { if (isSysmlDoc(event.document)) updateStatusBar(context); })
   );
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((event) => {

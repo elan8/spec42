@@ -3,11 +3,8 @@ import type { LanguageClient } from "vscode-languageclient/node";
 import { log, logError } from "../logger";
 
 export interface PositionDTO { line: number; character: number }
-export interface SysMLServerStats {
-  uptime: number;
-  memory: { rss: number };
-  caches: { documents: number; symbolTables: number; semanticTokens: number };
-}
+export type { SysmlServerStatsDto as SysMLServerStats } from "../generated/editor-status";
+import type { SysmlServerStatsDto as SysMLServerStats } from "../generated/editor-status";
 export interface SysMLClearCacheResult {
   documents: number;
   symbolTables: number;

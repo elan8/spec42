@@ -33,7 +33,7 @@ pub(crate) fn sysml_feature_inspector_result(
             &uri,
             position,
             at,
-            Some((text.as_str(), &entry.parsed)),
+            Some((text.as_str(), entry.syntax()?)),
         ),
         None => crate::views::empty_feature_inspector_response(&uri, position),
     };
@@ -42,7 +42,7 @@ pub(crate) fn sysml_feature_inspector_result(
     );
 
     if let Some(literal) = entry
-        .parsed
+        .syntax()?
         .unit_literal_at(position.line, position.character)
     {
         response.selection = dto::SysmlFeatureInspectorSelectionDto {
@@ -62,7 +62,7 @@ pub(crate) fn sysml_feature_inspector_result(
         return Ok(response);
     }
 
-    let Some(token) = entry.parsed.token_at(position.line, position.character) else {
+    let Some(token) = entry.syntax()?.token_at(position.line, position.character) else {
         return Ok(response);
     };
     let word = token.text;
@@ -140,14 +140,15 @@ pub(crate) fn sysml_library_search_result(
         }
         // Only non-admitted corpus documents may use syntax recovery for search. Admitted
         // documents are represented exclusively by the committed publication query.
-        if !index_entry.admitted_to_publication {
+        if let Some(parsed) = index_entry
+            .parsed
+            .as_ref()
+            .filter(|_| !index_entry.admitted_to_publication)
+        {
             search_symbols.extend(
-                language_service::search_symbols_from_recovered_short_names(
-                    &index_entry.parsed,
-                    uri,
-                )
-                .into_iter()
-                .map(language_service::RecoverySearchSymbol::into_search_only_symbol),
+                language_service::search_symbols_from_recovered_short_names(parsed, uri)
+                    .into_iter()
+                    .map(language_service::RecoverySearchSymbol::into_search_only_symbol),
             );
         }
     }
@@ -229,8 +230,18 @@ pub(crate) fn sysml_library_search_result(
 pub(crate) fn sysml_server_stats_result(
     state: &ServerState,
     start_time: Instant,
+    occupancy: (usize, usize),
 ) -> dto::SysmlServerStatsDto {
     dto::SysmlServerStatsDto {
+        analysis: dto::SysmlAnalysisSummaryDto {
+            state: dto::SysmlAnalysisStateDto::from_status(state.session.analysis_status()),
+            active_jobs: occupancy.0,
+            pending_jobs: occupancy.1,
+            failure: (state.session.analysis_status()
+                == sysml_query::publication::AnalysisStatus::FailedRetained)
+                .then(|| state.publication_failure.as_ref().map(ToString::to_string))
+                .flatten(),
+        },
         uptime: start_time.elapsed().as_secs(),
         memory: dto::SysmlServerMemoryDto { rss: 0 },
         caches: dto::SysmlServerCachesDto {

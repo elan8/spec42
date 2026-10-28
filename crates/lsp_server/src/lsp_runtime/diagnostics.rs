@@ -123,7 +123,12 @@ async fn publish_if_current(
     if !may_publish(handle, publication) {
         return false;
     }
-    client.publish_diagnostics(uri, diagnostics, None).await;
+    let version = handle
+        .snapshot()
+        .index
+        .get(&util::normalize_file_uri(&uri))
+        .and_then(|entry| entry.editor_version());
+    client.publish_diagnostics(uri, diagnostics, version).await;
     true
 }
 
@@ -181,20 +186,29 @@ pub(crate) async fn publish_workspace_diagnostics(
     // state the author has already moved past.
     let publication = snap.session.publication();
     let mut join_set = tokio::task::JoinSet::new();
-    for uri in docs {
-        let model = Some(Arc::clone(snap.session.current()));
-        let client = client.clone();
-        let handle = handle.clone();
-        join_set.spawn(async move {
-            let diagnostics = collect_diagnostics_for_document(model, &uri).await;
-            let count = diagnostics.len();
-            let published =
-                publish_if_current(&client, &handle, publication, uri, diagnostics).await;
-            (published, count)
-        });
-    }
-
-    while let Some(res) = join_set.join_next().await {
+    let mut remaining = docs.into_iter();
+    loop {
+        while join_set.len() < 8 && may_publish(handle, publication) {
+            let Some(uri) = remaining.next() else {
+                break;
+            };
+            let model = Some(Arc::clone(snap.session.current()));
+            let client = client.clone();
+            let handle = handle.clone();
+            join_set.spawn(async move {
+                if !may_publish(&handle, publication) {
+                    return (false, 0);
+                }
+                let diagnostics = collect_diagnostics_for_document(model, &uri).await;
+                let count = diagnostics.len();
+                let published =
+                    publish_if_current(&client, &handle, publication, uri, diagnostics).await;
+                (published, count)
+            });
+        }
+        let Some(res) = join_set.join_next().await else {
+            break;
+        };
         if let Ok((true, count)) = res {
             diagnostic_count += count;
             published_count += 1;
