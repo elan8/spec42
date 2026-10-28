@@ -134,6 +134,7 @@ mod publication_tests {
             ])
             .await
             .unwrap();
+        handle.rebuild_publication().await.unwrap();
 
         let snapshot = handle.snapshot();
         assert!(!snapshot.index.contains_key(&old_uri));
@@ -188,6 +189,7 @@ mod publication_tests {
             ])
             .await
             .unwrap();
+        handle.rebuild_publication().await.unwrap();
 
         let snapshot = handle.snapshot();
         assert_eq!(
@@ -243,6 +245,7 @@ mod publication_tests {
             });
             bare.await.unwrap().expect("bare rebuild");
             refresh.await.unwrap().expect("document refresh");
+            handle.rebuild_publication().await.unwrap();
 
             let snapshot = handle.snapshot();
             assert!(
@@ -474,6 +477,25 @@ mod editor_update_tests {
             .await
             .unwrap();
         assert_eq!(handle.snapshot().index[&uri].editor_version(), Some(-2));
+    }
+
+    #[tokio::test]
+    async fn watched_updates_cannot_replace_open_editor_text_or_its_version() {
+        let (handle, uri) = opened("package Unsaved;");
+        let inputs = handle.snapshot().session.inputs();
+        let (changed, warnings) = handle
+            .apply_watched_file_changes(vec![
+                (uri.clone(), None),
+                (uri.clone(), Some("package Disk;".into())),
+            ])
+            .await
+            .unwrap();
+        assert!(!changed);
+        assert!(warnings.is_empty());
+        let snapshot = handle.snapshot();
+        assert_eq!(snapshot.index[&uri].content(), "package Unsaved;");
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(1));
+        assert!(snapshot.session.is_input_current(&inputs));
     }
 
     #[tokio::test]
@@ -1456,7 +1478,7 @@ impl WorkspaceHandle {
             .await
             .map(|outcome| outcome.value)?;
         if library {
-            self.rebuild_publication().await?;
+            self.request_rebuild();
         }
         Ok(library)
     }
@@ -1584,56 +1606,63 @@ impl WorkspaceHandle {
 
     // --- did_change_watched_files --------------------------------------------------------
 
-    /// Applies one watched-file notification as a single source revision and rebuilds once.
+    /// Ingest one watched-file batch as a single desired revision; the caller schedules analysis.
     /// Rename notifications commonly contain a delete and a create in the same batch.
     pub(crate) async fn apply_watched_file_changes(
         &self,
         changes: Vec<(Url, Option<String>)>,
     ) -> Result<(bool, Vec<String>), MutatePanicked> {
-        let outcome = self
-            .actor
-            .mutate_if_changed(move |state| {
-                let mut warnings = Vec::new();
-                let mut changed = false;
-                for (uri, content) in changes {
-                    match content {
-                        Some(content) => {
-                            if state
-                                .index
-                                .get(&uri)
-                                .is_some_and(|entry| entry.content() == content)
-                            {
-                                continue;
+        let outcome =
+            self.actor
+                .mutate_if_changed(move |state| {
+                    let mut warnings = Vec::new();
+                    let mut changed = false;
+                    for (uri, content) in changes {
+                        // The editor remains authoritative until didClose, including across saves,
+                        // renames and a delayed disk-read completion.
+                        if state.is_editor_open(&uri) {
+                            continue;
+                        }
+                        match content {
+                            Some(content) => {
+                                if state
+                                    .index
+                                    .get(&uri)
+                                    .is_some_and(|entry| entry.content() == content)
+                                {
+                                    continue;
+                                }
+                                if let Some(warning) =
+                                    crate::session::services::store_document_text_fast(
+                                        state, &uri, content,
+                                    )
+                                {
+                                    warnings.push(warning);
+                                }
                             }
-                            if let Some(warning) =
-                                crate::session::services::store_document_text_fast(
-                                    state, &uri, content,
-                                )
-                            {
-                                warnings.push(warning);
+                            None => {
+                                if !state.index.contains_key(&uri) {
+                                    continue;
+                                }
+                                crate::session::services::remove_document(state, &uri);
                             }
                         }
-                        None => {
-                            if !state.index.contains_key(&uri) {
-                                continue;
-                            }
-                            crate::session::services::remove_document(state, &uri);
-                        }
+                        changed = true;
                     }
-                    changed = true;
-                }
-                if changed {
-                    state.semantic_revision = state.semantic_revision.wrapping_add(1);
-                    state.session.invalidate_inputs();
-                    Mutation::Changed(warnings)
-                } else {
-                    Mutation::Unchanged(warnings)
-                }
-            })
-            .await?;
-        if outcome.published {
-            self.rebuild_publication().await?;
-        }
+                    if changed {
+                        state.semantic_revision = state.semantic_revision.wrapping_add(1);
+                        state.session.invalidate_inputs();
+                        state.services.syntax.retain(
+                            state.index.values().filter_map(|entry| {
+                                entry.parsed.as_ref().map(ParsedSource::digest)
+                            }),
+                        );
+                        Mutation::Changed(warnings)
+                    } else {
+                        Mutation::Unchanged(warnings)
+                    }
+                })
+                .await?;
         Ok((outcome.published, outcome.value))
     }
 

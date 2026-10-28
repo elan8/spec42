@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import type { LspClientHandles } from "./lspClient";
-import { isClientNotRunningError, resolvedReference } from "../providers/lspModelProvider";
+import { isClientNotRunningError, isPendingAnalysisError, resolvedReference } from "../providers/lspModelProvider";
 import type { FeatureInspectorViewProvider } from "../inspector/featureInspectorViewProvider";
 import { isLanguageClientReady } from "./lspClient";
 import { isSysmlDoc } from "./configBridge";
@@ -8,6 +8,8 @@ import { logError } from "../logger";
 import { updateStatusBar } from "./statusBar";
 
 let selectionTimer: ReturnType<typeof setTimeout> | undefined;
+let inspectorRequestGeneration = 0;
+let inspectorCancellation: vscode.CancellationTokenSource | undefined;
 
 async function syncInspector(
   handles: LspClientHandles,
@@ -17,9 +19,16 @@ async function syncInspector(
   logPerf: (event: string, extra?: Record<string, unknown>) => void
 ): Promise<void> {
   if (!provider.isVisible() || provider.isPinned() || !isSysmlDoc(editor.document) || !isLanguageClientReady()) return;
+  const generation = ++inspectorRequestGeneration;
+  inspectorCancellation?.cancel();
+  inspectorCancellation?.dispose();
+  const cancellation = new vscode.CancellationTokenSource();
+  inspectorCancellation = cancellation;
+  const version = editor.document.version;
   const startedAt = Date.now();
   try {
-    const result = await handles.lspModelProvider.getFeatureInspector(editor.document.uri.toString(), position);
+    const result = await handles.lspModelProvider.getFeatureInspector(editor.document.uri.toString(), position, cancellation.token);
+    if (generation !== inspectorRequestGeneration || cancellation.token.isCancellationRequested || editor.document.version !== version || editor.document.isClosed || vscode.window.activeTextEditor !== editor || !editor.selection.active.isEqual(position)) return;
     provider.update(result);
     logPerf("selectionSync:featureInspector", {
       uri: editor.document.uri.toString(),
@@ -28,7 +37,7 @@ async function syncInspector(
       elementId: (resolvedReference(result) ?? result.containingElement)?.id,
     });
   } catch (error) {
-    if (!isClientNotRunningError(error)) logError("Feature inspector cursor sync failed", error);
+    if (!cancellation.token.isCancellationRequested && !isClientNotRunningError(error) && !isPendingAnalysisError(error)) logError("Feature inspector cursor sync failed", error);
   }
 }
 
@@ -48,6 +57,7 @@ export function registerWorkspaceIndexing(
     }
   };
   context.subscriptions.push(inspectorProvider.onResumeRequested(syncActive));
+  context.subscriptions.push(handles.client.onNotification("spec42/publicationChanged", syncActive));
   context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection((event) => {
     if (!isSysmlDoc(event.textEditor.document)) return;
     if (selectionTimer) clearTimeout(selectionTimer);
@@ -67,6 +77,10 @@ export function registerWorkspaceIndexing(
 
 export function resetSemanticIndexTracking(): void {}
 export function deactivateWorkspaceIndexing(): void {
+  ++inspectorRequestGeneration;
+  inspectorCancellation?.cancel();
+  inspectorCancellation?.dispose();
+  inspectorCancellation = undefined;
   if (selectionTimer) clearTimeout(selectionTimer);
   selectionTimer = undefined;
 }

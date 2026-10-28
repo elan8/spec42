@@ -88,7 +88,8 @@ fn an_incremental_burst_converges_to_its_final_versioned_diagnostics_and_current
     let diagnostics = session.wait_for_diagnostics_version(uri, 80);
     assert!(diagnostics["diagnostics"].is_array());
     assert_current_symbol(&mut session, uri, "B");
-    let stats = session.request("sysml/serverStats", json!({}));
+    let stats = session.request("sysml/serverStats", serde_json::Value::Null);
+    assert!(stats.get("error").is_none(), "{stats}");
     assert_eq!(stats["result"]["analysis"]["state"], "current");
     assert!(stats["result"]["analysis"]["activeJobs"].as_u64().unwrap() <= 1);
     assert!(stats["result"]["analysis"]["pendingJobs"].as_u64().unwrap() <= 1);

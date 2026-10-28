@@ -197,37 +197,6 @@ async fn refresh_semantic_tokens(
     }
 }
 
-fn merge_diagnostic_fanout(mut old: Vec<Url>, new: Vec<Url>) -> Vec<Url> {
-    old.extend(new);
-    old.sort_unstable_by(|left, right| left.as_str().cmp(right.as_str()));
-    old.dedup();
-    old
-}
-
-/// Both sides of the publication barrier contribute to diagnostic fanout: the old graph owns
-/// dependants whose diagnostics must be cleared, while the new graph owns newly introduced
-/// dependants whose diagnostics must be published.
-fn diagnostic_fanout(state: &ServerState, changed_uri: &Url) -> Vec<Url> {
-    let workspace_uris = state
-        .index
-        .keys()
-        .filter(|uri| {
-            !crate::common::util::uri_under_any_library(uri, &state.library_paths)
-                && !crate::common::util::uri_under_any_library(uri, &state.standard_library_paths)
-        })
-        .cloned()
-        .collect::<Vec<_>>();
-    let mut diagnostic_uris = state
-        .published_model()
-        .dependencies()
-        .workspace_documents_affected_by(workspace_uris, changed_uri)
-        .into_uris();
-    if !diagnostic_uris.contains(changed_uri) {
-        diagnostic_uris.push(changed_uri.clone());
-    }
-    diagnostic_uris
-}
-
 async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str, String)>) {
     if !enabled {
         return;
@@ -325,21 +294,6 @@ mod tests {
         );
         assert_eq!(publication_failure_message(&failure),
             "Spec42 could not analyze the current project; the previous analysis remains visible. ConstructionWorker: worker panicked");
-    }
-
-    #[test]
-    fn diagnostic_fanout_retains_old_dependants_and_adds_new_dependants() {
-        let changed = Url::parse("file:///changed.sysml").unwrap();
-        let removed_dependant = Url::parse("file:///old-dependant.sysml").unwrap();
-        let added_dependant = Url::parse("file:///new-dependant.sysml").unwrap();
-
-        assert_eq!(
-            merge_diagnostic_fanout(
-                vec![removed_dependant.clone(), changed.clone()],
-                vec![changed.clone(), added_dependant.clone()],
-            ),
-            vec![changed, added_dependant, removed_dependant]
-        );
     }
 
     #[test]

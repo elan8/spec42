@@ -1231,6 +1231,7 @@ fn closing_unsaved_buffer_restores_disk_diagnostics() {
         &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
     );
     super::harness::wait_for_publication(&mut stdout, &uri);
+    super::harness::wait_for_publication_changed(&mut stdout);
     super::harness::lsp_barrier(&mut stdin, &mut stdout);
 
     send_message(
@@ -1263,6 +1264,7 @@ fn closing_unsaved_buffer_restores_disk_diagnostics() {
         }
     }
 
+    super::harness::wait_for_publication_changed(&mut stdout);
     send_message(
         &mut stdin,
         &serde_json::json!({
@@ -1281,6 +1283,8 @@ fn closing_unsaved_buffer_restores_disk_diagnostics() {
         .to_string(),
     );
     let mut restored = false;
+    let mut publication_seen = false;
+    let mut ingestion_seen = false;
     loop {
         let message = read_message(&mut stdout).expect("message before close barrier");
         let json: serde_json::Value = serde_json::from_str(&message).expect("json message");
@@ -1293,7 +1297,9 @@ fn closing_unsaved_buffer_restores_disk_diagnostics() {
                 .as_array()
                 .is_some_and(Vec::is_empty);
         }
-        if json["id"].as_i64() == Some(barrier_id) {
+        publication_seen |= json["method"] == "spec42/publicationChanged";
+        ingestion_seen |= json["id"].as_i64() == Some(barrier_id);
+        if ingestion_seen && publication_seen && restored {
             break;
         }
     }
@@ -1360,6 +1366,7 @@ fn watched_rename_batch_publishes_once_without_transient_dependent_error() {
         .to_string(),
     );
     let mut publications = 0;
+    let mut ingestion_seen = false;
     let mut usage_republished = false;
     loop {
         let message = read_message(&mut stdout).expect("message before rename barrier");
@@ -1382,7 +1389,8 @@ fn watched_rename_batch_publishes_once_without_transient_dependent_error() {
                 "rename batch published an intermediate unresolved dependency: {json}"
             );
         }
-        if json["id"].as_i64() == Some(barrier_id) {
+        ingestion_seen |= json["id"].as_i64() == Some(barrier_id);
+        if ingestion_seen && publications > 0 && usage_republished {
             break;
         }
     }
@@ -1454,9 +1462,9 @@ fn explorer_rename_notification_publishes_once_without_transient_dependent_error
         .to_string(),
     );
     let mut publications = 0;
+    let mut ingestion_seen = false;
     let mut usage_republished = false;
     let mut old_cleared = false;
-    let mut follow_up_id = None;
     loop {
         let message = read_message(&mut stdout).expect("message before rename barrier");
         let json: serde_json::Value = serde_json::from_str(&message).expect("json message");
@@ -1489,24 +1497,8 @@ fn explorer_rename_notification_publishes_once_without_transient_dependent_error
                 old_cleared = true;
             }
         }
-        if json["id"].as_i64() == Some(barrier_id) && follow_up_id.is_none() && !old_cleared {
-            // The clear can be written just after this response when the notification and the
-            // barrier request overlap. One more request observes that publish without sleeping.
-            let id = next_id();
-            follow_up_id = Some(id);
-            send_message(
-                &mut stdin,
-                &serde_json::json!({
-                    "jsonrpc": "2.0", "id": id, "method": "workspace/symbol",
-                    "params": { "query": "" }
-                })
-                .to_string(),
-            );
-        }
-        if json["id"].as_i64() == Some(barrier_id) && old_cleared {
-            break;
-        }
-        if follow_up_id.is_some_and(|id| json["id"].as_i64() == Some(id)) {
+        ingestion_seen |= json["id"].as_i64() == Some(barrier_id);
+        if ingestion_seen && publications > 0 && usage_republished && old_cleared {
             break;
         }
     }

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import type { LanguageClient } from "vscode-languageclient/node";
+import { LSPErrorCodes, ResponseError, type LanguageClient } from "vscode-languageclient/node";
 import { log, logError } from "../logger";
 
 export interface PositionDTO { line: number; character: number }
@@ -39,6 +39,9 @@ export function resolvedReference(result: FeatureInspectorResult | null | undefi
   return result?.referenced?.status === "resolved" ? result.referenced.element : undefined;
 }
 export function hasWorkspaceFolder(): boolean { return (vscode.workspace.workspaceFolders?.length ?? 0) > 0; }
+export function isPendingAnalysisError(error: unknown): boolean {
+  return error instanceof ResponseError && error.code === LSPErrorCodes.ContentModified;
+}
 export function isClientNotRunningError(error: unknown): boolean {
   return error instanceof Error && /Client is not running/i.test(error.message);
 }
@@ -61,7 +64,7 @@ export class LspModelProvider {
     const projectUri = this.inspectorProjectUri;
     try {
       return await this.sendRequest<FeatureInspectorResult>("sysml/featureInspector", { textDocument: { uri }, uri, position, ...(projectUri ? { projectUri } : {}) }, token);
-    } catch (error) { logError("getFeatureInspector failed", error); throw error; }
+    } catch (error) { if (!token?.isCancellationRequested && !isPendingAnalysisError(error)) logError("getFeatureInspector failed", error); throw error; }
   }
   async getServerStats(): Promise<SysMLServerStats | undefined> {
     try { return await this.client.sendRequest<SysMLServerStats>("sysml/serverStats"); }

@@ -325,16 +325,7 @@ pub(crate) async fn did_change_watched_files(
             deleted_client_uris.push(event.uri);
         }
     }
-    let event_uris: Vec<Url> = changed_or_created_uris
-        .iter()
-        .chain(deleted_uris.iter())
-        .cloned()
-        .collect();
-    // Cheap: an `Arc` clone of the current state, not the fanout scan below. Held so the old
-    // side of the fanout is still available after the mutation, but the scan itself is deferred
-    // until we know the batch actually changed anything -- a batch of redundant save echoes
-    // must not pay for it.
-    let old = handle.snapshot();
+    ensure_analysis_notifications(client, handle, runtime_config);
     let refresh_start = Instant::now();
     let changed = match handle.apply_watched_file_changes(changes).await {
         Ok((changed, warnings)) => {
@@ -358,22 +349,9 @@ pub(crate) async fn did_change_watched_files(
         client.log_message(MessageType::WARNING, msg).await;
     }
     report_publication_failure(client, handle).await;
-    let diagnostics_start = Instant::now();
     if changed {
-        let mut diagnostic_uris = event_uris
-            .iter()
-            .flat_map(|uri| diagnostic_fanout(&old, uri))
-            .collect::<Vec<_>>();
-        drop(old);
-        let new = handle.snapshot();
-        for uri in &event_uris {
-            diagnostic_uris =
-                merge_diagnostic_fanout(diagnostic_uris, diagnostic_fanout(&new, uri));
-        }
-        drop(new);
-        publish_workspace_diagnostics(client, handle, runtime_config, Some(&diagnostic_uris)).await;
+        handle.request_rebuild();
     }
-    let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
     let deleted_uri_count = deleted_uris.len();
     let current = handle.snapshot();
     let removed_uris = deleted_uris
@@ -407,7 +385,6 @@ pub(crate) async fn did_change_watched_files(
             ),
             ("deletedUris", deleted_uri_count.to_string()),
             ("refreshDocumentMs", refresh_document_ms.to_string()),
-            ("diagnosticsMs", diagnostics_ms.to_string()),
             ("totalMs", total_start.elapsed().as_millis().to_string()),
         ],
     )

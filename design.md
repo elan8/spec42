@@ -270,7 +270,10 @@ Cancelled/failed work cannot install a partial library stratum or semantic publi
 retention respects live source and AST leases across projects and sweeps replaced edit history.
 Completion delivery is independent of ordered source ingestion. Diagnostics are versioned, bounded
 in fanout and checked against the current publication; editor refresh and status notifications are
-wakes to requery the current owner, not independent stores of semantic freshness.
+wakes to requery the current owner, not independent stores of semantic freshness. A coalesced
+completion republishes workspace diagnostics and open library diagnostics once, replacing the old
+per-edit selective delivery plus a later full sweep. This is reporting scope over already-owned
+diagnostics, not a host implementation of dependency semantics.
 
 ### Project boundaries and library admission
 
