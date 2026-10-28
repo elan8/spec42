@@ -21,7 +21,7 @@ use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
-use crate::session::services::{ParsedScanEntry, RebuildAllDocumentLinksMetrics};
+use crate::session::services::ParsedScanEntry;
 use crate::session::state::ServerState;
 
 #[cfg(test)]
@@ -1012,6 +1012,124 @@ mod library_reindex_tests {
     }
 
     #[tokio::test]
+    async fn library_scan_burst_retains_only_one_active_and_the_latest_configuration() {
+        let handle = ready();
+        let initial = handle
+            .begin_library_reindex_if_changed(vec![uri("file:///scan/initial/")])
+            .await
+            .unwrap()
+            .unwrap();
+        let (active, _) = handle.queue_library_scan(initial).unwrap().into_parts();
+        let mut latest = None;
+        for revision in 0..1_000 {
+            let token = handle
+                .begin_library_reindex_if_changed(vec![uri(&format!("file:///scan/{revision}/"))])
+                .await
+                .unwrap()
+                .unwrap();
+            assert!(handle.queue_library_scan(token.clone()).is_none());
+            assert_eq!(handle.library_scan_occupancy(), (true, true));
+            latest = Some(token);
+        }
+        let (current, request) = handle.finish_library_scan(&active).unwrap().into_parts();
+        assert_eq!(request.library_paths, vec![uri("file:///scan/999/")]);
+        assert!(handle.library_scan_is_current(&request.readiness));
+        assert!(handle
+            .snapshot()
+            .diagnostic_readiness
+            .is_current(&latest.unwrap()));
+        assert_eq!(handle.library_scan_occupancy(), (true, false));
+        assert!(handle.finish_library_scan(&active).is_none());
+        assert_eq!(handle.library_scan_occupancy(), (true, false));
+        assert!(handle.finish_library_scan(&current).is_none());
+        assert_eq!(handle.library_scan_occupancy(), (false, false));
+    }
+
+    #[tokio::test]
+    async fn foreign_scan_completions_and_close_cannot_start_pending_discovery() {
+        let handle = ready();
+        let other = ready();
+        let root = vec![uri("file:///scan/initial/")];
+        let initial = handle
+            .begin_library_reindex_if_changed(root.clone())
+            .await
+            .unwrap()
+            .unwrap();
+        let foreign = other
+            .begin_library_reindex_if_changed(root)
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(handle.queue_library_scan(foreign.clone()).is_none());
+        let (foreign_work, _) = other.queue_library_scan(foreign).unwrap().into_parts();
+        let (active, _) = handle.queue_library_scan(initial).unwrap().into_parts();
+        let pending = handle
+            .begin_library_reindex_if_changed(vec![uri("file:///scan/latest/")])
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(handle.queue_library_scan(pending.clone()).is_none());
+        assert!(handle.finish_library_scan(&foreign_work).is_none());
+        assert_eq!(handle.library_scan_occupancy(), (true, true));
+        handle.close_session().await.unwrap();
+        assert_eq!(handle.library_scan_occupancy(), (true, false));
+        assert!(handle.queue_library_scan(pending).is_none());
+        assert!(handle.finish_library_scan(&active).is_none());
+        assert_eq!(handle.library_scan_occupancy(), (false, false));
+        assert!(other.finish_library_scan(&foreign_work).is_none());
+    }
+
+    #[tokio::test]
+    async fn discovery_releases_its_interval_without_waiting_for_semantic_publication() {
+        let handle = ready();
+        // Reserve semantic work without executing it, so awaiting publication here would
+        // prevent the discovery driver from advancing to the next configuration.
+        let _reserved = {
+            let snapshot = handle.snapshot();
+            let mut scheduler = handle.analysis_queue.lock().unwrap();
+            scheduler.newest = Some(snapshot.session.inputs());
+            let super::super::latest_work::Submission::Start(work) =
+                scheduler.work.submit(snapshot)
+            else {
+                panic!("idle queue")
+            };
+            work
+        };
+        let initial = handle
+            .begin_library_reindex_if_changed(vec![uri("file:///scan/initial/")])
+            .await
+            .unwrap()
+            .unwrap();
+        let (active, _) = handle
+            .queue_library_scan(initial.clone())
+            .unwrap()
+            .into_parts();
+        let admission = tokio::time::timeout(
+            std::time::Duration::from_secs(5),
+            handle.complete_library_reindex(initial, Vec::new()),
+        )
+        .await
+        .unwrap()
+        .unwrap();
+        assert!(matches!(admission, LibraryReindexCompletion::Admitted(..)));
+        assert_eq!(
+            handle.snapshot().session.analysis_status(),
+            sysml_query::publication::AnalysisStatus::Updating
+        );
+        let latest = handle
+            .begin_library_reindex_if_changed(vec![uri("file:///scan/latest/")])
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(handle.queue_library_scan(latest).is_none());
+        let (next, request) = handle.finish_library_scan(&active).unwrap().into_parts();
+        assert!(handle.library_scan_is_current(&request.readiness));
+        assert_eq!(request.library_paths, vec![uri("file:///scan/latest/")]);
+        handle.close_session().await.unwrap();
+        assert!(handle.finish_library_scan(&next).is_none());
+    }
+
+    #[tokio::test]
     async fn older_library_scan_cannot_mutate_a_newer_configuration_or_publication() {
         let handle = ready();
         let old = handle
@@ -1116,6 +1234,7 @@ mod library_reindex_tests {
                 .unwrap(),
             LibraryReindexCompletion::Admitted(..)
         ));
+        handle.rebuild_publication().await.unwrap();
         let snapshot = handle.snapshot();
         assert_eq!(snapshot.index[&document].content(), "package Unsaved;");
         assert_eq!(snapshot.index[&document].editor_version(), Some(17));
@@ -1169,6 +1288,7 @@ mod library_reindex_tests {
             .complete_library_reindex(current.clone(), entries)
             .await
             .unwrap();
+        handle.rebuild_publication().await.unwrap();
         let complete = handle.snapshot();
         assert!(!complete.diagnostic_readiness.source_inputs_pending());
         assert_eq!(
@@ -1249,6 +1369,7 @@ mod library_reindex_tests {
             .complete_library_reindex(retry.clone(), entries)
             .await
             .unwrap();
+        handle.rebuild_publication().await.unwrap();
         assert!(handle.announce_readiness(retry).await.unwrap());
         assert_eq!(
             handle.snapshot().session.analysis_status(),
@@ -1298,9 +1419,17 @@ mod library_reindex_tests {
     }
 }
 
+/// Immutable source-discovery inputs. The queue holds one active and one latest request.
+pub(crate) struct LibraryScanRequest {
+    pub(crate) library_paths: Vec<Url>,
+    pub(crate) readiness: super::readiness::ReadinessToken,
+}
+pub(crate) type LibraryScanWork = super::latest_work::Work<LibraryScanRequest>;
+pub(crate) use super::latest_work::WorkToken as LibraryScanWorkToken;
+
 /// Only the scan for the current project/configuration epoch may admit source inputs.
 pub(crate) enum LibraryReindexCompletion {
-    Admitted(Vec<(Url, Option<String>)>, RebuildAllDocumentLinksMetrics),
+    Admitted(Vec<(Url, Option<String>)>),
     Superseded,
 }
 
@@ -1314,6 +1443,7 @@ pub(crate) struct WorkspaceHandle {
     analysis_queue: Arc<std::sync::Mutex<AnalysisScheduler>>,
     analysis_events: tokio::sync::watch::Sender<AnalysisEvent>,
     analysis_notifications_started: Arc<std::sync::atomic::AtomicBool>,
+    library_scans: Arc<std::sync::Mutex<super::latest_work::LatestWork<LibraryScanRequest>>>,
 }
 
 impl WorkspaceHandle {
@@ -1332,6 +1462,7 @@ impl WorkspaceHandle {
             analysis_queue: Arc::default(),
             analysis_events,
             analysis_notifications_started: Arc::default(),
+            library_scans: Arc::default(),
         }
     }
 
@@ -1502,6 +1633,10 @@ impl WorkspaceHandle {
         scheduler.work.close();
         scheduler.newest = None;
         self.analysis_events.send_replace(AnalysisEvent::Closed);
+        self.library_scans
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .close();
         Ok(())
     }
 
@@ -2020,11 +2155,62 @@ impl WorkspaceHandle {
 
     // --- did_change_configuration (library reindex) ---------------------------------------
 
+    pub(crate) fn library_scan_is_current(&self, token: &super::readiness::ReadinessToken) -> bool {
+        let snapshot = self.snapshot();
+        snapshot.diagnostic_readiness.is_current(token)
+            && snapshot.diagnostic_readiness.source_inputs_pending()
+            && snapshot.session.lifecycle() != sysml_query::publication::SessionLifecycle::Closed
+    }
+
+    pub(crate) fn queue_library_scan(
+        &self,
+        token: super::readiness::ReadinessToken,
+    ) -> Option<LibraryScanWork> {
+        use super::latest_work::Submission;
+        let mut queue = self
+            .library_scans
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let snapshot = self.snapshot();
+        if queue.is_closed()
+            || !snapshot.diagnostic_readiness.is_current(&token)
+            || !snapshot.diagnostic_readiness.source_inputs_pending()
+            || snapshot.session.lifecycle() == sysml_query::publication::SessionLifecycle::Closed
+        {
+            return None;
+        }
+        match queue.submit(LibraryScanRequest {
+            library_paths: snapshot.library_paths.clone(),
+            readiness: token,
+        }) {
+            Submission::Start(work) => Some(work),
+            Submission::Queued | Submission::Closed => None,
+        }
+    }
+
+    pub(crate) fn finish_library_scan(
+        &self,
+        token: &LibraryScanWorkToken,
+    ) -> Option<LibraryScanWork> {
+        self.library_scans
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .complete(token)
+            .ok()
+            .flatten()
+    }
+
+    #[cfg(test)]
+    fn library_scan_occupancy(&self) -> (bool, bool) {
+        self.library_scans.lock().unwrap().occupancy()
+    }
+
     pub(crate) async fn begin_library_reindex_if_changed(
         &self,
         new_library_paths: Vec<Url>,
     ) -> Result<Option<super::readiness::ReadinessToken>, MutatePanicked> {
-        self.actor
+        let token = self
+            .actor
             .mutate_if_changed(move |s| {
                 if s.session.lifecycle() == sysml_query::publication::SessionLifecycle::Closed {
                     return Mutation::Unchanged(None);
@@ -2045,7 +2231,11 @@ impl WorkspaceHandle {
                 }
             })
             .await
-            .map(|outcome| outcome.value)
+            .map(|outcome| outcome.value)?;
+        if token.is_some() {
+            self.request_rebuild();
+        }
+        Ok(token)
     }
 
     pub(crate) async fn complete_library_reindex(
@@ -2080,15 +2270,14 @@ impl WorkspaceHandle {
                 s.publication_failure = None;
                 s.semantic_revision = s.semantic_revision.wrapping_add(1);
                 s.invalidate_inputs();
-                Mutation::Changed(LibraryReindexCompletion::Admitted(
-                    ingest_results,
-                    RebuildAllDocumentLinksMetrics::default(),
-                ))
+                Mutation::Changed(LibraryReindexCompletion::Admitted(ingest_results))
             })
             .await?
             .value;
         if matches!(result, LibraryReindexCompletion::Admitted(..)) {
-            self.rebuild_publication().await?;
+            // Release the discovery interval before awaiting semantic construction: the next
+            // configuration's sources may be a prerequisite of that construction.
+            self.request_rebuild();
         }
         Ok(result)
     }

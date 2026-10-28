@@ -410,6 +410,7 @@ mod readiness_tests {
         client: Client,
         handle: WorkspaceHandle,
         config: Arc<std::sync::OnceLock<RuntimeConfig>>,
+        reindex: bool,
     }
 
     #[tower_lsp::async_trait]
@@ -422,7 +423,25 @@ mod readiness_tests {
         }
 
         async fn initialized(&self, _: InitializedParams) {
-            initialized_handle(&self.client, &self.handle, "empty-scan-test", &self.config).await;
+            if self.reindex {
+                ensure_analysis_notifications(&self.client, &self.handle, &self.config);
+                let token = self
+                    .handle
+                    .begin_library_reindex_if_changed(vec![Url::parse(
+                        "file:///empty-reindex/library/",
+                    )
+                    .unwrap()])
+                    .await
+                    .unwrap()
+                    .unwrap();
+                self.handle
+                    .complete_library_reindex(token, Vec::new())
+                    .await
+                    .unwrap();
+            } else {
+                initialized_handle(&self.client, &self.handle, "empty-scan-test", &self.config)
+                    .await;
+            }
         }
 
         async fn shutdown(&self) -> tower_lsp::jsonrpc::Result<()> {
@@ -432,8 +451,20 @@ mod readiness_tests {
 
     #[tokio::test]
     async fn empty_scan_announces_before_republishing_a_deferred_open_document() {
+        assert_readiness_before_diagnostics(false).await;
+    }
+
+    #[tokio::test]
+    async fn reindex_publication_announces_before_diagnostics_without_awaiting_a_scan_task() {
+        assert_readiness_before_diagnostics(true).await;
+    }
+
+    async fn assert_readiness_before_diagnostics(reindex: bool) {
         let uri = Url::parse("file:///empty-scan/bad.sysml").unwrap();
         let mut state = ServerState::default();
+        if reindex {
+            state.session.complete_startup();
+        }
         state.index.insert(
             uri.clone(),
             crate::session::state::IndexEntry::for_test(&uri, "package P { } }"),
@@ -447,6 +478,7 @@ mod readiness_tests {
             client,
             handle,
             config,
+            reindex,
         });
         let (mut client_io, server_io) = tokio::io::duplex(16384);
         let (reader, writer) = tokio::io::split(server_io);

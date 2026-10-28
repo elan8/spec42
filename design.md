@@ -282,6 +282,11 @@ for its library inputs. Saved scan results merge around open buffers. Unexpected
 worker failures retain the coherent publication and an explicit failed state across subsequent edits;
 retrying the same configuration creates a new epoch. An open buffer from a removed library keeps its
 source provenance for that editor interval and is withdrawn on close.
+Each project retains at most one active configured-library discovery job and one replaceable
+pending request containing the latest complete configuration. Obsolete jobs stop at discovery and
+parsing boundaries; closing the project discards pending discovery. The discovery driver releases
+its interval after source admission, independently of semantic construction. Readiness and
+diagnostic delivery follow the current semantic publication through the owner's completion loop.
 
 ### Project boundaries and library admission
 

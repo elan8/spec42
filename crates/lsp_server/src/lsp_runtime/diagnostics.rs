@@ -420,6 +420,7 @@ mod tests {
             .complete_library_reindex(replacement.clone(), Vec::new())
             .await
             .unwrap();
+        handle.rebuild_publication().await.unwrap();
         assert!(handle.announce_readiness(replacement).await.unwrap());
         assert!(may_publish(
             &handle,

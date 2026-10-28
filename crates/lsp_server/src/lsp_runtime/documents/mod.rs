@@ -64,6 +64,16 @@ fn ensure_analysis_notifications(
                             if report.outcome
                                 == sysml_query::publication::PublicationOutcome::Published
                             {
+                                let snapshot = handle.snapshot();
+                                let readiness = snapshot
+                                    .diagnostic_readiness
+                                    .needs_reindex_notification()
+                                    .then(|| snapshot.diagnostic_readiness.token());
+                                drop(snapshot);
+                                if let Some(readiness) = readiness {
+                                    send_semantic_ready_notification(&client, &handle, readiness)
+                                        .await;
+                                }
                                 // A coalesced job can include changes to several documents. A
                                 // workspace sweep also clears former dependants; open libraries
                                 // remain authoring surfaces and must receive their diagnostics.
@@ -252,6 +262,9 @@ async fn send_semantic_ready_notification(
     let snapshot = handle.snapshot();
     if !snapshot.diagnostic_readiness.is_current(&token)
         || snapshot.diagnostic_readiness.source_inputs_pending()
+        || (!snapshot.diagnostic_readiness.needs_initial_notification()
+            && snapshot.session.analysis_status()
+                != sysml_query::publication::AnalysisStatus::Current)
     {
         return;
     }

@@ -9,7 +9,7 @@ pub(crate) async fn did_open(
 ) {
     ensure_analysis_notifications(client, handle, runtime_config);
     // Loose projects created after initialize do not run initialized_handle. Announce their
-    // initial readiness here, while a library-reindex epoch remains owned by its scan task.
+    // initial readiness here; library readiness follows its semantic publication.
     let snapshot = handle.snapshot();
     let announce_initial = snapshot.diagnostic_readiness.needs_initial_notification()
         && crate::session::state::supports_semantic_queries(snapshot.session.lifecycle());
@@ -400,6 +400,7 @@ pub(crate) async fn did_change_configuration(
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeConfigurationParams,
 ) {
+    ensure_analysis_notifications(client, handle, runtime_config);
     let library_path_base = runtime_config
         .get()
         .and_then(|config| config.library_path_base.as_deref());
@@ -422,142 +423,133 @@ pub(crate) async fn did_change_configuration(
         return;
     };
 
+    let Some(mut work) = handle.queue_library_scan(readiness_token) else {
+        return;
+    };
     let handle = handle.clone();
     let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
-    let source = handle.snapshot().services.source.clone();
     tokio::spawn(async move {
-        let perf_logging_enabled = runtime_config
-            .get()
-            .expect("initialize precedes all other LSP requests")
-            .perf_logging_enabled;
-        let total_start = Instant::now();
-        let discover_read_start = Instant::now();
-        let (entries, summary) =
-            match tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths, &source))
-                .await
-            {
-                Ok(result) => result,
-                Err(error) => {
-                    fail_library_scan(
-                        &client,
-                        &handle,
-                        readiness_token,
-                        format!("Library discovery worker failed: {error}"),
-                    )
-                    .await;
-                    return;
-                }
-            };
-        let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
-        let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
-        let parallel_parse_min_files =
-            util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
-        let should_parallel_parse =
-            parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
-        let parse_worker_start = Instant::now();
-        let services = handle.snapshot().services.clone();
-        let parsed_entries = match tokio::task::spawn_blocking(move || {
-            parse_scanned_documents(entries, should_parallel_parse, &services)
-        })
-        .await
+        loop {
+            let (token, request) = work.into_parts();
+            run_library_scan(&client, &handle, &runtime_config, request).await;
+            match handle.finish_library_scan(&token) {
+                Some(next) => work = next,
+                None => return,
+            }
+        }
+    });
+}
+
+async fn run_library_scan(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
+    request: crate::session::handle::LibraryScanRequest,
+) {
+    let readiness_token = request.readiness;
+    if !handle.library_scan_is_current(&readiness_token) {
+        return;
+    }
+    let new_library_paths = request.library_paths;
+    let source = handle.snapshot().services.source.clone();
+    let perf_logging_enabled = runtime_config
+        .get()
+        .expect("initialize precedes all other LSP requests")
+        .perf_logging_enabled;
+    let total_start = Instant::now();
+    let discover_read_start = Instant::now();
+    let (entries, summary) =
+        match tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths, &source))
+            .await
         {
             Ok(result) => result,
             Err(error) => {
                 fail_library_scan(
-                    &client,
-                    &handle,
+                    client,
+                    handle,
                     readiness_token,
-                    format!("Library syntax worker failed: {error}"),
+                    format!("Library discovery worker failed: {error}"),
                 )
                 .await;
                 return;
             }
         };
-        let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
-        let ingest_start = Instant::now();
-        let (ingest_results, relink_metrics) = match handle
-            .complete_library_reindex(readiness_token.clone(), parsed_entries)
-            .await
-        {
-            Ok(crate::session::handle::LibraryReindexCompletion::Admitted(results, metrics)) => {
-                (results, metrics)
-            }
-            Ok(crate::session::handle::LibraryReindexCompletion::Superseded) => return,
-            Err(error) => {
-                client.log_message(MessageType::ERROR, format!("Library source admission failed; retaining the previous publication: {error:?}")).await;
-                return;
-            }
-        };
-        let mut warnings = Vec::new();
-        for (_uri_norm, warning) in ingest_results {
-            if let Some(message) = warning {
-                warnings.push(format!("didChangeConfiguration: {}", message));
-            }
+    let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
+    if !handle.library_scan_is_current(&readiness_token) {
+        return;
+    }
+    let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
+    let parallel_parse_min_files = util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
+    let should_parallel_parse = parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
+    let parse_worker_start = Instant::now();
+    let services = handle.snapshot().services.clone();
+    let parsed_entries = match tokio::task::spawn_blocking(move || {
+        parse_scanned_documents(entries, should_parallel_parse, &services)
+    })
+    .await
+    {
+        Ok(result) => result,
+        Err(error) => {
+            fail_library_scan(
+                client,
+                handle,
+                readiness_token,
+                format!("Library syntax worker failed: {error}"),
+            )
+            .await;
+            return;
         }
-        let ingest_ms = ingest_start.elapsed().as_millis() as u64;
-        if summary.roots_skipped_non_file > 0
-            || summary.read_failures > 0
-            || summary.uri_failures > 0
-        {
-            warnings.push(format!(
-                "didChangeConfiguration: library reindex completed with skips: loaded {} of {} candidate SysML/KerML files across {} root(s); skipped_non_file_roots={}, read_failures={}, uri_failures={}.",
-                summary.files_loaded,
-                summary.candidate_files,
-                summary.roots_scanned,
-                summary.roots_skipped_non_file,
-                summary.read_failures,
-                summary.uri_failures,
-            ));
+    };
+    let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
+    let ingest_start = Instant::now();
+    let ingest_results = match handle
+        .complete_library_reindex(readiness_token.clone(), parsed_entries)
+        .await
+    {
+        Ok(crate::session::handle::LibraryReindexCompletion::Admitted(results)) => results,
+        Ok(crate::session::handle::LibraryReindexCompletion::Superseded) => return,
+        Err(error) => {
+            client.log_message(MessageType::ERROR, format!("Library source admission failed; retaining the previous publication: {error:?}")).await;
+            return;
         }
-        for warning in warnings {
-            client.log_message(MessageType::WARNING, warning).await;
+    };
+    let mut warnings = Vec::new();
+    for (_uri_norm, warning) in ingest_results {
+        if let Some(message) = warning {
+            warnings.push(format!("didChangeConfiguration: {}", message));
         }
-        send_semantic_ready_notification(&client, &handle, readiness_token).await;
-        refresh_semantic_tokens(&client, &runtime_config).await;
-        let diagnostics_start = Instant::now();
-        publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
-        log_perf(
-            &client,
-            perf_logging_enabled,
-            "backend:didChangeConfigurationReindex",
-            vec![
-                ("discoverReadMs", discover_read_ms.to_string()),
-                ("parseWorkersMs", parse_worker_ms.to_string()),
-                ("ingestMs", ingest_ms.to_string()),
-                ("relinkTotalMs", relink_metrics.total_ms.to_string()),
-                (
-                    "relinkRemoveNodesMs",
-                    relink_metrics.remove_nodes_ms.to_string(),
-                ),
-                (
-                    "relinkRebuildGraphsMs",
-                    relink_metrics.rebuild_graphs_ms.to_string(),
-                ),
-                (
-                    "relinkCrossDocumentEdgesMs",
-                    relink_metrics.cross_document_edges_ms.to_string(),
-                ),
-                (
-                    "relinkRefreshSymbolsMs",
-                    relink_metrics.refresh_symbols_ms.to_string(),
-                ),
-                ("uriCount", relink_metrics.uri_count.to_string()),
-                (
-                    "parsedDocCount",
-                    relink_metrics.parsed_doc_count.to_string(),
-                ),
-                ("loadedFiles", summary.files_loaded.to_string()),
-                ("candidateFiles", summary.candidate_files.to_string()),
-                (
-                    "diagnosticsMs",
-                    diagnostics_start.elapsed().as_millis().to_string(),
-                ),
-                ("totalMs", total_start.elapsed().as_millis().to_string()),
-            ],
-        )
-        .await;
-    });
+    }
+    let ingest_ms = ingest_start.elapsed().as_millis() as u64;
+    if summary.roots_skipped_non_file > 0 || summary.read_failures > 0 || summary.uri_failures > 0 {
+        warnings.push(format!(
+            "didChangeConfiguration: library reindex completed with skips: loaded {} of {} candidate SysML/KerML files across {} root(s); skipped_non_file_roots={}, read_failures={}, uri_failures={}.",
+            summary.files_loaded,
+            summary.candidate_files,
+            summary.roots_scanned,
+            summary.roots_skipped_non_file,
+            summary.read_failures,
+            summary.uri_failures,
+        ));
+    }
+    for warning in warnings {
+        client.log_message(MessageType::WARNING, warning).await;
+    }
+    log_perf(
+        client,
+        perf_logging_enabled,
+        "backend:didChangeConfigurationReindex",
+        vec![
+            ("discoverReadMs", discover_read_ms.to_string()),
+            ("parseWorkersMs", parse_worker_ms.to_string()),
+            ("ingestMs", ingest_ms.to_string()),
+            ("analysisScheduled", "true".to_owned()),
+            ("loadedFiles", summary.files_loaded.to_string()),
+            ("candidateFiles", summary.candidate_files.to_string()),
+            ("totalMs", total_start.elapsed().as_millis().to_string()),
+        ],
+    )
+    .await;
 }
 
 async fn fail_library_scan(

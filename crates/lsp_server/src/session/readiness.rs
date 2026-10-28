@@ -66,6 +66,10 @@ impl DiagnosticReadiness {
         self.initial && !self.announced
     }
 
+    pub(crate) fn needs_reindex_notification(&self) -> bool {
+        !self.initial && !self.announced && !self.source_inputs_pending
+    }
+
     /// A send completed for this exact project/notification epoch. An older startup or
     /// reindex notification must never unlock diagnostics for its replacement.
     pub(crate) fn announce(&mut self, token: &ReadinessToken) -> bool {
@@ -91,12 +95,15 @@ mod tests {
         assert!(!readiness.announce(&old));
         assert!(!readiness.announced());
         assert!(!readiness.needs_initial_notification());
+        assert!(!readiness.needs_reindex_notification());
         let foreign = DiagnosticReadiness::default().token();
         assert!(!readiness.announce(&foreign));
         assert!(!readiness.announce(&readiness.token()));
         assert!(!readiness.admit_source_inputs(&old));
         assert!(readiness.admit_source_inputs(&readiness.token()));
+        assert!(readiness.needs_reindex_notification());
         assert!(readiness.announce(&readiness.token()));
         assert!(readiness.announced());
+        assert!(!readiness.needs_reindex_notification());
     }
 }
