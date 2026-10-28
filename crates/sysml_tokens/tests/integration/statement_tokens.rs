@@ -2,7 +2,8 @@
 //! directed parameters, `perform`, state actions, assignments and `for` loops.
 
 use sysml_tokens::{
-    ast_semantic_ranges, semantic_tokens_full, TYPE_KEYWORD, TYPE_NAMES, TYPE_PROPERTY, TYPE_TYPE,
+    ast_semantic_ranges, semantic_tokens_full, TYPE_FUNCTION, TYPE_KEYWORD, TYPE_NAMES,
+    TYPE_PROPERTY, TYPE_TYPE,
 };
 
 /// Token types for `content`, as `(line, word, type)` in document order.
@@ -217,4 +218,43 @@ fn keywords_inside_member_ranges_stay_keywords() {
         &[("stakeholder", TYPE_KEYWORD)],
     );
     assert_line(content, "entry;", &[("entry", TYPE_PROPERTY)]);
+}
+
+#[test]
+fn named_assign_and_terminate_headers_keep_precise_roles_in_definitions_and_usages() {
+    let source = r#"package Named {
+  action def <work> Work;
+  action def Definition {
+    action <inc> increment : Work assign lhs := rhs;
+    then action <stop> finish : Work terminate;
+  }
+  action usage {
+    action <next> advance : Work assign lhs := rhs;
+    then action <haltId> halt : Work terminate self;
+  }
+}"#;
+    for (statement, short, name, keyword) in [
+        ("action <inc>", "inc", "increment", "assign"),
+        ("then action <stop>", "stop", "finish", "terminate"),
+        ("action <next>", "next", "advance", "assign"),
+        ("then action <haltId>", "haltId", "halt", "terminate"),
+    ] {
+        assert_line(
+            source,
+            statement,
+            &[
+                ("action", TYPE_KEYWORD),
+                (short, TYPE_PROPERTY),
+                (name, TYPE_PROPERTY),
+                ("Work", TYPE_TYPE),
+                (keyword, TYPE_KEYWORD),
+            ],
+        );
+    }
+    assert_line(source, "terminate self", &[("self", TYPE_PROPERTY)]);
+    assert_line(
+        source,
+        "action def <work>",
+        &[("work", TYPE_FUNCTION), ("Work", TYPE_FUNCTION)],
+    );
 }
