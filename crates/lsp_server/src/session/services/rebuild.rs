@@ -30,6 +30,7 @@ pub(crate) fn index_library_paths_for_search(
                 document: entry.document.clone(),
                 parsed: entry.parsed,
                 admitted_to_publication: false,
+                editor_revision: None,
             },
         );
         state.recovery_search_symbols_mut().extend(symbols);

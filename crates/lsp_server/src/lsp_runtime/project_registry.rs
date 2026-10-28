@@ -73,10 +73,8 @@ impl ProjectRegistry {
             let mut documents = BTreeMap::new();
             for handle in state.handles.values() {
                 let snapshot = handle.snapshot();
-                for uri in &snapshot.open_in_editor {
-                    if let Some(entry) = snapshot.index.get(uri) {
-                        documents.insert(uri.clone(), entry.clone());
-                    }
+                for (uri, entry) in snapshot.editor_documents() {
+                    documents.insert(uri.clone(), entry.clone());
                 }
             }
             documents
@@ -541,7 +539,7 @@ mod tests {
             .await;
         let original = registry.handle_for_uri(&model).await.unwrap();
         original
-            .store_document_text_fast(model.clone(), "package Unsaved;".into())
+            .store_document_text_fast(model.clone(), "package Unsaved;".into(), None)
             .await
             .unwrap();
         original
@@ -696,7 +694,7 @@ mod tests {
         assert!(!Arc::ptr_eq(&a_handle.snapshot(), &b_handle.snapshot()));
         let a_uri = Url::from_file_path(a_source).unwrap();
         a_handle
-            .store_document_text_fast(a_uri.clone(), "package A;".to_owned())
+            .store_document_text_fast(a_uri.clone(), "package A;".to_owned(), None)
             .await
             .unwrap();
         assert!(a_handle.snapshot().index.contains_key(&a_uri));
@@ -724,10 +722,13 @@ mod tests {
             .await;
         let original = registry.handle_for_uri(&uri).await.unwrap();
         original
-            .store_document_text_fast(uri.clone(), "package Unsaved;".to_owned())
+            .store_document_text_fast(uri.clone(), "package Unsaved;".to_owned(), None)
             .await
             .unwrap();
-        original.set_document_open(uri.clone(), true).await.unwrap();
+        original
+            .set_editor_document_open(uri.clone(), 17)
+            .await
+            .unwrap();
 
         fs::write(
             root.join(".project.json"),
@@ -746,7 +747,8 @@ mod tests {
             crate::session::parse_scanned_documents(disk_entries, false, &registry.services);
         replacement.ingest_startup_scan(parsed_disk).await.unwrap();
         let snapshot = replacement.snapshot();
-        assert!(snapshot.open_in_editor.contains(&uri));
+        assert!(snapshot.is_editor_open(&uri));
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(17));
         assert_eq!(
             snapshot.index.get(&uri).unwrap().content(),
             "package Unsaved;"

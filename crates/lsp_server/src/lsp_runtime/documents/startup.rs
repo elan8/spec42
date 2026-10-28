@@ -429,7 +429,7 @@ mod readiness_tests {
             uri.clone(),
             crate::session::state::IndexEntry::for_test(&uri, "package P { } }"),
         );
-        state.open_in_editor.insert(uri.clone());
+        state.index.get_mut(&uri).unwrap().open_editor(None);
         let handle = WorkspaceHandle::spawn(state);
         handle.rebuild_publication().await.unwrap();
         let config = Arc::new(std::sync::OnceLock::new());

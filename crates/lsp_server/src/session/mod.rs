@@ -1,3 +1,4 @@
+mod editor_documents;
 pub(crate) mod handle;
 mod readiness;
 pub(crate) mod services;
