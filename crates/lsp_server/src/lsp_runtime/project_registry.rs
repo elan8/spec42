@@ -270,8 +270,40 @@ impl ProjectRegistry {
         match handles.as_slice() {
             [handle] => Ok(handle.clone()),
             [] => Err("document URI is outside the configured workspace projects".to_owned()),
-            _ => Err("shared library document requires project provenance".to_owned()),
+            _ => self
+                .shared_library_handle(uri, &handles)
+                .ok_or_else(|| "shared library document requires project provenance".to_owned()),
         }
+    }
+
+    /// The project that answers a context-free read of a library document several projects
+    /// admit. Editor requests about a library document the user opened (highlighting, outline,
+    /// folding, hover) carry no project. When every admitting project admits it from the same
+    /// library root on disk, they publish the same source for it, and a library resolves against
+    /// its own library, so any of them gives the same answer: the first in root order does.
+    /// Projects that admit it from different roots stay ambiguous.
+    fn shared_library_handle(
+        &self,
+        uri: &Url,
+        handles: &[WorkspaceHandle],
+    ) -> Option<WorkspaceHandle> {
+        let document = canonicalize_or_self(&uri.to_file_path().ok()?);
+        let mut admitting_roots = handles.iter().map(|handle| {
+            let snapshot = handle.snapshot();
+            snapshot
+                .library_paths
+                .iter()
+                .chain(&snapshot.standard_library_paths)
+                .filter_map(|root| root.to_file_path().ok())
+                .map(|root| canonicalize_or_self(&root))
+                .filter(|root| document.starts_with(root))
+                .max_by_key(|root| root.components().count())
+        });
+        let first = admitting_roots.next()??;
+        admitting_roots
+            .all(|root| root.as_ref() == Some(&first))
+            .then(|| handles.first().cloned())
+            .flatten()
     }
 
     /// Every project publication that explicitly admits this library document.
@@ -585,7 +617,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn library_queries_use_admission_and_require_context_when_shared() {
+    async fn library_queries_use_admission_and_one_shared_library_root() {
         let temp = tempfile::tempdir().unwrap();
         let a = temp.path().join("a");
         let b = temp.path().join("b");
@@ -640,7 +672,14 @@ mod tests {
                 vec![library_root],
             )
             .await;
-        assert!(registry.query_handle_for_uri(&library_uri, None).is_err());
+        // Both projects admit the document from the same library root, so either answers a
+        // context-free read the same way: the first in root order does. An explicit context
+        // still selects its own project.
+        let project_a = registry.existing_handle_for_uri(&a_uri).unwrap();
+        assert!(registry
+            .query_handle_for_uri(&library_uri, None)
+            .unwrap()
+            .same_session(&project_a));
         for project_uri in [&a_uri, &b_uri] {
             let owner = registry.existing_handle_for_uri(project_uri).unwrap();
             assert!(registry
