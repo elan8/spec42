@@ -225,7 +225,7 @@ package BareTerminate {
 ~~~json
 {
   "schemaVersion": 10,
-  "modelDigest": "blake3:91d81406b4f92ec8274b52ba965c5e6d08874e115ffc13822bde57aad61b3193",
+  "modelDigest": "blake3:8395c36385fc4afcb54566be0d8b51273e1d451011d3a0872d47601ed70da85c",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
