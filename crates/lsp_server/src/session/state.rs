@@ -110,7 +110,11 @@ pub(crate) struct ServerState {
     /// Changes only when admitted semantic inputs/reporting change. Guards model mirroring from
     /// edits that race construction without treating search-only bookkeeping as semantic change.
     pub(crate) semantic_revision: u64,
+    /// Ordered desired source state; ingestion can advance ahead of semantic construction.
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
+    /// Opaque source/syntax handles paired with `session.current()`, replaced only at admission.
+    pub(crate) published_index: Arc<std::collections::HashMap<Url, IndexEntry>>,
+    pub(crate) published_library_paths: Arc<[Url]>,
     /// Presentation projection derived only from `session.current()` at the admission barrier.
     pub(crate) semantic_symbols: Vec<SymbolEntry>,
     /// Parser-recovery search entries for documents deliberately excluded from publication.
@@ -142,6 +146,8 @@ impl ServerState {
             diagnostic_readiness: super::readiness::DiagnosticReadiness::default(),
             semantic_revision: 0,
             index: std::collections::HashMap::new(),
+            published_index: Arc::default(),
+            published_library_paths: Arc::default(),
             semantic_symbols: Vec::new(),
             recovery_search_symbols: Vec::new(),
             publication_failure: None,
@@ -156,6 +162,13 @@ impl ServerState {
         self.index
             .iter()
             .filter(|(_, entry)| entry.is_editor_open())
+    }
+
+    /// Called in the same actor turn that admits the matching model. These are source inputs,
+    /// not cached semantic derivations; failed/superseded work never changes this reader pair.
+    pub(crate) fn publish_source_snapshot(&mut self) {
+        self.published_index = Arc::new(self.index.clone());
+        self.published_library_paths = self.library_paths.clone().into();
     }
 
     /// The current immutable publication.
@@ -403,6 +416,7 @@ mod tests {
             completion.admit(&mut state.session),
             PublicationOutcome::Published
         );
+        state.publish_source_snapshot();
     }
 
     /// Without the configured libraries in the publication, every reference into them is

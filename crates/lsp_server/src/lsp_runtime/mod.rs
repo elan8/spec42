@@ -73,6 +73,13 @@ impl LanguageServer for Backend {
     }
 
     async fn shutdown(&self) -> Result<()> {
+        for handle in self.projects.handles() {
+            handle.close_session().await.map_err(|error| {
+                let mut failure = tower_lsp::jsonrpc::Error::internal_error();
+                failure.message = error.to_string().into();
+                failure
+            })?;
+        }
         Ok(())
     }
 

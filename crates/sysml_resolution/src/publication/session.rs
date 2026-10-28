@@ -19,6 +19,15 @@ pub enum SessionLifecycle {
     Closed,
 }
 
+/// Whether the retained publication answers the session's current construction inputs.
+/// This is independent of startup readiness: a settled failure must not be labelled current.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AnalysisStatus {
+    Current,
+    Updating,
+    FailedRetained,
+}
+
 /// Owner-scoped identity of the complete state a session currently publishes.
 ///
 /// Background work captures this value together with the immutable inputs it reads, and may
@@ -105,6 +114,8 @@ pub struct Session<P> {
     version: u64,
     /// Incremented for every mutation of a semantic construction prerequisite.
     input_revision: u64,
+    published_input_revision: u64,
+    failed_input_revision: Option<u64>,
     /// Incremented per started build; only the newest build may be admitted.
     build_generation: u64,
     current: Arc<P>,
@@ -117,6 +128,8 @@ impl<P> Clone for Session<P> {
             lifecycle: self.lifecycle,
             version: self.version,
             input_revision: self.input_revision,
+            published_input_revision: self.published_input_revision,
+            failed_input_revision: self.failed_input_revision,
             build_generation: self.build_generation,
             current: Arc::clone(&self.current),
         }
@@ -131,6 +144,8 @@ impl<P: Published> Session<P> {
             lifecycle: SessionLifecycle::Cold,
             version: 0,
             input_revision: 0,
+            published_input_revision: 0,
+            failed_input_revision: None,
             build_generation: 0,
             current: initial,
         }
@@ -151,6 +166,17 @@ impl<P: Published> Session<P> {
 
     pub fn lifecycle(&self) -> SessionLifecycle {
         self.lifecycle
+    }
+
+    /// Source/configuration freshness of the retained publication, owned by this barrier.
+    pub fn analysis_status(&self) -> AnalysisStatus {
+        if self.failed_input_revision == Some(self.input_revision) {
+            AnalysisStatus::FailedRetained
+        } else if self.published_input_revision == self.input_revision {
+            AnalysisStatus::Current
+        } else {
+            AnalysisStatus::Updating
+        }
     }
 
     pub fn version(&self) -> u64 {
@@ -251,6 +277,7 @@ impl<P: Published> Session<P> {
 
     /// Starts a build for `identity`, superseding any build started earlier.
     pub fn begin_build(&mut self, identity: PublicationIdentity) -> BuildToken {
+        self.failed_input_revision = None;
         self.build_generation = increment(self.build_generation, "build generation");
         BuildToken {
             owner: self.owner,
@@ -277,6 +304,8 @@ impl<P: Published> Session<P> {
         match result {
             Ok(published) if published.identity() == &token.identity => {
                 self.current = published;
+                self.published_input_revision = self.input_revision;
+                self.failed_input_revision = None;
                 self.version = increment(self.version, "publication version");
                 if self.lifecycle == SessionLifecycle::Reindexing {
                     self.lifecycle = SessionLifecycle::Ready;
@@ -295,6 +324,7 @@ impl<P: Published> Session<P> {
     }
 
     fn finish_current_build(&mut self) {
+        self.failed_input_revision = Some(self.input_revision);
         if self.lifecycle == SessionLifecycle::Reindexing {
             self.transition(SessionLifecycle::Ready);
         }
@@ -303,6 +333,7 @@ impl<P: Published> Session<P> {
     /// Finishes a failed preparation for the current semantic inputs. There is no build token yet,
     /// but the lifecycle must not claim work remains in flight.
     pub fn finish_preparation_failure(&mut self) {
+        self.failed_input_revision = Some(self.input_revision);
         if self.lifecycle == SessionLifecycle::Reindexing {
             self.transition(SessionLifecycle::Ready);
         }
@@ -379,6 +410,45 @@ mod tests {
         let version = session.complete_startup();
         assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
         assert_eq!(version, session.version());
+    }
+
+    #[test]
+    fn analysis_status_tracks_current_updating_and_failed_retained_inputs() {
+        let mut session = ready();
+        assert_eq!(session.analysis_status(), AnalysisStatus::Current);
+        session.invalidate_inputs();
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
+        let failed = session.begin_build(identity("failed"));
+        assert_eq!(
+            session.admit::<()>(&failed, Err(())),
+            PublicationOutcome::Failed
+        );
+        assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
+        assert_eq!(session.analysis_status(), AnalysisStatus::FailedRetained);
+        session.invalidate_inputs();
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
+        assert_eq!(
+            session.admit::<()>(&failed, Err(())),
+            PublicationOutcome::Superseded
+        );
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
+        let completed = session.begin_build(identity("completed"));
+        assert_eq!(
+            session.admit::<()>(&completed, Ok(Arc::new(Fake(identity("completed"))))),
+            PublicationOutcome::Published
+        );
+        assert_eq!(session.analysis_status(), AnalysisStatus::Current);
+    }
+
+    #[test]
+    fn failed_preparation_is_not_reported_current_just_because_startup_finished() {
+        let mut session = ready();
+        session.invalidate_inputs();
+        session.finish_preparation_failure();
+        assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
+        assert_eq!(session.analysis_status(), AnalysisStatus::FailedRetained);
+        session.begin_build(identity("retry"));
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
     }
 
     #[test]

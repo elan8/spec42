@@ -241,14 +241,14 @@ pub(crate) fn sysml_server_stats_result(
     }
 }
 
-/// Clears the document-store side of the cache (index/symbol table/publication/render cache),
-/// returning the pre-clear document and symbol counts. Called via
+/// Clears desired source/search state, returning the previous document and symbol counts.
+/// The admitted source/model/projection pair remains intact until its replacement is admitted.
+/// Called via
 /// `WorkspaceHandle::clear_cache_state` inside an actor `mutate` closure.
 pub(crate) fn clear_document_store_state(state: &mut ServerState) -> (usize, usize) {
     let docs = state.index().len();
     let syms = state.semantic_symbols.len() + state.recovery_search_symbols.len();
     state.index_mut().clear();
-    state.semantic_symbols.clear();
     state.recovery_search_symbols.clear();
     (docs, syms)
 }

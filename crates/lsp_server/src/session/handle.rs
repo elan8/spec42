@@ -556,6 +556,88 @@ pub(crate) enum ParsedDocumentUpdate {
     Superseded,
 }
 
+#[cfg(test)]
+mod coherence_tests {
+    use super::*;
+    use crate::session::snapshot::ServerStateSnapshot;
+    use crate::session::state::IndexEntry;
+    use language_service::WorkspaceSnapshot;
+    use sysml_query::publication::AnalysisStatus;
+
+    #[tokio::test]
+    async fn pending_and_failed_work_retain_the_paired_source_until_successful_admission() {
+        let uri = Url::parse("memory://coherence/model.sysml").unwrap();
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        state
+            .index
+            .insert(uri.clone(), IndexEntry::for_test(&uri, "package Initial;"));
+        state.session.invalidate_inputs();
+        let handle = WorkspaceHandle::spawn(state);
+        assert!(handle.rebuild_publication().await.unwrap());
+        let initial = handle.snapshot();
+        let model = Arc::clone(initial.session.current());
+        let sources = Arc::clone(&initial.published_index);
+        let initial_parse = initial.published_index[&uri].parsed.digest();
+        let library_root = Url::parse("file:///configured/new-library/").unwrap();
+        handle
+            .actor
+            .mutate({
+                let uri = uri.clone();
+                let library_root = library_root.clone();
+                move |state| {
+                    state
+                        .index
+                        .insert(uri.clone(), IndexEntry::for_test(&uri, "package Changed;"));
+                    state.library_paths = vec![library_root];
+                    state.session.invalidate_inputs();
+                }
+            })
+            .await
+            .unwrap();
+        let pending = handle.snapshot();
+        assert_eq!(pending.session.analysis_status(), AnalysisStatus::Updating);
+        assert_eq!(pending.index[&uri].content(), "package Changed;");
+        assert!(Arc::ptr_eq(&pending.published_index, &sources));
+        let reader = ServerStateSnapshot::new(&pending, false);
+        assert_eq!(reader.document_text(&uri), Some("package Initial;"));
+        assert_eq!(reader.parsed(&uri).unwrap().digest(), initial_parse);
+        assert!(reader.library_paths().is_empty());
+        let failed = handle
+            .rebuild_with_preparer(|_| {
+                Err(PublicationBuildFailure::preparation_worker(
+                    "cannot prepare inputs",
+                ))
+            })
+            .await
+            .unwrap();
+        assert_eq!(failed.outcome, PublicationOutcome::Failed);
+        let retained = handle.snapshot();
+        assert_eq!(
+            retained.session.analysis_status(),
+            AnalysisStatus::FailedRetained
+        );
+        assert!(Arc::ptr_eq(retained.session.current(), &model));
+        assert!(Arc::ptr_eq(&retained.published_index, &sources));
+        assert_eq!(
+            ServerStateSnapshot::new(&retained, false).document_text(&uri),
+            Some("package Initial;")
+        );
+        assert!(handle.rebuild_publication().await.unwrap());
+        let current = handle.snapshot();
+        assert_eq!(current.session.analysis_status(), AnalysisStatus::Current);
+        assert_eq!(
+            ServerStateSnapshot::new(&current, false).document_text(&uri),
+            Some("package Changed;")
+        );
+        assert_eq!(
+            ServerStateSnapshot::new(&current, false).library_paths(),
+            &[library_root]
+        );
+        assert!(!Arc::ptr_eq(&current.published_index, &sources));
+    }
+}
+
 /// A preparation is not a build until its captured input revision passes the actor barrier.
 enum PreparedPublicationAdmission {
     Build(Box<SemanticBuild>),
@@ -707,8 +789,136 @@ mod preparation_tests {
     }
 }
 
+#[cfg(test)]
+mod scheduler_tests {
+    use super::*;
+    use crate::session::latest_work::Submission;
+    use crate::session::state::IndexEntry;
+    use sysml_query::publication::AnalysisStatus;
+
+    #[tokio::test]
+    async fn a_reserved_active_interval_coalesces_a_burst_into_the_latest_complete_sources() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let handle = WorkspaceHandle::spawn(state);
+        // Reserve an interval without running it: edits and requests race a paused worker,
+        // deterministically, without relying on wall-clock sleeps or parser workload size.
+        let reserved = {
+            let snapshot = handle.snapshot();
+            let mut scheduler = handle.analysis_queue.lock().unwrap();
+            scheduler.newest = Some(snapshot.session.inputs());
+            let Submission::Start(work) = scheduler.work.submit(snapshot) else {
+                panic!("idle queue")
+            };
+            work
+        };
+        let uri = Url::parse("memory://scheduler/model.sysml").unwrap();
+        for revision in 0..100 {
+            handle
+                .actor
+                .mutate({
+                    let uri = uri.clone();
+                    move |state| {
+                        state.index.insert(
+                            uri.clone(),
+                            IndexEntry::for_test(&uri, &format!("package P{revision};")),
+                        );
+                        state.session.invalidate_inputs();
+                    }
+                })
+                .await
+                .unwrap();
+            handle.queue_analysis(handle.snapshot());
+            assert_eq!(
+                handle.analysis_queue.lock().unwrap().work.occupancy(),
+                (true, true)
+            );
+        }
+        let active = handle.clone();
+        let driver = tokio::spawn(async move {
+            active.run_analysis(reserved).await;
+        });
+        let report = handle.rebuild_publication_measured().await.unwrap();
+        assert_eq!(report.outcome, PublicationOutcome::Published);
+        driver.await.unwrap();
+        let current = handle.snapshot();
+        assert_eq!(current.session.analysis_status(), AnalysisStatus::Current);
+        assert_eq!(current.published_index[&uri].content(), "package P99;");
+        assert_eq!(
+            handle.analysis_queue.lock().unwrap().work.occupancy(),
+            (false, false)
+        );
+        let (documents, reported, availability) =
+            crate::session::state::publication_inputs(&*current);
+        let fresh = sysml_query::Services::default()
+            .publication
+            .publish_with_standard_library_availability(&documents, availability, reported)
+            .unwrap();
+        assert_eq!(
+            current.session.current().publication().identity(),
+            fresh.publication().identity()
+        );
+    }
+
+    #[tokio::test]
+    async fn closing_an_owner_discards_pending_work_and_keeps_its_last_coherent_pair() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        let handle = WorkspaceHandle::spawn(state);
+        let reserved = {
+            let snapshot = handle.snapshot();
+            let mut scheduler = handle.analysis_queue.lock().unwrap();
+            let Submission::Start(work) = scheduler.work.submit(snapshot) else {
+                panic!("idle queue")
+            };
+            work
+        };
+        handle
+            .actor
+            .mutate(|state| {
+                state.session.invalidate_inputs();
+            })
+            .await
+            .unwrap();
+        handle.queue_analysis(handle.snapshot());
+        let model = Arc::clone(handle.snapshot().session.current());
+        let sources = Arc::clone(&handle.snapshot().published_index);
+        handle.close_session().await.unwrap();
+        handle.run_analysis(reserved).await;
+        assert_eq!(
+            handle.rebuild_publication_measured().await.unwrap().outcome,
+            PublicationOutcome::Superseded
+        );
+        let closed = handle.snapshot();
+        assert!(Arc::ptr_eq(closed.session.current(), &model));
+        assert!(Arc::ptr_eq(&closed.published_index, &sources));
+        assert_eq!(
+            handle.analysis_queue.lock().unwrap().work.occupancy(),
+            (false, false)
+        );
+    }
+}
+
+#[derive(Clone)]
+enum AnalysisEvent {
+    Idle,
+    Requested,
+    Completed {
+        inputs: InputRevisionToken,
+        result: Result<Arc<PublicationRebuildReport>, Arc<MutatePanicked>>,
+    },
+    Closed,
+}
+
+#[derive(Default)]
+struct AnalysisScheduler {
+    work: super::latest_work::LatestWork<Arc<ServerState>>,
+    newest: Option<InputRevisionToken>,
+}
+
 /// Host boundary costs plus the canonical phase owner's complete construction measurements.
 /// Timings are observations only; they do not participate in publication identity or admission.
+#[derive(Clone)]
 pub(crate) struct PublicationRebuildReport {
     pub(crate) outcome: PublicationOutcome,
     pub(crate) preparation: std::time::Duration,
@@ -716,6 +926,19 @@ pub(crate) struct PublicationRebuildReport {
     pub(crate) construction: std::time::Duration,
     pub(crate) admission: std::time::Duration,
     pub(crate) phases: Option<sysml_query::resolved_slice::BuildMeasurements>,
+}
+
+impl PublicationRebuildReport {
+    fn superseded() -> Self {
+        Self {
+            outcome: PublicationOutcome::Superseded,
+            preparation: std::time::Duration::ZERO,
+            preparation_queue: std::time::Duration::ZERO,
+            construction: std::time::Duration::ZERO,
+            admission: std::time::Duration::ZERO,
+            phases: None,
+        }
+    }
 }
 
 impl PreparedDocumentEdit {
@@ -740,6 +963,8 @@ pub(crate) struct WorkspaceHandle {
     diagnostics_debounce_generation: Arc<AtomicU64>,
     /// The retained failure last shown to the user, so one failure is announced once.
     reported_publication_failure: Arc<std::sync::Mutex<Option<String>>>,
+    analysis_queue: Arc<std::sync::Mutex<AnalysisScheduler>>,
+    analysis_events: tokio::sync::watch::Sender<AnalysisEvent>,
 }
 
 impl WorkspaceHandle {
@@ -749,12 +974,15 @@ impl WorkspaceHandle {
 
     pub(crate) fn spawn(initial: ServerState) -> Self {
         let (actor, snapshot) = SessionActor::spawn(initial);
+        let (analysis_events, _) = tokio::sync::watch::channel(AnalysisEvent::Idle);
         Self {
             identity: Arc::new(()),
             actor,
             snapshot,
             diagnostics_debounce_generation: Arc::new(AtomicU64::new(0)),
             reported_publication_failure: Arc::default(),
+            analysis_queue: Arc::default(),
+            analysis_events,
         }
     }
 
@@ -804,17 +1032,122 @@ impl WorkspaceHandle {
     pub(crate) async fn rebuild_publication_measured(
         &self,
     ) -> Result<PublicationRebuildReport, MutatePanicked> {
-        self.rebuild_with_preparer(prepare_publication).await
+        let snapshot = self.snapshot();
+        let expected = snapshot.session.inputs();
+        let mut events = self.analysis_events.subscribe();
+        self.queue_analysis(snapshot);
+        loop {
+            if !self.snapshot().session.is_input_current(&expected) {
+                return Ok(PublicationRebuildReport::superseded());
+            }
+            match events.borrow_and_update().clone() {
+                AnalysisEvent::Completed { inputs, result } if inputs == expected => {
+                    return result
+                        .map(|report| (*report).clone())
+                        .map_err(|_| MutatePanicked);
+                }
+                AnalysisEvent::Closed => return Ok(PublicationRebuildReport::superseded()),
+                _ => {}
+            }
+            if events.changed().await.is_err() {
+                return Ok(PublicationRebuildReport::superseded());
+            }
+        }
     }
 
+    /// Queue complete immutable inputs. The only spawned driver runs one active job and takes
+    /// at most one replacement snapshot after it finishes; repeated requests cannot spawn jobs.
+    fn queue_analysis(&self, snapshot: Arc<ServerState>) {
+        use super::latest_work::Submission;
+        let inputs = snapshot.session.inputs();
+        let submission = {
+            let mut scheduler = self
+                .analysis_queue
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            if scheduler.newest == Some(inputs) || scheduler.work.is_closed() {
+                return;
+            }
+            let submission = scheduler.work.submit(snapshot);
+            if !matches!(submission, Submission::Closed) {
+                scheduler.newest = Some(inputs);
+                self.analysis_events.send_replace(AnalysisEvent::Requested);
+            }
+            submission
+        };
+        if let Submission::Start(work) = submission {
+            let handle = self.clone();
+            tokio::spawn(async move {
+                handle.run_analysis(work).await;
+            });
+        }
+    }
+
+    async fn run_analysis(&self, mut work: super::latest_work::Work<Arc<ServerState>>) {
+        loop {
+            let (token, snapshot) = work.into_parts();
+            let inputs = snapshot.session.inputs();
+            let result = self
+                .rebuild_snapshot_with_preparer(snapshot, prepare_publication)
+                .await
+                .map(Arc::new)
+                .map_err(Arc::new);
+            let next = {
+                let mut scheduler = self
+                    .analysis_queue
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
+                let next = match scheduler.work.complete(&token) {
+                    Ok(next) => next,
+                    Err(_) => return,
+                };
+                if next.is_none() {
+                    scheduler.newest = None;
+                }
+                if !scheduler.work.is_closed() {
+                    self.analysis_events
+                        .send_replace(AnalysisEvent::Completed { inputs, result });
+                }
+                next
+            };
+            match next {
+                Some(next) => work = next,
+                None => return,
+            }
+        }
+    }
+
+    pub(crate) async fn close_session(&self) -> Result<(), MutatePanicked> {
+        self.actor.mutate(|state| state.session.close()).await?;
+        let mut scheduler = self
+            .analysis_queue
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        scheduler.work.close();
+        scheduler.newest = None;
+        self.analysis_events.send_replace(AnalysisEvent::Closed);
+        Ok(())
+    }
+
+    #[cfg(test)]
     async fn rebuild_with_preparer(
         &self,
         prepare: impl FnOnce(Arc<ServerState>) -> Result<PreparedPublication, PublicationBuildFailure>
             + Send
             + 'static,
     ) -> Result<PublicationRebuildReport, MutatePanicked> {
+        self.rebuild_snapshot_with_preparer(self.snapshot(), prepare)
+            .await
+    }
+
+    async fn rebuild_snapshot_with_preparer(
+        &self,
+        snapshot: Arc<ServerState>,
+        prepare: impl FnOnce(Arc<ServerState>) -> Result<PreparedPublication, PublicationBuildFailure>
+            + Send
+            + 'static,
+    ) -> Result<PublicationRebuildReport, MutatePanicked> {
         let preparation_started = std::time::Instant::now();
-        let snapshot = self.snapshot();
         let expected = snapshot.session.inputs();
         let prepared = tokio::task::spawn_blocking(move || {
             let started = std::time::Instant::now();
@@ -902,6 +1235,7 @@ impl WorkspaceHandle {
                 }
                 match outcome {
                     PublicationOutcome::Published => {
+                        state.publish_source_snapshot();
                         state.publication_failure = None;
                         crate::session::state::refresh_symbol_table_from_publication(state);
                         state

@@ -242,6 +242,21 @@ publication lifecycle state outside a `PublicationSession`.
 | CLI / MCP (`server`) | thin adapters over the batch host: validation, reports, generation; reaches `lsp_server` only to launch the editor host (`run_lsp`, config, tracing, custom RPC); one `Services` shared by both |
 | Generators | receive an immutable `PublishedModel` and typed queries; never source text |
 
+### Desired inputs and coherent editor publications
+
+The editor ingests source changes in protocol order into its desired source state. Background
+analysis may coalesce complete desired snapshots, never incremental text deltas. Each project
+bounds analysis to one active construction and one replaceable pending desired state.
+
+A host publication pairs the canonical sealed model with the opaque source/syntax handles and
+source-scope configuration from the inputs it admitted. These source handles remain host-owned:
+the sealed model still holds no parsed tree. Desired inputs may advance independently, while
+semantic readers retain the prior coherent source/model pair. The session's input-revision token
+guards preparation before it receives a build generation; the build token guards final admission.
+Source handles, model and dependent projections cross that final barrier together. A failed or
+superseded build leaves the previous pair intact. Input freshness and retained failures are owned
+by `PublicationSession`, separately from startup readiness.
+
 ### Project boundaries and library admission
 
 A filesystem model is owned by its nearest ancestor `.project.json`, bounded by the host's

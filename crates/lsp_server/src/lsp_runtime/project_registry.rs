@@ -79,6 +79,11 @@ impl ProjectRegistry {
             }
             documents
         };
+        // A replaced owner must stop accepting work before its successor can publish. Keeping
+        // an old handle alive for a worker does not authorize it to keep notifying the client.
+        for handle in self.handles() {
+            let _ = handle.close_session().await;
+        }
         let fallback_roots = workspace_roots
             .iter()
             .filter_map(|uri| uri.to_file_path().ok())
@@ -739,6 +744,11 @@ mod tests {
 
         let replacement = registry.handle_for_uri(&uri).await.unwrap();
         assert!(!Arc::ptr_eq(&original.snapshot(), &replacement.snapshot()));
+        assert_eq!(
+            original.snapshot().session.lifecycle(),
+            sysml_query::publication::SessionLifecycle::Closed
+        );
+        assert!(!original.rebuild_publication().await.unwrap());
         let (disk_entries, _) = crate::session::scan_sysml_files(
             vec![Url::from_directory_path(root).unwrap()],
             &registry.services.source,

@@ -23,8 +23,8 @@ use crate::{
 };
 
 pub use session::{
-    BuildToken, InputRevisionToken, PublicationOutcome, PublicationToken, Published, Session,
-    SessionLifecycle,
+    AnalysisStatus, BuildToken, InputRevisionToken, PublicationOutcome, PublicationToken,
+    Published, Session, SessionLifecycle,
 };
 
 /// The semantic phase which rejected a publication request.
