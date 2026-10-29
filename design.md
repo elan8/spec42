@@ -258,7 +258,9 @@ superseded build leaves the previous pair intact. Input freshness and retained f
 by `PublicationSession`, separately from startup readiness.
 
 Accepted editor deltas and versions enter desired source state before parsing. Missing syntax is
-explicitly pending. A preparation worker holds canonical syntax leases and installs them only after
+explicitly pending. A preparation worker holds the syntax authority's opaque prepared batch,
+which pins matching source/syntax leases across independent projects' memo sweeps. Admission
+transfers these existing leases without a parse or memo lookup, and installs them only after
 its captured input revision passes the actor barrier; it never replaces newer editor membership or
 version metadata. Syntax-only requests may use matching desired syntax. Semantic positional requests
 return `ContentModified` while analysis is pending, and an explicit failure when the current build

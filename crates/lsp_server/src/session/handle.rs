@@ -17,7 +17,6 @@ use sysml_query::publication::{
     InputRevisionToken, PreparedPublication, PublicationBuildFailure, PublicationOutcome,
     SemanticBuild,
 };
-use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 
@@ -635,9 +634,8 @@ enum PreparedPublicationAdmission {
 
 struct PreparedInputs {
     publication: PreparedPublication,
-    /// The documents parsed off the actor. Their trees stay with the syntax authority, whose
-    /// memo keeps every revision parsed since its last `retain`; admission asks it again.
-    parsed: Vec<SourceDocument>,
+    /// The syntax authority's opaque prepared batch holds leases across unrelated sweeps.
+    syntax: sysml_query::syntax::PreparedSyntax,
     parsing: std::time::Duration,
 }
 
@@ -648,13 +646,13 @@ fn prepare_publication(
     let inputs = snapshot.session.inputs();
     let cancellation = inputs.cancellation();
     let parse_started = std::time::Instant::now();
-    let mut syntax = Vec::with_capacity(documents.len());
-    for document in &documents {
-        if cancellation.is_cancelled() {
-            return Err(PublicationBuildFailure::cancelled());
-        }
-        snapshot.services.syntax.parse(document);
-        syntax.push(document.clone());
+    let syntax = snapshot.services.syntax.prepare(
+        documents
+            .iter()
+            .take_while(|_| !cancellation.is_cancelled()),
+    );
+    if cancellation.is_cancelled() {
+        return Err(PublicationBuildFailure::cancelled());
     }
     let parsing = parse_started.elapsed();
     let publication = snapshot.services.publication.prepare_cancellable(
@@ -665,7 +663,7 @@ fn prepare_publication(
     )?;
     Ok(PreparedInputs {
         publication,
-        parsed: syntax,
+        syntax,
         parsing,
     })
 }
@@ -682,7 +680,7 @@ fn admit_prepared_publication(
         Ok(prepared) => {
             // Source identity is checked as a complete set before installing leases.
             assert!(
-                prepared.parsed.iter().all(|document| {
+                prepared.syntax.documents().all(|document| {
                     state.index.get(document.uri()).is_some_and(|entry| {
                         entry.document.digest() == document.digest()
                             && entry.document.language() == document.language()
@@ -690,9 +688,8 @@ fn admit_prepared_publication(
                 }),
                 "prepared syntax must belong to the guarded desired source"
             );
-            // A memo hit: preparation parsed each of these off the actor.
-            for document in prepared.parsed {
-                let parsed = state.services.syntax.parse(&document);
+            // Transfer the existing leases: admission never acquires or parses syntax.
+            for (document, parsed) in prepared.syntax.into_sources() {
                 state.index.get_mut(document.uri()).unwrap().parsed = Some(parsed);
             }
             let prepared = prepared.publication;
@@ -718,6 +715,53 @@ fn admit_prepared_publication(
 #[cfg(test)]
 mod preparation_tests {
     use super::*;
+    use crate::session::state::IndexEntry;
+
+    #[test]
+    fn prepared_syntax_crosses_sweeps_but_never_a_replaced_input_revision() {
+        for superseded in [false, true] {
+            let mut state = ServerState::default();
+            state.session.complete_startup();
+            let uri = Url::parse("memory://preparation/model.sysml").unwrap();
+            let mut entry = IndexEntry::for_test(&uri, "package Prepared;");
+            entry.parsed = None;
+            state.index.insert(uri.clone(), entry);
+            state.invalidate_inputs();
+            let inputs = state.session.inputs();
+            let prepared = prepare_publication(Arc::new(state.clone())).unwrap();
+            for _ in 0..4 {
+                state.services.syntax.retain([]);
+            }
+            if superseded {
+                let mut newer = IndexEntry::for_test(&uri, "package Newer;");
+                newer.parsed = None;
+                state.index.insert(uri.clone(), newer);
+                state.invalidate_inputs();
+            }
+            let admission = admit_prepared_publication(&mut state, &inputs, Ok(prepared));
+            if superseded {
+                assert!(matches!(
+                    admission,
+                    Mutation::Unchanged(PreparedPublicationAdmission::Superseded)
+                ));
+                assert!(state.index[&uri].parsed.is_none());
+            } else {
+                assert!(matches!(
+                    admission,
+                    Mutation::Changed(PreparedPublicationAdmission::Build(_))
+                ));
+                let entry = &state.index[&uri];
+                assert_eq!(
+                    entry.parsed.as_ref().unwrap().digest(),
+                    entry.document.digest()
+                );
+                assert_eq!(
+                    entry.parsed.as_ref().unwrap().language(),
+                    entry.document.language()
+                );
+            }
+        }
+    }
 
     #[tokio::test]
     async fn slow_preparation_does_not_block_the_actor_and_rejects_superseded_inputs() {
