@@ -440,7 +440,8 @@ clock; persisted-log polling delays the next edit but does not enter that span. 
 cover only the ExtensionHost including the benchmark driver, excluding the server, renderer and GPU. Viewport/disclosure reuse
 flags describe the renderer's actual state; they do not establish preservation of non-default state.
 
-The launcher uses a hidden window launch. Reports without a focused window for every visible sample
+The launcher requests hidden startup by default. Use `--visible` for an explicitly requested visible
+run and keep its window focused throughout. Reports without a focused window for every visible sample
 are labelled `background-probe-only`; they cannot establish a representative visible-view baseline.
 Keep raw reports, profiles/logs, build identity and launch options. Repeat controlled runs before
 choosing release thresholds; shared CI hardware does not enforce timing gates.

@@ -12,6 +12,7 @@ const { values } = parseArgs({ options: {
   "library-input": { type: "string", multiple: true },
   iterations: { type: "string", default: "20" }, "burst-size": { type: "string", default: "10" },
   "inactive-iterations": { type: "string", default: "1" },
+  visible: { type: "boolean", default: false },
 } });
 for (const name of ["code", "server", "workspace", "document", "output"]) {
   if (!values[name]) throw new Error(`--${name} is required`);
@@ -59,12 +60,13 @@ const env = { ...process.env,
 };
 delete env.ELECTRON_RUN_AS_NODE;
 fs.writeFileSync(`${output}.launch.json`, JSON.stringify({ executable: path.resolve(values.code), args,
+  visibleLaunchRequested: values.visible,
   revision: execFileSync("git", ["rev-parse", "HEAD"], { cwd: extension, encoding: "utf8", windowsHide: true }).trim(),
   workingTree: execFileSync("git", ["status", "--short"], { cwd: extension, encoding: "utf8", windowsHide: true }),
   environment: Object.fromEntries(Object.entries(env).filter(([key]) => key.startsWith("SPEC42_"))),
 }, null, 2));
-// A hidden launch is a probe until the report confirms focus and visible animation frames.
-const child = spawn(path.resolve(values.code), args, { env, windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+// Launch intent does not establish presentation: the report must confirm focus and visible frames.
+const child = spawn(path.resolve(values.code), args, { env, windowsHide: !values.visible, stdio: ["ignore", "pipe", "pipe"] });
 const log = fs.createWriteStream(`${output}.console.log`);
 child.stdout.pipe(log, { end: false });
 child.stderr.pipe(log, { end: false });
