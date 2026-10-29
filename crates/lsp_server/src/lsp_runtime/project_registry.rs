@@ -267,7 +267,19 @@ impl ProjectRegistry {
         create_workspace: bool,
     ) -> Vec<WorkspaceHandle> {
         let mut handles = self.handles_admitting_library_uri(uri);
-        let workspace = if !self.has_workspace_roots() && !handles.is_empty() {
+        let library_without_workspace = !handles.is_empty() && {
+            let roots = self
+                .inner
+                .read()
+                .expect("project registry poisoned")
+                .workspace_roots
+                .clone();
+            project_boundary_for_uri(uri, &roots).is_none()
+        };
+        let workspace = if library_without_workspace {
+            // An installed/external library is authored through its consumers. Opening it must
+            // not create an unrelated loose publication, whose diagnostics and identity would
+            // then compete with those consumers. Preserve a genuine pre-existing authoring owner.
             self.existing_handle_for_uri(uri).filter(|handle| {
                 let state = handle.snapshot();
                 state
@@ -570,6 +582,44 @@ fn boundary_root_for_uri(uri: &Url, workspace_roots: &[Url]) -> Option<PathBuf> 
 mod tests {
     use super::*;
     use std::fs;
+
+    #[tokio::test]
+    async fn external_library_mutations_do_not_create_a_competing_loose_owner() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path().join("workspace");
+        let library = temp.path().join("library");
+        fs::create_dir(&root).unwrap();
+        fs::create_dir(&library).unwrap();
+        let source = library.join("Types.sysml");
+        fs::write(&source, "package Types;").unwrap();
+        let uri = sysml_query::source::path_to_file_url(&source).unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(
+                vec![library_root_url(&root).unwrap()],
+                vec![library_root_url(&library).unwrap()],
+                Vec::new(),
+            )
+            .await;
+        let consumer = registry.handles().pop().unwrap();
+        for create_workspace in [true, false] {
+            let routed = registry
+                .mutation_handles_for_uri(&uri, create_workspace)
+                .await;
+            assert_eq!(routed.len(), 1);
+            assert!(routed[0].same_session(&consumer));
+            assert_eq!(registry.handles().len(), 1);
+            assert!(registry.existing_handle_for_uri(&uri).is_none());
+            assert!(registry
+                .query_handle_for_uri(&uri, None)
+                .unwrap()
+                .same_session(&consumer));
+        }
+    }
 
     #[tokio::test]
     async fn installed_manifests_cannot_create_workspace_sessions_but_keep_library_provenance() {

@@ -354,6 +354,8 @@ project discovery. Manifest-owned admissions retain their selected roots until p
 retrying a failed discovery uses that project's roots rather than editor defaults. A source may be
 authored by one workspace project and admitted as a library by others. Editor and watched-file
 mutations reach the authoring owner and every admitting consumer, with each owner updated once.
+An admitted library outside the declared workspace roots stays with its consumers; opening it does
+not create a competing loose publication. A pre-existing independent authoring owner is retained.
 
 ## Publication lifecycle and identity
 
