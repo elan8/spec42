@@ -2,10 +2,11 @@ import { diagramLimitations } from "./diagramLimitations";
 import { populateViewSelect, withExportBackground, type ViewChoice } from "./viewPresentation";
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
 import { isNativeDiagramView, renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
-import type { PreparedView } from "../../diagram-renderer/src/prepare";
+import type { PreparedView, PreparedNode } from "../../diagram-renderer/src/prepare";
 import type { DiagramProductIdentity, DisclosureState, RequestServerDraw, ViewportTransform } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "./diagramProductState";
+import type { RenderMeasurement, RenderMeasurementIdentity, RenderMeasurementOutcome } from "./diagramPerformance";
 
 declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
 
@@ -18,6 +19,7 @@ type RenderMessage = {
   placeholder?: string;
   loading?: boolean;
   error?: string;
+  measurement?: RenderMeasurementIdentity;
 };
 
 type DrawResponseMessage = {
@@ -156,7 +158,7 @@ function clearRenderState(): void {
   retainedViewport = undefined;
 }
 
-function openSource(node: { uri?: string; sourcePath?: string; range?: { start?: { line: number; character?: number }; end?: { line?: number; character?: number } } }): void {
+function openSource(node: PreparedNode): void {
   const range = node.range;
   const uri = node.uri ?? node.sourcePath;
   if (!uri || !range?.start || !range.end) return;
@@ -262,10 +264,34 @@ function showLimitations(product?: DiagramProduct, viewHandle?: string): void {
   host.appendChild(details);
 }
 
+type RenderProgress = Pick<RenderMeasurement, "webviewPrepareMs" | "webviewRenderMs" | "viewportReused" | "disclosureReused">;
+
+/** Hidden documents and superseded renders cannot supply a visible frame observation. */
+function nextVisibleFrame(signal: AbortSignal): Promise<boolean> {
+  if (signal.aborted || document.visibilityState !== "visible") return Promise.resolve(false);
+  return new Promise(resolve => {
+    let frame = 0;
+    const finish = (observed: boolean): void => {
+      cancelAnimationFrame(frame);
+      signal.removeEventListener("abort", cancelled);
+      document.removeEventListener("visibilitychange", visibilityChanged);
+      resolve(observed);
+    };
+    const cancelled = (): void => finish(false);
+    const visibilityChanged = (): void => { if (document.visibilityState !== "visible") finish(false); };
+    signal.addEventListener("abort", cancelled, { once: true });
+    document.addEventListener("visibilitychange", visibilityChanged);
+    frame = requestAnimationFrame(() => finish(document.visibilityState === "visible"));
+  });
+}
+
 async function render(message: RenderMessage): Promise<void> {
   const { generation, signal } = beginRender();
+  const started = performance.now();
+  const progress: RenderProgress = { webviewPrepareMs: 0, webviewRenderMs: 0, viewportReused: false, disclosureReused: false };
+  let outcome: RenderMeasurementOutcome | undefined;
   try {
-    await renderCurrent(message, generation, signal);
+    outcome = await renderCurrent(message, generation, signal, progress);
   } catch (error) {
     // A render that throws (a malformed product, a failed layout) must not leave the previous
     // view's SVG on the canvas looking current. A superseded render's failure is irrelevant.
@@ -274,10 +300,28 @@ async function render(message: RenderMessage): Promise<void> {
     showLimitations();
     const reason = error instanceof Error ? error.message : String(error);
     canvas.replaceChildren(withText(`The view could not be rendered: ${reason}`));
+    outcome = "failed";
+  }
+  if (message.measurement && outcome && isCurrentRender(generation, signal)) {
+    const frameStarted = performance.now();
+    let framesObserved = 0;
+    if (outcome === "rendered") {
+      while (framesObserved < 2 && await nextVisibleFrame(signal)) framesObserved++;
+    }
+    if (!isCurrentRender(generation, signal)) return;
+    const finished = performance.now();
+    vscode.postMessage({
+      ...message.measurement,
+      ...(currentIdentity ? { modelDigest: currentIdentity.modelDigest, viewHandle: currentIdentity.viewHandle } : {}),
+      type: "renderComplete", outcome, ...progress,
+      webviewTotalMs: finished - started, frameWaitMs: finished - frameStarted,
+      framesObserved, visible: document.visibilityState === "visible",
+    } satisfies RenderMeasurement);
   }
 }
 
-async function renderCurrent(message: RenderMessage, generation: number, signal: AbortSignal): Promise<void> {
+async function renderCurrent(message: RenderMessage, generation: number, signal: AbortSignal, progress: RenderProgress): Promise<RenderMeasurementOutcome | undefined> {
+  const prepareStarted = performance.now();
   populateSelect(message.views, message.selectedHandle);
   setStatus(message.header, message.error);
 
@@ -297,7 +341,8 @@ async function renderCurrent(message: RenderMessage, generation: number, signal:
     clearRenderState();
     showLimitations();
     canvas.replaceChildren(withText("The generated diagram product was not valid JSON."));
-    return;
+    progress.webviewPrepareMs = performance.now() - prepareStarted;
+    return "failed";
   }
 
   showLimitations(product, message.selectedHandle);
@@ -306,7 +351,8 @@ async function renderCurrent(message: RenderMessage, generation: number, signal:
     clearRenderState();
     const reasons = diagramLimitations(product).map((reason) => reason.explanation).join(" ") || "the projection is empty";
     canvas.replaceChildren(withText(`Nothing to draw yet — ${reasons}.`));
-    return;
+    progress.webviewPrepareMs = performance.now() - prepareStarted;
+    return "empty";
   }
 
   const sameView = currentIdentity?.viewHandle === message.selectedHandle;
@@ -323,7 +369,21 @@ async function renderCurrent(message: RenderMessage, generation: number, signal:
     viewHandle: message.selectedHandle,
   };
   currentIdentity = productIdentity;
-  await mountPrepared(generation, signal, prepared, product, productIdentity, disclosure, viewport);
+  progress.webviewPrepareMs = performance.now() - prepareStarted;
+  const renderStarted = performance.now();
+  try {
+    await mountPrepared(generation, signal, prepared, product, productIdentity, disclosure, viewport);
+  } finally {
+    progress.webviewRenderMs = performance.now() - renderStarted;
+  }
+  if (!isCurrentRender(generation, signal)) return;
+  const mountedViewport = controller?.getViewport();
+  progress.viewportReused = viewport !== undefined && mountedViewport !== undefined &&
+    Math.abs(viewport.x - mountedViewport.x) < 0.000001 &&
+    Math.abs(viewport.y - mountedViewport.y) < 0.000001 &&
+    Math.abs(viewport.k - mountedViewport.k) < 0.000001;
+  progress.disclosureReused = disclosure !== undefined && JSON.stringify(disclosure) === JSON.stringify(controller?.getDisclosureState());
+  return mountedViewport ? "rendered" : "unavailable";
 }
 
 async function redrawPreservingDisclosure(): Promise<void> {

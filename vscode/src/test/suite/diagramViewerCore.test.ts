@@ -21,6 +21,59 @@ import {
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "../../diagram/diagramProductState";
+import { isPresentedFrame, parseRenderMeasurement, RenderMeasurementTracker, type RenderMeasurement } from "../../diagram/diagramPerformance";
+
+describe("diagram performance correlation", () => {
+  const frame = (identity: { renderId: number; modelDigest: string; viewHandle: string }): RenderMeasurement => ({
+    ...identity, type: "renderComplete", outcome: "rendered",
+    webviewTotalMs: 15, webviewPrepareMs: 2, webviewRenderMs: 8, frameWaitMs: 4,
+    framesObserved: 2, visible: true, viewportReused: true, disclosureReused: false,
+  });
+
+  it("accepts one acknowledgement for the exact current render, product and view", () => {
+    const tracker = new RenderMeasurementTracker();
+    const old = tracker.begin("old", "general:one", 10);
+    const current = tracker.begin("current", "general:one", 30);
+    assert.equal(tracker.complete(frame(old), 60), undefined);
+    assert.equal(tracker.complete({ ...frame(current), modelDigest: "other" }, 60), undefined);
+    assert.equal(tracker.complete({ ...frame(current), viewHandle: "other" }, 60), undefined);
+    assert.equal(tracker.complete(frame(current), 20), undefined);
+    const accepted = tracker.complete(frame(current), 60);
+    assert.ok(accepted);
+    assert.equal(accepted.postToAckMs, 30);
+    assert.ok(isPresentedFrame(accepted));
+    assert.equal(tracker.complete(frame(current), 70), undefined);
+  });
+
+  it("drops pending render identity on publication replacement, hide or disposal", () => {
+    const tracker = new RenderMeasurementTracker();
+    const identity = tracker.begin("current", "general:one", 10);
+    tracker.invalidate();
+    assert.equal(tracker.complete(frame(identity), 60), undefined);
+  });
+
+  it("keeps hidden, incomplete and unavailable renders explicit instead of counting a frame", () => {
+    const value = frame({ renderId: 1, modelDigest: "current", viewHandle: "general:one" });
+    for (const outcome of ["empty", "failed", "unavailable"] as const) {
+      assert.equal(isPresentedFrame({ ...value, outcome }), false);
+    }
+    assert.equal(isPresentedFrame({ ...value, visible: false }), false);
+    assert.equal(isPresentedFrame({ ...value, framesObserved: 1 }), false);
+  });
+
+  it("rejects malformed durations and strips fields outside the measurement contract", () => {
+    const value = frame({ renderId: 1, modelDigest: "current", viewHandle: "general:one" });
+    for (const extra of [{ webviewRenderMs: NaN }, { webviewRenderMs: -1 }, { framesObserved: 3 },
+      { renderId: 1.5 }, { visible: "yes" }, { outcome: "success" }, { webviewTotalMs: 1 }]) {
+      assert.equal(parseRenderMeasurement({ ...value, ...extra }), undefined);
+    }
+    assert.equal(parseRenderMeasurement(null), undefined);
+    const accepted = parseRenderMeasurement({ ...value, event: "backend:publication", extensionHostMs: -1 });
+    assert.ok(accepted);
+    assert.equal("event" in accepted, false);
+    assert.equal("extensionHostMs" in accepted, false);
+  });
+});
 
 describe("diagram viewer core", () => {
   it("reuses disclosure only while a product projects the same nodes", () => {

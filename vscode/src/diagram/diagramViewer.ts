@@ -3,6 +3,8 @@ import * as vscode from "vscode";
 import { diagramLimitations } from "./diagramLimitations";
 import { State } from "vscode-languageclient/node";
 import type { LspClientHandles } from "../activation/lspClient";
+import { isPerformanceLoggingEnabled, logPerfEvent } from "../logger";
+import { RenderMeasurementTracker, type RenderMeasurementIdentity } from "./diagramPerformance";
 import {
   allDiagramViewOptions,
   authoredDiagramViewOptions,
@@ -39,6 +41,7 @@ type RenderMessage = {
   placeholder?: string;
   loading?: boolean;
   error?: string;
+  measurement?: RenderMeasurementIdentity;
 };
 
 const PUBLICATION_DEBOUNCE_MS = 250;
@@ -96,6 +99,11 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private emptyCatalogDigest: string | undefined;
   private emptyCatalogAttempts = 0;
   private readonly disposables: vscode.Disposable[] = [];
+  private readonly renderMeasurements = new RenderMeasurementTracker();
+
+  private logPerformance(event: string, fields: Record<string, unknown>): void {
+    logPerfEvent(`view:${event}`, { ...fields, extensionHostMs: performance.now() });
+  }
 
   constructor(
     private readonly context: vscode.ExtensionContext,
@@ -118,6 +126,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   }
 
   dispose(): void {
+    this.renderMeasurements.invalidate();
     if (this.publicationDebounce) clearTimeout(this.publicationDebounce);
     if (this.reconcileTimer) clearTimeout(this.reconcileTimer);
     if (this.webviewWatchdog) clearTimeout(this.webviewWatchdog);
@@ -138,14 +147,16 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     webviewView.webview.html = this.shellHtml(webviewView.webview);
     webviewView.webview.onDidReceiveMessage((message) => this.onWebviewMessage(message), undefined, this.disposables);
     webviewView.onDidChangeVisibility(() => {
+      this.logPerformance("visibility", { visible: webviewView.visible });
       if (webviewView.visible) this.kickReconcile();
-      else this.stopReconcile();
+      else { this.renderMeasurements.invalidate(); this.stopReconcile(); }
     }, undefined, this.disposables);
     webviewView.onDidDispose(() => {
       if (this.view === webviewView) {
         this.view = undefined;
         this.webviewReady = false;
         this.pendingRender = undefined;
+        this.renderMeasurements.invalidate();
         this.stopReconcile();
         this.activeAbort?.abort();
       }
@@ -170,6 +181,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       if (this.webviewReady || !this.view) return;
       this.webviewReady = false;
       this.pendingRender = undefined;
+      this.renderMeasurements.invalidate();
       this.view.webview.html = this.shellHtml(this.view.webview);
       // The re-injected script sends a fresh `ready`; queue what should be on screen for it.
       if (this.lastArtifact) this.postRender();
@@ -226,11 +238,16 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   }
 
   private onPublicationChanged(publishedModelDigest: string): void {
+    this.logPerformance("publicationObserved", {
+      modelDigest: publishedModelDigest,
+      viewState: !this.view ? "closed" : this.view.visible ? "visible" : "hidden",
+    });
     if (!this.view) return;
     const stillCurrent =
       this.lastArtifact !== undefined &&
       !diagramRenderIsStale(this.lastArtifact.product.modelDigest, publishedModelDigest);
     if (stillCurrent) return;
+    this.renderMeasurements.invalidate();
     this.converged = false;
     this.reconcileAttempt = 0;
     // A digest change is a fresh chance for an empty catalog to have gained a view.
@@ -245,6 +262,14 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private onWebviewMessage(message: unknown): void {
     if (!message || typeof message !== "object") return;
     const kind = (message as { type?: unknown }).type;
+    if (kind === "renderComplete") {
+      if (!isPerformanceLoggingEnabled()) return;
+      const measurement = this.renderMeasurements.complete(message, performance.now());
+      if (measurement && this.view?.visible && this.converged) {
+        this.logPerformance("renderComplete", measurement);
+      }
+      return;
+    }
     if (kind === "ready") {
       this.webviewReady = true;
       if (this.webviewWatchdog) { clearTimeout(this.webviewWatchdog); this.webviewWatchdog = undefined; }
@@ -370,6 +395,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     this.activeDrawCancellation?.dispose();
     const cancellation = new vscode.CancellationTokenSource();
     this.activeDrawCancellation = cancellation;
+    const drawStarted = performance.now();
 
     try {
       const result = await this.handles.client.sendRequest(
@@ -384,6 +410,10 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
         presentationRevision: number;
         svg: string;
       };
+      this.logPerformance("drawComplete", {
+        modelDigest: drawn.modelDigest, viewHandle: drawn.viewHandle,
+        presentationRevision: drawn.presentationRevision, clientDrawMs: performance.now() - drawStarted,
+      });
       void this.view?.webview.postMessage({
         type: "drawResponse",
         requestId,
@@ -394,6 +424,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       });
     } catch (error) {
       if (cancellation.token.isCancellationRequested) return;
+      this.logPerformance("drawFailed", {
+        modelDigest, viewHandle, presentationRevision, clientDrawMs: performance.now() - drawStarted,
+      });
       void this.view?.webview.postMessage({
         type: "drawError",
         requestId,
@@ -416,11 +449,14 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     }
 
     this.stopReconcile();
+    this.renderMeasurements.invalidate();
     this.activeAbort?.abort();
     const abort = new AbortController();
     this.activeAbort = abort;
     const current = ++this.generation;
     this.regenerating = true;
+    const refreshStarted = performance.now();
+    let catalogMs = 0;
 
     void this.view.webview.postMessage({ type: "busy", busy: true });
     try {
@@ -436,7 +472,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       let attempt = 0;
       // eslint-disable-next-line no-constant-condition
       while (true) {
+        const catalogStarted = performance.now();
         const catalog = await this.fetchCatalog(anchorUri);
+        catalogMs += performance.now() - catalogStarted;
         if (current !== this.generation || abort.signal.aborted) return;
         this.options = allDiagramViewOptions(catalog);
         if (this.options.length === 0) {
@@ -479,8 +517,14 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
         }
 
         try {
+          const generationStarted = performance.now();
           const artifact = await this.generate(document, kind, catalog.modelDigest, selected.handle, abort.signal);
           if (current !== this.generation) return;
+          this.logPerformance("generated", {
+            modelDigest: artifact.product.modelDigest, viewHandle: selected.handle, reason,
+            catalogMs, generationMs: performance.now() - generationStarted,
+            serverGenerationMs: artifact.durationUs / 1000, hostRefreshMs: performance.now() - refreshStarted,
+          });
           this.lastArtifact = artifact;
           this.converged = true;
           this.reconcileAttempt = 0;
@@ -585,10 +629,14 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       selectedHandle: this.selectedHandle ?? "",
       header: artifactHeader(artifact),
       error,
+      ...(isPerformanceLoggingEnabled() && !error && this.converged ? {
+        measurement: this.renderMeasurements.begin(artifact.product.modelDigest, this.selectedHandle ?? "", performance.now()),
+      } : {}),
     });
   }
 
   private send(message: RenderMessage): void {
+    if (!message.measurement) this.renderMeasurements.invalidate();
     if (this.webviewReady) {
       void this.view?.webview.postMessage(message);
     } else {
