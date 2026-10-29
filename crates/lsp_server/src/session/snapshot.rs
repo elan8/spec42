@@ -54,6 +54,15 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
             .map(|entry| entry.content())
     }
 
+    fn editor_text(&self, uri: &Url) -> Option<&str> {
+        let uri = util::normalize_file_uri(uri);
+        self.state
+            .index
+            .get(&uri)
+            .or_else(|| self.state.published_index.get(&uri))
+            .map(|entry| entry.content())
+    }
+
     fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource> {
         self.state
             .published_index

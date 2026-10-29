@@ -146,16 +146,6 @@
         }
       }
     ],
-    "snippets": [
-      {
-        "language": "sysml",
-        "path": "./snippets/sysml.json"
-      },
-      {
-        "language": "kerml",
-        "path": "./snippets/sysml.json"
-      }
-    ],
     "commands": [
       {
         "command": "sysml.formatDocument",
@@ -607,6 +597,7 @@
         "editor.guides.indentation": false,
         "editor.guides.bracketPairs": false,
         "editor.bracketPairColorization.enabled": false,
+        "editor.wordBasedSuggestions": "off",
         "breadcrumbs.enabled": true,
         "breadcrumbs.showModules": true,
         "breadcrumbs.showNamespaces": true
@@ -616,6 +607,7 @@
         "editor.guides.indentation": false,
         "editor.guides.bracketPairs": false,
         "editor.bracketPairColorization.enabled": false,
+        "editor.wordBasedSuggestions": "off",
         "breadcrumbs.enabled": true,
         "breadcrumbs.showModules": true,
         "breadcrumbs.showNamespaces": true

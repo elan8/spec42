@@ -197,19 +197,69 @@ package Main {
     session.barrier();
 
     let labels = completion_labels(&mut session, uri, 5, 22);
-    let foo_idx = labels.iter().position(|label| label == "Foo");
-    let force_idx = labels.iter().position(|label| label == "Force");
-    assert!(foo_idx.is_some(), "expected Foo in {:?}", labels);
-    assert!(force_idx.is_some(), "expected Force in {:?}", labels);
     assert!(
-        foo_idx.unwrap() < force_idx.unwrap(),
-        "qualified namespace match should outrank unrelated symbols in {:?}",
-        labels
+        labels.iter().any(|label| label == "Foo"),
+        "expected Foo in {labels:?}"
+    );
+    assert!(
+        !labels.iter().any(|label| label == "Force"),
+        "after `Pkg::` only Pkg's members can follow; got {labels:?}"
+    );
+}
+
+/// Completion answers while analysis of the edit is still pending, from the text being typed.
+#[test]
+fn completion_answers_from_the_edit_being_typed() {
+    let mut session = TestSession::new();
+    let uri = "file:///c:/spec42-lsp-tests/typing_context.sysml";
+    let before = "package P {\n    part def Engine;\n    attribute def Energy;\n}\n";
+    let after =
+        "package P {\n    part def Engine;\n    attribute def Energy;\n    part motor : En\n}\n";
+
+    session.initialize_default("test");
+    session.did_open(uri, before, 1);
+    session.barrier();
+    session.did_change_full(uri, after, 2);
+
+    let (line, character) = position_for(after, "part motor : En");
+    let response = session.request_once(
+        "textDocument/completion",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "position": { "line": line, "character": character }
+        }),
+    );
+    assert!(
+        response["error"].is_null(),
+        "completion must not be refused while analysis is pending: {response}"
+    );
+    let items = response["result"]["items"]
+        .as_array()
+        .unwrap_or_else(|| panic!("completion list: {response}"));
+    let engine = items
+        .iter()
+        .find(|item| item["label"] == "Engine")
+        .unwrap_or_else(|| panic!("expected Engine in {response}"));
+    assert_eq!(
+        engine["textEdit"]["range"]["start"],
+        serde_json::json!({ "line": 3, "character": 17 }),
+        "the edit replaces the typed `En` of the current text"
     );
 }
 
 #[test]
-fn completion_prioritizes_typed_members() {
+fn completion_is_not_triggered_by_a_space() {
+    let mut session = TestSession::new();
+    let init = session.request(
+        "initialize",
+        serde_json::json!({ "processId": null, "rootUri": null, "capabilities": {} }),
+    );
+    let triggers = &init["result"]["capabilities"]["completionProvider"]["triggerCharacters"];
+    assert_eq!(triggers, &serde_json::json!([".", ":"]));
+}
+
+#[test]
+fn completion_after_a_dot_offers_only_the_receivers_members() {
     let mut session = TestSession::new();
     let uri = "file:///c:/spec42-lsp-tests/member_context.sysml";
     let content = r#"package P {
@@ -226,14 +276,13 @@ fn completion_prioritizes_typed_members() {
     session.barrier();
 
     let labels = completion_labels(&mut session, uri, 6, 34);
-    let engine_idx = labels.iter().position(|label| label == "engine");
-    let mount_idx = labels.iter().position(|label| label == "engineMount");
-    assert!(engine_idx.is_some(), "expected engine in {:?}", labels);
-    assert!(mount_idx.is_some(), "expected engineMount in {:?}", labels);
     assert!(
-        engine_idx.unwrap() < mount_idx.unwrap(),
-        "typed member should outrank unrelated symbol in {:?}",
-        labels
+        labels.iter().any(|label| label == "engine"),
+        "expected engine in {labels:?}"
+    );
+    assert!(
+        !labels.iter().any(|label| label == "engineMount"),
+        "engineMount is not a member of vehicle; got {labels:?}"
     );
 }
 

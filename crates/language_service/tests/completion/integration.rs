@@ -1,4 +1,6 @@
-use language_service::{complete, CompletionItemKindDto};
+use language_service::{complete, CompletionItemKindDto, InMemoryWorkspace, WorkspaceSnapshot};
+use sysml_query::resolved_slice::TextPosition;
+use url::Url;
 
 use super::support::{completion_labels, multi_doc, position_after, position_at, single_doc};
 
@@ -119,14 +121,102 @@ package Main {
 }"#;
     let workspace = single_doc(path, content);
     let labels = completion_labels(&workspace, path, position_at(5, 22));
-    let foo_idx = labels.iter().position(|label| label == "Foo");
-    let force_idx = labels.iter().position(|label| label == "Force");
-    assert!(foo_idx.is_some() && force_idx.is_some());
     assert!(
-        foo_idx.unwrap() < force_idx.unwrap(),
-        "qualified match should outrank unrelated symbol in {:?}",
-        labels
+        labels.iter().any(|label| label == "Foo"),
+        "expected the qualified member Foo in {labels:?}"
     );
+    assert!(
+        !labels.iter().any(|label| label == "Force"),
+        "after `Pkg::` only Pkg's members are names that can follow; got {labels:?}"
+    );
+}
+
+/// The editor text the user is typing, over a publication built from an older revision.
+struct EditedWorkspace<'w> {
+    published: &'w InMemoryWorkspace,
+    editor_text: &'w str,
+}
+
+impl WorkspaceSnapshot for EditedWorkspace<'_> {
+    fn resolve_uri_for_path(&self, path: &str) -> Option<Url> {
+        self.published.resolve_uri_for_path(path)
+    }
+    fn path_for_uri(&self, uri: &Url) -> String {
+        self.published.path_for_uri(uri)
+    }
+    fn document_text(&self, uri: &Url) -> Option<&str> {
+        self.published.document_text(uri)
+    }
+    fn editor_text(&self, _uri: &Url) -> Option<&str> {
+        Some(self.editor_text)
+    }
+    fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource> {
+        self.published.parsed(uri)
+    }
+    fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
+        self.published.published_model()
+    }
+    fn symbol_table(&self) -> &[language_service::SymbolEntry] {
+        self.published.symbol_table()
+    }
+    fn index_uris(&self) -> Vec<Url> {
+        self.published.index_uris()
+    }
+}
+
+/// Completion is asked while the user types, before analysis of the new text has finished. The
+/// context and the replaced range must come from the text being typed, not from the revision the
+/// publication was built from.
+#[test]
+fn complete_reads_the_editor_text_ahead_of_the_publication() {
+    let path = "typing.sysml";
+    let published = "package P {\n    part def Engine;\n    attribute def Energy;\n}\n";
+    let editor =
+        "package P {\n    part def Engine;\n    attribute def Energy;\n    part motor : En\n}\n";
+    let base = single_doc(path, published);
+    let workspace = EditedWorkspace {
+        published: &base,
+        editor_text: editor,
+    };
+    let position = position_after(editor, "part motor : En");
+    let result = complete(&workspace, path, position).expect("completion result");
+    let labels: Vec<_> = result
+        .items
+        .iter()
+        .map(|item| item.label.as_str())
+        .collect();
+    let engine = labels.iter().position(|label| *label == "Engine");
+    let energy = labels.iter().position(|label| *label == "Energy");
+    assert!(
+        engine.is_some_and(|engine| energy.is_none_or(|energy| engine < energy)),
+        "the part type context comes from the editor text; got {labels:?}"
+    );
+    let engine_item = &result.items[engine.unwrap()];
+    let edit = engine_item.text_edit.as_ref().expect("text edit");
+    assert_eq!(
+        (edit.range.start, edit.range.end),
+        (TextPosition::new(3, 17), position),
+        "the edit replaces the typed `En` in the editor text"
+    );
+    assert!(
+        result.semantic_status.predates_source && result.is_incomplete,
+        "an answer over an older publication says so: {:?}",
+        result.semantic_status
+    );
+    assert!(
+        result.items.iter().all(|item| !item.preselect),
+        "nothing is preselected, so Enter keeps inserting a newline"
+    );
+}
+
+#[test]
+fn complete_over_a_current_publication_is_not_marked_as_predating_it() {
+    let path = "current.sysml";
+    let content = "package P {\n    part def Engine;\n    part motor : En\n}\n";
+    let workspace = single_doc(path, content);
+    let result = complete(&workspace, path, position_after(content, "part motor : En"))
+        .expect("completion result");
+    assert!(!result.semantic_status.predates_source);
 }
 
 #[test]
