@@ -276,6 +276,15 @@ fn loose_documents_select_libraries_without_scanning_unopened_siblings() {
 
 #[test]
 fn unsaved_library_overlays_and_close_restore_fresh_publication_identity() {
+    library_overlay_restart_parity(false);
+}
+
+#[test]
+fn project_rediscovery_preserves_library_overlays_and_close_restart_parity() {
+    library_overlay_restart_parity(true);
+}
+
+fn library_overlay_restart_parity(rediscover: bool) {
     let directory = tempfile::tempdir().unwrap();
     let base = directory.path().canonicalize().unwrap();
     let root = base.join("workspace");
@@ -303,6 +312,14 @@ fn unsaved_library_overlays_and_close_restore_fresh_publication_identity() {
     publication(&mut edited, &library_uri, 1);
     edited.did_change_full(&library_uri, unsaved, 2);
     publication(&mut edited, &library_uri, 2);
+    if rediscover {
+        let config = root.join("syside.toml");
+        std::fs::write(&config, "include = ['**/*.sysml']").unwrap();
+        edited.notify(
+            "workspace/didChangeWatchedFiles",
+            json!({"changes":[{"uri":sysml_query::source::path_to_file_url(&config).unwrap(),"type":1}]}),
+        );
+    }
     edited.did_change_full(&uri, &latest, 2);
     let current = publication(&mut edited, &uri, 2);
     let mut fresh = parity_session(&root, std::slice::from_ref(&library));
@@ -329,6 +346,77 @@ fn unsaved_library_overlays_and_close_restore_fresh_publication_identity() {
     assert_eq!(cleared, json!([]));
     let mut fresh = parity_session(&root, std::slice::from_ref(&library));
     fresh.did_open(&uri, &restored, 1);
+    assert_eq!((digest, diagnostics), publication(&mut fresh, &uri, 1));
+}
+
+#[test]
+fn editing_and_closing_a_library_after_root_removal_keeps_its_original_consumer() {
+    let directory = tempfile::tempdir().unwrap();
+    let base = directory.path().canonicalize().unwrap();
+    let root = base.join("workspace");
+    let library = base.join("library");
+    std::fs::create_dir(&root).unwrap();
+    std::fs::create_dir(&library).unwrap();
+    let definition = library.join("First.sysml");
+    let saved = "package First { part def Thing; }";
+    let unsaved = "package First { part def Replacement; }";
+    std::fs::write(&definition, saved).unwrap();
+    let source = root.join("App.sysml");
+    std::fs::write(&source, "package App;").unwrap();
+    let uri = sysml_query::source::path_to_file_url(&source)
+        .unwrap()
+        .to_string();
+    let library_uri = sysml_query::source::path_to_file_url(&definition)
+        .unwrap()
+        .to_string();
+    let initial = "package App { private import First::*; part thing : Thing; }";
+    let latest = format!("{initial} // removed root");
+    let remove = |session: &mut TestSession| {
+        session.notify(
+            "workspace/didChangeConfiguration",
+            json!({"settings":{"spec42":{"libraryPaths":[]}}}),
+        );
+    };
+    let mut edited = parity_session(&root, std::slice::from_ref(&library));
+    edited.did_open(&uri, initial, 1);
+    publication(&mut edited, &uri, 1);
+    edited.did_open(&library_uri, saved, 1);
+    publication(&mut edited, &library_uri, 1);
+    remove(&mut edited);
+    edited.did_change_full(&library_uri, unsaved, 2);
+    publication(&mut edited, &library_uri, 2);
+    edited.did_change_full(&uri, &latest, 2);
+    let after_removal = publication(&mut edited, &uri, 2);
+
+    // The same admitted inputs must result whether the buffer changes before or after removing
+    // the root. The still-open interval retains its library provenance in both sessions.
+    let mut control = parity_session(&root, std::slice::from_ref(&library));
+    control.did_open(&uri, initial, 1);
+    publication(&mut control, &uri, 1);
+    control.did_open(&library_uri, unsaved, 1);
+    publication(&mut control, &library_uri, 1);
+    remove(&mut control);
+    control.did_change_full(&uri, &latest, 2);
+    assert_eq!(after_removal, publication(&mut control, &uri, 2));
+    drop(control);
+
+    edited.notify(
+        "textDocument/didClose",
+        json!({"textDocument":{"uri":library_uri}}),
+    );
+    let closed = format!("{initial} // closed");
+    edited.did_change_full(&uri, &closed, 3);
+    let (digest, mut diagnostics) = publication(&mut edited, &uri, 3);
+    assert_eq!(
+        diagnostics
+            .as_object_mut()
+            .unwrap()
+            .remove(&library_uri)
+            .unwrap(),
+        json!([])
+    );
+    let mut fresh = parity_session(&root, &[]);
+    fresh.did_open(&uri, &closed, 1);
     assert_eq!((digest, diagnostics), publication(&mut fresh, &uri, 1));
 }
 

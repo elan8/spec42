@@ -39,6 +39,47 @@ struct RegistryState {
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 struct ProjectRoot(PathBuf);
 
+#[derive(PartialEq, Eq)]
+enum SourceOwnership {
+    WorkspaceAuthor,
+    LibraryConsumer,
+}
+
+struct DocumentOwner {
+    handle: WorkspaceHandle,
+    relationship: SourceOwnership,
+}
+
+type BufferHandoffs = Vec<(DocumentOwner, Vec<(Url, crate::session::state::IndexEntry)>)>;
+
+impl DocumentOwner {
+    async fn handoff(self, documents: Vec<(Url, crate::session::state::IndexEntry)>) {
+        match self.relationship {
+            SourceOwnership::WorkspaceAuthor => {
+                let _ = self.handle.adopt_open_documents(documents).await;
+            }
+            SourceOwnership::LibraryConsumer => {
+                let _ = self.handle.adopt_open_library_documents(documents).await;
+            }
+        }
+    }
+}
+
+fn queue_buffer_handoff(
+    batches: &mut BufferHandoffs,
+    owner: DocumentOwner,
+    uri: Url,
+    entry: crate::session::state::IndexEntry,
+) {
+    if let Some((_, documents)) = batches.iter_mut().find(|(existing, _)| {
+        existing.relationship == owner.relationship && existing.handle.same_session(&owner.handle)
+    }) {
+        documents.push((uri, entry));
+    } else {
+        batches.push((owner, vec![(uri, entry)]));
+    }
+}
+
 impl ProjectRegistry {
     pub(crate) fn new(
         services: Services,
@@ -71,10 +112,13 @@ impl ProjectRegistry {
         let open_documents = {
             let state = self.inner.read().expect("project registry poisoned");
             let mut documents = BTreeMap::new();
-            for handle in state.handles.values() {
+            for (root, handle) in &state.handles {
                 let snapshot = handle.snapshot();
                 for (uri, entry) in snapshot.editor_documents() {
-                    documents.insert(uri.clone(), entry.clone());
+                    documents
+                        .entry(uri.clone())
+                        .or_insert_with(Vec::new)
+                        .push((root.clone(), entry.clone()));
                 }
             }
             documents
@@ -93,8 +137,9 @@ impl ProjectRegistry {
         roots.extend(sysml_query::source::discover_project_roots(&fallback_roots));
         roots.extend(
             open_documents
-                .keys()
-                .filter_map(|uri| boundary_root_for_uri(uri, &workspace_roots)),
+                .iter()
+                .filter(|(_, owners)| owners.iter().any(|(_, entry)| entry.workspace_source))
+                .filter_map(|(uri, _)| boundary_root_for_uri(uri, &workspace_roots)),
         );
         roots.sort();
         roots.dedup();
@@ -128,31 +173,92 @@ impl ProjectRegistry {
                     .await;
             }
         }
-        let created_by_root = created
-            .iter()
-            .cloned()
-            .map(|(root, handle)| (ProjectRoot(root), handle))
-            .collect::<BTreeMap<_, _>>();
-        let mut adopted_by_root: BTreeMap<PathBuf, Vec<_>> = BTreeMap::new();
-        for (uri, entry) in open_documents {
-            if let Some(root) = boundary_root_for_uri(&uri, &workspace_roots) {
-                adopted_by_root.entry(root).or_default().push((uri, entry));
+        // Stage the replacement privately. Queries retain the explicitly closed old owners
+        // until every new owner has received its buffers; no half-migrated registry is exposed.
+        let replacement = Self {
+            inner: Arc::new(RwLock::new(RegistryState {
+                workspace_roots,
+                library_paths,
+                standard_library_paths,
+                handles: created
+                    .into_iter()
+                    .map(|(root, handle)| (ProjectRoot(root), handle))
+                    .collect(),
+                admission_errors,
+            })),
+            ..self.clone()
+        };
+        let mut retained_buffers = Vec::new();
+        for (uri, owners) in &open_documents {
+            for (old_root, entry) in owners {
+                if entry.workspace_source {
+                    if let Some(handle) = replacement.existing_handle_for_uri(uri) {
+                        queue_buffer_handoff(
+                            &mut retained_buffers,
+                            DocumentOwner {
+                                handle,
+                                relationship: SourceOwnership::WorkspaceAuthor,
+                            },
+                            uri.clone(),
+                            entry.clone(),
+                        );
+                    }
+                } else {
+                    let handle = replacement
+                        .inner
+                        .read()
+                        .expect("project registry poisoned")
+                        .handles
+                        .get(old_root)
+                        .cloned();
+                    if let Some(handle) = handle {
+                        queue_buffer_handoff(
+                            &mut retained_buffers,
+                            DocumentOwner {
+                                handle,
+                                relationship: SourceOwnership::LibraryConsumer,
+                            },
+                            uri.clone(),
+                            entry.clone(),
+                        );
+                    }
+                }
             }
         }
-        for (root, documents) in adopted_by_root {
-            if let Some(handle) = created_by_root.get(&ProjectRoot(root)) {
-                let _ = handle.adopt_open_documents(documents).await;
+        for (owner, documents) in retained_buffers {
+            owner.handoff(documents).await;
+        }
+        let mut routed_buffers = Vec::new();
+        for (uri, previous_owners) in open_documents {
+            // Source ingestion fans one editor revision out in order. Prefer the workspace
+            // author's provenance when that same buffer was also admitted by consumers.
+            let entry = previous_owners
+                .iter()
+                .find(|(_, entry)| entry.workspace_source)
+                .or_else(|| previous_owners.first())
+                .map(|(_, entry)| entry)
+                .expect("an open buffer has an owner");
+            for owner in replacement.document_owners(&uri, true).await {
+                let retained = owner
+                    .handle
+                    .snapshot()
+                    .index
+                    .get(&uri)
+                    .filter(|entry| entry.is_editor_open())
+                    .cloned()
+                    .unwrap_or_else(|| entry.clone());
+                queue_buffer_handoff(&mut routed_buffers, owner, uri.clone(), retained);
             }
         }
+        for (owner, documents) in routed_buffers {
+            owner.handoff(documents).await;
+        }
+        let mut staged = replacement
+            .inner
+            .write()
+            .expect("project registry poisoned");
         let mut state = self.inner.write().expect("project registry poisoned");
-        state.workspace_roots = workspace_roots;
-        state.library_paths = library_paths;
-        state.standard_library_paths = standard_library_paths;
-        state.handles = created
-            .into_iter()
-            .map(|(root, handle)| (ProjectRoot(root), handle))
-            .collect();
-        state.admission_errors = admission_errors;
+        std::mem::swap(&mut *state, &mut *staged);
     }
 
     pub(crate) async fn rediscover(&self) {
@@ -266,6 +372,15 @@ impl ProjectRegistry {
         uri: &Url,
         create_workspace: bool,
     ) -> Vec<WorkspaceHandle> {
+        self.document_owners(uri, create_workspace)
+            .await
+            .into_iter()
+            .map(|owner| owner.handle)
+            .collect()
+    }
+
+    /// The same ownership plan governs live events and replacement-session buffer handoff.
+    async fn document_owners(&self, uri: &Url, create_workspace: bool) -> Vec<DocumentOwner> {
         let mut handles = self.handles_admitting_library_uri(uri);
         let library_without_workspace = !handles.is_empty() && {
             let roots = self
@@ -285,21 +400,28 @@ impl ProjectRegistry {
                 state
                     .index
                     .get(&crate::common::util::normalize_file_uri(uri))
-                    .is_some_and(|entry| entry.workspace_source || entry.is_editor_open())
+                    .is_some_and(|entry| entry.workspace_source)
             })
         } else if create_workspace {
             self.handle_for_uri(uri).await
         } else {
             self.existing_handle_for_uri(uri)
         };
+        let mut owners = Vec::new();
         if let Some(workspace) = workspace {
-            if self.admission_error_for_uri(uri).is_none()
-                && !handles.iter().any(|handle| handle.same_session(&workspace))
-            {
-                handles.push(workspace);
+            if self.admission_error_for_uri(uri).is_none() {
+                handles.retain(|handle| !handle.same_session(&workspace));
+                owners.push(DocumentOwner {
+                    handle: workspace,
+                    relationship: SourceOwnership::WorkspaceAuthor,
+                });
             }
         }
-        handles
+        owners.extend(handles.into_iter().map(|handle| DocumentOwner {
+            handle,
+            relationship: SourceOwnership::LibraryConsumer,
+        }));
+        owners
     }
 
     /// Route reads to an owning publication, including admitted documents outside its root.
@@ -383,11 +505,14 @@ impl ProjectRegistry {
             return Vec::new();
         };
         let document_path = canonicalize_or_self(&document_path);
+        let uri = crate::common::util::normalize_file_uri(uri);
         self.handles()
             .into_iter()
             .filter(|handle| {
                 let snapshot = handle.snapshot();
-                snapshot
+                snapshot.index.get(&uri).is_some_and(|entry| {
+                    entry.is_editor_open() && entry.document.kind().is_library()
+                }) || snapshot
                     .library_paths
                     .iter()
                     .chain(&snapshot.standard_library_paths)
@@ -619,6 +744,99 @@ mod tests {
                 .unwrap()
                 .same_session(&consumer));
         }
+    }
+
+    #[tokio::test]
+    async fn rediscovery_retains_external_library_buffers_in_their_consumers() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path().join("workspace");
+        let library = temp.path().join("library");
+        fs::create_dir(&root).unwrap();
+        fs::create_dir(&library).unwrap();
+        fs::write(root.join("App.sysml"), "package App;").unwrap();
+        let source = library.join("Types.sysml");
+        fs::write(&source, "package Saved;").unwrap();
+        let uri = sysml_query::source::path_to_file_url(&source).unwrap();
+        let root_uri = library_root_url(&root).unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(
+                vec![root_uri.clone()],
+                vec![library_root_url(&library).unwrap()],
+                Vec::new(),
+            )
+            .await;
+        let consumer = registry.handles().pop().unwrap();
+        consumer
+            .store_document_text_fast(uri.clone(), "package Unsaved;".to_owned(), Some(17))
+            .await
+            .unwrap();
+        assert!(!consumer.snapshot().index[&uri].workspace_source);
+        registry.rediscover().await;
+        assert_eq!(registry.handles().len(), 1);
+        let replacement = registry
+            .existing_handle_for_uri(
+                &sysml_query::source::path_to_file_url(&root.join("App.sysml")).unwrap(),
+            )
+            .unwrap();
+        let snapshot = replacement.snapshot();
+        assert_eq!(snapshot.index[&uri].content(), "package Unsaved;");
+        assert_eq!(snapshot.index[&uri].editor_version(), Some(17));
+        assert!(!snapshot.index[&uri].workspace_source);
+        assert_eq!(
+            snapshot.index[&uri].document.kind(),
+            sysml_query::source::SourceKind::Library
+        );
+    }
+
+    #[tokio::test]
+    async fn removed_library_roots_retain_routing_until_the_buffer_closes() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path().join("workspace");
+        let library = temp.path().join("library");
+        fs::create_dir(&root).unwrap();
+        fs::create_dir(&library).unwrap();
+        let source = library.join("Types.sysml");
+        fs::write(&source, "package Saved;").unwrap();
+        let uri = sysml_query::source::path_to_file_url(&source).unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(
+                vec![library_root_url(&root).unwrap()],
+                vec![library_root_url(&library).unwrap()],
+                Vec::new(),
+            )
+            .await;
+        let consumer = registry.handles().pop().unwrap();
+        consumer
+            .store_document_text_fast(uri.clone(), "package Unsaved;".to_owned(), Some(17))
+            .await
+            .unwrap();
+        consumer.complete_startup().await.unwrap();
+        assert!(consumer
+            .begin_library_reindex_if_changed(Vec::new())
+            .await
+            .unwrap()
+            .is_some());
+        assert!(consumer.snapshot().library_paths.is_empty());
+        let routed = registry.mutation_handles_for_uri(&uri, true).await;
+        assert_eq!(routed.len(), 1);
+        assert!(routed[0].same_session(&consumer));
+        assert_eq!(registry.handles().len(), 1);
+        consumer
+            .set_document_open(uri.clone(), false)
+            .await
+            .unwrap();
+        assert!(registry.handles_admitting_library_uri(&uri).is_empty());
+        assert!(registry.query_handle_for_uri(&uri, None).is_err());
     }
 
     #[tokio::test]

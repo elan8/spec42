@@ -356,6 +356,13 @@ authored by one workspace project and admitted as a library by others. Editor an
 mutations reach the authoring owner and every admitting consumer, with each owner updated once.
 An admitted library outside the declared workspace roots stays with its consumers; opening it does
 not create a competing loose publication. A pre-existing independent authoring owner is retained.
+The registry computes one source-ownership plan for both live notifications and replacement-session
+handoff, distinguishing workspace authors from library consumers independently of reporting role.
+Replacement registries are staged with their unsaved buffers before the registry is swapped. An
+open library overlay remains with its existing consumers across root removal until its editor
+interval closes; newly admitting consumers receive that same buffer during rediscovery. Text
+revision uses the source authority's revision operation so language and library location survive
+edits even after the original root is removed.
 
 ## Publication lifecycle and identity
 
