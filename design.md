@@ -371,6 +371,15 @@ edits even after the original root is removed.
 
 ## Publication lifecycle and identity
 
+Diagram presentation state belongs to the editor, but its occurrence identity comes from the
+canonical diagram query. The generator boundary hashes each occurrence's settled structural key
+into an opaque presentation key; the diagram product carries that key on its node. Consumers may
+remap disclosure state by exact key equality within the same selected view. Product-local indexes,
+labels, qualified-name text and source ranges never establish cross-publication correspondence.
+Missing or duplicate keys cannot transfer state. This preserves contextual occurrences while
+allowing indexes and source positions to change. Generated wire bindings, product validation and
+presentation-state regression tests enforce the boundary.
+
 A publication is an immutable `PublishedModel` with a dependency-complete, owner-scoped identity
 derived through domain-separated canonical encoding from the content digests of every admitted
 document, their provenance, semantic configuration, and the semantic contract version. Cold, warm,
