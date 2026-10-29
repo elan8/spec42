@@ -101,16 +101,12 @@ impl LanguageServer for Backend {
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
         let uri = params.text_document.uri.clone();
-        let mut handles = self.projects.handles_admitting_library_uri(&uri);
+        let handles = self.projects.mutation_handles_for_uri(&uri, true).await;
         if handles.is_empty() {
-            let Some(handle) = self.projects.handle_for_uri(&uri).await else {
-                return;
-            };
             if let Some(error) = self.projects.admission_error_for_uri(&uri) {
                 self.client.log_message(MessageType::ERROR, error).await;
-                return;
             }
-            handles.push(handle);
+            return;
         }
         for handle in handles {
             documents::did_open(
@@ -126,19 +122,10 @@ impl LanguageServer for Backend {
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        let mut handles = self
+        let handles = self
             .projects
-            .handles_admitting_library_uri(&params.text_document.uri);
-        if handles.is_empty() {
-            let Some(handle) = self
-                .projects
-                .handle_for_uri(&params.text_document.uri)
-                .await
-            else {
-                return;
-            };
-            handles.push(handle);
-        }
+            .mutation_handles_for_uri(&params.text_document.uri, true)
+            .await;
         for handle in handles {
             documents::did_change(
                 &self.client,
@@ -152,18 +139,10 @@ impl LanguageServer for Backend {
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
-        let mut handles = self
+        let handles = self
             .projects
-            .handles_admitting_library_uri(&params.text_document.uri);
-        if handles.is_empty() {
-            let Some(handle) = self
-                .projects
-                .existing_handle_for_uri(&params.text_document.uri)
-            else {
-                return;
-            };
-            handles.push(handle);
-        }
+            .mutation_handles_for_uri(&params.text_document.uri, false)
+            .await;
         for handle in handles {
             documents::did_close(
                 &self.client,
@@ -258,6 +237,12 @@ impl LanguageServer for Backend {
     }
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
+        self.projects
+            .set_library_defaults(documents::configured_library_paths(
+                &self.config,
+                &self.runtime_config,
+                &params,
+            ));
         for handle in self.projects.handles() {
             documents::did_change_configuration(
                 &self.client,
@@ -607,13 +592,10 @@ impl Backend {
     async fn publish_grouped_file_events(&self, changes: Vec<FileEvent>) {
         let mut grouped: Vec<(WorkspaceHandle, Vec<FileEvent>)> = Vec::new();
         for change in changes {
-            let mut handles = self.projects.handles_admitting_library_uri(&change.uri);
-            if handles.is_empty() {
-                let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
-                    continue;
-                };
-                handles.push(handle);
-            }
+            let handles = self
+                .projects
+                .mutation_handles_for_uri(&change.uri, true)
+                .await;
             for handle in handles {
                 if let Some((_, events)) = grouped
                     .iter_mut()

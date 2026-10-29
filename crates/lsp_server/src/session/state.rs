@@ -118,6 +118,8 @@ pub(crate) struct ServerState {
     /// Immutable inventory owned by the closure authority, admitted at the source barrier.
     pub(crate) library_catalog: Option<sysml_query::library::LibraryCatalog>,
     pub(crate) library_admission: sysml_query::library::LibraryAdmissionPolicy,
+    /// Manifest-owned bindings change only through project rediscovery, not editor defaults.
+    pub(crate) library_paths_follow_host_defaults: bool,
     /// The one set of services this host publishes through.
     pub(crate) services: Services,
     /// The publication lifecycle and the current immutable publication.
@@ -168,6 +170,7 @@ impl ServerState {
             standard_library_paths: Vec::new(),
             standard_library_availability: StandardLibraryAvailability::Unavailable,
             library_catalog: None,
+            library_paths_follow_host_defaults: true,
             library_admission: if crate::common::util::library_full_scan_enabled() {
                 sysml_query::library::LibraryAdmissionPolicy::All
             } else {

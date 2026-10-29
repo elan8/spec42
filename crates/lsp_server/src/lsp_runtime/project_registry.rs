@@ -121,6 +121,9 @@ impl ProjectRegistry {
                         project_library_paths,
                         project_standard_library_paths,
                         availability,
+                        !root
+                            .join(sysml_query::source::PROJECT_MANIFEST_FILE)
+                            .is_file(),
                     )
                     .await;
             }
@@ -196,6 +199,9 @@ impl ProjectRegistry {
                 library_paths,
                 standard_library_paths,
                 availability,
+                !root
+                    .join(sysml_query::source::PROJECT_MANIFEST_FILE)
+                    .is_file(),
             )
             .await;
         // Lazily-created loose projects did not participate in the initialize-time scan. They
@@ -244,6 +250,44 @@ impl ProjectRegistry {
             .expect("project registry poisoned")
             .workspace_roots
             .is_empty()
+    }
+
+    pub(crate) fn set_library_defaults(&self, library_paths: Vec<Url>) {
+        self.inner
+            .write()
+            .expect("project registry poisoned")
+            .library_paths = library_paths;
+    }
+
+    /// The workspace authoring owner and every library consumer ingest the same source event.
+    /// Library admission must not hide an independently configured workspace publication.
+    pub(crate) async fn mutation_handles_for_uri(
+        &self,
+        uri: &Url,
+        create_workspace: bool,
+    ) -> Vec<WorkspaceHandle> {
+        let mut handles = self.handles_admitting_library_uri(uri);
+        let workspace = if !self.has_workspace_roots() && !handles.is_empty() {
+            self.existing_handle_for_uri(uri).filter(|handle| {
+                let state = handle.snapshot();
+                state
+                    .index
+                    .get(&crate::common::util::normalize_file_uri(uri))
+                    .is_some_and(|entry| entry.workspace_source || entry.is_editor_open())
+            })
+        } else if create_workspace {
+            self.handle_for_uri(uri).await
+        } else {
+            self.existing_handle_for_uri(uri)
+        };
+        if let Some(workspace) = workspace {
+            if self.admission_error_for_uri(uri).is_none()
+                && !handles.iter().any(|handle| handle.same_session(&workspace))
+            {
+                handles.push(workspace);
+            }
+        }
+        handles
     }
 
     /// Route reads to an owning publication, including admitted documents outside its root.
