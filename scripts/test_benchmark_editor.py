@@ -63,6 +63,11 @@ class EditorBenchmarkTests(unittest.TestCase):
         lsp.messages, lsp.events, lsp.publications, lsp.diagnostics = queue.Queue(), [], {}, {}
         lsp.allow_missing_libraries = False
         uri = "file:///model.sysml"
+        # JSON-RPC notifications may carry null, positional, or omitted parameters. None of
+        # these unrelated messages can be interpreted as a structured performance event.
+        for params in (None, [], ["positional"]):
+            lsp.messages.put((100, {"method": "spec42/analysisStatusChanged", "params": params}))
+        lsp.messages.put((100, {"method": "spec42/semanticIndexReady"}))
         lsp.messages.put((200, {"method": "textDocument/publishDiagnostics", "params": {
             "uri": uri, "version": 9, "diagnostics": []}}))
         event = {"event": "backend:publication", "editorVersions": {uri: 9}, "modelDigest": "current"}
