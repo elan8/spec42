@@ -379,7 +379,7 @@ package ScenarioViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:26e1f930f02ea619df60cb172751a327ec542eb0ee691dcf08d25de1d77018bd",
   "documents": [
     {
@@ -817,6 +817,7 @@ package ScenarioViews {
         "name": "configurationChange",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:4dbecd679283d48e5947af3689cc4c8738f859c47a263e6da19a758c91ef1122",
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
@@ -835,6 +836,7 @@ package ScenarioViews {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
+        "presentationKey": "p:3577c678dad6fae541a236ca93c7a34140b3cf218b6f4c5f25a4cd14b9912af7",
         "reference": 7,
         "source": 5,
         "stateSubaction": null,
@@ -853,6 +855,7 @@ package ScenarioViews {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
+        "presentationKey": "p:2afde995ba2c3b4017f1dd055f1da53c250c54b1d61eb039cc59d17dd27e0755",
         "reference": 8,
         "source": 8,
         "stateSubaction": null,
@@ -871,6 +874,7 @@ package ScenarioViews {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
+        "presentationKey": "p:a9837a7533675679b6c1ef4e4ee551cbe8b998ad68cd383c9536f1af1f1ef709",
         "reference": 9,
         "source": 11,
         "stateSubaction": null,
@@ -889,6 +893,7 @@ package ScenarioViews {
         "name": "authenticate",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:b0b8464ff25bbbba5e8ddd16379d4ebb79dd7b2465b24d4281fb55b395b8cbe9",
         "reference": 3,
         "source": 1,
         "stateSubaction": null,
@@ -907,6 +912,7 @@ package ScenarioViews {
         "name": "proveRestart",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:9c4866118035bd1d8f81b4c3a72c25f2c17f03d4a9cfc306ac3cff33cc9b4b48",
         "reference": 5,
         "source": 4,
         "stateSubaction": null,
@@ -925,6 +931,7 @@ package ScenarioViews {
         "name": "reviewCompatibility",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:93ebf189544e5114f8a8c6d53ec5458b9ae2d929a69bc3f74b4f824713dc1895",
         "reference": 6,
         "source": 2,
         "stateSubaction": null,
@@ -943,6 +950,7 @@ package ScenarioViews {
         "name": "commit",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:74ad82528c4ca6594e0e31db1ca15b2424ec1d6207bac2d3dc29862ab22a6a0c",
         "reference": 4,
         "source": 3,
         "stateSubaction": null,

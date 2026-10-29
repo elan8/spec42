@@ -295,7 +295,7 @@ package Membership {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:7b33554c8e7a95e1c9fec1b3c600f9d58d686166f9750a1958915b8ab04f09e1",
   "documents": [
     {
@@ -586,6 +586,7 @@ package Membership {
         "name": "Vehicle",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:17fa0aee6b6b77b2da13b2ad2176cf227b4c715dfb45efd30d0054b33ee2efb2",
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
@@ -604,6 +605,7 @@ package Membership {
         "name": "owned",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:ea36b153e3ac0f6899186ccbbce9f2dec3835440dedb75c15ede882800e8942d",
         "reference": 4,
         "source": 1,
         "stateSubaction": null,
@@ -628,6 +630,7 @@ package Membership {
         "name": "borrowed",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:768a802550094923cb91bb7a3bce1bafcffcabd327e2d1950b2886febcaa2bb6",
         "reference": 2,
         "source": 5,
         "stateSubaction": null,
@@ -652,6 +655,7 @@ package Membership {
         "name": "forwarded",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:9fce8381c52286eba133c08730260f17bdd3d3c209d86641db700254fc5fa5eb",
         "reference": 3,
         "source": 7,
         "stateSubaction": null,
@@ -670,6 +674,7 @@ package Membership {
         "name": "socket",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:a2e07b9c16933e544917d746bd8942b49438f61eada7a974af26fcbb0a5eb4bf",
         "reference": 5,
         "source": 3,
         "stateSubaction": null,

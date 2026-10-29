@@ -229,7 +229,7 @@ package DirectTypingExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:fd8cf8a3fc1658c6d85389e7a88fec0f15dc252043a5522414caf2ff42dc5dfb",
   "documents": [
     {
@@ -409,6 +409,7 @@ package DirectTypingExample {
         "name": "root",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:8e0beb0da57d2c0946f8fa94b45521c877e03c1c0be6bd7178b619a7206a722c",
         "reference": 4,
         "source": 3,
         "stateSubaction": null,
@@ -433,6 +434,7 @@ package DirectTypingExample {
         "name": "typedChild",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:86e1044e7af30fd6c4d7964eeefaa3b5fd5237652792b12b6bc2d063bb080faf",
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
@@ -457,6 +459,7 @@ package DirectTypingExample {
         "name": "untypedChild",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:b5973fa882b1301a9949bfc02a2782ce722fd2bcf30f564579d140b0541ed527",
         "reference": 2,
         "source": 2,
         "stateSubaction": null,

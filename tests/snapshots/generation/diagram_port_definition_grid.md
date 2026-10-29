@@ -113,7 +113,7 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:adf0c00b268b44d104cfdce27edc20243675765b0f0e6f1cd89786cf44ec0b4a",
   "documents": [
     {
@@ -188,6 +188,7 @@ package M {
         "name": "P",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:e72a5c1043864cfe8f127e0a16a2e81e5a759e8479602ac8c893cef159909039",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,

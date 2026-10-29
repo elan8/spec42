@@ -168,7 +168,7 @@ package GridExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:891986bdbf40a2347c3d90f7d4f1cb3d49c814af4566a1bf657ea7d464da6420",
   "documents": [
     {
@@ -243,6 +243,7 @@ package GridExample {
         "name": "TableRoot",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:e0f0554926e582d2bc5912f3b3c19c3d6df53b5192a97e9683c21eba7a225365",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,

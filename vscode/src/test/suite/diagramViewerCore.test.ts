@@ -20,7 +20,7 @@ import {
   resolveDiagramSelection,
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
-import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "../../diagram/diagramProductState";
+import { isEmptyIncompleteDiagramProduct, remapDisclosureState } from "../../diagram/diagramProductState";
 import { isPresentedFrame, parseRenderMeasurement, RenderMeasurementTracker, type RenderMeasurement } from "../../diagram/diagramPerformance";
 
 describe("diagram performance correlation", () => {
@@ -76,17 +76,25 @@ describe("diagram performance correlation", () => {
 });
 
 describe("diagram viewer core", () => {
-  it("reuses disclosure only while a product projects the same nodes", () => {
-    const node = (name: string) => ({ reference: 0, name });
-    const product = (digest: string, names: string[]) => ({
-      modelDigest: digest, references: [{ kind: "qualified-name" }], projection: { nodes: names.map(node) },
+  it("remaps disclosure through inserted/reordered nodes using only opaque occurrence keys", () => {
+    const product = (keys: string[]) => ({ projection: { nodes: keys.map(presentationKey => ({ presentationKey })) } });
+    const state = { expandedNodeIds: ["n:0", "n:2", "n:99"], sectionStates: [
+      { nodeId: "n:0", sectionKey: "parts", expanded: false },
+      { nodeId: "n:1", sectionKey: "attributes", expanded: true },
+    ] };
+    assert.deepEqual(remapDisclosureState(product(["a", "b", "deleted"]), product(["new", "b", "a"]), state), {
+      expandedNodeIds: ["n:2"], sectionStates: [
+        { nodeId: "n:2", sectionKey: "parts", expanded: false },
+        { nodeId: "n:1", sectionKey: "attributes", expanded: true },
+      ],
     });
-    const before = product("blake3:a", ["root", "child"]);
-    assert.equal(sameProjectedNodes(before, product("blake3:a", ["root", "child"])), true);
-    // Loading a browser branch keeps the digest but adds nodes and shifts their indexes.
-    assert.equal(sameProjectedNodes(before, product("blake3:a", ["root", "loaded", "child"])), false);
-    assert.equal(sameProjectedNodes(before, product("blake3:b", ["root", "child"])), false);
-    assert.equal(sameProjectedNodes(undefined, before), false);
+    assert.deepEqual(state.expandedNodeIds, ["n:0", "n:2", "n:99"], "Previous publication state is immutable");
+    assert.equal(remapDisclosureState(undefined, product(["a"]), state), undefined);
+    assert.equal(remapDisclosureState(product(["a"]), product(["a"]), undefined), undefined);
+    for (const [before, after] of [[["a", "a"], ["a"]], [["a"], ["a", "a"]], [["a"], ["other"]], [[""], [""]]]) {
+      assert.deepEqual(remapDisclosureState(product(before), product(after), {expandedNodeIds:["n:0"],sectionStates:[]}),
+        {expandedNodeIds:[],sectionStates:[]});
+    }
   });
 
   it("reuses an already-visible source column and otherwise requests a new one", () => {
@@ -220,6 +228,7 @@ describe("diagram viewer core", () => {
       },
     }), false);
     const node = {
+      presentationKey: "p:root",
       reference: 0,
       metaclass: "PartUsage",
       notationRole: "usage",
@@ -233,6 +242,9 @@ describe("diagram viewer core", () => {
       ...value,
       projection: { ...value.projection, exposedRoots: [0], nodes: [node] },
     })).projection.nodes.length, 1);
+    for (const nodes of [[{...node,presentationKey:""}], [{...node,presentationKey:undefined}], [node,node]]) {
+      assert.throws(() => parseDiagramProduct(JSON.stringify({...value,projection:{...value.projection,nodes}})));
+    }
     const typedNodes = {
       ...value,
       projection: {

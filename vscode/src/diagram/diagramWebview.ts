@@ -5,7 +5,7 @@ import { isNativeDiagramView, renderVisualization, type RenderController } from 
 import type { PreparedView, PreparedNode } from "../../diagram-renderer/src/prepare";
 import type { DiagramProductIdentity, DisclosureState, RequestServerDraw, ViewportTransform } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
-import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "./diagramProductState";
+import { isEmptyIncompleteDiagramProduct, remapDisclosureState } from "./diagramProductState";
 import type { RenderMeasurement, RenderMeasurementIdentity, RenderMeasurementOutcome } from "./diagramPerformance";
 
 declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
@@ -112,11 +112,11 @@ let visibleViews: ViewChoice[] = [];
 const exportSvgButton = must<HTMLButtonElement>("export-svg");
 const exportPngButton = must<HTMLButtonElement>("export-png");
 
-let controller: RenderController | undefined;
+let mounted: { controller: RenderController; product: DiagramProduct; identity: DiagramProductIdentity } | undefined;
 let currentProduct: DiagramProduct | undefined;
 let currentPrepared: PreparedView | undefined;
 let currentIdentity: DiagramProductIdentity | undefined;
-let retainedViewport: ViewportTransform | undefined;
+let retainedPresentation: { product: DiagramProduct; viewHandle: string; disclosure: DisclosureState; viewport: ViewportTransform | undefined } | undefined;
 let renderGeneration = 0;
 let renderAbort: AbortController | undefined;
 
@@ -149,13 +149,29 @@ function isCurrentRender(generation: number, signal: AbortSignal): boolean {
   return generation === renderGeneration && !signal.aborted;
 }
 
+function capturePresentation(): void {
+  if (!mounted) return;
+  const viewport = mounted.controller.getViewport();
+  if (!viewport) return; // An inert/failed mount cannot replace the last presented state.
+  retainedPresentation = {
+    product: mounted.product, viewHandle: mounted.identity.viewHandle,
+    disclosure: mounted.controller.getDisclosureState(), viewport,
+  };
+}
+
+function presentationFor(product: DiagramProduct, viewHandle: string): {viewport: ViewportTransform | undefined; disclosure: DisclosureState | undefined} {
+  capturePresentation();
+  const retained = retainedPresentation?.viewHandle === viewHandle ? retainedPresentation : undefined;
+  return {viewport:retained?.viewport, disclosure:remapDisclosureState(retained?.product, product, retained?.disclosure)};
+}
+
 function clearRenderState(): void {
-  controller?.destroy();
-  controller = undefined;
+  capturePresentation();
+  mounted?.controller.destroy();
+  mounted = undefined;
   currentProduct = undefined;
   currentPrepared = undefined;
   currentIdentity = undefined;
-  retainedViewport = undefined;
 }
 
 function openSource(node: PreparedNode): void {
@@ -183,9 +199,9 @@ async function mountPrepared(
   disclosureState?: DisclosureState,
   viewport?: ViewportTransform,
 ): Promise<void> {
-  const previous = controller;
-  controller = undefined;
-  previous?.destroy();
+  capturePresentation();
+  mounted?.controller.destroy();
+  mounted = undefined;
   const next = await renderVisualization(canvas, prepared, {
     theme: { colorScheme: currentColorScheme() },
     productIdentity,
@@ -201,7 +217,8 @@ async function mountPrepared(
     next.destroy();
     return;
   }
-  controller = next;
+  mounted = { controller: next, product, identity: productIdentity };
+  capturePresentation();
 }
 
 function populateSelect(views: RenderMessage["views"], selectedHandle: string): void {
@@ -355,11 +372,7 @@ async function renderCurrent(message: RenderMessage, generation: number, signal:
     return "empty";
   }
 
-  const sameView = currentIdentity?.viewHandle === message.selectedHandle;
-  retainedViewport = sameView ? controller?.getViewport() ?? retainedViewport : undefined;
-  const viewport = retainedViewport;
-  // Disclosure names nodes by product index; it is reusable only while the same nodes are projected.
-  const disclosure = sameView && sameProjectedNodes(currentProduct, product) ? controller?.getDisclosureState() : undefined;
+  const {viewport, disclosure} = presentationFor(product, message.selectedHandle);
   currentProduct = product;
 
   const prepared = prepareViewData(product);
@@ -377,19 +390,18 @@ async function renderCurrent(message: RenderMessage, generation: number, signal:
     progress.webviewRenderMs = performance.now() - renderStarted;
   }
   if (!isCurrentRender(generation, signal)) return;
-  const mountedViewport = controller?.getViewport();
+  const mountedViewport = mounted?.controller.getViewport();
   progress.viewportReused = viewport !== undefined && mountedViewport !== undefined &&
     Math.abs(viewport.x - mountedViewport.x) < 0.000001 &&
     Math.abs(viewport.y - mountedViewport.y) < 0.000001 &&
     Math.abs(viewport.k - mountedViewport.k) < 0.000001;
-  progress.disclosureReused = disclosure !== undefined && JSON.stringify(disclosure) === JSON.stringify(controller?.getDisclosureState());
+  progress.disclosureReused = disclosure !== undefined && JSON.stringify(disclosure) === JSON.stringify(mounted?.controller.getDisclosureState());
   return mountedViewport ? "rendered" : "unavailable";
 }
 
 async function redrawPreservingDisclosure(): Promise<void> {
   if (!currentProduct || !currentPrepared || !currentIdentity) return;
-  const disclosure = controller?.getDisclosureState();
-  const viewport = controller?.getViewport();
+  const {viewport, disclosure} = presentationFor(currentProduct, currentIdentity.viewHandle);
   const { generation, signal } = beginRender();
   await mountPrepared(generation, signal, currentPrepared, currentProduct, currentIdentity, disclosure, viewport);
 }
@@ -415,6 +427,7 @@ function withLoading(text: string): HTMLElement {
 
 async function standaloneSvg(): Promise<string> {
   if (!currentProduct || !currentIdentity) throw new Error("Open a view before exporting it.");
+  const controller = mounted?.controller;
   if (!controller) throw new Error("Wait for the view to finish rendering before exporting it.");
   const scheme = "light" as const;
   if (currentPrepared && isNativeDiagramView(currentPrepared.view)) {
@@ -490,7 +503,7 @@ viewSelect.addEventListener("change", () => {
   updateSelectedViewInfo();
   vscode.postMessage({ type: "switchView", handle: viewSelect.value });
 });
-homeButton.addEventListener("click", () => controller?.reset());
+homeButton.addEventListener("click", () => mounted?.controller.reset());
 copyButton.addEventListener("click", () => vscode.postMessage({ type: "copyJson" }));
 exportSvgButton.addEventListener("click", () => void exportImage("svg"));
 exportPngButton.addEventListener("click", () => void exportImage("png"));

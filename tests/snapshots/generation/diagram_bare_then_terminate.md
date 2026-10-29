@@ -224,7 +224,7 @@ package BareTerminate {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:8395c36385fc4afcb54566be0d8b51273e1d451011d3a0872d47601ed70da85c",
   "documents": [
     {
@@ -535,6 +535,7 @@ package BareTerminate {
         "name": "Stop",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:6238ea96ff6d440f944700cec6e8a6def63feba79a3ba9e99bcff81c90ae1ca0",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -553,6 +554,7 @@ package BareTerminate {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
+        "presentationKey": "p:96c68d701ec070f6707cc89322326945c9f3d4eb06a2c8185ac1701cc21e2bdc",
         "reference": 7,
         "source": 1,
         "stateSubaction": null,
@@ -571,6 +573,7 @@ package BareTerminate {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:7b86441e121cd5ffc1b42775b14bd17d5010ee40abd5814f816b8cc33215645e",
         "reference": 8,
         "source": 4,
         "stateSubaction": null,
@@ -589,6 +592,7 @@ package BareTerminate {
         "name": "work",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:d84795ff51a1f59a202e78b952024244084df0919d562c7b8ac4680870a55fc1",
         "reference": 2,
         "source": 3,
         "stateSubaction": null,
@@ -607,6 +611,7 @@ package BareTerminate {
         "name": "start",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:91d76ba2df0635c83425136a3020c2e61e35d754f4711cbc0345418112017041",
         "reference": 5,
         "source": 6,
         "stateSubaction": null,

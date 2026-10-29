@@ -2,7 +2,7 @@
 import type { BrowserMembers } from "./BrowserMembers";
 import type { Membership } from "./Membership";
 
-export type BrowserRow = { node: number, 
+export type BrowserRow = { node: number,
 /**
  * The row's stable key: sent back with `spec42/diagram` to load this row's members.
  */

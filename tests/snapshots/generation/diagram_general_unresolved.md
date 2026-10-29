@@ -135,7 +135,7 @@ package GeneralNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:a09dae05a03c9be77450239a7edf477f05b95d72560181ab408604effad862cd",
   "documents": [
     {

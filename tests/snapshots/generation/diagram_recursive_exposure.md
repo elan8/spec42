@@ -205,7 +205,7 @@ package RecursiveExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:b42b9a7cf7ad2f372ca9168fe5e73b9985d6fbb5e55acf7394212820cbacc7d7",
   "documents": [
     {
@@ -374,6 +374,7 @@ package RecursiveExample {
         "name": "vehicle",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:9b68a4f16113651ca030bbc97985593fedeb6c8162333ba233f699bbf0ed718a",
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
@@ -392,6 +393,7 @@ package RecursiveExample {
         "name": "wheel",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:2a47f37341e9f49e774f0bcd21b5a8a54abb0d2af9871568f96e7746ef47d588",
         "reference": 4,
         "source": 3,
         "stateSubaction": null,
@@ -418,6 +420,7 @@ package RecursiveExample {
         "name": "engine",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:b43ad59b7e6213c0616305f16b2fc3eb87b8624e625a789f681922f63bbd3b42",
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
@@ -436,6 +439,7 @@ package RecursiveExample {
         "name": "cylinder",
         "notationRole": "usage",
         "owner": 2,
+        "presentationKey": "p:1ff6d2599903498b2870991484e17dff69cb155d463313a6ccd5c12756c8736f",
         "reference": 3,
         "source": 2,
         "stateSubaction": null,

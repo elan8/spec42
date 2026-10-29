@@ -1063,7 +1063,7 @@ package Product {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:785c84c3f87cf8595efc04bfa4986f06be079549c422c925ab480e1313236e42",
   "documents": [
     {
@@ -1493,6 +1493,7 @@ package Product {
         "name": "robot",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:7fcc5515ed3320cdd4fb282cc4c0713e5420e35f84ae2608295edd4d03f0566e",
         "reference": 12,
         "source": 13,
         "stateSubaction": null,
@@ -1517,6 +1518,7 @@ package Product {
         "name": "bays",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:73ebf417239d2543d8501709ba090876a3a7b5b0f19f135f2675bdacf844a316",
         "reference": 2,
         "source": 11,
         "stateSubaction": null,
@@ -1541,6 +1543,7 @@ package Product {
         "name": "slots",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:0b4519567c627122bf0f845d833147c8c640a91ee508b1a33e957ce6d7976a4e",
         "reference": 6,
         "source": 10,
         "stateSubaction": null,
@@ -1559,6 +1562,7 @@ package Product {
         "name": "motors",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:99213a61279201e92dfee93607659c38324f8b95e438eb698c0b1f33d09c4d9b",
         "reference": 3,
         "source": 2,
         "stateSubaction": null,
@@ -1583,6 +1587,7 @@ package Product {
         "name": "spares",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:00871a1e6164b3986b9fc562522ce11550fdf9ffe5ec97303df4e179631c3daf",
         "reference": 7,
         "source": 8,
         "stateSubaction": null,
@@ -1607,6 +1612,7 @@ package Product {
         "name": "wheels",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:9aafb8bf5c7ca1598a76b9376da4c6013f0f6f83bb82f4737ac90cba8196bcb8",
         "reference": 8,
         "source": 4,
         "stateSubaction": null,
@@ -1631,6 +1637,7 @@ package Product {
         "name": "sensors",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:e42a01745e8e3f28aa4e8db88cc931fd60309b12663ddb5b4b701f0ddf05f1e9",
         "reference": 5,
         "source": 6,
         "stateSubaction": null,
@@ -1655,6 +1662,7 @@ package Product {
         "name": "n",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:e11d82f947fa8b3bff67ff8da9f3542da70338dfbec1003ff67d530811d035b1",
         "reference": 4,
         "source": 0,
         "stateSubaction": null,

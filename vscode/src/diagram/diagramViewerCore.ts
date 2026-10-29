@@ -340,6 +340,10 @@ export function parseDiagramProduct(text: string): DiagramProduct {
       !isDiagramScene(projection.scene, String(view.kind), sources.length)) {
     throw new Error(`Generated diagram product does not match schema version ${DIAGRAM_PRODUCT_SCHEMA_VERSION}.`);
   }
+  const presentationKeys = (projection.nodes as Array<{ presentationKey: string }>).map(node => node.presentationKey);
+  if (new Set(presentationKeys).size !== presentationKeys.length) {
+    throw new Error("Generated diagram product has duplicate presentation keys.");
+  }
   for (const reason of completeness.reasons) {
     if (!reason || typeof reason !== "object") throw new Error("Generated diagram product has a malformed completeness reason.");
     const candidate = reason as Record<string, unknown>;
@@ -454,7 +458,8 @@ function isDiagramNode(value: unknown, referenceCount: number, sourceCount: numb
   if (!value || typeof value !== "object") return false;
   const node = value as Record<string, unknown>;
   const compartments = node.compartments;
-  return indexIn(node.reference, referenceCount) && indexIn(node.source, sourceCount) && typeof node.metaclass === "string" &&
+  return typeof node.presentationKey === "string" && node.presentationKey.length > 0 &&
+    indexIn(node.reference, referenceCount) && indexIn(node.source, sourceCount) && typeof node.metaclass === "string" &&
     typeof node.notationRole === "string" && NOTATION_ROLES.has(node.notationRole) &&
     (node.name === null || typeof node.name === "string") && (node.owner === null || indexIn(node.owner, nodeCount)) &&
     isDiagramTyping(node.typing, referenceCount) &&

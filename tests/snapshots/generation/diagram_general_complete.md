@@ -144,7 +144,7 @@ package GeneralExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:4d4dd0540d63bdf1fe37d7f8292d03ade7668e58528110faac8d08ccdbac107c",
   "documents": [
     {
@@ -254,6 +254,7 @@ package GeneralExample {
         "name": "System",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:a171c609eefb424d781888c817a7748d4507075248ede37e5d392b9194631fb6",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -272,6 +273,7 @@ package GeneralExample {
         "name": "child",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:6b98e3808eaf0d8e3760fc4f1e1158cb068013eb204f50a71fe92e0726cc4960",
         "reference": 1,
         "source": 1,
         "stateSubaction": null,
