@@ -131,11 +131,7 @@ pub(super) async fn run_startup_scan(
         return;
     }
     let total = Instant::now();
-    let roots = if util::library_full_scan_enabled() {
-        scan_roots(&inputs.workspace_roots, &request.library_paths)
-    } else {
-        inputs.workspace_roots
-    };
+    let roots = inputs.workspace_roots;
     let services = handle.snapshot().services.clone();
     let source = services.source.clone();
     let discover = Instant::now();
@@ -183,66 +179,41 @@ pub(super) async fn run_startup_scan(
         return;
     }
     let library = Instant::now();
-    let closure_services = services.clone();
+    let library_service = services.library.clone();
     let library_paths = request.library_paths.clone();
-    let library_entries = match tokio::task::spawn_blocking(move || {
-        let syntax = workspace_entries
-            .iter()
-            .map(|entry| entry.parsed.clone())
-            .collect::<Vec<_>>();
-        let documents = closure_services
-            .library
-            .resolve_for_roots(
-                &syntax,
-                &library_paths,
-                &inputs.standard_library_paths,
-                &sysml_query::library::LibraryClosureOptions::default(),
-            )
-            .map_err(|error| error.to_string())?;
-        Ok::<_, String>((workspace_entries, documents))
+    let standard_paths = inputs.standard_library_paths;
+    let catalog = match tokio::task::spawn_blocking(move || {
+        library_service.prepare_catalog_for_roots(&library_paths, &standard_paths)
     })
     .await
     {
-        Ok(Ok(result)) => result,
+        Ok(Ok(catalog)) => catalog,
         result => {
             super::sync::fail_source_scan(
                 client,
                 handle,
                 token,
-                format!("Startup library closure failed: {result:?}"),
-            )
-            .await;
-            return;
-        }
-    };
-    if !handle.library_scan_is_current(&token) {
-        return;
-    }
-    let (workspace_entries, documents) = library_entries;
-    let entries = match tokio::task::spawn_blocking(move || {
-        let library_entries = parse_scanned_documents(documents, parallel, &services);
-        workspace_entries
-            .into_iter()
-            .chain(library_entries)
-            .collect()
-    })
-    .await
-    {
-        Ok(entries) => entries,
-        Err(error) => {
-            super::sync::fail_source_scan(
-                client,
-                handle,
-                token,
-                format!("Startup library syntax worker failed: {error}"),
+                format!("Startup library inventory failed: {result:?}"),
             )
             .await;
             return;
         }
     };
     let library_ms = library.elapsed().as_millis();
+    let entries = workspace_entries;
+    super::sync::index_catalog_for_search(
+        client,
+        handle,
+        &token,
+        &request.disk_revision,
+        catalog.clone(),
+    )
+    .await;
     let admission = Instant::now();
-    let loaded = match handle.ingest_startup_scan(token.clone(), entries).await {
+    let loaded = match handle
+        .ingest_startup_scan(token.clone(), entries, catalog.clone())
+        .await
+    {
         Ok(crate::session::handle::LibraryReindexCompletion::Admitted(results)) => {
             let count = results.len();
             for (_, warning) in results {
@@ -264,36 +235,6 @@ pub(super) async fn run_startup_scan(
         }
     };
     let admission_ms = admission.elapsed().as_millis();
-    // Search-only syntax preparation also stays off the actor and is guarded by this epoch.
-    if !util::library_full_scan_enabled()
-        && !request.library_paths.is_empty()
-        && handle.library_search_is_current(&token, &request.disk_revision)
-    {
-        let services = handle.snapshot().services.clone();
-        let roots = request.library_paths;
-        let search = tokio::task::spawn_blocking(move || {
-            let (documents, _) =
-                scan_sysml_files(roots, &services.source).map_err(|error| error.to_string())?;
-            Ok::<_, String>(parse_scanned_documents(documents, parallel, &services))
-        })
-        .await;
-        match search {
-            Ok(Ok(entries)) => {
-                let _ = handle
-                    .admit_library_search(token.clone(), request.disk_revision.clone(), entries)
-                    .await;
-            }
-            error if handle.library_search_is_current(&token, &request.disk_revision) => {
-                client
-                    .log_message(
-                        MessageType::WARNING,
-                        format!("Library search preparation failed: {error:?}"),
-                    )
-                    .await;
-            }
-            _ => {}
-        }
-    }
     if !handle.source_epoch_is_current(&token) {
         return;
     }
@@ -318,7 +259,7 @@ pub(super) async fn run_startup_scan(
             ),
             ("discoverReadMs", discover_ms.to_string()),
             ("parseWorkersMs", parse_ms.to_string()),
-            ("libraryClosureMs", library_ms.to_string()),
+            ("libraryInventoryMs", library_ms.to_string()),
             ("sourceAdmissionMs", admission_ms.to_string()),
             ("loadedFiles", loaded.to_string()),
             ("analysisScheduled", "true".to_owned()),
@@ -363,7 +304,14 @@ mod readiness_tests {
                     .unwrap()
                     .unwrap();
                 self.handle
-                    .complete_library_reindex(token, Vec::new())
+                    .complete_library_reindex(
+                        token,
+                        self.handle
+                            .snapshot()
+                            .services
+                            .library
+                            .catalog_from_documents(Vec::new()),
+                    )
                     .await
                     .unwrap();
             } else {

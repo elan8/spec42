@@ -237,6 +237,15 @@ impl ProjectRegistry {
             .collect()
     }
 
+    pub(crate) fn has_workspace_roots(&self) -> bool {
+        !self
+            .inner
+            .read()
+            .expect("project registry poisoned")
+            .workspace_roots
+            .is_empty()
+    }
+
     /// Route reads to an owning publication, including admitted documents outside its root.
     /// Shared libraries need an explicit project context rather than an arbitrary consumer.
     pub(crate) fn query_handle_for_uri(
@@ -797,7 +806,11 @@ mod tests {
             crate::session::parse_scanned_documents(disk_entries, false, &registry.services);
         let token = replacement.begin_startup().await.unwrap().unwrap();
         replacement
-            .ingest_startup_scan(token, parsed_disk)
+            .ingest_startup_scan(
+                token,
+                parsed_disk,
+                registry.services.library.catalog_from_documents(Vec::new()),
+            )
             .await
             .unwrap();
         let snapshot = replacement.snapshot();

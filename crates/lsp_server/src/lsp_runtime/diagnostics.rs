@@ -417,7 +417,14 @@ mod tests {
             handle.snapshot().session.publication()
         ));
         handle
-            .complete_library_reindex(replacement.clone(), Vec::new())
+            .complete_library_reindex(
+                replacement.clone(),
+                handle
+                    .snapshot()
+                    .services
+                    .library
+                    .catalog_from_documents(Vec::new()),
+            )
             .await
             .unwrap();
         handle.rebuild_publication().await.unwrap();

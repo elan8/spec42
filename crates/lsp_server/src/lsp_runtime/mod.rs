@@ -119,6 +119,7 @@ impl LanguageServer for Backend {
                 &self.config,
                 &self.runtime_config,
                 params.clone(),
+                self.projects.has_workspace_roots(),
             )
             .await;
         }
@@ -606,16 +607,22 @@ impl Backend {
     async fn publish_grouped_file_events(&self, changes: Vec<FileEvent>) {
         let mut grouped: Vec<(WorkspaceHandle, Vec<FileEvent>)> = Vec::new();
         for change in changes {
-            let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
-                continue;
-            };
-            if let Some((_, events)) = grouped
-                .iter_mut()
-                .find(|(candidate, _)| candidate.same_session(&handle))
-            {
-                events.push(change);
-            } else {
-                grouped.push((handle, vec![change]));
+            let mut handles = self.projects.handles_admitting_library_uri(&change.uri);
+            if handles.is_empty() {
+                let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
+                    continue;
+                };
+                handles.push(handle);
+            }
+            for handle in handles {
+                if let Some((_, events)) = grouped
+                    .iter_mut()
+                    .find(|(candidate, _)| candidate.same_session(&handle))
+                {
+                    events.push(change.clone());
+                } else {
+                    grouped.push((handle, vec![change.clone()]));
+                }
             }
         }
         for (handle, changes) in grouped {
