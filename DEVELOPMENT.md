@@ -386,6 +386,12 @@ resolve/evaluate/index/check subphases; do not add it to those subphases. `names
 measured inside `checksMs`; do not add it to the containing check duration. Missing phase records
 remain explicit `null` values.
 
+`backend:startupScanPhases` and `backend:didChangeConfigurationReindex` measure source discovery,
+syntax preparation and source admission. `analysisScheduled: true` means that semantic work was
+scheduled; it is not a semantic-completion barrier. Use `backend:publication` and exact editor
+versions for construction and diagnostic completion. Library-search source preparation runs off
+the actor and is guarded by both the configuration epoch and the observed filesystem revision.
+
 On Windows the runner records cumulative process user/kernel CPU time, working set, commit charge
 and process-lifetime peaks after receiving each completion. The resource observation has its own
 timestamp; it is not synchronized with a semantic phase. Unsupported platforms or counter errors

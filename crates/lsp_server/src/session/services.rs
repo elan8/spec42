@@ -16,7 +16,7 @@ use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 pub(crate) fn scan_sysml_files(
     roots: Vec<Url>,
     source: &sysml_query::source::SourceService,
-) -> (Vec<SourceDocument>, ScanSummary) {
+) -> Result<(Vec<SourceDocument>, ScanSummary), sysml_query::source::SourceError> {
     use sysml_query::source::{FilesystemProvider, SourceError, SourceKind};
 
     let mut summary = ScanSummary::default();
@@ -29,13 +29,7 @@ pub(crate) fn scan_sysml_files(
     }
     let provider =
         FilesystemProvider::new(paths, SourceKind::Workspace).within_project_boundary(true);
-    let report = match source.load(&provider) {
-        Ok(report) => report,
-        Err(error) => {
-            tracing::warn!(%error, "workspace scan failed");
-            return (Vec::new(), summary);
-        }
-    };
+    let report = source.load(&provider)?;
     summary.roots_scanned = report.roots_scanned;
     summary.roots_skipped_non_file += report.roots_skipped;
     summary.candidate_files = report.candidate_files;
@@ -46,7 +40,7 @@ pub(crate) fn scan_sysml_files(
             _ => summary.read_failures += 1,
         }
     }
-    (report.documents, summary)
+    Ok((report.documents, summary))
 }
 
 #[derive(Debug)]
@@ -55,21 +49,6 @@ pub(crate) struct ParsedScanEntry {
     pub(crate) document: SourceDocument,
     pub(crate) parsed: ParsedSource,
     pub(crate) parse_errors: Vec<String>,
-}
-
-#[derive(Debug, Clone, Copy, Default)]
-pub(crate) struct RebuildAllDocumentLinksMetrics {
-    pub(crate) uri_count: usize,
-    pub(crate) parsed_doc_count: usize,
-    pub(crate) remove_nodes_ms: u32,
-    pub(crate) rebuild_graphs_ms: u32,
-    pub(crate) cross_edge_resolution_ms: u32,
-    pub(crate) workspace_relationship_linking_ms: u32,
-    pub(crate) pending_relationship_resolution_ms: u32,
-    pub(crate) expression_evaluation_ms: u32,
-    pub(crate) cross_document_edges_ms: u32,
-    pub(crate) refresh_symbols_ms: u32,
-    pub(crate) total_ms: u32,
 }
 
 fn warning_from_parse_errors(
@@ -236,4 +215,4 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
 mod edits;
 mod rebuild;
 pub(crate) use edits::{apply_content_changes, remove_document};
-pub(crate) use rebuild::{clear_documents_under_roots, index_library_paths_for_search};
+pub(crate) use rebuild::{clear_documents_under_roots, index_library_search_entries};

@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 
 use tower_lsp::lsp_types::{notification::Notification, *};
 use tower_lsp::Client;
-use tracing::{info, warn};
+use tracing::info;
 
 use crate::common::util;
 use crate::host::config::Spec42Config;
@@ -67,7 +67,7 @@ fn ensure_analysis_notifications(
                                 let snapshot = handle.snapshot();
                                 let readiness = snapshot
                                     .diagnostic_readiness
-                                    .needs_reindex_notification()
+                                    .needs_publication_notification()
                                     .then(|| snapshot.diagnostic_readiness.token());
                                 drop(snapshot);
                                 if let Some(readiness) = readiness {
@@ -266,6 +266,18 @@ async fn send_semantic_ready_notification(
             && snapshot.session.analysis_status()
                 != sysml_query::publication::AnalysisStatus::Current)
     {
+        return;
+    }
+    drop(snapshot);
+    if !handle
+        .begin_readiness_notification(token.clone())
+        .await
+        .unwrap_or(false)
+    {
+        return;
+    }
+    let snapshot = handle.snapshot();
+    if !snapshot.diagnostic_readiness.is_current(&token) {
         return;
     }
     let params = semantic_index_ready_notification(&snapshot);
