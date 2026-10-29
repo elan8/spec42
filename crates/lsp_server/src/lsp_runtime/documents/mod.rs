@@ -251,7 +251,7 @@ pub(crate) fn semantic_index_ready_notification(
 }
 
 /// Sends the `spec42/semanticIndexReady` LSP notification to the client.
-/// The session must already be in `Ready` state before calling this.
+/// The project owner checks lifecycle, source admission and notification epoch when claiming it.
 ///
 /// Diagnostics stay deferred until this send completes and the actor accepts its epoch.
 /// Semantic edits do not reset this host-only barrier; startup and library replacement do.
@@ -260,16 +260,7 @@ async fn send_semantic_ready_notification(
     handle: &WorkspaceHandle,
     token: crate::session::ReadinessToken,
 ) {
-    let snapshot = handle.snapshot();
-    if !snapshot.diagnostic_readiness.is_current(&token)
-        || snapshot.diagnostic_readiness.source_inputs_pending()
-        || (!snapshot.diagnostic_readiness.needs_initial_notification()
-            && snapshot.session.analysis_status()
-                != sysml_query::publication::AnalysisStatus::Current)
-    {
-        return;
-    }
-    drop(snapshot);
+    // The actor owns the transition checks; the transport does not mirror readiness rules.
     if !handle
         .begin_readiness_notification(token.clone())
         .await

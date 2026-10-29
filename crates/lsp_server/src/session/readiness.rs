@@ -8,14 +8,35 @@ pub(crate) struct ReadinessToken(Arc<()>);
 #[derive(Clone)]
 pub(crate) struct DiskRevisionToken(Arc<()>);
 
+#[derive(Clone, Copy)]
+enum DiscoveryScope {
+    Startup,
+    Libraries,
+}
+
+#[derive(Clone, Copy)]
+enum NotificationKind {
+    Initial,
+    Reindex,
+}
+
+/// Source admission and readiness delivery share one transition owner. Semantic construction
+/// and freshness remain owned by PublicationSession; disk observations are an independent fence.
+#[derive(Clone, Copy)]
+enum ReadinessPhase {
+    Discovering {
+        scope: DiscoveryScope,
+        notification: NotificationKind,
+    },
+    AwaitingNotification(NotificationKind),
+    Notifying(NotificationKind),
+    Announced,
+}
+
 #[derive(Clone)]
 pub(crate) struct DiagnosticReadiness {
     token: ReadinessToken,
-    announced: bool,
-    initial: bool,
-    source_inputs_pending: bool,
-    startup_sources_pending: bool,
-    notification_in_flight: bool,
+    phase: ReadinessPhase,
     disk_observations: usize,
     disk_revision: DiskRevisionToken,
 }
@@ -24,11 +45,7 @@ impl Default for DiagnosticReadiness {
     fn default() -> Self {
         Self {
             token: ReadinessToken(Arc::new(())),
-            announced: false,
-            initial: true,
-            source_inputs_pending: false,
-            startup_sources_pending: false,
-            notification_in_flight: false,
+            phase: ReadinessPhase::AwaitingNotification(NotificationKind::Initial),
             disk_observations: 0,
             disk_revision: DiskRevisionToken(Arc::new(())),
         }
@@ -43,25 +60,39 @@ impl DiagnosticReadiness {
     }
 
     pub(crate) fn reset(&mut self, initial: bool) {
-        let startup_sources_pending = !initial && self.startup_sources_pending;
-        let disk_observations = self.disk_observations;
-        *self = Self {
-            initial,
-            source_inputs_pending: !initial,
-            startup_sources_pending,
-            disk_observations,
-            ..Self::default()
+        let scope = if self.startup_sources_pending() {
+            DiscoveryScope::Startup
+        } else {
+            DiscoveryScope::Libraries
+        };
+        self.token = ReadinessToken(Arc::new(()));
+        self.disk_revision = DiskRevisionToken(Arc::new(()));
+        self.phase = if initial {
+            ReadinessPhase::AwaitingNotification(NotificationKind::Initial)
+        } else {
+            ReadinessPhase::Discovering {
+                scope,
+                notification: NotificationKind::Reindex,
+            }
         };
     }
 
     pub(crate) fn begin_startup_sources(&mut self) {
         self.reset(true);
-        self.startup_sources_pending = true;
-        self.source_inputs_pending = true;
+        self.phase = ReadinessPhase::Discovering {
+            scope: DiscoveryScope::Startup,
+            notification: NotificationKind::Initial,
+        };
     }
 
     pub(crate) fn startup_sources_pending(&self) -> bool {
-        self.startup_sources_pending
+        matches!(
+            self.phase,
+            ReadinessPhase::Discovering {
+                scope: DiscoveryScope::Startup,
+                ..
+            }
+        )
     }
 
     pub(crate) fn disk_observations_pending(&self) -> bool {
@@ -100,36 +131,34 @@ impl DiagnosticReadiness {
     /// An observed disk batch invalidates every in-flight saved-source read. Keep the pending
     /// startup scope so the replacement still discovers workspace sources with the latest roots.
     pub(crate) fn restart_pending_sources(&mut self) -> bool {
-        if !self.source_inputs_pending {
+        if !self.source_inputs_pending() {
             return false;
         }
         self.token = ReadinessToken(Arc::new(()));
-        self.announced = false;
-        self.notification_in_flight = false;
         true
     }
 
     pub(crate) fn source_inputs_pending(&self) -> bool {
-        self.source_inputs_pending
+        matches!(self.phase, ReadinessPhase::Discovering { .. })
     }
 
     pub(crate) fn require_library_sources(&mut self) {
-        if !self.source_inputs_pending {
+        if !self.source_inputs_pending() {
             self.reset(false);
         }
     }
 
     /// Configured library source discovery completes before semantic construction can run.
     pub(crate) fn admit_source_inputs(&mut self, token: &ReadinessToken) -> bool {
-        if !self.is_current(token)
-            || !self.source_inputs_pending
-            || self.disk_observations_pending()
-        {
+        if !self.is_current(token) || self.disk_observations_pending() {
             return false;
         }
-        self.source_inputs_pending = false;
-        self.startup_sources_pending = false;
-        true
+        if let ReadinessPhase::Discovering { notification, .. } = self.phase {
+            self.phase = ReadinessPhase::AwaitingNotification(notification);
+            true
+        } else {
+            false
+        }
     }
 
     pub(crate) fn token(&self) -> ReadinessToken {
@@ -137,7 +166,7 @@ impl DiagnosticReadiness {
     }
 
     pub(crate) fn announced(&self) -> bool {
-        self.announced
+        matches!(self.phase, ReadinessPhase::Announced)
     }
 
     pub(crate) fn is_current(&self, token: &ReadinessToken) -> bool {
@@ -145,33 +174,39 @@ impl DiagnosticReadiness {
     }
 
     pub(crate) fn needs_initial_notification(&self) -> bool {
-        self.initial && !self.announced
+        matches!(
+            self.phase,
+            ReadinessPhase::Discovering {
+                notification: NotificationKind::Initial,
+                ..
+            } | ReadinessPhase::AwaitingNotification(NotificationKind::Initial)
+                | ReadinessPhase::Notifying(NotificationKind::Initial)
+        )
     }
 
     pub(crate) fn needs_publication_notification(&self) -> bool {
-        !self.announced && !self.source_inputs_pending && !self.notification_in_flight
+        matches!(self.phase, ReadinessPhase::AwaitingNotification(_))
     }
 
     pub(crate) fn begin_notification(&mut self, token: &ReadinessToken) -> bool {
-        if !self.is_current(token)
-            || self.source_inputs_pending
-            || self.announced
-            || self.notification_in_flight
-        {
+        if !self.is_current(token) {
             return false;
         }
-        self.notification_in_flight = true;
-        true
+        if let ReadinessPhase::AwaitingNotification(notification) = self.phase {
+            self.phase = ReadinessPhase::Notifying(notification);
+            true
+        } else {
+            false
+        }
     }
 
     /// A send completed for this exact project/notification epoch. An older startup or
     /// reindex notification must never unlock diagnostics for its replacement.
     pub(crate) fn announce(&mut self, token: &ReadinessToken) -> bool {
-        if !self.is_current(token) || self.source_inputs_pending {
+        if !self.is_current(token) || self.source_inputs_pending() {
             return false;
         }
-        self.announced = true;
-        self.notification_in_flight = false;
+        self.phase = ReadinessPhase::Announced;
         true
     }
 }

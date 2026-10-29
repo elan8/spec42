@@ -297,6 +297,11 @@ batch is ingested; the last overlapping batch schedules fresh discovery for the 
 Library-search reads and parsing also run off the actor and cross an epoch guard at admission.
 Discovery failures remain explicit and retry the complete pending scope; initial and reindex
 readiness delivery is claimed once and follows semantic publication before diagnostics.
+Source readiness and notification delivery form one explicit host transition state: discovery,
+awaiting notification, sending, and announced. Startup discovery scope survives configuration
+replacement until source admission. Disk observations retain their independent revision and fence;
+semantic freshness remains owned by `PublicationSession`. These states cannot independently mark
+pending discovery as announced or start another readiness send while one is in flight.
 
 Discovery captures an immutable, content-identified `LibraryCatalog` from the canonical closure
 authority. Publication preparation selects the closure for the latest authored syntax against this
