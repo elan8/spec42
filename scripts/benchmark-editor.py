@@ -64,6 +64,53 @@ def end_position(text):
             "character": len(text.rsplit("\n", 1)[-1].encode("utf-16-le")) // 2}
 
 
+def windows_high_qos(pid):
+    """Opt only the measured child out of execution-speed throttling, with readback.
+
+    See Microsoft's SetProcessInformation / PROCESS_POWER_THROTTLING_STATE contract.
+    This is a measurement control, not the normal editor's scheduling policy.
+    """
+    import ctypes
+    from ctypes import wintypes
+
+    class PowerThrottling(ctypes.Structure):
+        _fields_ = [(name, wintypes.ULONG) for name in ["Version", "ControlMask", "StateMask"]]
+
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel.OpenProcess.restype = wintypes.HANDLE
+    kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel.CloseHandle.restype = wintypes.BOOL
+    for name in ["GetProcessInformation", "SetProcessInformation"]:
+        function = getattr(kernel, name)
+        function.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD]
+        function.restype = wintypes.BOOL
+    # PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_SET_INFORMATION, for this child only.
+    handle = kernel.OpenProcess(0x1000 | 0x0200, False, pid)
+    if not handle:
+        raise ctypes.WinError(ctypes.get_last_error())
+    try:
+        def read():
+            state = PowerThrottling(1, 0, 0)
+            if not kernel.GetProcessInformation(handle, 4, ctypes.byref(state), ctypes.sizeof(state)):
+                raise ctypes.WinError(ctypes.get_last_error())
+            return state
+
+        before = read()
+        # ProcessPowerThrottling=4, CURRENT_VERSION=1, EXECUTION_SPEED=1.
+        desired = PowerThrottling(1, before.ControlMask | 1, before.StateMask & ~1)
+        if not kernel.SetProcessInformation(handle, 4, ctypes.byref(desired), ctypes.sizeof(desired)):
+            raise ctypes.WinError(ctypes.get_last_error())
+        after = read()
+        if not after.ControlMask & 1 or after.StateMask & 1:
+            raise RuntimeError("Windows did not apply the requested child HighQoS policy")
+        return {"mode": "explicit-high-qos", "scope": "measured child process only",
+                "before": {"control_mask": before.ControlMask, "state_mask": before.StateMask},
+                "after": {"control_mask": after.ControlMask, "state_mask": after.StateMask}}
+    finally:
+        kernel.CloseHandle(handle)
+
+
 class WindowsResources:
     """Read only the child process: GetProcessTimes and GetProcessMemoryInfo.
 
@@ -236,11 +283,15 @@ def main():
     parser.add_argument("--change-kind", choices=["full", "incremental"], default="full")
     parser.add_argument("--allow-missing-libraries", action="store_true",
                         help="Permit a discovery run without library admission evidence; not a representative editor baseline")
+    parser.add_argument("--windows-high-qos", action="store_true",
+                        help="Explicit Windows measurement control: disable execution-speed throttling for the measured child only")
     parser.add_argument("--timeout-seconds", type=float, default=120)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if min(args.iterations, args.burst_size, args.timeout_seconds) <= 0:
         parser.error("counts and timeout must be positive")
+    if args.windows_high_qos and os.name != "nt":
+        parser.error("--windows-high-qos requires Windows")
     server, workspace, document = (path.resolve() for path in
                                     [args.server, args.workspace, args.document])
     if not server.is_file() or not document.is_file() or not document.is_relative_to(workspace):
@@ -261,6 +312,7 @@ def main():
                               "profile": args.profile, "command": command,
                               "command_cwd": str(root), "runner_sha256": digest(Path(__file__)),
                               "server_sha256": digest(server),
+                              "scheduling_policy": {"mode": "system-managed"},
                               "spec42_environment": {k: os.environ[k] for k in [
                                   "SPEC42_LSP_TEST_STDLIB", "SPEC42_LSP_TEST_NO_STDLIB",
                                   "SPEC42_LIBRARY_FULL_SCAN", "SPEC42_PARALLEL_STARTUP_PARSE",
@@ -278,6 +330,8 @@ def main():
     with args.output.with_suffix(".stderr.log").open("wb") as stderr:
         try:
             lsp = Lsp(command, root, stderr, args.allow_missing_libraries)
+            if args.windows_high_qos:
+                report["environment"]["scheduling_policy"] = windows_high_qos(lsp.process.pid)
             lsp.send("initialize", {"processId": None, "rootUri": workspace.as_uri(), "capabilities": {},
                      "initializationOptions": {"performanceLogging": {"enabled": True}}}, 1)
             lsp.until(lambda m: m.get("id") == 1, args.timeout_seconds)
