@@ -13,7 +13,7 @@ use crate::views::dto::SemanticIndexReadyNotificationDto;
 
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
-use super::lifecycle::{project_boundary_for_uri, scan_roots, workspace_roots_from_initialize};
+use super::lifecycle::{project_boundary_for_uri, workspace_roots_from_initialize};
 use super::project_registry::ProjectRegistry;
 
 /// Ordered source ingestion schedules one bounded worker; delivery has its own per-owner loop.
@@ -148,6 +148,7 @@ fn ensure_analysis_notifications(
                                         ("admissionWallMs", ms(report.admission)),
                                         ("diagnosticFanoutMs", ms(diagnostic_fanout)),
                                         ("sourceParseMs", ms(report.source_parsing)),
+                                        ("libraryClosureMs", ms(report.library_selection)),
                                     ];
                                     if let Some(phases) = report.phases {
                                         fields.extend([

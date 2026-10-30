@@ -6,8 +6,26 @@ pub(crate) async fn did_open(
     _config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidOpenTextDocumentParams,
+    discover_workspace: bool,
 ) {
     ensure_analysis_notifications(client, handle, runtime_config);
+    let discovery = if discover_workspace {
+        handle.begin_startup().await
+    } else {
+        handle.begin_open_document_sources().await
+    };
+    let discovery = match discovery {
+        Ok(token) => token,
+        Err(error) => {
+            client
+                .log_message(
+                    MessageType::ERROR,
+                    format!("Source initialization failed: {error:?}"),
+                )
+                .await;
+            return;
+        }
+    };
     // Loose projects created after initialize do not run initialized_handle. Announce their
     // initial readiness here; library readiness follows its semantic publication.
     let snapshot = handle.snapshot();
@@ -61,6 +79,15 @@ pub(crate) async fn did_open(
             .set_editor_document_open(uri_norm.clone(), params.text_document.version)
             .await
         {
+            if let Some(token) = discovery.clone() {
+                fail_source_scan(
+                    client,
+                    handle,
+                    token,
+                    format!("Initial source ingestion failed: {error:?}"),
+                )
+                .await;
+            }
             client
                 .log_message(MessageType::ERROR, format!("didOpen failed: {error:?}"))
                 .await;
@@ -83,6 +110,15 @@ pub(crate) async fn did_open(
         let warning = match warning {
             Ok(warning) => warning,
             Err(error) => {
+                if let Some(token) = discovery.clone() {
+                    fail_source_scan(
+                        client,
+                        handle,
+                        token,
+                        format!("Initial source ingestion failed: {error:?}"),
+                    )
+                    .await;
+                }
                 client
                     .log_message(MessageType::ERROR, format!("didOpen failed: {error:?}"))
                     .await;
@@ -102,6 +138,9 @@ pub(crate) async fn did_open(
         (warning, lock_wait_ms, scheduled_relink)
     };
 
+    if let Some(token) = discovery {
+        start_source_discovery(client, handle, runtime_config, token);
+    }
     if perf_logging_enabled {
         client
             .log_message(
@@ -299,11 +338,25 @@ pub(crate) async fn did_change_watched_files(
             let admitted = match event.uri.to_file_path() {
                 Ok(path) => {
                     let services = handle.snapshot().services.clone();
+                    let workspace_roots = handle.snapshot().workspace_roots.clone();
+                    let source_uri = event.uri.clone();
                     Some(
                         tokio::task::spawn_blocking(move || {
+                            let workspace_source =
+                                project_boundary_for_uri(&source_uri, &workspace_roots)
+                                    .and_then(|boundary| {
+                                        Url::from_directory_path(boundary.project_root()).ok()
+                                    })
+                                    .is_some_and(|owner| {
+                                        workspace_roots.iter().any(|root| {
+                                            util::normalize_file_uri(root)
+                                                == util::normalize_file_uri(&owner)
+                                        })
+                                    });
                             services
                                 .source
                                 .admit_path(&path, sysml_query::source::SourceKind::Workspace)
+                                .map(|document| (document, workspace_source))
                                 .map_err(|error| error.to_string())
                         })
                         .await
@@ -313,12 +366,16 @@ pub(crate) async fn did_change_watched_files(
                 Err(_) => None,
             };
             match admitted {
-                Some(Ok(document)) => {
+                Some(Ok((document, workspace_source))) => {
                     let content = document.content().to_owned();
                     // Compare against the evolving batch inside `apply_watched_file_changes`.
                     // Comparing against the pre-batch snapshot here would drop the create half
                     // of a delete/create pair when the new file has identical contents.
-                    changes.push((uri_norm.clone(), Some(content)));
+                    changes.push(crate::session::handle::ObservedFileChange {
+                        uri: uri_norm.clone(),
+                        content: Some(content),
+                        workspace_source,
+                    });
                     changed_or_created_uris.push(uri_norm.clone());
                 }
                 Some(Err(error)) => runtime_warnings.push(format!(
@@ -331,14 +388,18 @@ pub(crate) async fn did_change_watched_files(
                 )),
             }
         } else if event.typ == FileChangeType::DELETED {
-            changes.push((uri_norm.clone(), None));
+            changes.push(crate::session::handle::ObservedFileChange {
+                uri: uri_norm.clone(),
+                content: None,
+                workspace_source: false,
+            });
             deleted_uris.push(uri_norm);
             deleted_client_uris.push(event.uri);
         }
     }
     ensure_analysis_notifications(client, handle, runtime_config);
     let refresh_start = Instant::now();
-    let changed = match handle.apply_watched_file_changes(changes).await {
+    let changed = match handle.apply_observed_file_changes(changes).await {
         Ok((changed, warnings)) => {
             runtime_warnings.extend(
                 warnings
@@ -485,105 +546,100 @@ async fn run_library_scan(
     if !handle.library_scan_is_current(&readiness_token) {
         return;
     }
-    let new_library_paths = request.library_paths;
-    let source = handle.snapshot().services.source.clone();
-    let perf_logging_enabled = runtime_config
-        .get()
-        .expect("initialize precedes all other LSP requests")
-        .perf_logging_enabled;
-    let total_start = Instant::now();
-    let discover_read_start = Instant::now();
-    let (entries, summary) =
-        match tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths, &source))
-            .await
-        {
-            Ok(Ok(result)) => result,
-            error => {
-                fail_source_scan(
-                    client,
-                    handle,
-                    readiness_token,
-                    format!("Library discovery failed: {error:?}"),
-                )
-                .await;
-                return;
-            }
-        };
-    let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
-    if !handle.library_scan_is_current(&readiness_token) {
-        return;
-    }
-    let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
-    let parallel_parse_min_files = util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
-    let should_parallel_parse = parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
-    let parse_worker_start = Instant::now();
-    let services = handle.snapshot().services.clone();
-    let parsed_entries = match tokio::task::spawn_blocking(move || {
-        parse_scanned_documents(entries, should_parallel_parse, &services)
+    let library_service = handle.snapshot().services.library.clone();
+    let roots = request.library_paths;
+    let standards = request.standard_library_paths;
+    let started = Instant::now();
+    let catalog = match tokio::task::spawn_blocking(move || {
+        library_service.prepare_catalog_for_roots(&roots, &standards)
     })
     .await
     {
-        Ok(result) => result,
-        Err(error) => {
+        Ok(Ok(catalog)) => catalog,
+        result => {
             fail_source_scan(
                 client,
                 handle,
                 readiness_token,
-                format!("Library syntax worker failed: {error}"),
+                format!("Library inventory failed: {result:?}"),
             )
             .await;
             return;
         }
     };
-    let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
-    let ingest_start = Instant::now();
-    let ingest_results = match handle
-        .complete_library_reindex(readiness_token.clone(), parsed_entries)
+    let inventory_ms = started.elapsed().as_millis();
+    let source_count = catalog.documents().len();
+    index_catalog_for_search(
+        client,
+        handle,
+        &readiness_token,
+        &request.disk_revision,
+        catalog.clone(),
+    )
+    .await;
+    match handle
+        .complete_library_reindex(readiness_token.clone(), catalog.clone())
         .await
     {
-        Ok(crate::session::handle::LibraryReindexCompletion::Admitted(results)) => results,
+        Ok(crate::session::handle::LibraryReindexCompletion::Admitted(_)) => {}
         Ok(crate::session::handle::LibraryReindexCompletion::Superseded) => return,
         Err(error) => {
-            client.log_message(MessageType::ERROR, format!("Library source admission failed; retaining the previous publication: {error:?}")).await;
+            client
+                .log_message(
+                    MessageType::ERROR,
+                    format!("Library inventory admission failed: {error:?}"),
+                )
+                .await;
             return;
         }
-    };
-    let mut warnings = Vec::new();
-    for (_uri_norm, warning) in ingest_results {
-        if let Some(message) = warning {
-            warnings.push(format!("didChangeConfiguration: {}", message));
-        }
-    }
-    let ingest_ms = ingest_start.elapsed().as_millis() as u64;
-    if summary.roots_skipped_non_file > 0 || summary.read_failures > 0 || summary.uri_failures > 0 {
-        warnings.push(format!(
-            "didChangeConfiguration: library reindex completed with skips: loaded {} of {} candidate SysML/KerML files across {} root(s); skipped_non_file_roots={}, read_failures={}, uri_failures={}.",
-            summary.files_loaded,
-            summary.candidate_files,
-            summary.roots_scanned,
-            summary.roots_skipped_non_file,
-            summary.read_failures,
-            summary.uri_failures,
-        ));
-    }
-    for warning in warnings {
-        client.log_message(MessageType::WARNING, warning).await;
     }
     log_perf(
         client,
-        perf_logging_enabled,
+        runtime_config
+            .get()
+            .is_some_and(|config| config.perf_logging_enabled),
         "backend:didChangeConfigurationReindex",
         vec![
-            ("discoverReadMs", discover_read_ms.to_string()),
-            ("parseWorkersMs", parse_worker_ms.to_string()),
-            ("ingestMs", ingest_ms.to_string()),
+            ("inventoryPreparationMs", inventory_ms.to_string()),
+            ("inventorySources", source_count.to_string()),
             ("analysisScheduled", "true".to_owned()),
-            ("loadedFiles", summary.files_loaded.to_string()),
-            ("candidateFiles", summary.candidate_files.to_string()),
-            ("totalMs", total_start.elapsed().as_millis().to_string()),
+            ("totalMs", started.elapsed().as_millis().to_string()),
         ],
     )
     .await;
+}
+
+pub(super) async fn index_catalog_for_search(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    token: &crate::session::ReadinessToken,
+    disk: &crate::session::DiskRevisionToken,
+    catalog: sysml_query::library::LibraryCatalog,
+) {
+    if !handle.library_search_is_current(token, disk) {
+        return;
+    }
+    let services = handle.snapshot().services.clone();
+    let result = tokio::task::spawn_blocking(move || {
+        parse_scanned_documents(catalog.documents().cloned().collect(), true, &services)
+    })
+    .await;
+    match result {
+        Ok(entries) => {
+            let _ = handle
+                .admit_library_search(token.clone(), disk.clone(), entries)
+                .await;
+        }
+        Err(error) if handle.library_search_is_current(token, disk) => {
+            client
+                .log_message(
+                    MessageType::WARNING,
+                    format!("Library search preparation failed: {error}"),
+                )
+                .await;
+        }
+        _ => {}
+    }
 }
 
 pub(super) async fn fail_source_scan(

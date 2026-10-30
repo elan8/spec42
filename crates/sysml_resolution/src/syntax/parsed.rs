@@ -54,6 +54,12 @@ pub struct PreparedSyntax {
 }
 
 impl PreparedSyntax {
+    /// Borrow the paired revisions without transferring their leases.
+    pub fn sources(&self) -> impl ExactSizeIterator<Item = (&SourceDocument, &ParsedSource)> {
+        self.sources
+            .iter()
+            .map(|(document, syntax)| (document, syntax))
+    }
     /// The complete source set whose identity a host must validate before admission.
     pub fn documents(&self) -> impl ExactSizeIterator<Item = &SourceDocument> {
         self.sources.iter().map(|(document, _)| document)

@@ -131,7 +131,18 @@ pub(crate) fn sysml_library_search_result(
     // Build any missing entries from that same publication, retaining the parser-backed search
     // projection only for documents deliberately not admitted to semantic construction.
     let mut search_symbols = state.semantic_symbols.clone();
-    search_symbols.extend(state.recovery_search_symbols.iter().cloned());
+    search_symbols.extend(
+        state
+            .recovery_search_symbols
+            .iter()
+            .filter(|symbol| {
+                !state
+                    .published_index
+                    .get(&symbol.uri)
+                    .is_some_and(|entry| entry.admitted_to_publication)
+            })
+            .cloned(),
+    );
     for (uri, index_entry) in &state.index {
         if !crate::common::util::uri_under_any_library(uri, &state.library_paths)
             || search_symbols.iter().any(|entry| entry.uri == *uri)

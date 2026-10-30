@@ -92,43 +92,25 @@ pub(crate) fn parse_scanned_documents(
     documents.into_par_iter().map(entry).collect()
 }
 
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn store_parsed_document_text(
-    state: &mut impl DocumentStore,
-    uri_norm: &Url,
-    document: SourceDocument,
-    parsed: ParsedSource,
-    parse_errors: &[String],
-    diagnostic_count: usize,
-    context: &str,
-    _evaluate: bool,
-) -> Option<String> {
-    let editor_revision = state
-        .index()
-        .get(uri_norm)
-        .and_then(|entry| entry.editor_revision.clone());
-    state.index_mut().insert(
-        uri_norm.clone(),
-        IndexEntry {
-            document,
-            parsed: Some(parsed),
-            admitted_to_publication: true,
-            editor_revision,
-        },
-    );
-    warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
-}
-
 /// Admit desired source immediately. The bounded analysis worker owns parsing and publication.
 pub(crate) fn store_document_text_fast(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let kind = state
-        .index()
-        .get(uri_norm)
-        .map_or(SourceKind::Workspace, |entry| entry.document.kind());
+    let kind = state.index().get(uri_norm).map_or_else(
+        || {
+            let (libraries, standard) = state.library_roots();
+            if util::uri_under_any_library(uri_norm, standard) {
+                SourceKind::StandardLibrary
+            } else if util::uri_under_any_library(uri_norm, libraries) {
+                SourceKind::Library
+            } else {
+                SourceKind::Workspace
+            }
+        },
+        |entry| entry.document.kind(),
+    );
     let document = state
         .services()
         .source
@@ -141,42 +123,21 @@ pub(crate) fn store_document_text_fast(
         })
         .and_then(|entry| entry.parsed.clone());
     let editor_revision = previous.and_then(|entry| entry.editor_revision.clone());
+    let workspace_source = previous.map_or(!kind.is_library(), |entry| entry.workspace_source);
     state.index_mut().insert(
         uri_norm.clone(),
         IndexEntry {
             document,
             parsed,
             admitted_to_publication: true,
+            workspace_source,
             editor_revision,
         },
     );
     None
 }
 
-pub(crate) fn ingest_parsed_scan_entries(
-    state: &mut impl DocumentStore,
-    entries: Vec<ParsedScanEntry>,
-) -> Vec<(Url, Option<String>)> {
-    let mut loaded = Vec::with_capacity(entries.len());
-    for entry in entries {
-        let uri_norm = util::normalize_file_uri(&entry.uri);
-        let warning = store_parsed_document_text(
-            state,
-            &uri_norm,
-            entry.document,
-            entry.parsed,
-            &entry.parse_errors,
-            entry.parse_errors.len(),
-            "workspace_scan",
-            false,
-        );
-        loaded.push((uri_norm, warning));
-    }
-    loaded
-}
-
-/// A faster version of ingest_parsed_scan_entries that avoids per-document relinking/evaluation.
-/// Intended for use during startup when a full relink is performed immediately after.
+/// Admit prepared startup sources; semantic work crosses a separate publication barrier.
 pub(crate) fn ingest_parsed_scan_entries_batch(
     state: &mut impl DocumentStore,
     entries: Vec<ParsedScanEntry>,
@@ -194,6 +155,7 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
                 document: entry.document,
                 parsed: Some(entry.parsed),
                 admitted_to_publication: true,
+                workspace_source: true,
                 editor_revision,
             },
         );

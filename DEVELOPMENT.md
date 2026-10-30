@@ -386,6 +386,12 @@ resolve/evaluate/index/check subphases; do not add it to those subphases. `names
 measured inside `checksMs`; do not add it to the containing check duration. Missing phase records
 remain explicit `null` values.
 
+`libraryClosureMs` measures canonical source selection against the immutable admitted library
+inventory, including open-library overlays. It is within `preparationMs`, separately from
+`sourceParseMs`. Library filesystem inventory preparation belongs to source discovery, not each
+editor revision. Restart parity tests compare complete model digests and workspace diagnostic
+publications after configuration, import, cross-file and library-file changes.
+
 `backend:startupScanPhases` and `backend:didChangeConfigurationReindex` measure source discovery,
 syntax preparation and source admission. `analysisScheduled: true` means that semantic work was
 scheduled; it is not a semantic-completion barrier. Use `backend:publication` and exact editor

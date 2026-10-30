@@ -544,6 +544,62 @@ impl TestSession {
         }
     }
 
+    /// Observe both exact-version diagnostics and the completed owner's model identity. Used
+    /// for restart/configuration parity; handler completion alone cannot satisfy this barrier.
+    pub fn wait_for_publication_version(
+        &mut self,
+        uri: &str,
+        version: i32,
+    ) -> (serde_json::Value, serde_json::Value) {
+        let mut diagnostics = None;
+        let mut publication = None;
+        let mut workspace_diagnostics = serde_json::Map::new();
+        while diagnostics.is_none() || publication.is_none() {
+            let message: serde_json::Value = serde_json::from_str(
+                &read_message(&mut self.stdout).expect("versioned publication"),
+            )
+            .expect("JSON-RPC message");
+            if message["method"] == "textDocument/publishDiagnostics" {
+                if let Some(source_uri) = message["params"]["uri"].as_str() {
+                    workspace_diagnostics.insert(
+                        source_uri.to_owned(),
+                        message["params"]["diagnostics"].clone(),
+                    );
+                }
+            }
+            if message["method"] == "textDocument/publishDiagnostics"
+                && message["params"]["uri"]
+                    .as_str()
+                    .is_some_and(|value| value.eq_ignore_ascii_case(uri))
+                && message["params"]["version"] == version
+            {
+                diagnostics = Some(message["params"]["diagnostics"].clone());
+            }
+            if let Some(raw) = message["params"]["message"]
+                .as_str()
+                .and_then(|raw| raw.strip_prefix("[SysML][perf] "))
+            {
+                let record: serde_json::Value =
+                    serde_json::from_str(raw).expect("performance record");
+                if record["event"] == "backend:publication"
+                    && record["editorVersions"]
+                        .as_object()
+                        .is_some_and(|versions| {
+                            versions.iter().any(|(key, value)| {
+                                key.eq_ignore_ascii_case(uri) && value == version
+                            })
+                        })
+                {
+                    publication = Some(record);
+                }
+            }
+        }
+        (
+            publication.unwrap(),
+            serde_json::Value::Object(workspace_diagnostics),
+        )
+    }
+
     pub fn wait_for_diagnostics(&mut self, uri: &str) -> Vec<serde_json::Value> {
         loop {
             let message: serde_json::Value = serde_json::from_str(

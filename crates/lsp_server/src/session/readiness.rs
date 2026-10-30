@@ -113,6 +113,12 @@ impl DiagnosticReadiness {
         self.source_inputs_pending
     }
 
+    pub(crate) fn require_library_sources(&mut self) {
+        if !self.source_inputs_pending {
+            self.reset(false);
+        }
+    }
+
     /// Configured library source discovery completes before semantic construction can run.
     pub(crate) fn admit_source_inputs(&mut self, token: &ReadinessToken) -> bool {
         if !self.is_current(token)

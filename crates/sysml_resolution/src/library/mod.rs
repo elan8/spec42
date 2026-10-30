@@ -77,9 +77,111 @@ struct IndexedDocument {
 
 #[derive(Debug, Default)]
 struct PackageIndex {
+    documents: Vec<IndexedDocument>,
     packages: HashMap<PackageKey, Vec<IndexedDocument>>,
     unit_catalogs: Vec<IndexedDocument>,
     standard_packages: HashSet<PackageKey>,
+}
+
+/// Immutable, content-identified library inventory captured at a host's source barrier.
+/// Selection against later editor revisions performs no filesystem reads.
+#[derive(Debug, Clone)]
+pub struct LibraryCatalog {
+    index: Arc<PackageIndex>,
+    syntax: Arc<SyntaxAuthority>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LibraryAdmissionPolicy {
+    Referenced,
+    All,
+}
+
+impl LibraryCatalog {
+    pub fn source_document(&self, uri: &str) -> Option<&SourceDocument> {
+        self.index
+            .documents
+            .iter()
+            .find(|entry| entry.document.uri().as_str() == uri)
+            .map(|entry| &entry.document)
+    }
+    pub fn documents(&self) -> impl ExactSizeIterator<Item = &SourceDocument> {
+        self.index.documents.iter().map(|entry| &entry.document)
+    }
+
+    /// Select the canonical closure for these exact authored sources. Library overlays replace
+    /// saved catalogue revisions while inheriting their root provenance and stable location.
+    /// Authored sources are always included, even when no other source references them.
+    /// If a batch includes several revisions of one URI, only its last revision seeds selection.
+    pub fn publication_documents(
+        &self,
+        authored: &crate::syntax::PreparedSyntax,
+        options: &LibraryClosureOptions,
+        policy: LibraryAdmissionPolicy,
+    ) -> Vec<SourceDocument> {
+        let authored_sources = authored
+            .sources()
+            .map(|(document, syntax)| (document.uri(), (document, syntax)))
+            .collect::<std::collections::BTreeMap<_, _>>();
+        let authored_documents = authored_sources
+            .values()
+            .map(|(document, _)| *document)
+            .map(|document| {
+                if document.kind().is_library() {
+                    if let Some(saved) = self
+                        .index
+                        .documents
+                        .iter()
+                        .find(|saved| saved.document.uri() == document.uri())
+                    {
+                        let mut document = document.with_kind(saved.document.kind());
+                        if let Some((slot, relative)) = saved.document.library_location() {
+                            document = document.with_library_location(slot, relative.to_owned());
+                        }
+                        return document;
+                    }
+                }
+                document.clone()
+            })
+            .collect::<Vec<_>>();
+        let overlays = authored_documents
+            .iter()
+            .filter(|document| document.kind().is_library())
+            .collect::<Vec<_>>();
+        let overlay_index = (!overlays.is_empty()).then(|| {
+            let mut documents = self
+                .documents()
+                .filter(|document| {
+                    !overlays
+                        .iter()
+                        .any(|overlay| overlay.uri() == document.uri())
+                })
+                .cloned()
+                .collect::<Vec<_>>();
+            documents.extend(overlays.iter().map(|document| (*document).clone()));
+            build_index(&self.syntax, documents)
+        });
+        let index = overlay_index.as_ref().unwrap_or(&self.index);
+        let facts = authored_sources
+            .values()
+            .map(|(_, syntax)| syntax.closure_facts())
+            .collect::<Vec<_>>();
+        let selected = match policy {
+            LibraryAdmissionPolicy::Referenced => resolve_closure(index, &facts, options),
+            LibraryAdmissionPolicy::All => index
+                .documents
+                .iter()
+                .map(|entry| entry.document.clone())
+                .collect(),
+        };
+        // Source authority URIs are canonical; authored revisions have precedence for the same
+        // identity. Ordering is independent of package traversal and parallel preparation.
+        let mut documents = std::collections::BTreeMap::new();
+        for document in selected.into_iter().chain(authored_documents) {
+            documents.insert(document.uri().clone(), document);
+        }
+        documents.into_values().collect()
+    }
 }
 
 /// The authority over library closure. One per host; the package index is rebuilt only when the
@@ -97,6 +199,21 @@ impl LibraryClosureAuthority {
             source,
             syntax,
             index: Mutex::new(None),
+        }
+    }
+
+    pub fn prepare_catalog(&self, roots: &[LibraryRoot]) -> Result<LibraryCatalog, SourceError> {
+        Ok(LibraryCatalog {
+            index: self.package_index(roots)?,
+            syntax: Arc::clone(&self.syntax),
+        })
+    }
+
+    /// A host supplying already admitted library sources uses the same canonical index builder.
+    pub fn catalog_from_documents(&self, documents: Vec<SourceDocument>) -> LibraryCatalog {
+        LibraryCatalog {
+            index: Arc::new(build_index(&self.syntax, documents)),
+            syntax: Arc::clone(&self.syntax),
         }
     }
 
@@ -156,40 +273,41 @@ impl LibraryClosureAuthority {
                 return Ok(Arc::clone(index));
             }
         }
-        let index = Arc::new(self.build_index(listed));
+        let index = Arc::new(build_index(&self.syntax, listed));
         *self.index.lock().unwrap() = Some((key, Arc::clone(&index)));
         Ok(index)
     }
+}
 
-    fn build_index(&self, listed: Vec<SourceDocument>) -> PackageIndex {
-        use rayon::prelude::*;
-        let syntax = Arc::clone(&self.syntax);
-        let parsed = listed
-            .into_par_iter()
-            .map(|document| {
-                let parsed = syntax.parse(&document);
-                IndexedDocument { document, parsed }
-            })
-            .collect::<Vec<_>>();
-        let mut index = PackageIndex::default();
-        for entry in parsed {
-            let facts = entry.parsed.closure_facts();
-            let path_hint = entry.document.path_hint().unwrap_or("");
-            if is_unit_catalog_path(entry.document.uri().path(), path_hint)
-                || facts.declares_unit_definitions
-            {
-                index.unit_catalogs.push(entry.clone());
-            }
-            for package in facts.declared_packages {
-                let key = PackageKey(package);
-                if entry.document.kind() == SourceKind::StandardLibrary {
-                    index.standard_packages.insert(key.clone());
-                }
-                index.packages.entry(key).or_default().push(entry.clone());
-            }
+fn build_index(syntax: &Arc<SyntaxAuthority>, listed: Vec<SourceDocument>) -> PackageIndex {
+    use rayon::prelude::*;
+    let syntax = Arc::clone(syntax);
+    let parsed = listed
+        .into_par_iter()
+        .map(|document| {
+            let parsed = syntax.parse(&document);
+            IndexedDocument { document, parsed }
+        })
+        .collect::<Vec<_>>();
+    let mut index = PackageIndex::default();
+    for entry in &parsed {
+        let facts = entry.parsed.closure_facts();
+        let path_hint = entry.document.path_hint().unwrap_or("");
+        if is_unit_catalog_path(entry.document.uri().path(), path_hint)
+            || facts.declares_unit_definitions
+        {
+            index.unit_catalogs.push(entry.clone());
         }
-        index
+        for package in facts.declared_packages {
+            let key = PackageKey(package);
+            if entry.document.kind() == SourceKind::StandardLibrary {
+                index.standard_packages.insert(key.clone());
+            }
+            index.packages.entry(key).or_default().push(entry.clone());
+        }
     }
+    index.documents = parsed;
+    index
 }
 
 fn listing_key(listed: &[SourceDocument]) -> LibraryListingKey {
@@ -430,6 +548,170 @@ mod tests {
     use super::*;
     use std::fs;
     use std::path::Path;
+
+    #[test]
+    fn catalogue_selection_tracks_current_imports_and_prunes_unused_sources_without_io() {
+        let root = tempfile::tempdir().unwrap();
+        for name in ["First", "Second", "Unused"] {
+            fs::write(
+                root.path().join(format!("{name}.sysml")),
+                format!("package {name};"),
+            )
+            .unwrap();
+        }
+        let authority = authority();
+        let catalog = authority.prepare_catalog(&library(root.path())).unwrap();
+        let again = authority.prepare_catalog(&library(root.path())).unwrap();
+        assert!(Arc::ptr_eq(&catalog.index, &again.index));
+        let authored = |text: &str| {
+            let document = authority
+                .source
+                .admit(
+                    "memory://workspace/model.sysml",
+                    text,
+                    SourceKind::Workspace,
+                )
+                .unwrap();
+            authority.syntax.prepare([&document])
+        };
+        let options = LibraryClosureOptions::default();
+        let first = authored("package App { private import First::*; }");
+        let second = authored("package App { private import Second::*; }");
+        let selected = |batch: &crate::syntax::PreparedSyntax| {
+            catalog.publication_documents(batch, &options, LibraryAdmissionPolicy::Referenced)
+        };
+        let first_documents = selected(&first);
+        let second_documents = selected(&second);
+        let library_uris = |documents: &[SourceDocument]| {
+            documents
+                .iter()
+                .filter(|document| document.kind().is_library())
+                .map(|document| document.uri().clone())
+                .collect::<Vec<_>>()
+        };
+        let first_uri = authority
+            .source
+            .admit_path(&root.path().join("First.sysml"), SourceKind::Library)
+            .unwrap()
+            .uri()
+            .clone();
+        let second_uri = authority
+            .source
+            .admit_path(&root.path().join("Second.sysml"), SourceKind::Library)
+            .unwrap()
+            .uri()
+            .clone();
+        assert_eq!(library_uris(&first_documents), vec![first_uri]);
+        assert_eq!(library_uris(&second_documents), vec![second_uri]);
+        fs::remove_file(root.path().join("Second.sysml")).unwrap();
+        assert_eq!(
+            selected(&second),
+            second_documents,
+            "selection reads the captured inventory, not disk"
+        );
+        let fresh = authority.prepare_catalog(&library(root.path())).unwrap();
+        let fresh_documents =
+            fresh.publication_documents(&second, &options, LibraryAdmissionPolicy::Referenced);
+        assert!(library_uris(&fresh_documents).is_empty());
+        assert_eq!(
+            catalog
+                .publication_documents(&second, &options, LibraryAdmissionPolicy::All)
+                .len(),
+            4
+        );
+    }
+
+    #[test]
+    fn catalogue_selection_uses_only_the_last_authored_revision_for_each_uri() {
+        let root = tempfile::tempdir().unwrap();
+        fs::write(root.path().join("First.sysml"), "package First;").unwrap();
+        fs::write(root.path().join("Second.sysml"), "package Second;").unwrap();
+        let authority = authority();
+        let catalog = authority.prepare_catalog(&library(root.path())).unwrap();
+        let first = authority
+            .source
+            .admit(
+                "memory://workspace/model.sysml",
+                "package App { private import First::*; }",
+                SourceKind::Workspace,
+            )
+            .unwrap();
+        let second = authority
+            .source
+            .admit(
+                first.uri().as_str(),
+                "package App { private import Second::*; }",
+                SourceKind::Workspace,
+            )
+            .unwrap();
+        let options = LibraryClosureOptions::default();
+        let select = |sources: &[&SourceDocument]| {
+            catalog.publication_documents(
+                &authority.syntax.prepare(sources.iter().copied()),
+                &options,
+                LibraryAdmissionPolicy::Referenced,
+            )
+        };
+        assert_eq!(select(&[&first, &second]), select(&[&second]));
+        assert_eq!(select(&[&second, &first]), select(&[&first]));
+        assert_ne!(select(&[&first]), select(&[&second]));
+    }
+
+    #[test]
+    fn library_overlays_replace_saved_packages_and_preserve_language_role_and_location() {
+        let root = tempfile::tempdir().unwrap();
+        let path = root.path().join("Saved.kerml");
+        fs::write(&path, "package Saved;").unwrap();
+        fs::write(root.path().join("Dependency.kerml"), "package Dependency;").unwrap();
+        let authority = authority();
+        let catalog = authority.prepare_catalog(&standard(root.path())).unwrap();
+        let uri = authority
+            .source
+            .admit_path(&path, SourceKind::StandardLibrary)
+            .unwrap()
+            .uri()
+            .clone();
+        let saved = catalog
+            .documents()
+            .find(|document| document.uri() == &uri)
+            .unwrap();
+        let overlay = authority
+            .source
+            .admit(
+                saved.uri().as_str(),
+                "package Unsaved { private import Dependency::*; }",
+                SourceKind::Library,
+            )
+            .unwrap();
+        let batch = authority.syntax.prepare([&overlay]);
+        let documents = catalog.publication_documents(
+            &batch,
+            &LibraryClosureOptions::default(),
+            LibraryAdmissionPolicy::Referenced,
+        );
+        assert_eq!(documents.len(), 2);
+        let admitted = documents
+            .iter()
+            .find(|document| document.uri() == saved.uri())
+            .unwrap();
+        assert_eq!(admitted.digest(), overlay.digest());
+        assert_eq!(admitted.language(), overlay.language());
+        assert_eq!(admitted.kind(), SourceKind::StandardLibrary);
+        assert_eq!(admitted.library_location(), saved.library_location());
+        assert_eq!(
+            catalog
+                .source_document(saved.uri().as_str())
+                .unwrap()
+                .digest(),
+            saved.digest()
+        );
+        let all = catalog.publication_documents(
+            &batch,
+            &LibraryClosureOptions::default(),
+            LibraryAdmissionPolicy::All,
+        );
+        assert_eq!(all, documents);
+    }
 
     fn authority() -> LibraryClosureAuthority {
         LibraryClosureAuthority::new(

@@ -241,10 +241,20 @@ impl SourceDocument {
     }
 
     /// The same document under a different provenance. Identity (URI and digest) is unchanged,
-    /// so a memoised parse of this document still applies.
+    /// so a memoised parse still applies. Non-library roles discard library-root locations.
     pub fn with_kind(&self, kind: SourceKind) -> Self {
         Self {
             kind,
+            library_root_slot: if kind.is_library() {
+                self.library_root_slot
+            } else {
+                None
+            },
+            library_relative_path: if kind.is_library() {
+                self.library_relative_path.clone()
+            } else {
+                None
+            },
             ..self.clone()
         }
     }
@@ -773,6 +783,28 @@ impl SourceAuthority {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn changing_to_a_workspace_role_discards_only_the_library_location() {
+        let authority = SourceAuthority::new();
+        let library = authority
+            .admit(
+                "memory://library/Base.kerml",
+                "package Base;",
+                SourceKind::Library,
+            )
+            .unwrap()
+            .with_library_location(2, "Base.kerml");
+        let standard = library.with_kind(SourceKind::StandardLibrary);
+        assert_eq!(standard.library_location(), library.library_location());
+        let workspace = library.with_kind(SourceKind::Workspace);
+        assert_eq!(workspace.kind(), SourceKind::Workspace);
+        assert_eq!(workspace.library_location(), None);
+        assert_eq!(workspace.uri(), library.uri());
+        assert_eq!(workspace.digest(), library.digest());
+        assert_eq!(workspace.language(), library.language());
+        assert_eq!(workspace.content(), library.content());
+    }
 
     #[test]
     fn admission_derives_the_language_from_the_path_and_a_host_may_declare_it() {

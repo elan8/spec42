@@ -298,6 +298,18 @@ Library-search reads and parsing also run off the actor and cross an epoch guard
 Discovery failures remain explicit and retry the complete pending scope; initial and reindex
 readiness delivery is claimed once and follows semantic publication before diagnostics.
 
+Discovery captures an immutable, content-identified `LibraryCatalog` from the canonical closure
+authority. Publication preparation selects the closure for the latest authored syntax against this
+inventory, without filesystem reads. Changing or removing imports therefore changes the selected
+library set as on a fresh publication. Open library overlays replace their saved revisions while
+preserving language, library role and root-relative identity. Workspace-selected sources remain
+authored seeds independently of their configured library reporting role; removing that role keeps
+the workspace source and drops obsolete library-location metadata. Library watch events fan out to
+all admitting projects and refresh the inventory when its source revisions change. Save echoes do
+not reload it. Loose projects initialize the inventory for explicitly opened sources without
+recursively discovering unopened siblings. Search preparation crosses the source barrier before
+readiness; recovery search entries cannot compete with committed semantic entries for one source.
+
 ### Project boundaries and library admission
 
 A filesystem model is owned by its nearest ancestor `.project.json`, bounded by the host's
@@ -401,7 +413,7 @@ Each invariant above is checked in a place the constrained crates cannot disable
 | the facade publishes no parser or graph type and no text-taking syntax entry point | `crates/sysml_query/tests/architecture.rs` (public API visitor) |
 | no consumer re-implements a facade query, revives a retired heuristic, holds a parsed tree or stratum outside the allow-listed host fields, or reads SysML files | `crates/sysml_query/tests/syntax_authority.rs` (retired-name list, shadowed-name set, source-probe detector with predicate-backed exemptions, field and I/O bans) |
 | a host declares no SysML text entry point and no document-keyed map outside the session's index, both against a shrinking allow-list | `crates/sysml_query/tests/architecture.rs` (AST visitors over `lsp_server/src` and `server/src`) |
-| one `Services` per host; library closure never on the edit path | `crates/lsp_server/tests/debt_guardrails.rs` |
+| one `Services` per host; library filesystem discovery never on the edit path; closure selection belongs to the immutable canonical catalogue | `crates/lsp_server/tests/debt_guardrails.rs` |
 | nearest-manifest project ownership, nested-project isolation, host-selected language-baseline availability and compatibility constraints, manifestless defaults, and exact local dependency admission are shared by batch and editor hosts | `crates/sysml_source` project-boundary tests; `crates/workspace/tests/integration/project_dependencies.rs`; `crates/library_catalog` dependency and explicit-project-library tests; `crates/lsp_server/src/lsp_runtime/project_registry.rs` tests and `crates/lsp_server/tests/integration/project_workspaces.rs` |
 | reporting policy decides nothing semantic | `crates/sysml_diagnostics/tests/dependency_guardrails.rs` |
 | phases only depend on earlier products; evaluation has one writer; a sealed publication holds no parse tree or source text | `crates/sysml_resolution/tests/integration/phase_order.rs` |

@@ -236,9 +236,10 @@ fn the_editor_host_constructs_one_services_value() {
     );
 }
 
-/// Library-closure resolution is a startup and reconfiguration cost, never a per-edit one.
+/// Root discovery is a source-barrier cost. Edits query the immutable canonical inventory;
+/// forbidding closure selection itself would leave newly edited imports permanently stale.
 #[test]
-fn library_closure_never_runs_on_the_edit_path() {
+fn library_filesystem_discovery_never_runs_on_the_edit_path() {
     let src = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
     for file in [
         "lsp_runtime/documents/sync.rs",
@@ -252,6 +253,14 @@ fn library_closure_never_runs_on_the_edit_path() {
                 "{file} resolves the library closure on the edit path: {forbidden}"
             );
         }
+    }
+
+    for file in ["session/handle.rs", "lsp_runtime/documents/mod.rs"] {
+        let source = std::fs::read_to_string(src.join(file)).expect("read preparation source");
+        assert!(
+            !source.contains("prepare_catalog_for_roots("),
+            "{file} must select from an admitted catalogue instead of reading roots"
+        );
     }
 
     // Closure loading is the facade's; the host names roots and asks. A host-side loader would be
