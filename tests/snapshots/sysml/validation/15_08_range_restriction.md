@@ -138,8 +138,8 @@ package '15_08-Range Restriction' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (unit (declaration (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "°") (start 16 35) (end 16 39) (outcome (status catalog-unavailable)))
-    (unit (declaration (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 1) (authored "°") (start 16 58) (end 16 62) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "°") (start 16 35) (end 16 38) (outcome (status catalog-unavailable)))
+    (unit (declaration (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 1) (authored "°") (start 16 57) (end 16 60) (outcome (status catalog-unavailable)))
   )
 )
 ~~~
@@ -221,7 +221,7 @@ package '15_08-Range Restriction' {
       (outcome (status resolved) (target (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle")))))
     )
   )
-  (query (document "memory://snapshot/15_08_range_restriction.md") (range (start 16 45) (end 16 50)) (probe (position 16 45))
+  (query (document "memory://snapshot/15_08_range_restriction.md") (range (start 16 44) (end 16 49)) (probe (position 16 44))
     (reference (id (source (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "angle")
       (outcome (status resolved) (target (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle")))))
     )

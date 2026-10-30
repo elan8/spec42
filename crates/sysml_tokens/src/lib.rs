@@ -85,6 +85,33 @@ fn apply_ast_semantic_ranges(
     lines: &[&str],
     mut log_out: Option<&mut Vec<String>>,
 ) {
+    // Lexer tokens use scalar indices internally; the public syntax contract uses UTF-16.
+    let scalar_column = |line: u32, column: u32| {
+        let text = *lines.get(line as usize)?;
+        let mut units = 0;
+        for (index, character) in text.chars().enumerate() {
+            if units == column {
+                return Some(index as u32);
+            }
+            units += character.len_utf16() as u32;
+        }
+        (units == column).then_some(text.chars().count() as u32)
+    };
+    let scalar_ranges: Vec<_> = ast_ranges
+        .iter()
+        .filter_map(|(range, kind)| {
+            Some((
+                SourceRange {
+                    start_line: range.start_line,
+                    start_character: scalar_column(range.start_line, range.start_character)?,
+                    end_line: range.end_line,
+                    end_character: scalar_column(range.end_line, range.end_character)?,
+                },
+                *kind,
+            ))
+        })
+        .collect();
+    let ast_ranges = scalar_ranges.as_slice();
     if let Some(log) = log_out.as_mut() {
         if !ast_ranges.is_empty() {
             log.push(format!(
@@ -323,14 +350,15 @@ pub fn semantic_tokens_range_debug(
         in_block_comment = still_in;
 
         for (ln, start_char, length, token_type) in line_tokens {
-            let token_end_char = start_char + length;
+            let (start_utf16, length_utf16) = to_utf16_units(&lines, ln, start_char, length);
+            let token_end_char = start_utf16 + length_utf16;
             let range_start_char = if ln == start_line { start_character } else { 0 };
             let range_end_char = if ln == end_line {
                 end_character
             } else {
                 u32::MAX
             };
-            if token_end_char <= range_start_char || start_char >= range_end_char {
+            if token_end_char <= range_start_char || start_utf16 >= range_end_char {
                 continue;
             }
             all_tokens.push((ln, start_char, length, token_type));
@@ -354,6 +382,27 @@ pub fn semantic_tokens_range_debug(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn utf16_ast_ranges_and_range_requests_agree_after_an_emoji() {
+        let text = "package P { /* é😀 */ part def Motor; }";
+        let start = text[..text.find("Motor").unwrap()].encode_utf16().count() as u32;
+        let parsed = sysml_query::syntax::SyntaxService::new().parse_text(text);
+        let ranges = ast_semantic_ranges(&parsed, text);
+        let full = semantic_tokens_for_text(text);
+        let mut column = 0;
+        let mut found = false;
+        for token in full.data.chunks_exact(5) {
+            column += token[1];
+            if column == start {
+                assert_eq!((token[2], token[3]), (5, TYPE_CLASS));
+                found = true;
+            }
+        }
+        assert!(found);
+        let (range, _) = semantic_tokens_range(text, 0, start, 0, start + 5, Some(&ranges));
+        assert_eq!(range.data, vec![0, start, 5, TYPE_CLASS, 0]);
+    }
 
     #[test]
     fn test_utf16_conversion_ascii() {

@@ -49,6 +49,13 @@ pub(crate) async fn initialize(
     }
     runtime_config
         .set(RuntimeConfig {
+            versioned_document_changes: params
+                .capabilities
+                .workspace
+                .as_ref()
+                .and_then(|workspace| workspace.workspace_edit.as_ref())
+                .and_then(|edit| edit.document_changes)
+                .unwrap_or(false),
             library_path_base,
             startup_trace_id: startup_trace_id.clone(),
             code_lens_enabled,

@@ -21,13 +21,13 @@ package 'αβ' {
         (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
-        (range (start 2 19) (end 2 33))
+        (range (start 2 17) (end 2 31))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
-        (range (start 4 18) (end 4 27))
+        (range (start 4 17) (end 4 25))
       )
     )
   )
@@ -66,12 +66,12 @@ package 'αβ' {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/unicode_identifiers.md") (range (start 4 18) (end 4 27)) (probe (position 4 18))
+  (query (document "memory://snapshot/unicode_identifiers.md") (range (start 4 17) (end 4 25)) (probe (position 4 17))
     (reference (id (source (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ::Ω"))) (kind specialization) (ordinal 0) (authored-target "Pkg::β")
       (outcome (status unresolved)))
     )
   )
-  (query (document "memory://snapshot/unicode_identifiers.md") (range (start 2 19) (end 2 33)) (probe (position 2 19))
+  (query (document "memory://snapshot/unicode_identifiers.md") (range (start 2 17) (end 2 31)) (probe (position 2 17))
     (reference (id (source (node (document "memory://snapshot/unicode_identifiers.md") (qualified-name "αβ::🧪"))) (kind specialization) (ordinal 0) (authored-target "Base::Anything")
       (outcome (status unresolved)))
     )
