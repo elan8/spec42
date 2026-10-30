@@ -276,7 +276,10 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        let state = self.state_for_uri(&params.text_document_position.text_document.uri)?;
+        // Completion is asked while the user types, which is exactly when analysis is pending.
+        // It answers from the current editor text and the retained publication, and reports
+        // the gap as an incomplete list instead of refusing.
+        let state = self.source_state_for_uri(&params.text_document_position.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()

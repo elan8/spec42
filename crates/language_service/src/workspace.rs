@@ -32,6 +32,14 @@ pub trait WorkspaceSnapshot {
     fn resolve_uri_for_path(&self, path: &str) -> Option<Url>;
     fn path_for_uri(&self, uri: &Url) -> String;
     fn document_text(&self, uri: &Url) -> Option<&str>;
+    /// The document as the editor currently holds it.
+    ///
+    /// [`Self::document_text`] is the source paired with [`Self::published_model`]; while
+    /// analysis of a newer edit is pending, the editor text is ahead of it. Services answering
+    /// a question about what the user is typing read this, and the publication for semantics.
+    fn editor_text(&self, uri: &Url) -> Option<&str> {
+        self.document_text(uri)
+    }
     /// The tree the syntax service parsed for this document.
     ///
     /// A handle into the service's memo, so asking is a lookup rather than a parse. Services that

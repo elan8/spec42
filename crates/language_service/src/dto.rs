@@ -15,6 +15,10 @@ pub struct SemanticResultStatus {
     pub available: bool,
     /// Every obstacle reported by the publication, in canonical order when available.
     pub obstacles: Vec<SemanticObstacleDto>,
+    /// True when the publication predates the editor text the request was answered for: the
+    /// syntax context is current, the semantic facts come from the older publication.
+    #[serde(default)]
+    pub predates_source: bool,
 }
 
 impl SemanticResultStatus {
@@ -34,11 +38,12 @@ impl SemanticResultStatus {
                     PublicationObstacle::NonConverged => SemanticObstacleDto::NonConverged,
                 })
                 .collect(),
+            predates_source: false,
         }
     }
 
     pub fn is_complete(&self) -> bool {
-        self.available && self.obstacles.is_empty()
+        self.available && self.obstacles.is_empty() && !self.predates_source
     }
 }
 

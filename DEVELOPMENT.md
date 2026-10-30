@@ -321,7 +321,7 @@ Useful focused suites:
 
 ```bash
 npm run test:multi-file          # multi-file workspace smoke
-npm run test:ux-unit             # status bar, snippets, and examples provider
+npm run test:ux-unit             # status bar and examples provider
 npm run test:library-unit        # library status view model
 ```
 

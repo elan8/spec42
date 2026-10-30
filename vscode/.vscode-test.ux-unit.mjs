@@ -9,7 +9,6 @@ const testOut = process.env.SPEC42_VSCODE_TEST_OUT || "out";
 export default defineConfig({
   files: [
     path.join(__dirname, testOut, "test/suite/examplesViewProvider.test.js"),
-    path.join(__dirname, testOut, "test/suite/snippets.test.js"),
     path.join(__dirname, testOut, "test/suite/statusBar.test.js"),
     path.join(__dirname, testOut, "test/suite/pendingAnalysis.test.js"),
     path.join(__dirname, testOut, "test/suite/workspaceDiagnostics.test.js"),

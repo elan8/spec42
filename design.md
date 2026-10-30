@@ -264,7 +264,11 @@ transfers these existing leases without a parse or memo lookup, and installs the
 its captured input revision passes the actor barrier; it never replaces newer editor membership or
 version metadata. Syntax-only requests may use matching desired syntax. Semantic positional requests
 return `ContentModified` while analysis is pending, and an explicit failure when the current build
-failed, rather than applying old semantic ranges to new text.
+failed, rather than applying old semantic ranges to new text. Completion is the exception, because
+it is asked exactly while that analysis is pending: it reads its context and replaced range from the
+current editor text, queries the retained publication at the cursor translated into that
+publication's revision, takes only names and kinds from it, and marks the result as predating the
+source.
 
 Each input revision owns cancellation shared with its child build generations. Invalidation and
 close cancel obsolete work; phase boundaries cooperate without treating cancellation as a fault.

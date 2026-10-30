@@ -9,7 +9,7 @@ use crate::dto::{
     CompletionResult, CompletionTextEditDto,
 };
 use crate::keywords::{keyword_doc, sysml_keywords};
-use crate::text::{completion_prefix, line_prefix_at_position};
+use crate::text::{completion_prefix, line_prefix_at_position, position_in_previous_revision};
 use crate::workspace::WorkspaceSnapshot;
 
 /// The definition kinds offered when a typed declaration gives no narrower expectation.
@@ -49,8 +49,6 @@ pub const ATTRIBUTE_TYPE_LOOKUP_KINDS: &[ElementKind] = &[
     ElementKind::Class,
     ElementKind::Structure,
 ];
-const DECLARATION_MODIFIER_KEYWORDS: &[&str] = &["def"];
-
 const TIER_CONTEXTUAL_SNIPPET: i32 = 7000;
 const TIER_EXACT_SEMANTIC: i32 = 6000;
 const TIER_CONTEXT_COMPATIBLE_SAME_SCOPE: i32 = 5000;
@@ -135,29 +133,31 @@ pub fn complete(
     position: TextPosition,
 ) -> Option<CompletionResult> {
     let uri = workspace.resolve_uri_for_path(document_path)?;
-    let text = workspace.document_text(&uri)?;
-    let line_prefix = line_prefix_at_position(text, position.line, position.character);
-    let context = refine_completion_context(
-        workspace,
-        &uri,
-        position,
-        detect_completion_context(&line_prefix),
-    );
-    let hints = completion_semantic_hints(workspace, &uri, position, &context);
+    let published_text = workspace.document_text(&uri)?;
+    // The context and the replaced range are read from what the user is typing; the symbols come
+    // from the publication, anchored at the cursor's position in the revision it was built from.
+    let editor_text = workspace.editor_text(&uri).unwrap_or(published_text);
+    let predates_source = editor_text != published_text;
+    let semantic_position = position_in_previous_revision(published_text, editor_text, position);
+    let line_prefix = line_prefix_at_position(editor_text, position.line, position.character);
+    let context = refine_completion_context(detect_completion_context(&line_prefix));
+    let hints = completion_semantic_hints(workspace, &uri, &context);
     let edit_shape = completion_edit_shape(position, context.prefix());
     let items = rank_completion_candidates(collect_completion_candidates(
         workspace,
         &uri,
+        semantic_position,
         &context,
         &hints,
         &edit_shape,
     ));
-    let semantic_status = workspace
+    let mut semantic_status = workspace
         .published_model()
         .map(|model| {
             crate::dto::SemanticResultStatus::from_publication(model.publication().completeness())
         })
         .unwrap_or_default();
+    semantic_status.predates_source = predates_source;
     Some(CompletionResult {
         items,
         is_incomplete: !semantic_status.is_complete(),
@@ -185,7 +185,13 @@ pub fn detect_completion_context(line_prefix: &str) -> CompletionContext {
         };
     }
 
-    let (token_start, raw_token) = completion_token(trimmed);
+    let (mut token_start, mut raw_token) = completion_token(trimmed);
+    // A trailing single `:` is the typing operator just typed, not part of the name being
+    // completed: `part engine:` asks for a type exactly as `part engine : ` does.
+    if raw_token.ends_with(':') && !raw_token.ends_with("::") {
+        token_start = trimmed.len();
+        raw_token = "";
+    }
     let before_token = &trimmed[..token_start];
 
     if let Some((expected_kinds, qualifier, prefix)) =
@@ -338,12 +344,7 @@ fn typed_declaration_keyword(prefix: &str) -> Option<&str> {
         .filter(|keyword| matches!(*keyword, "part" | "port" | "attribute"))
 }
 
-fn refine_completion_context(
-    _workspace: &impl WorkspaceSnapshot,
-    _uri: &Url,
-    _pos: TextPosition,
-    context: CompletionContext,
-) -> CompletionContext {
+fn refine_completion_context(context: CompletionContext) -> CompletionContext {
     match context {
         CompletionContext::TopLevelKeyword { prefix }
         | CompletionContext::General { prefix }
@@ -359,7 +360,6 @@ fn refine_completion_context(
 fn completion_semantic_hints(
     workspace: &impl WorkspaceSnapshot,
     uri: &Url,
-    _pos: TextPosition,
     context: &CompletionContext,
 ) -> CompletionSemanticHints {
     if !workspace.supports_semantic_queries() {
@@ -391,6 +391,7 @@ fn completion_semantic_hints(
 fn collect_completion_candidates(
     workspace: &impl WorkspaceSnapshot,
     uri: &Url,
+    semantic_position: TextPosition,
     context: &CompletionContext,
     hints: &CompletionSemanticHints,
     edit_shape: &CompletionEditShape,
@@ -398,7 +399,15 @@ fn collect_completion_candidates(
     let mut candidates = Vec::new();
     collect_snippet_candidates(context, edit_shape, &mut candidates);
     collect_keyword_candidates(context, edit_shape, &mut candidates);
-    collect_symbol_candidates(workspace, uri, context, hints, edit_shape, &mut candidates);
+    collect_symbol_candidates(
+        workspace,
+        uri,
+        semantic_position,
+        context,
+        hints,
+        edit_shape,
+        &mut candidates,
+    );
     rank_candidates_in_place(context, hints, &mut candidates);
     dedupe_completion_candidates(candidates)
 }
@@ -409,9 +418,7 @@ fn collect_snippet_candidates(
     out: &mut Vec<CompletionCandidate>,
 ) {
     match context {
-        CompletionContext::DeclarationModifier { keyword, .. }
-            if DECLARATION_MODIFIER_KEYWORDS.contains(&"def") =>
-        {
+        CompletionContext::DeclarationModifier { keyword, .. } => {
             out.push(snippet_candidate(
                 "def",
                 format!("{keyword} definition"),
@@ -421,7 +428,6 @@ fn collect_snippet_candidates(
                 edit_shape,
             ));
         }
-        CompletionContext::DeclarationModifier { .. } => {}
         CompletionContext::TopLevelKeyword { .. } | CompletionContext::BodyStatement { .. } => {
             let mut part_def_candidate = snippet_candidate(
                 "part def",
@@ -548,7 +554,6 @@ fn collect_keyword_candidates(
         CompletionContext::TopLevelKeyword { .. } | CompletionContext::BodyStatement { .. } => {
             sysml_keywords()
         }
-        CompletionContext::DeclarationModifier { .. } => DECLARATION_MODIFIER_KEYWORDS,
         _ => &[],
     };
 
@@ -584,6 +589,7 @@ fn collect_keyword_candidates(
 fn collect_symbol_candidates(
     workspace: &impl WorkspaceSnapshot,
     current_uri: &Url,
+    semantic_position: TextPosition,
     context: &CompletionContext,
     hints: &CompletionSemanticHints,
     edit_shape: &CompletionEditShape,
@@ -622,17 +628,13 @@ fn collect_symbol_candidates(
         _ => None,
     };
 
-    let query_position = edit_shape.replace_range.end;
     let Some(model) = workspace.published_model() else {
         return;
     };
     let completion = model.completion();
     let outcome = completion.visible_members(
         current_uri.as_str(),
-        sysml_query::resolved_slice::TextPosition {
-            line: query_position.line,
-            character: query_position.character,
-        },
+        semantic_position,
         qualifier.map(|value| value.trim_end_matches(':')),
     );
     let mut members = match outcome.answer {
@@ -641,21 +643,6 @@ fn collect_symbol_candidates(
         }
         _ => return,
     };
-    if qualifier.is_some() {
-        if let sysml_query::resolved_slice::QueryAnswer::Resolved(extra) = completion
-            .visible_members(
-                current_uri.as_str(),
-                sysml_query::resolved_slice::TextPosition {
-                    line: query_position.line,
-                    character: query_position.character,
-                },
-                None,
-            )
-            .answer
-        {
-            members.extend(extra.iter())
-        }
-    }
     members.sort_by_key(|a| a.symbol());
     members.dedup_by(|a, b| a.symbol() == b.symbol());
     for member in members {
@@ -701,9 +688,7 @@ fn collect_symbol_candidates(
                 resolve_detail: detail,
                 resolve_documentation: documentation,
             },
-            tier: if qualifier
-                .is_some_and(|qualifier| member.declaring_document().contains(qualifier))
-            {
+            tier: if qualifier.is_some() {
                 TIER_CONTEXT_COMPATIBLE_SAME_SCOPE
             } else if hints
                 .same_file_uri
@@ -950,7 +935,6 @@ fn rank_completion_candidates(mut candidates: Vec<CompletionCandidate>) -> Vec<C
                 total.saturating_sub(idx),
                 candidate.label
             ));
-            item.preselect = idx == 0;
             item
         })
         .collect()
