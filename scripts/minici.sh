@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Run the high-signal, platform-independent portion of required CI locally.
 #
-# With no argument this runs every suite sequentially (the local pre-push path). CI splits the
+# With no argument this runs the core suites sequentially (the local pre-push path). CI splits the
 # same suites across parallel jobs by passing one of: lint, tests-workspace, tests-lsp,
-# tests-server, generator. Keep the cargo invocations here so local and hosted checks cannot
+# tests-server, generator, docs. Rustdoc runs only with the explicit docs suite; CI requires it
+# in a separate job. Keep the cargo invocations here so local and hosted checks cannot
 # silently drift apart.
 #
 # This script deliberately performs no downloads. Prepare the pinned library bundles with the
@@ -16,9 +17,9 @@ cd "$root"
 
 SUITE="${1:-all}"
 case "$SUITE" in
-  all|lint|tests-workspace|tests-lsp|tests-server|generator) ;;
+  all|lint|tests-workspace|tests-lsp|tests-server|generator|docs) ;;
   *)
-    echo "usage: scripts/minici.sh [all|lint|tests-workspace|tests-lsp|tests-server|generator]" >&2
+    echo "usage: scripts/minici.sh [all|lint|tests-workspace|tests-lsp|tests-server|generator|docs]" >&2
     exit 2
     ;;
 esac
@@ -187,9 +188,9 @@ if wants generator; then
   cargo run -p spec42-snapshot -- check --fixture resolution/indexed_geometry_expressions.md
 fi
 
-if wants lint; then
+if [[ "$SUITE" == "docs" ]]; then
   step "Workspace documentation"
-  RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --workspace
+  RUSTDOCFLAGS="-D warnings" cargo doc --jobs 1 --no-deps --workspace
 fi
 
 echo

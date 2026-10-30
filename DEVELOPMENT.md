@@ -250,6 +250,12 @@ seed-corpus step because its `no_main` binaries fail to link with MSVC (`LNK1561
 standard-library ratchets, and the remaining suites still run. Linux CI retains the fuzz check;
 WSL with a Linux Rust toolchain runs it too.
 
+The default run and the `lint` suite omit the full Rustdoc build. Run
+`bash scripts/minici.sh docs` explicitly to check workspace API documentation with warnings denied.
+This suite uses one build job to avoid parallel Rustdoc output contention. CI runs it as a separate
+required job through the `Rust core checks` aggregator. Generated-document freshness checks remain
+part of `lint` and the default local run.
+
 ```bash
 cargo test --workspace --exclude server
 cargo test -p server --lib
