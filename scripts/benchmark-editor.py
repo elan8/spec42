@@ -50,6 +50,15 @@ def distribution(values):
             for name, p in [("p50", .5), ("p95", .95), ("max", 1)]}
 
 
+def performance_event(message):
+    if message.get("method") != "window/logMessage":
+        return None
+    raw = message["params"]["message"]
+    if raw.startswith("[SysML][perf] "):
+        return json.loads(raw[len("[SysML][perf] "):])
+    return None
+
+
 def end_position(text):
     return {"line": text.count("\n"),
             "character": len(text.rsplit("\n", 1)[-1].encode("utf-16-le")) // 2}
@@ -185,9 +194,8 @@ class Lsp:
             if message.get("method") == "textDocument/publishDiagnostics" and not self.allow_missing_libraries:
                 if any(diagnostic.get("code") == "missing_library_context" for diagnostic in message["params"]["diagnostics"]):
                     raise RuntimeError("Missing library context: this run cannot be used as a representative editor baseline")
-            raw = message.get("params", {}).get("message", "")
-            if raw.startswith("[SysML][perf] "):
-                event = json.loads(raw[len("[SysML][perf] "):])
+            event = performance_event(message)
+            if event is not None:
                 if event.get("event") == "backend:publication":
                     versions = event.get("editorVersions")
                     if versions is None:
@@ -311,13 +319,12 @@ def main():
                     pending = set(sent)
                     while pending:
                         def completed(message):
-                            raw = message.get("params", {}).get("message", "")
-                            if not raw.startswith("[SysML][perf] "):
+                            event = performance_event(message)
+                            if event is None:
                                 return False
-                            event = json.loads(raw[len("[SysML][perf] "):])
                             return event.get("event") == "backend:didChange" and event.get("version") in pending and event.get("uri", "").lower() == uri.lower()
                         received, message = lsp.until(completed, args.timeout_seconds)
-                        event = json.loads(message["params"]["message"][len("[SysML][perf] "):])
+                        event = performance_event(message)
                         completed_version = event["version"]
                         pending.remove(completed_version)
                         report["samples"].append({"workload": workload, "iteration": iteration, "version": completed_version,
