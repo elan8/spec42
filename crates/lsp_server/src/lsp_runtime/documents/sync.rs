@@ -272,6 +272,15 @@ pub(crate) async fn did_change_watched_files(
 ) {
     use tower_lsp::lsp_types::FileChangeType;
 
+    if let Err(error) = handle.begin_filesystem_observation().await {
+        client
+            .log_message(
+                MessageType::ERROR,
+                format!("Filesystem observation failed: {error:?}"),
+            )
+            .await;
+        return;
+    }
     let total_start = Instant::now();
     let perf_logging_enabled = runtime_config
         .get()
@@ -346,6 +355,18 @@ pub(crate) async fn did_change_watched_files(
             false
         }
     };
+    match handle.finish_filesystem_observation().await {
+        Ok(Some(token)) => start_source_discovery(client, handle, runtime_config, token),
+        Ok(None) => {}
+        Err(error) => {
+            client
+                .log_message(
+                    MessageType::ERROR,
+                    format!("Filesystem observation completion failed: {error:?}"),
+                )
+                .await
+        }
+    }
     let refresh_document_ms = refresh_start.elapsed().as_millis() as u64;
     for msg in runtime_warnings {
         client.log_message(MessageType::WARNING, msg).await;
@@ -423,6 +444,15 @@ pub(crate) async fn did_change_configuration(
         return;
     };
 
+    start_source_discovery(client, handle, runtime_config, readiness_token);
+}
+
+pub(super) fn start_source_discovery(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
+    readiness_token: crate::session::ReadinessToken,
+) {
     let Some(mut work) = handle.queue_library_scan(readiness_token) else {
         return;
     };
@@ -432,7 +462,11 @@ pub(crate) async fn did_change_configuration(
     tokio::spawn(async move {
         loop {
             let (token, request) = work.into_parts();
-            run_library_scan(&client, &handle, &runtime_config, request).await;
+            if request.startup.is_some() {
+                super::startup::run_startup_scan(&client, &handle, &runtime_config, request).await;
+            } else {
+                run_library_scan(&client, &handle, &runtime_config, request).await;
+            }
             match handle.finish_library_scan(&token) {
                 Some(next) => work = next,
                 None => return,
@@ -463,13 +497,13 @@ async fn run_library_scan(
         match tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths, &source))
             .await
         {
-            Ok(result) => result,
-            Err(error) => {
-                fail_library_scan(
+            Ok(Ok(result)) => result,
+            error => {
+                fail_source_scan(
                     client,
                     handle,
                     readiness_token,
-                    format!("Library discovery worker failed: {error}"),
+                    format!("Library discovery failed: {error:?}"),
                 )
                 .await;
                 return;
@@ -491,7 +525,7 @@ async fn run_library_scan(
     {
         Ok(result) => result,
         Err(error) => {
-            fail_library_scan(
+            fail_source_scan(
                 client,
                 handle,
                 readiness_token,
@@ -552,7 +586,7 @@ async fn run_library_scan(
     .await;
 }
 
-async fn fail_library_scan(
+pub(super) async fn fail_source_scan(
     client: &Client,
     handle: &WorkspaceHandle,
     expected: crate::session::ReadinessToken,

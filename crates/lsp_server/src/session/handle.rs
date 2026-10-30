@@ -1056,6 +1056,346 @@ mod library_reindex_tests {
     }
 
     #[tokio::test]
+    async fn configuration_replacement_keeps_startup_workspace_discovery_in_the_latest_request() {
+        let handle = ready();
+        let workspace_root = uri("file:///startup/workspace/");
+        let old_root = uri("file:///startup/old-library/");
+        let new_root = uri("file:///startup/new-library/");
+        let standard_root = uri("file:///startup/standard/");
+        handle
+            .set_startup_config(
+                vec![workspace_root.clone()],
+                vec![old_root],
+                vec![standard_root.clone()],
+                sysml_query::StandardLibraryAvailability::Unavailable,
+            )
+            .await
+            .unwrap();
+        let old = handle.begin_startup().await.unwrap().unwrap();
+        let (active, _) = handle.queue_library_scan(old.clone()).unwrap().into_parts();
+        let workspace = uri("file:///startup/workspace/model.sysml");
+        let old_library = uri("file:///startup/old-library/model.sysml");
+        let mut stale = scanned(&handle, &workspace, "package Workspace;");
+        stale.extend(scanned(&handle, &old_library, "package OldLibrary;"));
+        let latest = handle
+            .begin_library_reindex_if_changed(vec![new_root.clone()])
+            .await
+            .unwrap()
+            .unwrap();
+        assert!(handle.queue_library_scan(latest.clone()).is_none());
+        assert!(matches!(
+            handle.ingest_startup_scan(old, stale).await.unwrap(),
+            LibraryReindexCompletion::Superseded
+        ));
+        assert!(!handle.snapshot().index.contains_key(&old_library));
+        assert!(!handle.snapshot().index.contains_key(&workspace));
+        // A library-only completion cannot release the still-required workspace barrier.
+        assert!(matches!(
+            handle
+                .complete_library_reindex(latest.clone(), Vec::new())
+                .await
+                .unwrap(),
+            LibraryReindexCompletion::Superseded
+        ));
+        assert_eq!(handle.analysis_occupancy(), (0, 0));
+        let (next, request) = handle.finish_library_scan(&active).unwrap().into_parts();
+        let startup = request.startup.unwrap();
+        assert_eq!(startup.workspace_roots, vec![workspace_root]);
+        assert_eq!(startup.standard_library_paths, vec![standard_root]);
+        assert_eq!(request.library_paths, vec![new_root]);
+        assert!(handle.library_scan_is_current(&request.readiness));
+        let library = uri("file:///startup/new-library/model.sysml");
+        let mut entries = scanned(&handle, &workspace, "package Workspace;");
+        entries.extend(scanned(&handle, &library, "package LatestLibrary;"));
+        assert!(matches!(
+            handle.ingest_startup_scan(latest, entries).await.unwrap(),
+            LibraryReindexCompletion::Admitted(..)
+        ));
+        handle.rebuild_publication().await.unwrap();
+        let snapshot = handle.snapshot();
+        assert!(snapshot.published_index.contains_key(&workspace));
+        assert!(snapshot.published_index.contains_key(&library));
+        assert!(!snapshot.published_index.contains_key(&old_library));
+        assert!(!snapshot.diagnostic_readiness.startup_sources_pending());
+        assert_eq!(
+            snapshot.session.analysis_status(),
+            sysml_query::publication::AnalysisStatus::Current
+        );
+        assert!(handle.finish_library_scan(&next).is_none());
+    }
+
+    #[tokio::test]
+    async fn observed_disk_updates_and_deletes_reject_old_startup_and_library_reads() {
+        for startup in [false, true] {
+            let handle = ready();
+            let root = uri("file:///disk-observation/");
+            let changed = uri("file:///disk-observation/changed.sysml");
+            let deleted = uri("file:///disk-observation/deleted.sysml");
+            let old = if startup {
+                handle
+                    .set_startup_config(
+                        vec![root.clone()],
+                        Vec::new(),
+                        Vec::new(),
+                        sysml_query::StandardLibraryAvailability::Unavailable,
+                    )
+                    .await
+                    .unwrap();
+                handle.begin_startup().await.unwrap().unwrap()
+            } else {
+                handle
+                    .begin_library_reindex_if_changed(vec![root.clone()])
+                    .await
+                    .unwrap()
+                    .unwrap()
+            };
+            let (active, _) = handle.queue_library_scan(old.clone()).unwrap().into_parts();
+            let mut stale = scanned(&handle, &changed, "package Old;");
+            stale.extend(scanned(&handle, &deleted, "package Deleted;"));
+            handle.begin_filesystem_observation().await.unwrap();
+            assert!(!handle.library_scan_is_current(&old));
+            // A configuration arriving during the read captures the pending disk barrier too.
+            let current = handle
+                .begin_library_reindex_if_changed(vec![
+                    root.clone(),
+                    uri("file:///disk-observation-extra/"),
+                ])
+                .await
+                .unwrap()
+                .unwrap();
+            let result = if startup {
+                handle.ingest_startup_scan(current.clone(), stale).await
+            } else {
+                handle
+                    .complete_library_reindex(current.clone(), stale)
+                    .await
+            }
+            .unwrap();
+            assert!(matches!(result, LibraryReindexCompletion::Superseded));
+            handle
+                .apply_watched_file_changes(vec![
+                    (changed.clone(), Some("package New;".into())),
+                    (deleted.clone(), None),
+                ])
+                .await
+                .unwrap();
+            let latest = handle
+                .finish_filesystem_observation()
+                .await
+                .unwrap()
+                .unwrap();
+            assert!(!handle.source_epoch_is_current(&current));
+            assert!(handle.queue_library_scan(latest.clone()).is_none());
+            let (next, request) = handle.finish_library_scan(&active).unwrap().into_parts();
+            assert!(handle.library_scan_is_current(&request.readiness));
+            assert_eq!(request.startup.is_some(), startup);
+            let entries = scanned(&handle, &changed, "package New;");
+            let result = if startup {
+                handle.ingest_startup_scan(latest, entries).await
+            } else {
+                handle.complete_library_reindex(latest, entries).await
+            }
+            .unwrap();
+            assert!(matches!(result, LibraryReindexCompletion::Admitted(..)));
+            handle.rebuild_publication().await.unwrap();
+            assert_eq!(
+                handle.snapshot().published_index[&changed].content(),
+                "package New;"
+            );
+            assert!(!handle.snapshot().published_index.contains_key(&deleted));
+            assert!(handle.finish_library_scan(&next).is_none());
+        }
+    }
+
+    #[tokio::test]
+    async fn search_preparation_cannot_reintroduce_a_removed_library_or_mutate_a_closed_owner() {
+        let handle = ready();
+        let old = handle
+            .begin_library_reindex_if_changed(vec![uri("file:///search/old/")])
+            .await
+            .unwrap()
+            .unwrap();
+        let library = uri("file:///search/old/model.sysml");
+        let entries = scanned(&handle, &library, "package Old;");
+        handle
+            .begin_library_reindex_if_changed(vec![uri("file:///search/new/")])
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            handle
+                .admit_library_search(
+                    old,
+                    handle.snapshot().diagnostic_readiness.disk_revision(),
+                    entries
+                )
+                .await
+                .unwrap(),
+            0
+        );
+        assert!(!handle.snapshot().index.contains_key(&library));
+        let current = handle.snapshot().diagnostic_readiness.token();
+        let new_library = uri("file:///search/new/model.sysml");
+        let entries = scanned(&handle, &new_library, "package SearchOnly;");
+        let inputs = handle.snapshot().session.inputs();
+        assert_eq!(
+            handle
+                .admit_library_search(
+                    current.clone(),
+                    handle.snapshot().diagnostic_readiness.disk_revision(),
+                    entries
+                )
+                .await
+                .unwrap(),
+            1
+        );
+        assert!(!handle.snapshot().index[&new_library].admitted_to_publication);
+        assert!(handle.snapshot().session.is_input_current(&inputs));
+        let entries = scanned(&handle, &library, "package Old;");
+        handle.close_session().await.unwrap();
+        assert_eq!(
+            handle
+                .admit_library_search(
+                    current,
+                    handle.snapshot().diagnostic_readiness.disk_revision(),
+                    entries
+                )
+                .await
+                .unwrap(),
+            0
+        );
+        assert!(!handle.snapshot().index.contains_key(&library));
+    }
+
+    #[tokio::test]
+    async fn startup_failure_retains_its_workspace_barrier_and_retries_the_complete_scope() {
+        let handle = ready();
+        let root = uri("file:///startup-retry/workspace/");
+        handle
+            .set_startup_config(
+                vec![root.clone()],
+                Vec::new(),
+                Vec::new(),
+                sysml_query::StandardLibraryAvailability::Unavailable,
+            )
+            .await
+            .unwrap();
+        let token = handle.begin_startup().await.unwrap().unwrap();
+        let foreign = WorkspaceHandle::spawn(ServerState::default());
+        let foreign_token = foreign.begin_startup().await.unwrap().unwrap();
+        let inputs = handle.snapshot().session.inputs();
+        assert!(matches!(
+            handle
+                .ingest_startup_scan(foreign_token, Vec::new())
+                .await
+                .unwrap(),
+            LibraryReindexCompletion::Superseded
+        ));
+        assert!(handle.snapshot().session.is_input_current(&inputs));
+        let retained = Arc::clone(handle.snapshot().session.current());
+        assert!(handle
+            .fail_library_reindex(
+                token.clone(),
+                PublicationBuildFailure::preparation_worker("discovery failed")
+            )
+            .await
+            .unwrap());
+        assert!(!handle
+            .begin_readiness_notification(token.clone())
+            .await
+            .unwrap());
+        assert_eq!(
+            handle.snapshot().session.analysis_status(),
+            sysml_query::publication::AnalysisStatus::FailedRetained
+        );
+        assert!(Arc::ptr_eq(handle.snapshot().session.current(), &retained));
+        let retry = handle
+            .begin_library_reindex_if_changed(Vec::new())
+            .await
+            .unwrap()
+            .unwrap();
+        let (work, request) = handle
+            .queue_library_scan(retry.clone())
+            .unwrap()
+            .into_parts();
+        assert_eq!(request.startup.unwrap().workspace_roots, vec![root]);
+        assert!(matches!(
+            handle.ingest_startup_scan(token, Vec::new()).await.unwrap(),
+            LibraryReindexCompletion::Superseded
+        ));
+        let model = uri("file:///startup-retry/workspace/model.sysml");
+        let entries = scanned(&handle, &model, "package Recovered;");
+        handle
+            .ingest_startup_scan(retry.clone(), entries)
+            .await
+            .unwrap();
+        handle.rebuild_publication().await.unwrap();
+        assert!(handle.snapshot().published_index.contains_key(&model));
+        assert_eq!(
+            handle.snapshot().session.analysis_status(),
+            sysml_query::publication::AnalysisStatus::Current
+        );
+        assert!(handle.finish_library_scan(&work).is_none());
+        handle.close_session().await.unwrap();
+        assert!(matches!(
+            handle.ingest_startup_scan(retry, Vec::new()).await.unwrap(),
+            LibraryReindexCompletion::Superseded
+        ));
+    }
+
+    #[tokio::test]
+    async fn disk_observation_invalidates_search_reads_after_semantic_source_admission() {
+        let handle = ready();
+        let token = handle
+            .begin_library_reindex_if_changed(vec![uri("file:///search-disk/")])
+            .await
+            .unwrap()
+            .unwrap();
+        handle
+            .complete_library_reindex(token.clone(), Vec::new())
+            .await
+            .unwrap();
+        handle.rebuild_publication().await.unwrap();
+        let disk = handle.snapshot().diagnostic_readiness.disk_revision();
+        let library = uri("file:///search-disk/deleted.sysml");
+        let stale = scanned(&handle, &library, "package Deleted;");
+        handle.begin_filesystem_observation().await.unwrap();
+        handle
+            .apply_watched_file_changes(vec![(library.clone(), None)])
+            .await
+            .unwrap();
+        assert!(handle
+            .finish_filesystem_observation()
+            .await
+            .unwrap()
+            .is_none());
+        // Readiness is unchanged; the independent disk frontier rejects the old search batch.
+        assert!(handle.source_epoch_is_current(&token));
+        assert!(!handle.library_search_is_current(&token, &disk));
+        assert_eq!(
+            handle
+                .admit_library_search(token.clone(), disk, stale)
+                .await
+                .unwrap(),
+            0
+        );
+        assert!(!handle.snapshot().index.contains_key(&library));
+        let fresh = scanned(&handle, &library, "package Recreated;");
+        let disk = handle.snapshot().diagnostic_readiness.disk_revision();
+        assert_eq!(
+            handle
+                .admit_library_search(token, disk, fresh)
+                .await
+                .unwrap(),
+            1
+        );
+        assert_eq!(
+            handle.snapshot().index[&library].content(),
+            "package Recreated;"
+        );
+    }
+
+    #[tokio::test]
     async fn library_scan_burst_retains_only_one_active_and_the_latest_configuration() {
         let handle = ready();
         let initial = handle
@@ -1467,6 +1807,13 @@ mod library_reindex_tests {
 pub(crate) struct LibraryScanRequest {
     pub(crate) library_paths: Vec<Url>,
     pub(crate) readiness: super::readiness::ReadinessToken,
+    pub(crate) startup: Option<StartupScanInputs>,
+    pub(crate) disk_revision: super::readiness::DiskRevisionToken,
+}
+
+pub(crate) struct StartupScanInputs {
+    pub(crate) workspace_roots: Vec<Url>,
+    pub(crate) standard_library_paths: Vec<Url>,
 }
 pub(crate) type LibraryScanWork = super::latest_work::Work<LibraryScanRequest>;
 pub(crate) use super::latest_work::WorkToken as LibraryScanWorkToken;
@@ -1850,8 +2197,27 @@ impl WorkspaceHandle {
             .await
     }
 
-    pub(crate) async fn begin_startup(&self) -> Result<(), MutatePanicked> {
-        self.actor.mutate(|s| s.session.begin_startup()).await
+    pub(crate) async fn begin_startup(
+        &self,
+    ) -> Result<Option<super::readiness::ReadinessToken>, MutatePanicked> {
+        let token = self
+            .actor
+            .mutate_if_changed(|s| {
+                if s.session.lifecycle() != sysml_query::publication::SessionLifecycle::Cold {
+                    return Mutation::Unchanged(None);
+                }
+                s.session.begin_startup();
+                s.diagnostic_readiness.begin_startup_sources();
+                s.publication_failure = None;
+                s.invalidate_inputs();
+                Mutation::Changed(Some(s.diagnostic_readiness.token()))
+            })
+            .await?
+            .value;
+        if token.is_some() {
+            self.request_rebuild();
+        }
+        Ok(token)
     }
 
     pub(crate) async fn complete_startup(&self) -> Result<u64, MutatePanicked> {
@@ -1874,12 +2240,44 @@ impl WorkspaceHandle {
             .map(|outcome| outcome.value)
     }
 
+    pub(crate) async fn begin_readiness_notification(
+        &self,
+        token: super::readiness::ReadinessToken,
+    ) -> Result<bool, MutatePanicked> {
+        self.actor
+            .mutate_if_changed(move |s| {
+                if !crate::session::state::supports_semantic_queries(s.session.lifecycle())
+                    || (!s.diagnostic_readiness.needs_initial_notification()
+                        && s.session.analysis_status()
+                            != sysml_query::publication::AnalysisStatus::Current)
+                {
+                    return Mutation::Unchanged(false);
+                }
+                if s.diagnostic_readiness.begin_notification(&token) {
+                    Mutation::Changed(true)
+                } else {
+                    Mutation::Unchanged(false)
+                }
+            })
+            .await
+            .map(|outcome| outcome.value)
+    }
+
     pub(crate) async fn ingest_startup_scan(
         &self,
+        expected: super::readiness::ReadinessToken,
         mut entries: Vec<ParsedScanEntry>,
-    ) -> Result<Vec<(Url, Option<String>)>, MutatePanicked> {
-        self.actor
-            .mutate(move |s| {
+    ) -> Result<LibraryReindexCompletion, MutatePanicked> {
+        let result = self
+            .actor
+            .mutate_if_changed(move |s| {
+                if !s.diagnostic_readiness.is_current(&expected)
+                    || !s.diagnostic_readiness.startup_sources_pending()
+                    || s.diagnostic_readiness.disk_observations_pending()
+                    || s.session.lifecycle() == sysml_query::publication::SessionLifecycle::Closed
+                {
+                    return Mutation::Unchanged(LibraryReindexCompletion::Superseded);
+                }
                 // Editor text is authoritative for open documents. A startup or manifest-change
                 // rescan may have read an older saved revision from disk while didOpen/didChange
                 // was already published; never replace that revision at the scan barrier.
@@ -1889,10 +2287,19 @@ impl WorkspaceHandle {
                 });
                 let results =
                     crate::session::services::ingest_parsed_scan_entries_batch(s, entries);
+                assert!(s.diagnostic_readiness.admit_source_inputs(&expected));
+                s.session.complete_startup();
+                s.publication_failure = None;
+                s.semantic_revision = s.semantic_revision.wrapping_add(1);
                 s.invalidate_inputs();
-                results
+                Mutation::Changed(LibraryReindexCompletion::Admitted(results))
             })
-            .await
+            .await?
+            .value;
+        if matches!(result, LibraryReindexCompletion::Admitted(..)) {
+            self.request_rebuild();
+        }
+        Ok(result)
     }
 
     pub(crate) async fn adopt_open_documents(
@@ -1911,14 +2318,20 @@ impl WorkspaceHandle {
             .await
     }
 
-    pub(crate) async fn index_library_paths_for_search(
+    pub(crate) async fn admit_library_search(
         &self,
-        library_paths: Vec<Url>,
+        expected: super::readiness::ReadinessToken,
+        disk: super::readiness::DiskRevisionToken,
+        entries: Vec<ParsedScanEntry>,
     ) -> Result<usize, MutatePanicked> {
         self.actor
             .mutate_if_changed(move |s| {
-                let indexed =
-                    crate::session::services::index_library_paths_for_search(s, &library_paths);
+                if !s.diagnostic_readiness.is_search_current(&expected, &disk)
+                    || s.session.lifecycle() == sysml_query::publication::SessionLifecycle::Closed
+                {
+                    return Mutation::Unchanged(0);
+                }
+                let indexed = crate::session::services::index_library_search_entries(s, entries);
                 if indexed == 0 {
                     Mutation::Unchanged(0)
                 } else {
@@ -2137,6 +2550,41 @@ impl WorkspaceHandle {
 
     // --- did_change_watched_files --------------------------------------------------------
 
+    pub(crate) async fn begin_filesystem_observation(&self) -> Result<(), MutatePanicked> {
+        self.actor
+            .mutate(|s| {
+                s.diagnostic_readiness.begin_disk_observation();
+                if s.diagnostic_readiness.source_inputs_pending() {
+                    s.publication_failure = None;
+                    s.invalidate_inputs();
+                }
+            })
+            .await
+    }
+
+    pub(crate) async fn finish_filesystem_observation(
+        &self,
+    ) -> Result<Option<super::readiness::ReadinessToken>, MutatePanicked> {
+        let token = self
+            .actor
+            .mutate(|s| {
+                if s.diagnostic_readiness.finish_disk_observation()
+                    && s.session.lifecycle() != sysml_query::publication::SessionLifecycle::Closed
+                {
+                    s.publication_failure = None;
+                    s.invalidate_inputs();
+                    Some(s.diagnostic_readiness.token())
+                } else {
+                    None
+                }
+            })
+            .await?;
+        if token.is_some() {
+            self.request_rebuild();
+        }
+        Ok(token)
+    }
+
     /// Ingest one watched-file batch as a single desired revision; the caller schedules analysis.
     /// Rename notifications commonly contain a delete and a create in the same batch.
     pub(crate) async fn apply_watched_file_changes(
@@ -2199,10 +2647,27 @@ impl WorkspaceHandle {
 
     // --- did_change_configuration (library reindex) ---------------------------------------
 
+    pub(crate) fn source_epoch_is_current(&self, token: &super::readiness::ReadinessToken) -> bool {
+        let snapshot = self.snapshot();
+        snapshot.diagnostic_readiness.is_current(token)
+            && snapshot.session.lifecycle() != sysml_query::publication::SessionLifecycle::Closed
+    }
+
+    pub(crate) fn library_search_is_current(
+        &self,
+        token: &super::readiness::ReadinessToken,
+        disk: &super::readiness::DiskRevisionToken,
+    ) -> bool {
+        let snapshot = self.snapshot();
+        snapshot.diagnostic_readiness.is_search_current(token, disk)
+            && snapshot.session.lifecycle() != sysml_query::publication::SessionLifecycle::Closed
+    }
+
     pub(crate) fn library_scan_is_current(&self, token: &super::readiness::ReadinessToken) -> bool {
         let snapshot = self.snapshot();
         snapshot.diagnostic_readiness.is_current(token)
             && snapshot.diagnostic_readiness.source_inputs_pending()
+            && !snapshot.diagnostic_readiness.disk_observations_pending()
             && snapshot.session.lifecycle() != sysml_query::publication::SessionLifecycle::Closed
     }
 
@@ -2226,6 +2691,14 @@ impl WorkspaceHandle {
         match queue.submit(LibraryScanRequest {
             library_paths: snapshot.library_paths.clone(),
             readiness: token,
+            disk_revision: snapshot.diagnostic_readiness.disk_revision(),
+            startup: snapshot
+                .diagnostic_readiness
+                .startup_sources_pending()
+                .then(|| StartupScanInputs {
+                    workspace_roots: snapshot.workspace_roots.clone(),
+                    standard_library_paths: snapshot.standard_library_paths.clone(),
+                }),
         }) {
             Submission::Start(work) => Some(work),
             Submission::Queued | Submission::Closed => None,
@@ -2292,6 +2765,8 @@ impl WorkspaceHandle {
             .mutate_if_changed(move |s| {
                 if !s.diagnostic_readiness.is_current(&expected)
                     || !s.diagnostic_readiness.source_inputs_pending()
+                    || s.diagnostic_readiness.startup_sources_pending()
+                    || s.diagnostic_readiness.disk_observations_pending()
                     || s.session.lifecycle() == sysml_query::publication::SessionLifecycle::Closed
                 {
                     return Mutation::Unchanged(LibraryReindexCompletion::Superseded);

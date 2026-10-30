@@ -791,10 +791,15 @@ mod tests {
         let (disk_entries, _) = crate::session::scan_sysml_files(
             vec![Url::from_directory_path(root).unwrap()],
             &registry.services.source,
-        );
+        )
+        .unwrap();
         let parsed_disk =
             crate::session::parse_scanned_documents(disk_entries, false, &registry.services);
-        replacement.ingest_startup_scan(parsed_disk).await.unwrap();
+        let token = replacement.begin_startup().await.unwrap().unwrap();
+        replacement
+            .ingest_startup_scan(token, parsed_disk)
+            .await
+            .unwrap();
         let snapshot = replacement.snapshot();
         assert!(snapshot.is_editor_open(&uri));
         assert_eq!(snapshot.index[&uri].editor_version(), Some(17));

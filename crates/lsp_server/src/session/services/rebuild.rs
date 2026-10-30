@@ -1,18 +1,10 @@
 use super::*;
 
-/// Scan configured library roots for `sysml/librarySearch` without admitting the full tree.
-pub(crate) fn index_library_paths_for_search(
+/// Admit off-actor prepared syntax for library search without admitting the full tree.
+pub(crate) fn index_library_search_entries(
     state: &mut impl DocumentStore,
-    library_paths: &[Url],
+    parsed_entries: Vec<ParsedScanEntry>,
 ) -> usize {
-    if library_paths.is_empty() {
-        return 0;
-    }
-    let (entries, _) = scan_sysml_files(library_paths.to_vec(), &state.services().source);
-    if entries.is_empty() {
-        return 0;
-    }
-    let parsed_entries = parse_scanned_documents(entries, false, state.services());
     let mut indexed = 0usize;
     for entry in parsed_entries {
         let uri_norm = crate::common::util::normalize_file_uri(&entry.uri);

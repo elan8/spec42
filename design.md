@@ -289,6 +289,14 @@ pending request containing the latest complete configuration. Obsolete jobs stop
 parsing boundaries; closing the project discards pending discovery. The discovery driver releases
 its interval after source admission, independently of semantic construction. Readiness and
 diagnostic delivery follow the current semantic publication through the owner's completion loop.
+Startup uses this same queue and source-admission epoch. Until its sources are admitted, a new
+configuration replaces the whole pending workspace/library discovery scope. An obsolete startup
+scan cannot admit old libraries, lose the workspace scan, or signal readiness. Watched filesystem
+batches invalidate older saved-source reads before I/O and hold source admission until the observed
+batch is ingested; the last overlapping batch schedules fresh discovery for the current scope.
+Library-search reads and parsing also run off the actor and cross an epoch guard at admission.
+Discovery failures remain explicit and retry the complete pending scope; initial and reindex
+readiness delivery is claimed once and follows semantic publication before diagnostics.
 
 ### Project boundaries and library admission
 
