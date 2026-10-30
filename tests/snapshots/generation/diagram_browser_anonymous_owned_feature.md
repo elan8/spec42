@@ -156,7 +156,7 @@ package BrowserProbe {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:a68180d18592ed903625829f21427aeba2477501ff2733bb3de7ac0e3600d796",
+  "modelDigest": "blake3:3447d0bfb87a3fa2dd1c5b2d73ed86210be4ff5777c5e77d5f7e98e82862f126",
   "documents": [
     {
       "uri": "memory://snapshot/structure.kerml",

@@ -334,7 +334,7 @@ package PortDirectionExample {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:cf38a63819743ecadb967220a45f2721ca2d07c1d219e8daf1e28f29c40cd4eb",
+  "modelDigest": "blake3:dc5c5baa9a76278d48f0aa282f147f33469b126d32dc4992d49ce06bbfb002f6",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_port_direction.md",

@@ -160,6 +160,7 @@ package Seq {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p::r3"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p::r3"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p::r3"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p::s1"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p::s1"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p::s1"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::p"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::pressMsg"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
@@ -183,8 +184,10 @@ package Seq {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::r1"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::s2"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::s2"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::s2"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::r1"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::s3"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::s3"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::s3"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::q::s2"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::r"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::r"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario::r"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_semantic_names.md") (qualified-name "Seq::Scenario"))) (provenance implied))
@@ -668,7 +671,7 @@ package Seq {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:cd4f9b677d2fec23994d97f207f0bf2df28cbae97471dd0593b2765f0a9d03fa",
+  "modelDigest": "blake3:26a694e8b28ce9053f13627812b3d9699874099b888715bee4c0a092b7e29a06",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_event_order_semantic_names.md",
@@ -1161,19 +1164,19 @@ package Seq {
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 28,
       "relationshipKind": "flowPayloadType",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "ordinal": 29,
       "relationshipKind": "flowSource",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "ordinal": 30,
       "relationshipKind": "flowTarget",
       "source": 7
     },
@@ -1233,19 +1236,19 @@ package Seq {
     },
     {
       "kind": "relationship",
-      "ordinal": 42,
+      "ordinal": 45,
       "relationshipKind": "flowPayloadType",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 43,
+      "ordinal": 46,
       "relationshipKind": "flowSource",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 47,
       "relationshipKind": "flowTarget",
       "source": 12
     },
@@ -1281,7 +1284,7 @@ package Seq {
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "ordinal": 10,
       "relationshipKind": "typing",
       "source": 14
     },
@@ -1317,7 +1320,7 @@ package Seq {
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "ordinal": 22,
       "relationshipKind": "typing",
       "source": 18
     },
@@ -1335,19 +1338,19 @@ package Seq {
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "ordinal": 62,
       "relationshipKind": "flowPayloadType",
       "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 63,
       "relationshipKind": "flowSource",
       "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 61,
+      "ordinal": 64,
       "relationshipKind": "flowTarget",
       "source": 20
     },

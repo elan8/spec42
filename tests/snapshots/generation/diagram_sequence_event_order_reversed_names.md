@@ -188,6 +188,7 @@ package Seq {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p::r3"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p::r3"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p::r3"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p::s1"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p::s1"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p::s1"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::p"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
@@ -197,8 +198,10 @@ package Seq {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::r1"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::s2"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::s2"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::s2"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::r1"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::s3"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::s3"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::s3"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::q::s2"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::r"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::r"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario::r"))) (target (node (document "memory://snapshot/diagram_sequence_event_order_reversed_names.md") (qualified-name "Seq::Scenario"))) (provenance implied))
@@ -668,7 +671,7 @@ package Seq {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:99c6883649485723e23b9c4838b67803bb14fda0c45ea768394a4f702de6373c",
+  "modelDigest": "blake3:f1b499268e2e33ac5e274c6c1b22ac5c9d1a68176390eba894eac40647dd8de6",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_event_order_reversed_names.md",
@@ -1323,7 +1326,7 @@ package Seq {
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 61,
       "relationshipKind": "typing",
       "source": 16
     },
@@ -1359,7 +1362,7 @@ package Seq {
     },
     {
       "kind": "relationship",
-      "ordinal": 70,
+      "ordinal": 73,
       "relationshipKind": "typing",
       "source": 20
     }

@@ -1740,10 +1740,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::forwardSent"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::forwardSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::forwardSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::submitReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeForwarded"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeForwarded"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeForwarded"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::outcomeReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::forwardSent"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::submitReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway::submitReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::authorizePayment"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
@@ -1793,18 +1796,24 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeReturned"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeReturned"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeReturned"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeSent"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeSent"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::forwardReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::forwardReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::forwardReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::orderCreatedSent"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::orderCreatedSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::orderCreatedSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::reserveReturned"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::outcomeSent"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::outcomeSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::outcomeSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::orderCreatedSent"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::reserveReturned"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::reserveReturned"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::reserveReturned"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::reserveSent"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::reserveSent"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::reserveSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::reserveSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::checkoutService::authorizeReturned"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::forwardCheckout"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::forwardCheckout"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::messages"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::forwardCheckout"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
@@ -1824,6 +1833,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService::reserveAnswered"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService::reserveAnswered"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService::reserveAnswered"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService::reserveReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService::reserveReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService::reserveReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::inventoryService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::ordersEventsTopic"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
@@ -1850,6 +1860,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService::authorizeAnswered"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService::authorizeAnswered"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService::authorizeAnswered"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService::authorizeReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService::authorizeReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService::authorizeReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::paymentsService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::publishOrderCreated"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
@@ -1899,6 +1910,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront::outcomeReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront::outcomeReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront::outcomeReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront::submitSent"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront::submitSent"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront::submitSent"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::storefront"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::submitCheckout"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
@@ -2111,11 +2123,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::inventoryService::orderCreatedReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::inventoryService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::inventoryService::reservationPublished"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::inventoryService::reservationPublished"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::inventoryService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::inventoryService::reservationPublished"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::inventoryService::orderCreatedReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService::confirmationRequested"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService::confirmationRequested"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService::confirmationRequested"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService::orderCreatedReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService::orderCreatedReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService::orderCreatedReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::notificationService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::orderProjection"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
@@ -2128,16 +2142,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::confirmationReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::confirmationReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::confirmationReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::reservationReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::inventoryDelivered"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::inventoryDelivered"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::inventoryDelivered"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::projectionRequested"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::notificationDelivered"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::notificationDelivered"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::notificationDelivered"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::inventoryDelivered"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::orderCreatedReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::orderCreatedReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::projectionRequested"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::projectionRequested"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::projectionRequested"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::orderCreatedReceived"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::reservationReceived"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::reservationReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::reservationReceived"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::ordersEventsTopic::notificationDelivered"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::publishOrderCreated"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::publishOrderCreated"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::messages"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::publishOrderCreated"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
@@ -11288,7 +11307,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:6bd1ec04cbe94f02bbbc63e2c0ed2d1d41d7d3b2f9acbd4ced80b8b0c0187a9f",
+  "modelDigest": "blake3:3b5412ef588863e5b347536766a57945985eff497314b8e382a539565ae53097",
   "documents": [
     {
       "uri": "memory://snapshot/examples/webshop/Views.sysml",
@@ -13657,19 +13676,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 244,
+      "ordinal": 255,
       "relationshipKind": "flowPayloadType",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 245,
+      "ordinal": 256,
       "relationshipKind": "flowSource",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 246,
+      "ordinal": 257,
       "relationshipKind": "flowTarget",
       "source": 14
     },
@@ -13705,19 +13724,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 261,
+      "ordinal": 272,
       "relationshipKind": "flowPayloadType",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 262,
+      "ordinal": 273,
       "relationshipKind": "flowSource",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 263,
+      "ordinal": 274,
       "relationshipKind": "flowTarget",
       "source": 16
     },
@@ -13753,19 +13772,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 131,
+      "ordinal": 135,
       "relationshipKind": "flowPayloadType",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 132,
+      "ordinal": 136,
       "relationshipKind": "flowSource",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 133,
+      "ordinal": 137,
       "relationshipKind": "flowTarget",
       "source": 18
     },
@@ -13867,7 +13886,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 182,
+      "ordinal": 186,
       "relationshipKind": "typing",
       "source": 20
     },
@@ -13945,19 +13964,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 148,
+      "ordinal": 152,
       "relationshipKind": "flowPayloadType",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 149,
+      "ordinal": 153,
       "relationshipKind": "flowSource",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 150,
+      "ordinal": 154,
       "relationshipKind": "flowTarget",
       "source": 28
     },
@@ -14029,7 +14048,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 278,
+      "ordinal": 289,
       "relationshipKind": "typing",
       "source": 30
     },
@@ -14083,7 +14102,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 304,
+      "ordinal": 316,
       "relationshipKind": "typing",
       "source": 33
     },
@@ -14101,19 +14120,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 165,
+      "ordinal": 169,
       "relationshipKind": "flowPayloadType",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 166,
+      "ordinal": 170,
       "relationshipKind": "flowSource",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 167,
+      "ordinal": 171,
       "relationshipKind": "flowTarget",
       "source": 35
     },
@@ -14179,7 +14198,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 221,
+      "ordinal": 231,
       "relationshipKind": "typing",
       "source": 37
     },
@@ -14209,19 +14228,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 325,
+      "ordinal": 337,
       "relationshipKind": "flowPayloadType",
       "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 326,
+      "ordinal": 338,
       "relationshipKind": "flowSource",
       "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 327,
+      "ordinal": 339,
       "relationshipKind": "flowTarget",
       "source": 40
     },
@@ -14257,19 +14276,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 80,
+      "ordinal": 84,
       "relationshipKind": "flowPayloadType",
       "source": 42
     },
     {
       "kind": "relationship",
-      "ordinal": 81,
+      "ordinal": 85,
       "relationshipKind": "flowSource",
       "source": 42
     },
     {
       "kind": "relationship",
-      "ordinal": 82,
+      "ordinal": 86,
       "relationshipKind": "flowTarget",
       "source": 42
     },
@@ -14305,19 +14324,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 97,
+      "ordinal": 101,
       "relationshipKind": "flowPayloadType",
       "source": 44
     },
     {
       "kind": "relationship",
-      "ordinal": 98,
+      "ordinal": 102,
       "relationshipKind": "flowSource",
       "source": 44
     },
     {
       "kind": "relationship",
-      "ordinal": 99,
+      "ordinal": 103,
       "relationshipKind": "flowTarget",
       "source": 44
     },
@@ -14371,7 +14390,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 66,
       "relationshipKind": "typing",
       "source": 46
     },
@@ -14401,19 +14420,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 114,
+      "ordinal": 118,
       "relationshipKind": "flowPayloadType",
       "source": 49
     },
     {
       "kind": "relationship",
-      "ordinal": 115,
+      "ordinal": 119,
       "relationshipKind": "flowSource",
       "source": 49
     },
     {
       "kind": "relationship",
-      "ordinal": 116,
+      "ordinal": 120,
       "relationshipKind": "flowTarget",
       "source": 49
     },
@@ -14437,37 +14456,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 186,
+      "ordinal": 190,
       "relationshipKind": "redefinition",
       "source": 54
     },
     {
       "kind": "relationship",
-      "ordinal": 282,
+      "ordinal": 293,
       "relationshipKind": "redefinition",
       "source": 62
     },
     {
       "kind": "relationship",
-      "ordinal": 308,
+      "ordinal": 320,
       "relationshipKind": "redefinition",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 311,
+      "ordinal": 323,
       "relationshipKind": "redefinition",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 314,
+      "ordinal": 326,
       "relationshipKind": "redefinition",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 225,
+      "ordinal": 235,
       "relationshipKind": "redefinition",
       "source": 78
     },
@@ -14479,25 +14498,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 195,
+      "ordinal": 199,
       "relationshipKind": "typing",
       "source": 82
     },
     {
       "kind": "relationship",
-      "ordinal": 237,
+      "ordinal": 247,
       "relationshipKind": "typing",
       "source": 82
     },
     {
       "kind": "relationship",
-      "ordinal": 288,
+      "ordinal": 299,
       "relationshipKind": "typing",
       "source": 82
     },
     {
       "kind": "relationship",
-      "ordinal": 67,
+      "ordinal": 70,
       "relationshipKind": "redefinition",
       "source": 85
     }

@@ -49,12 +49,13 @@ package Control {
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Control"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "count")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "start")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (kind then-continuation) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (thenTarget (reference "halt")))))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1))))) (kind then-continuation) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (thenTarget (reference "again")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind terminate-action) (ordinal 0))))) (kind terminate-action) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind kerml-boolean-expression) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "count")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Sample")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::check"))) (kind decide) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind assign) (value (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (named (kind attribute) (name "count")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (result (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (named (kind attribute) (name "count")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer")))))
@@ -78,9 +79,6 @@ package Control {
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues")))))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "count")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "start")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start")))))
@@ -90,6 +88,9 @@ package Control {
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1))))) (kind thenTarget) (ordinal 0))
       (authored-target "again")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again")))))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "count")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (kind featureTyping) (ordinal 0))
       (authored-target "Sample")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Sample")))))
@@ -113,10 +114,10 @@ package Control {
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run")))))
   )
   (relationships
-    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
     (relationship (kind thenTarget) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::halt"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (kind thenTarget) (ordinal 0)))
     (relationship (kind thenTarget) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1))))) (kind thenTarget) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Sample"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Integer"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::halt"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Sample"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::halt"))) (kind featureTyping) (ordinal 0)))
@@ -131,15 +132,21 @@ package Control {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind terminate-action) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::check"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::check"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind terminate-action) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::halt"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::check"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::decisions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::check"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::check"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::inc"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (named (kind attribute) (name "count")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
@@ -151,6 +158,7 @@ package Control {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::halt"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::halt"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::inc"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::inc"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::inc"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::assignmentActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::inc"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (named (kind assign) (name "inc")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments::target"))) (provenance implied))
@@ -166,11 +174,13 @@ package Control {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::stop"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::terminateSubactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::stop"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::terminateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::stop"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::stop"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Sample"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::stopFlow"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind view) (name "stopFlow")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::stopFlow"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state evaluated) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (named (kind attribute) (name "count")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::inc"))) (state evaluated) (value (kind integer) (integer 1)))
   )
@@ -219,26 +229,6 @@ package Control {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
-    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
-      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::LiteralEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalEvaluations"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::LiteralIntegerEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::LiteralEvaluation")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::LiteralIntegerEvaluation")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalEvaluations")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
-    )
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
@@ -284,6 +274,44 @@ package Control {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::LiteralEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalEvaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::LiteralIntegerEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::LiteralEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::LiteralIntegerEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalEvaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again")))
@@ -618,6 +646,7 @@ package Control {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (operator ">" (feature-reference "count" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count")))) (literal (value (kind integer) (integer 3)))))
   (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (named (kind attribute) (name "count")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
   (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::inc"))) (outcome resolved) (operator "+" (feature-reference "count" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count")))) (literal (value (kind integer) (integer 1)))))
 )
@@ -635,11 +664,6 @@ package Control {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues")))))
     )
   )
-  (query (document "memory://snapshot/model.sysml") (range (start 9 15) (end 9 20)) (probe (position 9 15))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run"))) (kind expressionOperand) (ordinal 0) (authored-target "count")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count")))))
-    )
-  )
   (query (document "memory://snapshot/model.sysml") (range (start 6 14) (end 6 19)) (probe (position 6 14))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "start")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start")))))
@@ -653,6 +677,11 @@ package Control {
   (query (document "memory://snapshot/model.sysml") (range (start 10 17) (end 10 22)) (probe (position 10 17))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 1))))) (kind thenTarget) (ordinal 0) (authored-target "again")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::again")))))
+    )
+  )
+  (query (document "memory://snapshot/model.sysml") (range (start 9 15) (end 9 20)) (probe (position 9 15))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Control")) (named (kind action-def) (name "Run")) (anonymous (kind then-continuation) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "count")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Control::Run::count")))))
     )
   )
   (query (document "memory://snapshot/model.sysml") (range (start 11 23) (end 11 29)) (probe (position 11 23))
@@ -697,7 +726,7 @@ package Control {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:65b0b36085b2ddc5905eba655316eb2e0ab98d607e17956e5114c2555e6423ae",
+  "modelDigest": "blake3:21fc4dbdd199929f86a3eec2be1fedda19b7f73f8ff52631adb9d33d980ab8e2",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -796,15 +825,6 @@ package Control {
         20,
         8,
         25
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        9,
-        15,
-        9,
-        20
       ]
     },
     {
@@ -1026,21 +1046,21 @@ package Control {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Control::Run",
-      "source": 10,
+      "source": 9,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Control::Run",
-      "source": 13,
+      "source": 12,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "TerminateActionUsage",
       "ownerQualifiedName": "Control::Run",
-      "source": 19,
+      "source": 18,
       "sourceDomain": "workspace"
     },
     {
@@ -1132,25 +1152,19 @@ package Control {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "expressionOperand",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
+      "ordinal": 2,
       "relationshipKind": "succession",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 39,
       "relationshipKind": "thenTarget",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
+      "ordinal": 43,
       "relationshipKind": "thenTarget",
       "source": 1
     },
@@ -1180,7 +1194,7 @@ package Control {
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "ordinal": 30,
       "relationshipKind": "typing",
       "source": 4
     },
@@ -1198,7 +1212,7 @@ package Control {
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "ordinal": 4,
       "relationshipKind": "assignTarget",
       "source": 6
     },
@@ -1210,7 +1224,7 @@ package Control {
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "ordinal": 5,
       "relationshipKind": "expressionOperand",
       "source": 6
     },
@@ -1234,7 +1248,7 @@ package Control {
     },
     {
       "kind": "relationship",
-      "ordinal": 45,
+      "ordinal": 50,
       "relationshipKind": "redefinition",
       "source": 13
     },
@@ -1246,7 +1260,7 @@ package Control {
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 49,
       "relationshipKind": "typing",
       "source": 13
     }
@@ -1255,7 +1269,7 @@ package Control {
     "reference": 11,
     "kind": "action-flow-view",
     "name": "stopFlow",
-    "source": 20
+    "source": 19
   },
   "completeness": {
     "status": "complete",
@@ -1286,7 +1300,7 @@ package Control {
         "navigation": 5,
         "origin": 8,
         "provenance": "authored",
-        "reference": 52,
+        "reference": 51,
         "source": 14,
         "target": 8
       },
@@ -1295,7 +1309,7 @@ package Control {
         "navigation": 6,
         "origin": 9,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 45,
         "source": 8,
         "target": 9
       },
@@ -1304,7 +1318,7 @@ package Control {
         "navigation": 6,
         "origin": 10,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 48,
         "source": 9,
         "target": 10
       },
@@ -1313,13 +1327,13 @@ package Control {
         "navigation": 6,
         "origin": 11,
         "provenance": "authored",
-        "reference": 50,
+        "reference": 49,
         "source": 10,
         "target": 11
       },
       {
         "kind": "containment",
-        "navigation": 17,
+        "navigation": 16,
         "origin": 6,
         "provenance": "authored",
         "reference": 25,
@@ -1328,7 +1342,7 @@ package Control {
       },
       {
         "kind": "containment",
-        "navigation": 14,
+        "navigation": 13,
         "origin": 7,
         "provenance": "authored",
         "reference": 26,
@@ -1349,7 +1363,7 @@ package Control {
         "navigation": 8,
         "origin": 12,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 47,
         "source": 8,
         "target": 12
       },
@@ -1364,7 +1378,7 @@ package Control {
       },
       {
         "kind": "containment",
-        "navigation": 19,
+        "navigation": 18,
         "origin": 2,
         "provenance": "authored",
         "reference": 29,
@@ -1373,16 +1387,16 @@ package Control {
       },
       {
         "kind": "succession",
-        "navigation": 19,
+        "navigation": 18,
         "origin": 2,
         "provenance": "authored",
-        "reference": 43,
+        "reference": 42,
         "source": 6,
         "target": 2
       },
       {
         "kind": "containment",
-        "navigation": 10,
+        "navigation": 9,
         "origin": 4,
         "provenance": "authored",
         "reference": 30,
@@ -1391,16 +1405,16 @@ package Control {
       },
       {
         "kind": "succession",
-        "navigation": 10,
+        "navigation": 9,
         "origin": 4,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 39,
         "source": 12,
         "target": 6
       },
       {
         "kind": "containment",
-        "navigation": 13,
+        "navigation": 12,
         "origin": 5,
         "provenance": "authored",
         "reference": 31,
@@ -1409,16 +1423,16 @@ package Control {
       },
       {
         "kind": "succession",
-        "navigation": 13,
+        "navigation": 12,
         "origin": 5,
         "provenance": "authored",
-        "reference": 41,
+        "reference": 40,
         "source": 12,
         "target": 7
       },
       {
         "kind": "containment",
-        "navigation": 16,
+        "navigation": 15,
         "origin": 3,
         "provenance": "authored",
         "reference": 32,
@@ -1427,16 +1441,16 @@ package Control {
       },
       {
         "kind": "succession",
-        "navigation": 16,
+        "navigation": 15,
         "origin": 3,
         "provenance": "authored",
-        "reference": 38,
+        "reference": 37,
         "source": 7,
         "target": 3
       },
       {
         "kind": "containment",
-        "navigation": 21,
+        "navigation": 20,
         "origin": 14,
         "provenance": "implied",
         "reference": 33,
@@ -1539,7 +1553,7 @@ package Control {
         "owner": 0,
         "presentationKey": "p:f1ebf75cefd7e4994540d262a9e6113b86103eb02b3a7560dab1d79cc68262a7",
         "reference": 19,
-        "source": 19,
+        "source": 18,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1558,7 +1572,7 @@ package Control {
         "owner": 0,
         "presentationKey": "p:d0f3de7a4256872527e7917023f2da91d855466ac350e5a484dff299b71e1510",
         "reference": 9,
-        "source": 16,
+        "source": 15,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1577,7 +1591,7 @@ package Control {
         "owner": 0,
         "presentationKey": "p:0ad4f8b524c63c08cb7c60430e42b9346d7c1dd3b60cf385b2154b5327c2aa03",
         "reference": 17,
-        "source": 10,
+        "source": 9,
         "stateSubaction": null,
         "successionGuard": "count > 3",
         "typing": {
@@ -1596,7 +1610,7 @@ package Control {
         "owner": 0,
         "presentationKey": "p:44a30741923b59627e0bcc1e1cd443526db92f7bfbbb2eaf9fa54f08410b7a64",
         "reference": 18,
-        "source": 13,
+        "source": 12,
         "stateSubaction": null,
         "successionGuard": "else",
         "typing": {
@@ -1615,7 +1629,7 @@ package Control {
         "owner": 0,
         "presentationKey": "p:ce43d96adbb95625066f5e6820f4cea6be4ef78198db7cdff3454874c140e512",
         "reference": 5,
-        "source": 17,
+        "source": 16,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1640,7 +1654,7 @@ package Control {
         "owner": 0,
         "presentationKey": "p:61a67ac68ba8ebc908a70f8f2786490203f69e6ae7fee9ee685b6d46d48cc2ea",
         "reference": 2,
-        "source": 14,
+        "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1801,7 +1815,7 @@ package Control {
         "owner": 0,
         "presentationKey": "p:bf3686851d7ecfed064d232f90c52ca0c9c9db8b63c1a71f766d3928b33bf5b8",
         "reference": 13,
-        "source": 21,
+        "source": 20,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1817,21 +1831,10 @@ package Control {
     ],
     "relationships": [
       {
-        "kind": "expressionOperand",
-        "navigation": 9,
-        "provenance": "authored",
-        "reference": 34,
-        "source": 0,
-        "target": {
-          "node": 13,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 34,
         "source": 1,
         "target": {
           "node": 14,
@@ -1842,7 +1845,7 @@ package Control {
         "kind": "assignTarget",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 45,
+        "reference": 44,
         "source": 8,
         "target": {
           "node": 13,
@@ -1853,7 +1856,7 @@ package Control {
         "kind": "expressionOperand",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 46,
         "source": 8,
         "target": {
           "node": 13,
@@ -1862,9 +1865,9 @@ package Control {
       },
       {
         "kind": "typing",
-        "navigation": 18,
+        "navigation": 17,
         "provenance": "authored",
-        "reference": 44,
+        "reference": 43,
         "source": 6,
         "target": {
           "reference": 10,
@@ -1873,9 +1876,9 @@ package Control {
       },
       {
         "kind": "typing",
-        "navigation": 15,
+        "navigation": 14,
         "provenance": "authored",
-        "reference": 39,
+        "reference": 38,
         "source": 7,
         "target": {
           "reference": 10,
@@ -1886,7 +1889,7 @@ package Control {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 41,
         "source": 13,
         "target": {
           "reference": 15,
@@ -1895,9 +1898,9 @@ package Control {
       },
       {
         "kind": "thenTarget",
-        "navigation": 11,
+        "navigation": 10,
         "provenance": "authored",
-        "reference": 36,
+        "reference": 35,
         "source": 4,
         "target": {
           "node": 6,
@@ -1906,9 +1909,9 @@ package Control {
       },
       {
         "kind": "thenTarget",
-        "navigation": 12,
+        "navigation": 11,
         "provenance": "authored",
-        "reference": 37,
+        "reference": 36,
         "source": 5,
         "target": {
           "node": 7,
@@ -1917,9 +1920,9 @@ package Control {
       },
       {
         "kind": "typing",
-        "navigation": 22,
+        "navigation": 21,
         "provenance": "authored",
-        "reference": 53,
+        "reference": 52,
         "source": 14,
         "target": {
           "reference": 12,
@@ -1928,9 +1931,9 @@ package Control {
       },
       {
         "kind": "redefinition",
-        "navigation": 23,
+        "navigation": 22,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 50,
         "source": 14,
         "target": {
           "reference": 14,

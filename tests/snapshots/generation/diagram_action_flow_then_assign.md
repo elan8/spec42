@@ -132,6 +132,7 @@ package Counting {
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Counting::Count"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::whileLoops"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::assignmentActions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::assignmentActions"))) (provenance implied))
@@ -141,6 +142,8 @@ package Counting {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Counting::Count"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Counting::Count"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Counting::Count"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 0))))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments"))) (provenance implied))
@@ -152,6 +155,7 @@ package Counting {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 1))))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0)) (named (kind action) (name "sample"))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind while) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Counting")) (named (kind action-def) (name "Count")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))) (provenance implied))
@@ -852,7 +856,7 @@ package Counting {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:aeb3efe9dac6889a3a752bd8c10126236822e0936466ad5c29d266205a0814f2",
+  "modelDigest": "blake3:5950daf5a00be8fedf4c047e7a7e70ce1046b62176e09a1b6e04885fa739bd36",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1329,13 +1333,13 @@ package Counting {
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 25,
       "relationshipKind": "assignTarget",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 39,
       "relationshipKind": "assignTarget",
       "source": 1
     },
@@ -1383,19 +1387,19 @@ package Counting {
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 53,
       "relationshipKind": "succession",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 60,
       "relationshipKind": "thenTarget",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "ordinal": 6,
       "relationshipKind": "assignTarget",
       "source": 2
     },
@@ -1419,7 +1423,7 @@ package Counting {
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "ordinal": 7,
       "relationshipKind": "expressionOperand",
       "source": 2
     },
@@ -1455,31 +1459,31 @@ package Counting {
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "ordinal": 21,
       "relationshipKind": "typing",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
+      "ordinal": 55,
       "relationshipKind": "typing",
       "source": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "ordinal": 63,
       "relationshipKind": "redefinition",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 62,
       "relationshipKind": "typing",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "ordinal": 68,
       "relationshipKind": "redefinition",
       "source": 11
     },
@@ -1491,7 +1495,7 @@ package Counting {
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 67,
       "relationshipKind": "typing",
       "source": 11
     }

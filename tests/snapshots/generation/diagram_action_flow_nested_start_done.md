@@ -128,8 +128,10 @@ package Nested {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Nested")) (named (kind action-def) (name "Drive")) (named (kind action) (name "propel")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Nested")) (named (kind action-def) (name "Drive")) (named (kind action) (name "propel")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Nested")) (named (kind action-def) (name "Drive")) (named (kind action) (name "propel")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel::burn"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Nested")) (named (kind action-def) (name "Drive")) (named (kind action) (name "propel")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Nested")) (named (kind action-def) (name "Drive")) (named (kind action) (name "propel")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel::burn"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel::burn"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel::burn"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel::burn"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Nested::Drive::propel"))) (provenance implied))
@@ -437,7 +439,7 @@ package Nested {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:7b90362ac350159b45d6a996715de142291a6e9f027b7b0f1f6493f53a3eff6d",
+  "modelDigest": "blake3:e9e5f3fb01a0a03ed23e5cfd421800782f0c7c15052ce3a0a883ec68c20411f9",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -916,7 +918,7 @@ package Nested {
     },
     {
       "kind": "relationship",
-      "ordinal": 34,
+      "ordinal": 36,
       "relationshipKind": "thenTarget",
       "source": 4
     },
@@ -940,43 +942,43 @@ package Nested {
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 38,
       "relationshipKind": "typing",
       "source": 6
     },
     {
       "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "redefinition",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 43,
+      "relationshipKind": "redefinition",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
       "ordinal": 24,
-      "relationshipKind": "redefinition",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "redefinition",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
       "relationshipKind": "typing",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
+      "ordinal": 42,
       "relationshipKind": "typing",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "ordinal": 30,
       "relationshipKind": "redefinition",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "ordinal": 48,
       "relationshipKind": "redefinition",
       "source": 11
     },
@@ -994,13 +996,13 @@ package Nested {
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
+      "ordinal": 29,
       "relationshipKind": "typing",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 45,
+      "ordinal": 47,
       "relationshipKind": "typing",
       "source": 11
     }

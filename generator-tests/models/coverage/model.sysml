@@ -4,6 +4,12 @@
 package Coverage {
     doc /* Package-level documentation. */
 
+    attribute booleanLiteral = true;
+    attribute booleanText = "true";
+    attribute integerLiteral = 1;
+    attribute integerText = "1";
+    attribute realLiteral = 1.0;
+
     attribute def Mass;
     attribute def Speed;
 

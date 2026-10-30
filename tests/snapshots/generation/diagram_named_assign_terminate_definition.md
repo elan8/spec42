@@ -134,6 +134,7 @@ package NamedNodes {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::finish"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::terminateSubactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::finish"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::terminateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::finish"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::finish"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::increment"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::naturals"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count"))) (provenance implied))
@@ -147,6 +148,7 @@ package NamedNodes {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-function) (name "LiteralIntegerEvaluation")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-function) (name "LiteralIntegerEvaluation")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::increment"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::increment"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::increment"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::assignmentActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::increment"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind assign) (name "increment")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments::target"))) (provenance implied))
@@ -707,7 +709,7 @@ package NamedNodes {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:fb5df6b2981191439852a29bc31e4890a2df78815527ea97beadae6d49b9f83b",
+  "modelDigest": "blake3:8846baabcb9000096401a676c585fa5593ea8bd3fb9a9c22c4bba7735f37a9ae",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1021,7 +1023,7 @@ package NamedNodes {
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "ordinal": 23,
       "relationshipKind": "typing",
       "source": 4
     },
@@ -1069,7 +1071,7 @@ package NamedNodes {
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "ordinal": 32,
       "relationshipKind": "redefinition",
       "source": 11
     },
@@ -1081,7 +1083,7 @@ package NamedNodes {
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "ordinal": 31,
       "relationshipKind": "typing",
       "source": 11
     }

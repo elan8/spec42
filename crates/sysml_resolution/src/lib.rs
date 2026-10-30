@@ -988,6 +988,14 @@ impl PublishedResolution {
         self.model.resolved_expression(symbol)
     }
 
+    /// One workspace `connect` / `interface` connector and its resolved ends.
+    ///
+    /// `Ok(None)` when `symbol` is not such a connector. Dotted ends keep one outcome per authored
+    /// segment, the same path [`PublishedConnector`] publishes for model export.
+    pub fn connector(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedConnector>> {
+        self.model.connector(symbol)
+    }
+
     /// The effective expression body and bindings in a derived type or typed usage, with
     /// authored provenance retained. Invalid contexts are unresolved; competing bindings
     /// return a typed ambiguity rather than an asserted tree.

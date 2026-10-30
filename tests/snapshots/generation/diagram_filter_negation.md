@@ -248,7 +248,7 @@ package Filters {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:fcc651ae58ecd27a4f53cba06f199e5832324e2da302d7f7987254b82b239abb",
+  "modelDigest": "blake3:29e17795f75a412396909c4f6884f3732645330a25c57d508050cfe8331feb62",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
