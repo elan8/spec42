@@ -29,6 +29,61 @@ fn publication(
 }
 
 #[test]
+fn library_source_events_also_reach_the_independent_workspace_authoring_owner() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().canonicalize().unwrap();
+    let library = root.join("library");
+    std::fs::create_dir(&library).unwrap();
+    std::fs::write(
+        library.join(".project.json"),
+        r#"{"name":"library-project","version":"1.0.0"}"#,
+    )
+    .unwrap();
+    let source = library.join("Model.sysml");
+    std::fs::write(&source, "package Saved;").unwrap();
+    let consumer = root.join("App.sysml");
+    std::fs::write(&consumer, "package App;").unwrap();
+    let uri = sysml_query::source::path_to_file_url(&source).unwrap();
+    let consumer_uri = sysml_query::source::path_to_file_url(&consumer).unwrap();
+    let mut session = parity_session(&root, &[library]);
+    session.did_open(consumer_uri.as_str(), "package App; // opened", 1);
+    publication(&mut session, consumer_uri.as_str(), 1);
+
+    // Reads select the nested project's authoring owner. Both that owner and the enclosing
+    // project's library consumer must ingest the editor revisions before answering them.
+    for (version, name) in [(1, "Unsaved"), (2, "Latest")] {
+        let text = format!("package {name};");
+        if version == 1 {
+            session.did_open(uri.as_str(), &text, version);
+        } else {
+            session.did_change_full(uri.as_str(), &text, version);
+        }
+        let response = session.request(
+            "textDocument/documentSymbol",
+            json!({"textDocument":{"uri":uri}}),
+        );
+        assert!(response.get("error").is_none(), "{response}");
+        let names: Vec<_> = response["result"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|symbol| symbol["name"].as_str().unwrap())
+            .collect();
+        assert_eq!(names, [name]);
+    }
+    std::fs::write(&source, "package Restored;").unwrap();
+    session.notify("textDocument/didClose", json!({"textDocument":{"uri":uri}}));
+    let response = session.request(
+        "textDocument/documentSymbol",
+        json!({"textDocument":{"uri":uri}}),
+    );
+    assert!(response.get("error").is_none(), "{response}");
+    let symbols = response["result"].as_array().unwrap();
+    assert_eq!(symbols.len(), 1);
+    assert_eq!(symbols[0]["name"], "Restored");
+}
+
+#[test]
 fn configuration_and_incremental_import_changes_match_fresh_publications() {
     let directory = tempfile::tempdir().unwrap();
     let base = directory.path().canonicalize().unwrap();
@@ -275,6 +330,83 @@ fn unsaved_library_overlays_and_close_restore_fresh_publication_identity() {
     let mut fresh = parity_session(&root, std::slice::from_ref(&library));
     fresh.did_open(&uri, &restored, 1);
     assert_eq!((digest, diagnostics), publication(&mut fresh, &uri, 1));
+}
+
+#[test]
+fn library_settings_update_defaults_before_the_first_loose_project_exists() {
+    let directory = tempfile::tempdir().unwrap();
+    let base = directory.path().canonicalize().unwrap();
+    let root = base.join("loose");
+    let old = base.join("old");
+    let new = base.join("new");
+    for path in [&root, &old, &new] {
+        std::fs::create_dir(path).unwrap();
+    }
+    std::fs::write(old.join("Old.sysml"), "package Old;").unwrap();
+    std::fs::write(new.join("Next.sysml"), "package Next { part def Thing; }").unwrap();
+    let source = root.join("App.sysml");
+    std::fs::write(&source, "package App;").unwrap();
+    let uri = sysml_query::source::path_to_file_url(&source)
+        .unwrap()
+        .to_string();
+    let open = |library: &std::path::Path| {
+        let mut session =
+            TestSession::new_with_env(&[("SPEC42_LSP_TEST_NO_STDLIB", std::path::Path::new("1"))]);
+        session.initialize_with_options(
+            "future-project-defaults",
+            Some(json!({"libraryPaths":[library],"performanceLogging":{"enabled":true}})),
+        );
+        session
+    };
+    let text = "package App { private import Next::*; part thing : Thing; }";
+    let mut changed = open(&old);
+    changed.notify(
+        "workspace/didChangeConfiguration",
+        json!({"settings":{"spec42":{"libraryPaths":[new]}}}),
+    );
+    changed.did_open(&uri, text, 1);
+    let current = publication(&mut changed, &uri, 1);
+    let mut fresh = open(&new);
+    fresh.did_open(&uri, text, 1);
+    assert_eq!(current, publication(&mut fresh, &uri, 1));
+}
+
+#[test]
+fn editor_library_defaults_do_not_replace_manifest_owned_project_bindings() {
+    let directory = tempfile::tempdir().unwrap();
+    let base = directory.path().canonicalize().unwrap();
+    let root = base.join("project");
+    let old = base.join("old");
+    let new = base.join("new");
+    for path in [&root, &old, &new] {
+        std::fs::create_dir(path).unwrap();
+    }
+    std::fs::write(
+        root.join(".project.json"),
+        r#"{"name":"pinned-project","version":"1.0.0"}"#,
+    )
+    .unwrap();
+    std::fs::write(old.join("Old.sysml"), "package Old;").unwrap();
+    std::fs::write(new.join("Next.sysml"), "package Next { part def Thing; }").unwrap();
+    let source = root.join("App.sysml");
+    std::fs::write(&source, "package App;").unwrap();
+    let uri = sysml_query::source::path_to_file_url(&source)
+        .unwrap()
+        .to_string();
+    let text = "package App { private import Next::*; part thing : Thing; }";
+    let mut changed = parity_session(&root, &[old]);
+    changed.did_open(&uri, text, 1);
+    publication(&mut changed, &uri, 1);
+    changed.notify(
+        "workspace/didChangeConfiguration",
+        json!({"settings":{"spec42":{"libraryPaths":[new]}}}),
+    );
+    let latest = format!("{text} // unchanged project bindings");
+    changed.did_change_full(&uri, &latest, 2);
+    let current = publication(&mut changed, &uri, 2);
+    let mut fresh = parity_session(&root, &[new]);
+    fresh.did_open(&uri, &latest, 1);
+    assert_eq!(current, publication(&mut fresh, &uri, 1));
 }
 
 #[test]

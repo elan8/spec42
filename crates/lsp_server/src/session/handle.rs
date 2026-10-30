@@ -1123,6 +1123,51 @@ mod library_reindex_tests {
     use crate::session::state::{publication_inputs, IndexEntry};
     use sysml_query::source::SourceKind;
 
+    #[tokio::test]
+    async fn project_owned_bindings_ignore_defaults_but_retry_failed_discovery_with_the_same_roots()
+    {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        state.library_paths_follow_host_defaults = false;
+        let pinned = uri("file:///project-pinned/");
+        state.library_paths = vec![pinned.clone()];
+        let handle = WorkspaceHandle::spawn(state);
+        let inputs = handle.snapshot().session.inputs();
+        let defaults = vec![uri("file:///editor-defaults/")];
+        assert!(handle
+            .begin_library_reindex_if_changed(defaults.clone())
+            .await
+            .unwrap()
+            .is_none());
+        assert_eq!(handle.snapshot().library_paths, vec![pinned.clone()]);
+        assert!(handle.snapshot().session.is_input_current(&inputs));
+        handle
+            .actor
+            .mutate(|state| {
+                state.diagnostic_readiness.require_library_sources();
+                state.invalidate_inputs();
+            })
+            .await
+            .unwrap();
+        let failed = handle.snapshot().diagnostic_readiness.token();
+        assert!(handle
+            .fail_library_reindex(
+                failed,
+                PublicationBuildFailure::preparation_worker("inventory failed")
+            )
+            .await
+            .unwrap());
+        let retry = handle
+            .begin_library_reindex_if_changed(defaults)
+            .await
+            .unwrap()
+            .unwrap();
+        let (work, request) = handle.queue_library_scan(retry).unwrap().into_parts();
+        assert_eq!(request.library_paths, vec![pinned]);
+        assert!(handle.snapshot().publication_failure.is_none());
+        assert!(handle.finish_library_scan(&work).is_none());
+    }
+
     fn uri(value: &str) -> Url {
         crate::common::util::normalize_file_uri(&Url::parse(value).unwrap())
     }
@@ -1199,6 +1244,7 @@ mod library_reindex_tests {
                 vec![old_root],
                 vec![standard_root.clone()],
                 sysml_query::StandardLibraryAvailability::Unavailable,
+                true,
             )
             .await
             .unwrap();
@@ -1270,6 +1316,7 @@ mod library_reindex_tests {
                         Vec::new(),
                         Vec::new(),
                         sysml_query::StandardLibraryAvailability::Unavailable,
+                        true,
                     )
                     .await
                     .unwrap();
@@ -1407,6 +1454,7 @@ mod library_reindex_tests {
                 Vec::new(),
                 Vec::new(),
                 sysml_query::StandardLibraryAvailability::Unavailable,
+                true,
             )
             .await
             .unwrap();
@@ -2329,6 +2377,7 @@ impl WorkspaceHandle {
         library_paths: Vec<Url>,
         standard_library_paths: Vec<Url>,
         standard_library_availability: sysml_query::StandardLibraryAvailability,
+        follow_host_defaults: bool,
     ) -> Result<(), MutatePanicked> {
         self.actor
             .mutate(move |s| {
@@ -2336,6 +2385,7 @@ impl WorkspaceHandle {
                 s.library_paths = library_paths;
                 s.standard_library_paths = standard_library_paths;
                 s.standard_library_availability = standard_library_availability;
+                s.library_paths_follow_host_defaults = follow_host_defaults;
                 s.library_catalog = None;
                 s.session.reset();
                 s.diagnostic_readiness.reset(true);
@@ -2976,6 +3026,11 @@ impl WorkspaceHandle {
                 if s.session.lifecycle() == sysml_query::publication::SessionLifecycle::Closed {
                     return Mutation::Unchanged(None);
                 }
+                let new_library_paths = if s.library_paths_follow_host_defaults {
+                    new_library_paths
+                } else {
+                    s.library_paths.clone()
+                };
                 let old = std::mem::take(&mut s.library_paths);
                 let retry_failed = s.diagnostic_readiness.source_inputs_pending()
                     && s.publication_failure.is_some();

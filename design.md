@@ -349,6 +349,14 @@ independent results deterministically or require project provenance. Manifest ch
 affected project configuration while preserving editor-owned unsaved revisions; they never merge
 project publications or expose an undeclared library.
 
+Editor library settings replace the defaults used by existing manifestless projects and by future
+project discovery. Manifest-owned admissions retain their selected roots until project rediscovery;
+retrying a failed discovery uses that project's roots rather than editor defaults. A source may be
+authored by one workspace project and admitted as a library by others. Editor and watched-file
+mutations reach the authoring owner and every admitting consumer, with each owner updated once.
+An admitted library outside the declared workspace roots stays with its consumers; opening it does
+not create a competing loose publication. A pre-existing independent authoring owner is retained.
+
 ## Publication lifecycle and identity
 
 A publication is an immutable `PublishedModel` with a dependency-complete, owner-scoped identity

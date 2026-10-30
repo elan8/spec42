@@ -308,7 +308,8 @@ mod startup;
 mod sync;
 pub(crate) use startup::{initialize, initialized};
 pub(crate) use sync::{
-    did_change, did_change_configuration, did_change_watched_files, did_close, did_open,
+    configured_library_paths, did_change, did_change_configuration, did_change_watched_files,
+    did_close, did_open,
 };
 
 #[cfg(test)]

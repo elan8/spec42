@@ -483,6 +483,23 @@ pub(crate) async fn did_change_configuration(
     params: DidChangeConfigurationParams,
 ) {
     ensure_analysis_notifications(client, handle, runtime_config);
+    let new_library_paths = configured_library_paths(config, runtime_config, &params);
+    let readiness_token = handle
+        .begin_library_reindex_if_changed(new_library_paths.clone())
+        .await
+        .unwrap_or(None);
+    let Some(readiness_token) = readiness_token else {
+        return;
+    };
+
+    start_source_discovery(client, handle, runtime_config, readiness_token);
+}
+
+pub(crate) fn configured_library_paths(
+    config: &Spec42Config,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
+    params: &DidChangeConfigurationParams,
+) -> Vec<Url> {
     let library_path_base = runtime_config
         .get()
         .and_then(|config| config.library_path_base.as_deref());
@@ -493,19 +510,7 @@ pub(crate) async fn did_change_configuration(
         .unwrap_or_else(|| {
             util::parse_library_paths_with_base(Some(&params.settings), library_path_base)
         });
-    let new_library_paths = util::merge_host_and_client_library_paths(
-        &config.default_library_paths,
-        client_library_paths,
-    );
-    let readiness_token = handle
-        .begin_library_reindex_if_changed(new_library_paths.clone())
-        .await
-        .unwrap_or(None);
-    let Some(readiness_token) = readiness_token else {
-        return;
-    };
-
-    start_source_discovery(client, handle, runtime_config, readiness_token);
+    util::merge_host_and_client_library_paths(&config.default_library_paths, client_library_paths)
 }
 
 pub(super) fn start_source_discovery(
