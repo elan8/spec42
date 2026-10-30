@@ -695,6 +695,7 @@ impl<D> SemanticModel<D> {
                 effective_imports: Some(&self.effective_imports),
                 exported_imports: Some(&self.effective_imports),
                 inherited_names: Some(&self.resolution.inherited_names),
+                memberships: None,
             },
             owner,
             first,

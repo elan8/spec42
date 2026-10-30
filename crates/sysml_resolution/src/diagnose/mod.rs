@@ -23,7 +23,62 @@ use crate::TextRange;
 use sysml_v2_parser::ParseError;
 use sysml_v2_parser::ParsedDocument;
 
+/// The note attached to the private member a qualified name failed to reach.
+const RELATED_PRIVATE_MEMBER: &str = "Private member the qualified name names.";
+
 impl<D> SemanticModel<D> {
+    /// The private segment that made an unresolved qualified name fail: the path resolves once
+    /// visibility is ignored, and one of the namespaces it passes through owns that segment
+    /// privately without enclosing the reference (KerML 8.2.3.5).
+    fn private_qualified_segment(
+        &self,
+        reference: &crate::lower::facts::AuthoredReference,
+    ) -> Result<Option<crate::model::DeclarationId>, ResolutionError> {
+        let path = self.authored_path(reference.path);
+        let segments = path
+            .split("::")
+            .filter(|segment| !segment.is_empty())
+            .count();
+        if segments < 2 {
+            return Ok(None);
+        }
+        let source = self
+            .storage
+            .declaration(reference.source)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        let [target] = self.resolve_qualifier_scopes(source.owner, &path)?[..] else {
+            return Ok(None);
+        };
+        let encloses_source = |namespace: crate::model::DeclarationId| {
+            let mut cursor = Some(reference.source);
+            while let Some(current) = cursor {
+                if current == namespace {
+                    return true;
+                }
+                cursor = self
+                    .storage
+                    .declaration(current)
+                    .and_then(|declaration| declaration.owner);
+            }
+            false
+        };
+        let mut segment = target;
+        for _ in 1..segments {
+            let Some(owner) = self.storage.declaration(segment).and_then(|d| d.owner) else {
+                break;
+            };
+            if !encloses_source(owner)
+                && self.memberships.get(segment).is_some_and(|membership| {
+                    membership.visibility == crate::resolve::names::EffectiveVisibility::Private
+                })
+            {
+                return Ok(Some(segment));
+            }
+            segment = owner;
+        }
+        Ok(None)
+    }
+
     /// Every diagnostic this publication settled, as facts rather than rendered text.
     ///
     /// Derived once while the model is sealed, for the same reason the other indexes are: a query
@@ -135,6 +190,19 @@ impl<D> SemanticModel<D> {
                         continue;
                     };
                     let mut related = Vec::new();
+                    let mut message: Box<str> = code.describe().into();
+                    if matches!(status, ResolutionStatus::Unresolved) {
+                        if let Some(hidden) = self.private_qualified_segment(reference)? {
+                            let name = self.display_name(hidden);
+                            message = format!(
+                                "'{name}' is private, so this qualified name cannot reach it from \
+                                 here. Make '{name}' public, or refer to it from inside its \
+                                 namespace."
+                            )
+                            .into();
+                            related.push(self.related_declaration(hidden, RELATED_PRIVATE_MEMBER)?);
+                        }
+                    }
                     if let ResolutionStatus::Ambiguous(candidates) = status {
                         // Every candidate, in the resolver's canonical candidate order: choosing one
                         // would settle an ambiguity the publication deliberately left open.
@@ -154,7 +222,7 @@ impl<D> SemanticModel<D> {
                                         .into_boxed_str(),
                                 },
                             ),
-                        message: code.describe().into(),
+                        message,
                         subject: self.symbol_id(reference.source),
                         code,
                         severity,

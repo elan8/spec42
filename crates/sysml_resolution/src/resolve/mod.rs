@@ -39,6 +39,7 @@ use crate::resolve::names::build_inherited_name_index;
 use crate::resolve::names::build_inherited_name_index_for_scopes;
 use crate::resolve::names::lookup_lexical_into;
 use crate::resolve::names::CandidateRange;
+use crate::resolve::names::EffectiveVisibility;
 use crate::resolve::names::FirstScopePolicy;
 use crate::resolve::names::InheritedNameIndex;
 use crate::resolve::names::LookupTarget;
@@ -580,6 +581,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
+                    memberships: Some(&memberships),
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
                     inherited_names: None,
@@ -652,6 +654,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
+                    memberships: Some(&memberships),
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
                     inherited_names: None,
@@ -704,6 +707,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
+                    memberships: Some(&memberships),
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
                     inherited_names: Some(&inherited_names),
@@ -735,6 +739,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
+                    memberships: Some(&memberships),
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
                     inherited_names: Some(&inherited_names),
@@ -765,6 +770,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
+                    memberships: Some(&memberships),
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
                     inherited_names: Some(&inherited_names),
@@ -1013,6 +1019,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     ResolutionIndexes {
                         direct_names: &direct_names,
                         exported_names: &exported_names,
+                        memberships: Some(&memberships),
                         effective_imports: Some(&effective_imports),
                         exported_imports: Some(&exported_imports),
                         inherited_names: Some(&inherited_names),
@@ -1051,6 +1058,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     ResolutionIndexes {
                         direct_names: &direct_names,
                         exported_names: &exported_names,
+                        memberships: Some(&memberships),
                         effective_imports: Some(&effective_imports),
                         exported_imports: Some(&exported_imports),
                         inherited_names: Some(&inherited_names),
@@ -1149,6 +1157,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     ResolutionIndexes {
                         direct_names: &direct_names,
                         exported_names: &exported_names,
+                        memberships: Some(&memberships),
                         effective_imports: Some(&effective_imports),
                         exported_imports: Some(&exported_imports),
                         inherited_names: Some(&inherited_names),
@@ -1185,6 +1194,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 let indexes = ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
+                    memberships: Some(&memberships),
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
                     inherited_names: Some(&inherited_names),
@@ -1239,6 +1249,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     ResolutionIndexes {
                         direct_names: &direct_names,
                         exported_names: &exported_names,
+                        memberships: Some(&memberships),
                         effective_imports: Some(&effective_imports),
                         exported_imports: Some(&exported_imports),
                         inherited_names: Some(&inherited_names),
@@ -1331,6 +1342,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 ResolutionIndexes {
                     direct_names: &direct_names,
                     exported_names: &exported_names,
+                    memberships: Some(&memberships),
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
                     inherited_names: Some(&inherited_names),
@@ -2385,6 +2397,27 @@ pub(crate) struct ResolutionIndexes<'a> {
     /// for the Subclassification pass itself (it is built from Subclassification's own settled
     /// outcomes) and present for reference kinds resolved afterward, such as FeatureTyping.
     pub(crate) inherited_names: Option<&'a InheritedNameIndex>,
+    /// Effective membership visibility. When present, a qualified-name segment does not reach a
+    /// private member of a namespace that does not enclose the reference (KerML 8.2.3.5).
+    pub(crate) memberships: Option<&'a MembershipIndex>,
+}
+
+/// Whether `namespace` is `element` or one of its owners.
+fn encloses(
+    declarations: &[Declaration],
+    namespace: DeclarationId,
+    element: DeclarationId,
+) -> bool {
+    let mut cursor = Some(element);
+    while let Some(current) = cursor {
+        if current == namespace {
+            return true;
+        }
+        cursor = declarations
+            .get(current.index())
+            .and_then(|declaration| declaration.owner);
+    }
+    false
 }
 
 pub(crate) struct ResolutionScratch<'a> {
@@ -2564,9 +2597,26 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
             // `inherited_names` index also carries effective-type members for Features, so paths
             // such as `ConeOrCylinder::faces::edges` traverse `faces` to the members of its type.
             // Import fallback remains last for owners reached through an imported namespace.
-            let direct = indexes.direct_names.candidates(Some(candidate), *segment);
-            if !direct.is_empty() {
-                scratch.next_candidates.extend_from_slice(direct);
+            // A private member is visible only to references the namespace encloses.
+            let private_hidden = indexes
+                .memberships
+                .filter(|_| !encloses(declarations, candidate, reference.source()));
+            let before = scratch.next_candidates.len();
+            scratch.next_candidates.extend(
+                indexes
+                    .direct_names
+                    .candidates(Some(candidate), *segment)
+                    .iter()
+                    .copied()
+                    .filter(|member| {
+                        private_hidden.is_none_or(|memberships| {
+                            memberships.get(*member).is_none_or(|membership| {
+                                membership.visibility != EffectiveVisibility::Private
+                            })
+                        })
+                    }),
+            );
+            if scratch.next_candidates.len() > before {
                 continue;
             }
             let inherited = indexes
