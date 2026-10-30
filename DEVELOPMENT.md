@@ -404,9 +404,47 @@ timestamp; it is not synchronized with a semantic phase. Unsupported platforms o
 stay explicit as unavailable. Compare CPU deltas with `resources_before_edits`, rather than treating
 the cumulative counters as per-edit CPU time.
 
-Representative version-correlated diagnostic measurements and VS Code view-refresh costs remain
-release acceptance work. Failed or timed-out runs retain a failed report and stderr; timings from debug runs are
+Failed or timed-out runs retain a failed report and stderr; timings from debug runs are
 smoke-test evidence only.
+
+### VS Code view refresh
+
+After building the optimized host, run `npm ci` in `vscode/diagram-renderer` and `vscode`, then
+`npm run compile` in `vscode`. Use an existing VS Code installation and a workspace with an authored
+native view. No benchmark command downloads VS Code or model libraries. For example, from `vscode`:
+
+```powershell
+node scripts/benchmark-view-refresh.mjs --code C:/tools/VSCode/Code.exe --server ../target/release/spec42.exe --workspace ../../sysml-robot-vacuum-cleaner --document ../../sysml-robot-vacuum-cleaner/model/Root.sysml --library-input ../.cache/sysml-stdlib-kpar-2026-04 --library-input ../../sysml-domain-libraries/model --output ../target/editor-view-robot.json
+```
+
+Supply every admitted external source/archive root with `--library-input`, and the same pinned bundle
+environment as the host build. Verify `sysml/libraryStatus` with the normal host and these library
+settings before collecting representative measurements. The runner rejects missing-library-context
+diagnostics and records byte hashes of the declared inputs, binaries and compiled runner before/after.
+Library-input arguments identify evidence; they do not configure server admissions.
+
+Each invocation creates a new isolated profile next to its report, disables auto-save, and leaves
+the real model files unchanged. It measures single edits and bursts with the view closed, visible,
+then hidden. Defaults collect 20 single edits and 20 bursts of 10 while visible; closed and hidden
+states each exercise one single edit and one burst to check that no refresh occurs. Use
+`--inactive-iterations 20` for equal workload counts when comparing resource use across states.
+The native SysML output log correlates the final editor version's publication digest
+with generation, drawing and the current view's render acknowledgement. Closed/hidden views must
+perform no refresh for the measured digest. Their latency remains absent. Intermediate burst
+versions are not assigned the final version's latency.
+
+A frame observation means a mounted SVG followed by two visible browser animation-frame callbacks
+and an ExtensionHost acknowledgement. It is not a GPU/compositor timestamp. Reported webview/draw
+spans are nested and must not be added together. `editToFrameAckMs` uses one ExtensionHost monotonic
+clock; persisted-log polling delays the next edit but does not enter that span. CPU/memory counters
+cover only the ExtensionHost including the benchmark driver, excluding the server, renderer and GPU. Viewport/disclosure reuse
+flags describe the renderer's actual state; they do not establish preservation of non-default state.
+
+The launcher requests hidden startup by default. Use `--visible` for an explicitly requested visible
+run and keep its window focused throughout. Reports without a focused window for every visible sample
+are labelled `background-probe-only`; they cannot establish a representative visible-view baseline.
+Keep raw reports, profiles/logs, build identity and launch options. Repeat controlled runs before
+choosing release thresholds; shared CI hardware does not enforce timing gates.
 
 ### Query benchmarks
 
