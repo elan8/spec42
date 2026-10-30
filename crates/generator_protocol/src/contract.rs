@@ -287,9 +287,9 @@ impl fmt::Display for UnknownCode {
 impl std::error::Error for UnknownCode {}
 
 abi_contract! {
-    abi_version: 5,
-    semantic_api_version: "0.2.0",
-    namespace: "spec42:generator-abi/5",
+    abi_version: 6,
+    semantic_api_version: "0.3.0",
+    namespace: "spec42:generator-abi/6",
     import_module: "spec42",
 
     /// A read-only semantic query.
@@ -323,6 +323,12 @@ abi_contract! {
         DiagramView = 12 => (String, DiagramViewProjection),
         /// Authoritative workspace requirement derivations with classified ends.
         DerivationRelationships = 13 => ((), Vec<DerivationRelationship>),
+        /// Resolved expression tree of one element: its own constraint, calc, value, loop
+        /// condition, or guard, or the value expression of a feature that has one.
+        Expression = 14 => (String, ExpressionTree),
+        /// Authored ends of one connector. Empty when the element is not a workspace connector.
+        /// A dotted end's path is every hop, and `index` is the end's authored position.
+        ConnectorEnds = 15 => (String, Vec<ConnectorEnd>),
     }
 
     /// Severity of a generator diagnostic.

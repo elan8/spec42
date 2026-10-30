@@ -62,7 +62,7 @@ package 'Conditional Succession Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:89c8588bc7b31b2701daeba51884a4a38bd2f91e10735dfbc0cd88cd98250054"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:89c8588bc7b31b2701daeba51884a4a38bd2f91e10735dfbc0cd88cd98250054"))
   (declarations
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -78,9 +78,10 @@ package 'Conditional Succession Example-1' {
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::TakePicture"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::TakePicture::picture"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture") (direction out)))))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::TakePicture::scene"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scene") (direction in)))))
-    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TakePicture")) (memberAccessOperand (reference "focus::image::isWellFocused")))))
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TakePicture")))))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "focus")) (succession (reference "shoot")))))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flow) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (flowSource (reference "focus::image")) (flowTarget (reference "shoot::image")))))
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind kerml-boolean-expression) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "focus::image::isWellFocused")))))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0))))) (kind flow-end) (membership (kind feature) (visibility default)) (facts (positional-end 0)))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1))))) (kind flow-end) (membership (kind feature) (visibility default)) (facts (positional-end 1)))
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
@@ -123,9 +124,6 @@ package 'Conditional Succession Example-1' {
     (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind featureTyping) (ordinal 0))
       (authored-target "TakePicture")
       (outcome (status resolved) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::TakePicture")))))
-    (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind memberAccessOperand) (ordinal 0))
-      (authored-target "focus::image::isWellFocused")
-      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "focus")
       (outcome (status resolved) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture::focus")))))
@@ -138,6 +136,9 @@ package 'Conditional Succession Example-1' {
     (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0))
       (authored-target "shoot::image")
       (outcome (status resolved) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::Shoot::image")))))
+    (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "focus::image::isWellFocused")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture::focus"))) (kind featureTyping) (ordinal 0))
       (authored-target "Focus")
       (outcome (status resolved) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::Focus")))))
@@ -168,6 +169,7 @@ package 'Conditional Succession Example-1' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::TakePicture::scene"))) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::TakePicture"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0))))) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1))))) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0))))) (provenance implied))
@@ -192,6 +194,7 @@ package 'Conditional Succession Example-1' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (named (kind item) (name "picture")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (named (kind item) (name "picture")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -276,6 +279,9 @@ package 'Conditional Succession Example-1' {
       (positional-ends (authored 2) (effective 2))
       (featured-by (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture")))
     )
+    (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)))))
+    )
     (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0)))))
     )
@@ -350,6 +356,12 @@ package 'Conditional Succession Example-1' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (feature-reference "focus::image::isWellFocused" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
@@ -393,11 +405,6 @@ package 'Conditional Succession Example-1' {
       (outcome (status resolved) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::TakePicture")))))
     )
   )
-  (query (document "memory://snapshot/16_conditional_succession_example_1.md") (range (start 21 6) (end 21 31)) (probe (position 21 6))
-    (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture"))) (kind memberAccessOperand) (ordinal 0) (authored-target "focus::image::isWellFocused")
-      (outcome (status unresolved)))
-    )
-  )
   (query (document "memory://snapshot/16_conditional_succession_example_1.md") (range (start 20 8) (end 20 13)) (probe (position 20 8))
     (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "focus")
       (outcome (status resolved) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::takePicture::focus")))))
@@ -416,6 +423,11 @@ package 'Conditional Succession Example-1' {
   (query (document "memory://snapshot/16_conditional_succession_example_1.md") (range (start 23 27) (end 23 38)) (probe (position 23 27))
     (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0) (authored-target "shoot::image")
       (outcome (status resolved) (target (node (document "memory://snapshot/16_conditional_succession_example_1.md") (qualified-name "Conditional Succession Example-1::Shoot::image")))))
+    )
+  )
+  (query (document "memory://snapshot/16_conditional_succession_example_1.md") (range (start 21 6) (end 21 31)) (probe (position 21 6))
+    (reference (id (source (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "focus::image::isWellFocused")
+      (outcome (status unresolved)))
     )
   )
   (query (document "memory://snapshot/16_conditional_succession_example_1.md") (range (start 15 17) (end 15 22)) (probe (position 15 17))

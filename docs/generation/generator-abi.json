@@ -1,10 +1,10 @@
 {
-  "abiVersion": 5,
-  "semanticApiVersion": "0.2.0",
-  "namespace": "spec42:generator-abi/5",
+  "abiVersion": 6,
+  "semanticApiVersion": "0.3.0",
+  "namespace": "spec42:generator-abi/6",
   "importModule": "spec42",
-  "schemaFingerprint": "0x252e7fb175bd0a3b",
-  "compatibilityToken": "0x1df72a6bfd2a0025",
+  "schemaFingerprint": "0x7d4172f9e2b7ac5d",
+  "compatibilityToken": "0xddd6fbe8c80dee5b",
   "operations": [
     { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
     { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },
@@ -19,7 +19,9 @@
     { "name": "RequirementVerifications", "code": 10, "request": "()", "response": "Vec<RequirementVerification>" },
     { "name": "DiagramViews", "code": 11, "request": "()", "response": "Vec<DiagramViewSummary>" },
     { "name": "DiagramView", "code": 12, "request": "String", "response": "DiagramViewProjection" },
-    { "name": "DerivationRelationships", "code": 13, "request": "()", "response": "Vec<DerivationRelationship>" }
+    { "name": "DerivationRelationships", "code": 13, "request": "()", "response": "Vec<DerivationRelationship>" },
+    { "name": "Expression", "code": 14, "request": "String", "response": "ExpressionTree" },
+    { "name": "ConnectorEnds", "code": 15, "request": "String", "response": "Vec<ConnectorEnd>" }
   ],
   "diagnosticLevels": [
     { "name": "Debug", "code": 0 },

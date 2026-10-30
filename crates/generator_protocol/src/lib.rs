@@ -35,6 +35,8 @@ struct WireSchema {
     source_range: SourceRange,
     multiplicity: Multiplicity,
     relationship: Relationship,
+    expression_tree: ExpressionTree,
+    connector_end: ConnectorEnd,
     requirement_usage_typing: RequirementUsageTyping,
     satisfy_relationship: SatisfyRelationship,
     satisfy_endpoint: SatisfyEndpoint,
@@ -633,6 +635,83 @@ pub struct ElementDetail {
     pub evaluated_value: Option<String>,
 }
 
+/// Whether an element has a resolved expression tree.
+///
+/// `NotApplicable` is "this element authored no expression", distinct from `Unsupported`, which
+/// is an authored expression whose shape is outside the published slice.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum ExpressionStatus {
+    NotApplicable,
+    Resolved,
+    Unsupported,
+}
+
+/// The resolved expression tree model-export publishes as `expression.root` / `expression.nodes`.
+///
+/// Nodes are a flat arena. `root` indexes [`ExpressionTree::nodes`]. Operand indexes are indexes
+/// into that same arena, in authored order.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct ExpressionTree {
+    pub outcome: ExpressionStatus,
+    pub root: Option<u32>,
+    pub nodes: Vec<ExpressionNode>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct ExpressionNode {
+    pub kind: ExpressionNodeKind,
+    pub range: SourceRange,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum ExpressionNodeKind {
+    /// Rendered with the same spelling as [`ElementDetail::evaluated_value`].
+    Literal(String),
+    /// `target` is absent when the reference did not resolve to one feature.
+    FeatureReference {
+        target: Option<ElementSummary>,
+        authored: String,
+    },
+    Operator {
+        operator: String,
+        operands: Vec<u32>,
+    },
+    Unsupported {
+        children: Vec<u32>,
+    },
+}
+
+/// One end of a workspace `connect` or `interface` connector, in authored order.
+///
+/// `index` is zero-based. For `connect a to b`, end 0 is `a` and end 1 is `b`. A dotted end
+/// (`sensor.reading`) carries every hop in authored order, so two parts of the same type stay
+/// distinguishable. A failed hop stays explicit; later hops are unresolved.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct ConnectorEnd {
+    pub index: u32,
+    pub declaration: Option<ElementSummary>,
+    pub endpoint: ConnectorEndEndpoint,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum ConnectorEndEndpoint {
+    Feature(EndpointTarget),
+    FeatureChain {
+        path: Vec<EndpointTarget>,
+        authored: String,
+    },
+    Unconnected,
+}
+
+/// One hop of a connector end, with the same outcome vocabulary as a relationship target.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum EndpointTarget {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct Relationship {
     pub kind: RelationshipKind,
@@ -640,6 +719,10 @@ pub struct Relationship {
     pub target: ElementSummary,
     pub implied: bool,
 }
+
+// An implied `succession` on a `then` member names the predecessor that succession starts from
+// (SysML 7.17.4). The member is the succession's target; `target` is its source. Explicit
+// successions keep both ends as authored `succession` relationships on the succession element.
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum TypingProvenance {
@@ -1371,7 +1454,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x252e_7fb1_75bd_0a3b,
+            SCHEMA_FINGERPRINT, 0x7d41_72f9_e2b7_ac5d,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1379,7 +1462,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x1df7_2a6b_fd2a_0025,
+            COMPATIBILITY_TOKEN, 0xddd6_fbe8_c80d_ee5b,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

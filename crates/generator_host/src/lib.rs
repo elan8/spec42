@@ -1108,6 +1108,24 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
+        protocol::Operation::Expression => {
+            let element = decode_for::<protocol::query::Expression>(request)?;
+            encode_result(
+                state
+                    .model
+                    .expression(&element)
+                    .map_err(|error| error.to_string()),
+            )
+        }
+        protocol::Operation::ConnectorEnds => {
+            let element = decode_for::<protocol::query::ConnectorEnds>(request)?;
+            encode_result(
+                state
+                    .model
+                    .connector_ends(&element)
+                    .map_err(|error| error.to_string()),
+            )
+        }
     }?;
     state.remember_response(operation.code(), request, &response);
     Ok(response)

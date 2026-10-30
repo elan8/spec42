@@ -418,9 +418,15 @@ impl StructureQueries<'_> {
         self.model.contextual_expression(symbol, context)
     }
     /// The resolved expression tree of one element's authored constraint / calc / value
-    /// expression.
+    /// expression. A feature with no expression of its own answers with its value expression.
     pub fn expression(&self, symbol: SymbolId) -> QueryOutcome<PublishedExpression> {
         self.model.resolved_expression(symbol)
+    }
+
+    /// One workspace connector and its resolved ends, including each hop of a dotted end.
+    /// `None` when `symbol` is not a workspace `connect` / `interface` connector.
+    pub fn connector(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedConnector>> {
+        self.model.connector(symbol)
     }
 }
 

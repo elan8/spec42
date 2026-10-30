@@ -993,7 +993,7 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
-        self.lower_constraint_expression(document, owner, family, &node.value.guard)?;
+        self.mint_succession_guard(document, declaration, family, &node.value.guard)?;
         self.lower_kerml_connector_end(
             document,
             declaration,
@@ -1282,6 +1282,36 @@ impl SemanticModelBuilder {
         Ok(declared)
     }
 
+    /// Owns a succession guard as its own boolean expression, the same shape a transition guard
+    /// uses, so the guard tree is that expression and not an operand of the enclosing action.
+    fn mint_succession_guard(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        guard: &Node<Expression>,
+    ) -> Result<(), ConstructionError> {
+        let expression = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlBooleanExpression,
+            None,
+            guard.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            expression,
+            MembershipKind::Feature,
+            Visibility::Default,
+            guard.span,
+        )?;
+        self.push_evaluation_fact(
+            expression,
+            self.constraint_expression_site(document, &guard.value),
+        );
+        self.lower_constraint_expression(document, expression, family, guard)
+    }
+
     /// The guard of a conditional succession as it is written, with its white space collapsed.
     pub(super) fn guard_text(&self, document: DocumentIdx, guard: &Node<Expression>) -> Box<str> {
         let source = self.documents[document.index()].parsed.source.as_str();
@@ -1335,8 +1365,12 @@ impl SemanticModelBuilder {
         if let Some(declared) = self.lower_then_action_declared(document, owner, family, then)? {
             self.declaration_facts[declared].succession_guard =
                 Some(SuccessionGuard::Condition(guard));
+            let declared =
+                DeclarationId::from_index(declared).map_err(|_| ConstructionError::Capacity)?;
+            self.mint_succession_guard(document, declared, family, &node.condition)?;
+        } else {
+            self.lower_constraint_expression(document, owner, family, &node.condition)?;
         }
-        self.lower_constraint_expression(document, owner, family, &node.condition)?;
         if let Some(otherwise) = otherwise {
             if let Some(declared) =
                 self.lower_then_action_declared(document, owner, family, otherwise)?

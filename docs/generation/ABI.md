@@ -5,7 +5,7 @@ specification; `crates/generator_sdk` is one implementation of it, not its defin
 guest written in any language that can emit the imports and exports below is equally valid.
 
 <!-- generated:abi-header -->
-Current version: **ABI 5**. Compatibility token: `0x1df72a6bfd2a0025`.
+Current version: **ABI 6**. Compatibility token: `0xddd6fbe8c80dee5b`.
 <!-- /generated:abi-header -->
 
 The tables below and `generator-abi.json` are generated from the contract declaration in
@@ -118,6 +118,8 @@ impossible and `0` unambiguously means "success, nothing written".
 | 11 | `diagram_views` | `()` | `Vec<DiagramViewSummary>` |
 | 12 | `diagram_view` | `String` | `DiagramViewProjection` |
 | 13 | `derivation_relationships` | `()` | `Vec<DerivationRelationship>` |
+| 14 | `expression` | `String` | `ExpressionTree` |
+| 15 | `connector_ends` | `String` | `Vec<ConnectorEnd>` |
 <!-- /generated:abi-operations -->
 
 Note that `find` takes `Option<String>`: `None` means "every element". An empty string is
@@ -215,6 +217,37 @@ struct ElementDetail {
 }
 
 struct Relationship { kind: RelationshipKind, source: ElementSummary, target: ElementSummary, implied: bool }
+
+/// An implied `succession` on a `then` member names the predecessor that succession starts from.
+/// The member is the succession's target; `target` is its source.
+
+enum ExpressionStatus { NotApplicable, Resolved, Unsupported }
+
+struct ExpressionTree { outcome: ExpressionStatus, root: Option<u32>, nodes: Vec<ExpressionNode> }
+
+struct ExpressionNode { kind: ExpressionNodeKind, range: SourceRange }
+
+enum ExpressionNodeKind {
+    Literal(String),
+    FeatureReference { target: Option<ElementSummary>, authored: String },
+    Operator { operator: String, operands: Vec<u32> },
+    Unsupported { children: Vec<u32> },
+}
+
+struct ConnectorEnd { index: u32, declaration: Option<ElementSummary>, endpoint: ConnectorEndEndpoint }
+
+enum ConnectorEndEndpoint {
+    Feature(EndpointTarget),
+    FeatureChain { path: Vec<EndpointTarget>, authored: String },
+    Unconnected,
+}
+
+enum EndpointTarget {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
 
 struct Artifact { file_path: String, contents: Vec<u8> }
 ```

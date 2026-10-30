@@ -23,4 +23,6 @@ unresolved. Authored text never substitutes for missing semantic identities.
 
 Model-export JSON adds `path` to feature-chain endpoints. Projection schema version 1 permits
 additive fields; the semantic contract version changes with the new publication behavior.
-The WASM generator ABI is unchanged; extending it requires a concrete consumer contract.
+The generator ABI exposes the same expression tree through `expression` and the same connector
+path through `connector_ends`. An implied `succession` on a `then` member names the predecessor
+that succession starts from.
