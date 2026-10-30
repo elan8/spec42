@@ -11,10 +11,10 @@ use std::sync::Arc;
 pub use sysml_resolution::source::ContentDigest;
 pub use sysml_resolution::syntax::{
     is_reserved_keyword, reserved_keywords, ImportScope, PackageTargets, ParsedSource,
-    RecoveredShortName, SyntaxClosureFacts, SyntaxDiagnostic, SyntaxDiagnosticCategory,
-    SyntaxDiagnosticSeverity, SyntaxFileImport, SyntaxFoldingKind, SyntaxFoldingRegion,
-    SyntaxImport, SyntaxOutlineKind, SyntaxOutlineNode, SyntaxRange, SyntaxRecoveryProvenance,
-    SyntaxRole, SyntaxToken, SyntaxUnitLiteral, RESERVED_KEYWORDS,
+    PreparedSyntax, RecoveredShortName, SyntaxClosureFacts, SyntaxDiagnostic,
+    SyntaxDiagnosticCategory, SyntaxDiagnosticSeverity, SyntaxFileImport, SyntaxFoldingKind,
+    SyntaxFoldingRegion, SyntaxImport, SyntaxOutlineKind, SyntaxOutlineNode, SyntaxRange,
+    SyntaxRecoveryProvenance, SyntaxRole, SyntaxToken, SyntaxUnitLiteral, RESERVED_KEYWORDS,
 };
 
 use sysml_resolution::syntax::SyntaxAuthority;
@@ -33,6 +33,14 @@ impl SyntaxService {
     /// The parsed tree for an admitted document: a memo hit, or one parse.
     pub fn parse(&self, document: &crate::source::SourceDocument) -> ParsedSource {
         self.inner.parse(document)
+    }
+
+    /// Retain prepared source/syntax pairs through a later guarded admission without reparsing.
+    pub fn prepare<'a>(
+        &self,
+        documents: impl IntoIterator<Item = &'a crate::source::SourceDocument>,
+    ) -> PreparedSyntax {
+        self.inner.prepare(documents)
     }
 
     /// Parse text that is not an admitted document.

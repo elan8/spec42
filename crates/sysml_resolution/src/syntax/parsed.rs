@@ -43,6 +43,29 @@ struct Inner {
 #[derive(Clone)]
 pub struct ParsedSource(Arc<Inner>);
 
+/// An immutable batch of source revisions and their matching syntax leases.
+///
+/// Preparation may run away from a host's admission barrier. Owning the leases, rather than
+/// relying on a recent memo touch, keeps every tree alive across other projects' sweeps. This
+/// batch is a work product, not another cache; dropping it releases unadmitted revisions.
+#[derive(Debug)]
+pub struct PreparedSyntax {
+    sources: Vec<(SourceDocument, ParsedSource)>,
+}
+
+impl PreparedSyntax {
+    /// The complete source set whose identity a host must validate before admission.
+    pub fn documents(&self) -> impl ExactSizeIterator<Item = &SourceDocument> {
+        self.sources.iter().map(|(document, _)| document)
+    }
+
+    /// Transfer already prepared leases at the admission barrier. This never parses or looks
+    /// up the memo, and preserves the pairing and order supplied during preparation.
+    pub fn into_sources(self) -> impl ExactSizeIterator<Item = (SourceDocument, ParsedSource)> {
+        self.sources.into_iter()
+    }
+}
+
 impl std::fmt::Debug for ParsedSource {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter
@@ -249,6 +272,20 @@ impl SyntaxAuthority {
         self.parse_with_digest(document.language(), document.digest(), document.content())
     }
 
+    /// Prepare and retain matching source/syntax pairs until their owner admits or drops them.
+    /// The caller may bound or cooperatively stop the iterator before accepting the batch.
+    pub fn prepare<'a>(
+        &self,
+        documents: impl IntoIterator<Item = &'a SourceDocument>,
+    ) -> PreparedSyntax {
+        PreparedSyntax {
+            sources: documents
+                .into_iter()
+                .map(|document| (document.clone(), self.parse(document)))
+                .collect(),
+        }
+    }
+
     /// Parse text that is not an admitted document (an editor's candidate reformatting, a
     /// stateless caller). Digested here so identical text still hits the memo.
     pub fn parse_text(&self, text: &str) -> ParsedSource {
@@ -334,7 +371,77 @@ mod tests {
     fn handles_are_send_and_sync_without_unsafe_impls() {
         fn assert_send_sync<T: Send + Sync>() {}
         assert_send_sync::<ParsedSource>();
+        assert_send_sync::<PreparedSyntax>();
         assert_send_sync::<SyntaxAuthority>();
+    }
+
+    #[test]
+    fn prepared_batch_keeps_exact_leases_across_sweeps_until_transfer() {
+        let authority = SyntaxAuthority::new();
+        let sources = [
+            document("memory://prepared/first.sysml", "package First;"),
+            document("memory://prepared/second.sysml", "package Second;"),
+        ];
+        let batch = authority.prepare(&sources);
+        let leases = batch
+            .sources
+            .iter()
+            .map(|(_, parsed)| Arc::downgrade(&parsed.0))
+            .collect::<Vec<_>>();
+        for _ in 0..4 {
+            authority.retain([]);
+        }
+        assert_eq!(authority.memo_len(), 2);
+        assert_eq!(
+            batch.documents().collect::<Vec<_>>(),
+            sources.iter().collect::<Vec<_>>()
+        );
+        for ((source, parsed), original) in batch.into_sources().zip(&leases) {
+            assert_eq!(source.digest(), parsed.digest());
+            assert_eq!(source.language(), parsed.language());
+            assert!(Arc::ptr_eq(&original.upgrade().unwrap(), &parsed.0));
+            assert!(Arc::ptr_eq(&authority.parse(&source).0, &parsed.0));
+        }
+        authority.retain([]);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
+        assert!(leases.iter().all(|lease| lease.upgrade().is_none()));
+    }
+
+    #[test]
+    fn dropping_an_unadmitted_batch_releases_its_revisions() {
+        let authority = SyntaxAuthority::new();
+        let source = document("memory://prepared/cancelled.sysml", "package Cancelled;");
+        let batch = authority.prepare([&source]);
+        let lease = Arc::downgrade(&batch.sources[0].1 .0);
+        authority.retain([]);
+        authority.retain([]);
+        assert!(lease.upgrade().is_some());
+        drop(batch);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
+        assert!(lease.upgrade().is_none());
+    }
+
+    #[test]
+    fn prepared_batch_preserves_document_order_and_language_qualified_identity() {
+        let authority = SyntaxAuthority::new();
+        let sources = [
+            document("memory://prepared/first.sysml", "package Same;"),
+            document("memory://prepared/second.kerml", "package Same;"),
+            document("memory://prepared/third.sysml", "package Same;"),
+        ];
+        let batch = authority.prepare(&sources);
+        assert_eq!(
+            batch.documents().collect::<Vec<_>>(),
+            sources.iter().collect::<Vec<_>>()
+        );
+        assert!(Arc::ptr_eq(&batch.sources[0].1 .0, &batch.sources[2].1 .0));
+        assert!(!Arc::ptr_eq(&batch.sources[0].1 .0, &batch.sources[1].1 .0));
+        for (source, parsed) in batch.into_sources() {
+            assert_eq!(source.language(), parsed.language());
+            assert_eq!(source.digest(), parsed.digest());
+        }
     }
 
     #[test]

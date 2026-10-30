@@ -19,7 +19,7 @@ mod parsed;
 
 pub use keywords::{is_reserved_keyword, reserved_keywords, RESERVED_KEYWORDS};
 pub(crate) use parsed::parser_name_language;
-pub use parsed::{ParsedSource, SyntaxAuthority};
+pub use parsed::{ParsedSource, PreparedSyntax, SyntaxAuthority};
 
 fn top_level_package_names(document: &ParsedDocument) -> Vec<String> {
     document
