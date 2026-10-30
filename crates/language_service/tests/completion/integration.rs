@@ -210,6 +210,32 @@ fn complete_reads_the_editor_text_ahead_of_the_publication() {
 }
 
 #[test]
+fn complete_retains_nested_scope_while_a_reference_is_being_edited() {
+    let path = "nested_typing.sysml";
+    let published = "package P {\n    package Q { part def Engine; part motor : En; }\n}\n";
+    let editor = "package P {\n    package Q { part def Engine; part motor : Eng; }\n}\n";
+    let base = single_doc(path, published);
+    let workspace = EditedWorkspace {
+        published: &base,
+        editor_text: editor,
+    };
+    let position = position_after(editor, "part motor : Eng");
+    let result = complete(&workspace, path, position).expect("completion result");
+    let engine = result
+        .items
+        .iter()
+        .find(|item| item.label == "Engine")
+        .expect("Engine remains visible in the nested package while analysis is pending");
+    let edit = engine.text_edit.as_ref().expect("text edit");
+    assert_eq!(
+        edit.range.start,
+        TextPosition::new(position.line, position.character - 3)
+    );
+    assert_eq!(edit.range.end, position);
+    assert!(result.semantic_status.predates_source && result.is_incomplete);
+}
+
+#[test]
 fn complete_over_a_current_publication_is_not_marked_as_predating_it() {
     let path = "current.sysml";
     let content = "package P {\n    part def Engine;\n    part motor : En\n}\n";
