@@ -48,10 +48,9 @@ pub fn position_to_byte_offset(source: &str, line: u32, character: u32) -> Optio
 }
 /// Where a position in `current` falls in `previous`, an older revision of the same document.
 ///
-/// Lines are matched from both ends: a position on an unchanged line keeps its column on the
-/// corresponding line. A position inside the edited lines has no counterpart in `previous`; it
-/// maps to the end of the last unchanged line before the edit, or the document start when the
-/// edit begins on the first line.
+/// Text is matched from both ends at character boundaries, preserving positions within unchanged
+/// portions of edited lines as well as whole lines. A position inside the changed text has no
+/// counterpart in `previous` and maps to the end of the unchanged prefix.
 pub fn position_in_previous_revision(
     previous: &str,
     current: &str,
@@ -60,32 +59,34 @@ pub fn position_in_previous_revision(
     if previous == current {
         return position;
     }
-    let previous_lines: Vec<&str> = previous.lines().collect();
-    let current_lines: Vec<&str> = current.lines().collect();
-    let common_prefix = previous_lines
-        .iter()
-        .zip(&current_lines)
+    let common_prefix = previous
+        .chars()
+        .zip(current.chars())
         .take_while(|(left, right)| left == right)
-        .count();
-    let common_suffix = previous_lines[common_prefix..]
-        .iter()
+        .map(|(character, _)| character.len_utf8())
+        .sum::<usize>();
+    let common_suffix = previous[common_prefix..]
+        .chars()
         .rev()
-        .zip(current_lines[common_prefix..].iter().rev())
+        .zip(current[common_prefix..].chars().rev())
         .take_while(|(left, right)| left == right)
-        .count();
-    let line = position.line as usize;
-    if line < common_prefix {
-        return position;
-    }
-    let current_suffix_start = current_lines.len() - common_suffix;
-    if line >= current_suffix_start {
-        let previous_line = line - current_suffix_start + (previous_lines.len() - common_suffix);
-        return TextPosition::new(previous_line as u32, position.character);
-    }
-    match common_prefix.checked_sub(1) {
-        Some(anchor) => TextPosition::new(anchor as u32, utf16_len(previous_lines[anchor])),
-        None => TextPosition::new(0, 0),
-    }
+        .map(|(character, _)| character.len_utf8())
+        .sum::<usize>();
+    let Some(offset) = position_to_byte_offset(current, position.line, position.character) else {
+        return TextPosition::new(0, 0);
+    };
+    let previous_offset = if offset <= common_prefix {
+        offset
+    } else if offset >= current.len() - common_suffix {
+        previous.len() - (current.len() - offset)
+    } else {
+        common_prefix
+    };
+    let prefix = &previous[..previous_offset];
+    TextPosition::new(
+        prefix.bytes().filter(|byte| *byte == b'\n').count() as u32,
+        utf16_len(prefix.rsplit('\n').next().unwrap_or_default()),
+    )
 }
 
 /// Returns the text of the line up to (but not including) the given (line, character).
@@ -152,17 +153,71 @@ mod tests {
     }
 
     #[test]
-    fn an_edited_line_maps_to_the_end_of_the_line_before_the_edit() {
+    fn inserted_text_maps_to_the_end_of_the_unchanged_prefix() {
         let previous = "package P {\n    part a;\n}\n";
         let current = "package P {\n    part a;\n    part b : B\n}\n";
         assert_eq!(
             position_in_previous_revision(previous, current, TextPosition::new(2, 14)),
-            TextPosition::new(1, 11)
+            TextPosition::new(2, 0)
         );
         assert_eq!(
             position_in_previous_revision("part a;", "part ab;", TextPosition::new(0, 6)),
-            TextPosition::new(0, 0),
-            "an edit on the first line has no unchanged line before it"
+            TextPosition::new(0, 6),
+            "an edit on the first line preserves the unchanged part of that line"
+        );
+    }
+
+    #[test]
+    fn positions_after_insertions_and_deletions_follow_the_unchanged_suffix() {
+        for (previous, current, position, expected) in [
+            (
+                "abCD",
+                "abXYZCD",
+                TextPosition::new(0, 6),
+                TextPosition::new(0, 3),
+            ),
+            (
+                "abXYZCD",
+                "abCD",
+                TextPosition::new(0, 3),
+                TextPosition::new(0, 6),
+            ),
+            (
+                "a\nb\nc",
+                "a\nnew\nb\nc",
+                TextPosition::new(2, 1),
+                TextPosition::new(1, 1),
+            ),
+            (
+                "a\n",
+                "a\nz",
+                TextPosition::new(1, 1),
+                TextPosition::new(1, 0),
+            ),
+        ] {
+            assert_eq!(
+                position_in_previous_revision(previous, current, position),
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn changed_positions_and_unicode_boundaries_use_utf16_columns() {
+        assert_eq!(
+            position_in_previous_revision("a😀CD", "a😀XYZCD", TextPosition::new(0, 5)),
+            TextPosition::new(0, 3),
+            "an inserted position anchors after the complete supplementary character"
+        );
+        assert_eq!(
+            position_in_previous_revision("a😀CD", "a😀XYZCD", TextPosition::new(0, 7)),
+            TextPosition::new(0, 4),
+            "suffix positions are expressed in UTF-16 columns"
+        );
+        assert_eq!(
+            position_in_previous_revision("a😀z", "a😁z", TextPosition::new(0, 3)),
+            TextPosition::new(0, 3),
+            "a shared UTF-8 byte prefix must not split different supplementary characters"
         );
     }
 
