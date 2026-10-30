@@ -145,7 +145,14 @@ if wants tests-server; then
   step "Server library, fuzz corpus, and stdlib ratchet"
   export RUST_MIN_STACK=16777216
   cargo test -p server --lib
-  cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
+  # Cargo also builds the libfuzzer no_main binaries for this integration test. Those fail
+  # to link with Windows MSVC (LNK1561); keep the seed corpus covered on Linux CI.
+  rust_host="$(rustc -vV | sed -n 's/^host: //p')"
+  if [[ "$rust_host" == *-windows-* ]]; then
+    step "SKIP libfuzzer seed corpus on Windows ($rust_host); covered by Linux CI"
+  else
+    cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
+  fi
   # Curated-corpus admission (a small workspace resolves against tests/snapshots/sysml.library/).
   cargo snapshot check --fixture standard_library_admission.md
   # Shipped-artifact ratchet (issue #135): the pinned KPAR bundle unpacks completely and

@@ -244,6 +244,12 @@ Spec42 uses two Rust integration layers in CI:
 
 ### Rust (core, fast path)
 
+Run the local pre-push checks with `bash scripts/minici.sh`, or select a suite such as
+`bash scripts/minici.sh tests-server`. On native Windows, miniCI explicitly skips the libfuzzer
+seed-corpus step because its `no_main` binaries fail to link with MSVC (`LNK1561`). Server tests,
+standard-library ratchets, and the remaining suites still run. Linux CI retains the fuzz check;
+WSL with a Linux Rust toolchain runs it too.
+
 ```bash
 cargo test --workspace --exclude server
 cargo test -p server --lib
@@ -251,7 +257,7 @@ cargo test -p server --test integration multi_file_check
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
-Full workspace including agent surfaces (local pre-push equivalent of CI):
+All default workspace tests:
 
 ```bash
 cargo test --workspace
