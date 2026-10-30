@@ -2530,14 +2530,29 @@ impl WorkspaceHandle {
         &self,
         documents: Vec<(Url, crate::session::state::IndexEntry)>,
     ) -> Result<(), MutatePanicked> {
+        self.adopt_editor_documents(documents, true).await
+    }
+
+    pub(crate) async fn adopt_open_library_documents(
+        &self,
+        documents: Vec<(Url, crate::session::state::IndexEntry)>,
+    ) -> Result<(), MutatePanicked> {
+        self.adopt_editor_documents(documents, false).await
+    }
+
+    async fn adopt_editor_documents(
+        &self,
+        documents: Vec<(Url, crate::session::state::IndexEntry)>,
+        workspace_source: bool,
+    ) -> Result<(), MutatePanicked> {
         self.actor
             .mutate(move |state| {
                 for (uri, mut entry) in documents {
                     entry.open_editor(None);
                     entry.rekey_editor_owner();
-                    // Registry migration selected this URI for the new workspace owner. Its
-                    // former project's library role and slot do not define the new scope.
-                    entry.workspace_source = true;
+                    // Origin belongs to the registry's ownership plan. Reporting role belongs
+                    // to this project's configuration; a removed library stays open until close.
+                    entry.workspace_source = workspace_source;
                     let kind = if crate::common::util::uri_under_any_library(
                         &uri,
                         &state.standard_library_paths,
@@ -2546,8 +2561,10 @@ impl WorkspaceHandle {
                     } else if crate::common::util::uri_under_any_library(&uri, &state.library_paths)
                     {
                         sysml_query::source::SourceKind::Library
-                    } else {
+                    } else if workspace_source {
                         sysml_query::source::SourceKind::Workspace
+                    } else {
+                        entry.document.kind()
                     };
                     entry.document = entry.document.with_kind(kind);
                     state.index.insert(uri, entry);

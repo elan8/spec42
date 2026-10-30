@@ -44,6 +44,10 @@ impl SourceService {
         self.inner.admit_url(uri, content, kind)
     }
 
+    pub fn revise(&self, document: &SourceDocument, content: &str) -> SourceDocument {
+        self.inner.revise(document, content)
+    }
+
     pub fn admit_memory(
         &self,
         scope: &str,

@@ -111,11 +111,16 @@ pub(crate) fn store_document_text_fast(
         },
         |entry| entry.document.kind(),
     );
-    let document = state
-        .services()
-        .source
-        .admit_url(uri_norm.clone(), &text, kind);
     let previous = state.index().get(uri_norm);
+    let document = previous.map_or_else(
+        || {
+            state
+                .services()
+                .source
+                .admit_url(uri_norm.clone(), &text, kind)
+        },
+        |entry| state.services().source.revise(&entry.document, &text),
+    );
     let parsed = previous
         .filter(|entry| {
             entry.document.digest() == document.digest()

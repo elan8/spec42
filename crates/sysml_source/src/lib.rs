@@ -693,6 +693,17 @@ impl SourceAuthority {
         }
     }
 
+    /// Replace a document's text under the canonical normalization/digest policy, retaining
+    /// its declared language and source provenance. Changing reporting role is a separate input.
+    pub fn revise(&self, document: &SourceDocument, content: &str) -> SourceDocument {
+        let text = self.admit_url(document.uri.clone(), content, document.kind);
+        SourceDocument {
+            content: text.content,
+            digest: text.digest,
+            ..document.clone()
+        }
+    }
+
     /// Admit text under a `memory://{scope}/{path}` identity, for in-memory corpora.
     pub fn admit_memory(
         &self,
@@ -783,6 +794,35 @@ impl SourceAuthority {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn revising_text_preserves_declared_language_and_complete_source_provenance() {
+        let authority = SourceAuthority::new();
+        let original = authority
+            .admit_memory(
+                "library",
+                "fixture.md",
+                "package Before;",
+                SourceKind::Library,
+            )
+            .unwrap()
+            .with_language(SourceLanguage::KerML)
+            .with_path_hint("local/fixture.kerml")
+            .with_library_location(2, "fixture.kerml");
+        let revised = authority.revise(&original, "package After;\r\n");
+        assert_eq!(revised.uri(), original.uri());
+        assert_eq!(revised.kind(), original.kind());
+        assert_eq!(revised.language(), original.language());
+        assert_eq!(revised.path_hint(), original.path_hint());
+        assert_eq!(revised.library_location(), original.library_location());
+        assert_eq!(revised.content(), "package After;\n");
+        assert_eq!(
+            revised.digest(),
+            ContentDigest::of_bytes(b"package After;\n")
+        );
+        assert_ne!(revised.digest(), original.digest());
+        assert_eq!(original.content(), "package Before;");
+    }
 
     #[test]
     fn changing_to_a_workspace_role_discards_only_the_library_location() {
