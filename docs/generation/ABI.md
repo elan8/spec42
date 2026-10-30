@@ -5,8 +5,13 @@ specification; `crates/generator_sdk` is one implementation of it, not its defin
 guest written in any language that can emit the imports and exports below is equally valid.
 
 <!-- generated:abi-header -->
-Current version: **ABI 6**. Compatibility token: `0xddd6fbe8c80dee5b`.
+Current version: **ABI 7**. Compatibility token: `0xc4c20ef3eb84e8d3`.
 <!-- /generated:abi-header -->
+
+Expression literals carry an `ExpressionLiteral` with a typed `LiteralValue` (`Boolean`,
+`Integer`, `Real`, or `String`) and an ordered `units` list. The list is empty for scalars;
+quantity wrappers retain authored unit text from the innermost wrapper to the outermost.
+Display formatting belongs to the guest.
 
 The tables below and `generator-abi.json` are generated from the contract declaration in
 `crates/generator_protocol/src/contract.rs`; run `node scripts/sync-generator-abi.mjs` after
@@ -228,11 +233,15 @@ struct ExpressionTree { outcome: ExpressionStatus, root: Option<u32>, nodes: Vec
 struct ExpressionNode { kind: ExpressionNodeKind, range: SourceRange }
 
 enum ExpressionNodeKind {
-    Literal(String),
+    Literal(ExpressionLiteral),
     FeatureReference { target: Option<ElementSummary>, authored: String },
     Operator { operator: String, operands: Vec<u32> },
     Unsupported { children: Vec<u32> },
 }
+
+struct ExpressionLiteral { value: LiteralValue, units: Vec<String> }
+
+enum LiteralValue { Boolean(bool), Integer(i64), Real(f64), String(String) }
 
 struct ConnectorEnd { index: u32, declaration: Option<ElementSummary>, endpoint: ConnectorEndEndpoint }
 

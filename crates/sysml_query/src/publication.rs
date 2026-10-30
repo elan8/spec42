@@ -16,8 +16,8 @@ use crate::syntax::SyntaxService;
 use crate::StandardLibraryAvailability;
 
 pub use sysml_resolution::publication::{
-    BuildToken, PublicationBuildFailure, PublicationFailureStage, PublicationOutcome,
-    PublicationToken, Published, SessionLifecycle,
+    AnalysisStatus, BuildCancellation, BuildToken, InputRevisionToken, PublicationBuildFailure,
+    PublicationFailureStage, PublicationOutcome, PublicationToken, Published, SessionLifecycle,
 };
 
 /// The lifecycle and publication barrier of one host session, publishing [`PublishedModel`]s.
@@ -63,6 +63,7 @@ impl SemanticBuild {
 pub struct SemanticBuildCompletion {
     token: BuildToken,
     result: Result<Arc<PublishedModel>, PublicationBuildFailure>,
+    measurements: Option<BuildMeasurements>,
 }
 
 impl SemanticBuildCompletion {
@@ -71,12 +72,29 @@ impl SemanticBuildCompletion {
     }
 
     pub fn failure(&self) -> Option<&PublicationBuildFailure> {
-        self.result.as_ref().err()
+        self.result
+            .as_ref()
+            .err()
+            .filter(|failure| !failure.is_cancelled())
+    }
+
+    /// Timings and counted facts recorded by canonical phase owners for a successful build.
+    /// Failed constructions have no complete phase measurement and return `None`.
+    pub fn measurements(&self) -> Option<&BuildMeasurements> {
+        self.measurements.as_ref()
     }
 
     /// Admit this completion at `session`'s barrier.
     pub fn admit(self, session: &mut PublicationSession) -> PublicationOutcome {
-        session.admit(&self.token, self.result)
+        if self
+            .result
+            .as_ref()
+            .is_err_and(|failure| failure.is_cancelled())
+        {
+            session.admit_cancelled(&self.token)
+        } else {
+            session.admit(&self.token, self.result)
+        }
     }
 }
 
@@ -220,16 +238,37 @@ impl PublicationService {
             .map(|inner| PreparedPublication { inner })
     }
 
+    pub fn prepare_cancellable(
+        &self,
+        documents: &[SourceDocument],
+        availability: StandardLibraryAvailability,
+        reported: impl IntoIterator<Item = Box<str>>,
+        cancellation: &BuildCancellation,
+    ) -> Result<PreparedPublication, PublicationBuildFailure> {
+        self.inner
+            .prepare_cancellable(documents, availability, reported, cancellation)
+            .map(|inner| PreparedPublication { inner })
+    }
+
     /// Performs the expensive construction. Call it off the host's executor; it parses any
     /// document the memo does not hold and resolves the model.
     pub fn construct(&self, build: SemanticBuild) -> SemanticBuildCompletion {
+        let (result, measurements) = match build
+            .prepared
+            .inner
+            .with_cancellation(build.token.cancellation().clone())
+            .build_measured()
+        {
+            Ok((inner, measurements)) => (
+                Ok(Arc::new(PublishedModel::from_resolution(inner))),
+                Some(measurements),
+            ),
+            Err(error) => (Err(error), None),
+        };
         SemanticBuildCompletion {
             token: build.token,
-            result: build
-                .prepared
-                .inner
-                .build()
-                .map(|inner| Arc::new(PublishedModel::from_resolution(inner))),
+            result,
+            measurements,
         }
     }
 

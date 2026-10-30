@@ -1,4 +1,4 @@
-//! The schema-7 diagram product: a typed diagram view projection
+//! The schema-11 diagram product: a typed diagram view projection
 //! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
 //! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
 //! once and referenced by index.
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 use spec42_generator_protocol as model;
 
 /// Version of the product format `diagram_draw` consumes.
-pub const SCHEMA_VERSION: u32 = 7;
+pub const SCHEMA_VERSION: u32 = 11;
 
 /// The file name under which generators publish the product.
 pub const ARTIFACT_PATH: &str = "diagram.json";
@@ -184,6 +184,17 @@ fn published_relationships(
 
 impl NormalizedProduct {
     fn new(typed: &model::DiagramViewProjection) -> Result<Self, String> {
+        let mut presentation_keys = std::collections::BTreeSet::new();
+        for element in &typed.elements {
+            if element.presentation_key.is_empty()
+                || !presentation_keys.insert(&element.presentation_key)
+            {
+                return Err(
+                    "diagram presentation keys must be nonempty and unique within a projection"
+                        .to_owned(),
+                );
+            }
+        }
         let mut references = BTreeMap::<ReferenceKey, model::DiagramSemanticReference>::new();
         let mut sources = BTreeMap::<SourceKey, model::SourceReference>::new();
         collect_reference(&mut references, &typed.view.reference);
@@ -373,6 +384,7 @@ impl NormalizedProduct {
                     "order": match message.order {
                         model::SequenceOrder::Resolved(order) => json!({ "status": "resolved", "value": order }),
                         model::SequenceOrder::Cyclic => json!({ "status": "cyclic" }),
+                        model::SequenceOrder::BlockedByCycle => json!({ "status": "blocked-by-cycle" }),
                     },
                     "provenance": provenance(&message.provenance),
                     "navigation": self.source(&message.source_reference)?,
@@ -461,6 +473,7 @@ impl NormalizedProduct {
         };
         Ok(json!({
             "reference": self.reference(&value.reference)?,
+            "presentationKey": value.presentation_key,
             "metaclass": value.metaclass.as_str(),
             "notationRole": notation_role(value.notation_role),
             "name": value.name,
@@ -472,6 +485,7 @@ impl NormalizedProduct {
                 "provenance": compartment_provenance(compartment.provenance),
                 "members": compartment.members.iter().map(|member| self.node(member)).collect::<Result<Vec<_>, _>>()?,
             }))).collect::<Result<Vec<Value>, String>>()?,
+            "multiplicity": value.multiplicity.as_ref().map(multiplicity_text),
             "direction": value.direction,
             "conjugated": value.conjugated,
             "stateSubaction": value.state_subaction,
@@ -540,8 +554,27 @@ impl NormalizedProduct {
                 parts,
                 ports,
                 connectors,
+                port_families,
             } => {
-                json!({ "parts": nodes(parts)?, "ports": nodes(ports)?, "connectors": nodes(connectors)? })
+                let types = |values: &[model::DiagramElementType]| {
+                    values
+                        .iter()
+                        .map(|value| {
+                            Ok(json!({ "reference": self.reference(&value.reference)?, "label": value.label }))
+                        })
+                        .collect::<Result<Vec<Value>, String>>()
+                };
+                let families = port_families
+                    .iter()
+                    .map(|family| {
+                        Ok(json!({
+                            "general": types(&family.general)?,
+                            "types": types(&family.types)?,
+                            "connectors": nodes(&family.connectors)?,
+                        }))
+                    })
+                    .collect::<Result<Vec<Value>, String>>()?;
+                json!({ "parts": nodes(parts)?, "ports": nodes(ports)?, "connectors": nodes(connectors)?, "portFamilies": families })
             }
             model::DiagramViewMetadata::ActionFlow {
                 actions,
@@ -651,8 +684,15 @@ impl NormalizedProduct {
             model::DiagramIncompleteReason::SequenceMessageEndpointOutsideLifeline => {
                 json!({ "code": "sequence-message-endpoint-outside-lifeline" })
             }
-            model::DiagramIncompleteReason::SequenceOrderingCycle => {
-                json!({ "code": "sequence-ordering-cycle" })
+            model::DiagramIncompleteReason::SequenceOrderingCycle { witness } => {
+                json!({ "code": "sequence-ordering-cycle", "witness": witness.iter().map(|step| Ok(json!({
+                    "source": self.node(&step.source)?, "target": self.node(&step.target)?,
+                    "events": step.events.iter().map(|event| self.node(event)).collect::<Result<Vec<_>, _>>()?,
+                    "provenance": provenance(&step.provenance),
+                }))).collect::<Result<Vec<Value>, String>>()? })
+            }
+            model::DiagramIncompleteReason::SequenceContentOmitted { elements } => {
+                json!({ "code": "sequence-content-omitted", "elements": elements.iter().map(|element| self.node(element)).collect::<Result<Vec<_>, _>>()? })
             }
         })
     }
@@ -920,6 +960,20 @@ fn collect_reason_reference(
         | model::DiagramIncompleteReason::ExposureUnsupported { exposure } => {
             collect_reference(values, exposure)
         }
+        model::DiagramIncompleteReason::SequenceOrderingCycle { witness } => {
+            for step in witness {
+                collect_occurrence_references(values, &step.source);
+                collect_occurrence_references(values, &step.target);
+                for event in &step.events {
+                    collect_occurrence_references(values, event);
+                }
+            }
+        }
+        model::DiagramIncompleteReason::SequenceContentOmitted { elements } => {
+            for element in elements {
+                collect_occurrence_references(values, element);
+            }
+        }
         _ => {}
     }
 }
@@ -944,10 +998,19 @@ fn collect_metadata_references(
             parts,
             ports,
             connectors,
+            port_families,
         } => {
             add(parts);
             add(ports);
             add(connectors);
+            for family in port_families {
+                for occurrence in &family.connectors {
+                    collect_occurrence_references(values, occurrence);
+                }
+                for ty in family.general.iter().chain(&family.types) {
+                    collect_reference(values, &ty.reference);
+                }
+            }
         }
         model::DiagramViewMetadata::ActionFlow {
             actions,
@@ -1093,6 +1156,18 @@ fn source_domain_name(value: model::DiagramSourceDomain) -> &'static str {
     }
 }
 
+/// A multiplicity as SysML writes it (`[6]`, `[0..*]`, `[*]`, `[1..2]`), for a label. A single
+/// bound and a range with equal bounds are the same multiplicity (KerML 8.3.4.11), written once.
+fn multiplicity_text(value: &model::Multiplicity) -> String {
+    let bound = |bound: &Option<String>| bound.as_deref().unwrap_or("*").to_owned();
+    let (lower, upper) = (bound(&value.lower), bound(&value.upper));
+    if lower == upper {
+        format!("[{upper}]")
+    } else {
+        format!("[{lower}..{upper}]")
+    }
+}
+
 fn provenance(value: &model::RelationshipProvenance) -> &'static str {
     match value {
         model::RelationshipProvenance::Authored => "authored",
@@ -1218,6 +1293,7 @@ mod tests {
     #[test]
     fn normalization_interns_references_and_sources_once() {
         let product = projection(vec![model::DiagramElement {
+            presentation_key: "p:root".to_owned(),
             occurrence: occurrence("P::root"),
             reference: qualified("P::root"),
             metaclass: model::Metaclass::PartDefinition,
@@ -1227,6 +1303,7 @@ mod tests {
             owner: None,
             source: source(1),
             compartments: Vec::new(),
+            multiplicity: None,
             direction: None,
             conjugated: false,
             state_subaction: None,
@@ -1243,11 +1320,28 @@ mod tests {
             normalized.element(&product.elements[0]).unwrap()["notationRole"],
             "definition"
         );
+        assert_eq!(
+            normalized.element(&product.elements[0]).unwrap()["presentationKey"],
+            "p:root"
+        );
+        let mut invalid = product.clone();
+        invalid.elements.push(invalid.elements[0].clone());
+        assert!(
+            NormalizedProduct::new(&invalid).is_err(),
+            "duplicate presentation identities must be rejected"
+        );
+        invalid.elements.pop();
+        invalid.elements[0].presentation_key.clear();
+        assert!(
+            NormalizedProduct::new(&invalid).is_err(),
+            "missing presentation identity must be rejected"
+        );
     }
 
     #[test]
     fn reference_table_order_does_not_depend_on_node_insertion_order() {
         let element = |name: &str, line| model::DiagramElement {
+            presentation_key: format!("p:{name}"),
             occurrence: occurrence(name),
             reference: qualified(name),
             metaclass: model::Metaclass::PartDefinition,
@@ -1257,6 +1351,7 @@ mod tests {
             owner: None,
             source: source(line),
             compartments: Vec::new(),
+            multiplicity: None,
             direction: None,
             conjugated: false,
             state_subaction: None,
@@ -1328,6 +1423,7 @@ mod tests {
     fn normalized_product_scales_to_thousands_of_graph_records() {
         let elements = (0..1_000)
             .map(|index| model::DiagramElement {
+                presentation_key: format!("p:{index}"),
                 occurrence: occurrence(&format!("P::n{index:04}")),
                 reference: qualified(&format!("P::n{index:04}")),
                 metaclass: model::Metaclass::PartUsage,
@@ -1337,6 +1433,7 @@ mod tests {
                 owner: None,
                 source: source(index),
                 compartments: Vec::new(),
+                multiplicity: None,
                 direction: None,
                 conjugated: false,
                 state_subaction: None,

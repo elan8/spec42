@@ -601,7 +601,21 @@ fn collect_semantic_ranges_package_body_element(
                 for element in elements {
                     match &element.value {
                         EBE::Value(value) => {
-                            out.push((span_to_source_range(&value.span), SyntaxRole::Property));
+                            // The name, not the member: `entry;` must match the `entry` token
+                            // exactly to replace its keyword classification.
+                            push_identification_definition_spans(
+                                &value.value.identification,
+                                None,
+                                SyntaxRole::Property,
+                                out,
+                            );
+                            push_view_typing_ranges(ctx, value.value.typing.as_deref(), out);
+                            if let Some(feature_value) = &value.value.value {
+                                out.push((
+                                    span_to_source_range(&feature_value.value.expression.span),
+                                    SyntaxRole::Property,
+                                ));
+                            }
                         }
                         EBE::Annotating(member) => {
                             collect_semantic_ranges_annotating(member, out);
@@ -1189,12 +1203,7 @@ fn collect_state_subaction(
                 },
             ..
         } => {
-            if let Some(reference) = ctx.document.qualified_reference(*action) {
-                out.push((
-                    span_to_source_range(&reference.metadata.span),
-                    SyntaxRole::Function,
-                ));
-            }
+            push_reference(ctx, *action, SyntaxRole::Property, out);
             specialization.as_deref()
         }
         StateActionUsage::Effect { declaration, .. } => declaration
@@ -1202,13 +1211,7 @@ fn collect_state_subaction(
             .and_then(|node| node.declaration.as_ref()),
     };
     if let Some(declaration) = declaration {
-        push_identification_definition_spans(
-            &declaration.identification,
-            None,
-            SyntaxRole::Function,
-            out,
-        );
-        push_view_typing_ranges(ctx, declaration.typing.as_deref(), out);
+        push_usage_declaration(ctx, declaration, out);
     }
     if let ActionDefBody::Brace { elements, .. } = body {
         for element in elements {
@@ -1256,9 +1259,7 @@ fn collect_semantic_ranges_state_def_body_element(
                 }
             }
         }
-        SDBE::InOutDecl(in_out) => {
-            out.push((span_to_source_range(&in_out.span), SyntaxRole::Property))
-        }
+        SDBE::InOutDecl(in_out) => collect_semantic_ranges_in_out(ctx, in_out, out),
         SDBE::Entry(node) => collect_state_subaction(ctx, &node.action, &node.body, out),
         SDBE::Do(node) => collect_state_subaction(ctx, &node.action, &node.body, out),
         SDBE::Exit(node) => collect_state_subaction(ctx, &node.action, &node.body, out),
@@ -1346,9 +1347,7 @@ fn collect_semantic_ranges_occurrence_body_element(
             }
         }
         OBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
-        OBE::Perform(perform) => {
-            out.push((span_to_source_range(&perform.span), SyntaxRole::Function))
-        }
+        OBE::Perform(perform) => collect_semantic_ranges_perform(ctx, perform, out),
         OBE::Error(_)
         | OBE::AssertConstraint(_)
         | OBE::Allocate(_)
@@ -1497,9 +1496,7 @@ fn collect_semantic_ranges_part_def_body_element(
                 }
             }
         }
-        PDBE::Perform(perform) => {
-            out.push((span_to_source_range(&perform.span), SyntaxRole::Function))
-        }
+        PDBE::Perform(perform) => collect_semantic_ranges_perform(ctx, perform, out),
         PDBE::ExhibitState(exhibit) => {
             push_usage_name_type_spans(
                 ctx.source,
@@ -1730,6 +1727,165 @@ fn collect_semantic_ranges_ref_decl(
     }
 }
 
+/// A reference at its authored span, when the document's arena has a view for it.
+fn push_reference(
+    ctx: &RangeCtx<'_>,
+    reference: QualifiedReferenceId,
+    role: SyntaxRole,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if let Some(view) = ctx.document.qualified_reference(reference) {
+        out.push((span_to_source_range(&view.metadata.span), role));
+    }
+}
+
+/// A `UsageDeclaration` names a usage and references its types, exactly as a plain action usage
+/// does. Only those identifiers get a role, so the keywords around them stay keywords.
+fn push_usage_declaration(
+    ctx: &RangeCtx<'_>,
+    declaration: &sysml_v2_parser::ast::UsageDeclaration,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    push_identification_definition_spans(
+        &declaration.identification,
+        None,
+        SyntaxRole::Property,
+        out,
+    );
+    push_view_typing_ranges(ctx, declaration.typing.as_deref(), out);
+}
+
+/// `in`/`out`/`inout` parameter: a usage name, its type, the features it subsets or redefines
+/// (`in :>> payload;` names the parameter only that way), its value expression and its members.
+/// The direction keyword and any `ref`/`var`/`action` prefix are keywords, so the statement itself
+/// gets no role.
+fn collect_semantic_ranges_in_out(
+    ctx: &RangeCtx<'_>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::InOutDecl>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    let declaration = &node.value;
+    for name in [declaration.name, declaration.short_name]
+        .into_iter()
+        .flatten()
+    {
+        out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+    }
+    if let Some(type_name) = declaration.type_name {
+        push_reference(ctx, type_name, SyntaxRole::Type, out);
+    }
+    for relationship in [&declaration.subsets, &declaration.redefines]
+        .into_iter()
+        .flatten()
+    {
+        for target in &relationship.value.target {
+            push_reference(ctx, *target, SyntaxRole::Property, out);
+        }
+    }
+    if let Some(value) = &declaration.value {
+        out.push((
+            span_to_source_range(&value.value.expression.span),
+            SyntaxRole::Property,
+        ));
+    }
+    for element in declaration.body.iter().flatten() {
+        collect_semantic_ranges_action_def_body_element(ctx, element, out);
+    }
+}
+
+/// `perform action name : Type;` names a usage like `action name : Type;`, and
+/// `perform name;` references one. Members of a performed action body keep their own roles.
+fn collect_semantic_ranges_perform(
+    ctx: &RangeCtx<'_>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::Perform>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    use sysml_v2_parser::ast::{Body, PerformActionTarget, PerformBodyElement};
+    match &node.value.target {
+        PerformActionTarget::Action(declaration) => {
+            push_usage_declaration(ctx, &declaration.value, out)
+        }
+        PerformActionTarget::Reference {
+            action,
+            specialization,
+        } => {
+            push_reference(ctx, *action, SyntaxRole::Property, out);
+            if let Some(specialization) = specialization {
+                push_usage_declaration(ctx, &specialization.value, out);
+            }
+        }
+    }
+    if let Body::Brace { elements, .. } = &node.value.body {
+        for element in elements {
+            if let PerformBodyElement::Action(member) = &element.value {
+                collect_semantic_ranges_action_usage_body_element(ctx, member, out);
+            }
+        }
+    }
+}
+
+/// Preserve name and type-reference roles from the optional shared action-node declaration.
+fn collect_semantic_ranges_action_node_prefix(
+    ctx: &RangeCtx<'_>,
+    prefix: &sysml_v2_parser::ast::ActionNodePrefix,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if let Some(action) = &prefix.action_declaration {
+        if let Some(declaration) = &action.value.declaration {
+            push_usage_declaration(ctx, &declaration.value, out);
+        }
+    }
+}
+
+/// `assign target := value;`: both sides are feature expressions; `assign` stays a keyword.
+fn collect_semantic_ranges_assign(
+    ctx: &RangeCtx<'_>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::AssignStmt>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    collect_semantic_ranges_action_node_prefix(ctx, &node.value.prefix, out);
+    for side in [&node.value.lhs, &node.value.rhs] {
+        out.push((span_to_source_range(&side.span), SyntaxRole::Property));
+    }
+}
+
+/// The terminate target is a feature expression, including the library's `self` feature.
+fn collect_semantic_ranges_terminate(
+    ctx: &RangeCtx<'_>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::TerminateStmt>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    collect_semantic_ranges_action_node_prefix(ctx, &node.value.prefix, out);
+    if let Some(target) = &node.value.target {
+        out.push((span_to_source_range(&target.span), SyntaxRole::Property));
+    }
+}
+
+/// `for variable in sequence { ... }`: the loop variable is a usage, the sequence an expression,
+/// and the body's members keep their own roles; `for` and `in` stay keywords.
+fn collect_semantic_ranges_for_loop(
+    ctx: &RangeCtx<'_>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::ForLoop>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    let for_loop = &node.value;
+    push_usage_declaration(ctx, &for_loop.variable.value, out);
+    out.push((
+        span_to_source_range(&for_loop.in_parameter.expression.span),
+        SyntaxRole::Property,
+    ));
+    if let Some(action) = &for_loop.body.action_declaration {
+        if let Some(declaration) = &action.value.declaration {
+            push_usage_declaration(ctx, &declaration.value, out);
+        }
+    }
+    if let ActionDefBody::Brace { elements, .. } = &for_loop.body.body {
+        for element in elements {
+            collect_semantic_ranges_action_def_body_element(ctx, element, out);
+        }
+    }
+}
+
 fn collect_semantic_ranges_state_usage(
     ctx: &RangeCtx<'_>,
     node: &sysml_v2_parser::Node<StateUsage>,
@@ -1957,9 +2113,7 @@ fn collect_semantic_ranges_action_def_body_element(
             }
             push_view_typing_ranges(ctx, node.typing.as_deref(), out);
         }
-        ADBE::InOutDecl(in_out) => {
-            out.push((span_to_source_range(&in_out.span), SyntaxRole::Property))
-        }
+        ADBE::InOutDecl(in_out) => collect_semantic_ranges_in_out(ctx, in_out, out),
         ADBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         ADBE::ThenAction(then_action) => {
             // `then merge <name>;`/`then <name>;` (§6 G23) aren't action-usage declarations --
@@ -1971,15 +2125,10 @@ fn collect_semantic_ranges_action_def_body_element(
         }
         ADBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
         ADBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
-        ADBE::Perform(perform) => {
-            out.push((span_to_source_range(&perform.span), SyntaxRole::Function))
-        }
-        ADBE::Assign(assign) => {
-            out.push((span_to_source_range(&assign.span), SyntaxRole::Property))
-        }
-        ADBE::ForLoop(for_loop) => {
-            out.push((span_to_source_range(&for_loop.span), SyntaxRole::Property))
-        }
+        ADBE::Perform(perform) => collect_semantic_ranges_perform(ctx, perform, out),
+        ADBE::Assign(assign) => collect_semantic_ranges_assign(ctx, assign, out),
+        ADBE::TerminateStmt(node) => collect_semantic_ranges_terminate(ctx, node, out),
+        ADBE::ForLoop(for_loop) => collect_semantic_ranges_for_loop(ctx, for_loop, out),
         ADBE::DefaultReferenceUsage(default_ref) => {
             push_usage_name_type_spans(
                 ctx.source,
@@ -2001,7 +2150,6 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::JoinStmt(_)
         | ADBE::ForkStmt(_)
         | ADBE::Error(_)
-        | ADBE::TerminateStmt(_)
         | ADBE::WhileStmt(_)
         | ADBE::LoopStmt(_)
         | ADBE::IfStmt(_) => {}
@@ -2102,9 +2250,7 @@ fn collect_semantic_ranges_action_usage_body_element(
             }
             push_view_typing_ranges(ctx, node.typing.as_deref(), out);
         }
-        AUBE::InOutDecl(in_out) => {
-            out.push((span_to_source_range(&in_out.span), SyntaxRole::Property))
-        }
+        AUBE::InOutDecl(in_out) => collect_semantic_ranges_in_out(ctx, in_out, out),
         AUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         AUBE::ThenAction(then_action) => {
             // See ADBE::ThenAction above.
@@ -2114,16 +2260,11 @@ fn collect_semantic_ranges_action_usage_body_element(
             }
         }
         AUBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
-        AUBE::Perform(perform) => {
-            out.push((span_to_source_range(&perform.span), SyntaxRole::Function))
-        }
+        AUBE::Perform(perform) => collect_semantic_ranges_perform(ctx, perform, out),
         AUBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
-        AUBE::Assign(assign) => {
-            out.push((span_to_source_range(&assign.span), SyntaxRole::Property))
-        }
-        AUBE::ForLoop(for_loop) => {
-            out.push((span_to_source_range(&for_loop.span), SyntaxRole::Property))
-        }
+        AUBE::Assign(assign) => collect_semantic_ranges_assign(ctx, assign, out),
+        AUBE::TerminateStmt(node) => collect_semantic_ranges_terminate(ctx, node, out),
+        AUBE::ForLoop(for_loop) => collect_semantic_ranges_for_loop(ctx, for_loop, out),
         AUBE::DefaultReferenceUsage(default_ref) => {
             push_usage_name_type_spans(
                 ctx.source,
@@ -2144,7 +2285,6 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::JoinStmt(_)
         | AUBE::ForkStmt(_)
         | AUBE::Error(_)
-        | AUBE::TerminateStmt(_)
         | AUBE::WhileStmt(_)
         | AUBE::LoopStmt(_)
         | AUBE::IfStmt(_) => {}

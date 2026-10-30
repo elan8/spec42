@@ -113,8 +113,8 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:03b3b81596c42117d8511aea4345eace92249414f41ba11a3f288cd472e5fcd5",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:683f3067bbf92cba5791f58a61ac621e386e03782e3fa0dcda23e779a26cabe3",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_port_definition_browser.md",
@@ -227,9 +227,11 @@ package M {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConjugatedPortDefinition",
+        "multiplicity": null,
         "name": "~P",
         "notationRole": "definition",
         "owner": 1,
+        "presentationKey": "p:51c4a214ba99ed6561e42ac9ad623acd526b27e55ce8cfaa5b166914173106e9",
         "reference": 2,
         "source": 0,
         "stateSubaction": null,
@@ -244,9 +246,11 @@ package M {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortDefinition",
+        "multiplicity": null,
         "name": "P",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:36e34acabf842f82c1bd1b1dbff7604b4e43180fc933e69bd27dd4fc8e9776c9",
         "reference": 0,
         "source": 1,
         "stateSubaction": null,

@@ -802,20 +802,6 @@ impl ProbeVisitor<'_> {
 }
 
 impl<'ast> Visit<'ast> for ProbeVisitor<'_> {
-    fn visit_item_fn(&mut self, item: &'ast syn::ItemFn) {
-        let is_documented_code_action_text_operation = self.file
-            == "crates/language_service/src/code_actions.rs"
-            && matches!(
-                item.sig.ident.to_string().as_str(),
-                "parse_untyped_part_usage_name"
-                    | "rewrite_untyped_part_usage_line"
-                    | "rewrite_implicit_redefinition_line"
-            );
-        if !is_documented_code_action_text_operation {
-            visit::visit_item_fn(self, item);
-        }
-    }
-
     fn visit_item_mod(&mut self, item: &'ast syn::ItemMod) {
         if !is_test_module(item) {
             visit::visit_item_mod(self, item);

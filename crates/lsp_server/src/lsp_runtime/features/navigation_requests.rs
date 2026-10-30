@@ -60,13 +60,23 @@ pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<
         Some(entry) => entry,
         None => return Ok(None),
     };
-    let imports = entry.parsed.imports();
-    let links = navigation::collect_document_links(&imports, |import_name| {
-        state
-            .semantic_symbols
-            .iter()
-            .find(|entry| entry.name == import_name)
-            .map(|entry| entry.uri.clone())
+    let imports = entry.syntax()?.imports();
+    let model = state.published_model();
+    let links = navigation::collect_document_links(&imports, |import| {
+        let position = sysml_query::resolved_slice::TextPosition::new(
+            import.target_range.start_line,
+            import.target_range.start_character,
+        );
+        match model
+            .navigation()
+            .target_at(uri_norm.as_str(), position)
+            .answer
+        {
+            sysml_query::resolved_slice::QueryAnswer::Resolved(target) => model
+                .document_identity(target.location.document)
+                .and_then(|uri| Url::parse(uri).ok()),
+            _ => None,
+        }
     });
     Ok(Some(links))
 }
@@ -112,7 +122,7 @@ pub(crate) fn selection_range(
     };
     Ok(Some(navigation::selection_ranges_for_positions(
         entry.content(),
-        &entry.parsed,
+        entry.syntax()?,
         &positions,
     )))
 }

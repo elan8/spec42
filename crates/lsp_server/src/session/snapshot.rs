@@ -26,12 +26,12 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     fn resolve_uri_for_path(&self, path: &str) -> Option<Url> {
         if let Ok(uri) = Url::parse(path) {
             let normalized = util::normalize_file_uri(&uri);
-            if self.state.index.contains_key(&normalized) {
+            if self.state.published_index.contains_key(&normalized) {
                 return Some(normalized);
             }
         }
         let normalized = path.trim_start_matches('/').replace('\\', "/");
-        self.state.index.keys().find_map(|uri| {
+        self.state.published_index.keys().find_map(|uri| {
             let uri_norm = util::normalize_file_uri(uri);
             let uri_path = uri_norm.path().trim_start_matches('/').replace('\\', "/");
             if uri_path == normalized || uri_path.ends_with(&format!("/{normalized}")) {
@@ -49,16 +49,25 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
 
     fn document_text(&self, uri: &Url) -> Option<&str> {
         self.state
-            .index
+            .published_index
             .get(&util::normalize_file_uri(uri))
+            .map(|entry| entry.content())
+    }
+
+    fn editor_text(&self, uri: &Url) -> Option<&str> {
+        let uri = util::normalize_file_uri(uri);
+        self.state
+            .index
+            .get(&uri)
+            .or_else(|| self.state.published_index.get(&uri))
             .map(|entry| entry.content())
     }
 
     fn parsed(&self, uri: &Url) -> Option<sysml_query::syntax::ParsedSource> {
         self.state
-            .index
+            .published_index
             .get(&util::normalize_file_uri(uri))
-            .map(|entry| entry.parsed.clone())
+            .and_then(|entry| entry.parsed.clone())
     }
 
     fn published_model(&self) -> Option<&sysml_query::resolved_slice::PublishedModel> {
@@ -70,7 +79,7 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     }
 
     fn index_uris(&self) -> Vec<Url> {
-        self.state.index.keys().cloned().collect()
+        self.state.published_index.keys().cloned().collect()
     }
 
     fn normalize_uri(&self, uri: &Url) -> Url {
@@ -82,7 +91,7 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     }
 
     fn library_paths(&self) -> &[Url] {
-        &self.state.library_paths
+        &self.state.published_library_paths
     }
 
     fn supports_semantic_queries(&self) -> bool {

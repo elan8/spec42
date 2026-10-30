@@ -3,7 +3,9 @@
 use std::fmt;
 
 use crate::source::Url;
-pub use sysml_resolution::{ContextualExpressionOutcome, PublishedContextualExpression};
+pub use sysml_resolution::{
+    published_relationship_kinds, ContextualExpressionOutcome, PublishedContextualExpression,
+};
 
 pub use sysml_resolution::{
     requirement_collection_from_kind, ActionDerivedFactCollection, ActionDerivedFactKind,
@@ -19,8 +21,8 @@ pub use sysml_resolution::{
     DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
     DiagramIncompleteReason, DiagramMembership, DiagramOccurrenceIdentity, DiagramRelationship,
     DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
-    DiagramSemanticReference, DiagramSequenceEndpoint, DiagramSequenceMessage,
-    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
+    DiagramSemanticReference, DiagramSequenceCycleStep, DiagramSequenceEndpoint,
+    DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
     DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
     DiagramSuccessionGuard, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
     DiagramViewProjection, DocumentId, DocumentToken, Documentation, EffectiveType,
@@ -29,19 +31,21 @@ pub use sysml_resolution::{
     ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
     ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
     ExpectedMeasurement, ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome,
-    FeatureDerivedRelationshipCollection, FeatureDirection, InheritedFeature,
-    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId, MembershipKind,
-    MembershipRelationship, MembershipRole, MetadataAnnotationForm, MetadataAnnotationValue,
-    MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
-    NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind, ProjectedElement,
-    ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublicationCompleteness,
-    PublicationIdentity, PublicationModelDigest, PublicationObstacle, PublishedConnectionGraph,
-    PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics, PublishedElement,
-    PublishedExpression, PublishedMetadataAnnotation, PublishedModelProjection,
-    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer,
-    QueryOutcome, RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
-    ReferenceAt, ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
-    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    FeatureDerivedRelationshipCollection, FeatureDirection, ImplicitRedefinitionRepair,
+    ImportCandidate, InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts,
+    MembershipId, MembershipKind, MembershipRelationship, MembershipRole, MetadataAnnotationForm,
+    MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
+    NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
+    OccurrenceRole, PortionKind, ProjectedElement, ProjectionEnvelope, ProjectionPhase,
+    ProjectionTruncation, PublicationCompleteness, PublicationIdentity, PublicationModelDigest,
+    PublicationObstacle, PublishedConnectionGraph, PublishedConnector, PublishedConnectorEnd,
+    PublishedDiagnostics, PublishedElement, PublishedExpression, PublishedMetadataAnnotation,
+    PublishedModelProjection, QualificationCandidate, QualifiedElementReference,
+    QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer, QueryOutcome,
+    RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt,
+    ReferenceRepair, ReferenceRepairOutcome, ReferencedDetails, RelatedLocation,
+    RelationshipFamily, RelationshipOutcome, RelationshipProvenance, RelationshipTarget,
+    RenameOutcome, RepairNamespace, RepairSlot, RequirementConstraintKind,
     RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
     RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
     ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
@@ -99,6 +103,13 @@ impl PublishedModel {
     /// one. Borrowed, so showing a name costs no allocation.
     pub fn qualified_name(&self, symbol: SymbolId) -> Option<&str> {
         self.inner.qualified_name(symbol)
+    }
+
+    /// The escaped qualified name that names exactly this element in source: KerML
+    /// `deriveElementQualifiedName`. Composed on request, so this allocates; `None` where a
+    /// segment is unnamed or not unique.
+    pub fn element_qualified_name(&self, symbol: SymbolId) -> Option<String> {
+        self.inner.element_qualified_name(symbol)
     }
 
     /// One run of authored text, borrowed from this publication.
@@ -643,6 +654,24 @@ impl EditQueries<'_> {
     ) -> RenameOutcome {
         self.model.prepare_rename(document, position, new_name)
     }
+
+    /// What an editor may offer to repair the unresolved or ambiguous reference at `position`.
+    pub fn reference_repair(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ReferenceRepair> {
+        self.model.reference_repair(document, position)
+    }
+
+    /// The explicit `:>>` repair for the declaration at `position`.
+    pub fn implicit_redefinition_repair(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ImplicitRedefinitionRepair> {
+        self.model.implicit_redefinition_repair(document, position)
+    }
 }
 
 pub struct CompletionQueries<'a> {
@@ -954,6 +983,8 @@ pub struct EditorProbe {
     pub rename_to: Option<String>,
     /// Include ordered feature collections and effective identification in the projection.
     pub features: bool,
+    /// Include the reference and declaration repairs an editor may offer at the position.
+    pub repairs: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1052,6 +1083,16 @@ impl DebugQueries<'_> {
                         write_feature_queries(model, output, element.inspection.identity)?;
                     }
                 }
+            }
+            if probe.repairs {
+                write_repairs(
+                    model,
+                    output,
+                    &self.model.reference_repair(&probe.document, probe.position),
+                    &self
+                        .model
+                        .implicit_redefinition_repair(&probe.document, probe.position),
+                )?;
             }
             writeln!(output, "  )")?;
         }
@@ -1328,6 +1369,105 @@ fn write_rename_outcome(
         RenameOutcome::Incomplete => write!(output, "(status incomplete)")?,
     }
     writeln!(output, ")")
+}
+
+fn write_answer_status<T>(output: &mut dyn fmt::Write, answer: &QueryAnswer<T>) -> fmt::Result {
+    let status = match answer {
+        QueryAnswer::Resolved(_) => "resolved",
+        QueryAnswer::Unresolved => "unresolved",
+        QueryAnswer::Ambiguous(_) => "ambiguous",
+        QueryAnswer::Unsupported => "unsupported",
+        QueryAnswer::Recovery => "recovery",
+        QueryAnswer::Incomplete => "incomplete",
+    };
+    write!(output, "(status {status})")
+}
+
+fn write_repairs(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    reference: &QueryOutcome<ReferenceRepair>,
+    redefinition: &QueryOutcome<ImplicitRedefinitionRepair>,
+) -> fmt::Result {
+    let name = |symbol: SymbolId| model.qualified_name(symbol).unwrap_or_default();
+    writeln!(output, "    (repairs")?;
+    write!(output, "      (reference ")?;
+    write_answer_status(output, &reference.answer)?;
+    if let QueryAnswer::Resolved(repair) = &reference.answer {
+        let slot = match repair.slot {
+            RepairSlot::Typing => "typing",
+            RepairSlot::Specialization => "specialization",
+            RepairSlot::Other => "other",
+        };
+        write!(output, " ")?;
+        write_range(output, repair.range)?;
+        write!(output, " (slot {slot})")?;
+        match &repair.outcome {
+            ReferenceRepairOutcome::Unresolved {
+                name: authored,
+                imports,
+                namespace,
+                expected_definition,
+            } => {
+                write!(output, "\n        (unresolved")?;
+                if let Some(authored) = authored {
+                    write!(
+                        output,
+                        " (name {:?})",
+                        model.text(*authored).unwrap_or_default()
+                    )?;
+                }
+                match namespace {
+                    Some(namespace) => {
+                        write!(output, " (namespace {:?} ", name(namespace.symbol))?;
+                        write_range(output, namespace.identifier)?;
+                        write!(output, ")")?;
+                    }
+                    None => write!(output, " (namespace root)")?,
+                }
+                if let Some(kind) = expected_definition {
+                    write!(output, " (expected-definition {kind:?})")?;
+                }
+                for import in imports.iter() {
+                    write!(
+                        output,
+                        "\n          (import (path {:?}) (target {:?}) (kind {:?}) (library {}))",
+                        model
+                            .element_qualified_name(import.target)
+                            .unwrap_or_default(),
+                        name(import.target),
+                        import.kind,
+                        import.library
+                    )?;
+                }
+                write!(output, ")")?;
+            }
+            ReferenceRepairOutcome::Ambiguous { candidates } => {
+                write!(output, "\n        (ambiguous")?;
+                for candidate in candidates.iter() {
+                    write!(
+                        output,
+                        "\n          (qualify (name {:?}) (target {:?}) (kind {:?}))",
+                        model
+                            .element_qualified_name(candidate.target)
+                            .unwrap_or_default(),
+                        name(candidate.target),
+                        candidate.kind
+                    )?;
+                }
+                write!(output, ")")?;
+            }
+        }
+    }
+    writeln!(output, ")")?;
+    write!(output, "      (implicit-redefinition ")?;
+    write_answer_status(output, &redefinition.answer)?;
+    if let QueryAnswer::Resolved(repair) = &redefinition.answer {
+        write!(output, " (declaration {:?}) ", name(repair.declaration))?;
+        write_range(output, repair.identifier)?;
+        write!(output, " (redefined {:?})", name(repair.redefined))?;
+    }
+    writeln!(output, "))")
 }
 
 fn write_members_outcome(

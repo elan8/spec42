@@ -61,13 +61,15 @@ syntax or metadata display names.
   must compare typed facts by stable identity.
 - Call hierarchy and monikers are disabled until the publication owns typed behavior/`perform`
   relationships.
+- Signature help, linked editing, code lenses, and inlay hints are not advertised while they lack
+  useful implementations. Rename uses semantic identities and versioned document edits when the
+  client supports them. Type hierarchy items retain their symbol token and publication digest;
+  follow-up requests reject stale items.
 - `model-export` emits a bounded, `schema_version`-stamped structural projection alongside the
   validation summary: `sysml_query`'s `PublishedModel::projection` composes the per-element query
   groups into one deterministic answer, and `crates/server` materialises it to JSON at the
   boundary. Hosts read that contract; they do not reconstruct structure from display names or
   serialized output.
-- Import and ambiguous-name quick fixes are disabled until typed queries provide candidates,
-  provenance, and authored replacement/insertion ranges.
 
 These are unsupported states, not compatibility gaps hidden by a fallback. New semantic capability
 belongs first in `sysml_resolution`, then in a typed `sysml_query` contract, and only then in a host.

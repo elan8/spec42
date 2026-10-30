@@ -41,6 +41,8 @@ impl<D> SemanticModel<D> {
     ) -> Result<DerivedDiagnostics, ResolutionError> {
         let mut diagnostics = Vec::new();
         let mut by_document = vec![(0u32, 0u32); self.storage.documents.len()];
+        let mut namespace_checks = std::time::Duration::ZERO;
+        let mut inherited_members = self.inherited_feature_queries();
         // Built once, then sliced per document. Every rule below asks "what did this document
         // declare", and answering that by scanning every declaration each time made the barrier
         // quadratic in the admitted corpus -- invisible while only workspace documents were
@@ -124,6 +126,10 @@ impl<D> SemanticModel<D> {
                         .resolution
                         .outcome(reference_id)
                         .ok_or(ResolutionError::InvalidStorage)?;
+                    // Reported once, at the alias whose binding failed.
+                    if self.resolution.alias_failures.contains(&reference_id) {
+                        continue;
+                    }
                     let Some((severity, code)) = reference_diagnostic(reference.kind, status)
                     else {
                         continue;
@@ -168,6 +174,13 @@ impl<D> SemanticModel<D> {
                 self.collect_conformance(document_id, declared, &mut diagnostics)?;
                 self.collect_structural_conformance(document_id, declared, &mut diagnostics)?;
                 self.collect_expression_conformance(document_id, declared, &mut diagnostics)?;
+                let namespace_started = std::time::Instant::now();
+                Self::collect_namespace_identity(
+                    &mut inherited_members,
+                    declared,
+                    &mut diagnostics,
+                )?;
+                namespace_checks += namespace_started.elapsed();
                 self.collect_host_conformance(document_id, declared, &mut diagnostics)?;
                 self.collect_library_context(
                     document_id,
@@ -194,10 +207,11 @@ impl<D> SemanticModel<D> {
             })()
             .map_err(|error| error.in_document(document_id))?;
         }
-        Ok((
-            diagnostics.into_boxed_slice(),
-            by_document.into_boxed_slice(),
-        ))
+        Ok(DerivedDiagnostics {
+            diagnostics: diagnostics.into_boxed_slice(),
+            by_document: by_document.into_boxed_slice(),
+            namespace_checks,
+        })
     }
 }
 
@@ -205,7 +219,12 @@ impl<D> SemanticModel<D> {
 ///
 /// The two are derived together and are only correct together, so they are returned together
 /// rather than as two calls a caller could interleave.
-pub(crate) type DerivedDiagnostics = (Box<[Diagnostic]>, Box<[(u32, u32)]>);
+pub(crate) struct DerivedDiagnostics {
+    pub(crate) diagnostics: Box<[Diagnostic]>,
+    pub(crate) by_document: Box<[(u32, u32)]>,
+    /// A transient observation, excluded from the settled diagnostic facts.
+    pub(crate) namespace_checks: std::time::Duration,
+}
 
 pub(crate) fn parser_diagnostic_category(
     category: Option<sysml_v2_parser::DiagnosticCategory>,

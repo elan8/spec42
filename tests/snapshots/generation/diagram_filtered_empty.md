@@ -190,8 +190,8 @@ package EmptySelection {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:d3f2f0bcdff676786e5c08560e09b3c244d8d3f91f6a6d9950949254829b112f",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:f2d723e7f42abff962585c1c56dbcba36b766b450ea231c2794b69e661ce3fce",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -233,6 +233,7 @@ package EmptySelection {
     "metadata": {
       "connectors": [],
       "parts": [],
+      "portFamilies": [],
       "ports": []
     },
     "nodes": [],

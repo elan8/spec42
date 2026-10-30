@@ -6,6 +6,7 @@
 
 use std::sync::Arc;
 
+use super::BuildCancellation;
 use crate::PublicationIdentity;
 
 /// Lifecycle state tracked by a [`Session`].
@@ -17,6 +18,16 @@ pub enum SessionLifecycle {
     Ready,
     Reindexing,
     Closed,
+}
+
+/// Whether the retained publication answers the session's current construction inputs.
+/// This is independent of startup readiness: a settled failure must not be labelled current.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AnalysisStatus {
+    Current,
+    Updating,
+    FailedRetained,
+    CancelledRetained,
 }
 
 /// Owner-scoped identity of the complete state a session currently publishes.
@@ -37,6 +48,22 @@ impl PublicationToken {
     }
 }
 
+/// Owner-scoped revision of semantic construction inputs, captured before preparation.
+/// Lifecycle/reporting notifications and successful admissions do not change these inputs;
+/// invalidation, reset, library replacement, owner replacement and close reject old captures.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InputRevisionToken {
+    owner: u64,
+    revision: u64,
+    cancellation: BuildCancellation,
+}
+
+impl InputRevisionToken {
+    pub fn cancellation(&self) -> &BuildCancellation {
+        &self.cancellation
+    }
+}
+
 /// Token carried by a background build: the owner it was started in, its place in the build
 /// order, and the identity it must produce.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -45,9 +72,14 @@ pub struct BuildToken {
     input_revision: u64,
     generation: u64,
     identity: PublicationIdentity,
+    cancellation: BuildCancellation,
 }
 
 impl BuildToken {
+    pub fn cancellation(&self) -> &BuildCancellation {
+        &self.cancellation
+    }
+
     pub fn identity(&self) -> &PublicationIdentity {
         &self.identity
     }
@@ -63,6 +95,8 @@ pub enum PublicationOutcome {
     IdentityMismatch,
     /// Construction failed; the previous publication remains.
     Failed,
+    /// Cancelled construction retained the previous publication without recording a failure.
+    Cancelled,
 }
 
 /// Anything a session can publish: it has a dependency-complete identity.
@@ -96,6 +130,11 @@ pub struct Session<P> {
     version: u64,
     /// Incremented for every mutation of a semantic construction prerequisite.
     input_revision: u64,
+    published_input_revision: u64,
+    failed_input_revision: Option<u64>,
+    cancelled_input_revision: Option<u64>,
+    input_cancellation: BuildCancellation,
+    active_cancellation: Option<BuildCancellation>,
     /// Incremented per started build; only the newest build may be admitted.
     build_generation: u64,
     current: Arc<P>,
@@ -108,6 +147,11 @@ impl<P> Clone for Session<P> {
             lifecycle: self.lifecycle,
             version: self.version,
             input_revision: self.input_revision,
+            published_input_revision: self.published_input_revision,
+            failed_input_revision: self.failed_input_revision,
+            cancelled_input_revision: self.cancelled_input_revision,
+            input_cancellation: self.input_cancellation.clone(),
+            active_cancellation: self.active_cancellation.clone(),
             build_generation: self.build_generation,
             current: Arc::clone(&self.current),
         }
@@ -122,6 +166,11 @@ impl<P: Published> Session<P> {
             lifecycle: SessionLifecycle::Cold,
             version: 0,
             input_revision: 0,
+            published_input_revision: 0,
+            failed_input_revision: None,
+            cancelled_input_revision: None,
+            input_cancellation: BuildCancellation::new(),
+            active_cancellation: None,
             build_generation: 0,
             current: initial,
         }
@@ -144,6 +193,19 @@ impl<P: Published> Session<P> {
         self.lifecycle
     }
 
+    /// Source/configuration freshness of the retained publication, owned by this barrier.
+    pub fn analysis_status(&self) -> AnalysisStatus {
+        if self.failed_input_revision == Some(self.input_revision) {
+            AnalysisStatus::FailedRetained
+        } else if self.cancelled_input_revision == Some(self.input_revision) {
+            AnalysisStatus::CancelledRetained
+        } else if self.published_input_revision == self.input_revision {
+            AnalysisStatus::Current
+        } else {
+            AnalysisStatus::Updating
+        }
+    }
+
     pub fn version(&self) -> u64 {
         self.version
     }
@@ -163,20 +225,43 @@ impl<P: Published> Session<P> {
             && self.lifecycle != SessionLifecycle::Closed
     }
 
+    /// Capture the immutable input revision before potentially expensive request preparation.
+    pub fn inputs(&self) -> InputRevisionToken {
+        InputRevisionToken {
+            owner: self.owner,
+            revision: self.input_revision,
+            cancellation: self.input_cancellation.clone(),
+        }
+    }
+
+    /// Preparation may enter the build-generation order only while its inputs remain current.
+    pub fn is_input_current(&self, token: &InputRevisionToken) -> bool {
+        self.owner == token.owner
+            && self.input_revision == token.revision
+            && self.lifecycle != SessionLifecycle::Closed
+    }
+
     /// Gives a newly spawned owner a distinct identity, invalidating tokens inherited from a
     /// cloned seed state.
     pub fn rekey_for_owner(&mut self) {
         self.owner = next_session_owner();
+        // Rekeying a cloned seed must not cancel work in its original independent owner.
+        self.input_cancellation = BuildCancellation::new();
+        self.active_cancellation = None;
     }
 
     /// Resets to `Cold`, invalidating every outstanding token.
     pub fn reset(&mut self) {
-        self.input_revision = increment(self.input_revision, "input revision");
+        self.advance_inputs();
         self.transition(SessionLifecycle::Cold);
     }
 
     /// Permanently closes this session; a closed session accepts no later background result.
     pub fn close(&mut self) {
+        self.input_cancellation.cancel();
+        if let Some(active) = &self.active_cancellation {
+            active.cancel();
+        }
         self.transition(SessionLifecycle::Closed);
     }
 
@@ -195,7 +280,7 @@ impl<P: Published> Session<P> {
 
     /// Marks the semantic construction inputs changed and supersedes all work for older inputs.
     pub fn invalidate_inputs(&mut self) -> u64 {
-        self.input_revision = increment(self.input_revision, "input revision");
+        self.advance_inputs();
         match self.lifecycle {
             SessionLifecycle::Ready | SessionLifecycle::Reindexing => {
                 self.transition(SessionLifecycle::Reindexing);
@@ -209,7 +294,7 @@ impl<P: Published> Session<P> {
     }
 
     pub fn begin_library_reindex(&mut self) {
-        self.input_revision = increment(self.input_revision, "input revision");
+        self.advance_inputs();
         self.transition(SessionLifecycle::Reindexing);
     }
 
@@ -220,20 +305,48 @@ impl<P: Published> Session<P> {
 
     /// Bumps the version without a lifecycle change, invalidating in-flight work.
     pub fn bump_version(&mut self) -> u64 {
-        self.input_revision = increment(self.input_revision, "input revision");
+        self.advance_inputs();
         self.version = increment(self.version, "publication version");
         self.version
     }
 
     /// Starts a build for `identity`, superseding any build started earlier.
     pub fn begin_build(&mut self, identity: PublicationIdentity) -> BuildToken {
+        self.failed_input_revision = None;
+        self.cancelled_input_revision = None;
+        if let Some(active) = self.active_cancellation.take() {
+            active.cancel();
+        }
+        let cancellation = self.input_cancellation.child();
+        self.active_cancellation = Some(cancellation.clone());
         self.build_generation = increment(self.build_generation, "build generation");
         BuildToken {
             owner: self.owner,
             input_revision: self.input_revision,
             generation: self.build_generation,
             identity,
+            cancellation,
         }
+    }
+
+    /// Cancelled work is distinct from failure; obsolete work cannot change the current status.
+    pub fn admit_cancelled(&mut self, token: &BuildToken) -> PublicationOutcome {
+        if !self.is_build_current(token) {
+            return PublicationOutcome::Superseded;
+        }
+        self.failed_input_revision = None;
+        self.cancelled_input_revision = Some(self.input_revision);
+        if self.lifecycle == SessionLifecycle::Reindexing {
+            self.transition(SessionLifecycle::Ready);
+        }
+        PublicationOutcome::Cancelled
+    }
+
+    fn is_build_current(&self, token: &BuildToken) -> bool {
+        token.owner == self.owner
+            && token.input_revision == self.input_revision
+            && token.generation == self.build_generation
+            && self.lifecycle != SessionLifecycle::Closed
     }
 
     /// The publication barrier: admit a finished build only if it is still the newest and
@@ -243,16 +356,15 @@ impl<P: Published> Session<P> {
         token: &BuildToken,
         result: Result<Arc<P>, E>,
     ) -> PublicationOutcome {
-        if token.owner != self.owner
-            || token.input_revision != self.input_revision
-            || token.generation != self.build_generation
-            || self.lifecycle == SessionLifecycle::Closed
-        {
+        if !self.is_build_current(token) {
             return PublicationOutcome::Superseded;
         }
         match result {
             Ok(published) if published.identity() == &token.identity => {
                 self.current = published;
+                self.published_input_revision = self.input_revision;
+                self.failed_input_revision = None;
+                self.cancelled_input_revision = None;
                 self.version = increment(self.version, "publication version");
                 if self.lifecycle == SessionLifecycle::Reindexing {
                     self.lifecycle = SessionLifecycle::Ready;
@@ -271,6 +383,7 @@ impl<P: Published> Session<P> {
     }
 
     fn finish_current_build(&mut self) {
+        self.failed_input_revision = Some(self.input_revision);
         if self.lifecycle == SessionLifecycle::Reindexing {
             self.transition(SessionLifecycle::Ready);
         }
@@ -279,6 +392,21 @@ impl<P: Published> Session<P> {
     /// Finishes a failed preparation for the current semantic inputs. There is no build token yet,
     /// but the lifecycle must not claim work remains in flight.
     pub fn finish_preparation_failure(&mut self) {
+        self.failed_input_revision = Some(self.input_revision);
+        if self.lifecycle == SessionLifecycle::Reindexing {
+            self.transition(SessionLifecycle::Ready);
+        }
+    }
+
+    fn advance_inputs(&mut self) {
+        self.input_cancellation.cancel();
+        self.input_cancellation = BuildCancellation::new();
+        self.input_revision = increment(self.input_revision, "input revision");
+    }
+
+    pub fn finish_preparation_cancelled(&mut self) {
+        self.failed_input_revision = None;
+        self.cancelled_input_revision = Some(self.input_revision);
         if self.lifecycle == SessionLifecycle::Reindexing {
             self.transition(SessionLifecycle::Ready);
         }
@@ -355,6 +483,135 @@ mod tests {
         let version = session.complete_startup();
         assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
         assert_eq!(version, session.version());
+    }
+
+    #[test]
+    fn worker_controls_cancel_old_builds_and_input_epochs_without_touching_new_ones() {
+        let mut session = ready();
+        let inputs = session.inputs();
+        let first = session.begin_build(identity("first"));
+        let second = session.begin_build(identity("second"));
+        assert!(first.cancellation().is_cancelled());
+        assert!(!second.cancellation().is_cancelled());
+        assert!(!inputs.cancellation().is_cancelled());
+        session.invalidate_inputs();
+        assert!(inputs.cancellation().is_cancelled());
+        assert!(second.cancellation().is_cancelled());
+        assert!(!session.inputs().cancellation().is_cancelled());
+        let current = session.begin_build(identity("current"));
+        assert!(!current.cancellation().is_cancelled());
+        session.close();
+        assert!(current.cancellation().is_cancelled());
+    }
+
+    #[test]
+    fn rekeying_a_cloned_owner_keeps_the_original_worker_live() {
+        let mut original = ready();
+        let worker = original.begin_build(identity("original"));
+        let mut independent = original.clone();
+        independent.rekey_for_owner();
+        independent.invalidate_inputs();
+        independent.close();
+        assert!(!worker.cancellation().is_cancelled());
+        assert!(original.is_build_current(&worker));
+    }
+
+    #[test]
+    fn cancelled_work_retains_the_model_and_is_distinct_from_failure_and_supersession() {
+        let mut session = ready();
+        let model = Arc::clone(session.current());
+        session.invalidate_inputs();
+        let cancelled = session.begin_build(identity("cancelled"));
+        assert_eq!(
+            session.admit_cancelled(&cancelled),
+            PublicationOutcome::Cancelled
+        );
+        assert_eq!(session.analysis_status(), AnalysisStatus::CancelledRetained);
+        assert!(session.failed_input_revision.is_none());
+        assert!(Arc::ptr_eq(session.current(), &model));
+        session.invalidate_inputs();
+        assert_eq!(
+            session.admit_cancelled(&cancelled),
+            PublicationOutcome::Superseded
+        );
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
+        session.finish_preparation_cancelled();
+        assert_eq!(session.analysis_status(), AnalysisStatus::CancelledRetained);
+    }
+
+    #[test]
+    fn analysis_status_tracks_current_updating_and_failed_retained_inputs() {
+        let mut session = ready();
+        assert_eq!(session.analysis_status(), AnalysisStatus::Current);
+        session.invalidate_inputs();
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
+        let failed = session.begin_build(identity("failed"));
+        assert_eq!(
+            session.admit::<()>(&failed, Err(())),
+            PublicationOutcome::Failed
+        );
+        assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
+        assert_eq!(session.analysis_status(), AnalysisStatus::FailedRetained);
+        session.invalidate_inputs();
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
+        assert_eq!(
+            session.admit::<()>(&failed, Err(())),
+            PublicationOutcome::Superseded
+        );
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
+        let completed = session.begin_build(identity("completed"));
+        assert_eq!(
+            session.admit::<()>(&completed, Ok(Arc::new(Fake(identity("completed"))))),
+            PublicationOutcome::Published
+        );
+        assert_eq!(session.analysis_status(), AnalysisStatus::Current);
+    }
+
+    #[test]
+    fn failed_preparation_is_not_reported_current_just_because_startup_finished() {
+        let mut session = ready();
+        session.invalidate_inputs();
+        session.finish_preparation_failure();
+        assert_eq!(session.lifecycle(), SessionLifecycle::Ready);
+        assert_eq!(session.analysis_status(), AnalysisStatus::FailedRetained);
+        session.begin_build(identity("retry"));
+        assert_eq!(session.analysis_status(), AnalysisStatus::Updating);
+    }
+
+    #[test]
+    fn preparation_tokens_follow_inputs_instead_of_publication_transitions() {
+        let mut session = Session::new(Arc::new(Fake(identity("initial"))));
+        let inputs = session.inputs();
+        session.begin_startup();
+        session.complete_startup();
+        assert!(session.is_input_current(&inputs));
+        let token = session.begin_build(identity("new"));
+        assert_eq!(
+            session.admit::<()>(&token, Ok(Arc::new(Fake(identity("new"))))),
+            PublicationOutcome::Published
+        );
+        assert!(session.is_input_current(&inputs));
+        session.invalidate_inputs();
+        assert!(!session.is_input_current(&inputs));
+    }
+
+    #[test]
+    fn preparation_tokens_reject_other_owners_resets_library_replacement_and_close() {
+        let mut session = ready();
+        assert!(!session.is_input_current(&ready().inputs()));
+        let before_reset = session.inputs();
+        session.reset();
+        assert!(!session.is_input_current(&before_reset));
+        session.complete_startup();
+        let before_library = session.inputs();
+        session.begin_library_reindex();
+        assert!(!session.is_input_current(&before_library));
+        let before_rekey = session.inputs();
+        session.rekey_for_owner();
+        assert!(!session.is_input_current(&before_rekey));
+        let before_close = session.inputs();
+        session.close();
+        assert!(!session.is_input_current(&before_close));
     }
 
     #[test]

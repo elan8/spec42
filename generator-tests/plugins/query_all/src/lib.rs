@@ -7,7 +7,8 @@
 use spec42_generator_sdk::{
     export,
     model::{
-        self, ConnectorEnd, ConnectorEndEndpoint, EndpointTarget, ExpressionStatus,
+        self, ConnectorEnd, ConnectorEndEndpoint, EndpointTarget, ExpressionNodeKind,
+        ExpressionStatus,
     },
     Artifact, Guest,
 };
@@ -177,13 +178,29 @@ impl Guest for QueryAll {
                         items.len()
                     );
                     for edge in items {
+                        let target = match &edge.target {
+                            model::RelationshipTarget::Resolved(target) => {
+                                target.qualified_name.clone()
+                            }
+                            model::RelationshipTarget::Ambiguous(candidates) => format!(
+                                "<ambiguous: {}>",
+                                candidates
+                                    .iter()
+                                    .map(|c| c.qualified_name.as_str())
+                                    .collect::<Vec<_>>()
+                                    .join(", ")
+                            ),
+                            model::RelationshipTarget::Unresolved { authored } => {
+                                format!("<unresolved: {}>", authored.as_deref().unwrap_or("?"))
+                            }
+                            model::RelationshipTarget::Unsupported { authored } => {
+                                format!("<unsupported: {}>", authored.as_deref().unwrap_or("?"))
+                            }
+                        };
                         let _ = writeln!(
                             out,
                             "  {} {} -> {} implied={}",
-                            edge.kind,
-                            edge.source.qualified_name,
-                            edge.target.qualified_name,
-                            edge.implied
+                            edge.kind, edge.source.qualified_name, target, edge.implied
                         );
                     }
                 }
@@ -215,13 +232,14 @@ impl Guest for QueryAll {
                             .unwrap_or_else(|| "<none>".to_owned()),
                         expression.nodes.len()
                     );
+                    for (index, node) in expression.nodes.iter().enumerate() {
+                        if let ExpressionNodeKind::Literal(literal) = &node.kind {
+                            let _ = writeln!(out, "  literal[{index}]: {literal:?}");
+                        }
+                    }
                 }
                 Err(error) => {
-                    let _ = writeln!(
-                        out,
-                        "expression({}): ERROR {error}",
-                        element.qualified_name
-                    );
+                    let _ = writeln!(out, "expression({}): ERROR {error}", element.qualified_name);
                 }
             }
 

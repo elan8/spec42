@@ -291,8 +291,8 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:34c99daa2182910a9004bed8ec39a639f6de53cc4bae37b991426d1996bb8708",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:f0e792777f801d8ca27bf3a058f61b94575272457ded37516714756fcb37344b",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -546,6 +546,7 @@ package Model {
         1,
         3
       ],
+      "portFamilies": [],
       "ports": [
         2,
         4
@@ -558,9 +559,11 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:796ee1504a587a5b4681b87b15a74ca661d00f907a5e0bfe80af5523d3b30ef6",
         "reference": 7,
         "source": 4,
         "stateSubaction": null,
@@ -583,9 +586,11 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "left",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:75404888111acde33d7597d11f625d36fc79fcd6cdb79508b52cdef4765279dc",
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
@@ -606,9 +611,11 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 1,
+        "presentationKey": "p:f71a184cf6c342694a04e2ac00fe5d686f54ace745ef874717a5567e3ca60607",
         "reference": 5,
         "source": 8,
         "stateSubaction": null,
@@ -637,9 +644,11 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "right",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:8723a7b749077b95012d47e6e4fd819e950cfba4a06173ab186fc75dc00bdede",
         "reference": 2,
         "source": 2,
         "stateSubaction": null,
@@ -660,9 +669,11 @@ package Model {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "data",
         "notationRole": "usage",
         "owner": 3,
+        "presentationKey": "p:a0910ba3dbe08fd78b964fe408f9087db00e77ae74af5bb4cc0e933deb7bf8b3",
         "reference": 5,
         "source": 8,
         "stateSubaction": null,

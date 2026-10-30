@@ -321,7 +321,7 @@ Useful focused suites:
 
 ```bash
 npm run test:multi-file          # multi-file workspace smoke
-npm run test:ux-unit             # status bar, snippets, and examples provider
+npm run test:ux-unit             # status bar and examples provider
 npm run test:library-unit        # library status view model
 ```
 
@@ -350,6 +350,113 @@ checked into source control.
 Spec42 emits structured performance logs when `spec42.performanceLogging.enabled` is true.
 Performance measurements are gathered locally on controlled hardware and reviewed with the change;
 they are not CI gates.
+
+### Editor notification baseline
+
+Build the optimized normal LSP host with its pinned libraries, then measure single full-text edits and bursts without
+writing the edited source file:
+
+```powershell
+cargo build --offline --release -p server --bin spec42
+python scripts/benchmark-editor.py --server target/release/spec42.exe --server-arg=lsp --profile release --workspace ../sysml-robot-vacuum-cleaner --document ../sysml-robot-vacuum-cleaner/model/Root.sysml --iterations 20 --burst-size 10 --output target/editor-robot-vacuum.json
+```
+
+Choose an existing source document in the workspace for `--document`.
+Use `--change-kind incremental` to send ordered UTF-16 range edits instead of full-text updates.
+For another host, use `--server-arg` for its LSP command-line arguments.
+The report keeps raw messages, per-version samples, p50/p95/max, binary/input/configuration hashes,
+revision, dirty-tree state, build-profile label and host metadata. Check the profile against the
+actual binary build; the runner does not build or download anything.
+The normal host's `sysml/libraryStatus` response is retained and must confirm the pinned standard
+library is available. Missing-library-context diagnostics fail a representative run. The core test
+host intentionally has no libraries by default: use `--allow-missing-libraries` only for explicitly
+labelled discovery/negative-control runs, which do not establish representative editor performance.
+
+The #192 probe records edit ingestion separately from version-correlated diagnostic delivery.
+By default, each single edit and the final version of each burst must receive matching versioned
+`publishDiagnostics` and a publication phase record. Intermediate burst versions without an observed
+notification remain `coalesced_or_unobserved`; their diagnostic latency is `null`, never the final
+version's latency. `--completion-scope handler` explicitly retains the older handler-only baseline
+scope for binaries that predate versioned diagnostic delivery.
+
+Hosts emit `backend:publication` records with a complete `editorVersions` map and model digest, plus
+preparation and queue time, construction wall time, canonical parse/lower/resolve/evaluate/index/check
+costs, admission and diagnostic fanout. The construction `resolutionTotalMs` contains its
+resolve/evaluate/index/check subphases; do not add it to those subphases. `namespaceChecksMs` is
+measured inside `checksMs`; do not add it to the containing check duration. Missing phase records
+remain explicit `null` values.
+
+`libraryClosureMs` measures canonical source selection against the immutable admitted library
+inventory, including open-library overlays. It is within `preparationMs`, separately from
+`sourceParseMs`. Library filesystem inventory preparation belongs to source discovery, not each
+editor revision. Restart parity tests compare complete model digests and workspace diagnostic
+publications after configuration, import, cross-file and library-file changes.
+
+`backend:startupScanPhases` and `backend:didChangeConfigurationReindex` measure source discovery,
+syntax preparation and source admission. `analysisScheduled: true` means that semantic work was
+scheduled; it is not a semantic-completion barrier. Use `backend:publication` and exact editor
+versions for construction and diagnostic completion. Library-search source preparation runs off
+the actor and is guarded by both the configuration epoch and the observed filesystem revision.
+
+On Windows the runner records cumulative process user/kernel CPU time, working set, commit charge
+and process-lifetime peaks after receiving each completion. The resource observation has its own
+timestamp; it is not synchronized with a semantic phase. Unsupported platforms or counter errors
+stay explicit as unavailable. Compare CPU deltas with `resources_before_edits`, rather than treating
+the cumulative counters as per-edit CPU time.
+
+Windows can change a background process's execution QoS during a run. If both retained baseline
+and candidate binaries slow down under system-managed scheduling, keep those reports and isolate
+the effect before attributing it to a code change. `--windows-high-qos` is an explicit measurement
+control: it disables execution-speed throttling for the disposable measured child, preserves other
+power-policy flags, and records the requested policy's readback. An API failure fails the run;
+there is no silent fallback. It changes neither global Windows settings nor normal editor policy.
+Compare both binaries under the same explicit policy and retain the system-managed controls.
+These controlled diagnostic timings do not establish background-editor performance. Confirm
+normal-policy editor behavior separately with the focused native view benchmark below. See
+[Windows QoS](https://learn.microsoft.com/en-us/windows/win32/procthread/quality-of-service) and
+[the process power-throttling contract](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/ns-processthreadsapi-process_power_throttling_state).
+
+Failed or timed-out runs retain a failed report and stderr; timings from debug runs are
+smoke-test evidence only.
+
+### VS Code view refresh
+
+After building the optimized host, run `npm ci` in `vscode/diagram-renderer` and `vscode`, then
+`npm run compile` in `vscode`. Use an existing VS Code installation and a workspace with an authored
+native view. No benchmark command downloads VS Code or model libraries. For example, from `vscode`:
+
+```powershell
+node scripts/benchmark-view-refresh.mjs --code C:/tools/VSCode/Code.exe --server ../target/release/spec42.exe --workspace ../../sysml-robot-vacuum-cleaner --document ../../sysml-robot-vacuum-cleaner/model/Root.sysml --library-input ../.cache/sysml-stdlib-kpar-2026-04 --library-input ../../sysml-domain-libraries/model --output ../target/editor-view-robot.json
+```
+
+Supply every admitted external source/archive root with `--library-input`, and the same pinned bundle
+environment as the host build. Verify `sysml/libraryStatus` with the normal host and these library
+settings before collecting representative measurements. The runner rejects missing-library-context
+diagnostics and records byte hashes of the declared inputs, binaries and compiled runner before/after.
+Library-input arguments identify evidence; they do not configure server admissions.
+
+Each invocation creates a new isolated profile next to its report, disables auto-save, and leaves
+the real model files unchanged. It measures single edits and bursts with the view closed, visible,
+then hidden. Defaults collect 20 single edits and 20 bursts of 10 while visible; closed and hidden
+states each exercise one single edit and one burst to check that no refresh occurs. Use
+`--inactive-iterations 20` for equal workload counts when comparing resource use across states.
+The native SysML output log correlates the final editor version's publication digest
+with generation, drawing and the current view's render acknowledgement. Closed/hidden views must
+perform no refresh for the measured digest. Their latency remains absent. Intermediate burst
+versions are not assigned the final version's latency.
+
+A frame observation means a mounted SVG followed by two visible browser animation-frame callbacks
+and an ExtensionHost acknowledgement. It is not a GPU/compositor timestamp. Reported webview/draw
+spans are nested and must not be added together. `editToFrameAckMs` uses one ExtensionHost monotonic
+clock; persisted-log polling delays the next edit but does not enter that span. CPU/memory counters
+cover only the ExtensionHost including the benchmark driver, excluding the server, renderer and GPU. Viewport/disclosure reuse
+flags describe the renderer's actual state; they do not establish preservation of non-default state.
+
+The launcher requests hidden startup by default. Use `--visible` for an explicitly requested visible
+run and keep its window focused throughout. Reports without a focused window for every visible sample
+are labelled `background-probe-only`; they cannot establish a representative visible-view baseline.
+Keep raw reports, profiles/logs, build identity and launch options. Repeat controlled runs before
+choosing release thresholds; shared CI hardware does not enforce timing gates.
 
 ### Query benchmarks
 

@@ -253,8 +253,8 @@ package BehaviorModel {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:709c3b4254c27f12ab8ea4de875fba0db26f4342fec9934064c4c8741089dad3",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:a175c06f26d6b17ac2c8ab5622f20810606b96e66be148517459dfc90950ef6a",
   "documents": [
     {
       "uri": "memory://snapshot/structure.sysml",
@@ -359,9 +359,11 @@ package BehaviorModel {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "SelectedRoot",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:4f9d6dc8c8e0ddc4c4e010049ac77abadf3c649ac844cb391350c838970d73e3",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -376,9 +378,11 @@ package BehaviorModel {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "included",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:88c3643c216d3354a643f7341ad66a8c7e489e8bba0408cac6fbe93a03c1350f",
         "reference": 1,
         "source": 1,
         "stateSubaction": null,

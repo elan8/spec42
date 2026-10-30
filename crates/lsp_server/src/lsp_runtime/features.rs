@@ -76,7 +76,7 @@ pub(crate) fn semantic_tokens_full_request(
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
         Some(entry) => {
             let text = entry.content().to_owned();
-            let ast_ranges = Some(ast_semantic_ranges(&entry.parsed, &text));
+            let ast_ranges = Some(ast_semantic_ranges(entry.syntax()?, &text));
             (text, ast_ranges)
         }
         None => return Ok(None),
@@ -111,7 +111,7 @@ pub(crate) fn semantic_tokens_range_request(
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
         Some(entry) => {
             let text = entry.content().to_owned();
-            let ast_ranges = Some(ast_semantic_ranges(&entry.parsed, &text));
+            let ast_ranges = Some(ast_semantic_ranges(entry.syntax()?, &text));
             (text, ast_ranges)
         }
         None => return Ok(None),
@@ -144,57 +144,17 @@ pub(crate) fn semantic_tokens_range_request(
     Ok(Some((tokens, logs)))
 }
 
+/// SysML declarations do not form spelling-based paired editing groups. Explicit rename
+/// uses canonical identities; typing into one name must not rewrite unrelated declarations.
 pub(crate) fn linked_editing_range(
-    state: &ServerState,
-    uri: Url,
-    pos: Position,
+    _state: &ServerState,
+    _uri: Url,
+    _pos: Position,
 ) -> Result<Option<LinkedEditingRanges>> {
-    let uri_norm = util::normalize_file_uri(&uri);
-    let entry = match state.index.get(&uri_norm) {
-        Some(entry) => entry,
-        None => return Ok(None),
-    };
-    let Some(token) = entry.parsed.token_at(pos.line, pos.character) else {
-        return Ok(None);
-    };
-    if token.is_keyword {
-        return Ok(None);
-    }
-    let line = token.range.start_line;
-    // Linked editing only applies on a declaration's own header line. The syntax service says
-    // which line that is; this used to guess from the line's leading keyword, which both missed
-    // declaration forms it had not enumerated and fired inside comments and strings.
-    let on_declaration_header = entry
-        .parsed
-        .declaration_at(line)
-        .is_some_and(|declaration| declaration.head_range.start_line == line);
-    if !on_declaration_header {
-        return Ok(None);
-    }
-    // Occurrences the syntax service found in code. The substring scan this replaced also
-    // matched inside comments and string literals, so editing a name could rewrite prose.
-    let ranges: Vec<_> = entry
-        .parsed
-        .occurrences_of(token.text)
-        .into_iter()
-        .filter(|range| range.start_line == line)
-        .map(|range| {
-            Range::new(
-                Position::new(range.start_line, range.start_character),
-                Position::new(range.end_line, range.end_character),
-            )
-        })
-        .collect();
-    if ranges.is_empty() {
-        return Ok(None);
-    }
-    Ok(Some(LinkedEditingRanges {
-        ranges,
-        word_pattern: None,
-    }))
+    Ok(None)
 }
 
-/// The published element whose declaration contains `position`, if the publication settled one.
+/// The resolved reference target, or containing declaration when there is no reference.
 fn element_at(
     state: &ServerState,
     uri: &Url,
@@ -203,9 +163,6 @@ fn element_at(
     use sysml_query::resolved_slice::{QueryAnswer, QueryOutcome, TextPosition};
 
     let model = state.published_model();
-    if !model.publication().completeness().is_complete() {
-        return None;
-    }
     let at = match model.inspection().inspect_at(
         uri.as_str(),
         TextPosition {
@@ -219,7 +176,11 @@ fn element_at(
         } => at,
         _ => return None,
     };
-    at.containing
+    match at.referenced {
+        sysml_query::resolved_slice::ReferenceAt::Resolved(target) => Some(*target),
+        sysml_query::resolved_slice::ReferenceAt::None => at.containing,
+        _ => None,
+    }
 }
 
 /// One published specialization step, in either direction.
@@ -228,29 +189,27 @@ fn element_at(
 /// and a subsetting are steps in this hierarchy exactly as a subclassification is.
 fn hierarchy_step(
     state: &ServerState,
-    uri: &Url,
-    position: Position,
+    symbol: sysml_query::resolved_slice::SymbolId,
     ascending: bool,
 ) -> Option<Vec<TypeHierarchyItem>> {
     use sysml_query::resolved_slice::{QueryAnswer, QueryOutcome, SpecializationScope};
 
     let model = state.published_model();
-    let element = element_at(state, uri, position)?;
     let outcome = if ascending {
         model
             .types()
-            .direct_supertypes(element.identity, SpecializationScope::AnySpecialization)
+            .direct_supertypes(symbol, SpecializationScope::AnySpecialization)
     } else {
         model
             .types()
-            .direct_subtypes(element.identity, SpecializationScope::AnySpecialization)
+            .direct_subtypes(symbol, SpecializationScope::AnySpecialization)
     };
     let symbols = match outcome {
         QueryOutcome {
             completeness: _publication_completeness,
             answer: QueryAnswer::Resolved(symbols),
         } => symbols,
-        _ => return Some(Vec::new()),
+        _ => return None,
     };
     Some(
         symbols
@@ -280,16 +239,16 @@ pub(crate) fn prepare_type_hierarchy(
 
 pub(crate) fn supertypes(
     state: &ServerState,
-    uri: Url,
-    range: Range,
+    item: TypeHierarchyItem,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-    Ok(hierarchy_step(state, &uri, range.start, true))
+    let symbol = hierarchy::item_symbol(state.published_model(), &item)?;
+    Ok(hierarchy_step(state, symbol, true))
 }
 
 pub(crate) fn subtypes(
     state: &ServerState,
-    uri: Url,
-    range: Range,
+    item: TypeHierarchyItem,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-    Ok(hierarchy_step(state, &uri, range.start, false))
+    let symbol = hierarchy::item_symbol(state.published_model(), &item)?;
+    Ok(hierarchy_step(state, symbol, false))
 }

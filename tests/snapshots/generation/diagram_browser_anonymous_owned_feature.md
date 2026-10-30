@@ -155,8 +155,8 @@ package BrowserProbe {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:9437dfb322b15ab8d4243601fb6cfec320a0b55d8e654774e38f16b93d981e32",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:3447d0bfb87a3fa2dd1c5b2d73ed86210be4ff5777c5e77d5f7e98e82862f126",
   "documents": [
     {
       "uri": "memory://snapshot/structure.kerml",
@@ -298,9 +298,11 @@ package BrowserProbe {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Class",
+        "multiplicity": null,
         "name": "Holder",
         "notationRole": "unsupported",
         "owner": null,
+        "presentationKey": "p:f11e16283f9313cd8a04594aad51b83111aa5b15cb479d4af6776745c3f6d3b9",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -315,9 +317,11 @@ package BrowserProbe {
         "direction": null,
         "featureDirection": null,
         "metaclass": "Feature",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
+        "presentationKey": "p:c629a3298aa9a7f15d55321f343de1ebef1be2aa8c87ca7bb643b9ca587b67d7",
         "reference": 4,
         "source": 1,
         "stateSubaction": null,

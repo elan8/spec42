@@ -284,3 +284,105 @@ fn dependency_mismatch_is_an_explicit_lsp_error_without_fallback() {
     assert!(!response.to_string().contains("Systems.sysml"));
     let _ = child.kill();
 }
+
+fn request(
+    stdin: &mut std::process::ChildStdin,
+    stdout: &mut std::process::ChildStdout,
+    method: &str,
+    params: serde_json::Value,
+) -> serde_json::Value {
+    let id = next_id();
+    send_message(
+        stdin,
+        &serde_json::json!({"jsonrpc":"2.0", "id":id, "method":method, "params":params})
+            .to_string(),
+    );
+    serde_json::from_str(&read_response(stdout, id).unwrap()).unwrap()
+}
+
+/// Two sibling projects that both use the standard library: the editor requests it makes for a
+/// standard-library document after a jump into it (outline, highlighting, folding, hover) carry
+/// no project, and must be answered rather than refused for lacking project provenance.
+#[test]
+fn a_standard_library_document_shared_by_two_projects_answers_editor_requests() {
+    let temp = tempfile::tempdir().unwrap();
+    let repo = temp.path().join("repo");
+    let stdlib = temp.path().join("stdlib");
+    std::fs::create_dir_all(&repo).unwrap();
+    fake_stdlib(&stdlib);
+    let usage = serde_json::json!([{"resource":SYSTEMS_RESOURCE,"versionConstraint":"2.0.0"}]);
+    let mut uses = Vec::new();
+    for project in ["a", "b"] {
+        let root = repo.join(project);
+        std::fs::create_dir_all(&root).unwrap();
+        write_manifest(&root, usage.clone());
+        let text = "package P { private import Systems::*; part s : SystemThing; }";
+        let path = root.join("model.sysml");
+        std::fs::write(&path, text).unwrap();
+        uses.push((url::Url::from_file_path(path).unwrap(), text));
+    }
+    let library_uri = url::Url::from_file_path(
+        stdlib
+            .canonicalize()
+            .unwrap()
+            .join("SysML_Systems_Library-2.0.0/Systems.sysml"),
+    )
+    .unwrap();
+
+    let mut child = spawn_server_with_env(&[("SPEC42_LSP_TEST_STDLIB", &stdlib)]);
+    let (mut stdin, mut stdout) = initialize(&mut child, &repo);
+    std::thread::sleep(std::time::Duration::from_millis(800));
+    for (uri, text) in &uses {
+        open(&mut stdin, uri, text);
+    }
+    std::thread::sleep(std::time::Duration::from_millis(300));
+
+    let editor_requests = |stdin: &mut std::process::ChildStdin,
+                           stdout: &mut std::process::ChildStdout| {
+        for (method, params) in [
+            (
+                "textDocument/documentSymbol",
+                serde_json::json!({"textDocument":{"uri":library_uri}}),
+            ),
+            (
+                "textDocument/semanticTokens/full",
+                serde_json::json!({"textDocument":{"uri":library_uri}}),
+            ),
+            (
+                "textDocument/foldingRange",
+                serde_json::json!({"textDocument":{"uri":library_uri}}),
+            ),
+            (
+                "textDocument/hover",
+                serde_json::json!({"textDocument":{"uri":library_uri},
+                                   "position":{"line":0,"character":24}}),
+            ),
+        ] {
+            let response = request(stdin, stdout, method, params);
+            assert!(
+                response.get("error").is_none(),
+                "{method} on the shared standard library failed: {response}"
+            );
+        }
+    };
+
+    // Before any navigation, either project answers: both admit the same library root.
+    editor_requests(&mut stdin, &mut stdout);
+
+    // The same after a jump from project b into the library, which is how the editor opens it.
+    let (b_uri, b_text) = &uses[1];
+    let jump = definition(
+        &mut stdin,
+        &mut stdout,
+        b_uri,
+        position_of(b_text, "SystemThing"),
+    );
+    assert!(
+        jump["result"]["uri"]
+            .as_str()
+            .is_some_and(|uri| uri.ends_with("Systems.sysml")),
+        "{jump}"
+    );
+    editor_requests(&mut stdin, &mut stdout);
+    let _ = child.kill();
+}

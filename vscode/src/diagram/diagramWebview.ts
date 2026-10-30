@@ -1,10 +1,12 @@
+import { diagramLimitations } from "./diagramLimitations";
 import { populateViewSelect, withExportBackground, type ViewChoice } from "./viewPresentation";
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
 import { isNativeDiagramView, renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
-import type { PreparedView } from "../../diagram-renderer/src/prepare";
+import type { PreparedView, PreparedNode } from "../../diagram-renderer/src/prepare";
 import type { DiagramProductIdentity, DisclosureState, RequestServerDraw, ViewportTransform } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
-import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "./diagramProductState";
+import { isEmptyIncompleteDiagramProduct, remapDisclosureState } from "./diagramProductState";
+import type { RenderMeasurement, RenderMeasurementIdentity, RenderMeasurementOutcome } from "./diagramPerformance";
 
 declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
 
@@ -14,10 +16,10 @@ type RenderMessage = {
   views: ViewChoice[];
   selectedHandle: string;
   header: string;
-  incompleteReasons: string[];
   placeholder?: string;
   loading?: boolean;
   error?: string;
+  measurement?: RenderMeasurementIdentity;
 };
 
 type DrawResponseMessage = {
@@ -110,11 +112,11 @@ let visibleViews: ViewChoice[] = [];
 const exportSvgButton = must<HTMLButtonElement>("export-svg");
 const exportPngButton = must<HTMLButtonElement>("export-png");
 
-let controller: RenderController | undefined;
+let mounted: { controller: RenderController; product: DiagramProduct; identity: DiagramProductIdentity } | undefined;
 let currentProduct: DiagramProduct | undefined;
 let currentPrepared: PreparedView | undefined;
 let currentIdentity: DiagramProductIdentity | undefined;
-let retainedViewport: ViewportTransform | undefined;
+let retainedPresentation: { product: DiagramProduct; viewHandle: string; disclosure: DisclosureState; viewport: ViewportTransform | undefined } | undefined;
 let renderGeneration = 0;
 let renderAbort: AbortController | undefined;
 
@@ -147,16 +149,32 @@ function isCurrentRender(generation: number, signal: AbortSignal): boolean {
   return generation === renderGeneration && !signal.aborted;
 }
 
+function capturePresentation(): void {
+  if (!mounted) return;
+  const viewport = mounted.controller.getViewport();
+  if (!viewport) return; // An inert/failed mount cannot replace the last presented state.
+  retainedPresentation = {
+    product: mounted.product, viewHandle: mounted.identity.viewHandle,
+    disclosure: mounted.controller.getDisclosureState(), viewport,
+  };
+}
+
+function presentationFor(product: DiagramProduct, viewHandle: string): {viewport: ViewportTransform | undefined; disclosure: DisclosureState | undefined} {
+  capturePresentation();
+  const retained = retainedPresentation?.viewHandle === viewHandle ? retainedPresentation : undefined;
+  return {viewport:retained?.viewport, disclosure:remapDisclosureState(retained?.product, product, retained?.disclosure)};
+}
+
 function clearRenderState(): void {
-  controller?.destroy();
-  controller = undefined;
+  capturePresentation();
+  mounted?.controller.destroy();
+  mounted = undefined;
   currentProduct = undefined;
   currentPrepared = undefined;
   currentIdentity = undefined;
-  retainedViewport = undefined;
 }
 
-function openSource(node: { uri?: string; sourcePath?: string; range?: { start?: { line: number; character?: number }; end?: { line?: number; character?: number } } }): void {
+function openSource(node: PreparedNode): void {
   const range = node.range;
   const uri = node.uri ?? node.sourcePath;
   if (!uri || !range?.start || !range.end) return;
@@ -181,9 +199,9 @@ async function mountPrepared(
   disclosureState?: DisclosureState,
   viewport?: ViewportTransform,
 ): Promise<void> {
-  const previous = controller;
-  controller = undefined;
-  previous?.destroy();
+  capturePresentation();
+  mounted?.controller.destroy();
+  mounted = undefined;
   const next = await renderVisualization(canvas, prepared, {
     theme: { colorScheme: currentColorScheme() },
     productIdentity,
@@ -199,7 +217,8 @@ async function mountPrepared(
     next.destroy();
     return;
   }
-  controller = next;
+  mounted = { controller: next, product, identity: productIdentity };
+  capturePresentation();
 }
 
 function populateSelect(views: RenderMessage["views"], selectedHandle: string): void {
@@ -225,12 +244,106 @@ function setStatus(header: string, error: string | undefined): void {
   statusEl.appendChild(document.createTextNode(header));
 }
 
+function showLimitations(product?: DiagramProduct, viewHandle?: string): void {
+  const host = must<HTMLElement>("limitations");
+  const wasOpen = host.querySelector("details")?.open ?? false;
+  host.replaceChildren();
+  const limitations = product ? diagramLimitations(product) : [];
+  host.hidden = limitations.length === 0;
+  if (!product || limitations.length === 0) return;
+  const details = document.createElement("details");
+  details.open = wasOpen;
+  const summary = document.createElement("summary");
+  summary.textContent = `Projection limitations (${limitations.length})`;
+  details.appendChild(summary);
+  const list = document.createElement("ul");
+  for (const limitation of limitations) {
+    const item = document.createElement("li");
+    const code = document.createElement("code");
+    code.textContent = limitation.code;
+    const text = document.createElement("p");
+    text.textContent = limitation.explanation;
+    item.append(code, text);
+    for (const link of limitation.links) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = link.label;
+      button.addEventListener("click", () => vscode.postMessage({ type: "openSource", target: link.target }));
+      item.appendChild(button);
+    }
+    list.appendChild(item);
+  }
+  const copy = document.createElement("button");
+  copy.type = "button";
+  copy.textContent = "Copy structured details";
+  copy.addEventListener("click", () => vscode.postMessage({ type: "copyLimitations", modelDigest: product.modelDigest, viewHandle }));
+  details.append(list, copy);
+  host.appendChild(details);
+}
+
+type RenderProgress = Pick<RenderMeasurement, "webviewPrepareMs" | "webviewRenderMs" | "viewportReused" | "disclosureReused">;
+
+/** Hidden documents and superseded renders cannot supply a visible frame observation. */
+function nextVisibleFrame(signal: AbortSignal): Promise<boolean> {
+  if (signal.aborted || document.visibilityState !== "visible") return Promise.resolve(false);
+  return new Promise(resolve => {
+    let frame = 0;
+    const finish = (observed: boolean): void => {
+      cancelAnimationFrame(frame);
+      signal.removeEventListener("abort", cancelled);
+      document.removeEventListener("visibilitychange", visibilityChanged);
+      resolve(observed);
+    };
+    const cancelled = (): void => finish(false);
+    const visibilityChanged = (): void => { if (document.visibilityState !== "visible") finish(false); };
+    signal.addEventListener("abort", cancelled, { once: true });
+    document.addEventListener("visibilitychange", visibilityChanged);
+    frame = requestAnimationFrame(() => finish(document.visibilityState === "visible"));
+  });
+}
+
 async function render(message: RenderMessage): Promise<void> {
   const { generation, signal } = beginRender();
+  const started = performance.now();
+  const progress: RenderProgress = { webviewPrepareMs: 0, webviewRenderMs: 0, viewportReused: false, disclosureReused: false };
+  let outcome: RenderMeasurementOutcome | undefined;
+  try {
+    outcome = await renderCurrent(message, generation, signal, progress);
+  } catch (error) {
+    // A render that throws (a malformed product, a failed layout) must not leave the previous
+    // view's SVG on the canvas looking current. A superseded render's failure is irrelevant.
+    if (!isCurrentRender(generation, signal)) return;
+    clearRenderState();
+    showLimitations();
+    const reason = error instanceof Error ? error.message : String(error);
+    canvas.replaceChildren(withText(`The view could not be rendered: ${reason}`));
+    outcome = "failed";
+  }
+  if (message.measurement && outcome && isCurrentRender(generation, signal)) {
+    const frameStarted = performance.now();
+    let framesObserved = 0;
+    if (outcome === "rendered") {
+      while (framesObserved < 2 && await nextVisibleFrame(signal)) framesObserved++;
+    }
+    if (!isCurrentRender(generation, signal)) return;
+    const finished = performance.now();
+    vscode.postMessage({
+      ...message.measurement,
+      ...(currentIdentity ? { modelDigest: currentIdentity.modelDigest, viewHandle: currentIdentity.viewHandle } : {}),
+      type: "renderComplete", outcome, ...progress,
+      webviewTotalMs: finished - started, frameWaitMs: finished - frameStarted,
+      framesObserved, visible: document.visibilityState === "visible",
+    } satisfies RenderMeasurement);
+  }
+}
+
+async function renderCurrent(message: RenderMessage, generation: number, signal: AbortSignal, progress: RenderProgress): Promise<RenderMeasurementOutcome | undefined> {
+  const prepareStarted = performance.now();
   populateSelect(message.views, message.selectedHandle);
   setStatus(message.header, message.error);
 
   if (message.placeholder) {
+    showLimitations();
     if (!isCurrentRender(generation, signal)) return;
     clearRenderState();
     canvas.replaceChildren(message.loading ? withLoading(message.placeholder) : withText(message.placeholder));
@@ -243,25 +356,23 @@ async function render(message: RenderMessage): Promise<void> {
   } catch {
     if (!isCurrentRender(generation, signal)) return;
     clearRenderState();
+    showLimitations();
     canvas.replaceChildren(withText("The generated diagram product was not valid JSON."));
-    return;
+    progress.webviewPrepareMs = performance.now() - prepareStarted;
+    return "failed";
   }
 
+  showLimitations(product, message.selectedHandle);
   if (isEmptyIncompleteDiagramProduct(product)) {
     if (!isCurrentRender(generation, signal)) return;
     clearRenderState();
-    const reasons = message.incompleteReasons.length > 0
-      ? message.incompleteReasons.join(", ")
-      : "the projection is empty";
+    const reasons = diagramLimitations(product).map((reason) => reason.explanation).join(" ") || "the projection is empty";
     canvas.replaceChildren(withText(`Nothing to draw yet — ${reasons}.`));
-    return;
+    progress.webviewPrepareMs = performance.now() - prepareStarted;
+    return "empty";
   }
 
-  const sameView = currentIdentity?.viewHandle === message.selectedHandle;
-  retainedViewport = sameView ? controller?.getViewport() ?? retainedViewport : undefined;
-  const viewport = retainedViewport;
-  // Disclosure names nodes by product index; it is reusable only while the same nodes are projected.
-  const disclosure = sameView && sameProjectedNodes(currentProduct, product) ? controller?.getDisclosureState() : undefined;
+  const {viewport, disclosure} = presentationFor(product, message.selectedHandle);
   currentProduct = product;
 
   const prepared = prepareViewData(product);
@@ -271,13 +382,26 @@ async function render(message: RenderMessage): Promise<void> {
     viewHandle: message.selectedHandle,
   };
   currentIdentity = productIdentity;
-  await mountPrepared(generation, signal, prepared, product, productIdentity, disclosure, viewport);
+  progress.webviewPrepareMs = performance.now() - prepareStarted;
+  const renderStarted = performance.now();
+  try {
+    await mountPrepared(generation, signal, prepared, product, productIdentity, disclosure, viewport);
+  } finally {
+    progress.webviewRenderMs = performance.now() - renderStarted;
+  }
+  if (!isCurrentRender(generation, signal)) return;
+  const mountedViewport = mounted?.controller.getViewport();
+  progress.viewportReused = viewport !== undefined && mountedViewport !== undefined &&
+    Math.abs(viewport.x - mountedViewport.x) < 0.000001 &&
+    Math.abs(viewport.y - mountedViewport.y) < 0.000001 &&
+    Math.abs(viewport.k - mountedViewport.k) < 0.000001;
+  progress.disclosureReused = disclosure !== undefined && JSON.stringify(disclosure) === JSON.stringify(mounted?.controller.getDisclosureState());
+  return mountedViewport ? "rendered" : "unavailable";
 }
 
 async function redrawPreservingDisclosure(): Promise<void> {
   if (!currentProduct || !currentPrepared || !currentIdentity) return;
-  const disclosure = controller?.getDisclosureState();
-  const viewport = controller?.getViewport();
+  const {viewport, disclosure} = presentationFor(currentProduct, currentIdentity.viewHandle);
   const { generation, signal } = beginRender();
   await mountPrepared(generation, signal, currentPrepared, currentProduct, currentIdentity, disclosure, viewport);
 }
@@ -303,6 +427,7 @@ function withLoading(text: string): HTMLElement {
 
 async function standaloneSvg(): Promise<string> {
   if (!currentProduct || !currentIdentity) throw new Error("Open a view before exporting it.");
+  const controller = mounted?.controller;
   if (!controller) throw new Error("Wait for the view to finish rendering before exporting it.");
   const scheme = "light" as const;
   if (currentPrepared && isNativeDiagramView(currentPrepared.view)) {
@@ -378,7 +503,7 @@ viewSelect.addEventListener("change", () => {
   updateSelectedViewInfo();
   vscode.postMessage({ type: "switchView", handle: viewSelect.value });
 });
-homeButton.addEventListener("click", () => controller?.reset());
+homeButton.addEventListener("click", () => mounted?.controller.reset());
 copyButton.addEventListener("click", () => vscode.postMessage({ type: "copyJson" }));
 exportSvgButton.addEventListener("click", () => void exportImage("svg"));
 exportPngButton.addEventListener("click", () => void exportImage("png"));

@@ -2465,13 +2465,14 @@ mod tests {
             unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         };
-        let (model, _) = crate::pipeline::phase::build_model(
+        let (model, _, _) = crate::pipeline::phase::build_model(
             storage,
             crate::lower::storage::ParsedSources::default(),
             EvaluationPolicy::Evaluate,
             sysml_contract::StandardLibraryAvailability::Unavailable,
             None,
             &[],
+            crate::pipeline::BuildControls::default(),
         )
         .unwrap();
         let mut output = String::new();

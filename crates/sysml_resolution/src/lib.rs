@@ -32,6 +32,7 @@ mod metadata_query;
 mod model;
 mod namespace_query;
 mod pipeline;
+mod positions;
 mod projection;
 pub mod publication;
 mod qualified_reference;
@@ -94,10 +95,11 @@ pub use diagram_query::{
     DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership,
     DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
     DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
-    DiagramSequenceEndpoint, DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene,
-    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
-    DiagramStateVertexKind, DiagramSuccessionGuard, DiagramTransitionFeature,
-    DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
+    DiagramSequenceCycleStep, DiagramSequenceEndpoint, DiagramSequenceMessage,
+    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
+    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
+    DiagramSuccessionGuard, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection,
 };
 pub use evaluation::{
     AnalysisEvaluation, AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure,
@@ -120,8 +122,13 @@ pub use inspection::{EffectiveIdentification, EffectiveName};
 pub use metadata_query::{
     MetadataAnnotationForm, MetadataAnnotationValue, PublishedMetadataAnnotation,
 };
+pub use model::published_relationship_kinds;
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
+pub use model::query::{
+    ImplicitRedefinitionRepair, ImportCandidate, QualificationCandidate, ReferenceRepair,
+    ReferenceRepairOutcome, RepairNamespace, RepairSlot,
+};
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
 pub use projection::{
     AdmittedSourceCounts, ProjectedElement, ProjectionEnvelope, ProjectionPhase,
@@ -171,6 +178,14 @@ pub struct BuildMeasurements {
     pub parse: std::time::Duration,
     pub lowering: std::time::Duration,
     pub resolution: std::time::Duration,
+    /// Subphases of `resolution`, measured by the owning phase barriers.
+    pub resolve: std::time::Duration,
+    pub evaluation: std::time::Duration,
+    pub indexing: std::time::Duration,
+    pub diagnostics: std::time::Duration,
+    /// Namespace membership-identity checks, measured inside `diagnostics` by their owner.
+    /// This observation is excluded from publication identity and semantic results.
+    pub namespace_checks: std::time::Duration,
     /// How many admitted documents this build lowered itself: a memo miss, or no memo at all.
     ///
     /// `documents_lowered + documents_reused` is every admitted document, library and workspace
@@ -422,6 +437,7 @@ pub struct BuildRequest {
     /// service handles, and the only trace a consumer sees is the counted facts on
     /// [`BuildMeasurements`].
     lowering: Option<std::sync::Arc<lower::memo::LoweringMemo>>,
+    cancellation: Option<publication::BuildCancellation>,
 }
 
 fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
@@ -504,11 +520,21 @@ pub(crate) fn build_library_stratum_memoized(
     syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
     lowering: Option<std::sync::Arc<lower::memo::LoweringMemo>>,
 ) -> Result<LibraryStratum, BuildFailure> {
+    build_library_stratum_cancellable(sources, syntax, lowering, None)
+}
+
+pub(crate) fn build_library_stratum_cancellable(
+    sources: Vec<SourceInput>,
+    syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
+    lowering: Option<std::sync::Arc<lower::memo::LoweringMemo>>,
+    cancellation: Option<publication::BuildCancellation>,
+) -> Result<LibraryStratum, BuildFailure> {
     let mut request = BuildRequest::new(
         sources,
         ConstructionSchedule::Parallel,
         LIBRARY_STRATUM_CONTRACT,
-    )?;
+    )?
+    .with_cancellation(cancellation);
     request.syntax = syntax;
     request.lowering = lowering;
     let manifest_entries = request.sources.iter().map(manifest_entry).collect();
@@ -564,6 +590,7 @@ impl BuildRequest {
             },
             syntax: None,
             lowering: None,
+            cancellation: None,
         })
     }
 
@@ -661,6 +688,14 @@ impl BuildRequest {
         self
     }
 
+    pub(crate) fn with_cancellation(
+        mut self,
+        cancellation: Option<publication::BuildCancellation>,
+    ) -> Self {
+        self.cancellation = cancellation;
+        self
+    }
+
     pub fn identity(&self) -> &PublicationIdentity {
         &self.identity
     }
@@ -673,6 +708,7 @@ pub enum ConstructionPhase {
     Lowering,
     Splicing,
     Resolution,
+    Evaluation,
     Indexing,
     Diagnostics,
     LibrarySeed,
@@ -680,6 +716,9 @@ pub enum ConstructionPhase {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BuildFailure {
+    Cancelled {
+        phase: ConstructionPhase,
+    },
     DuplicateSourceIdentity,
     ConstructionFailed {
         phase: ConstructionPhase,
@@ -709,6 +748,7 @@ impl BuildFailure {
 impl fmt::Display for BuildFailure {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Cancelled { phase } => write!(formatter, "{phase:?} cancelled"),
             Self::DuplicateSourceIdentity => formatter.write_str("DuplicateSourceIdentity"),
             Self::ConstructionFailed {
                 phase,
@@ -803,7 +843,10 @@ fn build_parts(
             request.standard_library_availability,
             request.library.as_deref().map(|library| &library.prepared),
             &request.reported,
-            request.lowering.as_deref(),
+            pipeline::BuildControls {
+                lowering_memo: request.lowering.as_deref(),
+                cancellation: request.cancellation.as_ref(),
+            },
         )?;
     Ok((
         PublishedResolution {
@@ -814,6 +857,11 @@ fn build_parts(
             parse: measurements.parse,
             lowering: measurements.lowering,
             resolution: measurements.resolution,
+            resolve: measurements.semantic.resolve,
+            evaluation: measurements.semantic.evaluation,
+            indexing: measurements.semantic.indexing,
+            diagnostics: measurements.semantic.diagnostics,
+            namespace_checks: measurements.semantic.namespace_checks,
             sources_parsed: measurements.sources_parsed,
             documents_lowered: measurements.documents_lowered,
             documents_reused: measurements.documents_reused,
@@ -906,6 +954,25 @@ impl PublishedResolution {
         self.model.visible_members(document, position, qualifier)
     }
 
+    /// What an editor may offer to repair the unresolved or ambiguous reference at `position`.
+    pub fn reference_repair(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ReferenceRepair> {
+        self.model.reference_repair(document, position)
+    }
+
+    /// The explicit `:>>` repair for the declaration at `position`, where its authored value
+    /// silently overrides the inherited member its name implicitly redefines.
+    pub fn implicit_redefinition_repair(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ImplicitRedefinitionRepair> {
+        self.model.implicit_redefinition_repair(document, position)
+    }
+
     /// The settled evaluation of one element: value, state, authored units and required
     /// measurement, from facts this publication fixed before it became visible.
     pub fn evaluate(&self, symbol: SymbolId) -> QueryOutcome<ElementEvaluation> {
@@ -968,6 +1035,15 @@ impl PublishedResolution {
     /// consumer takes when it needs to keep something.
     pub fn qualified_name(&self, symbol: SymbolId) -> Option<&str> {
         self.model.symbol_qualified_name(symbol)
+    }
+
+    /// KerML `deriveElementQualifiedName`: the escaped `::`-joined name that names exactly this
+    /// element from the root namespace. `None` where a segment is unnamed or not unique.
+    ///
+    /// Composed on request rather than stored, so this allocates. It is how source that names an
+    /// element is written, which is what [`Self::qualified_name`]'s display path is not.
+    pub fn element_qualified_name(&self, symbol: SymbolId) -> Option<String> {
+        self.model.symbol_element_qualified_name(symbol)
     }
 
     /// One run of authored text, borrowed from this publication.

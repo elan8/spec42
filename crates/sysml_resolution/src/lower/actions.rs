@@ -331,6 +331,8 @@ impl SemanticModelBuilder {
                 node.span,
                 Some(&node.value.condition),
                 &node.value.body.body,
+                node.value.until.as_ref(),
+                &node.value.prefix,
             )?,
             ActionDefBodyElement::LoopStmt(node) => self.lower_while_or_loop_stmt(
                 document,
@@ -340,6 +342,8 @@ impl SemanticModelBuilder {
                 node.span,
                 None,
                 &node.value.body.body,
+                node.value.until.as_ref(),
+                &node.value.prefix,
             )?,
             ActionDefBodyElement::IfStmt(node) => self.lower_if_stmt(
                 document,
@@ -792,6 +796,8 @@ impl SemanticModelBuilder {
                 node.span,
                 Some(&node.value.condition),
                 &node.value.body.body,
+                node.value.until.as_ref(),
+                &node.value.prefix,
             )?,
             ActionUsageBodyElement::LoopStmt(node) => self.lower_while_or_loop_stmt(
                 document,
@@ -801,6 +807,8 @@ impl SemanticModelBuilder {
                 node.span,
                 None,
                 &node.value.body.body,
+                node.value.until.as_ref(),
+                &node.value.prefix,
             )?,
             ActionUsageBodyElement::IfStmt(node) => self.lower_if_stmt(
                 document,
@@ -1486,6 +1494,8 @@ impl SemanticModelBuilder {
                 stmt.span,
                 Some(&stmt.value.condition),
                 &stmt.value.body.body,
+                stmt.value.until.as_ref(),
+                &stmt.value.prefix,
             )?,
             ThenTarget::Loop(stmt) => self.lower_while_or_loop_stmt(
                 document,
@@ -1495,6 +1505,8 @@ impl SemanticModelBuilder {
                 stmt.span,
                 None,
                 &stmt.value.body.body,
+                stmt.value.until.as_ref(),
+                &stmt.value.prefix,
             )?,
             ThenTarget::For(stmt) => {
                 self.lower_for_loop(document, owner, family, stmt.span, &stmt.value)?
@@ -1531,8 +1543,8 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers an `assign <target> := <value>;` reassignment statement (BNF `AssignStmt`, `ast::
-    /// AssignStmt`; `is_then` is not modeled as a distinct fact -- both the plain and `then assign
-    /// ...;` spellings resolve identically) as its own anonymous `DeclarationKind::Assign` feature
+    /// AssignStmt`; a `then assign ...;` also carries the source of its succession, like any other
+    /// `then` node) as its own anonymous `DeclarationKind::Assign` feature
     /// owned by `owner`, mirroring `lower_bind`'s "statement, not a new named usage" shape: `lhs`
     /// is lowered as an `AssignTarget` reference through the exact `lower_succession_end` `FeatureRef`/
     /// `MemberAccess` dispatch every other paired/single-operand control-flow reference kind uses,
@@ -1547,21 +1559,22 @@ impl SemanticModelBuilder {
         span: Span,
         node: &AssignStmt,
     ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
+        // `then assign` is SysML's `SourceSuccessionMember ActionNodeMember` (8.2.2.17.1): a
+        // succession from the preceding member to this assignment node.
+        let then_source = node
+            .is_then
+            .then(|| self.then_source(owner, self.declarations.len()))
+            .flatten();
+        // `AssignmentNodeDeclaration = ActionNodeUsageDeclaration? 'assign' ...`: a named
+        // `action inc assign x := 1;` is one assignment node called `inc`.
+        let declaration = self.lower_structured_action_declaration(
             document,
-            Some(owner),
+            owner,
             DeclarationKind::Assign,
-            None,
             span,
-            // A synthesized scope for the assignment's target/value references.
-            DeclarationFacts::none(),
+            &node.prefix,
         )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
+        self.declaration_facts[declaration.index()].then_source = then_source;
         self.lower_assignment_operands(document, declaration, family, &node.lhs, &node.rhs)
     }
 
@@ -1642,8 +1655,59 @@ impl SemanticModelBuilder {
         self.lower_constraint_expression(document, declaration, family, rhs)
     }
 
+    /// Preserve the shared ActionNodePrefix on for/while/loop declarations, and record the node's
+    /// own feature membership.
+    fn lower_structured_action_declaration(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        kind: DeclarationKind,
+        span: Span,
+        prefix: &sysml_v2_parser::ast::ActionNodePrefix,
+    ) -> Result<DeclarationId, ConstructionError> {
+        use crate::lower::facts::{occurrence_prefix_direction, occurrence_prefix_modifiers};
+        let usage = prefix
+            .action_declaration
+            .as_ref()
+            .and_then(|node| node.declaration.as_ref());
+        let name = match usage {
+            Some(usage) => self.intern_declaration_name(document, usage.identification.name)?,
+            None => None.into(),
+        };
+        let mut facts = DeclarationFacts {
+            modifiers: occurrence_prefix_modifiers(&prefix.occurrence_prefix),
+            direction: occurrence_prefix_direction(&prefix.occurrence_prefix),
+            portion_kind: portion_kind_node_fact(prefix.occurrence_prefix.portion()),
+            ..DeclarationFacts::none()
+        };
+        if let Some(usage) = usage {
+            facts.short_name = self.intern_short_name(document, usage.identification.short_name)?;
+            facts.multiplicity = multiplicity_facts(usage.multiplicity.as_ref());
+            facts.modifiers.ordered = usage.multiplicity_modifiers.is_ordered();
+            facts.modifiers.nonunique = !usage.multiplicity_modifiers.is_unique();
+        }
+        let declaration =
+            self.push_typed_declaration(document, Some(owner), kind, name, span, facts)?;
+        // The node's own membership precedes its clauses and annotations, as for every usage.
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        if let Some(usage) = usage {
+            self.lower_usage_declaration_clauses(document, declaration, usage, false, None)?;
+        }
+        self.lower_usage_extension_keywords(
+            document,
+            declaration,
+            &prefix.occurrence_prefix.extension_keywords,
+        )?;
+        Ok(declaration)
+    }
+
     /// Lowers a `while <condition> { ... }` (BNF `WhileStmt`) or bare `loop { ... }` (BNF
-    /// `LoopStmt`, no condition) control node as its own anonymous nested-declaration feature
+    /// `LoopStmt`, no condition) control node as its own nested-declaration feature
     /// owned by `owner`, mirroring `lower_first_merge_stmt`'s shape: an optional boolean
     /// `condition` is lowered through the same `classify_expression`/
     /// `lower_constraint_expression` machinery already used for `decide`'s branch guards/
@@ -1662,22 +1726,11 @@ impl SemanticModelBuilder {
         span: Span,
         condition: Option<&Node<Expression>>,
         body: &ActionDefBody,
+        until: Option<&sysml_v2_parser::ast::UntilParameter>,
+        prefix: &sysml_v2_parser::ast::ActionNodePrefix,
     ) -> Result<(), ConstructionError> {
-        // A synthesized control-flow scope with no authored declaration syntax of its own.
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            decl_kind,
-            None,
-            span,
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
-        )?;
+        let declaration =
+            self.lower_structured_action_declaration(document, owner, decl_kind, span, prefix)?;
         if let Some(condition) = condition {
             self.push_evaluation_fact(
                 declaration,
@@ -1688,6 +1741,23 @@ impl SemanticModelBuilder {
         let body_start = self.declarations.len();
         self.lower_action_def_body(document, declaration, body)?;
         self.mark_single_action_input_parameter(declaration, body_start, 2);
+        if let Some(until) = until {
+            // The optional third input is a distinct expression. Do not replace the while
+            // condition or evaluate it at construction time as if it were the loop's result.
+            let (parameter, _) = self.mint_value_expression(
+                document,
+                declaration,
+                Some(crate::MembershipRole::Parameter),
+                &until.expression,
+            )?;
+            self.declaration_facts[parameter.index()].direction = Some(ParameterDirection::In);
+            self.declaration_facts[parameter.index()].action_input_parameter_position = Some(3);
+            self.push_evaluation_fact(
+                parameter,
+                self.constraint_expression_site(document, &until.expression.value),
+            );
+            self.lower_constraint_expression(document, parameter, family, &until.expression)?;
+        }
         Ok(())
     }
 
@@ -1714,8 +1784,6 @@ impl SemanticModelBuilder {
             DeclarationKind::If,
             None,
             span,
-            // A synthesized scope for the conditional's guard and branches. `else_body` is a
-            // typed parser distinction, so publish its presence once at this lowering boundary.
             DeclarationFacts {
                 has_else_action: Some(node.else_body.is_some()),
                 ..DeclarationFacts::none()
@@ -1791,19 +1859,10 @@ impl SemanticModelBuilder {
         }
     }
 
-    /// Lowers a `for <var> in <range> { ... }` loop control node (BNF `ForLoop`) as its own
-    /// anonymous `DeclarationKind::ForLoop` nested-declaration feature owned by `owner`, mirroring
-    /// `lower_while_or_loop_stmt`'s shape: the `range` collection expression is lowered through
-    /// the same `classify_expression`/`lower_constraint_expression` machinery as
-    /// `while`'s condition, sourced at this `ForLoop` declaration (the range is evaluated once per
-    /// loop, not once per iteration binding). `var` (a bare, untyped `String` -- the parser
-    /// records no type/multiplicity for it) is lowered as a named `DeclarationKind::
-    /// ForLoopVariable` feature owned by this same `ForLoop` declaration -- introducing a binding,
-    /// not a reference, mirroring `InOutDecl`'s own scope boundary -- so it is a visible sibling
-    /// through the shared `DeclarationDomain::Any` lexical lookup the body's own statements use.
-    /// The body then recurses through `lower_action_def_body`, owned by this `ForLoop`
-    /// declaration. No type inference from `range`'s element type is performed; this is
-    /// reference-resolution scope only, not iteration-execution semantics.
+    /// Lower a for-loop's node declaration, sequence expression, variable UsageDeclaration and
+    /// body. The variable belongs to the loop's lexical scope and retains its authored type,
+    /// multiplicity and specialization clauses. This does not execute the loop or infer the
+    /// variable's type from the sequence expression.
     pub(crate) fn lower_for_loop(
         &mut self,
         document: DocumentIdx,
@@ -1812,20 +1871,12 @@ impl SemanticModelBuilder {
         span: Span,
         node: &ForLoop,
     ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
+        let declaration = self.lower_structured_action_declaration(
             document,
-            Some(owner),
+            owner,
             DeclarationKind::ForLoop,
-            None,
             span,
-            // A synthesized scope owning the loop variable and range expression.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            span,
+            &node.prefix,
         )?;
         self.push_evaluation_fact(
             declaration,
@@ -1839,21 +1890,37 @@ impl SemanticModelBuilder {
         )?;
         let var_name =
             self.intern_declaration_name(document, node.variable.value.identification.name)?;
+        let short_name =
+            self.intern_short_name(document, node.variable.value.identification.short_name)?;
         let var_declaration = self.push_typed_declaration(
             document,
             Some(declaration),
             DeclarationKind::ForLoopVariable,
             var_name,
-            span,
-            // `ast::ForLoop::var` is a bare `String`; the parser records no type, multiplicity, or
-            // modifier for the loop variable.
-            DeclarationFacts::none(),
+            node.variable.span,
+            DeclarationFacts {
+                short_name,
+                multiplicity: multiplicity_facts(node.variable.value.multiplicity.as_ref()),
+                modifiers: DeclarationModifiers {
+                    ordered: node.variable.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.variable.value.multiplicity_modifiers.is_unique(),
+                    ..DeclarationModifiers::default()
+                },
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             var_declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            span,
+            node.variable.span,
+        )?;
+        self.lower_usage_declaration_clauses(
+            document,
+            var_declaration,
+            &node.variable.value,
+            false,
+            None,
         )?;
         let body_start = self.declarations.len();
         self.lower_action_def_body(document, declaration, &node.body.body)?;
@@ -2262,7 +2329,8 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a `terminate <target>;`/bare `terminate;` body element (BNF `TerminateStmt`, `ast::
-    /// TerminateStmt`) found inside an action def/usage body. The optional `target` is resolved as
+    /// TerminateStmt`), named or not and optionally after `then`, found inside an action def/usage
+    /// body. The optional `target` is resolved as
     /// a `TerminateTarget` reference through the shared `lower_satisfy_operand`
     /// `DeclarationDomain::Any` lexical lookup. The statement owns a distinct anonymous
     /// `TerminateActionUsage` identity; lexical resolution from that child still reaches sibling
@@ -2275,20 +2343,23 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<TerminateStmt>,
     ) -> Result<(), ConstructionError> {
-        let declaration = self.push_typed_declaration(
+        // `then terminate` is a succession from the preceding member to this node, as for every
+        // `then` node (SysML 8.2.2.17.1).
+        let then_source = node
+            .value
+            .is_then
+            .then(|| self.then_source(owner, self.declarations.len()))
+            .flatten();
+        // `TerminateNode = OccurrenceUsagePrefix ActionNodeUsageDeclaration? 'terminate' ...`: a
+        // named `action stop terminate;` is one terminate node called `stop`.
+        let declaration = self.lower_structured_action_declaration(
             document,
-            Some(owner),
+            owner,
             DeclarationKind::TerminateActionUsage,
-            None,
             node.span,
-            DeclarationFacts::none(),
+            &node.value.prefix,
         )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span,
-        )?;
+        self.declaration_facts[declaration.index()].then_source = then_source;
         if let Some(target) = &node.value.target {
             self.lower_satisfy_operand(
                 document,

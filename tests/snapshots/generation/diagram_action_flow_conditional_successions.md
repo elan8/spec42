@@ -721,8 +721,8 @@ package Flow {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:1d40de58e88a21d63cf977ea674bd1512928acb952b458447738b2354bd5682d",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:a42568e89175e0ce067c67bb80af6440ce974c030c6d6e0844f914cb6da61c7b",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -872,15 +872,6 @@ package Flow {
       "document": 0,
       "range": [
         13,
-        15,
-        13,
-        20
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        13,
         21,
         13,
         31
@@ -962,15 +953,6 @@ package Flow {
       "document": 0,
       "range": [
         16,
-        22,
-        16,
-        28
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        16,
         34,
         16,
         42
@@ -992,24 +974,6 @@ package Flow {
         14,
         17,
         18
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        17,
-        22,
-        17,
-        32
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        17,
-        26,
-        17,
-        32
       ]
     },
     {
@@ -1126,11 +1090,6 @@ package Flow {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "Flow::Guarded::::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "Flow::Guarded::check"
     },
     {
@@ -1216,7 +1175,14 @@ package Flow {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Flow::Guarded",
-      "source": 15,
+      "source": 14,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Guarded",
+      "source": 17,
       "sourceDomain": "workspace"
     },
     {
@@ -1230,49 +1196,21 @@ package Flow {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Flow::Guarded",
-      "source": 19,
+      "source": 21,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Flow::Guarded",
-      "source": 22,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "Flow::Guarded",
-      "source": 26,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "Flow::Guarded",
-      "source": 31,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "BooleanExpression",
-      "ownerQualifiedName": "Flow::Guarded::",
-      "source": 14,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "BooleanExpression",
-      "ownerQualifiedName": "Flow::Guarded::",
       "source": 24,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "BooleanExpression",
-      "ownerQualifiedName": "Flow::Guarded::",
-      "source": 28,
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Guarded",
+      "source": 27,
       "sourceDomain": "workspace"
     },
     {
@@ -1295,13 +1233,25 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "ordinal": 5,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
       "ordinal": 9,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
       "relationshipKind": "containment",
       "source": 0
     },
@@ -1319,13 +1269,13 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 14,
       "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 15,
       "relationshipKind": "containment",
       "source": 0
     },
@@ -1343,12 +1293,6 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
       "ordinal": 19,
       "relationshipKind": "containment",
       "source": 0
@@ -1361,39 +1305,15 @@ package Flow {
     },
     {
       "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "containment",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
       "ordinal": 24,
       "relationshipKind": "containment",
       "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "containment",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "containment",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "containment",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "containment",
-      "source": 1
     },
     {
       "kind": "relationship",
@@ -1427,7 +1347,13 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 13,
+      "relationshipKind": "succession",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
       "relationshipKind": "succession",
       "source": 1
     },
@@ -1439,55 +1365,37 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 18,
       "relationshipKind": "succession",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 43,
+      "relationshipKind": "thenTarget",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "thenTarget",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "thenTarget",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
       "relationshipKind": "succession",
-      "source": 1
+      "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "thenTarget",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "thenTarget",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "thenTarget",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "expressionOperand",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "expressionOperand",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "expressionOperand",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
+      "ordinal": 20,
       "relationshipKind": "succession",
       "source": 4
     },
@@ -1495,86 +1403,80 @@ package Flow {
       "kind": "relationship",
       "ordinal": 22,
       "relationshipKind": "succession",
-      "source": 5
+      "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "succession",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 35,
       "relationshipKind": "typing",
-      "source": 6
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "succession",
-      "source": 7
+      "source": 6
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "succession",
-      "source": 8
+      "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "ordinal": 6,
       "relationshipKind": "succession",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 38,
+      "relationshipKind": "typing",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "typing",
-      "source": 9
+      "ordinal": 54,
+      "relationshipKind": "redefinition",
+      "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 53,
+      "relationshipKind": "typing",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
       "relationshipKind": "redefinition",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "typing",
+      "ordinal": 13,
+      "relationshipKind": "succession",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "redefinition",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 18,
       "relationshipKind": "succession",
-      "source": 13
+      "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
-      "relationshipKind": "succession",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 67,
+      "ordinal": 58,
       "relationshipKind": "typing",
-      "source": 13
+      "source": 12
     }
   ],
   "selectedView": {
-    "reference": 10,
+    "reference": 9,
     "kind": "action-flow-view",
     "name": "guarded",
-    "source": 34
+    "source": 30
   },
   "completeness": {
     "status": "complete",
@@ -1587,103 +1489,130 @@ package Flow {
         "navigation": 9,
         "origin": 1,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 24,
         "source": 0,
         "target": 1
       },
       {
         "kind": "containment",
-        "navigation": 19,
+        "navigation": 18,
         "origin": 2,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 25,
         "source": 0,
         "target": 2
       },
       {
         "kind": "succession",
-        "navigation": 20,
+        "navigation": 19,
         "origin": 2,
         "provenance": "implied",
-        "reference": 67,
-        "source": 14,
-        "target": 13
+        "reference": 57,
+        "source": 11,
+        "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 22,
+        "navigation": 21,
         "origin": 3,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 26,
         "source": 0,
         "target": 3
       },
       {
         "kind": "succession",
-        "navigation": 23,
+        "navigation": 22,
         "origin": 3,
         "provenance": "implied",
-        "reference": 68,
-        "source": 12,
-        "target": 15
+        "reference": 58,
+        "source": 9,
+        "target": 12
       },
       {
         "kind": "containment",
         "navigation": 24,
         "origin": 4,
         "provenance": "authored",
-        "reference": 45,
-        "source": 3,
+        "reference": 27,
+        "source": 0,
         "target": 4
       },
       {
+        "kind": "succession",
+        "navigation": 25,
+        "origin": 4,
+        "provenance": "implied",
+        "reference": 59,
+        "source": 9,
+        "target": 16
+      },
+      {
         "kind": "containment",
-        "navigation": 26,
+        "navigation": 27,
         "origin": 5,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 28,
         "source": 0,
         "target": 5
       },
       {
         "kind": "succession",
-        "navigation": 27,
+        "navigation": 28,
         "origin": 5,
         "provenance": "implied",
-        "reference": 69,
+        "reference": 53,
         "source": 12,
-        "target": 19
-      },
-      {
-        "kind": "containment",
-        "navigation": 28,
-        "origin": 6,
-        "provenance": "authored",
-        "reference": 46,
-        "source": 5,
-        "target": 6
-      },
-      {
-        "kind": "containment",
-        "navigation": 31,
-        "origin": 7,
-        "provenance": "authored",
-        "reference": 32,
-        "source": 0,
-        "target": 7
-      },
-      {
-        "kind": "succession",
-        "navigation": 32,
-        "origin": 7,
-        "provenance": "implied",
-        "reference": 63,
-        "source": 15,
-        "target": 19
+        "target": 16
       },
       {
         "kind": "containment",
         "navigation": 7,
+        "origin": 9,
+        "provenance": "authored",
+        "reference": 29,
+        "source": 0,
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 10,
+        "provenance": "authored",
+        "reference": 30,
+        "source": 0,
+        "target": 10
+      },
+      {
+        "kind": "containment",
+        "navigation": 6,
+        "origin": 11,
+        "provenance": "authored",
+        "reference": 31,
+        "source": 0,
+        "target": 11
+      },
+      {
+        "kind": "containment",
+        "navigation": 13,
+        "origin": 13,
+        "provenance": "authored",
+        "reference": 32,
+        "source": 0,
+        "target": 13
+      },
+      {
+        "kind": "succession",
+        "navigation": 13,
+        "origin": 13,
+        "provenance": "authored",
+        "reference": 64,
+        "source": 17,
+        "target": 13
+      },
+      {
+        "kind": "containment",
+        "navigation": 8,
         "origin": 12,
         "provenance": "authored",
         "reference": 33,
@@ -1692,147 +1621,93 @@ package Flow {
       },
       {
         "kind": "containment",
-        "navigation": 5,
-        "origin": 13,
-        "provenance": "authored",
-        "reference": 34,
-        "source": 0,
-        "target": 13
-      },
-      {
-        "kind": "containment",
-        "navigation": 6,
+        "navigation": 1,
         "origin": 14,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 34,
         "source": 0,
         "target": 14
       },
       {
         "kind": "containment",
-        "navigation": 13,
-        "origin": 16,
-        "provenance": "authored",
-        "reference": 36,
-        "source": 0,
-        "target": 16
-      },
-      {
-        "kind": "succession",
-        "navigation": 13,
-        "origin": 16,
-        "provenance": "authored",
-        "reference": 74,
-        "source": 20,
-        "target": 16
-      },
-      {
-        "kind": "containment",
-        "navigation": 8,
+        "navigation": 3,
         "origin": 15,
         "provenance": "authored",
-        "reference": 37,
+        "reference": 35,
         "source": 0,
         "target": 15
       },
       {
         "kind": "containment",
-        "navigation": 1,
-        "origin": 17,
-        "provenance": "authored",
-        "reference": 38,
-        "source": 0,
-        "target": 17
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 18,
-        "provenance": "authored",
-        "reference": 39,
-        "source": 0,
-        "target": 18
-      },
-      {
-        "kind": "containment",
         "navigation": 11,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 36,
+        "source": 0,
+        "target": 6
+      },
+      {
+        "kind": "succession",
+        "navigation": 11,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 65,
+        "source": 17,
+        "target": 10
+      },
+      {
+        "kind": "containment",
+        "navigation": 14,
+        "origin": 7,
+        "provenance": "authored",
+        "reference": 37,
+        "source": 0,
+        "target": 7
+      },
+      {
+        "kind": "succession",
+        "navigation": 14,
+        "origin": 7,
+        "provenance": "authored",
+        "reference": 54,
+        "source": 13,
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 17,
         "origin": 8,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 38,
         "source": 0,
         "target": 8
       },
       {
         "kind": "succession",
-        "navigation": 11,
+        "navigation": 17,
         "origin": 8,
         "provenance": "authored",
-        "reference": 75,
-        "source": 20,
-        "target": 13
-      },
-      {
-        "kind": "containment",
-        "navigation": 15,
-        "origin": 9,
-        "provenance": "authored",
-        "reference": 41,
-        "source": 0,
-        "target": 9
-      },
-      {
-        "kind": "succession",
-        "navigation": 15,
-        "origin": 9,
-        "provenance": "authored",
-        "reference": 64,
-        "source": 16,
-        "target": 12
-      },
-      {
-        "kind": "containment",
-        "navigation": 14,
-        "origin": 10,
-        "provenance": "authored",
-        "reference": 47,
-        "source": 9,
-        "target": 10
-      },
-      {
-        "kind": "containment",
-        "navigation": 18,
-        "origin": 11,
-        "provenance": "authored",
-        "reference": 42,
-        "source": 0,
+        "reference": 55,
+        "source": 13,
         "target": 11
       },
       {
-        "kind": "succession",
-        "navigation": 18,
-        "origin": 11,
-        "provenance": "authored",
-        "reference": 65,
-        "source": 16,
-        "target": 14
+        "kind": "containment",
+        "navigation": 34,
+        "origin": 16,
+        "provenance": "implied",
+        "reference": 39,
+        "source": 0,
+        "target": 16
       },
       {
         "kind": "containment",
-        "navigation": 38,
-        "origin": 19,
+        "navigation": 31,
+        "origin": 17,
         "provenance": "implied",
-        "reference": 43,
+        "reference": 40,
         "source": 0,
-        "target": 19
-      },
-      {
-        "kind": "containment",
-        "navigation": 35,
-        "origin": 20,
-        "provenance": "implied",
-        "reference": 44,
-        "source": 0,
-        "target": 20
+        "target": 17
       }
     ],
     "exposedRoots": [
@@ -1842,15 +1717,15 @@ package Flow {
     "metadata": {
       "actions": [
         0,
+        9,
+        10,
+        11,
         12,
-        13,
-        14,
-        15,
-        19,
-        20
+        16,
+        17
       ],
       "controlNodes": [
-        16
+        13
       ]
     },
     "nodes": [
@@ -1859,16 +1734,6 @@ package Flow {
           {
             "kind": "attributes",
             "members": [
-              17,
-              18
-            ],
-            "provenance": "direct"
-          },
-          {
-            "kind": "actions",
-            "members": [
-              12,
-              13,
               14,
               15
             ],
@@ -1877,8 +1742,18 @@ package Flow {
           {
             "kind": "actions",
             "members": [
-              19,
-              20
+              9,
+              10,
+              11,
+              12
+            ],
+            "provenance": "direct"
+          },
+          {
+            "kind": "actions",
+            "members": [
+              16,
+              17
             ],
             "provenance": "inherited"
           }
@@ -1887,9 +1762,11 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionDefinition",
+        "multiplicity": null,
         "name": "Guarded",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:421a6240f6d475db4dbc8ec9af1f481b157bfad6d9bf0fa7513494b648fa44de",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -1904,10 +1781,12 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 17,
+        "presentationKey": "p:a12f124a9f0f5a7186543902b690fbbbae5598cb1af1eda86df2c5ad1a0798ad",
+        "reference": 16,
         "source": 9,
         "stateSubaction": null,
         "successionGuard": null,
@@ -1921,11 +1800,13 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 21,
-        "source": 19,
+        "presentationKey": "p:1ceab3d9978292d068f4456c4a107c734267150c2835cd0cd98160573e7d45c2",
+        "reference": 20,
+        "source": 18,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1938,11 +1819,13 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 22,
-        "source": 22,
+        "presentationKey": "p:f3b6bb3ae2f4dfb46faa2109283870b98eafe64f674a6daf56a028fd89069135",
+        "reference": 21,
+        "source": 21,
         "stateSubaction": null,
         "successionGuard": "urgent",
         "typing": {
@@ -1954,29 +1837,14 @@ package Flow {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "BooleanExpression",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 3,
-        "reference": 26,
-        "source": 24,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 23,
-        "source": 26,
+        "presentationKey": "p:c5c99a914f5bdacf993996123045cee3937634c5515b8bc2ffa77a15b2634a2e",
+        "reference": 22,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": "not urgent",
         "typing": {
@@ -1988,12 +1856,14 @@ package Flow {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "BooleanExpression",
+        "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
-        "owner": 5,
-        "reference": 27,
-        "source": 28,
+        "owner": 0,
+        "presentationKey": "p:b7812a40c98f24037ae26a59d2ec76e30d9201cdb134804ceaa559e0c2df0371",
+        "reference": 23,
+        "source": 27,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2006,27 +1876,12 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 24,
-        "source": 31,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
-        "reference": 18,
+        "presentationKey": "p:f2b11ae751404981464cef3d1cf14445ffafe9c4c49c63a421d1a076d75110f7",
+        "reference": 17,
         "source": 11,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2040,11 +1895,13 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 19,
-        "source": 15,
+        "presentationKey": "p:92b894ef912a6832d09f5df08f734adf8421fcfdf5b14ba8102cf6af04b9b399",
+        "reference": 18,
+        "source": 14,
         "stateSubaction": null,
         "successionGuard": "ready",
         "typing": {
@@ -2056,29 +1913,14 @@ package Flow {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "BooleanExpression",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 9,
-        "reference": 25,
-        "source": 14,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "SuccessionAsUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 20,
-        "source": 18,
+        "presentationKey": "p:98810aaa020c312c11118a9073345ce83200de9c6f2bca0fb77718267c4656db",
+        "reference": 19,
+        "source": 17,
         "stateSubaction": null,
         "successionGuard": "else",
         "typing": {
@@ -2091,10 +1933,12 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "ship",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 8,
+        "presentationKey": "p:835045a5c7666bb550f3500832f2b3eaad24c5225141a46fe466f1d3fb585f59",
+        "reference": 7,
         "source": 7,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2108,10 +1952,12 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "check",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 3,
+        "presentationKey": "p:6838cf45c7c837bf32dd5607f20df05f1e51e81b98756f7c5f6a1c5104bd1fed",
+        "reference": 2,
         "source": 5,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2125,10 +1971,12 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "repair",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 7,
+        "presentationKey": "p:d514dedce799021406d4b5f00b9fec6e9aa18be54b0ae06c8caff87cc2d1f86b",
+        "reference": 6,
         "source": 6,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2142,10 +1990,12 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "expedite",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 4,
+        "presentationKey": "p:8682f66ba05fcff316cb6cf7787096ec1325ae3051cd3a8c23f908bfe7128cbe",
+        "reference": 3,
         "source": 8,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2159,10 +2009,12 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "DecisionNode",
+        "multiplicity": null,
         "name": "outcome",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 5,
+        "presentationKey": "p:67374844f7a718cdf9ccbe1f3514f4cdc788f8679483fc4105b2063450535e8a",
+        "reference": 4,
         "source": 13,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2176,10 +2028,12 @@ package Flow {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "ready",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 6,
+        "presentationKey": "p:0f6c14dee31c50516d1c6343847b86d9ca11adb45e42dc00a46d2537204bc6ed",
+        "reference": 5,
         "source": 1,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2188,7 +2042,7 @@ package Flow {
           "types": [
             {
               "label": "Boolean",
-              "reference": 16
+              "reference": 15
             }
           ]
         }
@@ -2199,10 +2053,12 @@ package Flow {
         "direction": "in",
         "featureDirection": null,
         "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "urgent",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 9,
+        "presentationKey": "p:19c8bec36fadc3d7310e9ddd2a7722e1ac6ced877e182743f6c34040e7352bce",
+        "reference": 8,
         "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
@@ -2211,7 +2067,7 @@ package Flow {
           "types": [
             {
               "label": "Boolean",
-              "reference": 16
+              "reference": 15
             }
           ]
         }
@@ -2222,11 +2078,13 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "done",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 12,
-        "source": 38,
+        "presentationKey": "p:93aecf15c13413c2088bb4675474c42ecf85c2de5aac4e4efd854c306b2b193a",
+        "reference": 11,
+        "source": 34,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2234,7 +2092,7 @@ package Flow {
           "types": [
             {
               "label": "Action",
-              "reference": 11
+              "reference": 10
             }
           ]
         }
@@ -2245,11 +2103,13 @@ package Flow {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ActionUsage",
+        "multiplicity": null,
         "name": "start",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 13,
-        "source": 35,
+        "presentationKey": "p:8e0b0487d24fb6fa1f43094a29727d6413bd0774f9839566774b146f83e6d4b0",
+        "reference": 12,
+        "source": 31,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2257,7 +2117,7 @@ package Flow {
           "types": [
             {
               "label": "Action",
-              "reference": 11
+              "reference": 10
             }
           ]
         }
@@ -2268,10 +2128,21 @@ package Flow {
         "kind": "succession",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 41,
         "source": 1,
         "target": {
-          "node": 20,
+          "node": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 19,
+        "provenance": "authored",
+        "reference": 42,
+        "source": 2,
+        "target": {
+          "node": 11,
           "status": "resolved"
         }
       },
@@ -2279,21 +2150,21 @@ package Flow {
         "kind": "succession",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 43,
         "source": 2,
         "target": {
-          "node": 14,
+          "node": 10,
           "status": "resolved"
         }
       },
       {
         "kind": "succession",
-        "navigation": 21,
+        "navigation": 22,
         "provenance": "authored",
-        "reference": 50,
-        "source": 2,
+        "reference": 44,
+        "source": 3,
         "target": {
-          "node": 13,
+          "node": 9,
           "status": "resolved"
         }
       },
@@ -2301,7 +2172,7 @@ package Flow {
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 45,
         "source": 3,
         "target": {
           "node": 12,
@@ -2312,29 +2183,29 @@ package Flow {
         "kind": "succession",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 52,
-        "source": 3,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 60,
+        "reference": 46,
         "source": 4,
         "target": {
-          "node": 18,
+          "node": 9,
           "status": "resolved"
         }
       },
       {
         "kind": "succession",
-        "navigation": 27,
+        "navigation": 26,
         "provenance": "authored",
-        "reference": 53,
+        "reference": 47,
+        "source": 4,
+        "target": {
+          "node": 16,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 28,
+        "provenance": "authored",
+        "reference": 48,
         "source": 5,
         "target": {
           "node": 12,
@@ -2343,45 +2214,12 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 30,
-        "provenance": "authored",
-        "reference": 54,
-        "source": 5,
-        "target": {
-          "node": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 61,
-        "source": 6,
+        "reference": 49,
+        "source": 5,
         "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 32,
-        "provenance": "authored",
-        "reference": 55,
-        "source": 7,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 33,
-        "provenance": "authored",
-        "reference": 56,
-        "source": 7,
-        "target": {
-          "node": 19,
+          "node": 16,
           "status": "resolved"
         }
       },
@@ -2389,10 +2227,10 @@ package Flow {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 66,
-        "source": 17,
+        "reference": 56,
+        "source": 14,
         "target": {
-          "reference": 16,
+          "reference": 15,
           "status": "resolved"
         }
       },
@@ -2400,10 +2238,10 @@ package Flow {
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 70,
-        "source": 18,
+        "reference": 60,
+        "source": 15,
         "target": {
-          "reference": 16,
+          "reference": 15,
           "status": "resolved"
         }
       },
@@ -2411,10 +2249,21 @@ package Flow {
         "kind": "thenTarget",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 57,
-        "source": 8,
+        "reference": 50,
+        "source": 6,
         "target": {
-          "node": 13,
+          "node": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "thenTarget",
+        "navigation": 15,
+        "provenance": "authored",
+        "reference": 51,
+        "source": 7,
+        "target": {
+          "node": 9,
           "status": "resolved"
         }
       },
@@ -2422,76 +2271,54 @@ package Flow {
         "kind": "thenTarget",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 58,
-        "source": 9,
+        "reference": 52,
+        "source": 8,
         "target": {
-          "node": 12,
+          "node": 11,
           "status": "resolved"
         }
       },
       {
-        "kind": "expressionOperand",
-        "navigation": 14,
+        "kind": "typing",
+        "navigation": 35,
         "provenance": "authored",
         "reference": 62,
-        "source": 10,
+        "source": 16,
         "target": {
-          "node": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "thenTarget",
-        "navigation": 17,
-        "provenance": "authored",
-        "reference": 59,
-        "source": 11,
-        "target": {
-          "node": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 39,
-        "provenance": "authored",
-        "reference": 72,
-        "source": 19,
-        "target": {
-          "reference": 11,
+          "reference": 10,
           "status": "resolved"
         }
       },
       {
         "kind": "redefinition",
-        "navigation": 40,
-        "provenance": "authored",
-        "reference": 71,
-        "source": 19,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
         "navigation": 36,
         "provenance": "authored",
-        "reference": 76,
-        "source": 20,
+        "reference": 61,
+        "source": 16,
         "target": {
-          "reference": 11,
+          "reference": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 32,
+        "provenance": "authored",
+        "reference": 66,
+        "source": 17,
+        "target": {
+          "reference": 10,
           "status": "resolved"
         }
       },
       {
         "kind": "redefinition",
-        "navigation": 37,
+        "navigation": 33,
         "provenance": "authored",
-        "reference": 73,
-        "source": 20,
+        "reference": 63,
+        "source": 17,
         "target": {
-          "reference": 15,
+          "reference": 14,
           "status": "resolved"
         }
       }

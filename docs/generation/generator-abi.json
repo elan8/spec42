@@ -1,10 +1,10 @@
 {
-  "abiVersion": 6,
-  "semanticApiVersion": "0.3.0",
-  "namespace": "spec42:generator-abi/6",
+  "abiVersion": 7,
+  "semanticApiVersion": "0.5.0",
+  "namespace": "spec42:generator-abi/7",
   "importModule": "spec42",
-  "schemaFingerprint": "0x7d4172f9e2b7ac5d",
-  "compatibilityToken": "0xddd6fbe8c80dee5b",
+  "schemaFingerprint": "0xc7d504f5df841a57",
+  "compatibilityToken": "0xc4c20ef3eb84e8d3",
   "operations": [
     { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
     { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },

@@ -144,8 +144,8 @@ package GeneralExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:8eece5424f67984f873958b16cf694e4084d603dd891e1aae7fd7ecfff24c623",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:e49fbf68bb50ee98fc89fca05cc72871086196711d48a8bc7262996a58c9eb8c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_complete.md",
@@ -250,9 +250,11 @@ package GeneralExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "System",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:a171c609eefb424d781888c817a7748d4507075248ede37e5d392b9194631fb6",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -267,9 +269,11 @@ package GeneralExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "child",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:6b98e3808eaf0d8e3760fc4f1e1158cb068013eb204f50a71fe92e0726cc4960",
         "reference": 1,
         "source": 1,
         "stateSubaction": null,

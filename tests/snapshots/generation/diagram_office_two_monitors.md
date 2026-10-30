@@ -731,8 +731,8 @@ package Office {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:e0f4f7266f525f1265d25658fb590f2620bbe4b2fec689579b34fe23b4bad376",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:090413ecec8cf93934252902ff23c2eec39a28b548aaa2e497842492c565b06b",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1497,6 +1497,43 @@ package Office {
         9,
         12
       ],
+      "portFamilies": [
+        {
+          "connectors": [
+            2,
+            3
+          ],
+          "general": [
+            {
+              "label": "PowerPort",
+              "reference": 6
+            }
+          ],
+          "types": [
+            {
+              "label": "PowerPort",
+              "reference": 6
+            }
+          ]
+        },
+        {
+          "connectors": [
+            1
+          ],
+          "general": [
+            {
+              "label": "VideoPort",
+              "reference": 9
+            }
+          ],
+          "types": [
+            {
+              "label": "VideoPort",
+              "reference": 9
+            }
+          ]
+        }
+      ],
       "ports": [
         5,
         6,
@@ -1534,9 +1571,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Workplace",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:d88654e8e5e745ff0b055bac68d799c99850fdac6e24639cae38df6c3c768a62",
         "reference": 10,
         "source": 10,
         "stateSubaction": null,
@@ -1551,9 +1590,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:457431d1e6efae1da271f79d40bcbac6ef5b2fb02a08bc880cde03f22e9dcc92",
         "reference": 17,
         "source": 19,
         "stateSubaction": null,
@@ -1568,9 +1609,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:87d6da4602701c6f7189318af24d9cf3dc636540b94b7c81baed96bdc490074b",
         "reference": 18,
         "source": 22,
         "stateSubaction": null,
@@ -1585,9 +1628,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:2a470b68d35b6d0b93e7975715acc3b450150bbb61d5eb0c4d97a06d471c4dd9",
         "reference": 19,
         "source": 25,
         "stateSubaction": null,
@@ -1611,9 +1656,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "laptop",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:43b6eb733d88ea8c23675a52019eb44d568beec5a6f0277f0c920da8b612ed85",
         "reference": 12,
         "source": 11,
         "stateSubaction": null,
@@ -1634,9 +1681,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "power",
         "notationRole": "usage",
         "owner": 4,
+        "presentationKey": "p:975febd1fd6a9d6f80a8d8278fe391a86ec6e7e6722b29cc7cd7780822faa0ec",
         "reference": 1,
         "source": 2,
         "stateSubaction": null,
@@ -1657,9 +1706,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "video",
         "notationRole": "usage",
         "owner": 4,
+        "presentationKey": "p:849cbf7610282ebe387fc64c43d019d3df928e2aa458b64df07af2405501f9db",
         "reference": 2,
         "source": 0,
         "stateSubaction": null,
@@ -1688,9 +1739,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "socket",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:827a9bfa087e5358a7048abb635ade90b62301c11611e318abb9ffdf9406dade",
         "reference": 15,
         "source": 17,
         "stateSubaction": null,
@@ -1711,9 +1764,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "power",
         "notationRole": "usage",
         "owner": 7,
+        "presentationKey": "p:f7c87b003e8f762d1f72130c3c7a711c148bf0fd969765c5a019d13ff96e1abd",
         "reference": 8,
         "source": 8,
         "stateSubaction": null,
@@ -1743,9 +1798,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "monitor1",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:d555e006759875b4ab57c5b712e6e7792829f049164619e95e691ce6339cd291",
         "reference": 13,
         "source": 13,
         "stateSubaction": null,
@@ -1766,9 +1823,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "power",
         "notationRole": "usage",
         "owner": 9,
+        "presentationKey": "p:812978e1977aefb10d6a4c4ee5c7d71610fca86b5195f8ddb6f24db3b15a53e2",
         "reference": 4,
         "source": 6,
         "stateSubaction": null,
@@ -1789,9 +1848,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "video",
         "notationRole": "usage",
         "owner": 9,
+        "presentationKey": "p:067dbd882472ca34dcb73048fb3219185cf0298afe0551d1ec885f9f6aff37d8",
         "reference": 5,
         "source": 4,
         "stateSubaction": null,
@@ -1821,9 +1882,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "monitor2",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:9e58d53e7008aa009cd891cf5cc70eb631ceed8f2cc1581cdcc9981af32f8f97",
         "reference": 14,
         "source": 15,
         "stateSubaction": null,
@@ -1844,9 +1907,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "power",
         "notationRole": "usage",
         "owner": 12,
+        "presentationKey": "p:b03d98a2ac66db3bc9fa8d9c18a97b5304ff0ee36cda15b741b4456d5a9d5c84",
         "reference": 4,
         "source": 6,
         "stateSubaction": null,
@@ -1867,9 +1932,11 @@ package Office {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "video",
         "notationRole": "usage",
         "owner": 12,
+        "presentationKey": "p:df0e84d3b32bb5519b51ee951b5b775e71a4308f8b6d529c3f39892131520389",
         "reference": 5,
         "source": 4,
         "stateSubaction": null,

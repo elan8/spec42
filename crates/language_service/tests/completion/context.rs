@@ -1,4 +1,4 @@
-﻿use language_service::{
+use language_service::{
     completion_edit_shape, detect_completion_context, CompletionContext,
     ATTRIBUTE_TYPE_LOOKUP_KINDS, PART_TYPE_LOOKUP_KINDS, PORT_TYPE_LOOKUP_KINDS,
 };
@@ -39,6 +39,38 @@ fn detects_attribute_type_reference_context() {
             prefix: "M".to_string(),
             qualifier: None,
             expected_kinds: ATTRIBUTE_TYPE_LOOKUP_KINDS,
+        }
+    );
+}
+
+/// The `:` trigger character asks for a type the moment it is typed, with or without a space
+/// around it; the colon is the operator, not the start of the name being completed.
+#[test]
+fn a_just_typed_colon_opens_a_type_reference_with_an_empty_prefix() {
+    for line in [
+        "    part engine:",
+        "    part engine :",
+        "    part engine : ",
+    ] {
+        assert_eq!(
+            detect_completion_context(line),
+            CompletionContext::TypeReference {
+                prefix: String::new(),
+                qualifier: None,
+                expected_kinds: PART_TYPE_LOOKUP_KINDS,
+            },
+            "{line:?}"
+        );
+    }
+}
+
+#[test]
+fn a_trailing_double_colon_stays_a_qualified_reference() {
+    assert_eq!(
+        detect_completion_context("    Pkg::"),
+        CompletionContext::QualifiedReference {
+            prefix: String::new(),
+            qualifier: "Pkg".to_string(),
         }
     );
 }

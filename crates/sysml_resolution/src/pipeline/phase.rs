@@ -105,6 +105,7 @@ pub(crate) struct Evaluated {
 /// Phase 8's product: the only value a `ResolvedSemanticModel` can be taken out of.
 pub(crate) struct Complete {
     model: ResolvedSemanticModel,
+    namespace_checks: std::time::Duration,
     /// Kept only so a library-stratum build can hand the trees to the next publication; a
     /// workspace build drops them with this value.
     sources: ParsedSources,
@@ -198,6 +199,7 @@ impl Lowered {
                         feature_type_dependencies: &feature_type_dependencies,
                     },
                 )?;
+            let resolution = resolution.follow_aliases(&storage.declarations, &storage.references);
             let authored_relationships = storage
                 .relationship_declarations
                 .iter()
@@ -789,12 +791,16 @@ impl Indexed {
         reported: &[Box<str>],
         standard_library_availability: sysml_contract::StandardLibraryAvailability,
     ) -> Result<Complete, ResolutionError> {
-        let (diagnostics, by_document) =
-            self.derive_diagnostics(&sources, reported, standard_library_availability)?;
+        let crate::diagnose::DerivedDiagnostics {
+            diagnostics,
+            by_document,
+            namespace_checks,
+        } = self.derive_diagnostics(&sources, reported, standard_library_availability)?;
         // The parse product is consumed here and goes no further: this is the barrier that makes
         // "a sealed publication holds no parse tree" true by construction rather than by review.
         Ok(Complete {
             sources,
+            namespace_checks,
             model: ResolvedSemanticModel {
                 storage: self.storage,
                 direct_names: self.direct_names,
@@ -829,7 +835,16 @@ impl Complete {
     }
 }
 
-/// The whole phase order in one expression, for the coordinator and for tests.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct SemanticPhaseDurations {
+    pub(crate) resolve: std::time::Duration,
+    pub(crate) evaluation: std::time::Duration,
+    pub(crate) indexing: std::time::Duration,
+    pub(crate) diagnostics: std::time::Duration,
+    pub(crate) namespace_checks: std::time::Duration,
+}
+
+/// The whole phase order, with measurements taken at its owning barriers.
 pub(crate) fn build_model(
     storage: SemanticModelStorage,
     sources: ParsedSources,
@@ -837,24 +852,50 @@ pub(crate) fn build_model(
     standard_library_availability: sysml_contract::StandardLibraryAvailability,
     library: Option<&SettledLibrary>,
     reported: &[Box<str>],
-) -> Result<(ResolvedSemanticModel, ParsedSources), crate::BuildFailure> {
+    controls: super::BuildControls<'_>,
+) -> Result<(ResolvedSemanticModel, ParsedSources, SemanticPhaseDurations), crate::BuildFailure> {
     let identities: Vec<_> = storage
         .documents
         .iter()
         .map(|document| document.identity.clone())
         .collect();
     let failure = |phase, error| resolution_failure(phase, &identities, error);
+    controls.checkpoint(crate::ConstructionPhase::Resolution)?;
+    let started = std::time::Instant::now();
     let resolved = Lowered::from((storage, sources))
         .resolve(library)
         .map_err(|error| failure(crate::ConstructionPhase::Resolution, error))?;
-    let (indexed, sources) = resolved
-        .evaluate(policy)
+    let resolve = started.elapsed();
+    let started = std::time::Instant::now();
+    controls.checkpoint(crate::ConstructionPhase::Evaluation)?;
+    let evaluated = resolved.evaluate(policy);
+    let evaluation = started.elapsed();
+    let started = std::time::Instant::now();
+    controls.checkpoint(crate::ConstructionPhase::Indexing)?;
+    let (indexed, sources) = evaluated
         .index()
         .map_err(|error| failure(crate::ConstructionPhase::Indexing, error))?;
-    Ok(indexed
+    let indexing = started.elapsed();
+    let started = std::time::Instant::now();
+    controls.checkpoint(crate::ConstructionPhase::Diagnostics)?;
+    let complete = indexed
         .diagnose(sources, reported, standard_library_availability)
-        .map_err(|error| failure(crate::ConstructionPhase::Diagnostics, error))?
-        .into_parts())
+        .map_err(|error| failure(crate::ConstructionPhase::Diagnostics, error))?;
+    let diagnostics = started.elapsed();
+    controls.checkpoint(crate::ConstructionPhase::Diagnostics)?;
+    let namespace_checks = complete.namespace_checks;
+    let complete = complete.into_parts();
+    Ok((
+        complete.0,
+        complete.1,
+        SemanticPhaseDurations {
+            resolve,
+            evaluation,
+            indexing,
+            diagnostics,
+            namespace_checks,
+        },
+    ))
 }
 
 fn resolution_failure(

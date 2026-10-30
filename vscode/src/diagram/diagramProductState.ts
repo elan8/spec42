@@ -7,22 +7,39 @@ export function isEmptyIncompleteDiagramProduct(product: DiagramProductState): b
   return product.projection.nodes.length === 0 && product.completeness.status === "incomplete";
 }
 
-export type DiagramProductNodes = {
-  modelDigest: string;
-  references: unknown[];
-  projection: { nodes: unknown[] };
-};
+/** Renderer-owned state; node ids address one product, section keys remain opaque here.
+ * Browser expandedNodeIds records collapsed rows (empty means all expanded). */
+export interface DisclosureState {
+  expandedNodeIds: string[];
+  sectionStates: Array<{ nodeId: string; sectionKey: string; expanded: boolean }>;
+}
 
-/**
- * Whether a disclosure state (expanded node ids such as `n:3`) taken from `previous` still names
- * the same nodes in `next`. Node ids are indexes into one product's projection, so they carry over
- * only between products of one model state that project the same nodes: loading a browser branch
- * keeps the model digest but projects more nodes, and shifts their indexes.
- */
-export function sameProjectedNodes(previous: DiagramProductNodes | undefined, next: DiagramProductNodes): boolean {
-  return previous !== undefined &&
-    previous.modelDigest === next.modelDigest &&
-    previous.projection.nodes.length === next.projection.nodes.length &&
-    JSON.stringify([previous.projection.nodes, previous.references]) ===
-      JSON.stringify([next.projection.nodes, next.references]);
+type PresentationProduct = { projection: { nodes: Array<{ presentationKey: string }> } };
+
+/** Transfer state only by authority-supplied occurrence keys, never by node order or labels.
+ * The caller owns selected-view continuity. Unknown/duplicate keys cannot carry state. */
+export function remapDisclosureState(previous: PresentationProduct | undefined, next: PresentationProduct,
+  state: DisclosureState | undefined): DisclosureState | undefined {
+  if (!previous || !state) return undefined;
+  const uniqueKeys = (product: PresentationProduct): Map<string, string | undefined> => {
+    const keys = new Map<string, string | undefined>();
+    product.projection.nodes.forEach((node, index) => {
+      if (node.presentationKey) keys.set(node.presentationKey, keys.has(node.presentationKey) ? undefined : `n:${index}`);
+    });
+    return keys;
+  };
+  const oldKeys = uniqueKeys(previous);
+  const newKeys = uniqueKeys(next);
+  const ids = new Map<string, string>();
+  for (const [key, oldId] of oldKeys) {
+    const newId = newKeys.get(key);
+    if (oldId !== undefined && newId !== undefined) ids.set(oldId, newId);
+  }
+  return {
+    expandedNodeIds: [...new Set(state.expandedNodeIds.flatMap(id => ids.has(id) ? [ids.get(id)!] : []))],
+    sectionStates: state.sectionStates.flatMap(section => {
+      const nodeId = ids.get(section.nodeId);
+      return nodeId === undefined ? [] : [{ ...section, nodeId }];
+    }),
+  };
 }

@@ -229,8 +229,8 @@ package DirectTypingExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:88d4e1520a71460f5fb26668675e0b2e0b8405d8d070800bcc3c1cb99b4abca4",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:b017b721a341d0d3ca541b8b1dad6041f28dc3d84960aaffe96ff8ccc16a3162",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_direct_typing.md",
@@ -405,9 +405,11 @@ package DirectTypingExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "root",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:8e0beb0da57d2c0946f8fa94b45521c877e03c1c0be6bd7178b619a7206a722c",
         "reference": 4,
         "source": 3,
         "stateSubaction": null,
@@ -428,9 +430,11 @@ package DirectTypingExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "typedChild",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:86e1044e7af30fd6c4d7964eeefaa3b5fd5237652792b12b6bc2d063bb080faf",
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
@@ -451,9 +455,11 @@ package DirectTypingExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "untypedChild",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:b5973fa882b1301a9949bfc02a2782ce722fd2bcf30f564579d140b0541ed527",
         "reference": 2,
         "source": 2,
         "stateSubaction": null,

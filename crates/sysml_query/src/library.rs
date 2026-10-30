@@ -12,7 +12,9 @@ use sysml_resolution::library::LibraryClosureAuthority;
 use crate::source::{SourceDocument, SourceError, SourceKind, SourceService, Url};
 use crate::syntax::{ParsedSource, SyntaxService};
 
-pub use sysml_resolution::library::{LibraryClosure, LibraryClosureOptions, LibraryRoot};
+pub use sysml_resolution::library::{
+    LibraryAdmissionPolicy, LibraryCatalog, LibraryClosure, LibraryClosureOptions, LibraryRoot,
+};
 
 /// Handle on the library-closure authority. Cheap to clone; all clones share one index.
 #[derive(Debug, Clone)]
@@ -57,23 +59,27 @@ impl LibraryClosureService {
         standard_library_roots: &[Url],
         options: &LibraryClosureOptions,
     ) -> Result<Vec<SourceDocument>, SourceError> {
-        let roots = library_roots
-            .iter()
-            .filter_map(|uri| {
-                let path = uri.to_file_path().ok()?;
-                let kind = if standard_library_roots.contains(uri) {
-                    SourceKind::StandardLibrary
-                } else {
-                    SourceKind::Library
-                };
-                Some(LibraryRoot { path, kind })
-            })
-            .collect::<Vec<_>>();
+        let roots = roots_for_uris(library_roots, standard_library_roots);
         if roots.is_empty() {
             return Ok(Vec::new());
         }
         self.resolve(workspace, &roots, options)
             .map(|closure| closure.documents)
+    }
+
+    /// Capture a content-identified inventory once; later editor closure selection does no I/O.
+    pub fn prepare_catalog_for_roots(
+        &self,
+        library_roots: &[Url],
+        standard_library_roots: &[Url],
+    ) -> Result<LibraryCatalog, SourceError> {
+        self.inner
+            .prepare_catalog(&roots_for_uris(library_roots, standard_library_roots))
+    }
+
+    /// Build the same inventory from sources a host already admitted.
+    pub fn catalog_from_documents(&self, documents: Vec<SourceDocument>) -> LibraryCatalog {
+        self.inner.catalog_from_documents(documents)
     }
 
     /// A stable signature of the workspace facts that seed closure resolution.
@@ -84,4 +90,19 @@ impl LibraryClosureService {
     ) -> Vec<String> {
         self.inner.seed_signature(workspace, options)
     }
+}
+
+fn roots_for_uris(library_roots: &[Url], standard_library_roots: &[Url]) -> Vec<LibraryRoot> {
+    library_roots
+        .iter()
+        .filter_map(|uri| {
+            let path = uri.to_file_path().ok()?;
+            let kind = if standard_library_roots.contains(uri) {
+                SourceKind::StandardLibrary
+            } else {
+                SourceKind::Library
+            };
+            Some(LibraryRoot { path, kind })
+        })
+        .collect::<Vec<_>>()
 }

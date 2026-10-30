@@ -1,3 +1,4 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../generated/diagram-product/schemaVersion";
 import * as path from "path";
 import type { DiagramProduct } from "../generated/diagram-product/DiagramProduct";
 
@@ -292,6 +293,24 @@ export function parseLspDiagramResult(value: unknown): LspDiagramResult {
 
 export const MAX_DIAGRAM_PRODUCT_BYTES = 16 * 1024 * 1024;
 
+/** The sequence reasons name projected nodes; their explanations index them without guards. */
+function isCompletenessReasonShape(reason: Record<string, unknown>, nodeCount: number): boolean {
+  const nodes = (value: unknown) => Array.isArray(value) && value.every((index) => indexIn(index, nodeCount));
+  switch (reason.code) {
+    case "sequence-content-omitted":
+      return nodes(reason.elements);
+    case "sequence-ordering-cycle":
+      return Array.isArray(reason.witness) && reason.witness.every((step) => {
+        if (!step || typeof step !== "object") return false;
+        const candidate = step as Record<string, unknown>;
+        return indexIn(candidate.source, nodeCount) && indexIn(candidate.target, nodeCount) &&
+          ["authored", "implied"].includes(String(candidate.provenance)) && nodes(candidate.events);
+      });
+    default:
+      return true;
+  }
+}
+
 export function parseDiagramProduct(text: string): DiagramProduct {
   const bytes = Buffer.byteLength(text, "utf8");
   if (bytes > MAX_DIAGRAM_PRODUCT_BYTES) throw new Error(oversizedProductMessage(text, bytes));
@@ -306,7 +325,7 @@ export function parseDiagramProduct(text: string): DiagramProduct {
   const documents = product.documents;
   const sources = product.sources;
   const references = product.references;
-  if (product.schemaVersion !== 7 || typeof product.modelDigest !== "string" ||
+  if (product.schemaVersion !== DIAGRAM_PRODUCT_SCHEMA_VERSION || typeof product.modelDigest !== "string" ||
       !Array.isArray(documents) || !documents.every(isDiagramDocument) ||
       !Array.isArray(sources) || !sources.every((source) => isDiagramSource(source, documents.length)) ||
       !Array.isArray(references) || !references.every((reference) => isProductReference(reference, documents.length, sources.length, references.length)) ||
@@ -319,7 +338,11 @@ export function parseDiagramProduct(text: string): DiagramProduct {
       !Array.isArray(projection.relationships) ||
       !Array.isArray(projection.edges) || !projection.metadata || typeof projection.metadata !== "object" ||
       !isDiagramScene(projection.scene, String(view.kind), sources.length)) {
-    throw new Error("Generated diagram product does not match schema version 5.");
+    throw new Error(`Generated diagram product does not match schema version ${DIAGRAM_PRODUCT_SCHEMA_VERSION}.`);
+  }
+  const presentationKeys = (projection.nodes as Array<{ presentationKey: string }>).map(node => node.presentationKey);
+  if (new Set(presentationKeys).size !== presentationKeys.length) {
+    throw new Error("Generated diagram product has duplicate presentation keys.");
   }
   for (const reason of completeness.reasons) {
     if (!reason || typeof reason !== "object") throw new Error("Generated diagram product has a malformed completeness reason.");
@@ -329,6 +352,9 @@ export function parseDiagramProduct(text: string): DiagramProduct {
     }
     if (candidate.exposure !== undefined && !indexIn(candidate.exposure, references.length)) {
       throw new Error("Generated diagram product has an out-of-range completeness reference.");
+    }
+    if (!isCompletenessReasonShape(candidate, (projection.nodes as unknown[]).length)) {
+      throw new Error("Generated diagram product has a malformed completeness reason.");
     }
   }
   if (!(projection.edges as unknown[]).every((edge) => isDiagramEdge(edge, references.length, sources.length, (projection.nodes as unknown[]).length)) ||
@@ -432,7 +458,8 @@ function isDiagramNode(value: unknown, referenceCount: number, sourceCount: numb
   if (!value || typeof value !== "object") return false;
   const node = value as Record<string, unknown>;
   const compartments = node.compartments;
-  return indexIn(node.reference, referenceCount) && indexIn(node.source, sourceCount) && typeof node.metaclass === "string" &&
+  return typeof node.presentationKey === "string" && node.presentationKey.length > 0 &&
+    indexIn(node.reference, referenceCount) && indexIn(node.source, sourceCount) && typeof node.metaclass === "string" &&
     typeof node.notationRole === "string" && NOTATION_ROLES.has(node.notationRole) &&
     (node.name === null || typeof node.name === "string") && (node.owner === null || indexIn(node.owner, nodeCount)) &&
     isDiagramTyping(node.typing, referenceCount) &&

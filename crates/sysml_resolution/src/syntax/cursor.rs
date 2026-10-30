@@ -41,6 +41,73 @@ pub struct SyntaxUnitLiteral<'p> {
     pub range: SyntaxRange,
 }
 
+fn utf16_to_character(line: &str, column: u32) -> Option<usize> {
+    let mut offset = 0;
+    for (index, character) in line.chars().enumerate() {
+        if offset == column {
+            return Some(index);
+        }
+        offset += character.len_utf16() as u32;
+        if offset > column {
+            return None;
+        }
+    }
+    (offset == column).then(|| line.chars().count())
+}
+
+/// Lexical context, including multiline strings/comments and quoted identifiers.
+pub(super) fn is_code_at(source: &str, target: usize) -> bool {
+    let bytes = source.as_bytes();
+    let mut index = 0;
+    let mut quote = None;
+    let mut block = false;
+    let mut line_comment = false;
+    while index < target {
+        let byte = bytes[index];
+        let next = bytes.get(index + 1).copied();
+        if line_comment {
+            if byte == b'\n' {
+                line_comment = false;
+            }
+            index += 1;
+            continue;
+        }
+        if block {
+            if byte == b'*' && next == Some(b'/') {
+                block = false;
+                index += 2;
+            } else {
+                index += 1;
+            }
+            continue;
+        }
+        if let Some(delimiter) = quote {
+            if byte == b'\\' {
+                index += 2;
+                continue;
+            }
+            if byte == delimiter {
+                quote = None;
+            }
+            index += 1;
+            continue;
+        }
+        if byte == b'/' && next == Some(b'/') {
+            line_comment = true;
+            index += 2;
+        } else if byte == b'/' && next == Some(b'*') {
+            block = true;
+            index += 2;
+        } else {
+            if byte == b'"' || byte == b'\'' {
+                quote = Some(byte);
+            }
+            index += 1;
+        }
+    }
+    !line_comment && !block && quote != Some(b'"')
+}
+
 fn continues_identifier(ch: char) -> bool {
     ch.is_alphanumeric() || ch == '_' || ch == ':'
 }
@@ -53,7 +120,7 @@ pub(super) fn token_at<'p>(
 ) -> Option<SyntaxToken<'p>> {
     let line_text = source.lines().nth(line as usize)?;
     let chars: Vec<char> = line_text.chars().collect();
-    let cursor = character as usize;
+    let cursor = utf16_to_character(line_text, character)?;
     // LSP positions identify the character under the cursor. Do not walk left from punctuation or
     // end-of-line and accidentally turn hovering a delimiter into a hover for the preceding name.
     if chars.is_empty() || cursor >= chars.len() || !continues_identifier(chars[cursor]) {
@@ -81,13 +148,13 @@ pub(super) fn token_at<'p>(
     }
     let range = SyntaxRange {
         start_line: line,
-        start_character: start as u32,
+        start_character: chars[..start].iter().map(|ch| ch.len_utf16() as u32).sum(),
         end_line: line,
-        end_character: end as u32,
+        end_character: chars[..end].iter().map(|ch| ch.len_utf16() as u32).sum(),
     };
     let role = roles
         .iter()
-        .find(|(span, _)| covers(span, line, start as u32))
+        .find(|(span, _)| covers(span, line, range.start_character))
         .map(|(_, role)| *role);
     Some(SyntaxToken {
         is_keyword: super::is_reserved_keyword(text),
@@ -118,7 +185,7 @@ pub(super) fn unit_literal_at<'p>(
 ) -> Option<SyntaxUnitLiteral<'p>> {
     let line_text = source.lines().nth(line as usize)?;
     let chars: Vec<char> = line_text.chars().collect();
-    let cursor = character as usize;
+    let cursor = utf16_to_character(line_text, character)?;
     if cursor > chars.len() {
         return None;
     }
@@ -155,9 +222,15 @@ pub(super) fn unit_literal_at<'p>(
         unit,
         range: SyntaxRange {
             start_line: line,
-            start_character: (open + 1 + leading) as u32,
+            start_character: chars[..open + 1 + leading]
+                .iter()
+                .map(|ch| ch.len_utf16() as u32)
+                .sum(),
             end_line: line,
-            end_character: (close - trailing) as u32,
+            end_character: chars[..close - trailing]
+                .iter()
+                .map(|ch| ch.len_utf16() as u32)
+                .sum(),
         },
     })
 }
@@ -250,9 +323,12 @@ pub(super) fn occurrences_of(source: &str, name: &str) -> Vec<SyntaxRange> {
             {
                 out.push(SyntaxRange {
                     start_line: line_number as u32,
-                    start_character: at as u32,
+                    start_character: chars[..at].iter().map(|ch| ch.len_utf16() as u32).sum(),
                     end_line: line_number as u32,
-                    end_character: (at + needle.len()) as u32,
+                    end_character: chars[..at + needle.len()]
+                        .iter()
+                        .map(|ch| ch.len_utf16() as u32)
+                        .sum(),
                 });
                 at += needle.len();
                 continue;
@@ -273,6 +349,30 @@ mod tests {
 
     fn parse(text: &str) -> crate::syntax::ParsedSource {
         SyntaxAuthority::new().parse_text(text)
+    }
+
+    #[test]
+    fn utf16_tokens_ignore_comment_and_string_prose() {
+        let source = "package P { /* é😀 Motor */ part vehicle : Motor; doc /* Motor */ }";
+        let parsed = parse(source);
+        for offset in [
+            source.find("Motor").unwrap(),
+            source.rfind("Motor").unwrap(),
+        ] {
+            let column = source[..offset].encode_utf16().count() as u32;
+            assert!(parsed.token_at(0, column).is_none());
+        }
+        let offset = source.find("vehicle").unwrap();
+        let column = source[..offset].encode_utf16().count() as u32;
+        let token = parsed.token_at(0, column).unwrap();
+        assert_eq!(token.text, "vehicle");
+        assert_eq!(token.range.start_character, column);
+        assert_eq!(token.range.end_character, column + 7);
+        let source = "package P { attribute text = \"Motor\"; }";
+        let parsed = parse(source);
+        assert!(parsed
+            .token_at(0, source.find("Motor").unwrap() as u32)
+            .is_none());
     }
 
     #[test]

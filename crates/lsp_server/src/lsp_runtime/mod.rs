@@ -36,6 +36,22 @@ use generation::{
 use layout::{legacy_engine_requested, LayoutEngine, LayoutParams, LayoutResult};
 use project_registry::ProjectRegistry;
 
+fn require_current_analysis(state: &ServerState) -> Result<()> {
+    use sysml_query::publication::AnalysisStatus;
+    match state.session.analysis_status() {
+        AnalysisStatus::Current => Ok(()),
+        AnalysisStatus::Updating | AnalysisStatus::CancelledRetained => {
+            Err(tower_lsp::jsonrpc::Error::content_modified())
+        }
+        AnalysisStatus::FailedRetained => Err(tower_lsp::jsonrpc::Error {
+            code: tower_lsp::jsonrpc::ErrorCode::InternalError,
+            message: "Analysis of the current source failed; the previous publication is retained"
+                .into(),
+            data: None,
+        }),
+    }
+}
+
 struct Backend {
     client: Client,
     projects: ProjectRegistry,
@@ -73,21 +89,24 @@ impl LanguageServer for Backend {
     }
 
     async fn shutdown(&self) -> Result<()> {
+        for handle in self.projects.handles() {
+            handle.close_session().await.map_err(|error| {
+                let mut failure = tower_lsp::jsonrpc::Error::internal_error();
+                failure.message = error.to_string().into();
+                failure
+            })?;
+        }
         Ok(())
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
         let uri = params.text_document.uri.clone();
-        let mut handles = self.projects.handles_admitting_library_uri(&uri);
+        let handles = self.projects.mutation_handles_for_uri(&uri, true).await;
         if handles.is_empty() {
-            let Some(handle) = self.projects.handle_for_uri(&uri).await else {
-                return;
-            };
             if let Some(error) = self.projects.admission_error_for_uri(&uri) {
                 self.client.log_message(MessageType::ERROR, error).await;
-                return;
             }
-            handles.push(handle);
+            return;
         }
         for handle in handles {
             documents::did_open(
@@ -96,25 +115,17 @@ impl LanguageServer for Backend {
                 &self.config,
                 &self.runtime_config,
                 params.clone(),
+                self.projects.has_workspace_roots(),
             )
             .await;
         }
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        let mut handles = self
+        let handles = self
             .projects
-            .handles_admitting_library_uri(&params.text_document.uri);
-        if handles.is_empty() {
-            let Some(handle) = self
-                .projects
-                .handle_for_uri(&params.text_document.uri)
-                .await
-            else {
-                return;
-            };
-            handles.push(handle);
-        }
+            .mutation_handles_for_uri(&params.text_document.uri, true)
+            .await;
         for handle in handles {
             documents::did_change(
                 &self.client,
@@ -128,18 +139,10 @@ impl LanguageServer for Backend {
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
-        let mut handles = self
+        let handles = self
             .projects
-            .handles_admitting_library_uri(&params.text_document.uri);
-        if handles.is_empty() {
-            let Some(handle) = self
-                .projects
-                .existing_handle_for_uri(&params.text_document.uri)
-            else {
-                return;
-            };
-            handles.push(handle);
-        }
+            .mutation_handles_for_uri(&params.text_document.uri, false)
+            .await;
         for handle in handles {
             documents::did_close(
                 &self.client,
@@ -234,6 +237,12 @@ impl LanguageServer for Backend {
     }
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
+        self.projects
+            .set_library_defaults(documents::configured_library_paths(
+                &self.config,
+                &self.runtime_config,
+                &params,
+            ));
         for handle in self.projects.handles() {
             documents::did_change_configuration(
                 &self.client,
@@ -267,7 +276,10 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        let state = self.state_for_uri(&params.text_document_position.text_document.uri)?;
+        // Completion is asked while the user types, which is exactly when analysis is pending.
+        // It answers from the current editor text and the retained publication, and reports
+        // the gap as an incomplete list instead of refusing.
+        let state = self.source_state_for_uri(&params.text_document_position.text_document.uri)?;
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -286,7 +298,8 @@ impl LanguageServer for Backend {
     }
 
     async fn signature_help(&self, params: SignatureHelpParams) -> Result<Option<SignatureHelp>> {
-        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
+        let state =
+            self.source_state_for_uri(&params.text_document_position_params.text_document.uri)?;
         features::signature_help(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -355,7 +368,7 @@ impl LanguageServer for Backend {
         &self,
         params: SelectionRangeParams,
     ) -> Result<Option<Vec<SelectionRange>>> {
-        let state = self.state_for_uri(&params.text_document.uri)?;
+        let state = self.source_state_for_uri(&params.text_document.uri)?;
         features::selection_range(&state, params.text_document.uri, params.positions)
     }
 
@@ -390,6 +403,10 @@ impl LanguageServer for Backend {
             params.text_document_position.position,
             params.new_name,
             perf_logging_enabled,
+            self.runtime_config
+                .get()
+                .expect("initialized")
+                .versioned_document_changes,
         )
     }
 
@@ -397,12 +414,12 @@ impl LanguageServer for Backend {
         &self,
         params: DocumentSymbolParams,
     ) -> Result<Option<DocumentSymbolResponse>> {
-        let state = self.state_for_uri(&params.text_document.uri)?;
+        let state = self.source_state_for_uri(&params.text_document.uri)?;
         features::document_symbol(&state, params.text_document.uri)
     }
 
     async fn folding_range(&self, params: FoldingRangeParams) -> Result<Option<Vec<FoldingRange>>> {
-        let state = self.state_for_uri(&params.text_document.uri)?;
+        let state = self.source_state_for_uri(&params.text_document.uri)?;
         features::folding_range(&state, params.text_document.uri)
     }
 
@@ -419,6 +436,7 @@ impl LanguageServer for Backend {
         let mut symbols = Vec::new();
         for handle in self.projects.handles() {
             let state = handle.snapshot();
+            require_current_analysis(&state)?;
             if let Some(mut project_symbols) =
                 features::workspace_symbol(&state, params.query.clone(), perf_logging_enabled)?
             {
@@ -444,11 +462,16 @@ impl LanguageServer for Backend {
 
     async fn code_action(&self, params: CodeActionParams) -> Result<Option<CodeActionResponse>> {
         let state = self.state_for_uri(&params.text_document.uri)?;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         features::code_action(
             &state,
             params.text_document.uri,
-            params.range,
             &params.context.diagnostics,
+            perf_logging_enabled,
         )
     }
 
@@ -472,7 +495,7 @@ impl LanguageServer for Backend {
     }
 
     async fn formatting(&self, params: DocumentFormattingParams) -> Result<Option<Vec<TextEdit>>> {
-        let state = self.state_for_uri(&params.text_document.uri)?;
+        let state = self.source_state_for_uri(&params.text_document.uri)?;
         features::formatting(&state, params.text_document.uri, params.options)
     }
 
@@ -535,7 +558,8 @@ impl LanguageServer for Backend {
         &self,
         params: LinkedEditingRangeParams,
     ) -> Result<Option<LinkedEditingRanges>> {
-        let state = self.state_for_uri(&params.text_document_position_params.text_document.uri)?;
+        let state =
+            self.source_state_for_uri(&params.text_document_position_params.text_document.uri)?;
         features::linked_editing_range(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -560,7 +584,7 @@ impl LanguageServer for Backend {
         params: TypeHierarchySupertypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
         let state = self.state_for_uri(&params.item.uri)?;
-        features::supertypes(&state, params.item.uri.clone(), params.item.selection_range)
+        features::supertypes(&state, params.item)
     }
 
     async fn subtypes(
@@ -568,7 +592,7 @@ impl LanguageServer for Backend {
         params: TypeHierarchySubtypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
         let state = self.state_for_uri(&params.item.uri)?;
-        features::subtypes(&state, params.item.uri.clone(), params.item.selection_range)
+        features::subtypes(&state, params.item)
     }
 }
 
@@ -580,16 +604,19 @@ impl Backend {
     async fn publish_grouped_file_events(&self, changes: Vec<FileEvent>) {
         let mut grouped: Vec<(WorkspaceHandle, Vec<FileEvent>)> = Vec::new();
         for change in changes {
-            let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
-                continue;
-            };
-            if let Some((_, events)) = grouped
-                .iter_mut()
-                .find(|(candidate, _)| candidate.same_session(&handle))
-            {
-                events.push(change);
-            } else {
-                grouped.push((handle, vec![change]));
+            let handles = self
+                .projects
+                .mutation_handles_for_uri(&change.uri, true)
+                .await;
+            for handle in handles {
+                if let Some((_, events)) = grouped
+                    .iter_mut()
+                    .find(|(candidate, _)| candidate.same_session(&handle))
+                {
+                    events.push(change.clone());
+                } else {
+                    grouped.push((handle, vec![change.clone()]));
+                }
             }
         }
         for (handle, changes) in grouped {
@@ -604,11 +631,17 @@ impl Backend {
         }
     }
 
-    fn state_for_uri(&self, uri: &Url) -> Result<Arc<ServerState>> {
+    fn source_state_for_uri(&self, uri: &Url) -> Result<Arc<ServerState>> {
         self.projects
             .query_handle_for_uri(uri, None)
             .map(|handle| handle.snapshot())
             .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    fn state_for_uri(&self, uri: &Url) -> Result<Arc<ServerState>> {
+        let state = self.source_state_for_uri(uri)?;
+        require_current_analysis(&state)?;
+        Ok(state)
     }
     async fn sysml_feature_inspector(
         &self,
@@ -621,11 +654,18 @@ impl Backend {
             .query_handle_for_uri(&uri, project_uri.as_ref())
             .map_err(tower_lsp::jsonrpc::Error::invalid_params)?
             .snapshot();
+        require_current_analysis(&state)?;
         sysml_feature_inspector_result(&state, params)
     }
 
     async fn sysml_server_stats(&self) -> Result<dto::SysmlServerStatsDto> {
         let mut result = dto::SysmlServerStatsDto {
+            analysis: dto::SysmlAnalysisSummaryDto {
+                state: dto::SysmlAnalysisStateDto::Current,
+                active_jobs: 0,
+                pending_jobs: 0,
+                failure: None,
+            },
             uptime: self.start_time.elapsed().as_secs(),
             memory: dto::SysmlServerMemoryDto { rss: 0 },
             caches: dto::SysmlServerCachesDto {
@@ -635,7 +675,17 @@ impl Backend {
             },
         };
         for handle in self.projects.handles() {
-            let project = sysml_server_stats_result(&handle.snapshot(), self.start_time);
+            let project = sysml_server_stats_result(
+                &handle.snapshot(),
+                self.start_time,
+                handle.analysis_occupancy(),
+            );
+            result.analysis.state = result.analysis.state.merge(project.analysis.state);
+            result.analysis.active_jobs += project.analysis.active_jobs;
+            result.analysis.pending_jobs += project.analysis.pending_jobs;
+            if result.analysis.failure.is_none() {
+                result.analysis.failure = project.analysis.failure;
+            }
             result.caches.documents += project.caches.documents;
             result.caches.symbol_tables += project.caches.symbol_tables;
             result.caches.semantic_tokens += project.caches.semantic_tokens;
@@ -876,7 +926,9 @@ impl Backend {
                 "sysml/librarySearch requires project provenance in a multi-project workspace",
             ));
         }
-        sysml_library_search_result(&handles[0].snapshot(), params)
+        let state = handles[0].snapshot();
+        require_current_analysis(&state)?;
+        sysml_library_search_result(&state, params)
     }
 
     async fn custom_rpc_method(
@@ -976,4 +1028,32 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
         .concurrency_level(1)
         .serve(service)
         .await;
+}
+
+#[cfg(test)]
+mod analysis_policy_tests {
+    use super::*;
+
+    #[test]
+    fn pending_cancelled_and_failed_analysis_are_never_successful_positional_queries() {
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        assert!(require_current_analysis(&state).is_ok());
+        state.session.invalidate_inputs();
+        assert_eq!(
+            require_current_analysis(&state).unwrap_err().code,
+            tower_lsp::jsonrpc::ErrorCode::ContentModified
+        );
+        state.session.finish_preparation_cancelled();
+        assert_eq!(
+            require_current_analysis(&state).unwrap_err().code,
+            tower_lsp::jsonrpc::ErrorCode::ContentModified
+        );
+        state.session.invalidate_inputs();
+        state.session.finish_preparation_failure();
+        assert_eq!(
+            require_current_analysis(&state).unwrap_err().code,
+            tower_lsp::jsonrpc::ErrorCode::InternalError
+        );
+    }
 }

@@ -3,7 +3,7 @@ use tower_lsp::lsp_types::*;
 
 pub(crate) fn server_capabilities(
     config: &Spec42Config,
-    code_lens_enabled: bool,
+    _code_lens_enabled: bool,
 ) -> ServerCapabilities {
     let mut capabilities = ServerCapabilities {
         text_document_sync: Some(TextDocumentSyncCapability::Kind(
@@ -12,16 +12,12 @@ pub(crate) fn server_capabilities(
         hover_provider: Some(HoverProviderCapability::Simple(true)),
         completion_provider: Some(CompletionOptions {
             resolve_provider: Some(true),
-            trigger_characters: Some(vec![".".to_string(), ":".to_string(), " ".to_string()]),
+            trigger_characters: Some(vec![".".to_string(), ":".to_string()]),
             all_commit_characters: None,
             work_done_progress_options: WorkDoneProgressOptions::default(),
             completion_item: None,
         }),
-        signature_help_provider: Some(SignatureHelpOptions {
-            trigger_characters: Some(vec![":".to_string(), ",".to_string()]),
-            retrigger_characters: None,
-            work_done_progress_options: WorkDoneProgressOptions::default(),
-        }),
+        signature_help_provider: None,
         definition_provider: Some(OneOf::Left(true)),
         references_provider: Some(OneOf::Left(true)),
         rename_provider: Some(OneOf::Right(RenameOptions {
@@ -38,15 +34,9 @@ pub(crate) fn server_capabilities(
         }),
         workspace_symbol_provider: Some(OneOf::Left(true)),
         code_action_provider: Some(CodeActionProviderCapability::Simple(true)),
-        code_lens_provider: if code_lens_enabled {
-            Some(CodeLensOptions {
-                resolve_provider: Some(false),
-            })
-        } else {
-            None
-        },
+        code_lens_provider: None,
         inlay_hint_provider: None,
-        linked_editing_range_provider: Some(LinkedEditingRangeServerCapabilities::Simple(true)),
+        linked_editing_range_provider: None,
         document_formatting_provider: Some(OneOf::Left(true)),
         // TODO(follow-up): Reintroduce monikers and call hierarchy only after their stable
         // identities and perform relationships are owned by typed immutable-model queries.

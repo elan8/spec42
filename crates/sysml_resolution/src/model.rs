@@ -1413,6 +1413,102 @@ pub(crate) enum ReferenceKind {
     FlowPayloadType,
 }
 
+macro_rules! reference_kinds {
+    ($($variant:ident),* $(,)?) => {
+        impl ReferenceKind {
+            /// Every kind, in declaration order. The exhaustive `match` below fails to compile
+            /// when a variant is added without being listed here.
+            pub(crate) const ALL: &'static [Self] = &[$(Self::$variant),*];
+        }
+
+        #[allow(dead_code)]
+        const fn reference_kind_list_is_exhaustive(kind: ReferenceKind) {
+            match kind {
+                $(ReferenceKind::$variant)|* => {}
+            }
+        }
+    };
+}
+
+reference_kinds![
+    ExplicitRelationshipEndpoint,
+    NamespaceImport,
+    MembershipImport,
+    FilterImport,
+    FeatureTyping,
+    TypeFeaturing,
+    FeatureChaining,
+    Subclassification,
+    Conjugation,
+    Subsetting,
+    Redefinition,
+    References,
+    Crosses,
+    FeatureInverting,
+    Intersects,
+    Unioning,
+    Intersecting,
+    Differencing,
+    Disjoining,
+    AliasBinding,
+    ConnectorEnd,
+    Succession,
+    EntryActionBinding,
+    DoActionBinding,
+    ExitActionBinding,
+    InitialState,
+    ExpressionOperand,
+    TransitionSource,
+    TransitionTarget,
+    TransitionTrigger,
+    TransitionEffect,
+    MetadataAnnotation,
+    MetadataAnnotationAbout,
+    Annotation,
+    FilterMetadataTest,
+    SatisfySource,
+    SatisfyTarget,
+    AllocateSource,
+    AllocateTarget,
+    BindSource,
+    BindTarget,
+    IncludeUseCase,
+    ViewExpose,
+    MemberAccessOperand,
+    InvocationCallee,
+    ThenTarget,
+    AcceptVia,
+    SendTarget,
+    AcceptPayloadType,
+    TerminateTarget,
+    FlowSource,
+    FlowTarget,
+    TypeCheckTarget,
+    MetaCastTarget,
+    MetadataAccessTarget,
+    StakeholderTarget,
+    PurposeTarget,
+    VerifyRequirementTarget,
+    AssignTarget,
+    DependencyClient,
+    DependencySupplier,
+    PerformParameterTarget,
+    FlowPayloadType,
+];
+
+/// Every relationship kind name the relationship channel can publish (see
+/// `render::relationship_kind`), so a consumer that maps them onto its own closed vocabulary can
+/// check that the mapping is total.
+pub fn published_relationship_kinds() -> Vec<&'static str> {
+    let mut names = ReferenceKind::ALL
+        .iter()
+        .filter_map(|kind| render::relationship_kind(*kind))
+        .collect::<Vec<_>>();
+    names.sort_unstable();
+    names.dedup();
+    names
+}
+
 impl ReferenceKind {
     /// Whether the kind is a KerML `Specialization` subkind, i.e. one of the edges that form
     /// `Type::ownedSpecialization` and so `Type::supertypes`: Subclassification, FeatureTyping,

@@ -1,3 +1,4 @@
+import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../../generated/diagram-product/schemaVersion";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
@@ -19,20 +20,81 @@ import {
   resolveDiagramSelection,
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
-import { isEmptyIncompleteDiagramProduct, sameProjectedNodes } from "../../diagram/diagramProductState";
+import { isEmptyIncompleteDiagramProduct, remapDisclosureState } from "../../diagram/diagramProductState";
+import { isPresentedFrame, parseRenderMeasurement, RenderMeasurementTracker, type RenderMeasurement } from "../../diagram/diagramPerformance";
+
+describe("diagram performance correlation", () => {
+  const frame = (identity: { renderId: number; modelDigest: string; viewHandle: string }): RenderMeasurement => ({
+    ...identity, type: "renderComplete", outcome: "rendered",
+    webviewTotalMs: 15, webviewPrepareMs: 2, webviewRenderMs: 8, frameWaitMs: 4,
+    framesObserved: 2, visible: true, viewportReused: true, disclosureReused: false,
+  });
+
+  it("accepts one acknowledgement for the exact current render, product and view", () => {
+    const tracker = new RenderMeasurementTracker();
+    const old = tracker.begin("old", "general:one", 10);
+    const current = tracker.begin("current", "general:one", 30);
+    assert.equal(tracker.complete(frame(old), 60), undefined);
+    assert.equal(tracker.complete({ ...frame(current), modelDigest: "other" }, 60), undefined);
+    assert.equal(tracker.complete({ ...frame(current), viewHandle: "other" }, 60), undefined);
+    assert.equal(tracker.complete(frame(current), 20), undefined);
+    const accepted = tracker.complete(frame(current), 60);
+    assert.ok(accepted);
+    assert.equal(accepted.postToAckMs, 30);
+    assert.ok(isPresentedFrame(accepted));
+    assert.equal(tracker.complete(frame(current), 70), undefined);
+  });
+
+  it("drops pending render identity on publication replacement, hide or disposal", () => {
+    const tracker = new RenderMeasurementTracker();
+    const identity = tracker.begin("current", "general:one", 10);
+    tracker.invalidate();
+    assert.equal(tracker.complete(frame(identity), 60), undefined);
+  });
+
+  it("keeps hidden, incomplete and unavailable renders explicit instead of counting a frame", () => {
+    const value = frame({ renderId: 1, modelDigest: "current", viewHandle: "general:one" });
+    for (const outcome of ["empty", "failed", "unavailable"] as const) {
+      assert.equal(isPresentedFrame({ ...value, outcome }), false);
+    }
+    assert.equal(isPresentedFrame({ ...value, visible: false }), false);
+    assert.equal(isPresentedFrame({ ...value, framesObserved: 1 }), false);
+  });
+
+  it("rejects malformed durations and strips fields outside the measurement contract", () => {
+    const value = frame({ renderId: 1, modelDigest: "current", viewHandle: "general:one" });
+    for (const extra of [{ webviewRenderMs: NaN }, { webviewRenderMs: -1 }, { framesObserved: 3 },
+      { renderId: 1.5 }, { visible: "yes" }, { outcome: "success" }, { webviewTotalMs: 1 }]) {
+      assert.equal(parseRenderMeasurement({ ...value, ...extra }), undefined);
+    }
+    assert.equal(parseRenderMeasurement(null), undefined);
+    const accepted = parseRenderMeasurement({ ...value, event: "backend:publication", extensionHostMs: -1 });
+    assert.ok(accepted);
+    assert.equal("event" in accepted, false);
+    assert.equal("extensionHostMs" in accepted, false);
+  });
+});
 
 describe("diagram viewer core", () => {
-  it("reuses disclosure only while a product projects the same nodes", () => {
-    const node = (name: string) => ({ reference: 0, name });
-    const product = (digest: string, names: string[]) => ({
-      modelDigest: digest, references: [{ kind: "qualified-name" }], projection: { nodes: names.map(node) },
+  it("remaps disclosure through inserted/reordered nodes using only opaque occurrence keys", () => {
+    const product = (keys: string[]) => ({ projection: { nodes: keys.map(presentationKey => ({ presentationKey })) } });
+    const state = { expandedNodeIds: ["n:0", "n:2", "n:99"], sectionStates: [
+      { nodeId: "n:0", sectionKey: "parts", expanded: false },
+      { nodeId: "n:1", sectionKey: "attributes", expanded: true },
+    ] };
+    assert.deepEqual(remapDisclosureState(product(["a", "b", "deleted"]), product(["new", "b", "a"]), state), {
+      expandedNodeIds: ["n:2"], sectionStates: [
+        { nodeId: "n:2", sectionKey: "parts", expanded: false },
+        { nodeId: "n:1", sectionKey: "attributes", expanded: true },
+      ],
     });
-    const before = product("blake3:a", ["root", "child"]);
-    assert.equal(sameProjectedNodes(before, product("blake3:a", ["root", "child"])), true);
-    // Loading a browser branch keeps the digest but adds nodes and shifts their indexes.
-    assert.equal(sameProjectedNodes(before, product("blake3:a", ["root", "loaded", "child"])), false);
-    assert.equal(sameProjectedNodes(before, product("blake3:b", ["root", "child"])), false);
-    assert.equal(sameProjectedNodes(undefined, before), false);
+    assert.deepEqual(state.expandedNodeIds, ["n:0", "n:2", "n:99"], "Previous publication state is immutable");
+    assert.equal(remapDisclosureState(undefined, product(["a"]), state), undefined);
+    assert.equal(remapDisclosureState(product(["a"]), product(["a"]), undefined), undefined);
+    for (const [before, after] of [[["a", "a"], ["a"]], [["a"], ["a", "a"]], [["a"], ["other"]], [[""], [""]]]) {
+      assert.deepEqual(remapDisclosureState(product(before), product(after), {expandedNodeIds:["n:0"],sectionStates:[]}),
+        {expandedNodeIds:[],sectionStates:[]});
+    }
   });
 
   it("reuses an already-visible source column and otherwise requests a new one", () => {
@@ -130,7 +192,7 @@ describe("diagram viewer core", () => {
 
   it("validates the versioned render product and explicit incompleteness", () => {
     const value = {
-      schemaVersion: 7,
+      schemaVersion: DIAGRAM_PRODUCT_SCHEMA_VERSION,
       modelDigest: "blake3:model",
       documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
@@ -166,6 +228,7 @@ describe("diagram viewer core", () => {
       },
     }), false);
     const node = {
+      presentationKey: "p:root",
       reference: 0,
       metaclass: "PartUsage",
       notationRole: "usage",
@@ -179,6 +242,9 @@ describe("diagram viewer core", () => {
       ...value,
       projection: { ...value.projection, exposedRoots: [0], nodes: [node] },
     })).projection.nodes.length, 1);
+    for (const nodes of [[{...node,presentationKey:""}], [{...node,presentationKey:undefined}], [node,node]]) {
+      assert.throws(() => parseDiagramProduct(JSON.stringify({...value,projection:{...value.projection,nodes}})));
+    }
     const typedNodes = {
       ...value,
       projection: {
@@ -206,9 +272,32 @@ describe("diagram viewer core", () => {
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 4 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 5 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 6 })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 8 })));
+    assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, schemaVersion: 9 })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, sources: [{ document: 1, range: [0, 0, 0, 1] }] })));
+    const withReason = (reason: unknown) => JSON.stringify({
+      ...value,
+      completeness: { status: "incomplete", reasons: [reason] },
+      projection: { ...value.projection, exposedRoots: [0], nodes: [node] },
+    });
+    assert.equal(parseDiagramProduct(withReason({ code: "sequence-content-omitted", elements: [0] })).completeness.reasons.length, 1);
+    assert.equal(parseDiagramProduct(withReason({
+      code: "sequence-ordering-cycle",
+      witness: [{ source: 0, target: 0, events: [0], provenance: "implied" }],
+    })).completeness.reasons.length, 1);
+    assert.throws(() => parseDiagramProduct(withReason({ code: "sequence-content-omitted", elements: [1] })));
+    assert.throws(() => parseDiagramProduct(withReason({ code: "sequence-content-omitted" })));
+    assert.throws(() => parseDiagramProduct(withReason({ code: "sequence-ordering-cycle" })));
+    assert.throws(() => parseDiagramProduct(withReason({
+      code: "sequence-ordering-cycle",
+      witness: [{ source: 0, target: 3, events: [], provenance: "authored" }],
+    })));
+    assert.throws(() => parseDiagramProduct(withReason({
+      code: "sequence-ordering-cycle",
+      witness: [{ source: 0, target: 0, provenance: "authored" }],
+    })));
   });
 
   it("lists every authored view in the model, grouped by canonical namespace and keyed by handle", () => {

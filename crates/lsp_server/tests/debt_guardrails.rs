@@ -149,8 +149,11 @@ fn diagnostic_dependency_guessing_remains_explicitly_recovery_only() {
         0,
         "LSP code must not reconstruct semantic dependencies by walking parser imports"
     );
-    // The selection itself is the facade's `workspace_documents_affected_by`; the host owns no
-    // second one, not even a wrapper that re-decides when to over-invalidate.
+    // A coalesced publication may contain edits to several documents. Completion delivery
+    // deliberately sweeps workspace diagnostics and open libraries, once per completed model,
+    // replacing the old per-edit selective publish plus debounced full sweep. It must not
+    // reconstruct dependencies to decide which semantic results exist. Any future selective
+    // fanout must consume the facade's dependency query, with both sides of the publication.
     assert_eq!(
         count_occurrences(&root, "fn affected_diagnostic_documents"),
         0,
@@ -158,8 +161,8 @@ fn diagnostic_dependency_guessing_remains_explicitly_recovery_only() {
     );
     assert_eq!(
         count_occurrences(&root, "workspace_documents_affected_by"),
-        1,
-        "one call site decides what a relink republishes"
+        0,
+        "coalesced completion delivery uses a complete reporting sweep, not per-edit dependency selection"
     );
 }
 
@@ -233,9 +236,10 @@ fn the_editor_host_constructs_one_services_value() {
     );
 }
 
-/// Library-closure resolution is a startup and reconfiguration cost, never a per-edit one.
+/// Root discovery is a source-barrier cost. Edits query the immutable canonical inventory;
+/// forbidding closure selection itself would leave newly edited imports permanently stale.
 #[test]
-fn library_closure_never_runs_on_the_edit_path() {
+fn library_filesystem_discovery_never_runs_on_the_edit_path() {
     let src = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
     for file in [
         "lsp_runtime/documents/sync.rs",
@@ -249,6 +253,14 @@ fn library_closure_never_runs_on_the_edit_path() {
                 "{file} resolves the library closure on the edit path: {forbidden}"
             );
         }
+    }
+
+    for file in ["session/handle.rs", "lsp_runtime/documents/mod.rs"] {
+        let source = std::fs::read_to_string(src.join(file)).expect("read preparation source");
+        assert!(
+            !source.contains("prepare_catalog_for_roots("),
+            "{file} must select from an admitted catalogue instead of reading roots"
+        );
     }
 
     // Closure loading is the facade's; the host names roots and asks. A host-side loader would be

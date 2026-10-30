@@ -1365,6 +1365,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         exported_imports,
         memberships,
         ResolutionResults {
+            alias_failures: std::collections::BTreeSet::new(),
             member_access_paths: member_access_paths
                 .into_iter()
                 .map(|(reference, path)| (reference, path.into_boxed_slice()))
@@ -1689,7 +1690,7 @@ fn build_member_inheritance_closures<R: ResolutionReferenceFact>(
     )
 }
 
-fn reference_target_domain(kind: ReferenceKind) -> DeclarationDomain {
+pub(crate) fn reference_target_domain(kind: ReferenceKind) -> DeclarationDomain {
     if kind == ReferenceKind::Conjugation {
         // `originalType` is any KerML Type, including a Feature (`feature g ~ B::f`).
         // `DeclarationDomain::Type` admits definition-like types only.

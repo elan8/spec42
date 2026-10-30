@@ -641,8 +641,8 @@ package Dispatch {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:8f44467c21d0741937dea7923724fd5dbcaa6b4f5a37c5d9a115d3af6b68d0e7",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:9ddffcbb1e9ffe55874dceb898c9291e3e503e57ad001becb1d673e15037fef0",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1141,6 +1141,25 @@ package Dispatch {
         4,
         6
       ],
+      "portFamilies": [
+        {
+          "connectors": [
+            1
+          ],
+          "general": [
+            {
+              "label": "DispatchPort",
+              "reference": 2
+            }
+          ],
+          "types": [
+            {
+              "label": "DispatchPort",
+              "reference": 2
+            }
+          ]
+        }
+      ],
       "ports": [
         5,
         7
@@ -1171,9 +1190,11 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "service",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:7564fd3c6de36d869def92320659dd00344ca8337d88bb7ffd821cc11ab5d814",
         "reference": 8,
         "source": 4,
         "stateSubaction": null,
@@ -1188,9 +1209,11 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:4d9fc51b8291b104d60cb05fb51f28d0840e2e8f1ff1e75fa29df5acae1d4ba1",
         "reference": 12,
         "source": 9,
         "stateSubaction": null,
@@ -1205,9 +1228,11 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:7d549a16d484212dd6ee3b3206f80b016776cd4a720edf7ad91ff5d687cea909",
         "reference": 13,
         "source": 12,
         "stateSubaction": null,
@@ -1222,9 +1247,11 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "FlowUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:57e4732855fde790acd4d76c1bddac17b3afd21ab5a0cb86abd5b46ab0dcd1e5",
         "reference": 14,
         "source": 15,
         "stateSubaction": null,
@@ -1247,9 +1274,11 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "car",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:a6c770f8e6029ca4bec0cff108366052b6e6125067eb8907ae1bc0af5b849437",
         "reference": 10,
         "source": 7,
         "stateSubaction": null,
@@ -1270,9 +1299,11 @@ package Dispatch {
         "direction": null,
         "featureDirection": "inout",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "group",
         "notationRole": "usage",
         "owner": 4,
+        "presentationKey": "p:b41d0318c7574b4845d4875cc2456a5349b985581ff3900f2d53a704bb205969",
         "reference": 1,
         "source": 2,
         "stateSubaction": null,
@@ -1301,9 +1332,11 @@ package Dispatch {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "group",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:fa8caca1f7cbb6d713c5a5bdc7f5b5efe33cb67f358502ad3932e5a5c73da222",
         "reference": 11,
         "source": 5,
         "stateSubaction": null,
@@ -1324,9 +1357,11 @@ package Dispatch {
         "direction": null,
         "featureDirection": "inout",
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "car",
         "notationRole": "usage",
         "owner": 6,
+        "presentationKey": "p:ed38446bbd1101a4614d7f4aab1401d2ff0a98e37fb3b2cc884447a4e129ddc1",
         "reference": 6,
         "source": 0,
         "stateSubaction": null,

@@ -2380,17 +2380,20 @@ impl ManifestAuditReport {
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 struct GeneratedArtifacts {
     files: BTreeMap<String, String>,
+    /// Disposable collision index using the generator path owner's filesystem normalization.
+    folded_paths: BTreeSet<String>,
 }
 
 impl GeneratedArtifacts {
     fn insert_utf8(&mut self, path: impl Into<String>, contents: String) -> Result<(), String> {
         let path = path.into();
-        validate_artifact_path(&path)?;
-        if self.files.insert(path.clone(), contents).is_some() {
+        let canonical = validate_artifact_path(&path)?;
+        if !self.folded_paths.insert(canonical.folded()) {
             return Err(format!(
                 "generator emitted duplicate artifact path {path:?}"
             ));
         }
+        self.files.insert(path, contents);
         Ok(())
     }
 }
@@ -8102,20 +8105,11 @@ fn parse_generator_plugin(value: &str, fallback_name: &str) -> Result<GeneratorP
     Ok(GeneratorPlugin::Conformance(name.to_string()))
 }
 
-fn validate_artifact_path(path: &str) -> Result<(), String> {
-    let candidate = Path::new(path);
-    if path.is_empty()
-        || candidate.is_absolute()
-        || candidate.components().any(|part| {
-            matches!(
-                part,
-                std::path::Component::ParentDir | std::path::Component::CurDir
-            )
-        })
-    {
-        return Err(format!("invalid generated artifact path {path:?}"));
-    }
-    Ok(())
+/// Reuse the generator boundary's portable path policy, including Windows device names and
+/// filesystem aliases. Host `Path` rules alone accept different names on different platforms.
+fn validate_artifact_path(path: &str) -> Result<generator_api::ArtifactPath, String> {
+    generator_api::ArtifactPath::parse(path)
+        .map_err(|error| format!("invalid generated artifact path {path:?}: {error}"))
 }
 
 fn artifact_fence_language(path: &str) -> &'static str {
@@ -8236,6 +8230,7 @@ fn parse_editor_probes(
         let mut rename_to = None;
         let probe_index = probes.len();
         let mut features = false;
+        let mut repairs = false;
         for option in fields {
             if let Some(value) = option.strip_prefix("qualifier=") {
                 qualifier = Some(value.to_string());
@@ -8248,6 +8243,13 @@ fn parse_editor_probes(
                     ));
                 }
                 features = true;
+            } else if option == "repairs" {
+                if repairs {
+                    return Err(format!(
+                        "{fallback_name}: duplicate editor probe option {option:?}"
+                    ));
+                }
+                repairs = true;
             } else if option == "hover" {
                 if !hover.insert(probe_index) {
                     return Err(format!(
@@ -8266,6 +8268,7 @@ fn parse_editor_probes(
             qualifier,
             rename_to,
             features,
+            repairs,
         });
     }
     Ok(EditorProbes {
@@ -10440,18 +10443,39 @@ mod tests {
     fn generated_artifact_paths_are_safe_and_unique() {
         let mut artifacts = GeneratedArtifacts::default();
         artifacts
-            .insert_utf8("ok/report.csv", String::new())
+            .insert_utf8("ok/report.csv", "original".to_owned())
             .unwrap();
         assert!(artifacts
-            .insert_utf8("ok/report.csv", String::new())
+            .insert_utf8("ok/report.csv", "replacement".to_owned())
             .unwrap_err()
             .contains("duplicate"));
+        assert_eq!(artifacts.files["ok/report.csv"], "original");
+        for (first, alias) in [("Report.csv", "report.csv"), ("é.csv", "e\u{301}.csv")] {
+            let mut artifacts = GeneratedArtifacts::default();
+            artifacts.insert_utf8(first, "original".to_owned()).unwrap();
+            assert!(artifacts
+                .insert_utf8(alias, "replacement".to_owned())
+                .is_err());
+            assert_eq!(artifacts.files.len(), 1);
+            assert_eq!(artifacts.files[first], "original");
+        }
         for path in [
             "",
             "/absolute.csv",
             "../escape.csv",
             "a/../escape.csv",
             "./same.csv",
+            "C:/drive.csv",
+            "C:\\drive.csv",
+            "a\\..\\escape.csv",
+            "a//empty-segment.csv",
+            "trailing/",
+            "nul\0.csv",
+            "CON.csv",
+            "nested/LPT1.txt",
+            "report.csv.",
+            "report.csv ",
+            "bad|name.csv",
         ] {
             assert!(
                 GeneratedArtifacts::default()

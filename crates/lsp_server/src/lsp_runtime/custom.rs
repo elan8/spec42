@@ -33,7 +33,7 @@ pub(crate) fn sysml_feature_inspector_result(
             &uri,
             position,
             at,
-            Some((text.as_str(), &entry.parsed)),
+            Some((text.as_str(), entry.syntax()?)),
         ),
         None => crate::views::empty_feature_inspector_response(&uri, position),
     };
@@ -42,7 +42,7 @@ pub(crate) fn sysml_feature_inspector_result(
     );
 
     if let Some(literal) = entry
-        .parsed
+        .syntax()?
         .unit_literal_at(position.line, position.character)
     {
         response.selection = dto::SysmlFeatureInspectorSelectionDto {
@@ -62,7 +62,7 @@ pub(crate) fn sysml_feature_inspector_result(
         return Ok(response);
     }
 
-    let Some(token) = entry.parsed.token_at(position.line, position.character) else {
+    let Some(token) = entry.syntax()?.token_at(position.line, position.character) else {
         return Ok(response);
     };
     let word = token.text;
@@ -131,7 +131,18 @@ pub(crate) fn sysml_library_search_result(
     // Build any missing entries from that same publication, retaining the parser-backed search
     // projection only for documents deliberately not admitted to semantic construction.
     let mut search_symbols = state.semantic_symbols.clone();
-    search_symbols.extend(state.recovery_search_symbols.iter().cloned());
+    search_symbols.extend(
+        state
+            .recovery_search_symbols
+            .iter()
+            .filter(|symbol| {
+                !state
+                    .published_index
+                    .get(&symbol.uri)
+                    .is_some_and(|entry| entry.admitted_to_publication)
+            })
+            .cloned(),
+    );
     for (uri, index_entry) in &state.index {
         if !crate::common::util::uri_under_any_library(uri, &state.library_paths)
             || search_symbols.iter().any(|entry| entry.uri == *uri)
@@ -140,14 +151,15 @@ pub(crate) fn sysml_library_search_result(
         }
         // Only non-admitted corpus documents may use syntax recovery for search. Admitted
         // documents are represented exclusively by the committed publication query.
-        if !index_entry.admitted_to_publication {
+        if let Some(parsed) = index_entry
+            .parsed
+            .as_ref()
+            .filter(|_| !index_entry.admitted_to_publication)
+        {
             search_symbols.extend(
-                language_service::search_symbols_from_recovered_short_names(
-                    &index_entry.parsed,
-                    uri,
-                )
-                .into_iter()
-                .map(language_service::RecoverySearchSymbol::into_search_only_symbol),
+                language_service::search_symbols_from_recovered_short_names(parsed, uri)
+                    .into_iter()
+                    .map(language_service::RecoverySearchSymbol::into_search_only_symbol),
             );
         }
     }
@@ -229,8 +241,18 @@ pub(crate) fn sysml_library_search_result(
 pub(crate) fn sysml_server_stats_result(
     state: &ServerState,
     start_time: Instant,
+    occupancy: (usize, usize),
 ) -> dto::SysmlServerStatsDto {
     dto::SysmlServerStatsDto {
+        analysis: dto::SysmlAnalysisSummaryDto {
+            state: dto::SysmlAnalysisStateDto::from_status(state.session.analysis_status()),
+            active_jobs: occupancy.0,
+            pending_jobs: occupancy.1,
+            failure: (state.session.analysis_status()
+                == sysml_query::publication::AnalysisStatus::FailedRetained)
+                .then(|| state.publication_failure.as_ref().map(ToString::to_string))
+                .flatten(),
+        },
         uptime: start_time.elapsed().as_secs(),
         memory: dto::SysmlServerMemoryDto { rss: 0 },
         caches: dto::SysmlServerCachesDto {
@@ -241,14 +263,14 @@ pub(crate) fn sysml_server_stats_result(
     }
 }
 
-/// Clears the document-store side of the cache (index/symbol table/publication/render cache),
-/// returning the pre-clear document and symbol counts. Called via
+/// Clears desired source/search state, returning the previous document and symbol counts.
+/// The admitted source/model/projection pair remains intact until its replacement is admitted.
+/// Called via
 /// `WorkspaceHandle::clear_cache_state` inside an actor `mutate` closure.
 pub(crate) fn clear_document_store_state(state: &mut ServerState) -> (usize, usize) {
     let docs = state.index().len();
     let syms = state.semantic_symbols.len() + state.recovery_search_symbols.len();
     state.index_mut().clear();
-    state.semantic_symbols.clear();
     state.recovery_search_symbols.clear();
     (docs, syms)
 }

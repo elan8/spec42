@@ -287,9 +287,9 @@ impl fmt::Display for UnknownCode {
 impl std::error::Error for UnknownCode {}
 
 abi_contract! {
-    abi_version: 6,
-    semantic_api_version: "0.3.0",
-    namespace: "spec42:generator-abi/6",
+    abi_version: 7,
+    semantic_api_version: "0.5.0",
+    namespace: "spec42:generator-abi/7",
     import_module: "spec42",
 
     /// A read-only semantic query.

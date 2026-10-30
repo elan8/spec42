@@ -113,8 +113,8 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:99e7cb59c6c87f956b83b1353c22ffc3d35e2354c4c702933f9669f2a01d2634",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:278720f5bbc0914dc5b4ef42c57187435efb3bcf3b487644959645053c1fa3a8",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_port_definition_grid.md",
@@ -184,9 +184,11 @@ package M {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortDefinition",
+        "multiplicity": null,
         "name": "P",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:e72a5c1043864cfe8f127e0a16a2e81e5a759e8479602ac8c893cef159909039",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,

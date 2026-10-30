@@ -100,6 +100,21 @@ pub(crate) fn families_are_comparable(source: Family, target: Family) -> bool {
     descends_from(target, source) || descends_from(source, target)
 }
 
+/// The metaclass rule a reference's target violates.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum KindViolation {
+    /// A KerML classifier specializes a classifier of an incompatible metaclass.
+    KermlSpecialization,
+    /// A classifier's `:>` names a feature.
+    SpecializesUsage,
+    /// A feature's `:>`, `:>>`, `::>` or `=>` names a classifier.
+    SubsetsDefinition,
+    /// A SysML usage is typed by a feature.
+    TypedByUsage,
+    /// The SysML families of source and target are in unrelated branches.
+    Family(DiagnosticCode),
+}
+
 impl<D> SemanticModel<D> {
     /// The family and role of one declaration, as opposed to of one `DeclarationKind`.
     ///
@@ -464,58 +479,142 @@ impl<D> SemanticModel<D> {
         target: DeclarationId,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        // KerML 8.3.4.1.2/8.3.4.2.2/8.3.4.3.2/8.3.4.6.2 `validate{DataType,Class,Structure,
-        // Behavior}Specialization` are metaclass tests over an owned Specialization's general,
-        // and apply to every KerML and SysML classifier alike.
-        if reference.kind == ReferenceKind::Subclassification
-            && self.kerml_specialization_incompatible(reference.source, target)
-        {
-            diagnostics.push(self.reference_diagnostic(
+        let Some(violation) =
+            self.reference_kind_violation(reference.kind, reference.source, target)
+        else {
+            return Ok(());
+        };
+        let diagnostic = match violation {
+            KindViolation::KermlSpecialization => self.reference_diagnostic(
                 reference,
                 DiagnosticCode::IncompatibleSpecializationKind,
                 DiagnosticSeverity::Warning,
                 Some(target),
-            )?);
-            return Ok(());
+            )?,
+            KindViolation::SpecializesUsage => self.reference_message_diagnostic(
+                reference,
+                DiagnosticCode::IncompatibleSpecializationKind,
+                DiagnosticSeverity::Error,
+                format!(
+                    "A definition specializes definitions, but '{}' is a usage. Specialize its \
+                     definition, or declare a usage that subsets it.",
+                    self.display_name(target)
+                ),
+                Some((target, RELATED_DECLARED)),
+            )?,
+            KindViolation::SubsetsDefinition => {
+                let relationship = match reference.kind {
+                    ReferenceKind::Redefinition => "redefines",
+                    ReferenceKind::References => "references",
+                    ReferenceKind::Crosses => "crosses",
+                    _ => "subsets",
+                };
+                self.reference_message_diagnostic(
+                    reference,
+                    DiagnosticCode::IncompatibleSubsettingKind,
+                    DiagnosticSeverity::Error,
+                    format!(
+                        "A usage {relationship} usages, but '{}' is a definition. Use ':' to \
+                         type it by the definition.",
+                        self.display_name(target)
+                    ),
+                    Some((target, RELATED_DECLARED)),
+                )?
+            }
+            KindViolation::TypedByUsage => self.reference_message_diagnostic(
+                reference,
+                DiagnosticCode::IncompatibleTypeKind,
+                DiagnosticSeverity::Error,
+                format!(
+                    "A usage is typed by a definition, but '{}' is a usage. Use ':>' to \
+                     specialize it, or type by its definition.",
+                    self.display_name(target)
+                ),
+                Some((target, RELATED_DECLARED)),
+            )?,
+            KindViolation::Family(code) => self.reference_diagnostic(
+                reference,
+                code,
+                DiagnosticSeverity::Warning,
+                Some(target),
+            )?,
+        };
+        diagnostics.push(diagnostic);
+        Ok(())
+    }
+
+    /// Why a reference of `kind` from `source` may not target `target`'s metaclass, or `None`
+    /// when the metaclass rules admit the pair.
+    ///
+    /// The one statement of these rules: validation reports a violation, and a repair that
+    /// proposes a target for an unresolved reference offers only targets this admits.
+    pub(crate) fn reference_kind_violation(
+        &self,
+        kind: ReferenceKind,
+        source: DeclarationId,
+        target: DeclarationId,
+    ) -> Option<KindViolation> {
+        // KerML 8.3.4.1.2/8.3.4.2.2/8.3.4.3.2/8.3.4.6.2 `validate{DataType,Class,Structure,
+        // Behavior}Specialization` are metaclass tests over an owned Specialization's general,
+        // and apply to every KerML and SysML classifier alike.
+        if kind == ReferenceKind::Subclassification
+            && self.kerml_specialization_incompatible(source, target)
+        {
+            return Some(KindViolation::KermlSpecialization);
+        }
+        let metaclass = |declaration: DeclarationId| {
+            self.storage
+                .declaration(declaration)
+                .map(|declaration| element_kind(declaration.kind))
+        };
+        let conforms = |declaration: DeclarationId, general: ElementKind| {
+            metaclass(declaration).is_some_and(|kind| kind.conforms_to(general))
+        };
+        // KerML 8.3.3.2 `Subclassification::superclassifier : Classifier`. `part def V8 :>
+        // engine;`, where `engine` is a part usage, names a feature where a classifier's `:>`
+        // names the classifiers it specializes.
+        if kind == ReferenceKind::Subclassification
+            && conforms(source, ElementKind::Classifier)
+            && conforms(target, ElementKind::Feature)
+        {
+            return Some(KindViolation::SpecializesUsage);
+        }
+        // KerML 8.3.3.3.10 `Subsetting::subsettedFeature : Feature`, which `Redefinition`,
+        // `ReferenceSubsetting` and `CrossSubsetting` inherit. `part engine :> Engine;`, where
+        // `Engine` is a part definition, names a classifier where a usage's `:>` names the
+        // features it subsets.
+        if matches!(
+            kind,
+            ReferenceKind::Subsetting
+                | ReferenceKind::Redefinition
+                | ReferenceKind::References
+                | ReferenceKind::Crosses
+        ) && conforms(source, ElementKind::Feature)
+            && conforms(target, ElementKind::Classifier)
+        {
+            return Some(KindViolation::SubsetsDefinition);
         }
         // SysML `Usage::definition : Classifier` redefines `Feature::type`, so every type of a
         // usage is a classifier. `out power : electricPower;`, where `electricPower` is an
         // attribute usage, types a feature by a feature. KerML has no such restriction (a
         // Feature is a Type), so this applies to SysML usages only.
-        if reference.kind == ReferenceKind::FeatureTyping {
-            let metaclass = |declaration: DeclarationId| {
-                self.storage
-                    .declaration(declaration)
-                    .map(|declaration| element_kind(declaration.kind))
-            };
-            if metaclass(reference.source).is_some_and(|kind| kind.conforms_to(ElementKind::Usage))
-                && metaclass(target).is_some_and(|kind| kind.conforms_to(ElementKind::Feature))
-            {
-                diagnostics.push(self.reference_message_diagnostic(
-                    reference,
-                    DiagnosticCode::IncompatibleTypeKind,
-                    DiagnosticSeverity::Error,
-                    format!(
-                        "A usage is typed by a definition, but '{}' is a usage. Use ':>' to \
-                         specialize it, or type by its definition.",
-                        self.display_name(target)
-                    ),
-                    Some((target, RELATED_DECLARED)),
-                )?);
-                return Ok(());
-            }
+        if kind == ReferenceKind::FeatureTyping
+            && conforms(source, ElementKind::Usage)
+            && conforms(target, ElementKind::Feature)
+        {
+            return Some(KindViolation::TypedByUsage);
         }
         let (Some((source_family, source_role)), Some((target_family, target_role))) = (
-            self.declaration_family(reference.source),
+            self.declaration_family(source),
             self.declaration_family(target),
         ) else {
-            return Ok(());
+            return None;
         };
 
-        let code = match reference.kind {
+        let code = match kind {
             ReferenceKind::FeatureTyping => {
                 if source_role != Role::Usage || target_role != Role::Definition {
-                    return Ok(());
+                    return None;
                 }
                 // A metadata definition classifies elements rather than describing one family's
                 // structure, so it types a usage of any family. This is the reflective idiom the
@@ -525,19 +624,19 @@ impl<D> SemanticModel<D> {
                 // whether the authored path spelled `SysML::`, which is the spelling-driven
                 // inference this owner does not do.
                 if target_family == Family::Metadata && source_family != Family::Metadata {
-                    return Ok(());
+                    return None;
                 }
                 if families_are_comparable(source_family, target_family) {
-                    return Ok(());
+                    return None;
                 }
                 DiagnosticCode::IncompatibleTypeKind
             }
             ReferenceKind::Subclassification => {
                 if source_role != Role::Definition || target_role != Role::Definition {
-                    return Ok(());
+                    return None;
                 }
                 if families_are_comparable(source_family, target_family) {
-                    return Ok(());
+                    return None;
                 }
                 DiagnosticCode::IncompatibleSpecializationKind
             }
@@ -546,23 +645,16 @@ impl<D> SemanticModel<D> {
             | ReferenceKind::References
             | ReferenceKind::Crosses => {
                 if source_role != Role::Usage {
-                    return Ok(());
+                    return None;
                 }
                 if families_are_comparable(source_family, target_family) {
-                    return Ok(());
+                    return None;
                 }
                 DiagnosticCode::IncompatibleSubsettingKind
             }
-            _ => return Ok(()),
+            _ => return None,
         };
-
-        diagnostics.push(self.reference_diagnostic(
-            reference,
-            code,
-            DiagnosticSeverity::Warning,
-            Some(target),
-        )?);
-        Ok(())
+        Some(KindViolation::Family(code))
     }
 
     /// Whether `specific`'s metaclass may not specialize `general`'s under the KerML classifier

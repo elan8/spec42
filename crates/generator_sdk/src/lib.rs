@@ -10,7 +10,7 @@ use serde::{de::DeserializeOwned, Serialize};
 pub use spec42_generator_protocol as protocol;
 pub use spec42_generator_protocol::{
     Artifact, DiagramViewProjection, DiagramViewSummary, ElementDetail, ElementSummary,
-    Multiplicity, Relationship,
+    Multiplicity, Relationship, RelationshipTarget,
 };
 
 /// Starting size of the query response buffer. Responses larger than this cost one extra
@@ -141,9 +141,10 @@ pub mod model {
         DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
         DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
         DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
-        ElementDetail, ElementIdentity, ElementSummary, EndpointTarget, ExpressionStatus,
-        ExpressionTree, Metaclass, ModelInfo, Multiplicity, ProjectionCompleteness,
-        ProjectionFeature, Relationship, RelationshipKind, RelationshipProvenance,
+        ElementDetail, ElementIdentity, ElementSummary, EndpointTarget, ExpressionLiteral,
+        ExpressionNode, ExpressionNodeKind, ExpressionStatus, ExpressionTree, LiteralValue,
+        Metaclass, ModelInfo, Multiplicity, ProjectionCompleteness, ProjectionFeature,
+        Relationship, RelationshipKind, RelationshipProvenance, RelationshipTarget,
         RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
         SatisfyRelationship, SequenceEndpoint, SequenceMessage, SequenceOrder, SequenceScene,
         SourceRange, SourceReference, StateMachineIdentity, StateMachineSummary,

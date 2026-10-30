@@ -12,14 +12,6 @@ pub(crate) fn workspace_roots_from_initialize(params: &InitializeParams) -> Vec<
         .unwrap_or_default()
 }
 
-pub(crate) fn scan_roots(workspace_roots: &[Url], library_paths: &[Url]) -> Vec<Url> {
-    workspace_roots
-        .iter()
-        .cloned()
-        .chain(library_paths.iter().cloned())
-        .collect()
-}
-
 /// Resolves an editor document to its nearest manifest project, bounded by the most specific
 /// containing workspace folder. The folder is the manifestless fallback, never semantic proof
 /// that every source below it belongs to one project.

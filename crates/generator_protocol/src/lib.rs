@@ -37,6 +37,7 @@ struct WireSchema {
     relationship: Relationship,
     expression_tree: ExpressionTree,
     connector_end: ConnectorEnd,
+    relationship_target: RelationshipTarget,
     requirement_usage_typing: RequirementUsageTyping,
     satisfy_relationship: SatisfyRelationship,
     satisfy_endpoint: SatisfyEndpoint,
@@ -143,7 +144,7 @@ pub enum Metaclass {
     AssignmentActionUsage,
     BindingConnectorUsage,
     ConjugatedPortDefinition,
-    DecisionNodeUsage,
+    DecisionNode,
     Dependency,
     DerivationConnectorUsage,
     Diagnostic,
@@ -154,17 +155,17 @@ pub enum Metaclass {
     FlowEnd,
     FlowPayload,
     ForLoopActionUsage,
-    ForkNodeUsage,
+    ForkNode,
     IfActionUsage,
     Import,
     InterfaceEndUsage,
-    JoinNodeUsage,
+    JoinNode,
     LiteralBoolean,
     LiteralInteger,
     LiteralRational,
     LiteralString,
     LiteralInfinity,
-    MergeNodeUsage,
+    MergeNode,
     MetadataAccessExpression,
     MultiplicityRange,
     NeedUsage,
@@ -179,12 +180,48 @@ pub enum Metaclass {
     VerdictUsage,
     VerifyUsage,
     WhileLoopActionUsage,
+    Namespace,
+    LibraryPackage,
+    AcceptActionUsage,
+    SendActionUsage,
+    ExhibitStateUsage,
+    Definition,
+    Usage,
+    PerformActionUsage,
+    ForLoopVariable,
+    ControlNode,
+    SuccessionAsUsage,
+    SatisfyRequirementUsage,
+    BindingConnectorAsUsage,
+    Expose,
+    AnnotatingElement,
+    Type,
+    Classifier,
+    Class,
+    Structure,
+    Association,
+    AssociationStructure,
+    DataType,
+    Metaclass,
+    Behavior,
+    Function,
+    Predicate,
+    Interaction,
+    Multiplicity,
+    Step,
+    BooleanExpression,
+    LiteralExpression,
+    Connector,
+    BindingConnector,
+    Succession,
+    Invariant,
+    MetadataFeature,
     /// A value this Spec42 produced that the enumeration above does not name.
     ///
     /// Carrying it explicitly means a guest can tell "I have never heard of this"
     /// apart from "I forgot to handle this", which a bare string cannot express.
-    /// Spec42's own conformance suite asserts this variant is never produced, so
-    /// seeing one means the upstream model gained a concept the ABI has not mapped.
+    /// `generator_api`'s tests assert every element kind the host publishes maps to a named
+    /// variant, so seeing one means the guest is older than the host.
     Unrecognized(String),
 }
 
@@ -265,7 +302,7 @@ impl Metaclass {
             Self::AssignmentActionUsage => "AssignmentActionUsage",
             Self::BindingConnectorUsage => "BindingConnectorUsage",
             Self::ConjugatedPortDefinition => "ConjugatedPortDefinition",
-            Self::DecisionNodeUsage => "DecisionNodeUsage",
+            Self::DecisionNode => "DecisionNode",
             Self::Dependency => "Dependency",
             Self::DerivationConnectorUsage => "DerivationConnectorUsage",
             Self::Diagnostic => "Diagnostic",
@@ -276,11 +313,11 @@ impl Metaclass {
             Self::FlowEnd => "FlowEnd",
             Self::FlowPayload => "FlowPayload",
             Self::ForLoopActionUsage => "ForLoopActionUsage",
-            Self::ForkNodeUsage => "ForkNodeUsage",
+            Self::ForkNode => "ForkNode",
             Self::IfActionUsage => "IfActionUsage",
             Self::Import => "Import",
             Self::InterfaceEndUsage => "InterfaceEndUsage",
-            Self::JoinNodeUsage => "JoinNodeUsage",
+            Self::JoinNode => "JoinNode",
             Self::LiteralBoolean => "LiteralBoolean",
             Self::LiteralInteger => "LiteralInteger",
             Self::LiteralRational => "LiteralRational",
@@ -288,7 +325,7 @@ impl Metaclass {
             Self::LiteralInfinity => "LiteralInfinity",
             Self::MetadataAccessExpression => "MetadataAccessExpression",
             Self::NullExpression => "NullExpression",
-            Self::MergeNodeUsage => "MergeNodeUsage",
+            Self::MergeNode => "MergeNode",
             Self::MultiplicityRange => "MultiplicityRange",
             Self::NeedUsage => "NeedUsage",
             Self::ObjectiveUsage => "ObjectiveUsage",
@@ -301,6 +338,42 @@ impl Metaclass {
             Self::VerdictUsage => "VerdictUsage",
             Self::VerifyUsage => "VerifyUsage",
             Self::WhileLoopActionUsage => "WhileLoopActionUsage",
+            Self::Namespace => "Namespace",
+            Self::LibraryPackage => "LibraryPackage",
+            Self::AcceptActionUsage => "AcceptActionUsage",
+            Self::SendActionUsage => "SendActionUsage",
+            Self::ExhibitStateUsage => "ExhibitStateUsage",
+            Self::Definition => "Definition",
+            Self::Usage => "Usage",
+            Self::PerformActionUsage => "PerformActionUsage",
+            Self::ForLoopVariable => "ForLoopVariable",
+            Self::ControlNode => "ControlNode",
+            Self::SuccessionAsUsage => "SuccessionAsUsage",
+            Self::SatisfyRequirementUsage => "SatisfyRequirementUsage",
+            Self::BindingConnectorAsUsage => "BindingConnectorAsUsage",
+            Self::Expose => "Expose",
+            Self::AnnotatingElement => "AnnotatingElement",
+            Self::Type => "Type",
+            Self::Classifier => "Classifier",
+            Self::Class => "Class",
+            Self::Structure => "Structure",
+            Self::Association => "Association",
+            Self::AssociationStructure => "AssociationStructure",
+            Self::DataType => "DataType",
+            Self::Metaclass => "Metaclass",
+            Self::Behavior => "Behavior",
+            Self::Function => "Function",
+            Self::Predicate => "Predicate",
+            Self::Interaction => "Interaction",
+            Self::Multiplicity => "Multiplicity",
+            Self::Step => "Step",
+            Self::BooleanExpression => "BooleanExpression",
+            Self::LiteralExpression => "LiteralExpression",
+            Self::Connector => "Connector",
+            Self::BindingConnector => "BindingConnector",
+            Self::Succession => "Succession",
+            Self::Invariant => "Invariant",
+            Self::MetadataFeature => "MetadataFeature",
             Self::Unrecognized(value) => value,
         }
     }
@@ -382,7 +455,7 @@ impl Metaclass {
             "AssignmentActionUsage" => Self::AssignmentActionUsage,
             "BindingConnectorUsage" => Self::BindingConnectorUsage,
             "ConjugatedPortDefinition" => Self::ConjugatedPortDefinition,
-            "DecisionNodeUsage" => Self::DecisionNodeUsage,
+            "DecisionNode" => Self::DecisionNode,
             "Dependency" => Self::Dependency,
             "DerivationConnectorUsage" => Self::DerivationConnectorUsage,
             "Diagnostic" => Self::Diagnostic,
@@ -393,11 +466,11 @@ impl Metaclass {
             "FlowEnd" => Self::FlowEnd,
             "FlowPayload" => Self::FlowPayload,
             "ForLoopActionUsage" => Self::ForLoopActionUsage,
-            "ForkNodeUsage" => Self::ForkNodeUsage,
+            "ForkNode" => Self::ForkNode,
             "IfActionUsage" => Self::IfActionUsage,
             "Import" => Self::Import,
             "InterfaceEndUsage" => Self::InterfaceEndUsage,
-            "JoinNodeUsage" => Self::JoinNodeUsage,
+            "JoinNode" => Self::JoinNode,
             "LiteralBoolean" => Self::LiteralBoolean,
             "LiteralInteger" => Self::LiteralInteger,
             "LiteralRational" => Self::LiteralRational,
@@ -405,7 +478,7 @@ impl Metaclass {
             "LiteralInfinity" => Self::LiteralInfinity,
             "MetadataAccessExpression" => Self::MetadataAccessExpression,
             "NullExpression" => Self::NullExpression,
-            "MergeNodeUsage" => Self::MergeNodeUsage,
+            "MergeNode" => Self::MergeNode,
             "MultiplicityRange" => Self::MultiplicityRange,
             "NeedUsage" => Self::NeedUsage,
             "ObjectiveUsage" => Self::ObjectiveUsage,
@@ -418,6 +491,42 @@ impl Metaclass {
             "VerdictUsage" => Self::VerdictUsage,
             "VerifyUsage" => Self::VerifyUsage,
             "WhileLoopActionUsage" => Self::WhileLoopActionUsage,
+            "Namespace" => Self::Namespace,
+            "LibraryPackage" => Self::LibraryPackage,
+            "AcceptActionUsage" => Self::AcceptActionUsage,
+            "SendActionUsage" => Self::SendActionUsage,
+            "ExhibitStateUsage" => Self::ExhibitStateUsage,
+            "Definition" => Self::Definition,
+            "Usage" => Self::Usage,
+            "PerformActionUsage" => Self::PerformActionUsage,
+            "ForLoopVariable" => Self::ForLoopVariable,
+            "ControlNode" => Self::ControlNode,
+            "SuccessionAsUsage" => Self::SuccessionAsUsage,
+            "SatisfyRequirementUsage" => Self::SatisfyRequirementUsage,
+            "BindingConnectorAsUsage" => Self::BindingConnectorAsUsage,
+            "Expose" => Self::Expose,
+            "AnnotatingElement" => Self::AnnotatingElement,
+            "Type" => Self::Type,
+            "Classifier" => Self::Classifier,
+            "Class" => Self::Class,
+            "Structure" => Self::Structure,
+            "Association" => Self::Association,
+            "AssociationStructure" => Self::AssociationStructure,
+            "DataType" => Self::DataType,
+            "Metaclass" => Self::Metaclass,
+            "Behavior" => Self::Behavior,
+            "Function" => Self::Function,
+            "Predicate" => Self::Predicate,
+            "Interaction" => Self::Interaction,
+            "Multiplicity" => Self::Multiplicity,
+            "Step" => Self::Step,
+            "BooleanExpression" => Self::BooleanExpression,
+            "LiteralExpression" => Self::LiteralExpression,
+            "Connector" => Self::Connector,
+            "BindingConnector" => Self::BindingConnector,
+            "Succession" => Self::Succession,
+            "Invariant" => Self::Invariant,
+            "MetadataFeature" => Self::MetadataFeature,
             other => Self::Unrecognized(other.to_owned()),
         }
     }
@@ -473,12 +582,53 @@ pub enum RelationshipKind {
     TransitionEffect,
     Annotation,
     PortConjugation,
+    AcceptPayloadType,
+    AcceptVia,
+    AliasBinding,
+    AllocateSource,
+    AllocateTarget,
+    AssignTarget,
+    BindSource,
+    BindTarget,
+    Conjugation,
+    DependencyClient,
+    DependencySupplier,
+    Differencing,
+    Disjoining,
+    DoActionBinding,
+    EntryActionBinding,
+    ExitActionBinding,
+    ExpressionOperand,
+    FeatureChaining,
+    FeatureInverting,
+    FilterMetadataTest,
+    IncludeUseCase,
+    Intersecting,
+    Intersects,
+    InvocationCallee,
+    MemberAccessOperand,
+    MetaCastTarget,
+    MetadataAccessTarget,
+    MetadataAnnotation,
+    MetadataAnnotationAbout,
+    PerformParameterTarget,
+    PurposeTarget,
+    SatisfySource,
+    SatisfyTarget,
+    SendTarget,
+    StakeholderTarget,
+    TerminateTarget,
+    ThenTarget,
+    TypeCheckTarget,
+    TypeFeaturing,
+    Unioning,
+    VerifyRequirementTarget,
     /// A value this Spec42 produced that the enumeration above does not name.
     ///
     /// Carrying it explicitly means a guest can tell "I have never heard of this"
     /// apart from "I forgot to handle this", which a bare string cannot express.
-    /// Spec42's own conformance suite asserts this variant is never produced, so
-    /// seeing one means the upstream model gained a concept the ABI has not mapped.
+    /// `generator_api`'s tests assert every relationship kind the host publishes maps to a
+    /// named variant, so seeing one means the guest is older than the host.
     Unrecognized(String),
 }
 
@@ -518,6 +668,47 @@ impl RelationshipKind {
             Self::TransitionEffect => "transitionEffect",
             Self::Annotation => "annotation",
             Self::PortConjugation => "portConjugation",
+            Self::AcceptPayloadType => "acceptPayloadType",
+            Self::AcceptVia => "acceptVia",
+            Self::AliasBinding => "aliasBinding",
+            Self::AllocateSource => "allocateSource",
+            Self::AllocateTarget => "allocateTarget",
+            Self::AssignTarget => "assignTarget",
+            Self::BindSource => "bindSource",
+            Self::BindTarget => "bindTarget",
+            Self::Conjugation => "conjugation",
+            Self::DependencyClient => "dependencyClient",
+            Self::DependencySupplier => "dependencySupplier",
+            Self::Differencing => "differencing",
+            Self::Disjoining => "disjoining",
+            Self::DoActionBinding => "doActionBinding",
+            Self::EntryActionBinding => "entryActionBinding",
+            Self::ExitActionBinding => "exitActionBinding",
+            Self::ExpressionOperand => "expressionOperand",
+            Self::FeatureChaining => "featureChaining",
+            Self::FeatureInverting => "featureInverting",
+            Self::FilterMetadataTest => "filterMetadataTest",
+            Self::IncludeUseCase => "includeUseCase",
+            Self::Intersecting => "intersecting",
+            Self::Intersects => "intersects",
+            Self::InvocationCallee => "invocationCallee",
+            Self::MemberAccessOperand => "memberAccessOperand",
+            Self::MetaCastTarget => "metaCastTarget",
+            Self::MetadataAccessTarget => "metadataAccessTarget",
+            Self::MetadataAnnotation => "metadataAnnotation",
+            Self::MetadataAnnotationAbout => "metadataAnnotationAbout",
+            Self::PerformParameterTarget => "performParameterTarget",
+            Self::PurposeTarget => "purposeTarget",
+            Self::SatisfySource => "satisfySource",
+            Self::SatisfyTarget => "satisfyTarget",
+            Self::SendTarget => "sendTarget",
+            Self::StakeholderTarget => "stakeholderTarget",
+            Self::TerminateTarget => "terminateTarget",
+            Self::ThenTarget => "thenTarget",
+            Self::TypeCheckTarget => "typeCheckTarget",
+            Self::TypeFeaturing => "typeFeaturing",
+            Self::Unioning => "unioning",
+            Self::VerifyRequirementTarget => "verifyRequirementTarget",
             Self::Unrecognized(value) => value,
         }
     }
@@ -558,6 +749,47 @@ impl RelationshipKind {
             "transitionEffect" => Self::TransitionEffect,
             "annotation" => Self::Annotation,
             "portConjugation" => Self::PortConjugation,
+            "acceptPayloadType" => Self::AcceptPayloadType,
+            "acceptVia" => Self::AcceptVia,
+            "aliasBinding" => Self::AliasBinding,
+            "allocateSource" => Self::AllocateSource,
+            "allocateTarget" => Self::AllocateTarget,
+            "assignTarget" => Self::AssignTarget,
+            "bindSource" => Self::BindSource,
+            "bindTarget" => Self::BindTarget,
+            "conjugation" => Self::Conjugation,
+            "dependencyClient" => Self::DependencyClient,
+            "dependencySupplier" => Self::DependencySupplier,
+            "differencing" => Self::Differencing,
+            "disjoining" => Self::Disjoining,
+            "doActionBinding" => Self::DoActionBinding,
+            "entryActionBinding" => Self::EntryActionBinding,
+            "exitActionBinding" => Self::ExitActionBinding,
+            "expressionOperand" => Self::ExpressionOperand,
+            "featureChaining" => Self::FeatureChaining,
+            "featureInverting" => Self::FeatureInverting,
+            "filterMetadataTest" => Self::FilterMetadataTest,
+            "includeUseCase" => Self::IncludeUseCase,
+            "intersecting" => Self::Intersecting,
+            "intersects" => Self::Intersects,
+            "invocationCallee" => Self::InvocationCallee,
+            "memberAccessOperand" => Self::MemberAccessOperand,
+            "metaCastTarget" => Self::MetaCastTarget,
+            "metadataAccessTarget" => Self::MetadataAccessTarget,
+            "metadataAnnotation" => Self::MetadataAnnotation,
+            "metadataAnnotationAbout" => Self::MetadataAnnotationAbout,
+            "performParameterTarget" => Self::PerformParameterTarget,
+            "purposeTarget" => Self::PurposeTarget,
+            "satisfySource" => Self::SatisfySource,
+            "satisfyTarget" => Self::SatisfyTarget,
+            "sendTarget" => Self::SendTarget,
+            "stakeholderTarget" => Self::StakeholderTarget,
+            "terminateTarget" => Self::TerminateTarget,
+            "thenTarget" => Self::ThenTarget,
+            "typeCheckTarget" => Self::TypeCheckTarget,
+            "typeFeaturing" => Self::TypeFeaturing,
+            "unioning" => Self::Unioning,
+            "verifyRequirementTarget" => Self::VerifyRequirementTarget,
             other => Self::Unrecognized(other.to_owned()),
         }
     }
@@ -650,23 +882,23 @@ pub enum ExpressionStatus {
 ///
 /// Nodes are a flat arena. `root` indexes [`ExpressionTree::nodes`]. Operand indexes are indexes
 /// into that same arena, in authored order.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Schema)]
 pub struct ExpressionTree {
     pub outcome: ExpressionStatus,
     pub root: Option<u32>,
     pub nodes: Vec<ExpressionNode>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Schema)]
 pub struct ExpressionNode {
     pub kind: ExpressionNodeKind,
     pub range: SourceRange,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Schema)]
 pub enum ExpressionNodeKind {
-    /// Rendered with the same spelling as [`ElementDetail::evaluated_value`].
-    Literal(String),
+    /// Typed literal value; strings remain distinct from booleans and numbers.
+    Literal(ExpressionLiteral),
     /// `target` is absent when the reference did not resolve to one feature.
     FeatureReference {
         target: Option<ElementSummary>,
@@ -679,6 +911,25 @@ pub enum ExpressionNodeKind {
     Unsupported {
         children: Vec<u32>,
     },
+}
+
+/// A literal value with each authored quantity wrapper retained.
+///
+/// `units` is empty for a scalar, otherwise ordered from the innermost quantity to
+/// the outermost. The flat representation preserves nested quantities without a
+/// recursive wire schema.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Schema)]
+pub struct ExpressionLiteral {
+    pub value: LiteralValue,
+    pub units: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Schema)]
+pub enum LiteralValue {
+    Boolean(bool),
+    Integer(i64),
+    Real(f64),
+    String(String),
 }
 
 /// One end of a workspace `connect` or `interface` connector, in authored order.
@@ -716,8 +967,42 @@ pub enum EndpointTarget {
 pub struct Relationship {
     pub kind: RelationshipKind,
     pub source: ElementSummary,
-    pub target: ElementSummary,
+    pub target: RelationshipTarget,
     pub implied: bool,
+    /// Where the reference was written, in the source element's document; `None` for an
+    /// implied relationship. Orders references of one kind as authored: the `first` and `then`
+    /// ends of a succession are both `Succession`, and only their positions say which is which.
+    pub authored_at: Option<SourceRange>,
+}
+
+/// What resolution settled on for the target of one relationship.
+///
+/// Carried per relationship rather than failing the whole query, so an element with one
+/// unsettled reference still reports the references that did settle. A model being edited has
+/// unsettled references routinely; the state stays explicit and cannot be read as a target.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum RelationshipTarget {
+    Resolved(ElementSummary),
+    /// Several candidates, none chosen, all retained in canonical order.
+    Ambiguous(Vec<ElementSummary>),
+    /// No candidate. `authored` is the reference as written, when it was written.
+    Unresolved {
+        authored: Option<String>,
+    },
+    /// The reference is written in a form outside the supported resolution slice.
+    Unsupported {
+        authored: Option<String>,
+    },
+}
+
+impl RelationshipTarget {
+    /// The target element, when resolution settled on exactly one.
+    pub fn resolved(&self) -> Option<&ElementSummary> {
+        match self {
+            Self::Resolved(target) => Some(target),
+            _ => None,
+        }
+    }
 }
 
 // An implied `succession` on a `then` member names the predecessor that succession starts from
@@ -923,22 +1208,50 @@ pub enum DiagramIncompleteReason {
     ParseRecovery,
     UnsupportedSyntax,
     NonConverged,
-    ExposureUnresolved { exposure: DiagramSemanticReference },
-    ExposureAmbiguous { exposure: DiagramSemanticReference },
-    ExposureUnsupported { exposure: DiagramSemanticReference },
-    RelationshipUnresolved { relationship_kind: String },
-    RelationshipAmbiguous { relationship_kind: String },
-    RelationshipUnsupported { relationship_kind: String },
+    ExposureUnresolved {
+        exposure: DiagramSemanticReference,
+    },
+    ExposureAmbiguous {
+        exposure: DiagramSemanticReference,
+    },
+    ExposureUnsupported {
+        exposure: DiagramSemanticReference,
+    },
+    RelationshipUnresolved {
+        relationship_kind: String,
+    },
+    RelationshipAmbiguous {
+        relationship_kind: String,
+    },
+    RelationshipUnsupported {
+        relationship_kind: String,
+    },
     ViewFilterUnresolved,
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
     SequenceMessageEndpointOutsideLifeline,
-    SequenceOrderingCycle,
+    SequenceOrderingCycle {
+        witness: Vec<SequenceCycleStep>,
+    },
+    SequenceContentOmitted {
+        elements: Vec<DiagramOccurrenceIdentity>,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SequenceCycleStep {
+    pub source: DiagramOccurrenceIdentity,
+    pub target: DiagramOccurrenceIdentity,
+    pub events: Vec<DiagramOccurrenceIdentity>,
+    pub provenance: RelationshipProvenance,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct DiagramElement {
+    /// Opaque contextual presentation identity, stable while the canonical structural
+    /// occurrence identity is unchanged. Consumers compare it; they never decode it.
+    pub presentation_key: String,
     pub occurrence: DiagramOccurrenceIdentity,
     pub reference: DiagramSemanticReference,
     pub metaclass: Metaclass,
@@ -951,6 +1264,10 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceReference,
     pub compartments: Vec<DiagramCompartment>,
+    /// The authored multiplicity of this element's declaration (`joints : Motor[6]`), for its
+    /// label. `None` when no `[...]` was written, or when a bound is not a literal integer (an
+    /// expression bound such as `[1..n]` is not reduced to text here).
+    pub multiplicity: Option<Multiplicity>,
     /// The authored direction (`"in"` / `"out"` / `"inout"`) of a port or of a directed feature
     /// such as a parameter of an action. `None` for an element with no authored direction; a
     /// generator or renderer must not derive a side or a direction from this element's name or
@@ -1150,6 +1467,18 @@ pub struct DiagramGridCell {
     pub kind: DiagramEdgeKind,
 }
 
+/// Connectors whose ports belong to one family of related port definitions.
+///
+/// A connector's port type is the most specific non-standard-library port definition every end's
+/// typing specializes, conjugation ignored; port types related by specialization within one view
+/// form a family, named by its most general members.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramPortFamily {
+    pub general: Vec<DiagramElementType>,
+    pub types: Vec<DiagramElementType>,
+    pub connectors: Vec<DiagramOccurrenceIdentity>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum DiagramViewMetadata {
     General {
@@ -1159,6 +1488,9 @@ pub enum DiagramViewMetadata {
         parts: Vec<DiagramOccurrenceIdentity>,
         ports: Vec<DiagramOccurrenceIdentity>,
         connectors: Vec<DiagramOccurrenceIdentity>,
+        /// Connectors grouped by the family of related port definitions their ends share, in
+        /// family-name order. A connector in no family has no common port type.
+        port_families: Vec<DiagramPortFamily>,
     },
     ActionFlow {
         actions: Vec<DiagramOccurrenceIdentity>,
@@ -1238,6 +1570,7 @@ pub enum SequenceEndpoint {
 pub enum SequenceOrder {
     Resolved(u32),
     Cyclic,
+    BlockedByCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1454,7 +1787,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x7d41_72f9_e2b7_ac5d,
+            SCHEMA_FINGERPRINT, 0xc7d504f5df841a57,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1462,7 +1795,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xddd6_fbe8_c80d_ee5b,
+            COMPATIBILITY_TOKEN, 0xc4c20ef3eb84e8d3,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

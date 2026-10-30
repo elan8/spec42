@@ -49,20 +49,21 @@ pub use symbols::collect_named_elements;
 pub use symbols::{collect_document_symbols, collect_folding_ranges};
 pub(crate) use symbols::{element_kind_label_to_lsp, symbol_kind_label};
 
-use language_service::{format_document_text, DiagnosticLine, FormatOptions, TextEditSuggestion};
+use language_service::{format_document_text, FormatOptions, TextEditSuggestion};
 use tower_lsp::lsp_types::{
     CodeAction, CodeActionKind, Command, Diagnostic, FormattingOptions, OneOf,
     OptionalVersionedTextDocumentIdentifier, Position, Range, TextDocumentEdit, TextEdit, Url,
     WorkspaceEdit,
 };
 
-fn suggestion_to_code_action(
+/// A quick fix whose edits apply to `uri` only at the editor `version` they were computed for.
+pub fn quick_fix_action(
     suggestion: TextEditSuggestion,
     uri: &Url,
-    diagnostic: Option<&Diagnostic>,
+    version: Option<i32>,
+    diagnostic: &Diagnostic,
 ) -> CodeAction {
-    let is_preferred = suggestion.is_preferred;
-    let edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = suggestion
+    let edits = suggestion
         .edits
         .into_iter()
         .map(|edit| {
@@ -75,14 +76,14 @@ fn suggestion_to_code_action(
     CodeAction {
         title: suggestion.title,
         kind: Some(CodeActionKind::QUICKFIX),
-        diagnostics: diagnostic.map(|d| vec![d.clone()]),
+        diagnostics: Some(vec![diagnostic.clone()]),
         edit: Some(WorkspaceEdit {
             changes: None,
             document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
                 TextDocumentEdit {
                     text_document: OptionalVersionedTextDocumentIdentifier {
                         uri: uri.clone(),
-                        version: None,
+                        version,
                     },
                     edits,
                 },
@@ -90,42 +91,7 @@ fn suggestion_to_code_action(
             change_annotations: None,
         }),
         command: None,
-        is_preferred: Some(is_preferred),
-        disabled: None,
-        data: None,
-    }
-}
-
-fn wrap_refactor_action(suggestion: TextEditSuggestion, uri: &Url) -> CodeAction {
-    let edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = suggestion
-        .edits
-        .into_iter()
-        .map(|edit| {
-            OneOf::Left(TextEdit {
-                range: crate::common::text_span::to_lsp_range(edit.range),
-                new_text: edit.replacement,
-            })
-        })
-        .collect();
-    CodeAction {
-        title: suggestion.title,
-        kind: Some(CodeActionKind::REFACTOR),
-        diagnostics: None,
-        edit: Some(WorkspaceEdit {
-            changes: None,
-            document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
-                TextDocumentEdit {
-                    text_document: OptionalVersionedTextDocumentIdentifier {
-                        uri: uri.clone(),
-                        version: None,
-                    },
-                    edits,
-                },
-            ])),
-            change_annotations: None,
-        }),
-        command: None,
-        is_preferred: None,
+        is_preferred: Some(suggestion.is_preferred),
         disabled: None,
         data: None,
     }
@@ -140,149 +106,15 @@ pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdi
             insert_spaces: options.insert_spaces,
         },
     );
-    let lines: Vec<&str> = source.lines().collect();
-    if lines.is_empty() {
-        let range = Range::new(Position::new(0, 0), Position::new(0, 0));
-        return vec![TextEdit { range, new_text }];
+    if new_text == source {
+        return Vec::new();
     }
-    let last_line = (lines.len() - 1) as u32;
-    let last_char = lines.last().map(|l| l.len()).unwrap_or(0) as u32;
-    let range = Range::new(Position::new(0, 0), Position::new(last_line, last_char));
+    let end = language_service::text::document_end(source);
+    let range = Range::new(Position::new(0, 0), Position::new(end.line, end.character));
     vec![TextEdit { range, new_text }]
 }
 
-pub fn suggest_wrap_in_package(
-    source: &str,
-    parsed: &sysml_query::syntax::ParsedSource,
-    uri: &Url,
-) -> Option<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_wrap_in_package(source, parsed, &path)
-        .map(|s| wrap_refactor_action(s, uri))
-}
-
-pub fn suggest_create_definition_for_unresolved_type_quick_fix(
-    source: &str,
-    parsed: &sysml_query::syntax::ParsedSource,
-    model: &sysml_query::resolved_slice::PublishedModel,
-    uri: &Url,
-    diagnostic: &Diagnostic,
-) -> Option<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_create_definition_for_unresolved_type_quick_fix(
-        source,
-        parsed,
-        model,
-        &path,
-        DiagnosticLine {
-            line: diagnostic.range.start.line,
-        },
-    )
-    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
-}
-
-pub fn suggest_create_matching_part_def_quick_fix(
-    source: &str,
-    parsed: &sysml_query::syntax::ParsedSource,
-    model: &sysml_query::resolved_slice::PublishedModel,
-    uri: &Url,
-    diagnostic: &Diagnostic,
-) -> Option<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_create_matching_part_def_quick_fix(
-        source,
-        parsed,
-        model,
-        &path,
-        DiagnosticLine {
-            line: diagnostic.range.start.line,
-        },
-    )
-    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
-}
-
-pub fn suggest_explicit_redefinition_quick_fix(
-    source: &str,
-    uri: &Url,
-    diagnostic: &Diagnostic,
-) -> Option<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_explicit_redefinition_quick_fix(
-        source,
-        &path,
-        DiagnosticLine {
-            line: diagnostic.range.start.line,
-        },
-    )
-    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
-}
-
-pub fn suggest_create_verification_case(
-    source: &str,
-    parsed: &sysml_query::syntax::ParsedSource,
-    model: &sysml_query::resolved_slice::PublishedModel,
-    uri: &Url,
-    line: u32,
-) -> Option<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_create_verification_case(source, parsed, model, &path, line)
-        .map(|s| wrap_refactor_action(s, uri))
-}
-
-pub fn suggest_create_usage_from_definition(
-    source: &str,
-    parsed: &sysml_query::syntax::ParsedSource,
-    uri: &Url,
-    line: u32,
-) -> Option<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_create_usage_from_definition(source, parsed, &path, line)
-        .map(|suggestion| wrap_refactor_action(suggestion, uri))
-}
-
-pub fn suggest_qualify_ambiguous_name_quick_fixes(
-    source: &str,
-    uri: &Url,
-    diagnostic: &Diagnostic,
-    model: &sysml_query::resolved_slice::PublishedModel,
-) -> Vec<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_qualify_ambiguous_name_quick_fixes(
-        source,
-        &path,
-        DiagnosticLine {
-            line: diagnostic.range.start.line,
-        },
-        model,
-        uri,
-    )
-    .into_iter()
-    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
-    .collect()
-}
-
-pub fn suggest_add_import_quick_fixes(
-    source: &str,
-    uri: &Url,
-    diagnostic: &Diagnostic,
-    model: &sysml_query::resolved_slice::PublishedModel,
-) -> Vec<CodeAction> {
-    let path = uri.path().trim_start_matches('/').to_string();
-    language_service::suggest_add_import_quick_fixes(
-        source,
-        &path,
-        DiagnosticLine {
-            line: diagnostic.range.start.line,
-        },
-        model,
-        uri,
-    )
-    .into_iter()
-    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
-    .collect()
-}
-
-pub fn suggest_manage_custom_libraries_quick_fix(diagnostic: &Diagnostic) -> CodeAction {
+pub fn configure_library_paths_action(diagnostic: &Diagnostic) -> CodeAction {
     CodeAction {
         title: "Configure SysML library paths".to_string(),
         kind: Some(CodeActionKind::QUICKFIX),
@@ -299,99 +131,9 @@ pub fn suggest_manage_custom_libraries_quick_fix(diagnostic: &Diagnostic) -> Cod
     }
 }
 
-pub fn suggest_show_standard_library_info_quick_fix(diagnostic: &Diagnostic) -> CodeAction {
-    CodeAction {
-        title: "Show bundled standard library information".to_string(),
-        kind: Some(CodeActionKind::QUICKFIX),
-        diagnostics: Some(vec![diagnostic.clone()]),
-        edit: None,
-        command: Some(Command {
-            title: "Show bundled standard library information".to_string(),
-            command: "sysml.library.showStdLibStatus".to_string(),
-            arguments: None,
-        }),
-        is_preferred: Some(false),
-        disabled: None,
-        data: None,
-    }
-}
-
-pub fn suggest_open_library_view_quick_fix(diagnostic: &Diagnostic) -> CodeAction {
-    CodeAction {
-        title: "Open Spec42 Library view".to_string(),
-        kind: Some(CodeActionKind::QUICKFIX),
-        diagnostics: Some(vec![diagnostic.clone()]),
-        edit: None,
-        command: Some(Command {
-            title: "Open Spec42 Library view".to_string(),
-            command: "sysml.library.search".to_string(),
-            arguments: None,
-        }),
-        is_preferred: Some(false),
-        disabled: None,
-        data: None,
-    }
-}
-
-fn library_search_symbol_from_diagnostic(diagnostic: &Diagnostic) -> Option<String> {
-    diagnostic
-        .data
-        .as_ref()?
-        .get("unresolvedReference")?
-        .get("authoredTarget")?
-        .as_str()?
-        .rsplit("::")
-        .next()
-        .filter(|name| !name.is_empty())
-        .map(str::to_string)
-}
-
-pub fn suggest_search_library_for_symbol_quick_fix(diagnostic: &Diagnostic) -> Option<CodeAction> {
-    let symbol = library_search_symbol_from_diagnostic(diagnostic)?;
-    Some(CodeAction {
-        title: format!("Search Library for `{symbol}`"),
-        kind: Some(CodeActionKind::QUICKFIX),
-        diagnostics: Some(vec![diagnostic.clone()]),
-        edit: None,
-        command: Some(Command {
-            title: format!("Search Library for `{symbol}`"),
-            command: "sysml.library.search".to_string(),
-            arguments: Some(vec![serde_json::Value::String(symbol)]),
-        }),
-        is_preferred: Some(false),
-        disabled: None,
-        data: None,
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::Arc;
-    use tower_lsp::lsp_types::{
-        CodeActionKind, Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url,
-    };
-
-    fn action_context(
-        source: &str,
-        uri: &Url,
-    ) -> (
-        sysml_query::syntax::ParsedSource,
-        Arc<sysml_query::resolved_slice::PublishedModel>,
-    ) {
-        let services = sysml_query::Services::default();
-        let document = services.source.admit_url(
-            uri.clone(),
-            source,
-            sysml_query::source::SourceKind::Workspace,
-        );
-        let parsed = services.syntax.parse(&document);
-        let model = services
-            .publication
-            .publish(&[document], std::iter::empty())
-            .expect("publication");
-        (parsed, model)
-    }
 
     #[test]
     fn test_position_to_byte_offset() {
@@ -576,403 +318,6 @@ mod tests {
     }
 
     #[test]
-    fn test_suggest_wrap_in_package_empty() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let (parsed, _) = action_context("", &uri);
-        let action = suggest_wrap_in_package("", &parsed, &uri);
-        assert!(action.is_none());
-    }
-
-    #[test]
-    fn test_suggest_wrap_in_package_named_package() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let (parsed, _) = action_context("package P { }", &uri);
-        let action = suggest_wrap_in_package("package P { }", &parsed, &uri);
-        assert!(action.is_none());
-    }
-
-    #[test]
-    fn test_suggest_wrap_in_package_unwrapped_member() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "part def X { }";
-        let (parsed, _) = action_context(source, &uri);
-        let action = suggest_wrap_in_package(source, &parsed, &uri)
-            .expect("a bare top-level part def must offer wrap-in-package");
-        assert_eq!(action.title, "Wrap in package");
-        assert_eq!(action.kind, Some(CodeActionKind::REFACTOR));
-        let edit = action.edit.expect("has edit");
-        let doc_edits = edit.document_changes.as_ref().expect("document_changes");
-        use tower_lsp::lsp_types::DocumentChanges;
-        let edits = match doc_edits {
-            DocumentChanges::Edits(v) => v,
-            _ => panic!("expected Edits"),
-        };
-        assert_eq!(edits.len(), 1);
-        assert_eq!(edits[0].edits.len(), 1);
-        let text_edit = match &edits[0].edits[0] {
-            tower_lsp::lsp_types::OneOf::Left(te) => te,
-            _ => panic!("expected TextEdit"),
-        };
-        assert_eq!(
-            text_edit.range,
-            Range::new(Position::new(0, 0), Position::new(0, 14))
-        );
-        let wrapped = "package Generated {\npart def X { }\n}\n";
-        assert_eq!(text_edit.new_text, wrapped);
-        let (wrapped_parsed, _) = action_context(wrapped, &uri);
-        assert!(
-            wrapped_parsed.is_clean(),
-            "wrapped document must parse cleanly"
-        );
-        assert_eq!(
-            wrapped_parsed.top_level_package_names(),
-            ["Generated".to_string()]
-        );
-        assert!(
-            suggest_wrap_in_package(wrapped, &wrapped_parsed, &uri).is_none(),
-            "the wrapped document must not offer wrap-in-package again"
-        );
-    }
-
-    #[test]
-    fn test_suggest_create_matching_part_def_quick_fix_creates_def_and_types_usage() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(2, 4), Position::new(2, 17)),
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
-            code_description: None,
-            source: Some("sysml".to_string()),
-            message: "untyped".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let (parsed, model) = action_context(source, &uri);
-        let action =
-            suggest_create_matching_part_def_quick_fix(source, &parsed, &model, &uri, &diagnostic)
-                .expect("action");
-        let edit = action.edit.expect("has edit");
-        let doc_edits = edit.document_changes.expect("document changes");
-        let edits = match doc_edits {
-            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
-            _ => panic!("expected edits"),
-        };
-        assert_eq!(edits.len(), 1);
-        assert_eq!(edits[0].edits.len(), 2);
-        let inserted = match &edits[0].edits[0] {
-            OneOf::Left(te) => {
-                assert_eq!(te.range.start.line, 1);
-                assert_eq!(te.range.start.character, 0);
-                te.new_text.clone()
-            }
-            _ => panic!("expected text edit"),
-        };
-        let rewritten = match &edits[0].edits[1] {
-            OneOf::Left(te) => te.new_text.clone(),
-            _ => panic!("expected text edit"),
-        };
-        assert!(inserted.contains("part def Display { }"));
-        assert_eq!(rewritten.trim(), "part display : Display;");
-    }
-
-    #[test]
-    fn test_suggest_create_matching_part_def_quick_fix_respects_four_space_indent() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "package P {\n    part def Laptop {\n        part display;\n    }\n}\n";
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(2, 8), Position::new(2, 21)),
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
-            code_description: None,
-            source: Some("sysml".to_string()),
-            message: "untyped".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let (parsed, model) = action_context(source, &uri);
-        let action =
-            suggest_create_matching_part_def_quick_fix(source, &parsed, &model, &uri, &diagnostic)
-                .expect("action");
-        let edit = action.edit.expect("has edit");
-        let doc_edits = edit.document_changes.expect("document changes");
-        let edits = match doc_edits {
-            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
-            _ => panic!("expected edits"),
-        };
-        let inserted = match &edits[0].edits[0] {
-            OneOf::Left(te) => te.new_text.clone(),
-            _ => panic!("expected text edit"),
-        };
-        assert_eq!(inserted, "    part def Display { }\n");
-    }
-
-    #[test]
-    fn test_suggest_create_matching_part_def_quick_fix_no_package_uses_usage_indent() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "part def Outer {\n    part display;\n}\n";
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(1, 4), Position::new(1, 17)),
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
-            code_description: None,
-            source: Some("sysml".to_string()),
-            message: "untyped".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let (parsed, model) = action_context(source, &uri);
-        let action =
-            suggest_create_matching_part_def_quick_fix(source, &parsed, &model, &uri, &diagnostic)
-                .expect("action");
-        let edit = action.edit.expect("has edit");
-        let doc_edits = edit.document_changes.expect("document changes");
-        let edits = match doc_edits {
-            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
-            _ => panic!("expected edits"),
-        };
-        let inserted = match &edits[0].edits[0] {
-            OneOf::Left(te) => {
-                assert_eq!(te.range.start.line, 2);
-                te.new_text.clone()
-            }
-            _ => panic!("expected text edit"),
-        };
-        assert_eq!(inserted, "    part def Display { }\n");
-    }
-
-    #[test]
-    fn test_suggest_create_matching_part_def_quick_fix_noop_for_typed_usage() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "package P {\n  part def Laptop {\n    part display : Display;\n  }\n}\n";
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(2, 4), Position::new(2, 27)),
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
-            code_description: None,
-            source: Some("sysml".to_string()),
-            message: "untyped".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let (parsed, model) = action_context(source, &uri);
-        let action =
-            suggest_create_matching_part_def_quick_fix(source, &parsed, &model, &uri, &diagnostic);
-        assert!(action.is_none());
-    }
-
-    #[test]
-    fn test_suggest_create_definition_for_unresolved_type_creates_part_def() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "package P {\n  part car : Vehicle;\n}\n";
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(1, 13), Position::new(1, 20)),
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String(
-                "unresolved_type_reference".to_string(),
-            )),
-            code_description: None,
-            source: Some("semantic".to_string()),
-            message: "unresolved".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let (parsed, model) = action_context(source, &uri);
-        let action = suggest_create_definition_for_unresolved_type_quick_fix(
-            source,
-            &parsed,
-            &model,
-            &uri,
-            &diagnostic,
-        )
-        .expect("action");
-        assert_eq!(action.title, "Create `part def Vehicle`");
-        let edit = action.edit.expect("has edit");
-        let doc_edits = edit.document_changes.expect("document changes");
-        let edits = match doc_edits {
-            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
-            _ => panic!("expected edits"),
-        };
-        let inserted = match &edits[0].edits[0] {
-            OneOf::Left(te) => te.new_text.clone(),
-            _ => panic!("expected text edit"),
-        };
-        assert_eq!(inserted, "  part def Vehicle { }\n");
-    }
-
-    #[test]
-    fn test_suggest_create_definition_for_unresolved_type_creates_port_def() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "package P {\n  port command : CommandPort;\n}\n";
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(1, 17), Position::new(1, 28)),
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String(
-                "unresolved_type_reference".to_string(),
-            )),
-            code_description: None,
-            source: Some("semantic".to_string()),
-            message: "unresolved".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let (parsed, model) = action_context(source, &uri);
-        let action = suggest_create_definition_for_unresolved_type_quick_fix(
-            source,
-            &parsed,
-            &model,
-            &uri,
-            &diagnostic,
-        )
-        .expect("action");
-        assert_eq!(action.title, "Create `port def CommandPort`");
-        let edit = action.edit.expect("has edit");
-        let doc_edits = edit.document_changes.expect("document changes");
-        let edits = match doc_edits {
-            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
-            _ => panic!("expected edits"),
-        };
-        let inserted = match &edits[0].edits[0] {
-            OneOf::Left(te) => te.new_text.clone(),
-            _ => panic!("expected text edit"),
-        };
-        assert_eq!(inserted, "  port def CommandPort;\n");
-    }
-
-    #[test]
-    fn test_suggest_show_standard_library_info_quick_fix_uses_command() {
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(0, 0), Position::new(0, 1)),
-            severity: Some(DiagnosticSeverity::INFORMATION),
-            code: Some(NumberOrString::String(
-                "missing_library_context".to_string(),
-            )),
-            code_description: None,
-            source: Some("semantic".to_string()),
-            message: "missing library".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let action = suggest_show_standard_library_info_quick_fix(&diagnostic);
-        assert_eq!(
-            action.command.expect("command").command,
-            "sysml.library.showStdLibStatus"
-        );
-    }
-
-    #[test]
-    fn test_suggest_open_library_view_quick_fix_uses_search_command() {
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(0, 0), Position::new(0, 1)),
-            severity: Some(DiagnosticSeverity::INFORMATION),
-            code: Some(NumberOrString::String(
-                "missing_library_context".to_string(),
-            )),
-            code_description: None,
-            source: Some("semantic".to_string()),
-            message: "missing library".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let action = suggest_open_library_view_quick_fix(&diagnostic);
-        assert_eq!(
-            action.command.expect("command").command,
-            "sysml.library.search"
-        );
-    }
-
-    #[test]
-    fn test_suggest_search_library_for_symbol_quick_fix_uses_symbol_argument() {
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(0, 0), Position::new(0, 1)),
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String(
-                "unresolved_type_reference".to_string(),
-            )),
-            code_description: None,
-            source: Some("semantic".to_string()),
-            message: "Type reference 'ScalarValues::Real' could not be resolved.".to_string(),
-            related_information: None,
-            tags: None,
-            data: Some(serde_json::json!({
-                "unresolvedReference": { "authoredTarget": "ScalarValues::Real" }
-            })),
-        };
-        let action = suggest_search_library_for_symbol_quick_fix(&diagnostic).expect("action");
-        let command = action.command.expect("command");
-        assert_eq!(command.command, "sysml.library.search");
-        assert_eq!(
-            command.arguments.expect("args"),
-            vec![serde_json::Value::String("Real".to_string())]
-        );
-    }
-
-    #[test]
-    fn test_suggest_explicit_redefinition_quick_fix_rewrites_line() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source =
-            "package P {\n  part def Child :> Base {\n    attribute mass = 1200;\n  }\n}\n";
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(2, 4), Position::new(2, 25)),
-            severity: Some(DiagnosticSeverity::ERROR),
-            code: Some(NumberOrString::String(
-                "implicit_redefinition_without_operator".to_string(),
-            )),
-            code_description: None,
-            source: Some("semantic".to_string()),
-            message: "missing :>>".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let action =
-            suggest_explicit_redefinition_quick_fix(source, &uri, &diagnostic).expect("action");
-        let edit = action.edit.expect("has edit");
-        let doc_edits = edit.document_changes.expect("document changes");
-        let edits = match doc_edits {
-            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
-            _ => panic!("expected edits"),
-        };
-        assert_eq!(edits.len(), 1);
-        assert_eq!(edits[0].edits.len(), 1);
-        let rewritten = match &edits[0].edits[0] {
-            OneOf::Left(te) => te.new_text.clone(),
-            _ => panic!("expected text edit"),
-        };
-        assert_eq!(rewritten.trim(), "attribute :>> mass = 1200;");
-    }
-
-    #[test]
-    fn test_suggest_explicit_redefinition_quick_fix_noop_when_already_explicit() {
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let source =
-            "package P {\n  part def Child :> Base {\n    attribute :>> mass = 1200;\n  }\n}\n";
-        let diagnostic = Diagnostic {
-            range: Range::new(Position::new(2, 4), Position::new(2, 29)),
-            severity: Some(DiagnosticSeverity::ERROR),
-            code: Some(NumberOrString::String(
-                "implicit_redefinition_without_operator".to_string(),
-            )),
-            code_description: None,
-            source: Some("semantic".to_string()),
-            message: "missing :>>".to_string(),
-            related_information: None,
-            tags: None,
-            data: None,
-        };
-        let action = suggest_explicit_redefinition_quick_fix(source, &uri, &diagnostic);
-        assert!(action.is_none());
-    }
-
-    #[test]
     fn test_format_document_empty() {
         let options = tower_lsp::lsp_types::FormattingOptions {
             tab_size: 4,
@@ -1041,12 +386,7 @@ mod tests {
             .next()
             .expect("first edit")
             .new_text;
-        let second = format_document(&first, &options)
-            .into_iter()
-            .next()
-            .expect("second edit")
-            .new_text;
-        assert_eq!(first, second);
+        assert!(format_document(&first, &options).is_empty());
     }
 
     #[test]

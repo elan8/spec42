@@ -1,3 +1,5 @@
+import { ANALYSIS_STATUS_CHANGED_METHOD } from "../generated/editor-status";
+import { analysisRequestMiddleware } from "./pendingAnalysis";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
@@ -30,6 +32,7 @@ import {
   getServerHealthDetail,
   getServerHealthState,
   setServerHealth,
+  updateStatusBar,
 } from "./statusBar";
 
 type RawSysandStatus = {
@@ -373,6 +376,7 @@ export function startLanguageClient(
   };
 
   const clientOptions: LanguageClientOptions = {
+    middleware: analysisRequestMiddleware,
     documentSelector: [{ language: "sysml" }, { language: "kerml" }],
     synchronize: {
       fileEvents: [
@@ -424,6 +428,24 @@ export function startLanguageClient(
     clientOptions
   );
 
+  // tower-lsp's current capability type exposes type hierarchy through experimental.
+  // Reuse the language client's standard provider, including its opaque item data handling.
+  const hierarchyClient = client;
+  client.registerFeature({
+    fillClientCapabilities() {},
+    initialize(capabilities, documentSelector) {
+      if (!capabilities.typeHierarchyProvider &&
+          capabilities.experimental?.typeHierarchyProvider === true && documentSelector) {
+        hierarchyClient.getFeature("textDocument/prepareTypeHierarchy").register({
+          id: "spec42.experimental.typeHierarchy",
+          registerOptions: { documentSelector },
+        });
+      }
+    },
+    clear() {},
+    getState: () => ({ kind: "static" as const }),
+  });
+
   context.subscriptions.push(
     client.onDidChangeState(({ newState }) => {
       if (newState === State.Starting) {
@@ -439,6 +461,10 @@ export function startLanguageClient(
     })
   );
 
+  context.subscriptions.push(
+    client.onNotification(ANALYSIS_STATUS_CHANGED_METHOD, () => updateStatusBar(context)),
+    client.onNotification("spec42/publicationChanged", () => updateStatusBar(context))
+  );
   const clientReadyPromise = client.start().then(() => {
       restartCount = 0;
       crashDialogShown = false;

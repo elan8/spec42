@@ -1171,6 +1171,7 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "tower-lsp",
             "tracing",
             "tracing-subscriber",
+            "ts-rs",
         ]),
         "lsp_server is the editor host and owns no batch path: it must not depend on \
          `workspace`; `diagram_layout` is the native layout boundary behind `spec42/layout` \
@@ -1408,43 +1409,7 @@ const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
     // service. These are the D10 entries Proposal C names; the list only ever shrinks.
     (
         "crates/lsp_server/src/common/util.rs",
-        "untyped_part_usage_diagnostics",
-    ),
-    (
-        "crates/lsp_server/src/common/util.rs",
         "import_statement_ranges",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_wrap_in_package",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_create_definition_for_unresolved_type_quick_fix",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_create_matching_part_def_quick_fix",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_explicit_redefinition_quick_fix",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_create_verification_case",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_create_usage_from_definition",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_qualify_ambiguous_name_quick_fixes",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_add_import_quick_fixes",
     ),
     (
         "crates/lsp_server/src/language/symbols.rs",
@@ -1471,11 +1436,12 @@ const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
 /// Document-keyed maps a host declares as a field.
 ///
 /// A map from `Url`/`PathBuf` to derived data is a cache of something the authority already
-/// owns, and a second place for it to go stale. The session's index is the one legitimate
-/// document-keyed map in a host; everything else reads the publication.
+/// owns, and a second place for it to go stale. The editor session alone retains source maps:
+/// ordered desired inputs and immutable source handles paired with the admitted publication.
+/// Neither is a private semantic cache; other hosts read the publication.
 const HOST_DOCUMENT_KEYED_FIELD_ALLOWLIST: &[(&str, &str)] = &[
-    // The editor session's document index: the one document-keyed map a host may own, because a
-    // session's open documents are its own state and not a derivation of the publication.
+    // The editor session owns desired source revisions and the immutable source/syntax handles
+    // paired with its admitted model. This allowance does not extend to derived semantic maps.
     ("crates/lsp_server/src/session/state.rs", "ServerState"),
 ];
 

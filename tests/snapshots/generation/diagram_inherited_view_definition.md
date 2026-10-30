@@ -657,8 +657,8 @@ package InheritedViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:405a773edb6ab45a0a61c6077819204d0781034231df03e0ef58602941298f43",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:6224dbd68e2158f37a1bcf8289806c4abfee67a9fe28ada81b28c1058f54226e",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1094,6 +1094,25 @@ package InheritedViews {
         1,
         3
       ],
+      "portFamilies": [
+        {
+          "connectors": [
+            5
+          ],
+          "general": [
+            {
+              "label": "Signal",
+              "reference": 11
+            }
+          ],
+          "types": [
+            {
+              "label": "Signal",
+              "reference": 11
+            }
+          ]
+        }
+      ],
       "ports": [
         2,
         4,
@@ -1124,9 +1143,11 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:e6d7837abb2e9be746cd709c5409627517dc98f633f28568b9cb76c0ff1b1578",
         "reference": 0,
         "source": 8,
         "stateSubaction": null,
@@ -1149,9 +1170,11 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "sender",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:714a0f5f2d863b39bd7b13f06bd87d5fbb34cc91d19404d4bed17bb308df09fb",
         "reference": 3,
         "source": 9,
         "stateSubaction": null,
@@ -1172,9 +1195,11 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 1,
+        "presentationKey": "p:4d6f9726492121b5b93b9f739ea774ebe69e679de249aaa00e39650cb176649b",
         "reference": 10,
         "source": 4,
         "stateSubaction": null,
@@ -1203,9 +1228,11 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "receiver",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:08185436c58a7c136374ebe9dc4349878c4be65a8798cd703c3322b85067786f",
         "reference": 2,
         "source": 11,
         "stateSubaction": null,
@@ -1226,9 +1253,11 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "p",
         "notationRole": "usage",
         "owner": 3,
+        "presentationKey": "p:f6ef756495c4eefc5e0b6c349d5ff7e92e5d993697f16eda926c4c97ac7a6d44",
         "reference": 8,
         "source": 6,
         "stateSubaction": null,
@@ -1258,9 +1287,11 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "InterfaceUsage",
+        "multiplicity": null,
         "name": "link",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:0e914c97401c310fbf4d33280bed1a9c0071d1dea123fabf5808dd44683f47e2",
         "reference": 1,
         "source": 13,
         "stateSubaction": null,
@@ -1281,9 +1312,11 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "x",
         "notationRole": "usage",
         "owner": 5,
+        "presentationKey": "p:2b1174527e2eee4729af1b3a89cef83a3f753a12883f7386c4dc620d8e1112b2",
         "reference": 5,
         "source": 0,
         "stateSubaction": null,
@@ -1304,9 +1337,11 @@ package InheritedViews {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "y",
         "notationRole": "usage",
         "owner": 5,
+        "presentationKey": "p:5584e2bf2bd1f5c97fe53160b968e4f4b90d9965674ea109f9d108b97d54bef1",
         "reference": 6,
         "source": 2,
         "stateSubaction": null,

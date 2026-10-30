@@ -27,6 +27,7 @@ pub(crate) const fn parser_name_language(
 type ParseIdentity = (SourceLanguage, ContentDigest);
 
 struct Inner {
+    positions: crate::positions::LineIndex,
     /// Shared with the semantic build's admitted documents and the library stratum: admitting a
     /// parsed source is two reference-count bumps, never a tree clone.
     document: Arc<ParsedDocument>,
@@ -42,6 +43,35 @@ struct Inner {
 /// exposed; `pub(crate)` accessors serve the authority's own traversals and the semantic build.
 #[derive(Clone)]
 pub struct ParsedSource(Arc<Inner>);
+
+/// An immutable batch of source revisions and their matching syntax leases.
+///
+/// Preparation may run away from a host's admission barrier. Owning the leases, rather than
+/// relying on a recent memo touch, keeps every tree alive across other projects' sweeps. This
+/// batch is a work product, not another cache; dropping it releases unadmitted revisions.
+#[derive(Debug)]
+pub struct PreparedSyntax {
+    sources: Vec<(SourceDocument, ParsedSource)>,
+}
+
+impl PreparedSyntax {
+    /// Borrow the paired revisions without transferring their leases.
+    pub fn sources(&self) -> impl ExactSizeIterator<Item = (&SourceDocument, &ParsedSource)> {
+        self.sources
+            .iter()
+            .map(|(document, syntax)| (document, syntax))
+    }
+    /// The complete source set whose identity a host must validate before admission.
+    pub fn documents(&self) -> impl ExactSizeIterator<Item = &SourceDocument> {
+        self.sources.iter().map(|(document, _)| document)
+    }
+
+    /// Transfer already prepared leases at the admission barrier. This never parses or looks
+    /// up the memo, and preserves the pairing and order supplied during preparation.
+    pub fn into_sources(self) -> impl ExactSizeIterator<Item = (SourceDocument, ParsedSource)> {
+        self.sources.into_iter()
+    }
+}
 
 impl std::fmt::Debug for ParsedSource {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -88,6 +118,7 @@ impl ParsedSource {
                 let mut source = Self::from_result(empty, digest, true);
                 let inner = Arc::get_mut(&mut source.0).expect("freshly built handle is unique");
                 inner.diagnostics = Box::new([SyntaxDiagnostic {
+                    source_range: None,
                     severity: SyntaxDiagnosticSeverity::Error,
                     category: SyntaxDiagnosticCategory::ParserFailure,
                     message: "the parser panicked on this document".to_owned(),
@@ -111,18 +142,42 @@ impl ParsedSource {
         digest: ContentDigest,
         parser_failed: bool,
     ) -> Self {
+        let positions = crate::positions::LineIndex::build(result.document.source.as_str());
         let diagnostics = result
             .errors
             .iter()
-            .map(SyntaxDiagnostic::from_parse_error)
+            .map(|error| {
+                let mut diagnostic = SyntaxDiagnostic::from_parse_error(error);
+                diagnostic.source_range = match error.offset {
+                    Some(offset) => positions.position(offset).and_then(|start| {
+                        let end =
+                            positions.position(offset.checked_add(error.length.unwrap_or(0))?)?;
+                        Some(super::SyntaxRange {
+                            start_line: start.line,
+                            start_character: start.character,
+                            end_line: end.line,
+                            end_character: end.character,
+                        })
+                    }),
+                    None => diagnostic
+                        .source_range
+                        .and_then(|range| positions.syntax_range(range)),
+                };
+                diagnostic
+            })
             .collect();
         Self(Arc::new(Inner {
+            positions,
             document: Arc::new(result.document),
             errors: result.errors,
             diagnostics,
             digest,
             parser_failed,
         }))
+    }
+
+    pub(crate) fn positions(&self) -> &crate::positions::LineIndex {
+        &self.0.positions
     }
 
     /// The source this document was parsed from, after BOM stripping.
@@ -148,14 +203,26 @@ impl ParsedSource {
         &self.0.diagnostics
     }
 
-    /// Whether the parse produced no diagnostic at all — the strict-parse notion of success.
+    /// Whether strict parsing succeeded. Non-fatal warnings remain available in diagnostics.
     pub fn is_clean(&self) -> bool {
-        self.0.diagnostics.is_empty()
+        !self.0.parser_failed
+            && !self
+                .0
+                .errors
+                .iter()
+                .any(ParseError::prevents_strict_parsing)
     }
 
-    /// The first diagnostic, for callers that treat any diagnostic as rejection.
+    /// The first diagnostic preventing strict parsing. Fully parsed syntax warnings do not reject it.
     pub fn first_error(&self) -> Option<&SyntaxDiagnostic> {
-        self.0.diagnostics.first()
+        if self.0.parser_failed {
+            return self.0.diagnostics.first();
+        }
+        self.0
+            .errors
+            .iter()
+            .position(ParseError::prevents_strict_parsing)
+            .and_then(|index| self.0.diagnostics.get(index))
     }
 
     /// Whether the parser failed outright (panicked) rather than recovering.
@@ -237,6 +304,20 @@ impl SyntaxAuthority {
         self.parse_with_digest(document.language(), document.digest(), document.content())
     }
 
+    /// Prepare and retain matching source/syntax pairs until their owner admits or drops them.
+    /// The caller may bound or cooperatively stop the iterator before accepting the batch.
+    pub fn prepare<'a>(
+        &self,
+        documents: impl IntoIterator<Item = &'a SourceDocument>,
+    ) -> PreparedSyntax {
+        PreparedSyntax {
+            sources: documents
+                .into_iter()
+                .map(|document| (document.clone(), self.parse(document)))
+                .collect(),
+        }
+    }
+
     /// Parse text that is not an admitted document (an editor's candidate reformatting, a
     /// stateless caller). Digested here so identical text still hits the memo.
     pub fn parse_text(&self, text: &str) -> ParsedSource {
@@ -278,18 +359,22 @@ impl SyntaxAuthority {
         parsed
     }
 
-    /// Keep only the revisions in `keep` plus everything touched since the last sweep.
+    /// Keep explicitly retained revisions, live source/tree leases and recent touches.
     ///
     /// The host passes the digests of every handle it still holds, admitted or not. Anything else
-    /// is a superseded revision and is dropped; the sweep and the clearing of the touched set are
-    /// one operation under the lock, so a parse racing the sweep is never lost.
+    /// is a superseded revision and is dropped. A different project's sweep must not evict a
+    /// still-live handle or a tree leased by an active build/library stratum and cause a second
+    /// parse of the same revision. The sweep and touch clearing are one operation under the lock.
     pub fn retain(&self, keep: impl IntoIterator<Item = ContentDigest>) {
         let mut state = self.lock();
         let survivors: HashSet<ContentDigest> = keep.into_iter().collect();
         let touched = state.touched.drain().collect::<HashSet<_>>();
-        state
-            .map
-            .retain(|identity, _| survivors.contains(&identity.1) || touched.contains(identity));
+        state.map.retain(|identity, parsed| {
+            survivors.contains(&identity.1)
+                || touched.contains(identity)
+                || Arc::strong_count(&parsed.0) > 1
+                || Arc::strong_count(&parsed.0.document) > 1
+        });
     }
 
     pub fn memo_len(&self) -> usize {
@@ -318,7 +403,127 @@ mod tests {
     fn handles_are_send_and_sync_without_unsafe_impls() {
         fn assert_send_sync<T: Send + Sync>() {}
         assert_send_sync::<ParsedSource>();
+        assert_send_sync::<PreparedSyntax>();
         assert_send_sync::<SyntaxAuthority>();
+    }
+
+    #[test]
+    fn prepared_batch_keeps_exact_leases_across_sweeps_until_transfer() {
+        let authority = SyntaxAuthority::new();
+        let sources = [
+            document("memory://prepared/first.sysml", "package First;"),
+            document("memory://prepared/second.sysml", "package Second;"),
+        ];
+        let batch = authority.prepare(&sources);
+        let leases = batch
+            .sources
+            .iter()
+            .map(|(_, parsed)| Arc::downgrade(&parsed.0))
+            .collect::<Vec<_>>();
+        for _ in 0..4 {
+            authority.retain([]);
+        }
+        assert_eq!(authority.memo_len(), 2);
+        assert_eq!(
+            batch.documents().collect::<Vec<_>>(),
+            sources.iter().collect::<Vec<_>>()
+        );
+        for ((source, parsed), original) in batch.into_sources().zip(&leases) {
+            assert_eq!(source.digest(), parsed.digest());
+            assert_eq!(source.language(), parsed.language());
+            assert!(Arc::ptr_eq(&original.upgrade().unwrap(), &parsed.0));
+            assert!(Arc::ptr_eq(&authority.parse(&source).0, &parsed.0));
+        }
+        authority.retain([]);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
+        assert!(leases.iter().all(|lease| lease.upgrade().is_none()));
+    }
+
+    #[test]
+    fn dropping_an_unadmitted_batch_releases_its_revisions() {
+        let authority = SyntaxAuthority::new();
+        let source = document("memory://prepared/cancelled.sysml", "package Cancelled;");
+        let batch = authority.prepare([&source]);
+        let lease = Arc::downgrade(&batch.sources[0].1 .0);
+        authority.retain([]);
+        authority.retain([]);
+        assert!(lease.upgrade().is_some());
+        drop(batch);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
+        assert!(lease.upgrade().is_none());
+    }
+
+    #[test]
+    fn prepared_batch_preserves_document_order_and_language_qualified_identity() {
+        let authority = SyntaxAuthority::new();
+        let sources = [
+            document("memory://prepared/first.sysml", "package Same;"),
+            document("memory://prepared/second.kerml", "package Same;"),
+            document("memory://prepared/third.sysml", "package Same;"),
+        ];
+        let batch = authority.prepare(&sources);
+        assert_eq!(
+            batch.documents().collect::<Vec<_>>(),
+            sources.iter().collect::<Vec<_>>()
+        );
+        assert!(Arc::ptr_eq(&batch.sources[0].1 .0, &batch.sources[2].1 .0));
+        assert!(!Arc::ptr_eq(&batch.sources[0].1 .0, &batch.sources[1].1 .0));
+        for (source, parsed) in batch.into_sources() {
+            assert_eq!(source.language(), parsed.language());
+            assert_eq!(source.digest(), parsed.digest());
+        }
+    }
+
+    #[test]
+    fn unrelated_sweeps_keep_live_source_handles_without_reparsing() {
+        let authority = SyntaxAuthority::new();
+        let source = document("memory://leases/model.sysml", "package P;");
+        let held = authority.parse(&source);
+        authority.retain([]);
+        authority.retain([]);
+        let again = authority.parse(&source);
+        assert!(Arc::ptr_eq(&held.0, &again.0));
+        drop((held, again));
+        authority.retain([]);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
+    }
+
+    #[test]
+    fn admitted_tree_leases_survive_an_unrelated_project_sweep() {
+        let authority = SyntaxAuthority::new();
+        let source = document("memory://leases/model.sysml", "package P;");
+        let held = authority.parse(&source);
+        let (tree, _) = held.admission_parts();
+        drop(held);
+        authority.retain([]);
+        authority.retain([]);
+        let again = authority.parse(&source);
+        assert!(Arc::ptr_eq(&again.0.document, &tree));
+        drop((tree, again));
+        authority.retain([]);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
+    }
+
+    #[test]
+    fn continuous_edits_bound_history_while_the_previous_publication_stays_live() {
+        let authority = SyntaxAuthority::new();
+        let published =
+            authority.parse(&document("memory://edits/model.sysml", "package Initial;"));
+        let mut desired = published.clone();
+        for revision in 0..300 {
+            let replacement = authority.parse(&document(
+                "memory://edits/model.sysml",
+                &format!("package P{revision};"),
+            ));
+            drop(std::mem::replace(&mut desired, replacement));
+            authority.retain([published.digest(), desired.digest()]);
+            assert!(authority.memo_len() <= 2);
+        }
+        assert_ne!(published.digest(), desired.digest());
     }
 
     #[test]
@@ -353,6 +558,13 @@ mod tests {
         authority.retain([]);
         authority.retain([source.digest()]);
         assert_eq!(authority.memo_len(), 2);
+        authority.retain([]);
+        assert_eq!(
+            authority.memo_len(),
+            2,
+            "live language-specific handles remain leased"
+        );
+        drop((sysml, kerml));
         authority.retain([]);
         assert_eq!(authority.memo_len(), 0);
     }
@@ -404,6 +616,7 @@ mod tests {
         let empty = sysml_v2_parser::parse_for_editor_owned(String::new());
         let mut failed = ParsedSource::from_result(empty, digest, true);
         Arc::get_mut(&mut failed.0).unwrap().diagnostics = Box::new([SyntaxDiagnostic {
+            source_range: None,
             severity: SyntaxDiagnosticSeverity::Error,
             category: SyntaxDiagnosticCategory::ParserFailure,
             message: String::new(),
@@ -459,8 +672,8 @@ mod tests {
         authority.retain([admitted.digest()]);
         assert_eq!(
             authority.memo_len(),
-            2,
-            "admitted plus the in-flight revision"
+            3,
+            "admitted, in-flight, and the live search-only handle"
         );
         assert!(Arc::ptr_eq(
             &authority
@@ -475,8 +688,11 @@ mod tests {
             &authority.parse(&admitted).0,
             &admitted_parsed.0
         ));
-        // The search-only file was neither kept nor touched and is gone; the host's own handle
-        // keeps its tree alive regardless.
-        assert!(!Arc::ptr_eq(&authority.parse(&search_only).0, &held.0));
+        // An independent owner's sweep cannot evict a still-leased revision and reparse it.
+        assert!(Arc::ptr_eq(&authority.parse(&search_only).0, &held.0));
+        drop((held, in_flight, admitted_parsed));
+        authority.retain([]);
+        authority.retain([]);
+        assert_eq!(authority.memo_len(), 0);
     }
 }

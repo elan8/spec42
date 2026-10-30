@@ -19,6 +19,22 @@ use crate::resolve::library_seed::SettledLibrary;
 pub(crate) mod phase;
 pub(crate) mod schedule;
 
+#[derive(Clone, Copy, Default)]
+pub(crate) struct BuildControls<'a> {
+    pub(crate) lowering_memo: Option<&'a LoweringMemo>,
+    pub(crate) cancellation: Option<&'a crate::publication::BuildCancellation>,
+}
+
+impl BuildControls<'_> {
+    pub(crate) fn checkpoint(
+        &self,
+        phase: crate::ConstructionPhase,
+    ) -> Result<(), crate::BuildFailure> {
+        self.cancellation
+            .map_or(Ok(()), |control| control.checkpoint(phase))
+    }
+}
+
 #[derive(Debug, Clone)]
 pub(crate) struct OwnedSourceRecord {
     pub(crate) identity: Box<str>,
@@ -63,7 +79,7 @@ impl SemanticModelBuildCoordinator {
         standard_library_availability: StandardLibraryAvailability,
         library: Option<&PreparedLibrary>,
         reported: &[Box<str>],
-        memo: Option<&LoweringMemo>,
+        controls: BuildControls<'_>,
     ) -> Result<
         (
             resolver::ResolvedSemanticModel,
@@ -72,6 +88,8 @@ impl SemanticModelBuildCoordinator {
         ),
         CoordinatorError,
     > {
+        controls.checkpoint(crate::ConstructionPhase::SourceAdmission)?;
+        let memo = controls.lowering_memo;
         // Library sources are ordered ahead of workspace sources so that the dense declaration
         // domain assigns them a contiguous prefix. Rendered output is sorted independently by
         // document identity, so this affects storage order only. Duplicate detection therefore
@@ -96,17 +114,21 @@ impl SemanticModelBuildCoordinator {
             return Err(CoordinatorError::DuplicateSourceIdentity);
         }
 
+        let parse_source = |source| {
+            controls.checkpoint(crate::ConstructionPhase::SourceAdmission)?;
+            Self::parse_source(source)
+        };
         let parse_started = Instant::now();
         let parsed: Vec<(AdmittedSource, bool)> = match schedule {
             BuildSchedule::Sequential => sources
                 .into_iter()
-                .map(Self::parse_source)
+                .map(parse_source)
                 .collect::<Result<Vec<_>, _>>()?,
             BuildSchedule::Parallel => {
                 use rayon::prelude::*;
                 sources
                     .into_par_iter()
-                    .map(Self::parse_source)
+                    .map(parse_source)
                     .collect::<Result<Vec<_>, _>>()?
             }
         };
@@ -118,6 +140,7 @@ impl SemanticModelBuildCoordinator {
             .count();
         let parsed: Vec<AdmittedSource> = parsed.into_iter().map(|(source, _)| source).collect();
 
+        controls.checkpoint(crate::ConstructionPhase::Lowering)?;
         let lowering_started = Instant::now();
         let mut builder = SemanticModelBuilder::default();
         let mut documents = Vec::with_capacity(parsed.len());
@@ -158,8 +181,15 @@ impl SemanticModelBuildCoordinator {
             .iter()
             .map(|document| document.identity.as_ref())
             .collect();
-        let products =
-            lower_documents(&documents, &document_identities, memo, generation, schedule)?;
+        let products = lower_documents(
+            &documents,
+            &document_identities,
+            memo,
+            generation,
+            schedule,
+            controls,
+        )?;
+        controls.checkpoint(crate::ConstructionPhase::Splicing)?;
         // Counted facts, not timers: which documents this build lowered and which it took from
         // the memo. A wall-clock threshold cannot state "this edit lowered exactly one document".
         let documents_reused = products.iter().filter(|(_, reused)| *reused).count();
@@ -174,19 +204,17 @@ impl SemanticModelBuildCoordinator {
             })?;
         }
         drop(products);
-        if let (Some(memo), Some(generation)) = (memo, generation) {
-            memo.retain(generation);
-        }
         let (storage, sources) = builder.freeze();
         let lowering = lowering_started.elapsed();
         let resolution_started = Instant::now();
-        let (model, sources) = phase::build_model(
+        let (model, sources, semantic) = phase::build_model(
             storage,
             sources,
             policy,
             standard_library_availability,
             library.map(|library| &library.settled),
             reported,
+            controls,
         )?;
         let resolution = resolution_started.elapsed();
         Ok((
@@ -196,6 +224,7 @@ impl SemanticModelBuildCoordinator {
                 parse,
                 lowering,
                 resolution,
+                semantic,
                 sources_parsed,
                 documents_lowered,
                 documents_reused,
@@ -272,6 +301,7 @@ fn lower_documents(
     memo: Option<&LoweringMemo>,
     generation: Option<crate::lower::memo::MemoGeneration>,
     schedule: BuildSchedule,
+    controls: BuildControls<'_>,
 ) -> Result<Vec<(Arc<LoweredDocument>, bool)>, CoordinatorError> {
     let lower_one = |(document, language, digest, parsed): &(
         DocumentIdx,
@@ -279,6 +309,7 @@ fn lower_documents(
         ContentDigest,
         Arc<ParsedDocument>,
     )| {
+        controls.checkpoint(crate::ConstructionPhase::Lowering)?;
         match (memo, generation) {
             (Some(memo), Some(generation)) => memo.lower(*language, *digest, generation, parsed),
             _ => crate::lower::document::lower_document(Arc::clone(parsed), *language)
@@ -292,13 +323,19 @@ fn lower_documents(
             )
         })
     };
-    match schedule {
+    let result = match schedule {
         BuildSchedule::Sequential => documents.iter().map(lower_one).collect(),
         BuildSchedule::Parallel => {
             use rayon::prelude::*;
             documents.par_iter().map(lower_one).collect()
         }
+    };
+    // Completed per-document lowering products remain valid. Even an interrupted generation
+    // sweeps older entries, so cancelled work cannot retain an unbounded revision history.
+    if let (Some(memo), Some(generation)) = (memo, generation) {
+        memo.retain(generation);
     }
+    result
 }
 
 type AdmittedSource = (

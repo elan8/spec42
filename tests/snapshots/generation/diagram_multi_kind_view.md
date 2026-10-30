@@ -258,8 +258,8 @@ package Garage {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:90088f8d39efd7deb6d0c233f66a9052cb342def6976f29a33b64328c32e1b6b",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:ecfb5dca4a0991836f02fbb38561cbe4854fbc5fec1c62af3979912fd2df4fdd",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -380,6 +380,7 @@ package Garage {
         1,
         2
       ],
+      "portFamilies": [],
       "ports": []
     },
     "nodes": [
@@ -398,9 +399,11 @@ package Garage {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Car",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:79716342c93d74330415ecac2b765cd414e69a8986705f17b95dbee1ed90573c",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -415,9 +418,11 @@ package Garage {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": "[4]",
         "name": "wheel",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:3bf613e12862846e19b2d3ee8ba669ecaf4cb3fb0d2b692318a202f6014dea3a",
         "reference": 2,
         "source": 2,
         "stateSubaction": null,
@@ -432,9 +437,11 @@ package Garage {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartUsage",
+        "multiplicity": null,
         "name": "engine",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:a01568c852b2cd8ef73ee176f6c8d24e5c06dbfe6596aab68b622198ab4d830d",
         "reference": 1,
         "source": 1,
         "stateSubaction": null,

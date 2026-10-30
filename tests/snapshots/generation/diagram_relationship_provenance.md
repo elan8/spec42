@@ -265,8 +265,8 @@ package ProvenanceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:abb8caf20b989a6b45e8ed0c42e68f3e0972602ac0cf46baa7213480b85f74fb",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:bf494a84e1bd72d80af5e1ba3a8996e3142ec69b749e91861d910e4d55d92e93",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_relationship_provenance.md",
@@ -304,15 +304,6 @@ package ProvenanceExample {
     {
       "document": 0,
       "range": [
-        3,
-        46,
-        3,
-        50
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
         4,
         9,
         4,
@@ -339,26 +330,7 @@ package ProvenanceExample {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "ProvenanceExample::Child::mass::"
-    },
-    {
-      "document": 0,
-      "kind": "qualified-name",
       "qualifiedName": "ProvenanceExample::selected"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "LiteralInteger",
-      "ownerQualifiedName": "ProvenanceExample::Child::mass",
-      "source": 3,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "Feature",
-      "ownerQualifiedName": "ProvenanceExample::Child::mass::",
-      "source": 3,
-      "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
@@ -371,25 +343,13 @@ package ProvenanceExample {
       "ordinal": 0,
       "relationshipKind": "specializes",
       "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "containment",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "containment",
-      "source": 3
     }
   ],
   "selectedView": {
-    "reference": 4,
+    "reference": 3,
     "kind": "general-view",
     "name": "selected",
-    "source": 4
+    "source": 3
   },
   "completeness": {
     "status": "complete",
@@ -402,27 +362,9 @@ package ProvenanceExample {
         "navigation": 2,
         "origin": 1,
         "provenance": "authored",
-        "reference": 7,
+        "reference": 4,
         "source": 0,
         "target": 1
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 2,
-        "provenance": "authored",
-        "reference": 9,
-        "source": 1,
-        "target": 2
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 3,
-        "provenance": "authored",
-        "reference": 10,
-        "source": 2,
-        "target": 3
       }
     ],
     "exposedRoots": [
@@ -449,9 +391,11 @@ package ProvenanceExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Child",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:e194145dcebc4d31c6e13a2e6b2d52d4a9d19a1177fdebde2bf4c1ceb189fcaf",
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
@@ -466,45 +410,13 @@ package ProvenanceExample {
         "direction": null,
         "featureDirection": null,
         "metaclass": "AttributeUsage",
+        "multiplicity": null,
         "name": "mass",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:802ba17126dbb1af3bb3d798c434b11858b38719a5fb1496fae415510f31fba1",
         "reference": 2,
         "source": 2,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "LiteralInteger",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 1,
-        "reference": 5,
-        "source": 3,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": "out",
-        "featureDirection": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 2,
-        "reference": 6,
-        "source": 3,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -517,7 +429,7 @@ package ProvenanceExample {
         "kind": "specializes",
         "navigation": 1,
         "provenance": "authored",
-        "reference": 8,
+        "reference": 5,
         "source": 0,
         "target": {
           "reference": 0,

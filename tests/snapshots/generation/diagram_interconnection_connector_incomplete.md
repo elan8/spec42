@@ -234,8 +234,8 @@ package ConnectorIncomplete {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 7,
-  "modelDigest": "blake3:46dd85aa72e2d9f9c70116a667916a47ac46fc0c04ad4d3a427cd8d00e94fe24",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:0c3591403413d4cec7875e5ccf37591cfb8f1c37d018129887eafddb24e86606",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_connector_incomplete.md",
@@ -398,6 +398,7 @@ package ConnectorIncomplete {
       "parts": [
         0
       ],
+      "portFamilies": [],
       "ports": [
         2
       ]
@@ -424,9 +425,11 @@ package ConnectorIncomplete {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PartDefinition",
+        "multiplicity": null,
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:d665bc3004e66c4a18fdea0ea7a080507927de81ff6c121094238c62cb064bd0",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -441,9 +444,11 @@ package ConnectorIncomplete {
         "direction": null,
         "featureDirection": null,
         "metaclass": "ConnectionUsage",
+        "multiplicity": null,
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:57f2e0843d57d0d3c4e70ef80e34174bd9465af9ad716138f2220f75987a1222",
         "reference": 4,
         "source": 2,
         "stateSubaction": null,
@@ -458,9 +463,11 @@ package ConnectorIncomplete {
         "direction": null,
         "featureDirection": null,
         "metaclass": "PortUsage",
+        "multiplicity": null,
         "name": "input",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:a134db7594df63875b0bdbf64083f415c844773ecc34ab089bf25952e210e751",
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
