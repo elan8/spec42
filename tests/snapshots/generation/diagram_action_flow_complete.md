@@ -216,8 +216,8 @@ package ActionFlowExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
-  "modelDigest": "blake3:606b26e8dea87c2ccf0e600e2d175ec07a188179a87f2016b81fe59655bdd9ab",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:b60db866d07d9aab0abf304ea7c969fba87a13350bb9d52e00092c7f53f0d471",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_action_flow_complete.md",
@@ -440,6 +440,7 @@ package ActionFlowExample {
         "name": "Process",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:18de045b4e0c476069017514c6d79e537f68ead8ddc8b9e8f77f21a5b3e521fc",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -458,6 +459,7 @@ package ActionFlowExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
+        "presentationKey": "p:5bcc01a5bec92b34ca85f5088e01d0ca94bf92d21f57c41f3d54d848b41a7211",
         "reference": 5,
         "source": 3,
         "stateSubaction": null,
@@ -476,6 +478,7 @@ package ActionFlowExample {
         "name": "execute",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:86b4ff2167cb27da75002f42b916fb3fe7fe9982f1db15200d546973d5dfec6e",
         "reference": 2,
         "source": 2,
         "stateSubaction": null,
@@ -494,6 +497,7 @@ package ActionFlowExample {
         "name": "prepare",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:77c3a05c305eb1e35ef2f7bd134d53fa2b3b1b5ba41a530e1655d6d8d1ed9755",
         "reference": 3,
         "source": 1,
         "stateSubaction": null,

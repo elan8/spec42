@@ -325,8 +325,8 @@ package Shop {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
-  "modelDigest": "blake3:368b26aebf90eff2a85efead00e15343650f09553c84bc1a360fa89da43311a9",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:3ad84ad2c1593bfbd2d51973e2f9859bac743a2a4e76c33d1bbe0219a1a09352",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -690,6 +690,7 @@ package Shop {
         "name": "Fulfil",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:8129ab368d4f6d1cec942536bd1f4ce3bb7d84fc8657e58492f701be9f50374e",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -708,6 +709,7 @@ package Shop {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
+        "presentationKey": "p:ad2b176344ef8a2559e7837125a00cc19286d5ca5db235372e1afeb11f11be11",
         "reference": 8,
         "source": 8,
         "stateSubaction": null,
@@ -726,6 +728,7 @@ package Shop {
         "name": "ship",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:f8146cb7d28da7881843efdd23d698f4860aef59b6b1fa85fd0a50fca4cac9d4",
         "reference": 6,
         "source": 7,
         "stateSubaction": null,
@@ -753,6 +756,7 @@ package Shop {
         "name": "order",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:aa0481c51206b879f128e91ce40ce568da6bfd9f95afd53e0e8074dc00ebe1b9",
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
@@ -771,6 +775,7 @@ package Shop {
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
+        "presentationKey": "p:4f02cd39d8de4dfe0adcd7bebec06d2d7fa490c6aff2105a256f35d9f500b8d3",
         "reference": 9,
         "source": 4,
         "stateSubaction": null,
@@ -789,6 +794,7 @@ package Shop {
         "name": "pack",
         "notationRole": "usage",
         "owner": 3,
+        "presentationKey": "p:1916ca69baefb5171312f9eb9c4fbdc79d2f5a5d45b59b5a9cd3a1678a08ce6a",
         "reference": 4,
         "source": 3,
         "stateSubaction": null,
@@ -807,6 +813,7 @@ package Shop {
         "name": "pick",
         "notationRole": "usage",
         "owner": 3,
+        "presentationKey": "p:0b6ae49e35a5163158c14776871dc698136b0ef51cdc19dda5619d815f7cb563",
         "reference": 5,
         "source": 2,
         "stateSubaction": null,

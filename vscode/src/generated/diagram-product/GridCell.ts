@@ -4,7 +4,7 @@
  * One cell of a relationship matrix: the relationship edge from the `row` node to the `column`
  * node.
  */
-export type GridCell = { row: number, column: number, 
+export type GridCell = { row: number, column: number,
 /**
  * Index into the projection's edges.
  */

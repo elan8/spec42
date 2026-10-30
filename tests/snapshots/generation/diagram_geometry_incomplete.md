@@ -120,8 +120,8 @@ package GeometryExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
-  "modelDigest": "blake3:8e2fd594c176e6bd06b7996639140294a24b4991ae98ddcbb05c6217b3068f8a",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:c76e146024f6dc1cde33dd854125b432759194c48d2ca864ea74b4b0542f8eeb",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_geometry_incomplete.md",
@@ -197,6 +197,7 @@ package GeometryExample {
         "name": "Shape",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:12c3949ef9602f9a9e4dc89a60c04d0f07f8d79ae8005c3c92282986ee00c18c",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,

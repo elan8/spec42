@@ -1147,6 +1147,9 @@ pub struct SequenceCycleStep {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct DiagramElement {
+    /// Opaque contextual presentation identity, stable while the canonical structural
+    /// occurrence identity is unchanged. Consumers compare it; they never decode it.
+    pub presentation_key: String,
     pub occurrence: DiagramOccurrenceIdentity,
     pub reference: DiagramSemanticReference,
     pub metaclass: Metaclass,
@@ -1682,7 +1685,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x1369_aed7_fa4a_ab18,
+            SCHEMA_FINGERPRINT, 0x0d01_9c27_af43_1f37,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1690,7 +1693,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x1c4b_1324_144f_9b38,
+            COMPATIBILITY_TOKEN, 0xa1ef_8f10_d2f1_99a6,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

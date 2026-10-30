@@ -632,8 +632,8 @@ package Deployment {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
-  "modelDigest": "blake3:cf7cc8840addd1186cf41014c3b57f5e6f4cd07dfb81c358807ed4fda179338f",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:c01a3913ee400e6081e053b244bb4b6c9be3edcc2a1b0c4ee3e2ee0d4a1b1e24",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_incident_allocation.md",
@@ -919,6 +919,7 @@ package Deployment {
         "name": "workerA",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:568d42228ae16486e8e1329a09a3c6717b0a42e99dcbe97ae42fc9261b8b86c8",
         "reference": 4,
         "source": 0,
         "stateSubaction": null,
@@ -943,6 +944,7 @@ package Deployment {
         "name": "workerB",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:b07e676c2d91914a53bc94fc6287a91d0e27f2ac31bbf8f6a3af3092a7b559af",
         "reference": 5,
         "source": 2,
         "stateSubaction": null,
@@ -967,6 +969,7 @@ package Deployment {
         "name": "cpu",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:e6831313dc8e17958f654f954ec1085534ade736914e973a1c07e8716d0b790e",
         "reference": 2,
         "source": 4,
         "stateSubaction": null,
@@ -991,6 +994,7 @@ package Deployment {
         "name": null,
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:41ae79576397467ffd0497522da771c24a6421305aff3d7d7463eaeb53f381a0",
         "reference": 7,
         "source": 6,
         "stateSubaction": null,
@@ -1009,6 +1013,7 @@ package Deployment {
         "name": null,
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:cc57a60127b13617e82ec7b3ac52bc81d7e3264cb623fbf6e2445a6390cdc6b3",
         "reference": 8,
         "source": 9,
         "stateSubaction": null,

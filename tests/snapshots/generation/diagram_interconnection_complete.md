@@ -368,8 +368,8 @@ package InterconnectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
-  "modelDigest": "blake3:4f35e1932386921da29f490e9eed2899cec6f6acae6a22012221cf8d542f9c93",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:e3d32e3cf19c3d3ab39d5477b4d76cca2a1e17260f24c21dd17424e99e85617b",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_complete.md",
@@ -749,6 +749,7 @@ package InterconnectionExample {
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:542ffdae5ce04b05d5e24a000be4d40de1da0fdcc267ef8a59197052ca8473a8",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -767,6 +768,7 @@ package InterconnectionExample {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:88b50921091ff34f42d0a649d0559f3b87941fb12caa5c7a1a287dd60b64e309",
         "reference": 7,
         "source": 5,
         "stateSubaction": null,
@@ -785,6 +787,7 @@ package InterconnectionExample {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:c6a727a14ec7762106ebbc779c60b33e678a7815e886dce86cfdc6f04d51c399",
         "reference": 8,
         "source": 8,
         "stateSubaction": null,
@@ -811,6 +814,7 @@ package InterconnectionExample {
         "name": "nested",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:2c5dc221d60e1b633437f8ddd763551bebb953df819dc4b6bbd541f6547a14c1",
         "reference": 3,
         "source": 3,
         "stateSubaction": null,
@@ -829,6 +833,7 @@ package InterconnectionExample {
         "name": "tap",
         "notationRole": "usage",
         "owner": 3,
+        "presentationKey": "p:3c0071379b6c4a1d80b500babf6db372132b4fe631f61ed5444f66b988b6572b",
         "reference": 4,
         "source": 4,
         "stateSubaction": null,
@@ -847,6 +852,7 @@ package InterconnectionExample {
         "name": "input",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:e11526331cef0ec281cc7a0f91c1b9592674c689d155cebf5a90c1e68a6b9fbb",
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
@@ -865,6 +871,7 @@ package InterconnectionExample {
         "name": "output",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:a3a08f0bee8510a14dfff3c95317ae2e13aae520b7994c36527fa6aaf458d10d",
         "reference": 5,
         "source": 2,
         "stateSubaction": null,

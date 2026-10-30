@@ -903,6 +903,7 @@ impl GeneratorModelView {
             .elements
             .iter()
             .map(|element| Ok(DiagramElement {
+                presentation_key: diagram_presentation_key(&element.occurrence_id),
                 occurrence: self.diagram_occurrence(&element.occurrence_id)?,
                 reference: self
                     .diagram_reference(element.semantic_id)
@@ -2343,6 +2344,16 @@ fn outcome<T>(value: QueryOutcome<T>, operation: &str) -> Result<T, ModelQueryEr
         ))),
         QueryAnswer::Incomplete => Err(ModelQueryError::Incomplete),
     }
+}
+
+/// A presentation-only boundary encoding of the authority's complete contextual identity.
+fn diagram_presentation_key(
+    occurrence: &sysml_query::resolved_slice::DiagramOccurrenceIdentity,
+) -> String {
+    let mut hash = Sha256::new();
+    hash.update(b"spec42-diagram-presentation-v1\0");
+    hash.update(occurrence.stable_key().as_bytes());
+    format!("p:{:x}", hash.finalize())
 }
 
 /// The catalog handle of `view` (a boundary token) as one of its diagram kinds.

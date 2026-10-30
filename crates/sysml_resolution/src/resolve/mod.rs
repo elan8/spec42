@@ -1365,6 +1365,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         exported_imports,
         memberships,
         ResolutionResults {
+            alias_failures: std::collections::BTreeSet::new(),
             member_access_paths: member_access_paths
                 .into_iter()
                 .map(|(reference, path)| (reference, path.into_boxed_slice()))

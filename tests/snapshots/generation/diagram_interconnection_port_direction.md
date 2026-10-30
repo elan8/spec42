@@ -333,8 +333,8 @@ package PortDirectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
-  "modelDigest": "blake3:dabe2e1154113f4b91010922bf4ac7acbd5077f826d2633f17c9343b5fce5bab",
+  "schemaVersion": 11,
+  "modelDigest": "blake3:cf38a63819743ecadb967220a45f2721ca2d07c1d219e8daf1e28f29c40cd4eb",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_port_direction.md",
@@ -652,6 +652,7 @@ package PortDirectionExample {
         "name": "Node",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:9d6e8336f1bcc28b088fe5658241b03b8897a03234e701cf2ddf77939e2b81f2",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -670,6 +671,7 @@ package PortDirectionExample {
         "name": "bidi",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:31bdb142df981db6be99fb27c2020f4331530efbc6392e7b580f4c86ed3fa176",
         "reference": 1,
         "source": 5,
         "stateSubaction": null,
@@ -694,6 +696,7 @@ package PortDirectionExample {
         "name": "plain",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:7e63bae15408f432f8e06ee8c9dc4a39da1e1bb95982e8a9d149f39fe2630156",
         "reference": 5,
         "source": 7,
         "stateSubaction": null,
@@ -718,6 +721,7 @@ package PortDirectionExample {
         "name": "inbound",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:34fc1483788c7079761dee2725d69190b5c749b2965f784520046530c10ddbb4",
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
@@ -742,6 +746,7 @@ package PortDirectionExample {
         "name": "mirrored",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:23f2c48d08bf1aac7bc1ba55b614b278f4c3c4d1e3c525ed550d9fe5c5764d9c",
         "reference": 3,
         "source": 9,
         "stateSubaction": null,
@@ -766,6 +771,7 @@ package PortDirectionExample {
         "name": "outbound",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:c4cd19ea7a1b5b4dbfaf70344be9999579a91cc9d526e912e4593330ff343a0b",
         "reference": 4,
         "source": 3,
         "stateSubaction": null,

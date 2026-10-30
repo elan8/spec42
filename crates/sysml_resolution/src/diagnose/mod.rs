@@ -126,6 +126,10 @@ impl<D> SemanticModel<D> {
                         .resolution
                         .outcome(reference_id)
                         .ok_or(ResolutionError::InvalidStorage)?;
+                    // Reported once, at the alias whose binding failed.
+                    if self.resolution.alias_failures.contains(&reference_id) {
+                        continue;
+                    }
                     let Some((severity, code)) = reference_diagnostic(reference.kind, status)
                     else {
                         continue;
