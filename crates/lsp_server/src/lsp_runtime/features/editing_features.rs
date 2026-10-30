@@ -11,54 +11,15 @@ use crate::session::snapshot::ServerStateSnapshot;
 use crate::session::ServerState;
 use language_service::WorkspaceSnapshot;
 use sysml_query::resolved_slice::DiagnosticCode;
-use sysml_query::syntax::SyntaxOutlineKind;
 
+/// Declaration templates are documentation, not callable signatures. Keep unsupported
+/// signature help quiet until the semantic service owns callable/argument context.
 pub(crate) fn signature_help(
-    state: &ServerState,
-    uri: Url,
-    pos: Position,
+    _state: &ServerState,
+    _uri: Url,
+    _pos: Position,
 ) -> Result<Option<SignatureHelp>> {
-    let uri_norm = util::normalize_file_uri(&uri);
-    let entry = match state.index.get(&uri_norm) {
-        Some(entry) => entry,
-        None => return Ok(None),
-    };
-    let line = entry.content().lines().nth(pos.line as usize).unwrap_or("");
-    let cursor_prefix = line
-        .chars()
-        .take(pos.character as usize)
-        .collect::<String>();
-    let active_param = cursor_prefix.matches(',').count() as u32;
-    // Which declaration shape to prompt for is a question about the declaration the cursor is
-    // in, and the syntax service answers it. Testing the line's text for `part def` used to
-    // prompt from a keyword in a comment, and from the *enclosing* declaration's keyword when
-    // the cursor sat on a nested member.
-    let label = match entry
-        .syntax()?
-        .declaration_at(pos.line)
-        .map(|declaration| declaration.kind)
-    {
-        Some(SyntaxOutlineKind::PartDef) => "part def <Name> : <Type>",
-        Some(SyntaxOutlineKind::PortDef | SyntaxOutlineKind::PortUsage) => {
-            "port <name> : <PortType>"
-        }
-        Some(SyntaxOutlineKind::AttributeDef | SyntaxOutlineKind::AttributeUsage) => {
-            "attribute <name> : <AttributeType>"
-        }
-        _ => "name : Type",
-    };
-    Ok(Some(SignatureHelp {
-        signatures: vec![SignatureInformation {
-            label: label.to_string(),
-            documentation: Some(Documentation::String(
-                "Basic SysML declaration shape".to_string(),
-            )),
-            parameters: None,
-            active_parameter: Some(active_param),
-        }],
-        active_signature: Some(0),
-        active_parameter: Some(active_param),
-    }))
+    Ok(None)
 }
 
 pub(crate) fn prepare_rename(
@@ -95,6 +56,7 @@ pub(crate) fn rename(
     pos: Position,
     new_name: String,
     perf_logging_enabled: bool,
+    versioned_document_changes: bool,
 ) -> Result<Option<WorkspaceEdit>> {
     let uri_norm = util::normalize_file_uri(&uri);
     if util::uri_under_any_library(&uri_norm, &state.library_paths) {
@@ -129,22 +91,50 @@ pub(crate) fn rename(
     let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> =
         std::collections::HashMap::new();
     for edit in edits {
-        let Some(edit_uri) = snapshot.resolve_uri_for_path(&edit.path) else {
-            continue;
-        };
+        let edit_uri = snapshot.resolve_uri_for_path(&edit.path).ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params("A required rename target is unavailable")
+        })?;
+        if !state.index.contains_key(&edit_uri) {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "A required rename target is unavailable; no edits were returned",
+            ));
+        }
         if util::uri_under_any_library(&edit_uri, &state.library_paths) {
-            continue;
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "Rename requires changes to a configured read-only library; no edits were returned",
+            ));
         }
         changes.entry(edit_uri).or_default().push(TextEdit {
             range: to_lsp_range(edit.range),
             new_text: edit.replacement,
         });
     }
-    Ok(Some(WorkspaceEdit {
-        changes: Some(changes),
-        document_changes: None,
-        change_annotations: None,
-    }))
+    if versioned_document_changes {
+        let mut documents = changes.into_iter().collect::<Vec<_>>();
+        documents.sort_by(|(left, _), (right, _)| left.as_str().cmp(right.as_str()));
+        let edits = documents
+            .into_iter()
+            .map(|(uri, edits)| {
+                let version = state
+                    .index
+                    .get(&uri)
+                    .and_then(|entry| entry.editor_version());
+                TextDocumentEdit {
+                    text_document: OptionalVersionedTextDocumentIdentifier { uri, version },
+                    edits: edits.into_iter().map(OneOf::Left).collect(),
+                }
+            })
+            .collect();
+        Ok(Some(WorkspaceEdit {
+            document_changes: Some(DocumentChanges::Edits(edits)),
+            ..WorkspaceEdit::default()
+        }))
+    } else {
+        Ok(Some(WorkspaceEdit {
+            changes: Some(changes),
+            ..WorkspaceEdit::default()
+        }))
+    }
 }
 
 pub(crate) fn document_symbol(

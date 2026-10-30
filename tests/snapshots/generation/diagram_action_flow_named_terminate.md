@@ -697,7 +697,7 @@ package Control {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:37f60b3cf7ffbb639880bcd679ebed8639bd0d06a1b3878208f848c4e0392504",
+  "modelDigest": "blake3:65b0b36085b2ddc5905eba655316eb2e0ab98d607e17956e5114c2555e6423ae",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

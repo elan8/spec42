@@ -32,6 +32,7 @@ mod metadata_query;
 mod model;
 mod namespace_query;
 mod pipeline;
+mod positions;
 mod projection;
 pub mod publication;
 mod qualified_reference;

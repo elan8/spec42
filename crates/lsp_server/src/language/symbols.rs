@@ -55,6 +55,11 @@ fn outline_kind_to_lsp(kind: SyntaxOutlineKind) -> SymbolKind {
         SyntaxOutlineKind::Package
         | SyntaxOutlineKind::Namespace
         | SyntaxOutlineKind::LibraryPackage => SymbolKind::MODULE,
+        SyntaxOutlineKind::EnumDef => SymbolKind::ENUM,
+        SyntaxOutlineKind::StateDef | SyntaxOutlineKind::ConstraintDef => SymbolKind::CLASS,
+        SyntaxOutlineKind::StateUsage | SyntaxOutlineKind::ConstraintUsage => SymbolKind::OBJECT,
+        SyntaxOutlineKind::CalcDef => SymbolKind::FUNCTION,
+        SyntaxOutlineKind::CalcUsage => SymbolKind::EVENT,
         SyntaxOutlineKind::PartDef
         | SyntaxOutlineKind::ItemDef
         | SyntaxOutlineKind::RequirementDef

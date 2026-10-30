@@ -326,7 +326,7 @@ package Shop {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:72fb8df3a84703a33c61ec43a3b066f7ac42fd9df1fe8a4313cc5cfcec96933c",
+  "modelDigest": "blake3:3ad84ad2c1593bfbd2d51973e2f9859bac743a2a4e76c33d1bbe0219a1a09352",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

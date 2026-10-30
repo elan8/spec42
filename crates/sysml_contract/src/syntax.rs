@@ -41,6 +41,13 @@ pub enum SyntaxOutlineKind {
     ViewUsage,
     ViewpointUsage,
     RenderingUsage,
+    EnumDef,
+    StateDef,
+    StateUsage,
+    CalcDef,
+    CalcUsage,
+    ConstraintDef,
+    ConstraintUsage,
     Ref,
 }
 
@@ -76,6 +83,13 @@ impl SyntaxOutlineKind {
             Self::ViewUsage => "view",
             Self::ViewpointUsage => "viewpoint",
             Self::RenderingUsage => "rendering",
+            Self::EnumDef => "enum def",
+            Self::StateDef => "state def",
+            Self::StateUsage => "state",
+            Self::CalcDef => "calc def",
+            Self::CalcUsage => "calc",
+            Self::ConstraintDef => "constraint def",
+            Self::ConstraintUsage => "constraint",
             Self::Ref => "ref",
         }
     }
@@ -85,6 +99,10 @@ impl SyntaxOutlineKind {
         matches!(
             self,
             Self::PartDef
+                | Self::EnumDef
+                | Self::StateDef
+                | Self::CalcDef
+                | Self::ConstraintDef
                 | Self::PortDef
                 | Self::ItemDef
                 | Self::InterfaceDef

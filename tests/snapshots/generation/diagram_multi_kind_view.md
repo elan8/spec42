@@ -259,7 +259,7 @@ package Garage {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:985d2224cc31fbbe7e61b32d854e20463c3a5ad88aa9ba0a511e1c19b4b2c9df",
+  "modelDigest": "blake3:d13ff284d21eb4963e9c15e88e8f9fdd6699a953510b80bb00c6fe5b5fb39036",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
