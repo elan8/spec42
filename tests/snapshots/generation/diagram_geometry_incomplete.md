@@ -120,7 +120,7 @@ package GeometryExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:53c7059d4b125893092ccd432bef2317414c32d29e9b05929440fd51a0c3507f",
   "documents": [
     {
@@ -197,6 +197,7 @@ package GeometryExample {
         "name": "Shape",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:12c3949ef9602f9a9e4dc89a60c04d0f07f8d79ae8005c3c92282986ee00c18c",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,

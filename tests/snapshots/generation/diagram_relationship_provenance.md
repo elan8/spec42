@@ -265,7 +265,7 @@ package ProvenanceExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:e3fb4b3770fec08b3d7ce770021cfdb439aa43c48ff47c4f45758100d927c21a",
   "documents": [
     {
@@ -395,6 +395,7 @@ package ProvenanceExample {
         "name": "Child",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:e194145dcebc4d31c6e13a2e6b2d52d4a9d19a1177fdebde2bf4c1ceb189fcaf",
         "reference": 1,
         "source": 0,
         "stateSubaction": null,
@@ -413,6 +414,7 @@ package ProvenanceExample {
         "name": "mass",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:802ba17126dbb1af3bb3d798c434b11858b38719a5fb1496fae415510f31fba1",
         "reference": 2,
         "source": 2,
         "stateSubaction": null,

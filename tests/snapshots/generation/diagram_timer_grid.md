@@ -6858,7 +6858,7 @@ package TimerGrid {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:86b69578674fc9bf4069bfb49976af0bc30c2f299c363f9076b5b5ca510bd7d5",
   "documents": [
     {
@@ -6965,6 +6965,7 @@ package TimerGrid {
         "name": "timerInstance",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:009f747ae0a57a0f1843b03b5ddffe1eee7d1549e786c375b1bc92a19280a651",
         "reference": 1,
         "source": 1,
         "stateSubaction": null,

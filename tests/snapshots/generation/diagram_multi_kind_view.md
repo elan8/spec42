@@ -258,7 +258,7 @@ package Garage {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:985d2224cc31fbbe7e61b32d854e20463c3a5ad88aa9ba0a511e1c19b4b2c9df",
   "documents": [
     {
@@ -403,6 +403,7 @@ package Garage {
         "name": "Car",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:79716342c93d74330415ecac2b765cd414e69a8986705f17b95dbee1ed90573c",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -421,6 +422,7 @@ package Garage {
         "name": "wheel",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:3bf613e12862846e19b2d3ee8ba669ecaf4cb3fb0d2b692318a202f6014dea3a",
         "reference": 2,
         "source": 2,
         "stateSubaction": null,
@@ -439,6 +441,7 @@ package Garage {
         "name": "engine",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:a01568c852b2cd8ef73ee176f6c8d24e5c06dbfe6596aab68b622198ab4d830d",
         "reference": 1,
         "source": 1,
         "stateSubaction": null,

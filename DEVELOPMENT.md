@@ -404,6 +404,18 @@ timestamp; it is not synchronized with a semantic phase. Unsupported platforms o
 stay explicit as unavailable. Compare CPU deltas with `resources_before_edits`, rather than treating
 the cumulative counters as per-edit CPU time.
 
+Windows can change a background process's execution QoS during a run. If both retained baseline
+and candidate binaries slow down under system-managed scheduling, keep those reports and isolate
+the effect before attributing it to a code change. `--windows-high-qos` is an explicit measurement
+control: it disables execution-speed throttling for the disposable measured child, preserves other
+power-policy flags, and records the requested policy's readback. An API failure fails the run;
+there is no silent fallback. It changes neither global Windows settings nor normal editor policy.
+Compare both binaries under the same explicit policy and retain the system-managed controls.
+These controlled diagnostic timings do not establish background-editor performance. Confirm
+normal-policy editor behavior separately with the focused native view benchmark below. See
+[Windows QoS](https://learn.microsoft.com/en-us/windows/win32/procthread/quality-of-service) and
+[the process power-throttling contract](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/ns-processthreadsapi-process_power_throttling_state).
+
 Failed or timed-out runs retain a failed report and stderr; timings from debug runs are
 smoke-test evidence only.
 

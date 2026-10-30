@@ -2,6 +2,7 @@ import importlib.util
 import json
 import os
 import queue
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -92,6 +93,22 @@ class EditorBenchmarkTests(unittest.TestCase):
             self.assertGreaterEqual(after["cpu_kernel_s"], before["cpu_kernel_s"])
         finally:
             resources.close()
+
+    @unittest.skipUnless(os.name == "nt" and sys.getwindowsversion().build >= 22621,
+                         "Windows 11 22H2 process power-throttling readback API contract")
+    def test_explicit_high_qos_is_read_back_from_a_disposable_child(self):
+        child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"])
+        try:
+            policy = benchmark.windows_high_qos(child.pid)
+            self.assertEqual(policy["mode"], "explicit-high-qos")
+            self.assertEqual(policy["after"]["control_mask"] & 1, 1)
+            self.assertEqual(policy["after"]["state_mask"] & 1, 0)
+            # Other explicitly configured mechanisms must survive the measurement control.
+            self.assertEqual(policy["before"]["control_mask"] & ~1, policy["after"]["control_mask"] & ~1)
+            self.assertEqual(policy["before"]["state_mask"] & ~1, policy["after"]["state_mask"] & ~1)
+        finally:
+            child.kill()
+            child.wait(timeout=10)
 
 
 if __name__ == "__main__":

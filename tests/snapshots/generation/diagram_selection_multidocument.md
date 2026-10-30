@@ -253,7 +253,7 @@ package BehaviorModel {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:b2d07def3b22640bd81a0d96520462dff9f4c46abc29011fff4fdba0ddd01a4e",
   "documents": [
     {
@@ -363,6 +363,7 @@ package BehaviorModel {
         "name": "SelectedRoot",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:4f9d6dc8c8e0ddc4c4e010049ac77abadf3c649ac844cb391350c838970d73e3",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -381,6 +382,7 @@ package BehaviorModel {
         "name": "included",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:88c3643c216d3354a643f7341ad66a8c7e489e8bba0408cac6fbe93a03c1350f",
         "reference": 1,
         "source": 1,
         "stateSubaction": null,

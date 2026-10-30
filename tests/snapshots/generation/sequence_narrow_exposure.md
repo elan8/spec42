@@ -436,7 +436,7 @@ package Repro {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:0fb089b95007c86cea104ec36fbbd9016c140a3f9d3e49d7fc621b3b680fec13",
   "documents": [
     {
@@ -754,6 +754,7 @@ package Repro {
         "name": "nested",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:c8f55b8076e8070728e3db568f699e7a2c6d2c6a56fc17ba8c05249a1fb477aa",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -772,6 +773,7 @@ package Repro {
         "name": "Inside",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:1eef5b58de06bbcfdf330bd2908ea54fbe940065e852d8b9073b047661bf462c",
         "reference": 3,
         "source": 3,
         "stateSubaction": null,
@@ -790,6 +792,7 @@ package Repro {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
+        "presentationKey": "p:e7df5de68b67711cd8f0842e2f4cb8b9b61564613e392f060b60ad1165c0c84b",
         "reference": 6,
         "source": 4,
         "stateSubaction": null,
@@ -808,6 +811,7 @@ package Repro {
         "name": null,
         "notationRole": "unsupported",
         "owner": 2,
+        "presentationKey": "p:2aefe7d38c1761bc38dec40e997af3c904760439f3f19395286baa0d5032b575",
         "reference": 8,
         "source": 4,
         "stateSubaction": null,
@@ -826,6 +830,7 @@ package Repro {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
+        "presentationKey": "p:8cb4474604027679ac3b41b609771fe185b897d744960da5fb91311b86e8ccca",
         "reference": 7,
         "source": 5,
         "stateSubaction": null,
@@ -844,6 +849,7 @@ package Repro {
         "name": null,
         "notationRole": "unsupported",
         "owner": 4,
+        "presentationKey": "p:7eb31500c0263dc2cd77fc6171f7853063b2355fd784bb9439228b0f80095cc1",
         "reference": 9,
         "source": 5,
         "stateSubaction": null,
@@ -862,6 +868,7 @@ package Repro {
         "name": "C",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:37a2d21971b937958801d1f2ba5dba52282213675cb374850d52417d154cdeb2",
         "reference": 1,
         "source": 1,
         "stateSubaction": null,
@@ -880,6 +887,7 @@ package Repro {
         "name": "D",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:eff312e25dbfdaf06be16cf63f629229361ded5b520031c9ebc6b287add211fe",
         "reference": 2,
         "source": 2,
         "stateSubaction": null,

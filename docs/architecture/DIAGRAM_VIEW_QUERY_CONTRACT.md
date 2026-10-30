@@ -15,8 +15,19 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
 never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 10
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 11
 is the sole renderer product for this contract.
+
+Each projected element carries an opaque `presentationKey`, a domain-separated SHA-256 encoding
+of its canonical contextual occurrence key. The generator boundary owns this encoding; semantic
+handles/tokens remain private. Equal keys identify the same structural occurrence for presentation
+transfer, including the exposed-root path for inherited declarations. They are not model lookup
+handles or evidence of unchanged semantic facts. Renames, reparenting and structural-identity changes
+may reset state. Anonymous declarations follow the authority's positional structural identity.
+Keys must be nonempty and unique within a product. Editors remap disclosure by exact key equality
+only within the same selected view, dropping missing/ambiguous matches. They retain the last mounted
+state through cancelled or failed renders, while all draw requests retain the new publication's
+identity. Viewport transforms are presentation state and may survive the same view's refresh.
 
 Projected element `name` is the publication's canonical effective name (SysML 7.6.5), so an
 unnamed redefinition displays the name it inherits from its first redefined feature. This does
@@ -97,7 +108,7 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-10 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
+The schema-11 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
 discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.
 

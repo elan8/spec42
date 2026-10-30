@@ -539,7 +539,7 @@ package RedefinedParts {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:57bd2ab3f5b19021e80e1351b58639ea184e3524e13d8ed4b6e435626ca6bb3d",
   "documents": [
     {
@@ -987,6 +987,7 @@ package RedefinedParts {
         "name": "System",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:d6af660c42315388c284537381e059df2d3c82e391332266a1b478dc16ac960d",
         "reference": 7,
         "source": 6,
         "stateSubaction": null,
@@ -1005,6 +1006,7 @@ package RedefinedParts {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:af3c50874e85a36651870588c9e5d1fac96c3c0e0242678edc6b53a695ed6867",
         "reference": 16,
         "source": 13,
         "stateSubaction": null,
@@ -1037,6 +1039,7 @@ package RedefinedParts {
         "name": "specialized",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:a2674c914eec18ec504d6e8c38ad4831099e1748b23c6fed07277356d15ff42f",
         "reference": 11,
         "source": 7,
         "stateSubaction": null,
@@ -1061,6 +1064,7 @@ package RedefinedParts {
         "name": "component",
         "notationRole": "usage",
         "owner": 2,
+        "presentationKey": "p:ea08a3b867dc813b7db4b63b03e3b0dece4422c750e413a21c88895e6e16048a",
         "reference": 14,
         "source": 0,
         "stateSubaction": null,
@@ -1087,6 +1091,7 @@ package RedefinedParts {
         "name": "further",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:aea3725b2dcd117ca93f1202021df97e2275a7d5fb5d221f01387e363520edf8",
         "reference": 9,
         "source": 9,
         "stateSubaction": null,
@@ -1111,6 +1116,7 @@ package RedefinedParts {
         "name": "component",
         "notationRole": "usage",
         "owner": 4,
+        "presentationKey": "p:c4f3eb7c83f418de83be58d15cb0fd465b16a53bc9f61828f30cec876f7e8902",
         "reference": 15,
         "source": 2,
         "stateSubaction": null,
@@ -1137,6 +1143,7 @@ package RedefinedParts {
         "name": "renamed",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:2a8780b58b6dab8e595ec48a5a7b1f46e081101e6aeaa8bc4d36da95a53e6636",
         "reference": 10,
         "source": 11,
         "stateSubaction": null,
@@ -1161,6 +1168,7 @@ package RedefinedParts {
         "name": "replacement",
         "notationRole": "usage",
         "owner": 6,
+        "presentationKey": "p:8a087a32c7ce9f6c8ce9f42f28684f9f2d62ee002cdd5243fabb207ed553af39",
         "reference": 6,
         "source": 4,
         "stateSubaction": null,

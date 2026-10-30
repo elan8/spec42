@@ -11,12 +11,8 @@ export interface DisclosureActions {
   toggleSection: (nodeId: string, sectionKey: string, currentlyExpanded: boolean) => void;
 }
 
-/** Serializable disclosure state for transferring the current view to another renderer.
- * For Browser View, `expandedNodeIds` is the set of collapsed row ids (empty = all expanded). */
-export interface DisclosureState {
-  expandedNodeIds: string[];
-  sectionStates: Array<{ nodeId: string; sectionKey: string; expanded: boolean }>;
-}
+import type { DisclosureState } from "../../../src/diagram/diagramProductState";
+export type { DisclosureState } from "../../../src/diagram/diagramProductState";
 
 /** Identifies which diagram product and which of its views a draw request is for. The server
  * has no independent notion of this; it only echoes the value back, so the caller can tell a

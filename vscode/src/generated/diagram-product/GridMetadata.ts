@@ -2,11 +2,11 @@
 import type { GridCell } from "./GridCell";
 import type { GridLayout } from "./GridLayout";
 
-export type GridMetadata = { layout: GridLayout, 
+export type GridMetadata = { layout: GridLayout,
 /**
  * Node indexes, in exposure order.
  */
-rows: Array<number>, 
+rows: Array<number>,
 /**
  * Node indexes, in exposure order; empty for an element table.
  */

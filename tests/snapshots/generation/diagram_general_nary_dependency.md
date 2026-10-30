@@ -262,7 +262,7 @@ package Trace {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:186d617ea6fb89209807665a7f85c4dfcec3207d8b7d51a53179d536f73f2066",
   "documents": [
     {
@@ -483,6 +483,7 @@ package Trace {
         "name": null,
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:7a5a6a9db687575366041f602c8389fe481a7c800540f7c85a53241831c4d958",
         "reference": 6,
         "source": 3,
         "stateSubaction": null,
@@ -501,6 +502,7 @@ package Trace {
         "name": "b",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:80b6d3728bf9c8317ef4ebbd90340b928ece020c577f60a95fa0d882e962c90d",
         "reference": 2,
         "source": 0,
         "stateSubaction": null,
@@ -519,6 +521,7 @@ package Trace {
         "name": "c",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:fabd4890c344de64415c32c9f14e4269917b927ee59248e62a1e23b88b64e44a",
         "reference": 3,
         "source": 1,
         "stateSubaction": null,
@@ -537,6 +540,7 @@ package Trace {
         "name": "d",
         "notationRole": "usage",
         "owner": null,
+        "presentationKey": "p:4cb71c2b5fc21b8560cc1a66d0e6ccfaed5a280347c10f31eaf85842b855346d",
         "reference": 4,
         "source": 2,
         "stateSubaction": null,

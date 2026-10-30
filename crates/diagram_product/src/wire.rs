@@ -1,4 +1,4 @@
-//! The schema-10 JSON wire contract. The Rust writer validates against these types before
+//! The schema-11 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -174,6 +174,9 @@ projection! {
 #[derive(Deserialize, TS)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct DiagramNode {
+    /// Opaque canonical contextual identity for transferring presentation state. It is not
+    /// a semantic lookup handle or a product-local node index.
+    pub presentation_key: String,
     pub reference: usize,
     pub metaclass: String,
     pub notation_role: NotationRole,

@@ -234,7 +234,7 @@ package ConnectorIncomplete {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "modelDigest": "blake3:b324dd7f493faea8ec7b4c624acf29a242a76a86bcecbda3c43ddddd6bce924a",
   "documents": [
     {
@@ -429,6 +429,7 @@ package ConnectorIncomplete {
         "name": "Assembly",
         "notationRole": "definition",
         "owner": null,
+        "presentationKey": "p:d665bc3004e66c4a18fdea0ea7a080507927de81ff6c121094238c62cb064bd0",
         "reference": 0,
         "source": 0,
         "stateSubaction": null,
@@ -447,6 +448,7 @@ package ConnectorIncomplete {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:57f2e0843d57d0d3c4e70ef80e34174bd9465af9ad716138f2220f75987a1222",
         "reference": 4,
         "source": 2,
         "stateSubaction": null,
@@ -465,6 +467,7 @@ package ConnectorIncomplete {
         "name": "input",
         "notationRole": "usage",
         "owner": 0,
+        "presentationKey": "p:a134db7594df63875b0bdbf64083f415c844773ecc34ab089bf25952e210e751",
         "reference": 2,
         "source": 1,
         "stateSubaction": null,
