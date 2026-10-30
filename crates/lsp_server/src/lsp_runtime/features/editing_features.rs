@@ -4,17 +4,13 @@ use tower_lsp::lsp_types::*;
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
-    collect_document_symbols, collect_folding_ranges, format_document,
-    suggest_add_import_quick_fixes, suggest_create_definition_for_unresolved_type_quick_fix,
-    suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
-    suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
-    suggest_manage_custom_libraries_quick_fix, suggest_open_library_view_quick_fix,
-    suggest_qualify_ambiguous_name_quick_fixes, suggest_search_library_for_symbol_quick_fix,
-    suggest_show_standard_library_info_quick_fix, suggest_wrap_in_package,
+    collect_document_symbols, collect_folding_ranges, configure_library_paths_action,
+    format_document, quick_fix_action,
 };
 use crate::session::snapshot::ServerStateSnapshot;
 use crate::session::ServerState;
 use language_service::WorkspaceSnapshot;
+use sysml_query::resolved_slice::DiagnosticCode;
 use sysml_query::syntax::SyntaxOutlineKind;
 
 pub(crate) fn signature_help(
@@ -207,104 +203,49 @@ pub(crate) fn workspace_symbol(
 pub(crate) fn code_action(
     state: &ServerState,
     uri: Url,
-    range: Range,
     diagnostics: &[Diagnostic],
+    perf_logging_enabled: bool,
 ) -> Result<Option<CodeActionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let entry = match state.index.get(&uri_norm) {
-        Some(entry) => entry,
-        None => return Ok(None),
-    };
-    let text = entry.content();
-    let parsed = entry.syntax()?;
-    let model = state.published_model();
+    if util::uri_under_any_library(&uri_norm, &state.library_paths) {
+        return Ok(None);
+    }
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
+    let path = snapshot.path_for_uri(&uri_norm);
+    let version = state
+        .index
+        .get(&uri_norm)
+        .and_then(|entry| entry.editor_version());
     let mut actions = Vec::new();
-    if let Some(action) = suggest_wrap_in_package(text, parsed, &uri) {
-        actions.push(CodeActionOrCommand::CodeAction(action));
-    }
-    if let Some(action) =
-        suggest_create_verification_case(text, parsed, model, &uri, range.start.line)
-    {
-        actions.push(CodeActionOrCommand::CodeAction(action));
-    }
-    if let Some(action) = suggest_create_usage_from_definition(text, parsed, &uri, range.start.line)
-    {
-        actions.push(CodeActionOrCommand::CodeAction(action));
-    }
     for diagnostic in diagnostics {
-        let is_untyped_part_usage = matches!(
-            diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "untyped_part_usage"
-        );
-        if is_untyped_part_usage {
-            if let Some(action) =
-                suggest_create_matching_part_def_quick_fix(text, parsed, model, &uri, diagnostic)
-            {
-                actions.push(CodeActionOrCommand::CodeAction(action));
+        let Some(NumberOrString::String(code)) = diagnostic.code.as_ref() else {
+            continue;
+        };
+        let position = to_core_position(diagnostic.range.start);
+        let fixes = if [
+            DiagnosticCode::UnresolvedTypeReference,
+            DiagnosticCode::UnresolvedSpecializesReference,
+            DiagnosticCode::AmbiguousReference,
+        ]
+        .iter()
+        .any(|reference| reference.as_str() == code)
+        {
+            language_service::reference_quick_fixes(&snapshot, &path, position)
+        } else if code == DiagnosticCode::ImplicitRedefinitionWithoutOperator.as_str() {
+            language_service::explicit_redefinition_quick_fix(&snapshot, &path, position)
+                .into_iter()
+                .collect()
+        } else {
+            if code == DiagnosticCode::MissingLibraryContext.as_str() {
+                actions.push(CodeActionOrCommand::CodeAction(
+                    configure_library_paths_action(diagnostic),
+                ));
             }
-        }
-        let is_implicit_redefinition_without_operator = matches!(
-            diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "implicit_redefinition_without_operator"
-        );
-        if is_implicit_redefinition_without_operator {
-            if let Some(action) = suggest_explicit_redefinition_quick_fix(text, &uri, diagnostic) {
-                actions.push(CodeActionOrCommand::CodeAction(action));
-            }
-        }
-        let is_ambiguous_name_reference = matches!(
-            diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "ambiguous_reference"
-        );
-        if is_ambiguous_name_reference {
-            {
-                let model = state.published_model();
-                for action in
-                    suggest_qualify_ambiguous_name_quick_fixes(text, &uri, diagnostic, model)
-                {
-                    actions.push(CodeActionOrCommand::CodeAction(action));
-                }
-            }
-        }
-        let is_unresolved_type_reference = matches!(
-            diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
-        );
-        if is_unresolved_type_reference {
-            let import_actions = suggest_add_import_quick_fixes(text, &uri, diagnostic, model);
-            let has_imports = !import_actions.is_empty();
-            for action in import_actions {
-                actions.push(CodeActionOrCommand::CodeAction(action));
-            }
-            if let Some(mut action) = suggest_create_definition_for_unresolved_type_quick_fix(
-                text, parsed, model, &uri, diagnostic,
-            ) {
-                if has_imports {
-                    action.is_preferred = Some(false);
-                }
-                actions.push(CodeActionOrCommand::CodeAction(action));
-            }
-        }
-        let is_missing_library_context = matches!(
-            diagnostic.code.as_ref(),
-            Some(NumberOrString::String(code)) if code == "missing_library_context"
-        );
-        if is_missing_library_context {
-            actions.push(CodeActionOrCommand::CodeAction(
-                suggest_manage_custom_libraries_quick_fix(diagnostic),
-            ));
-            actions.push(CodeActionOrCommand::CodeAction(
-                suggest_show_standard_library_info_quick_fix(diagnostic),
-            ));
-            actions.push(CodeActionOrCommand::CodeAction(
-                suggest_open_library_view_quick_fix(diagnostic),
-            ));
-        }
-        if is_missing_library_context || is_unresolved_type_reference {
-            if let Some(action) = suggest_search_library_for_symbol_quick_fix(diagnostic) {
-                actions.push(CodeActionOrCommand::CodeAction(action));
-            }
-        }
+            continue;
+        };
+        actions.extend(fixes.into_iter().map(|fix| {
+            CodeActionOrCommand::CodeAction(quick_fix_action(fix, &uri, version, diagnostic))
+        }));
     }
     Ok(Some(actions))
 }

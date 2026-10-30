@@ -8230,6 +8230,7 @@ fn parse_editor_probes(
         let mut rename_to = None;
         let probe_index = probes.len();
         let mut features = false;
+        let mut repairs = false;
         for option in fields {
             if let Some(value) = option.strip_prefix("qualifier=") {
                 qualifier = Some(value.to_string());
@@ -8242,6 +8243,13 @@ fn parse_editor_probes(
                     ));
                 }
                 features = true;
+            } else if option == "repairs" {
+                if repairs {
+                    return Err(format!(
+                        "{fallback_name}: duplicate editor probe option {option:?}"
+                    ));
+                }
+                repairs = true;
             } else if option == "hover" {
                 if !hover.insert(probe_index) {
                     return Err(format!(
@@ -8260,6 +8268,7 @@ fn parse_editor_probes(
             qualifier,
             rename_to,
             features,
+            repairs,
         });
     }
     Ok(EditorProbes {

@@ -66,8 +66,6 @@ syntax or metadata display names.
   groups into one deterministic answer, and `crates/server` materialises it to JSON at the
   boundary. Hosts read that contract; they do not reconstruct structure from display names or
   serialized output.
-- Import and ambiguous-name quick fixes are disabled until typed queries provide candidates,
-  provenance, and authored replacement/insertion ranges.
 
 These are unsupported states, not compatibility gaps hidden by a fallback. New semantic capability
 belongs first in `sysml_resolution`, then in a typed `sysml_query` contract, and only then in a host.

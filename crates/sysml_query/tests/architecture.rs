@@ -1409,43 +1409,7 @@ const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
     // service. These are the D10 entries Proposal C names; the list only ever shrinks.
     (
         "crates/lsp_server/src/common/util.rs",
-        "untyped_part_usage_diagnostics",
-    ),
-    (
-        "crates/lsp_server/src/common/util.rs",
         "import_statement_ranges",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_wrap_in_package",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_create_definition_for_unresolved_type_quick_fix",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_create_matching_part_def_quick_fix",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_explicit_redefinition_quick_fix",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_create_verification_case",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_create_usage_from_definition",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_qualify_ambiguous_name_quick_fixes",
-    ),
-    (
-        "crates/lsp_server/src/language/mod.rs",
-        "suggest_add_import_quick_fixes",
     ),
     (
         "crates/lsp_server/src/language/symbols.rs",

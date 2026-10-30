@@ -1690,7 +1690,7 @@ fn build_member_inheritance_closures<R: ResolutionReferenceFact>(
     )
 }
 
-fn reference_target_domain(kind: ReferenceKind) -> DeclarationDomain {
+pub(crate) fn reference_target_domain(kind: ReferenceKind) -> DeclarationDomain {
     if kind == ReferenceKind::Conjugation {
         // `originalType` is any KerML Type, including a Feature (`feature g ~ B::f`).
         // `DeclarationDomain::Type` admits definition-like types only.

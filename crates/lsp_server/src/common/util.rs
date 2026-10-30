@@ -3,10 +3,9 @@
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
-use tower_lsp::lsp_types::{Position, Range, Url};
+use tower_lsp::lsp_types::{Range, Url};
 
 use crate::language::{position_to_byte_offset, SymbolEntry};
-use language_service::utf16_len;
 
 /// Applies an incremental content change (range + new text) to the document.
 /// Uses LSP UTF-16 positions and only slices on validated UTF-8 byte boundaries.
@@ -51,31 +50,6 @@ pub fn parse_failure_diagnostics(
 #[cfg(test)]
 pub fn parse_for_editor(text: &str) -> sysml_query::syntax::ParsedSource {
     sysml_query::syntax::SyntaxService::new().parse_text(text)
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct UntypedPartUsage {
-    pub name: String,
-    pub range: Range,
-}
-
-pub fn untyped_part_usage_diagnostics(content: &str) -> Vec<UntypedPartUsage> {
-    let mut out = Vec::new();
-    for (line_idx, raw_line) in content.lines().enumerate() {
-        let Some(name) = language_service::parse_untyped_part_usage_name(raw_line) else {
-            continue;
-        };
-        let start_char = utf16_len(raw_line) - utf16_len(raw_line.trim_start());
-        let end_char = utf16_len(raw_line);
-        out.push(UntypedPartUsage {
-            name,
-            range: Range {
-                start: Position::new(line_idx as u32, start_char),
-                end: Position::new(line_idx as u32, end_char),
-            },
-        });
-    }
-    out
 }
 
 /// Returns true if `uri` is under any of the library path roots (path prefix check).
@@ -241,7 +215,7 @@ pub(crate) fn library_full_scan_enabled() -> bool {
 mod tests {
     use super::{
         apply_incremental_change, parse_diagnose_library_paths_from_value,
-        parse_semantic_tokens_debug_from_value, untyped_part_usage_diagnostics,
+        parse_semantic_tokens_debug_from_value,
     };
     use tower_lsp::lsp_types::{Position, Range};
 
@@ -297,22 +271,6 @@ mod tests {
         let range = Range::new(Position::new(1, 17), Position::new(1, 18));
         let updated = apply_incremental_change(text, &range, "").expect("edit applies");
         assert_eq!(updated, "package Demo {\n  part def Engine\n}\n");
-    }
-
-    #[test]
-    fn untyped_part_usage_diagnostics_detects_part_usage_without_type() {
-        let text = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
-        let diagnostics = untyped_part_usage_diagnostics(text);
-        assert_eq!(diagnostics.len(), 1);
-        assert_eq!(diagnostics[0].name, "display");
-        assert_eq!(diagnostics[0].range.start.line, 2);
-    }
-
-    #[test]
-    fn untyped_part_usage_diagnostics_ignores_typed_usage() {
-        let text = "package P {\n  part def Laptop {\n    part display : Display;\n  }\n}\n";
-        let diagnostics = untyped_part_usage_diagnostics(text);
-        assert!(diagnostics.is_empty());
     }
 
     #[test]
