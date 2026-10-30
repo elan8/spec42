@@ -373,10 +373,10 @@ impl<D> SemanticModel<D> {
 
     /// Reports constraint bodies and view filters that evaluate to something other than a Boolean.
     ///
-    /// Both rules read the settled evaluation rather than the authored text. Only a state that
-    /// carries a value can be judged: an expression that is not constant, could not be folded, or
-    /// is outside the evaluated slice has no Boolean-ness to report, and calling it non-Boolean
-    /// would turn every limit of this evaluator into a fault in the model.
+    /// Both rules read settled facts rather than the authored text. A constraint body is judged by
+    /// its folded value, or when it does not fold by its resolved tree's [`BooleanResult`]; a view
+    /// filter only by its folded value. Anything left undecided is not reported, so a limit of the
+    /// evaluator never becomes a fault in the model.
     pub(crate) fn collect_boolean_expressions(
         &self,
         document: DocumentIdx,
@@ -388,13 +388,7 @@ impl<D> SemanticModel<D> {
                 .storage
                 .declaration(id)
                 .ok_or(ResolutionError::InvalidStorage)?;
-            if !states_a_constraint(declaration.kind) {
-                continue;
-            }
-            if !matches!(
-                self.evaluated_value(id),
-                Some(value) if !matches!(value, EvaluatedScalar::Boolean(_))
-            ) {
+            if !states_a_constraint(declaration.kind) || !self.condition_is_non_boolean(id) {
                 continue;
             }
             diagnostics.push(self.declaration_diagnostic(
@@ -896,5 +890,153 @@ impl<D> SemanticModel<D> {
             }
             _ => result,
         })
+    }
+}
+
+/// The result type of a condition expression relative to `ScalarValues::Boolean`, for the rules
+/// that require one: a transition guard (SysML 8.3.18.8
+/// `validateTransitionFeatureMembershipGuardExpression`) and a constraint body (KerML 8.3.4.7.2
+/// `checkBooleanExpressionSpecialization`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum BooleanResult {
+    /// The result specializes `ScalarValues::Boolean`.
+    Boolean,
+    /// The result is typed, and none of its types is comparable with `ScalarValues::Boolean`.
+    NonBoolean,
+    /// No result type is derived: an unsupported shape, an unresolved operand, an untyped or
+    /// behavioral referent, or no admitted `ScalarValues::Boolean`. Never a verdict.
+    Undecided,
+}
+
+impl<D> SemanticModel<D> {
+    /// Whether `declaration`'s condition is non-Boolean: its settled value when it folds to one,
+    /// otherwise the result type of its resolved expression tree.
+    pub(crate) fn condition_is_non_boolean(&self, declaration: DeclarationId) -> bool {
+        match self.evaluated_value(declaration) {
+            Some(value) => !matches!(value, EvaluatedScalar::Boolean(_)),
+            None => self.boolean_result(declaration) == BooleanResult::NonBoolean,
+        }
+    }
+
+    /// The canonical result type of `declaration`'s expression body: a literal is typed by its
+    /// value; a lone feature reference by its referent's types; a comparison or logical operator
+    /// is a Boolean; arithmetic is a non-Boolean when every operand is one, since no
+    /// `ScalarFunctions` arithmetic operator returns a Boolean.
+    pub(crate) fn boolean_result(&self, declaration: DeclarationId) -> BooleanResult {
+        let Some(boolean) = self.expressions.anchors.boolean else {
+            return BooleanResult::Undecided;
+        };
+        let Some(row) = self.resolved_expressions.body(declaration) else {
+            return BooleanResult::Undecided;
+        };
+        match (row.outcome, row.root) {
+            (crate::expression::ExpressionOutcome::Resolved, Some(root)) => {
+                self.node_boolean_result(&row.nodes, root, boolean)
+            }
+            _ => BooleanResult::Undecided,
+        }
+    }
+
+    fn node_boolean_result(
+        &self,
+        nodes: &[crate::index::resolved_expressions::RawExpressionNode],
+        node: u32,
+        boolean: DeclarationId,
+    ) -> BooleanResult {
+        use crate::expression::ExpressionOperator as Op;
+        use crate::index::resolved_expressions::RawExpressionNodeKind;
+        let Some(node) = nodes.get(node as usize) else {
+            return BooleanResult::Undecided;
+        };
+        match &node.kind {
+            RawExpressionNodeKind::Literal(EvaluatedScalar::Boolean(_)) => BooleanResult::Boolean,
+            RawExpressionNodeKind::Literal(_) => BooleanResult::NonBoolean,
+            RawExpressionNodeKind::FeatureReference {
+                target: Some(referent),
+                ..
+            } => self.referent_boolean_result(*referent, boolean),
+            RawExpressionNodeKind::Operator { operator, operands } => match operator {
+                Op::Equal
+                | Op::NotEqual
+                | Op::IdenticalTo
+                | Op::NotIdenticalTo
+                | Op::Less
+                | Op::LessOrEqual
+                | Op::Greater
+                | Op::GreaterOrEqual
+                | Op::And
+                | Op::Or
+                | Op::Xor
+                | Op::Implies
+                | Op::Not => BooleanResult::Boolean,
+                Op::Add
+                | Op::Subtract
+                | Op::Multiply
+                | Op::Divide
+                | Op::Modulo
+                | Op::Power
+                | Op::Negate => {
+                    if operands.iter().all(|operand| {
+                        self.node_boolean_result(nodes, *operand, boolean)
+                            == BooleanResult::NonBoolean
+                    }) {
+                        BooleanResult::NonBoolean
+                    } else {
+                        BooleanResult::Undecided
+                    }
+                }
+            },
+            RawExpressionNodeKind::FeatureReference { target: None, .. }
+            | RawExpressionNodeKind::Unsupported { .. } => BooleanResult::Undecided,
+        }
+    }
+
+    /// The result type of a feature reference, from the types its referent authors. A behavioral
+    /// referent (a constraint, calculation or action usage) evaluates to its performance rather
+    /// than to a value of its types, and a referent typed only by implied library defaults has the
+    /// type of its value, which is not derived here.
+    fn referent_boolean_result(
+        &self,
+        referent: DeclarationId,
+        boolean: DeclarationId,
+    ) -> BooleanResult {
+        let Some(kind) = self.kind_of(referent) else {
+            return BooleanResult::Undecided;
+        };
+        if element_kind(kind).conforms_to(ElementKind::Step) {
+            return BooleanResult::Undecided;
+        }
+        let types = self.types.feature_types(referent);
+        if types.is_empty()
+            || self
+                .authored_references(
+                    referent,
+                    &[
+                        ReferenceKind::FeatureTyping,
+                        ReferenceKind::Subsetting,
+                        ReferenceKind::Redefinition,
+                        ReferenceKind::References,
+                    ],
+                )
+                .is_empty()
+        {
+            return BooleanResult::Undecided;
+        }
+        if types
+            .iter()
+            .any(|declared| conforms(&self.types, *declared, boolean))
+        {
+            return BooleanResult::Boolean;
+        }
+        // Effective typings are simultaneous constraints: one type unrelated to Boolean decides
+        // the result, while a broad type such as `Anything` alone leaves it open.
+        if types
+            .iter()
+            .any(|declared| !comparable(&self.types, *declared, boolean))
+        {
+            BooleanResult::NonBoolean
+        } else {
+            BooleanResult::Undecided
+        }
     }
 }
