@@ -2,8 +2,13 @@
 
 pub(crate) mod ends;
 mod redefinition;
+mod repair;
 mod visible;
 
+pub use repair::{
+    ImplicitRedefinitionRepair, ImportCandidate, QualificationCandidate, ReferenceRepair,
+    ReferenceRepairOutcome, RepairNamespace, RepairSlot,
+};
 pub use visible::VisibleMemberRef;
 pub use visible::VisibleMembers;
 
@@ -366,6 +371,10 @@ impl<D> SemanticModel<D> {
     pub(crate) fn symbol_qualified_name(&self, symbol: SymbolId) -> Option<&str> {
         let id = self.declaration_of(symbol)?;
         self.qualified_names.qualified_name(id)
+    }
+
+    pub(crate) fn symbol_element_qualified_name(&self, symbol: SymbolId) -> Option<String> {
+        self.normative_qualified_name(self.declaration_of(symbol)?, 0)
     }
 
     /// The stable structural encoding of a handle, materialised for a boundary.

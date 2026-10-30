@@ -1889,6 +1889,39 @@ impl<D> SemanticModel<D> {
         if declaration.document != document {
             return Ok(());
         }
+        let Some(value) = self.implicit_value_override(source, target)? else {
+            return Ok(());
+        };
+        let mut diagnostic = self.declaration_message_diagnostic(
+            source,
+            DiagnosticCode::ImplicitRedefinitionWithoutOperator,
+            DiagnosticSeverity::Error,
+            Some(format!(
+                "'{}' overrides inherited member '{}' but is missing the explicit ':>>' \
+                 operator.",
+                self.display_name(source),
+                self.display_name(target)
+            )),
+        )?;
+        diagnostic.related = Box::from([self.related_declaration(target, RELATED_INHERITED)?]);
+        diagnostics.push(diagnostic);
+        self.collect_inherited_enumeration_value(source, target, value, document, diagnostics)
+    }
+
+    /// The value `source` authors that silently overrides `target`, the inherited member its name
+    /// implicitly redefines; `None` when the pair is not such an override.
+    ///
+    /// The one statement of the rule: the diagnostic reports it, and the repair that makes the
+    /// redefinition explicit is offered exactly where it holds.
+    pub(crate) fn implicit_value_override(
+        &self,
+        source: DeclarationId,
+        target: DeclarationId,
+    ) -> Result<Option<&crate::lower::facts::FeatureValueRecord>, ResolutionError> {
+        let declaration = self
+            .storage
+            .declaration(source)
+            .ok_or(ResolutionError::InvalidStorage)?;
         // Only a value that overrides. `default = e` states a value the specialization may
         // replace, which is exactly what redeclaring an inherited parameter to give it a
         // default means, so it is not a silent override.
@@ -1905,7 +1938,7 @@ impl<D> SemanticModel<D> {
                 DeclarationKind::ParameterUsage | DeclarationKind::SubjectUsage
             )
         {
-            return Ok(());
+            return Ok(None);
         }
         let Some(value) = self
             .storage
@@ -1913,13 +1946,13 @@ impl<D> SemanticModel<D> {
             .iter()
             .find(|value| value.declaration == source && !value.is_default)
         else {
-            return Ok(());
+            return Ok(None);
         };
         if !self
             .authored_references(source, &[ReferenceKind::Redefinition])
             .is_empty()
         {
-            return Ok(());
+            return Ok(None);
         }
         // Only a redefinition the *name* implies. The resolver also derives positional
         // redefinitions -- a specializing function's `return u : T = ...` redefines the return
@@ -1936,23 +1969,21 @@ impl<D> SemanticModel<D> {
                     crate::resolve::results::EffectiveNameOutcome::Resolved(_)
                 ) && source.name == target.name
             });
-        if !named_collision {
-            return Ok(());
-        }
-        let mut diagnostic = self.declaration_message_diagnostic(
-            source,
-            DiagnosticCode::ImplicitRedefinitionWithoutOperator,
-            DiagnosticSeverity::Error,
-            Some(format!(
-                "'{}' overrides inherited member '{}' but is missing the explicit ':>>' \
-                 operator.",
-                self.display_name(source),
-                self.display_name(target)
-            )),
-        )?;
-        diagnostic.related = Box::from([self.related_declaration(target, RELATED_INHERITED)?]);
-        diagnostics.push(diagnostic);
+        Ok(named_collision.then_some(value))
+    }
 
+    fn collect_inherited_enumeration_value(
+        &self,
+        source: DeclarationId,
+        target: DeclarationId,
+        value: &crate::lower::facts::FeatureValueRecord,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let declaration = self
+            .storage
+            .declaration(source)
+            .ok_or(ResolutionError::InvalidStorage)?;
         // A string bound to a member the inherited declaration types by an enumeration names
         // no enumeration literal. Read from the settled value and the settled type, not from
         // the authored text.

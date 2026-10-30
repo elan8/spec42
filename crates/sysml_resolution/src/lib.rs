@@ -124,6 +124,10 @@ pub use metadata_query::{
 pub use model::published_relationship_kinds;
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
+pub use model::query::{
+    ImplicitRedefinitionRepair, ImportCandidate, QualificationCandidate, ReferenceRepair,
+    ReferenceRepairOutcome, RepairNamespace, RepairSlot,
+};
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
 pub use projection::{
     AdmittedSourceCounts, ProjectedElement, ProjectionEnvelope, ProjectionPhase,
@@ -949,6 +953,25 @@ impl PublishedResolution {
         self.model.visible_members(document, position, qualifier)
     }
 
+    /// What an editor may offer to repair the unresolved or ambiguous reference at `position`.
+    pub fn reference_repair(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ReferenceRepair> {
+        self.model.reference_repair(document, position)
+    }
+
+    /// The explicit `:>>` repair for the declaration at `position`, where its authored value
+    /// silently overrides the inherited member its name implicitly redefines.
+    pub fn implicit_redefinition_repair(
+        &self,
+        document: &str,
+        position: TextPosition,
+    ) -> QueryOutcome<ImplicitRedefinitionRepair> {
+        self.model.implicit_redefinition_repair(document, position)
+    }
+
     /// The settled evaluation of one element: value, state, authored units and required
     /// measurement, from facts this publication fixed before it became visible.
     pub fn evaluate(&self, symbol: SymbolId) -> QueryOutcome<ElementEvaluation> {
@@ -1003,6 +1026,15 @@ impl PublishedResolution {
     /// consumer takes when it needs to keep something.
     pub fn qualified_name(&self, symbol: SymbolId) -> Option<&str> {
         self.model.symbol_qualified_name(symbol)
+    }
+
+    /// KerML `deriveElementQualifiedName`: the escaped `::`-joined name that names exactly this
+    /// element from the root namespace. `None` where a segment is unnamed or not unique.
+    ///
+    /// Composed on request rather than stored, so this allocates. It is how source that names an
+    /// element is written, which is what [`Self::qualified_name`]'s display path is not.
+    pub fn element_qualified_name(&self, symbol: SymbolId) -> Option<String> {
+        self.model.symbol_element_qualified_name(symbol)
     }
 
     /// One run of authored text, borrowed from this publication.

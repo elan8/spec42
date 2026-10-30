@@ -458,11 +458,16 @@ impl LanguageServer for Backend {
 
     async fn code_action(&self, params: CodeActionParams) -> Result<Option<CodeActionResponse>> {
         let state = self.state_for_uri(&params.text_document.uri)?;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         features::code_action(
             &state,
             params.text_document.uri,
-            params.range,
             &params.context.diagnostics,
+            perf_logging_enabled,
         )
     }
 
