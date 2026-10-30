@@ -307,6 +307,10 @@ pub(crate) enum TransitionFeatureSpecializationStatus {
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
+    /// References that name an alias whose own binding did not settle. Each fails with the
+    /// binding's outcome, which the alias's `for` reference already reports, so they report
+    /// nothing of their own.
+    pub(crate) alias_failures: std::collections::BTreeSet<AuthoredReferenceId>,
     /// Per-hop outcomes captured by the canonical member-access resolver at publication.
     pub(crate) member_access_paths:
         std::collections::BTreeMap<AuthoredReferenceId, Box<[ResolutionStatus]>>,
@@ -356,6 +360,88 @@ pub(crate) struct ResolutionResults {
 impl ResolutionResults {
     pub(crate) fn outcome(&self, id: AuthoredReferenceId) -> Option<ResolutionStatus> {
         self.outcomes.get(id.index()).copied()
+    }
+
+    /// Resolve every reference that names an alias to the element the alias is for.
+    ///
+    /// An alias is a non-owning Membership (SysML 7.5.2, KerML `Membership::memberElement`): its
+    /// name identifies the aliased element, so `part m : Motor;` after `alias Motor for Engine;`
+    /// is typed by `Engine`, and `:> Motor`, `subsets Motor` and every other reference likewise
+    /// relate to `Engine`. Chains of aliases are followed; an alias whose binding does not settle
+    /// gives the reference that binding's outcome, and a cycle of aliases resolves nothing.
+    ///
+    /// An import keeps the alias: importing an alias membership imports its element under the
+    /// alias's name (SysML 7.5.3), which name lookup through that import still needs.
+    pub(crate) fn follow_aliases(
+        mut self,
+        declarations: &[crate::lower::facts::Declaration],
+        references: &[crate::lower::facts::AuthoredReference],
+    ) -> Self {
+        use crate::model::DeclarationKind;
+        let is_alias = |declaration: DeclarationId| {
+            declarations
+                .get(declaration.index())
+                .is_some_and(|value| value.kind == DeclarationKind::Alias)
+        };
+        let bindings = references
+            .iter()
+            .enumerate()
+            .filter(|(_, reference)| reference.kind == ReferenceKind::AliasBinding)
+            .map(|(index, reference)| (reference.source, index))
+            .collect::<std::collections::BTreeMap<_, _>>();
+        let original = self.outcomes.clone();
+        let follow = |start: DeclarationId| -> ResolutionStatus {
+            let mut current = start;
+            let mut seen = std::collections::BTreeSet::new();
+            while is_alias(current) {
+                if !seen.insert(current) {
+                    return ResolutionStatus::Unresolved;
+                }
+                match bindings
+                    .get(&current)
+                    .and_then(|binding| original.get(*binding).copied())
+                {
+                    Some(ResolutionStatus::Resolved(target)) => current = target,
+                    Some(other) => return other,
+                    None => return ResolutionStatus::Unresolved,
+                }
+            }
+            ResolutionStatus::Resolved(current)
+        };
+        let keeps_alias = |kind: ReferenceKind| {
+            matches!(
+                kind,
+                ReferenceKind::NamespaceImport | ReferenceKind::MembershipImport
+            )
+        };
+        for (index, reference) in references.iter().enumerate() {
+            if keeps_alias(reference.kind) {
+                continue;
+            }
+            if let Some(ResolutionStatus::Resolved(target)) = original.get(index).copied() {
+                if is_alias(target) {
+                    let followed = follow(target);
+                    if !matches!(followed, ResolutionStatus::Resolved(_)) {
+                        if let Ok(id) = AuthoredReferenceId::from_index(index) {
+                            self.alias_failures.insert(id);
+                        }
+                    }
+                    self.outcomes[index] = followed;
+                }
+            }
+            if let Ok(id) = AuthoredReferenceId::from_index(index) {
+                if let Some(hops) = self.member_access_paths.get_mut(&id) {
+                    for hop in hops.iter_mut() {
+                        if let ResolutionStatus::Resolved(target) = *hop {
+                            if is_alias(target) {
+                                *hop = follow(target);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        self
     }
 
     pub(crate) fn settle_authored_relationships(

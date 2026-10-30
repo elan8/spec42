@@ -199,6 +199,7 @@ impl Lowered {
                         feature_type_dependencies: &feature_type_dependencies,
                     },
                 )?;
+            let resolution = resolution.follow_aliases(&storage.declarations, &storage.references);
             let authored_relationships = storage
                 .relationship_declarations
                 .iter()
