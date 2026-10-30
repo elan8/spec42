@@ -275,6 +275,14 @@ completion republishes workspace diagnostics and open library diagnostics once, 
 per-edit selective delivery plus a later full sweep. This is reporting scope over already-owned
 diagnostics, not a host implementation of dependency semantics.
 
+Configured-library rescans carry the owning project/configuration epoch through discovery and
+parsing to source admission. Obsolete, foreign and closed-session completions cannot mutate desired
+inputs. Editor deltas still enter in order while a rescan is pending, but semantic construction waits
+for its library inputs. Saved scan results merge around open buffers. Unexpected discovery/parsing
+worker failures retain the coherent publication and an explicit failed state across subsequent edits;
+retrying the same configuration creates a new epoch. An open buffer from a removed library keeps its
+source provenance for that editor interval and is withdrawn on close.
+
 ### Project boundaries and library admission
 
 A filesystem model is owned by its nearest ancestor `.project.json`, bounded by the host's

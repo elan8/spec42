@@ -250,7 +250,9 @@ async fn send_semantic_ready_notification(
     token: crate::session::ReadinessToken,
 ) {
     let snapshot = handle.snapshot();
-    if !snapshot.diagnostic_readiness.is_current(&token) {
+    if !snapshot.diagnostic_readiness.is_current(&token)
+        || snapshot.diagnostic_readiness.source_inputs_pending()
+    {
         return;
     }
     let params = semantic_index_ready_notification(&snapshot);
