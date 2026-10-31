@@ -44,6 +44,9 @@ pub(crate) struct RelationshipFlags {
     pub(crate) implied: bool,
     pub(crate) recursive: bool,
     pub(crate) wildcard: bool,
+    /// `import all`: the import considers every membership, whatever its visibility (KerML
+    /// 8.3.2.4 `isImportAll`).
+    pub(crate) import_all: bool,
     /// The authored target uses the bracketed filtered-import shape. View exposes retain this
     /// separately from namespace wildcards so the exposed-element query can report the shape as
     /// unsupported instead of treating its resolved namespace as an explicitly exposed element.
