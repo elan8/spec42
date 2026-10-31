@@ -92,7 +92,7 @@ impl SemanticModelBuilder {
                 target,
                 span: node.span,
             });
-        if node.value.identification.is_some() || node.value.body.is_some() {
+        if node.value.identification.is_some() || !node.value.body.is_semicolon() {
             self.push_unsupported(
                 document,
                 UnsupportedFamily::RelationshipBodyMember,
