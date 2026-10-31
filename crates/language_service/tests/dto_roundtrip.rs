@@ -65,6 +65,7 @@ fn dto_roundtrip_serde_extended() {
             deprecated: false,
             resolve_detail: None,
             resolve_documentation: None,
+            import: None,
         }],
         is_incomplete: false,
     };

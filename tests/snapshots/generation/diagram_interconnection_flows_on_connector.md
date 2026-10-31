@@ -642,7 +642,7 @@ package Dispatch {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:9ddffcbb1e9ffe55874dceb898c9291e3e503e57ad001becb1d673e15037fef0",
+  "modelDigest": "blake3:382f4d1932812a9732252516ddae372c3c387c2f8234c9244d5fa9443ba4e762",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

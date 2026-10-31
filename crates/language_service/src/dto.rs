@@ -107,6 +107,12 @@ pub struct CompletionTextEditDto {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ImportCompletionDto {
+    pub target_token: String,
+    pub position: sysml_query::resolved_slice::TextPosition,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CompletionItemDto {
     pub label: String,
     pub kind: Option<CompletionItemKindDto>,
@@ -122,6 +128,8 @@ pub struct CompletionItemDto {
     pub deprecated: bool,
     pub resolve_detail: Option<String>,
     pub resolve_documentation: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub import: Option<ImportCompletionDto>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

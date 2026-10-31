@@ -21,6 +21,11 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 ## What you get
 
 - Live diagnostics, semantic highlighting, completion, hover, snippets, and formatting.
+- Import completion for definitions in other packages, including admitted libraries. Accepting
+  a suggestion inserts its reference and a private import together; the package path distinguishes
+  definitions with the same name.
+- **Add all unambiguous missing imports** in Source Actions (`source.fixAll.spec42.imports`).
+  It groups repeated references and leaves ambiguous or conflicting cases for individual fixes.
 - Definitions, references, rename, document symbols, and hierarchy navigation.
 - Workspace-aware indexing for multi-file models and configured libraries.
 - **Feature Inspector** for resolved typing, inheritance, relationships, values, and keyword help.

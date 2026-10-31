@@ -1167,7 +1167,7 @@ pub(crate) struct AdmittedDocument {
 }
 
 /// One document as the sealed publication holds it: no tree, no source text.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct CanonicalDocument {
     pub(crate) identity: Box<str>,
     /// See [`AdmittedDocument::role`].

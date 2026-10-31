@@ -8231,6 +8231,8 @@ fn parse_editor_probes(
         let probe_index = probes.len();
         let mut features = false;
         let mut repairs = false;
+        let mut import_prefix = None;
+        let mut fix_imports = false;
         for option in fields {
             if let Some(value) = option.strip_prefix("qualifier=") {
                 qualifier = Some(value.to_string());
@@ -8250,6 +8252,15 @@ fn parse_editor_probes(
                     ));
                 }
                 repairs = true;
+            } else if let Some(prefix) = option.strip_prefix("imports=") {
+                if import_prefix.replace(prefix.to_string()).is_some() {
+                    return Err(format!("{fallback_name}: duplicate imports probe"));
+                }
+            } else if option == "fix-imports" {
+                if fix_imports {
+                    return Err(format!("{fallback_name}: duplicate fix-imports probe"));
+                }
+                fix_imports = true;
             } else if option == "hover" {
                 if !hover.insert(probe_index) {
                     return Err(format!(
@@ -8269,6 +8280,8 @@ fn parse_editor_probes(
             rename_to,
             features,
             repairs,
+            import_prefix,
+            fix_imports,
         });
     }
     Ok(EditorProbes {

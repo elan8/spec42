@@ -270,6 +270,15 @@ current editor text, queries the retained publication at the cursor translated i
 publication's revision, takes only names and kinds from it, and marks the result as predating the
 source.
 
+Import completion and file-wide import repair require current source. The semantic authority
+owns import candidates and validates proposed private imports together through its canonical
+resolver, preserving existing bindings and rejecting ambiguous or incompatible results. These
+counterfactual transactions never modify a publication. `language_service` materializes accepted
+choices at syntax-owned anchors, preserving source-owned line-ending preferences. The LSP host
+guards asynchronous results with the document's open interval, editor version and publication
+identity. Completion delivers validated additional edits eagerly so immediate acceptance includes
+the import, and guards subsequent resolve requests; file actions use a versioned document transaction.
+
 Each input revision owns cancellation shared with its child build generations. Invalidation and
 close cancel obsolete work; phase boundaries cooperate without treating cancellation as a fault.
 Cancelled/failed work cannot install a partial library stratum or semantic publication. Syntax memo

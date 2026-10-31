@@ -29,7 +29,7 @@ use crate::model::DocumentIdx;
 use crate::model::NameId;
 use sysml_v2_parser::{ParseError, ParsedDocument};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct SemanticModelStorage {
     pub(crate) documents: Box<[CanonicalDocument]>,
     pub(crate) declarations: Box<[Declaration]>,

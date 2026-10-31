@@ -289,6 +289,7 @@ impl<D> SemanticModel<D> {
         }
         Ok(SettledLibrary {
             outcomes: self.resolution.outcomes.clone(),
+            ambiguous_candidates: self.resolution.ambiguous_candidates.clone(),
             expression_relationships:
                 crate::resolve::implied::synthesize_access_expression_result_relationships(
                     &self.storage,

@@ -93,6 +93,7 @@ impl IndexEntry {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct RuntimeConfig {
     pub(crate) versioned_document_changes: bool,
+    pub(crate) completion_import_resolve: bool,
     pub(crate) library_path_base: Option<std::path::PathBuf>,
     pub(crate) startup_trace_id: Option<String>,
     pub(crate) code_lens_enabled: bool,

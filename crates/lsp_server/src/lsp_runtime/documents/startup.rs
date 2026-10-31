@@ -49,6 +49,19 @@ pub(crate) async fn initialize(
     }
     runtime_config
         .set(RuntimeConfig {
+            completion_import_resolve: params
+                .capabilities
+                .text_document
+                .as_ref()
+                .and_then(|document| document.completion.as_ref())
+                .and_then(|completion| completion.completion_item.as_ref())
+                .and_then(|item| item.resolve_support.as_ref())
+                .is_some_and(|support| {
+                    support
+                        .properties
+                        .iter()
+                        .any(|property| property == "additionalTextEdits")
+                }),
             versioned_document_changes: params
                 .capabilities
                 .workspace

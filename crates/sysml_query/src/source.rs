@@ -11,7 +11,7 @@ pub use sysml_resolution::source::source_identity as identity;
 pub use sysml_resolution::source::{
     discover_enclosing_project_root, discover_project_boundary, discover_project_roots,
     is_sysml_like, normalize_line_endings, normalize_uri, path_to_file_url, uri_under_any,
-    workspace_source_selected, ContentDigest, FilesystemProvider, InMemoryProvider,
+    workspace_source_selected, ContentDigest, FilesystemProvider, InMemoryProvider, LineEnding,
     ProjectBoundary, ProjectSourceScope, RootDigest, SkippedSource, SourceAuthority,
     SourceDocument, SourceError, SourceKind, SourceLanguage, SourceLoadReport, SourceProvider, Url,
     PROJECT_CONFIG_FILE, PROJECT_MANIFEST_FILE,
