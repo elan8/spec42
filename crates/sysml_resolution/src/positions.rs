@@ -3,7 +3,7 @@
 use crate::{TextPosition, TextRange};
 use sysml_v2_parser::Span;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Multibyte {
     start: u32,
     end: u32,
@@ -12,7 +12,7 @@ struct Multibyte {
 }
 
 /// A compact position index retaining no source text or parser tree.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub(crate) struct LineIndex {
     starts: Box<[u32]>,
     length: u32,

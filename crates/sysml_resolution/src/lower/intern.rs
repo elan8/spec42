@@ -14,7 +14,7 @@ pub(crate) struct SymbolPath {
     pub(crate) rooted: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct SymbolPathArena {
     pub(crate) paths: Box<[SymbolPath]>,
     pub(crate) segments: Box<[NameId]>,
@@ -103,7 +103,7 @@ impl SymbolPathArenaBuilder {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct SymbolTable {
     pub(crate) bytes: Box<str>,
     pub(crate) spans: Box<[(u32, u32)]>,

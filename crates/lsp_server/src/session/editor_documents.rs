@@ -1,10 +1,16 @@
 //! Client document revisions, scoped to one open interval and one project owner.
 
-use std::sync::Arc;
+use std::sync::{
+    atomic::{AtomicU64, Ordering},
+    Arc,
+};
+
+static NEXT_OPEN_INTERVAL: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Debug, Clone)]
 pub(crate) struct EditorRevision {
     open_identity: Arc<()>,
+    token: u64,
     version: Option<i32>,
 }
 
@@ -20,8 +26,15 @@ impl EditorRevision {
     pub(crate) fn new(version: Option<i32>) -> Self {
         Self {
             open_identity: Arc::new(()),
+            token: NEXT_OPEN_INTERVAL
+                .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| n.checked_add(1))
+                .expect("editor interval identities exhausted"),
             version,
         }
+    }
+
+    pub(crate) fn token(&self) -> u64 {
+        self.token
     }
 
     pub(crate) fn version(&self) -> Option<i32> {
@@ -57,7 +70,7 @@ impl EditorRevision {
     }
 
     pub(crate) fn rekey_for_owner(&mut self) {
-        self.open_identity = Arc::new(());
+        *self = Self::new(self.version);
     }
 }
 

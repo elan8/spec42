@@ -430,6 +430,10 @@ fn is_ident_byte(byte: u8) -> bool {
 const SHADOW_ALLOW: &[&str] = &[
     "path_to_file_url",
     "normalize_uri",
+    // A WorkspaceSnapshot adapter delegates source-owned presentation metadata directly.
+    "line_ending",
+    // Common vocabulary conversion, including SourceDocument's LineEnding enum.
+    "as_str",
     "new",
     "default",
     "parse",

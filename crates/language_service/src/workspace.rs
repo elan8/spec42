@@ -32,6 +32,10 @@ pub trait WorkspaceSnapshot {
     fn resolve_uri_for_path(&self, path: &str) -> Option<Url>;
     fn path_for_uri(&self, uri: &Url) -> String;
     fn document_text(&self, uri: &Url) -> Option<&str>;
+    /// Syntax fidelity retained by the source authority, independently of LF semantic text.
+    fn line_ending(&self, _uri: &Url) -> sysml_query::source::LineEnding {
+        sysml_query::source::LineEnding::Lf
+    }
     /// The document as the editor currently holds it.
     ///
     /// [`Self::document_text`] is the source paired with [`Self::published_model`]; while
@@ -128,6 +132,12 @@ impl InMemoryWorkspace {
 }
 
 impl WorkspaceSnapshot for InMemoryWorkspace {
+    fn line_ending(&self, uri: &Url) -> sysml_query::source::LineEnding {
+        self.documents
+            .get(&normalize_uri(uri))
+            .map(|entry| entry.document.line_ending())
+            .unwrap_or_default()
+    }
     fn resolve_uri_for_path(&self, path: &str) -> Option<Url> {
         if let Ok(uri) = Url::parse(path) {
             let normalized = normalize_uri(&uri);

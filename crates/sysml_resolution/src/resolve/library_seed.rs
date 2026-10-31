@@ -75,6 +75,8 @@ pub(crate) fn shadowed_library_roots(storage: &SemanticModelStorage) -> Vec<Decl
 #[derive(Debug)]
 pub(crate) struct SettledLibrary {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
+    /// Candidate ranges in seeded outcomes address this pool; it travels with those outcomes.
+    pub(crate) ambiguous_candidates: Box<[DeclarationId]>,
     /// Canonical result relationships over exactly the same immutable library inputs and IDs.
     /// The existing root-name dependency check gates reuse of these facts with the outcomes.
     pub(crate) expression_relationships: Box<[crate::resolve::results::ImpliedRelationship]>,

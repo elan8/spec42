@@ -285,16 +285,66 @@ impl LanguageServer for Backend {
             .get()
             .expect("initialize precedes all other LSP requests")
             .perf_logging_enabled;
-        features::completion(
-            &state,
-            params.text_document_position.text_document.uri,
-            params.text_document_position.position,
-            perf_logging_enabled,
-        )
+        let uri = params.text_document_position.text_document.uri.clone();
+        let captured = Arc::clone(&state);
+        let supported = self
+            .runtime_config
+            .get()
+            .expect("initialized")
+            .completion_import_resolve;
+        let result = tokio::task::spawn_blocking(move || {
+            features::completion(
+                &state,
+                params.text_document_position.text_document.uri,
+                params.text_document_position.position,
+                perf_logging_enabled,
+                supported,
+            )
+        })
+        .await
+        .map_err(|_| tower_lsp::jsonrpc::Error::internal_error())??;
+        let has_imports = result.as_ref().is_some_and(|response| match response {
+            CompletionResponse::List(list) => list
+                .items
+                .iter()
+                .any(|item| item.additional_text_edits.is_some()),
+            CompletionResponse::Array(items) => items
+                .iter()
+                .any(|item| item.additional_text_edits.is_some()),
+        });
+        let current = if has_imports {
+            // A change in another document can invalidate candidates before its replacement
+            // publication is ready, even if this editor revision is unchanged.
+            self.state_for_uri(&uri)?
+        } else {
+            self.source_state_for_uri(&uri)?
+        };
+        // Ordinary completions may use the retained publication while analysis advances.
+        // Imports also require the exact semantic identity that validated their transaction.
+        if !features::same_editor_revision(&captured, &current, &uri)
+            || (has_imports && !features::same_edit_context(&captured, &current, &uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::content_modified());
+        }
+        Ok(result)
     }
 
     async fn completion_resolve(&self, params: CompletionItem) -> Result<CompletionItem> {
-        features::completion_resolve(params)
+        let Some(uri) = features::completion_import_uri(&params)? else {
+            return features::completion_resolve(params);
+        };
+        let captured = self.state_for_uri(&uri)?;
+        let state = Arc::clone(&captured);
+        let resolved = tokio::task::spawn_blocking(move || {
+            features::completion_resolve_import(&state, params)
+        })
+        .await
+        .map_err(|_| tower_lsp::jsonrpc::Error::internal_error())??;
+        let current = self.state_for_uri(&uri)?;
+        if !features::same_edit_context(&captured, &current, &uri) {
+            return Err(tower_lsp::jsonrpc::Error::content_modified());
+        }
+        Ok(resolved)
     }
 
     async fn signature_help(&self, params: SignatureHelpParams) -> Result<Option<SignatureHelp>> {
@@ -467,12 +517,30 @@ impl LanguageServer for Backend {
             .get()
             .expect("initialize precedes all other LSP requests")
             .perf_logging_enabled;
-        features::code_action(
-            &state,
-            params.text_document.uri,
-            &params.context.diagnostics,
-            perf_logging_enabled,
-        )
+        let uri = params.text_document.uri.clone();
+        let captured = Arc::clone(&state);
+        let versioned = self
+            .runtime_config
+            .get()
+            .expect("initialized")
+            .versioned_document_changes;
+        let result = tokio::task::spawn_blocking(move || {
+            features::code_action(
+                &state,
+                params.text_document.uri,
+                &params.context.diagnostics,
+                perf_logging_enabled,
+                versioned,
+                params.context.only.as_deref(),
+            )
+        })
+        .await
+        .map_err(|_| tower_lsp::jsonrpc::Error::internal_error())??;
+        let current = self.state_for_uri(&uri)?;
+        if !features::same_edit_context(&captured, &current, &uri) {
+            return Err(tower_lsp::jsonrpc::Error::content_modified());
+        }
+        Ok(result)
     }
 
     async fn code_lens(&self, params: CodeLensParams) -> Result<Option<Vec<CodeLens>>> {

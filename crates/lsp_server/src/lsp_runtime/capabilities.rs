@@ -33,7 +33,14 @@ pub(crate) fn server_capabilities(
             work_done_progress_options: WorkDoneProgressOptions::default(),
         }),
         workspace_symbol_provider: Some(OneOf::Left(true)),
-        code_action_provider: Some(CodeActionProviderCapability::Simple(true)),
+        code_action_provider: Some(CodeActionProviderCapability::Options(CodeActionOptions {
+            code_action_kinds: Some(vec![
+                CodeActionKind::QUICKFIX,
+                CodeActionKind::new("source.fixAll.spec42.imports"),
+            ]),
+            resolve_provider: None,
+            work_done_progress_options: WorkDoneProgressOptions::default(),
+        })),
         code_lens_provider: None,
         inlay_hint_provider: None,
         linked_editing_range_provider: None,

@@ -15,7 +15,10 @@ use crate::session::ServerState;
 
 use super::{hierarchy, symbols};
 
-pub(crate) use completion::{completion, completion_resolve};
+pub(crate) use completion::{
+    completion, completion_import_uri, completion_resolve, completion_resolve_import,
+    same_edit_context, same_editor_revision,
+};
 pub(crate) use editing_features::{
     code_action, document_symbol, folding_range, formatting, prepare_rename, rename,
     signature_help, workspace_symbol,
