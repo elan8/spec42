@@ -403,6 +403,10 @@ impl LanguageServer for Backend {
             params.text_document_position.position,
             params.new_name,
             perf_logging_enabled,
+            self.runtime_config
+                .get()
+                .expect("initialized")
+                .versioned_document_changes,
         )
     }
 
@@ -580,7 +584,7 @@ impl LanguageServer for Backend {
         params: TypeHierarchySupertypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
         let state = self.state_for_uri(&params.item.uri)?;
-        features::supertypes(&state, params.item.uri.clone(), params.item.selection_range)
+        features::supertypes(&state, params.item)
     }
 
     async fn subtypes(
@@ -588,7 +592,7 @@ impl LanguageServer for Backend {
         params: TypeHierarchySubtypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
         let state = self.state_for_uri(&params.item.uri)?;
-        features::subtypes(&state, params.item.uri.clone(), params.item.selection_range)
+        features::subtypes(&state, params.item)
     }
 }
 

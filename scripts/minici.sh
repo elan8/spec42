@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Run the high-signal, platform-independent portion of required CI locally.
 #
-# With no argument this runs every suite sequentially (the local pre-push path). CI splits the
+# With no argument this runs the core suites sequentially (the local pre-push path). CI splits the
 # same suites across parallel jobs by passing one of: lint, tests-workspace, tests-lsp,
-# tests-server, generator. Keep the cargo invocations here so local and hosted checks cannot
+# tests-server, generator, docs. Rustdoc runs only with the explicit docs suite; CI requires it
+# in a separate job. Keep the cargo invocations here so local and hosted checks cannot
 # silently drift apart.
 #
 # This script deliberately performs no downloads. Prepare the pinned library bundles with the
@@ -16,9 +17,9 @@ cd "$root"
 
 SUITE="${1:-all}"
 case "$SUITE" in
-  all|lint|tests-workspace|tests-lsp|tests-server|generator) ;;
+  all|lint|tests-workspace|tests-lsp|tests-server|generator|docs) ;;
   *)
-    echo "usage: scripts/minici.sh [all|lint|tests-workspace|tests-lsp|tests-server|generator]" >&2
+    echo "usage: scripts/minici.sh [all|lint|tests-workspace|tests-lsp|tests-server|generator|docs]" >&2
     exit 2
     ;;
 esac
@@ -145,7 +146,14 @@ if wants tests-server; then
   step "Server library, fuzz corpus, and stdlib ratchet"
   export RUST_MIN_STACK=16777216
   cargo test -p server --lib
-  cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
+  # Cargo also builds the libfuzzer no_main binaries for this integration test. Those fail
+  # to link with Windows MSVC (LNK1561); keep the seed corpus covered on Linux CI.
+  rust_host="$(rustc -vV | sed -n 's/^host: //p')"
+  if [[ "$rust_host" == *-windows-* ]]; then
+    step "SKIP libfuzzer seed corpus on Windows ($rust_host); covered by Linux CI"
+  else
+    cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
+  fi
   # Curated-corpus admission (a small workspace resolves against tests/snapshots/sysml.library/).
   cargo snapshot check --fixture standard_library_admission.md
   # Shipped-artifact ratchet (issue #135): the pinned KPAR bundle unpacks completely and
@@ -180,9 +188,9 @@ if wants generator; then
   cargo run -p spec42-snapshot -- check --fixture resolution/indexed_geometry_expressions.md
 fi
 
-if wants lint; then
+if [[ "$SUITE" == "docs" ]]; then
   step "Workspace documentation"
-  RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --workspace
+  RUSTDOCFLAGS="-D warnings" cargo doc --jobs 1 --no-deps --workspace
 fi
 
 echo

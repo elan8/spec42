@@ -51,7 +51,7 @@ package Flow {
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Flow"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "ready")) (expressionOperand (reference "urgent")) (expressionOperand (reference "urgent")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "start")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 0))))) (kind then-continuation) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (thenTarget (reference "check")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1))))) (kind then-continuation) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (thenTarget (reference "ship")))))
@@ -60,6 +60,9 @@ package Flow {
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "ship")) (succession (reference "expedite")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "ship")) (succession (reference "done")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 4))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "expedite")) (succession (reference "done")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind kerml-boolean-expression) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "ready")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind kerml-boolean-expression) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "urgent")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind kerml-boolean-expression) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "urgent")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::check"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::expedite"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::outcome"))) (kind decide) (membership (kind feature) (visibility default)))
@@ -77,15 +80,6 @@ package Flow {
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "ScalarValues")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues")))))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "ready")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready")))))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 1))
-      (authored-target "urgent")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 2))
-      (authored-target "urgent")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "start")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start")))))
@@ -122,6 +116,15 @@ package Flow {
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 2))))) (kind thenTarget) (ordinal 0))
       (authored-target "repair")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::repair")))))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "ready")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready")))))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "urgent")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "urgent")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready"))) (kind featureTyping) (ordinal 0))
       (authored-target "Boolean")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")))))
@@ -136,9 +139,6 @@ package Flow {
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded")))))
   )
   (relationships
-    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 0)))
-    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 1)))
-    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 2)))
     (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::repair"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 1))))) (kind succession) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ship"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2))))) (kind succession) (ordinal 0)))
@@ -151,11 +151,15 @@ package Flow {
     (relationship (kind thenTarget) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::check"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 0))))) (kind thenTarget) (ordinal 0)))
     (relationship (kind thenTarget) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ship"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1))))) (kind thenTarget) (ordinal 0)))
     (relationship (kind thenTarget) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 2))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::repair"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 2))))) (kind thenTarget) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::guarded"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::guarded"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind view) (name "guarded")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind view) (name "guarded")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
@@ -164,6 +168,8 @@ package Flow {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 4))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::outcome"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 2))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::outcome"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
@@ -172,6 +178,12 @@ package Flow {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 4))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::check"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::check"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::check"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
@@ -179,6 +191,7 @@ package Flow {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::expedite"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::expedite"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::outcome"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::decisions"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::outcome"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::outcome"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (provenance implied))
@@ -194,6 +207,9 @@ package Flow {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind view) (name "guarded")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::guarded"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -341,6 +357,60 @@ package Flow {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::check")))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded")))
@@ -529,6 +599,14 @@ package Flow {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ready" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready")))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (feature-reference "urgent" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (operator "not" (feature-reference "urgent" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
@@ -540,21 +618,6 @@ package Flow {
   (query (document "memory://snapshot/model.sysml") (range (start 2 19) (end 2 34)) (probe (position 2 19))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues")))))
-    )
-  )
-  (query (document "memory://snapshot/model.sysml") (range (start 13 15) (end 13 20)) (probe (position 13 15))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 0) (authored-target "ready")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready")))))
-    )
-  )
-  (query (document "memory://snapshot/model.sysml") (range (start 16 22) (end 16 28)) (probe (position 16 22))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 1) (authored-target "urgent")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
-    )
-  )
-  (query (document "memory://snapshot/model.sysml") (range (start 17 26) (end 17 32)) (probe (position 17 26))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded"))) (kind expressionOperand) (ordinal 2) (authored-target "urgent")
-      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
     )
   )
   (query (document "memory://snapshot/model.sysml") (range (start 10 14) (end 10 19)) (probe (position 10 14))
@@ -617,6 +680,21 @@ package Flow {
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::repair")))))
     )
   )
+  (query (document "memory://snapshot/model.sysml") (range (start 13 15) (end 13 20)) (probe (position 13 15))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind then-continuation) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "ready")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready")))))
+    )
+  )
+  (query (document "memory://snapshot/model.sysml") (range (start 16 22) (end 16 28)) (probe (position 16 22))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 2)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "urgent")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
+    )
+  )
+  (query (document "memory://snapshot/model.sysml") (range (start 17 26) (end 17 32)) (probe (position 17 26))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Flow")) (named (kind action-def) (name "Guarded")) (anonymous (kind succession) (ordinal 3)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "urgent")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::urgent")))))
+    )
+  )
   (query (document "memory://snapshot/model.sysml") (range (start 4 29) (end 4 36)) (probe (position 4 29))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Flow::Guarded::ready"))) (kind featureTyping) (ordinal 0) (authored-target "Boolean")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean")))))
@@ -644,7 +722,7 @@ package Flow {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:b770c406f0eb89705ab40660d01736c2eef5433bcf830707a1af57430ec2b44f",
+  "modelDigest": "blake3:a42568e89175e0ce067c67bb80af6440ce974c030c6d6e0844f914cb6da61c7b",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -794,15 +872,6 @@ package Flow {
       "document": 0,
       "range": [
         13,
-        15,
-        13,
-        20
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        13,
         21,
         13,
         31
@@ -884,15 +953,6 @@ package Flow {
       "document": 0,
       "range": [
         16,
-        22,
-        16,
-        28
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        16,
         34,
         16,
         42
@@ -914,15 +974,6 @@ package Flow {
         14,
         17,
         18
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        17,
-        26,
-        17,
-        32
       ]
     },
     {
@@ -1124,7 +1175,14 @@ package Flow {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Flow::Guarded",
-      "source": 15,
+      "source": 14,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "Flow::Guarded",
+      "source": 17,
       "sourceDomain": "workspace"
     },
     {
@@ -1138,28 +1196,21 @@ package Flow {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Flow::Guarded",
-      "source": 19,
+      "source": 21,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Flow::Guarded",
-      "source": 22,
+      "source": 24,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Flow::Guarded",
-      "source": 26,
-      "sourceDomain": "workspace"
-    },
-    {
-      "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
-      "ownerQualifiedName": "Flow::Guarded",
-      "source": 30,
+      "source": 27,
       "sourceDomain": "workspace"
     },
     {
@@ -1266,21 +1317,9 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "expressionOperand",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "expressionOperand",
-      "source": 0
-    },
-    {
-      "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "expressionOperand",
-      "source": 0
+      "relationshipKind": "succession",
+      "source": 1
     },
     {
       "kind": "relationship",
@@ -1290,7 +1329,7 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 6,
       "relationshipKind": "succession",
       "source": 1
     },
@@ -1302,7 +1341,7 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "ordinal": 10,
       "relationshipKind": "succession",
       "source": 1
     },
@@ -1314,7 +1353,7 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 14,
       "relationshipKind": "succession",
       "source": 1
     },
@@ -1326,19 +1365,13 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 18,
       "relationshipKind": "succession",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "succession",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 43,
       "relationshipKind": "thenTarget",
       "source": 1
     },
@@ -1350,7 +1383,7 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 51,
       "relationshipKind": "thenTarget",
       "source": 1
     },
@@ -1374,7 +1407,7 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "ordinal": 35,
       "relationshipKind": "typing",
       "source": 5
     },
@@ -1398,25 +1431,25 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
+      "ordinal": 38,
       "relationshipKind": "typing",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 54,
       "relationshipKind": "redefinition",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
+      "ordinal": 53,
       "relationshipKind": "typing",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 59,
       "relationshipKind": "redefinition",
       "source": 12
     },
@@ -1434,7 +1467,7 @@ package Flow {
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 58,
       "relationshipKind": "typing",
       "source": 12
     }
@@ -1443,7 +1476,7 @@ package Flow {
     "reference": 9,
     "kind": "action-flow-view",
     "name": "guarded",
-    "source": 33
+    "source": 30
   },
   "completeness": {
     "status": "complete",
@@ -1462,7 +1495,7 @@ package Flow {
       },
       {
         "kind": "containment",
-        "navigation": 19,
+        "navigation": 18,
         "origin": 2,
         "provenance": "authored",
         "reference": 25,
@@ -1471,16 +1504,16 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 20,
+        "navigation": 19,
         "origin": 2,
         "provenance": "implied",
-        "reference": 60,
+        "reference": 57,
         "source": 11,
         "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 22,
+        "navigation": 21,
         "origin": 3,
         "provenance": "authored",
         "reference": 26,
@@ -1489,16 +1522,16 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 23,
+        "navigation": 22,
         "origin": 3,
         "provenance": "implied",
-        "reference": 61,
+        "reference": 58,
         "source": 9,
         "target": 12
       },
       {
         "kind": "containment",
-        "navigation": 26,
+        "navigation": 24,
         "origin": 4,
         "provenance": "authored",
         "reference": 27,
@@ -1507,16 +1540,16 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 27,
+        "navigation": 25,
         "origin": 4,
         "provenance": "implied",
-        "reference": 62,
+        "reference": 59,
         "source": 9,
         "target": 16
       },
       {
         "kind": "containment",
-        "navigation": 30,
+        "navigation": 27,
         "origin": 5,
         "provenance": "authored",
         "reference": 28,
@@ -1525,10 +1558,10 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 31,
+        "navigation": 28,
         "origin": 5,
         "provenance": "implied",
-        "reference": 56,
+        "reference": 53,
         "source": 12,
         "target": 16
       },
@@ -1573,7 +1606,7 @@ package Flow {
         "navigation": 13,
         "origin": 13,
         "provenance": "authored",
-        "reference": 67,
+        "reference": 64,
         "source": 17,
         "target": 13
       },
@@ -1618,13 +1651,13 @@ package Flow {
         "navigation": 11,
         "origin": 6,
         "provenance": "authored",
-        "reference": 68,
+        "reference": 65,
         "source": 17,
         "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 15,
+        "navigation": 14,
         "origin": 7,
         "provenance": "authored",
         "reference": 37,
@@ -1633,16 +1666,16 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 15,
+        "navigation": 14,
         "origin": 7,
         "provenance": "authored",
-        "reference": 57,
+        "reference": 54,
         "source": 13,
         "target": 9
       },
       {
         "kind": "containment",
-        "navigation": 18,
+        "navigation": 17,
         "origin": 8,
         "provenance": "authored",
         "reference": 38,
@@ -1651,16 +1684,16 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 18,
+        "navigation": 17,
         "origin": 8,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 55,
         "source": 13,
         "target": 11
       },
       {
         "kind": "containment",
-        "navigation": 37,
+        "navigation": 34,
         "origin": 16,
         "provenance": "implied",
         "reference": 39,
@@ -1669,7 +1702,7 @@ package Flow {
       },
       {
         "kind": "containment",
-        "navigation": 34,
+        "navigation": 31,
         "origin": 17,
         "provenance": "implied",
         "reference": 40,
@@ -1773,7 +1806,7 @@ package Flow {
         "owner": 0,
         "presentationKey": "p:1ceab3d9978292d068f4456c4a107c734267150c2835cd0cd98160573e7d45c2",
         "reference": 20,
-        "source": 19,
+        "source": 18,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1792,7 +1825,7 @@ package Flow {
         "owner": 0,
         "presentationKey": "p:f3b6bb3ae2f4dfb46faa2109283870b98eafe64f674a6daf56a028fd89069135",
         "reference": 21,
-        "source": 22,
+        "source": 21,
         "stateSubaction": null,
         "successionGuard": "urgent",
         "typing": {
@@ -1811,7 +1844,7 @@ package Flow {
         "owner": 0,
         "presentationKey": "p:c5c99a914f5bdacf993996123045cee3937634c5515b8bc2ffa77a15b2634a2e",
         "reference": 22,
-        "source": 26,
+        "source": 24,
         "stateSubaction": null,
         "successionGuard": "not urgent",
         "typing": {
@@ -1830,7 +1863,7 @@ package Flow {
         "owner": 0,
         "presentationKey": "p:b7812a40c98f24037ae26a59d2ec76e30d9201cdb134804ceaa559e0c2df0371",
         "reference": 23,
-        "source": 30,
+        "source": 27,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -1868,7 +1901,7 @@ package Flow {
         "owner": 0,
         "presentationKey": "p:92b894ef912a6832d09f5df08f734adf8421fcfdf5b14ba8102cf6af04b9b399",
         "reference": 18,
-        "source": 15,
+        "source": 14,
         "stateSubaction": null,
         "successionGuard": "ready",
         "typing": {
@@ -1887,7 +1920,7 @@ package Flow {
         "owner": 0,
         "presentationKey": "p:98810aaa020c312c11118a9073345ce83200de9c6f2bca0fb77718267c4656db",
         "reference": 19,
-        "source": 18,
+        "source": 17,
         "stateSubaction": null,
         "successionGuard": "else",
         "typing": {
@@ -2051,7 +2084,7 @@ package Flow {
         "owner": 0,
         "presentationKey": "p:93aecf15c13413c2088bb4675474c42ecf85c2de5aac4e4efd854c306b2b193a",
         "reference": 11,
-        "source": 37,
+        "source": 34,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2076,7 +2109,7 @@ package Flow {
         "owner": 0,
         "presentationKey": "p:8e0b0487d24fb6fa1f43094a29727d6413bd0774f9839566774b146f83e6d4b0",
         "reference": 12,
-        "source": 34,
+        "source": 31,
         "stateSubaction": null,
         "successionGuard": null,
         "typing": {
@@ -2092,43 +2125,10 @@ package Flow {
     ],
     "relationships": [
       {
-        "kind": "expressionOperand",
-        "navigation": 14,
-        "provenance": "authored",
-        "reference": 41,
-        "source": 0,
-        "target": {
-          "node": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 42,
-        "source": 0,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "expressionOperand",
-        "navigation": 28,
-        "provenance": "authored",
-        "reference": 43,
-        "source": 0,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "succession",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 44,
+        "reference": 41,
         "source": 1,
         "target": {
           "node": 17,
@@ -2137,9 +2137,9 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 20,
+        "navigation": 19,
         "provenance": "authored",
-        "reference": 45,
+        "reference": 42,
         "source": 2,
         "target": {
           "node": 11,
@@ -2148,9 +2148,9 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 21,
+        "navigation": 20,
         "provenance": "authored",
-        "reference": 46,
+        "reference": 43,
         "source": 2,
         "target": {
           "node": 10,
@@ -2159,9 +2159,9 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 23,
+        "navigation": 22,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 44,
         "source": 3,
         "target": {
           "node": 9,
@@ -2170,9 +2170,9 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 25,
+        "navigation": 23,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 45,
         "source": 3,
         "target": {
           "node": 12,
@@ -2181,9 +2181,9 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 27,
+        "navigation": 25,
         "provenance": "authored",
-        "reference": 49,
+        "reference": 46,
         "source": 4,
         "target": {
           "node": 9,
@@ -2192,9 +2192,9 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 29,
+        "navigation": 26,
         "provenance": "authored",
-        "reference": 50,
+        "reference": 47,
         "source": 4,
         "target": {
           "node": 16,
@@ -2203,9 +2203,9 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 31,
+        "navigation": 28,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 48,
         "source": 5,
         "target": {
           "node": 12,
@@ -2214,9 +2214,9 @@ package Flow {
       },
       {
         "kind": "succession",
-        "navigation": 32,
+        "navigation": 29,
         "provenance": "authored",
-        "reference": 52,
+        "reference": 49,
         "source": 5,
         "target": {
           "node": 16,
@@ -2227,7 +2227,7 @@ package Flow {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 59,
+        "reference": 56,
         "source": 14,
         "target": {
           "reference": 15,
@@ -2238,7 +2238,7 @@ package Flow {
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 63,
+        "reference": 60,
         "source": 15,
         "target": {
           "reference": 15,
@@ -2249,7 +2249,7 @@ package Flow {
         "kind": "thenTarget",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 53,
+        "reference": 50,
         "source": 6,
         "target": {
           "node": 10,
@@ -2258,9 +2258,9 @@ package Flow {
       },
       {
         "kind": "thenTarget",
-        "navigation": 16,
+        "navigation": 15,
         "provenance": "authored",
-        "reference": 54,
+        "reference": 51,
         "source": 7,
         "target": {
           "node": 9,
@@ -2269,9 +2269,9 @@ package Flow {
       },
       {
         "kind": "thenTarget",
-        "navigation": 17,
+        "navigation": 16,
         "provenance": "authored",
-        "reference": 55,
+        "reference": 52,
         "source": 8,
         "target": {
           "node": 11,
@@ -2280,32 +2280,10 @@ package Flow {
       },
       {
         "kind": "typing",
-        "navigation": 38,
-        "provenance": "authored",
-        "reference": 65,
-        "source": 16,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 39,
-        "provenance": "authored",
-        "reference": 64,
-        "source": 16,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 69,
-        "source": 17,
+        "reference": 62,
+        "source": 16,
         "target": {
           "reference": 10,
           "status": "resolved"
@@ -2315,7 +2293,29 @@ package Flow {
         "kind": "redefinition",
         "navigation": 36,
         "provenance": "authored",
+        "reference": 61,
+        "source": 16,
+        "target": {
+          "reference": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 32,
+        "provenance": "authored",
         "reference": 66,
+        "source": 17,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 33,
+        "provenance": "authored",
+        "reference": 63,
         "source": 17,
         "target": {
           "reference": 14,

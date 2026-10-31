@@ -237,7 +237,7 @@ standard library package SIPrefixes {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 19 78) (end 19 94))
+        (range (start 19 77) (end 19 93))
       )
       (diagnostic
         (severity warning)
@@ -2888,7 +2888,7 @@ standard library package SIPrefixes {
       (outcome (status unresolved)))
     )
   )
-  (query (document "memory://snapshot/si_prefixes.md") (range (start 19 78) (end 19 94)) (probe (position 19 78))
+  (query (document "memory://snapshot/si_prefixes.md") (range (start 19 77) (end 19 93)) (probe (position 19 77))
     (reference (id (source (node (document "memory://snapshot/si_prefixes.md") (path (named (kind library-package) (name "SIPrefixes")) (named (kind attribute) (name "micro")) (anonymous (kind default-reference) (ordinal 2))))) (kind redefinition) (ordinal 0) (authored-target "conversionFactor")
       (outcome (status unresolved)))
     )

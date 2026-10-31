@@ -5234,6 +5234,25 @@ impl<D> SemanticModel<D> {
         counts
     }
 
+    /// One workspace connector and its resolved ends, or `None` when `symbol` is not a connector.
+    ///
+    /// The same projection [`Self::all_connectors`] publishes for each connector. A named end that
+    /// reuses the connection-usage kind, and a connector outside the workspace, are not connectors
+    /// of this query.
+    pub(crate) fn connector(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedConnector>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let Some(record) = self.storage.declaration(declaration) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        let Some(kind) = connector_kind(record.kind) else {
+            return self.resolved_outcome(None);
+        };
+        self.resolved_outcome(self.project_connector(declaration, record, kind))
+    }
+
     /// The `connect` / `interface` topology reachable from one element: every connector it owns
     /// (directly or transitively), each with its `:` type and resolved ends.
     ///
