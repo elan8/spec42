@@ -63,6 +63,18 @@ package Guards {
       )
       (diagnostic
         (severity warning)
+        (code "transition_guard_non_boolean")
+        (source "semantic")
+        (range (start 17 24) (end 17 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "transition_guard_non_boolean")
+        (source "semantic")
+        (range (start 18 24) (end 18 29))
+      )
+      (diagnostic
+        (severity warning)
         (code "non_boolean_expression")
         (source "semantic")
         (range (start 20 8) (end 20 31))

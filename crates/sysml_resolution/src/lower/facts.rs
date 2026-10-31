@@ -517,6 +517,9 @@ pub(crate) struct DeclarationFacts {
     pub(crate) then_source: Option<ThenSource>,
     /// On a conditional succession: when it is taken.
     pub(crate) succession_guard: Option<SuccessionGuard>,
+    /// On the expression a conditional succession owns as its guard. `GuardedSuccession` is a
+    /// `TransitionUsage`, so this is the same `GuardExpressionMember` a transition owns.
+    pub(crate) is_succession_guard: bool,
 }
 
 /// When a conditional succession is taken (SysML 7.17.5): `first a if g then b;`, and in the

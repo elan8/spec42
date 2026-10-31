@@ -978,6 +978,7 @@ impl<D> SemanticModel<D> {
 
         for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
+            self.collect_succession_guard(id, diagnostics)?;
             match kind {
                 DeclarationKind::PerformActionUsage => {
                     for (reference_id, reference) in self.authored_references(
@@ -1124,6 +1125,30 @@ impl<D> SemanticModel<D> {
             &final_by_context,
             diagnostics,
         )?;
+        Ok(())
+    }
+
+    /// SysML 8.3.18.8 `validateTransitionFeatureMembershipGuardExpression` for a conditional
+    /// succession, which is a `TransitionUsage` that lowering keeps on the declaration the
+    /// succession is written with: a `Succession`, or whatever an inline `if ... then` declares.
+    fn collect_succession_guard(
+        &self,
+        id: DeclarationId,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for guard in self.child_declarations(id).iter().copied().filter(|child| {
+            self.storage
+                .declaration_facts(*child)
+                .is_some_and(|facts| facts.is_succession_guard)
+        }) {
+            if self.condition_is_non_boolean(guard) {
+                diagnostics.push(self.declaration_diagnostic(
+                    guard,
+                    DiagnosticCode::TransitionGuardNonBoolean,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+        }
         Ok(())
     }
 
