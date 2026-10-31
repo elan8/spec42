@@ -7,6 +7,7 @@ source_expectation=accepted
 rule_family=derive
 expectation=semantics
 rule_id=sysml-2.0:8.3.26.11:deriveViewUsageExposedElement
+coverage_role=secondary
 libraries=standard
 ~~~
 # SOURCE
