@@ -2752,6 +2752,12 @@ impl WorkspaceHandle {
                         return Mutation::Unchanged((DocumentChange::Rejected(reason), Vec::new()))
                     }
                 };
+                let line_ending = changes
+                    .iter()
+                    .rev()
+                    .find(|change| change.range.is_none())
+                    .map(|change| sysml_query::source::LineEnding::from_text(&change.text))
+                    .unwrap_or_else(|| entry.document.line_ending());
                 let (content, changed, warnings) = crate::session::services::apply_content_changes(
                     entry.content(),
                     &uri,
@@ -2769,6 +2775,9 @@ impl WorkspaceHandle {
                     .expect("validated in the same actor mutation");
                 if changed {
                     crate::session::services::store_document_text_fast(state, &uri, content);
+                    if let Some(entry) = state.index.get_mut(&uri) {
+                        entry.document = entry.document.with_line_ending(line_ending);
+                    }
                     state.invalidate_inputs();
                     state.services.syntax.retain(
                         state
@@ -2778,6 +2787,9 @@ impl WorkspaceHandle {
                     );
                     Mutation::Changed((DocumentChange::Changed, warnings))
                 } else {
+                    if let Some(entry) = state.index.get_mut(&uri) {
+                        entry.document = entry.document.with_line_ending(line_ending);
+                    }
                     Mutation::Changed((DocumentChange::Unchanged, warnings))
                 }
             })

@@ -420,11 +420,34 @@ impl TestSession {
         root_uri: Option<&url::Url>,
         initialization_options: Option<serde_json::Value>,
     ) {
+        self.initialize_with_client_capabilities(
+            client_name,
+            root_uri,
+            initialization_options,
+            serde_json::json!({}),
+        );
+    }
+
+    pub fn initialize_with_capabilities(
+        &mut self,
+        client_name: &str,
+        capabilities: serde_json::Value,
+    ) {
+        self.initialize_with_client_capabilities(client_name, None, None, capabilities);
+    }
+
+    fn initialize_with_client_capabilities(
+        &mut self,
+        client_name: &str,
+        root_uri: Option<&url::Url>,
+        initialization_options: Option<serde_json::Value>,
+        capabilities: serde_json::Value,
+    ) {
         let init_id = next_id();
         let mut params = serde_json::json!({
             "processId": null,
             "rootUri": root_uri,
-            "capabilities": {},
+            "capabilities": capabilities,
             "clientInfo": { "name": client_name, "version": "0.1.0" }
         });
         if let Some(options) = initialization_options {
@@ -461,6 +484,12 @@ impl TestSession {
             })
             .to_string(),
         );
+    }
+
+    pub fn did_close(&mut self, uri: &str) {
+        send_message(&mut self.stdin, &serde_json::json!({
+            "jsonrpc":"2.0", "method":"textDocument/didClose", "params":{"textDocument":{"uri":uri}}
+        }).to_string());
     }
 
     pub fn did_change_full(&mut self, uri: &str, text: &str, version: i32) {

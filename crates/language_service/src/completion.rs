@@ -6,7 +6,7 @@ use url::Url;
 
 use crate::dto::{
     CompletionEditShape, CompletionItemDto, CompletionItemKindDto, CompletionItemLabelDetailsDto,
-    CompletionResult, CompletionTextEditDto,
+    CompletionResult, CompletionTextEditDto, ImportCompletionDto,
 };
 use crate::keywords::{keyword_doc, sysml_keywords};
 use crate::text::{completion_prefix, line_prefix_at_position, position_in_previous_revision};
@@ -132,6 +132,16 @@ pub fn complete(
     document_path: &str,
     position: TextPosition,
 ) -> Option<CompletionResult> {
+    complete_with_imports(workspace, document_path, position, true)
+}
+
+/// Hosts without guarded completion-import support can keep the ordinary completion path.
+pub fn complete_with_imports(
+    workspace: &impl WorkspaceSnapshot,
+    document_path: &str,
+    position: TextPosition,
+    include_imports: bool,
+) -> Option<CompletionResult> {
     let uri = workspace.resolve_uri_for_path(document_path)?;
     let published_text = workspace.document_text(&uri)?;
     // The context and the replaced range are read from what the user is typing; the symbols come
@@ -150,6 +160,7 @@ pub fn complete(
         &context,
         &hints,
         &edit_shape,
+        include_imports && !predates_source,
     ));
     let mut semantic_status = workspace
         .published_model()
@@ -395,6 +406,7 @@ fn collect_completion_candidates(
     context: &CompletionContext,
     hints: &CompletionSemanticHints,
     edit_shape: &CompletionEditShape,
+    include_imports: bool,
 ) -> Vec<CompletionCandidate> {
     let mut candidates = Vec::new();
     collect_snippet_candidates(context, edit_shape, &mut candidates);
@@ -408,8 +420,102 @@ fn collect_completion_candidates(
         edit_shape,
         &mut candidates,
     );
+    if include_imports {
+        collect_import_candidates(workspace, uri, context, edit_shape, &mut candidates);
+    }
     rank_candidates_in_place(context, hints, &mut candidates);
     dedupe_completion_candidates(candidates)
+}
+
+fn collect_import_candidates(
+    workspace: &impl WorkspaceSnapshot,
+    uri: &Url,
+    context: &CompletionContext,
+    edit_shape: &CompletionEditShape,
+    out: &mut Vec<CompletionCandidate>,
+) {
+    let (prefix, expected_kinds): (&str, &[ElementKind]) = match context {
+        CompletionContext::TypeReference {
+            prefix,
+            qualifier: None,
+            expected_kinds,
+        } => (prefix, expected_kinds),
+        // Inline packages/comments can leave the line-prefix recovery in General. The canonical
+        // query still requires an authored typing/specialization slot and owns its kind filter.
+        CompletionContext::General { prefix } | CompletionContext::BodyStatement { prefix } => {
+            (prefix, &[])
+        }
+        _ => return,
+    };
+    let Some(model) = workspace.published_model() else {
+        return;
+    };
+    let sysml_query::resolved_slice::QueryAnswer::Resolved(choices) = model
+        .completion()
+        .import_candidates(
+            uri.as_str(),
+            edit_shape.replace_range.start,
+            prefix,
+            expected_kinds,
+        )
+        .answer
+    else {
+        return;
+    };
+    for choice in choices {
+        let Some(token) = model.symbol_token(choice.candidate.target) else {
+            continue;
+        };
+        let Some(path) = model.edits().import_path(choice.candidate.target) else {
+            continue;
+        };
+        let Some(spelling) = model
+            .edits()
+            .import_reference_spelling(choice.candidate.target)
+        else {
+            continue;
+        };
+        let name = model
+            .symbol_name(choice.candidate.target)
+            .unwrap_or(&spelling)
+            .to_owned();
+        let detail = format!(
+            "{} — import {path}",
+            element_kind_label(choice.candidate.kind)
+        );
+        out.push(CompletionCandidate {
+            label: name.clone(),
+            element_kind: Some(choice.candidate.kind),
+            tier: TIER_WORKSPACE_COMPATIBLE - i32::from(choice.candidate.library),
+            score: 0,
+            item: CompletionItemDto {
+                label: name.clone(),
+                kind: Some(element_kind_to_completion_kind(choice.candidate.kind)),
+                detail: Some(detail.clone()),
+                documentation: None,
+                documentation_is_markdown: false,
+                label_details: Some(CompletionItemLabelDetailsDto {
+                    detail: Some(" (auto import)".into()),
+                    description: Some(path),
+                }),
+                filter_text: Some(name),
+                text_edit: Some(CompletionTextEditDto {
+                    range: choice.range,
+                    new_text: spelling,
+                }),
+                insert_text_format_snippet: false,
+                sort_text: None,
+                preselect: false,
+                deprecated: false,
+                resolve_detail: Some(detail),
+                resolve_documentation: None,
+                import: Some(ImportCompletionDto {
+                    target_token: token.as_str().to_owned(),
+                    position: choice.range.start,
+                }),
+            },
+        });
+    }
 }
 
 fn collect_snippet_candidates(
@@ -539,6 +645,7 @@ fn snippet_candidate(
             deprecated: false,
             resolve_detail: Some(detail),
             resolve_documentation: Some(documentation),
+            import: None,
         },
         tier: TIER_CONTEXTUAL_SNIPPET,
         score: 0,
@@ -579,6 +686,7 @@ fn collect_keyword_candidates(
                 deprecated: false,
                 resolve_detail: None,
                 resolve_documentation: None,
+                import: None,
             },
             tier: TIER_KEYWORD_FALLBACK,
             score: 0,
@@ -687,6 +795,7 @@ fn collect_symbol_candidates(
                 deprecated: false,
                 resolve_detail: detail,
                 resolve_documentation: documentation,
+                import: None,
             },
             tier: if qualifier.is_some() {
                 TIER_CONTEXT_COMPATIBLE_SAME_SCOPE
@@ -886,6 +995,9 @@ fn rank_candidates_in_place(
             score -= 250;
         }
 
+        if candidate.item.import.is_some() {
+            tier = candidate.tier;
+        }
         candidate.tier = tier;
         candidate.score = score;
     }
@@ -923,7 +1035,6 @@ fn rank_completion_candidates(mut candidates: Vec<CompletionCandidate>) -> Vec<C
             .then_with(|| left.label.cmp(&right.label))
     });
 
-    let total = candidates.len();
     candidates
         .into_iter()
         .enumerate()
@@ -932,7 +1043,7 @@ fn rank_completion_candidates(mut candidates: Vec<CompletionCandidate>) -> Vec<C
             item.sort_text = Some(format!(
                 "{:04}_{:06}_{}",
                 9999_i32.saturating_sub(candidate.tier),
-                total.saturating_sub(idx),
+                idx,
                 candidate.label
             ));
             item

@@ -1,8 +1,10 @@
 //! Phase 9: the read-only query surface over a finished model.
 
 pub(crate) mod ends;
+mod import_plan;
 mod redefinition;
 mod repair;
+pub use import_plan::{ImportChoice, ImportPlan, ImportRemainder, ImportRemainderReason};
 mod visible;
 
 pub use repair::{

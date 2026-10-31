@@ -184,12 +184,54 @@ pub struct SourceDocument {
     language: SourceLanguage,
     digest: ContentDigest,
     content: Arc<str>,
+    line_ending: LineEnding,
     path_hint: Option<Box<str>>,
     library_root_slot: Option<u32>,
     library_relative_path: Option<Box<str>>,
 }
 
+/// Preferred source spelling for inserted lines. Semantic text and its digest remain LF-only.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum LineEnding {
+    #[default]
+    Lf,
+    CrLf,
+    Cr,
+}
+impl LineEnding {
+    pub fn from_text(text: &str) -> Self {
+        match text.bytes().position(|b| b == b'\n' || b == b'\r') {
+            Some(index)
+                if text.as_bytes()[index] == b'\r'
+                    && text.as_bytes().get(index + 1) == Some(&b'\n') =>
+            {
+                Self::CrLf
+            }
+            Some(index) if text.as_bytes()[index] == b'\r' => Self::Cr,
+            _ => Self::Lf,
+        }
+    }
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Lf => "\n",
+            Self::CrLf => "\r\n",
+            Self::Cr => "\r",
+        }
+    }
+}
+
 impl SourceDocument {
+    pub fn line_ending(&self) -> LineEnding {
+        self.line_ending
+    }
+
+    pub fn with_line_ending(&self, line_ending: LineEnding) -> Self {
+        Self {
+            line_ending,
+            ..self.clone()
+        }
+    }
+
     pub fn uri(&self) -> &Url {
         &self.uri
     }
@@ -679,6 +721,7 @@ impl SourceAuthority {
 
     /// Admit text under an already-parsed URL.
     pub fn admit_url(&self, uri: Url, content: &str, kind: SourceKind) -> SourceDocument {
+        let line_ending = LineEnding::from_text(content);
         let content: Arc<str> = Arc::from(normalize_line_endings(content).as_ref());
         let uri = normalize_uri(&uri);
         SourceDocument {
@@ -687,6 +730,7 @@ impl SourceAuthority {
             kind,
             digest: ContentDigest::of_bytes(content.as_bytes()),
             content,
+            line_ending,
             path_hint: None,
             library_root_slot: None,
             library_relative_path: None,
@@ -700,6 +744,7 @@ impl SourceAuthority {
         SourceDocument {
             content: text.content,
             digest: text.digest,
+            line_ending: text.line_ending,
             ..document.clone()
         }
     }
@@ -917,6 +962,14 @@ mod tests {
         assert_eq!(lf.digest(), crlf.digest());
         assert_eq!(lf.content(), crlf.content());
         assert!(!crlf.content().contains('\r'));
+        assert_eq!(lf.line_ending(), LineEnding::Lf);
+        assert_eq!(crlf.line_ending(), LineEnding::CrLf);
+        let restyled = lf.with_line_ending(LineEnding::CrLf);
+        assert_eq!(restyled.digest(), lf.digest());
+        assert_eq!(restyled.content(), lf.content());
+        assert_eq!(restyled.line_ending().as_str(), "\r\n");
+        let revised = authority.revise(&crlf, "package A;\n");
+        assert_eq!(revised.line_ending(), LineEnding::Lf);
     }
 
     #[test]
