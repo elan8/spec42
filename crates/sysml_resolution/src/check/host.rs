@@ -1137,21 +1137,19 @@ impl<D> SemanticModel<D> {
         let target = self.settled_targets(id, &[ReferenceKind::TransitionTarget]);
         // SysML 8.3.18.8 `validateTransitionFeatureMembershipGuardExpression`: the guard is the
         // transition's owned guard-role Boolean expression, and it settles through the same
-        // expression pipeline every other condition does, so a non-Boolean constant is the same
+        // expression pipeline every other condition does, so a non-Boolean guard is the same
         // fact a non-Boolean constraint is.
         for guard in self.child_declarations(id).iter().copied().filter(|child| {
             self.storage.declaration_facts(*child).is_some_and(|facts| {
                 facts.transition_feature_role == Some(TransitionFeatureRole::Guard)
             })
         }) {
-            if let Some(value) = self.evaluation_for(guard).value() {
-                if !matches!(value, EvaluatedScalar::Boolean(_)) {
-                    diagnostics.push(self.declaration_diagnostic(
-                        id,
-                        DiagnosticCode::TransitionGuardNonBoolean,
-                        DiagnosticSeverity::Warning,
-                    )?);
-                }
+            if self.condition_is_non_boolean(guard) {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::TransitionGuardNonBoolean,
+                    DiagnosticSeverity::Warning,
+                )?);
             }
         }
         let (Some(source), Some(target)) = (source.first(), target.first()) else {
