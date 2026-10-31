@@ -126,7 +126,8 @@ pub use model::published_relationship_kinds;
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
 pub use model::query::{
-    ImplicitRedefinitionRepair, ImportCandidate, QualificationCandidate, ReferenceRepair,
+    CompletionImports, ImplicitRedefinitionRepair, ImportCandidate, ImportChoice, ImportPlan,
+    ImportRemainder, ImportRemainderReason, QualificationCandidate, ReferenceRepair,
     ReferenceRepairOutcome, RepairNamespace, RepairSlot,
 };
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
@@ -961,6 +962,39 @@ impl PublishedResolution {
         position: TextPosition,
     ) -> QueryOutcome<ReferenceRepair> {
         self.model.reference_repair(document, position)
+    }
+
+    pub fn completion_imports(
+        &self,
+        document: &str,
+        position: TextPosition,
+        prefix: &str,
+        expected: &[ElementKind],
+    ) -> QueryOutcome<CompletionImports> {
+        self.model
+            .completion_imports(document, position, prefix, expected)
+    }
+
+    pub fn validate_completion_import(
+        &self,
+        document: &str,
+        position: TextPosition,
+        target: SymbolId,
+    ) -> QueryOutcome<ImportChoice> {
+        self.model
+            .validate_completion_import(document, position, target)
+    }
+
+    pub fn import_path(&self, target: SymbolId) -> Option<String> {
+        self.model.import_path(target)
+    }
+
+    pub fn import_reference_spelling(&self, target: SymbolId) -> Option<String> {
+        self.model.import_reference_spelling(target)
+    }
+
+    pub fn missing_import_plan(&self, document: &str) -> QueryOutcome<ImportPlan> {
+        self.model.missing_import_plan(document)
     }
 
     /// The explicit `:>>` repair for the declaration at `position`, where its authored value

@@ -195,6 +195,8 @@ pub(crate) fn code_action(
     uri: Url,
     diagnostics: &[Diagnostic],
     perf_logging_enabled: bool,
+    versioned_edits: bool,
+    only: Option<&[CodeActionKind]>,
 ) -> Result<Option<CodeActionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
     if util::uri_under_any_library(&uri_norm, &state.library_paths) {
@@ -207,6 +209,26 @@ pub(crate) fn code_action(
         .get(&uri_norm)
         .and_then(|entry| entry.editor_version());
     let mut actions = Vec::new();
+    const IMPORT_KIND: &str = "source.fixAll.spec42.imports";
+    let wanted = |kind: &str| {
+        only.is_none_or(|kinds| {
+            kinds.iter().any(|requested| {
+                requested.as_str() == kind || kind.starts_with(&format!("{}.", requested.as_str()))
+            })
+        })
+    };
+    if versioned_edits && version.is_some() && wanted(IMPORT_KIND) {
+        if let Some(fix) = language_service::fix_all_missing_imports(&snapshot, &path) {
+            let empty = Diagnostic::default();
+            let mut action = quick_fix_action(fix, &uri, version, &empty);
+            action.kind = Some(CodeActionKind::new(IMPORT_KIND));
+            action.diagnostics = None;
+            actions.push(CodeActionOrCommand::CodeAction(action));
+        }
+    }
+    if !wanted(CodeActionKind::QUICKFIX.as_str()) {
+        return Ok(Some(actions));
+    }
     for diagnostic in diagnostics {
         let Some(NumberOrString::String(code)) = diagnostic.code.as_ref() else {
             continue;

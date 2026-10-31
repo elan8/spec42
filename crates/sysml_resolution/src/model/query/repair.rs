@@ -84,6 +84,8 @@ pub struct RepairNamespace {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ImportCandidate {
     pub target: SymbolId,
+    /// The definition reached through an alias, or the target itself.
+    pub referent: SymbolId,
     pub kind: ElementKind,
     /// Whether the target is authored in a library rather than the workspace.
     pub library: bool,
@@ -266,7 +268,7 @@ impl ResolvedSemanticModel {
 
     /// Every definition named `name` that a membership import into `namespace` would make the
     /// reference resolve to.
-    fn import_candidates(
+    pub(super) fn import_candidates(
         &self,
         source: DeclarationId,
         kind: ReferenceKind,
@@ -283,47 +285,15 @@ impl ResolvedSemanticModel {
         if !self.lexical_candidates(owner, name)?.is_empty() {
             return Ok(Vec::new());
         }
-        let domain = reference_target_domain(kind);
         let mut candidates = Vec::new();
         for index in 0..self.storage.declarations.len() {
-            let candidate =
-                DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            if candidate == source || self.effective_name_id(candidate) != Some(name) {
-                continue;
+            let target = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            if let Some(candidate) = self.import_candidate(source, kind, name, namespace, target)? {
+                let path = self
+                    .spelling_from(namespace, target)?
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                candidates.push((path, candidate));
             }
-            let declaration = self
-                .storage
-                .declaration(candidate)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            // A top-level element is a member of the root namespace every scope already sees.
-            if declaration.owner.is_none()
-                || !domain.accepts(declaration.kind)
-                || self
-                    .reference_kind_violation(kind, source, candidate)
-                    .is_some()
-            {
-                continue;
-            }
-            let Some(import_path) = self.spelling_from(namespace, candidate)? else {
-                continue;
-            };
-            let library = self
-                .storage
-                .documents
-                .get(declaration.document.index())
-                .ok_or(ResolutionError::InvalidStorage)?
-                .role
-                != source_identity::SourceRole::Workspace;
-            candidates.push((
-                import_path,
-                ImportCandidate {
-                    target: self
-                        .symbol_id(candidate)
-                        .ok_or(ResolutionError::InvalidStorage)?,
-                    kind: element_kind(declaration.kind),
-                    library,
-                },
-            ));
         }
         candidates.sort_by(|(left_path, left), (right_path, right)| {
             left.library
@@ -337,9 +307,67 @@ impl ResolvedSemanticModel {
             .collect())
     }
 
+    /// Shared single-reference and completion candidate contract. Callers enumerate canonical
+    /// declarations, never names reconstructed from source or display paths.
+    pub(super) fn import_candidate(
+        &self,
+        source: DeclarationId,
+        kind: ReferenceKind,
+        name: NameId,
+        namespace: Option<DeclarationId>,
+        candidate: DeclarationId,
+    ) -> Result<Option<ImportCandidate>, ResolutionError> {
+        if candidate == source || self.effective_name_id(candidate) != Some(name) {
+            return Ok(None);
+        }
+        let declaration = self
+            .storage
+            .declaration(candidate)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        let Some(referent) = self.import_referent(candidate) else {
+            return Ok(None);
+        };
+        let referent_kind = self
+            .storage
+            .declaration(referent)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .kind;
+        let owner = self
+            .storage
+            .declaration(source)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .owner;
+        if declaration.owner.is_none()
+            || !reference_target_domain(kind).accepts(referent_kind)
+            || self
+                .reference_kind_violation(kind, source, referent)
+                .is_some()
+            || !self.lexical_candidates(owner, name)?.is_empty()
+            || self.spelling_from(namespace, candidate)?.is_none()
+        {
+            return Ok(None);
+        }
+        Ok(Some(ImportCandidate {
+            target: self
+                .symbol_id(candidate)
+                .ok_or(ResolutionError::InvalidStorage)?,
+            referent: self
+                .symbol_id(referent)
+                .ok_or(ResolutionError::InvalidStorage)?,
+            kind: element_kind(referent_kind),
+            library: self
+                .storage
+                .documents
+                .get(declaration.document.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .role
+                != source_identity::SourceRole::Workspace,
+        }))
+    }
+
     /// The escaped qualified name of `target`, provided every segment of it is publicly visible
     /// and, looked up from `scope`, names exactly `target`.
-    fn spelling_from(
+    pub(super) fn spelling_from(
         &self,
         scope: Option<DeclarationId>,
         target: DeclarationId,
@@ -377,10 +405,10 @@ impl ResolvedSemanticModel {
                 return Ok(None);
             }
         }
-        Ok(self.normative_qualified_name(target, 0))
+        Ok(self.import_spelling(target))
     }
 
-    fn lexical_candidates(
+    pub(super) fn lexical_candidates(
         &self,
         scope: Option<DeclarationId>,
         name: NameId,
@@ -412,7 +440,7 @@ impl ResolvedSemanticModel {
     }
 
     /// The innermost package or library package that owns `declaration`.
-    fn enclosing_package(
+    pub(super) fn enclosing_package(
         &self,
         declaration: DeclarationId,
     ) -> Result<Option<DeclarationId>, ResolutionError> {
@@ -437,7 +465,7 @@ impl ResolvedSemanticModel {
         Ok(None)
     }
 
-    fn effective_name_id(&self, declaration: DeclarationId) -> Option<NameId> {
+    pub(super) fn effective_name_id(&self, declaration: DeclarationId) -> Option<NameId> {
         match self
             .resolution
             .effective_names

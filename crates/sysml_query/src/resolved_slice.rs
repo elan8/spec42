@@ -12,17 +12,18 @@ pub use sysml_resolution::{
     ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AdmittedSourceCounts,
     AffectedDocument, AnalysisEvaluation, AnnotationForm, AnonymousElementReference, AuthoredUnit,
     AuthoredValue, BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
-    BindingConnectorValidationPrerequisite, BuildMeasurements, Conformance, ConformanceObstacle,
-    ConnectedElement, ConnectorEndpoint, ConnectorKind, DefinitionUsageDerivedKind,
-    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivationEndpoint,
-    DerivationRelationship, DerivedElementOwner, Diagnostic, DiagnosticCategory, DiagnosticCode,
-    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramBrowserMembers,
-    DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance,
-    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
-    DiagramIncompleteReason, DiagramMembership, DiagramOccurrenceIdentity, DiagramRelationship,
-    DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
-    DiagramSemanticReference, DiagramSequenceCycleStep, DiagramSequenceEndpoint,
-    DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
+    BindingConnectorValidationPrerequisite, BuildMeasurements, CompletionImports, Conformance,
+    ConformanceObstacle, ConnectedElement, ConnectorEndpoint, ConnectorKind,
+    DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,
+    DerivationEndpoint, DerivationRelationship, DerivedElementOwner, Diagnostic,
+    DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
+    DiagramBrowserMembers, DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind,
+    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership,
+    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramSequenceCycleStep, DiagramSequenceEndpoint, DiagramSequenceMessage,
+    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
     DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
     DiagramSuccessionGuard, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
     DiagramViewProjection, DocumentId, DocumentToken, Documentation, EffectiveType,
@@ -32,8 +33,9 @@ pub use sysml_resolution::{
     ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
     ExpectedMeasurement, ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome,
     FeatureDerivedRelationshipCollection, FeatureDirection, ImplicitRedefinitionRepair,
-    ImportCandidate, InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts,
-    MembershipId, MembershipKind, MembershipRelationship, MembershipRole, MetadataAnnotationForm,
+    ImportCandidate, ImportChoice, ImportPlan, ImportRemainder, ImportRemainderReason,
+    InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId,
+    MembershipKind, MembershipRelationship, MembershipRole, MetadataAnnotationForm,
     MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
     NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
     OccurrenceRole, PortionKind, ProjectedElement, ProjectionEnvelope, ProjectionPhase,
@@ -664,6 +666,32 @@ impl EditQueries<'_> {
         self.model.reference_repair(document, position)
     }
 
+    /// Canonical escaped membership spelling, including public alias memberships.
+    pub fn import_path(&self, target: SymbolId) -> Option<String> {
+        self.model.import_path(target)
+    }
+
+    /// Materialize the escaped unqualified membership spelling only when emitting an edit.
+    pub fn import_reference_spelling(&self, target: SymbolId) -> Option<String> {
+        self.model.import_reference_spelling(target)
+    }
+
+    /// A safe, deduplicated import transaction for all unambiguous references in this document.
+    pub fn missing_import_plan(&self, document: &str) -> QueryOutcome<ImportPlan> {
+        self.model.missing_import_plan(document)
+    }
+
+    /// Revalidate the selected completion using the canonical resolver with its private import.
+    pub fn validate_completion_import(
+        &self,
+        document: &str,
+        position: TextPosition,
+        target: SymbolId,
+    ) -> QueryOutcome<ImportChoice> {
+        self.model
+            .validate_completion_import(document, position, target)
+    }
+
     /// The explicit `:>>` repair for the declaration at `position`.
     pub fn implicit_redefinition_repair(
         &self,
@@ -679,6 +707,17 @@ pub struct CompletionQueries<'a> {
 }
 
 impl<'a> CompletionQueries<'a> {
+    pub fn import_candidates(
+        &self,
+        document: &str,
+        position: TextPosition,
+        prefix: &str,
+        expected: &[ElementKind],
+    ) -> QueryOutcome<CompletionImports> {
+        self.model
+            .completion_imports(document, position, prefix, expected)
+    }
+
     /// The members visible at a position, as a borrowed view over the publication.
     ///
     /// The view outlives this query handle: it borrows the publication, not the handle, so a
@@ -985,6 +1024,8 @@ pub struct EditorProbe {
     pub features: bool,
     /// Include the reference and declaration repairs an editor may offer at the position.
     pub repairs: bool,
+    pub import_prefix: Option<String>,
+    pub fix_imports: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1093,6 +1134,52 @@ impl DebugQueries<'_> {
                         .model
                         .implicit_redefinition_repair(&probe.document, probe.position),
                 )?;
+            }
+            if let Some(prefix) = &probe.import_prefix {
+                let candidates =
+                    model.completion_imports(&probe.document, probe.position, prefix, &[]);
+                write!(output, "    (completion-imports ")?;
+                write_answer_status(output, &candidates.answer)?;
+                if let QueryAnswer::Resolved(choices) = candidates.answer {
+                    for choice in choices.choices.iter() {
+                        let valid = matches!(
+                            model
+                                .validate_completion_import(
+                                    &probe.document,
+                                    probe.position,
+                                    choice.candidate.target
+                                )
+                                .answer,
+                            QueryAnswer::Resolved(_)
+                        );
+                        write_import_choice(model, output, choice)?;
+                        write!(output, " (safe {valid})")?;
+                    }
+                }
+                writeln!(output, ")")?;
+            }
+            if probe.fix_imports {
+                let plan = model.missing_import_plan(&probe.document);
+                write!(output, "    (missing-imports ")?;
+                write_answer_status(output, &plan.answer)?;
+                if let QueryAnswer::Resolved(plan) = plan.answer {
+                    for choice in plan.imports.iter() {
+                        write_import_choice(model, output, choice)?;
+                    }
+                    write!(output, " (repaired")?;
+                    for range in plan.repaired.iter() {
+                        write!(output, " ")?;
+                        write_range(output, *range)?;
+                    }
+                    write!(output, ") (remaining")?;
+                    for remaining in plan.remaining.iter() {
+                        write!(output, " ({:?} ", remaining.reason)?;
+                        write_range(output, remaining.range)?;
+                        write!(output, ")")?;
+                    }
+                    write!(output, ")")?;
+                }
+                writeln!(output, ")")?;
             }
             writeln!(output, "  )")?;
         }
@@ -1381,6 +1468,32 @@ fn write_answer_status<T>(output: &mut dyn fmt::Write, answer: &QueryAnswer<T>) 
         QueryAnswer::Incomplete => "incomplete",
     };
     write!(output, "(status {status})")
+}
+
+fn write_import_choice(
+    model: &sysml_resolution::PublishedResolution,
+    output: &mut dyn fmt::Write,
+    choice: &ImportChoice,
+) -> fmt::Result {
+    write!(
+        output,
+        " (import (target {:?}) (referent {:?}) (spelling {:?}) (namespace {:?}) ",
+        model
+            .import_path(choice.candidate.target)
+            .unwrap_or_default(),
+        model
+            .qualified_name(choice.candidate.referent)
+            .unwrap_or_default(),
+        model
+            .import_reference_spelling(choice.candidate.target)
+            .unwrap_or_default(),
+        choice
+            .namespace
+            .and_then(|n| model.qualified_name(n.symbol))
+            .unwrap_or_default()
+    )?;
+    write_range(output, choice.range)?;
+    write!(output, ")")
 }
 
 fn write_repairs(

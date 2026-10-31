@@ -204,6 +204,26 @@ impl MembershipIndex {
 }
 
 impl NameIndex {
+    /// Merge ephemeral private memberships without changing the exported import index.
+    pub(crate) fn with_additional(
+        self,
+        additional: &[(NameKey, DeclarationId)],
+    ) -> Result<Self, ResolutionError> {
+        if additional.is_empty() {
+            return Ok(self);
+        }
+        let mut entries = additional.to_vec();
+        for (key, range) in self.keys.iter().zip(self.ranges.iter()) {
+            for candidate in range
+                .slice(&self.candidates)
+                .ok_or(ResolutionError::InvalidStorage)?
+            {
+                entries.push((*key, *candidate));
+            }
+        }
+        Self::build(entries)
+    }
+
     pub(crate) fn build(
         mut entries: Vec<(NameKey, DeclarationId)>,
     ) -> Result<Self, ResolutionError> {
