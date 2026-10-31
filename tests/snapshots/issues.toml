@@ -43,6 +43,12 @@ owner = "spec42-snapshot"
 summary = "KerML `ConjugationPart = ( 'conjugates' | '~' ) OwnedConjugation` (BNF 462) admits one owned Conjugation per type declaration, and a Conjugation declared as a body member is owned through an OwningMembership rather than the type's ownedRelationship, so a second owned Conjugation has no concrete-syntax spelling; no executable evidence can be cited yet because the pinned parser reports `classifier Two conjugates A conjugates B;` as unsupported_grammar_form (the unsupported_syntax category, i.e. valid-but-unimplemented) rather than malformed_syntax, so a rejection fixture would misstate the source intent"
 
 [[issue]]
+id = "abstract-syntax-nonrepresentable-second-result-expression"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "KerML `FunctionBodyPart = TypeBodyElement* ( ReturnFeatureMember )* ( ResultExpressionMember )?` admits at most one result expression, as the last member of the body, so a Function or Expression violating validateFunctionResultExpressionMembership or validateExpressionResultExpressionMembership has no textual spelling. The parser rejects `{ 1 2 }` since sysml-v2-parser#214."
+
+[[issue]]
 id = "abstract-syntax-nonrepresentable-variable-end"
 kind = "abstract_syntax_coverage_gap"
 owner = "spec42-snapshot"
