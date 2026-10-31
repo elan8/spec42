@@ -126,9 +126,9 @@ pub use model::published_relationship_kinds;
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
 pub use model::query::{
-    ImplicitRedefinitionRepair, ImportCandidate, ImportChoice, ImportPlan, ImportRemainder,
-    ImportRemainderReason, QualificationCandidate, ReferenceRepair, ReferenceRepairOutcome,
-    RepairNamespace, RepairSlot,
+    CompletionImports, ImplicitRedefinitionRepair, ImportCandidate, ImportChoice, ImportPlan,
+    ImportRemainder, ImportRemainderReason, QualificationCandidate, ReferenceRepair,
+    ReferenceRepairOutcome, RepairNamespace, RepairSlot,
 };
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
 pub use projection::{
@@ -970,7 +970,7 @@ impl PublishedResolution {
         position: TextPosition,
         prefix: &str,
         expected: &[ElementKind],
-    ) -> QueryOutcome<Box<[ImportChoice]>> {
+    ) -> QueryOutcome<CompletionImports> {
         self.model
             .completion_imports(document, position, prefix, expected)
     }

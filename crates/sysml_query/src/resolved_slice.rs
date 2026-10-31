@@ -12,17 +12,18 @@ pub use sysml_resolution::{
     ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AdmittedSourceCounts,
     AffectedDocument, AnalysisEvaluation, AnnotationForm, AnonymousElementReference, AuthoredUnit,
     AuthoredValue, BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
-    BindingConnectorValidationPrerequisite, BuildMeasurements, Conformance, ConformanceObstacle,
-    ConnectedElement, ConnectorEndpoint, ConnectorKind, DefinitionUsageDerivedKind,
-    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivationEndpoint,
-    DerivationRelationship, DerivedElementOwner, Diagnostic, DiagnosticCategory, DiagnosticCode,
-    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramBrowserMembers,
-    DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance,
-    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
-    DiagramIncompleteReason, DiagramMembership, DiagramOccurrenceIdentity, DiagramRelationship,
-    DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
-    DiagramSemanticReference, DiagramSequenceCycleStep, DiagramSequenceEndpoint,
-    DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
+    BindingConnectorValidationPrerequisite, BuildMeasurements, CompletionImports, Conformance,
+    ConformanceObstacle, ConnectedElement, ConnectorEndpoint, ConnectorKind,
+    DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,
+    DerivationEndpoint, DerivationRelationship, DerivedElementOwner, Diagnostic,
+    DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity,
+    DiagramBrowserMembers, DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind,
+    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramMembership,
+    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramSequenceCycleStep, DiagramSequenceEndpoint, DiagramSequenceMessage,
+    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
     DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
     DiagramSuccessionGuard, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
     DiagramViewProjection, DocumentId, DocumentToken, Documentation, EffectiveType,
@@ -712,7 +713,7 @@ impl<'a> CompletionQueries<'a> {
         position: TextPosition,
         prefix: &str,
         expected: &[ElementKind],
-    ) -> QueryOutcome<Box<[ImportChoice]>> {
+    ) -> QueryOutcome<CompletionImports> {
         self.model
             .completion_imports(document, position, prefix, expected)
     }
@@ -1140,7 +1141,7 @@ impl DebugQueries<'_> {
                 write!(output, "    (completion-imports ")?;
                 write_answer_status(output, &candidates.answer)?;
                 if let QueryAnswer::Resolved(choices) = candidates.answer {
-                    for choice in choices.iter() {
+                    for choice in choices.choices.iter() {
                         let valid = matches!(
                             model
                                 .validate_completion_import(

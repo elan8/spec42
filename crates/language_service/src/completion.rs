@@ -153,6 +153,7 @@ pub fn complete_with_imports(
     let context = refine_completion_context(detect_completion_context(&line_prefix));
     let hints = completion_semantic_hints(workspace, &uri, &context);
     let edit_shape = completion_edit_shape(position, context.prefix());
+    let mut imports_truncated = false;
     let items = rank_completion_candidates(collect_completion_candidates(
         workspace,
         &uri,
@@ -160,7 +161,7 @@ pub fn complete_with_imports(
         &context,
         &hints,
         &edit_shape,
-        include_imports && !predates_source,
+        (include_imports && !predates_source).then_some(&mut imports_truncated),
     ));
     let mut semantic_status = workspace
         .published_model()
@@ -171,7 +172,7 @@ pub fn complete_with_imports(
     semantic_status.predates_source = predates_source;
     Some(CompletionResult {
         items,
-        is_incomplete: !semantic_status.is_complete(),
+        is_incomplete: imports_truncated || !semantic_status.is_complete(),
         semantic_status,
     })
 }
@@ -406,7 +407,7 @@ fn collect_completion_candidates(
     context: &CompletionContext,
     hints: &CompletionSemanticHints,
     edit_shape: &CompletionEditShape,
-    include_imports: bool,
+    imports_truncated: Option<&mut bool>,
 ) -> Vec<CompletionCandidate> {
     let mut candidates = Vec::new();
     collect_snippet_candidates(context, edit_shape, &mut candidates);
@@ -420,20 +421,22 @@ fn collect_completion_candidates(
         edit_shape,
         &mut candidates,
     );
-    if include_imports {
-        collect_import_candidates(workspace, uri, context, edit_shape, &mut candidates);
+    if let Some(imports_truncated) = imports_truncated {
+        *imports_truncated =
+            collect_import_candidates(workspace, uri, context, edit_shape, &mut candidates);
     }
     rank_candidates_in_place(context, hints, &mut candidates);
     dedupe_completion_candidates(candidates)
 }
 
+/// Returns whether more import candidates exist than this request offered.
 fn collect_import_candidates(
     workspace: &impl WorkspaceSnapshot,
     uri: &Url,
     context: &CompletionContext,
     edit_shape: &CompletionEditShape,
     out: &mut Vec<CompletionCandidate>,
-) {
+) -> bool {
     let (prefix, expected_kinds): (&str, &[ElementKind]) = match context {
         CompletionContext::TypeReference {
             prefix,
@@ -445,12 +448,12 @@ fn collect_import_candidates(
         CompletionContext::General { prefix } | CompletionContext::BodyStatement { prefix } => {
             (prefix, &[])
         }
-        _ => return,
+        _ => return false,
     };
     let Some(model) = workspace.published_model() else {
-        return;
+        return false;
     };
-    let sysml_query::resolved_slice::QueryAnswer::Resolved(choices) = model
+    let sysml_query::resolved_slice::QueryAnswer::Resolved(imports) = model
         .completion()
         .import_candidates(
             uri.as_str(),
@@ -460,9 +463,9 @@ fn collect_import_candidates(
         )
         .answer
     else {
-        return;
+        return false;
     };
-    for choice in choices {
+    for choice in imports.choices {
         let Some(token) = model.symbol_token(choice.candidate.target) else {
             continue;
         };
@@ -516,6 +519,7 @@ fn collect_import_candidates(
             },
         });
     }
+    imports.truncated
 }
 
 fn collect_snippet_candidates(

@@ -4,7 +4,9 @@ pub(crate) mod ends;
 mod import_plan;
 mod redefinition;
 mod repair;
-pub use import_plan::{ImportChoice, ImportPlan, ImportRemainder, ImportRemainderReason};
+pub use import_plan::{
+    CompletionImports, ImportChoice, ImportPlan, ImportRemainder, ImportRemainderReason,
+};
 mod visible;
 
 pub use repair::{

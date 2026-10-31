@@ -105,6 +105,44 @@ fn import_completion_delivers_an_atomic_transaction_and_revalidates_on_resolve()
 }
 
 #[test]
+fn completion_bounds_its_import_proofs_and_requests_a_narrower_prefix() {
+    let definitions = (0..40)
+        .map(|index| format!("part def Motor{index:02};"))
+        .collect::<String>();
+    let source = "package Machine {\n    part drive : Mot;\n}\n";
+    let narrowed = "package Machine {\n    part drive : Motor39;\n}\n";
+    let mut session = TestSession::new();
+    session.initialize_with_capabilities("import-actions", capabilities());
+    session.did_open(LIB_URI, &format!("package Catalog {{ {definitions} }}"), 1);
+    session.did_open(URI, source, 1);
+    session.barrier();
+    let mut at = position(source, "Mot");
+    at["character"] = json!(at["character"].as_u64().unwrap() + 3);
+    let response = session.request(
+        "textDocument/completion",
+        json!({"textDocument":{"uri":URI},"position":at}),
+    );
+    let imports = response["result"]["items"]
+        .as_array()
+        .expect("completion list")
+        .iter()
+        .filter(|item| item.get("additionalTextEdits").is_some())
+        .count();
+    assert_eq!(imports, 10, "{response}");
+    assert_eq!(response["result"]["isIncomplete"], true);
+
+    session.did_change_full(URI, narrowed, 2);
+    session.barrier();
+    let items = items(&mut session, narrowed, "Motor39");
+    assert!(
+        items
+            .iter()
+            .any(|item| item["label"] == "Motor39" && item.get("additionalTextEdits").is_some()),
+        "a narrower prefix reaches a candidate past the bound: {items:?}"
+    );
+}
+
+#[test]
 fn completion_import_rejects_old_versions_and_reopened_documents() {
     let source = "package Machine { part drive : Mot; }";
     let mut session = session(source, capabilities());

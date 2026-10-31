@@ -37,6 +37,22 @@ pub struct ImportRemainder {
     pub reason: ImportRemainderReason,
 }
 
+/// The most auto-imports one completion offers. Each is proved by a full counterfactual resolve,
+/// so a request's cost must not grow with how many declarations share the typed prefix.
+const MAX_COMPLETION_IMPORTS: usize = 10;
+
+/// The most candidates one completion proves, which also bounds requests that keep finding unsafe
+/// ones.
+const MAX_COMPLETION_IMPORT_ATTEMPTS: usize = 2 * MAX_COMPLETION_IMPORTS;
+
+/// Safe completion imports in canonical order. `truncated` means more candidates exist, so the
+/// list must be requested again as the prefix grows.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CompletionImports {
+    pub choices: Box<[ImportChoice]>,
+    pub truncated: bool,
+}
+
 /// A deterministic safe subset, with one import per (namespace, membership).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ImportPlan {
@@ -130,20 +146,36 @@ impl ResolvedSemanticModel {
         position: TextPosition,
         prefix: &str,
         expected: &[ElementKind],
-    ) -> QueryOutcome<Box<[ImportChoice]>> {
+    ) -> QueryOutcome<CompletionImports> {
         let outcome = self.completion_import_candidates(document, position, prefix, expected);
-        let QueryAnswer::Resolved(choices) = outcome.answer else {
-            return outcome;
+        let choices = match outcome.answer {
+            QueryAnswer::Resolved(choices) => choices,
+            // The candidate query never reports a list of lists as ambiguous.
+            QueryAnswer::Incomplete | QueryAnswer::Ambiguous(_) => {
+                return self.query_outcome(QueryAnswer::Incomplete)
+            }
+            QueryAnswer::Unresolved => return self.query_outcome(QueryAnswer::Unresolved),
+            QueryAnswer::Unsupported => return self.query_outcome(QueryAnswer::Unsupported),
+            QueryAnswer::Recovery => return self.query_outcome(QueryAnswer::Recovery),
         };
+        let candidates = choices.len();
         let mut safe = Vec::new();
+        let mut attempted = 0;
         for choice in choices {
+            if safe.len() == MAX_COMPLETION_IMPORTS || attempted == MAX_COMPLETION_IMPORT_ATTEMPTS {
+                break;
+            }
+            attempted += 1;
             match self.import_hypothesis(document, std::slice::from_ref(&choice), true) {
                 Ok(Some(_)) => safe.push(choice),
                 Ok(None) => {}
                 Err(_) => return self.query_outcome(QueryAnswer::Incomplete),
             }
         }
-        self.resolved_outcome(safe.into_boxed_slice())
+        self.resolved_outcome(CompletionImports {
+            choices: safe.into_boxed_slice(),
+            truncated: attempted < candidates,
+        })
     }
 
     fn completion_import_candidates(
