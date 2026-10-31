@@ -29,7 +29,7 @@ sysml_query = { path = "../sysml_query" }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }
 kpar = { path = "../kpar" }
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1.53.3", features = ["full"] }
 serde_json = { workspace = true }
 clap = { workspace = true }
 serde = { workspace = true }
