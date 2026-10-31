@@ -762,7 +762,11 @@ impl SemanticModelBuilder {
             // `UseCaseUsage` owned by the including case, with `IncludeUseCase` as its membership
             // role -- the same shape `lower_satisfy` gives an inline requirement declaration.
             None => {
-                let name = self.intern_short_name(document, node.value.name)?;
+                let usage = node.value.declaration.as_ref();
+                let name = self.intern_short_name(
+                    document,
+                    usage.and_then(|usage| usage.value.identification.name),
+                )?;
                 let included = self.push_typed_declaration(
                     document,
                     Some(declaration),
@@ -770,7 +774,9 @@ impl SemanticModelBuilder {
                     name,
                     node.span,
                     DeclarationFacts {
-                        multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                        multiplicity: multiplicity_facts(
+                            usage.and_then(|usage| usage.value.multiplicity.as_ref()),
+                        ),
                         is_included_use_case: true,
                         ..DeclarationFacts::none()
                     },
@@ -781,8 +787,16 @@ impl SemanticModelBuilder {
                     Visibility::Default,
                     node.span,
                 )?;
-                if let Some(relationship) = &node.value.typing {
-                    self.lower_typing_relationship(document, included, relationship)?;
+                if let Some(usage) = usage {
+                    if let Some(relationship) = &usage.value.typing {
+                        self.lower_typing_relationship(document, included, relationship)?;
+                    }
+                    if let Some((relationship, _)) = &usage.value.subsets {
+                        self.lower_subsetting_relationship(document, included, relationship)?;
+                    }
+                    if let Some(relationship) = &usage.value.redefines {
+                        self.lower_subsetting_relationship(document, included, relationship)?;
+                    }
                 }
                 self.lower_case_family_def_body(
                     document,
@@ -1868,6 +1882,9 @@ impl SemanticModelBuilder {
                 }
                 UseCaseDefBodyElement::ThenAction(node) => {
                     self.lower_then_action(document, owner, unsupported, node)?;
+                }
+                UseCaseDefBodyElement::ActionMember(node) => {
+                    self.lower_action_def_body_element(document, owner, node)?;
                 }
                 UseCaseDefBodyElement::ThenUseCaseUsage(node) => {
                     self.lower_use_case_usage(document, Some(owner), &node.value.use_case)?;

@@ -34,34 +34,10 @@ package BodyRecovery {
         (range (start 2 8) (end 3 8))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 8) (end 8 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 16) (end 8 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 20) (end 8 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 25) (end 8 28))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_use_case_body_element")
         (source "parser")
-        (range (start 8 29) (end 8 32))
+        (range (start 8 8) (end 8 32))
       )
       (diagnostic
         (severity warning)
@@ -103,34 +79,10 @@ package BodyRecovery {
         (range (start 2 8) (end 3 8))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 8) (end 8 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 16) (end 8 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 20) (end 8 24))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 8 25) (end 8 28))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_use_case_body_element")
         (source "parser")
-        (range (start 8 29) (end 8 32))
+        (range (start 8 8) (end 8 32))
       )
       (diagnostic
         (severity warning)
@@ -163,7 +115,7 @@ package BodyRecovery {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:9993dae76af3fb99521a6414537e2f91fc502428f3b8c50ce76cc47deeec579b"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:9993dae76af3fb99521a6414537e2f91fc502428f3b8c50ce76cc47deeec579b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::A"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -172,30 +124,14 @@ package BodyRecovery {
     (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::A::GoodView"))) (kind view-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::S"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::S::good"))) (kind state) (membership (kind owning) (visibility default) (role variant)))
-    (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind use-case) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "variant")) (expressionOperand (reference "use")) (expressionOperand (reference "case")) (expressionOperand (reference "bad")))))
+    (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind use-case) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices::good"))) (kind use-case) (membership (kind owning) (visibility default) (role variant)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "variant")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind expressionOperand) (ordinal 1))
-      (authored-target "use")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind expressionOperand) (ordinal 2))
-      (authored-target "case")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind expressionOperand) (ordinal 3))
-      (authored-target "bad")
-      (outcome (status unresolved)))
   )
   (relationships
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (state unresolved-operand))
   )
 )
 ~~~
@@ -207,31 +143,10 @@ package BodyRecovery {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (outcome resolved) (operator "and" (feature-reference "variant" (target unresolved)) (feature-reference "use" (target unresolved)) (feature-reference "case" (target unresolved)) (feature-reference "bad" (target unresolved))))
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (range (start 8 8) (end 8 15)) (probe (position 8 8))
-    (reference (id (source (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind expressionOperand) (ordinal 0) (authored-target "variant")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (range (start 8 16) (end 8 19)) (probe (position 8 16))
-    (reference (id (source (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind expressionOperand) (ordinal 1) (authored-target "use")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (range (start 8 20) (end 8 24)) (probe (position 8 20))
-    (reference (id (source (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind expressionOperand) (ordinal 2) (authored-target "case")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (range (start 8 25) (end 8 28)) (probe (position 8 25))
-    (reference (id (source (node (document "memory://snapshot/parser_284_action_definition_variant_recovery.md") (qualified-name "BodyRecovery::choices"))) (kind expressionOperand) (ordinal 3) (authored-target "bad")
-      (outcome (status unresolved)))
-    )
-  )
 )
 ~~~
