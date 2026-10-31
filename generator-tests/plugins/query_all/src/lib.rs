@@ -4,7 +4,14 @@
 //! the entire semantic API, so any change to ordering, metaclass strings, relationship kinds
 //! or `ElementDetail` defaulting appears as a reviewable diff.
 
-use spec42_generator_sdk::{export, model, Artifact, Guest};
+use spec42_generator_sdk::{
+    export,
+    model::{
+        self, ConnectorEnd, ConnectorEndEndpoint, EndpointTarget, ExpressionNodeKind,
+        ExpressionStatus,
+    },
+    Artifact, Guest,
+};
 use std::fmt::Write;
 
 struct QueryAll;
@@ -25,6 +32,40 @@ fn describe_info(out: &mut String) {
         Err(error) => {
             let _ = writeln!(out, "info: ERROR {error}");
         }
+    }
+}
+
+fn expression_status(status: ExpressionStatus) -> &'static str {
+    match status {
+        ExpressionStatus::NotApplicable => "not-applicable",
+        ExpressionStatus::Resolved => "resolved",
+        ExpressionStatus::Unsupported => "unsupported",
+    }
+}
+
+fn describe_connector_end(end: &ConnectorEnd) -> String {
+    match &end.endpoint {
+        ConnectorEndEndpoint::Feature(target) => {
+            format!("{} feature {}", end.index, describe_endpoint(target))
+        }
+        ConnectorEndEndpoint::FeatureChain { path, authored } => format!(
+            "{} chain {authored:?} {}",
+            end.index,
+            path.iter()
+                .map(describe_endpoint)
+                .collect::<Vec<_>>()
+                .join(" -> ")
+        ),
+        ConnectorEndEndpoint::Unconnected => format!("{} unconnected", end.index),
+    }
+}
+
+fn describe_endpoint(target: &EndpointTarget) -> String {
+    match target {
+        EndpointTarget::Resolved(element) => element.qualified_name.clone(),
+        EndpointTarget::Ambiguous(values) => format!("ambiguous({})", values.len()),
+        EndpointTarget::Unresolved => "unresolved".to_owned(),
+        EndpointTarget::Unsupported => "unsupported".to_owned(),
     }
 }
 
@@ -177,6 +218,51 @@ impl Guest for QueryAll {
                 &format!("effective_features({})", element.qualified_name),
                 model::effective_features(&element.handle),
             );
+
+            match model::expression(&element.handle) {
+                Ok(expression) => {
+                    let _ = writeln!(
+                        out,
+                        "expression({}): {} root={} nodes={}",
+                        element.qualified_name,
+                        expression_status(expression.outcome),
+                        expression
+                            .root
+                            .map(|root| root.to_string())
+                            .unwrap_or_else(|| "<none>".to_owned()),
+                        expression.nodes.len()
+                    );
+                    for (index, node) in expression.nodes.iter().enumerate() {
+                        if let ExpressionNodeKind::Literal(literal) = &node.kind {
+                            let _ = writeln!(out, "  literal[{index}]: {literal:?}");
+                        }
+                    }
+                }
+                Err(error) => {
+                    let _ = writeln!(out, "expression({}): ERROR {error}", element.qualified_name);
+                }
+            }
+
+            match model::connector_ends(&element.handle) {
+                Ok(ends) => {
+                    let _ = writeln!(
+                        out,
+                        "connector_ends({}): {} end(s)",
+                        element.qualified_name,
+                        ends.len()
+                    );
+                    for end in ends {
+                        let _ = writeln!(out, "  {}", describe_connector_end(&end));
+                    }
+                }
+                Err(error) => {
+                    let _ = writeln!(
+                        out,
+                        "connector_ends({}): ERROR {error}",
+                        element.qualified_name
+                    );
+                }
+            }
         }
 
         // An unknown handle must be an error, not an empty result.

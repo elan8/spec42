@@ -1229,6 +1229,7 @@ pub(crate) fn synthesize_implied_relationships(
         )?,
     );
     implied.extend(synthesize_port_conjugations(storage, &resolution.outcomes)?);
+    implied.extend(synthesize_then_successions(storage, resolution)?);
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,
@@ -1238,6 +1239,58 @@ pub(crate) fn synthesize_implied_relationships(
     });
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// The succession a `then` member declares (SysML 7.17.4).
+///
+/// Lowering records the predecessor on the member as [`crate::lower::facts::ThenSource`]. This
+/// publishes that fact as an implied `succession` whose target is the predecessor: the member is
+/// the succession's target end, and the relationship target is its source end. An initial-node
+/// marker contributes the succession only when the node it names resolved.
+fn synthesize_then_successions(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
+    use crate::lower::facts::ThenSource;
+    let mut implied = Vec::new();
+    for index in 0..storage.declarations.len() {
+        let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(then_source) = storage
+            .declaration_facts(source)
+            .and_then(|facts| facts.then_source)
+        else {
+            continue;
+        };
+        let predecessor = match then_source {
+            ThenSource::Declaration(predecessor) => predecessor,
+            ThenSource::InitialNode(marker) => {
+                let mut resolved = None;
+                for (reference_index, reference) in storage.references.iter().enumerate() {
+                    if reference.source != marker || reference.kind != ReferenceKind::Succession {
+                        continue;
+                    }
+                    let reference_id = AuthoredReferenceId::from_index(reference_index)
+                        .map_err(|_| ResolutionError::Capacity)?;
+                    if let Some(ResolutionStatus::Resolved(target)) =
+                        resolution.outcome(reference_id)
+                    {
+                        resolved = Some(target);
+                        break;
+                    }
+                }
+                let Some(predecessor) = resolved else {
+                    continue;
+                };
+                predecessor
+            }
+        };
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Succession,
+            source,
+            target: predecessor,
+        });
+    }
+    Ok(implied)
 }
 
 /// Publishes the `PortConjugation` of every minted `ConjugatedPortDefinition` and the

@@ -19,7 +19,7 @@ use crate::model::{
     AuthoredReferenceId, DeclarationId, DeclarationKind, DocumentIdx, MembershipKind, NameId,
     ReferenceKind, SymbolPathId, Visibility,
 };
-use crate::{MembershipRole, TextPosition, TextRange};
+use crate::MembershipRole;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum AuthoredImportShape {
@@ -1171,58 +1171,7 @@ pub(crate) struct CanonicalDocument {
     pub(crate) lines: LineIndex,
 }
 
-/// The byte offset of every line start in one admitted source.
-///
-/// Four bytes per line, against the whole source text and AST it replaces in the sealed model. A
-/// settled parser `Span` is projected through this rather than by re-reading the document, which is
-/// what lets the publication answer a location query without a parse tree.
-#[derive(Debug, Default)]
-pub(crate) struct LineIndex {
-    /// Byte offset of the first byte of every line; always begins with `0`.
-    starts: Box<[u32]>,
-    /// Byte length of the source, so an out-of-bounds span is rejected rather than clamped.
-    length: u32,
-}
-
-impl LineIndex {
-    pub(crate) fn build(text: &str) -> Self {
-        let mut starts = vec![0u32];
-        starts.extend(text.bytes().enumerate().filter_map(|(index, byte)| {
-            (byte == b'\n')
-                .then(|| u32::try_from(index + 1).ok())
-                .flatten()
-        }));
-        Self {
-            starts: starts.into_boxed_slice(),
-            length: u32::try_from(text.len()).unwrap_or(u32::MAX),
-        }
-    }
-
-    /// The zero-based line and byte column of `offset`, or `None` past the end of the source.
-    pub(crate) fn position(&self, offset: usize) -> Option<TextPosition> {
-        let offset = u32::try_from(offset).ok()?;
-        if offset > self.length {
-            return None;
-        }
-        let line = self
-            .starts
-            .partition_point(|start| *start <= offset)
-            .checked_sub(1)?;
-        Some(TextPosition {
-            line: u32::try_from(line).ok()?,
-            character: offset - self.starts.get(line)?,
-        })
-    }
-
-    /// The zero-based range a settled byte span covers.
-    pub(crate) fn range(&self, span: &Span) -> Option<TextRange> {
-        let end = span.offset.checked_add(span.len)?;
-        Some(TextRange {
-            start: self.position(span.offset)?,
-            end: self.position(end)?,
-        })
-    }
-}
+pub(crate) use crate::positions::LineIndex;
 
 /// An authored identification component; malformed syntax is distinct from an omitted name.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]

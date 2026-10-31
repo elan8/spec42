@@ -1,7 +1,7 @@
-info: model_digest=<present> spec42_version=<present> semantic_api_version=0.4.0
+info: model_digest=<present> spec42_version=<present> semantic_api_version=0.5.0
 roots: 1 element(s)
   Coverage [Package] name=Coverage library=false
-find(None): 29 element(s)
+find(None): 44 element(s)
   Coverage [Package] name=Coverage library=false
   Coverage:: [Documentation] name=<none> library=false
   Coverage::Component [PartDefinition] name=Component library=false
@@ -30,13 +30,28 @@ find(None): 29 element(s)
   Coverage::Vehicle::spare:::: [LiteralInteger] name=<none> library=false
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
+  Coverage::booleanLiteral [AttributeUsage] name=booleanLiteral library=false
+  Coverage::booleanLiteral:: [LiteralBoolean] name=<none> library=false
+  Coverage::booleanLiteral:::: [Feature] name=<none> library=false
+  Coverage::booleanText [AttributeUsage] name=booleanText library=false
+  Coverage::booleanText:: [LiteralString] name=<none> library=false
+  Coverage::booleanText:::: [Feature] name=<none> library=false
+  Coverage::integerLiteral [AttributeUsage] name=integerLiteral library=false
+  Coverage::integerLiteral:: [LiteralInteger] name=<none> library=false
+  Coverage::integerLiteral:::: [Feature] name=<none> library=false
+  Coverage::integerText [AttributeUsage] name=integerText library=false
+  Coverage::integerText:: [LiteralString] name=<none> library=false
+  Coverage::integerText:::: [Feature] name=<none> library=false
+  Coverage::realLiteral [AttributeUsage] name=realLiteral library=false
+  Coverage::realLiteral:: [LiteralRational] name=<none> library=false
+  Coverage::realLiteral:::: [Feature] name=<none> library=false
   Coverage::vehicle [PartUsage] name=vehicle library=false
 find(PartDefinition): 4 element(s)
   Coverage::Component [PartDefinition] name=Component library=false
   Coverage::Engine [PartDefinition] name=Engine library=false
   Coverage::Powered [PartDefinition] name=Powered library=false
   Coverage::Vehicle [PartDefinition] name=Vehicle library=false
-children(Coverage): 8 element(s)
+children(Coverage): 13 element(s)
   Coverage:: [Documentation] name=<none> library=false
   Coverage::Component [PartDefinition] name=Component library=false
   Coverage::Engine [PartDefinition] name=Engine library=false
@@ -44,16 +59,25 @@ children(Coverage): 8 element(s)
   Coverage::Powered [PartDefinition] name=Powered library=false
   Coverage::Speed [AttributeDefinition] name=Speed library=false
   Coverage::Vehicle [PartDefinition] name=Vehicle library=false
+  Coverage::booleanLiteral [AttributeUsage] name=booleanLiteral library=false
+  Coverage::booleanText [AttributeUsage] name=booleanText library=false
+  Coverage::integerLiteral [AttributeUsage] name=integerLiteral library=false
+  Coverage::integerText [AttributeUsage] name=integerText library=false
+  Coverage::realLiteral [AttributeUsage] name=realLiteral library=false
   Coverage::vehicle [PartUsage] name=vehicle library=false
 element(Coverage): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage): <untyped>
 relationships(Coverage): 0 edge(s)
 effective_features(Coverage): 0 element(s)
+expression(Coverage): not-applicable root=<none> nodes=0
+connector_ends(Coverage): 0 end(s)
 children(Coverage::): 0 element(s)
 element(Coverage::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::): <untyped>
 relationships(Coverage::): 0 edge(s)
 effective_features(Coverage::): 0 element(s)
+expression(Coverage::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::): 0 end(s)
 children(Coverage::Component): 2 element(s)
   Coverage::Component:: [Documentation] name=<none> library=false
   Coverage::Component::mass [AttributeUsage] name=mass library=false
@@ -62,11 +86,15 @@ typed_by(Coverage::Component): <untyped>
 relationships(Coverage::Component): 0 edge(s)
 effective_features(Coverage::Component): 1 element(s)
   Coverage::Component::mass [AttributeUsage] name=mass library=false
+expression(Coverage::Component): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Component): 0 end(s)
 children(Coverage::Component::): 0 element(s)
 element(Coverage::Component::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Component::): <untyped>
 relationships(Coverage::Component::): 0 edge(s)
 effective_features(Coverage::Component::): 0 element(s)
+expression(Coverage::Component::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Component::): 0 end(s)
 children(Coverage::Component::mass): 0 element(s)
 element(Coverage::Component::mass): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Component::mass): Coverage::Mass
@@ -74,6 +102,8 @@ relationships(Coverage::Component::mass): 2 edge(s)
   typeFeaturing Coverage::Component::mass -> Coverage::Component implied=true
   typing Coverage::Component::mass -> Coverage::Mass implied=false
 effective_features(Coverage::Component::mass): 0 element(s)
+expression(Coverage::Component::mass): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Component::mass): 0 end(s)
 children(Coverage::Engine): 2 element(s)
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
@@ -85,6 +115,8 @@ effective_features(Coverage::Engine): 3 element(s)
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
   Coverage::Powered::power [AttributeUsage] name=power library=false
+expression(Coverage::Engine): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Engine): 0 end(s)
 children(Coverage::Engine::mass): 0 element(s)
 element(Coverage::Engine::mass): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Engine::mass): Coverage::Mass
@@ -92,6 +124,8 @@ relationships(Coverage::Engine::mass): 2 edge(s)
   typeFeaturing Coverage::Engine::mass -> Coverage::Engine implied=true
   typing Coverage::Engine::mass -> Coverage::Mass implied=false
 effective_features(Coverage::Engine::mass): 0 element(s)
+expression(Coverage::Engine::mass): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Engine::mass): 0 end(s)
 children(Coverage::Engine::speed): 1 element(s)
   Coverage::Engine::speed:: [MultiplicityRange] name=<none> library=false
 element(Coverage::Engine::speed): definition=false abstract=false derived=false end=false multiplicity=0..?
@@ -100,6 +134,8 @@ relationships(Coverage::Engine::speed): 2 edge(s)
   typeFeaturing Coverage::Engine::speed -> Coverage::Engine implied=true
   typing Coverage::Engine::speed -> Coverage::Speed implied=false
 effective_features(Coverage::Engine::speed): 0 element(s)
+expression(Coverage::Engine::speed): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Engine::speed): 0 end(s)
 children(Coverage::Engine::speed::): 2 element(s)
   Coverage::Engine::speed:::: [LiteralInfinity] name=<none> library=false
   Coverage::Engine::speed:::: [LiteralInteger] name=<none> library=false
@@ -108,6 +144,8 @@ typed_by(Coverage::Engine::speed::): <untyped>
 relationships(Coverage::Engine::speed::): 1 edge(s)
   typeFeaturing Coverage::Engine::speed:: -> Coverage::Engine implied=true
 effective_features(Coverage::Engine::speed::): 0 element(s)
+expression(Coverage::Engine::speed::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Engine::speed::): 0 end(s)
 children(Coverage::Engine::speed::::): 1 element(s)
   Coverage::Engine::speed:::::: [Feature] name=<none> library=false
 element(Coverage::Engine::speed::::): definition=false abstract=false derived=false end=false multiplicity=<none>
@@ -116,6 +154,8 @@ relationships(Coverage::Engine::speed::::): 1 edge(s)
   typeFeaturing Coverage::Engine::speed:::: -> Coverage::Engine implied=true
 effective_features(Coverage::Engine::speed::::): 1 element(s)
   Coverage::Engine::speed:::::: [Feature] name=<none> library=false
+expression(Coverage::Engine::speed::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Engine::speed::::): 0 end(s)
 children(Coverage::Engine::speed::::): 1 element(s)
   Coverage::Engine::speed:::::: [Feature] name=<none> library=false
 element(Coverage::Engine::speed::::): definition=false abstract=false derived=false end=false multiplicity=<none>
@@ -124,23 +164,31 @@ relationships(Coverage::Engine::speed::::): 1 edge(s)
   typeFeaturing Coverage::Engine::speed:::: -> Coverage::Engine implied=true
 effective_features(Coverage::Engine::speed::::): 1 element(s)
   Coverage::Engine::speed:::::: [Feature] name=<none> library=false
+expression(Coverage::Engine::speed::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Engine::speed::::): 0 end(s)
 children(Coverage::Engine::speed::::::): 0 element(s)
 element(Coverage::Engine::speed::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Engine::speed::::::): <untyped>
 relationships(Coverage::Engine::speed::::::): 1 edge(s)
   typeFeaturing Coverage::Engine::speed:::::: -> Coverage::Engine::speed:::: implied=true
 effective_features(Coverage::Engine::speed::::::): 0 element(s)
+expression(Coverage::Engine::speed::::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Engine::speed::::::): 0 end(s)
 children(Coverage::Engine::speed::::::): 0 element(s)
 element(Coverage::Engine::speed::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Engine::speed::::::): <untyped>
 relationships(Coverage::Engine::speed::::::): 1 edge(s)
   typeFeaturing Coverage::Engine::speed:::::: -> Coverage::Engine::speed:::: implied=true
 effective_features(Coverage::Engine::speed::::::): 0 element(s)
+expression(Coverage::Engine::speed::::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Engine::speed::::::): 0 end(s)
 children(Coverage::Mass): 0 element(s)
 element(Coverage::Mass): definition=true abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Mass): <untyped>
 relationships(Coverage::Mass): 0 edge(s)
 effective_features(Coverage::Mass): 0 element(s)
+expression(Coverage::Mass): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Mass): 0 end(s)
 children(Coverage::Powered): 1 element(s)
   Coverage::Powered::power [AttributeUsage] name=power library=false
 element(Coverage::Powered): definition=true abstract=true derived=false end=false multiplicity=<none>
@@ -150,17 +198,23 @@ relationships(Coverage::Powered): 1 edge(s)
 effective_features(Coverage::Powered): 2 element(s)
   Coverage::Powered::power [AttributeUsage] name=power library=false
   Coverage::Component::mass [AttributeUsage] name=mass library=false
+expression(Coverage::Powered): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Powered): 0 end(s)
 children(Coverage::Powered::power): 0 element(s)
 element(Coverage::Powered::power): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Powered::power): <untyped>
 relationships(Coverage::Powered::power): 1 edge(s)
   typeFeaturing Coverage::Powered::power -> Coverage::Powered implied=true
 effective_features(Coverage::Powered::power): 0 element(s)
+expression(Coverage::Powered::power): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Powered::power): 0 end(s)
 children(Coverage::Speed): 0 element(s)
 element(Coverage::Speed): definition=true abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Speed): <untyped>
 relationships(Coverage::Speed): 0 edge(s)
 effective_features(Coverage::Speed): 0 element(s)
+expression(Coverage::Speed): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Speed): 0 end(s)
 children(Coverage::Vehicle): 2 element(s)
   Coverage::Vehicle::engine [PartUsage] name=engine library=false
   Coverage::Vehicle::spare [PartUsage] name=spare library=false
@@ -172,6 +226,8 @@ effective_features(Coverage::Vehicle): 3 element(s)
   Coverage::Vehicle::engine [PartUsage] name=engine library=false
   Coverage::Vehicle::spare [PartUsage] name=spare library=false
   Coverage::Component::mass [AttributeUsage] name=mass library=false
+expression(Coverage::Vehicle): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle): 0 end(s)
 children(Coverage::Vehicle::engine): 1 element(s)
   Coverage::Vehicle::engine:: [MultiplicityRange] name=<none> library=false
 element(Coverage::Vehicle::engine): definition=false abstract=false derived=false end=false multiplicity=1..1
@@ -183,6 +239,8 @@ effective_features(Coverage::Vehicle::engine): 3 element(s)
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
   Coverage::Powered::power [AttributeUsage] name=power library=false
+expression(Coverage::Vehicle::engine): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::engine): 0 end(s)
 children(Coverage::Vehicle::engine::): 1 element(s)
   Coverage::Vehicle::engine:::: [LiteralInteger] name=<none> library=false
 element(Coverage::Vehicle::engine::): definition=false abstract=false derived=false end=false multiplicity=<none>
@@ -190,6 +248,8 @@ typed_by(Coverage::Vehicle::engine::): <untyped>
 relationships(Coverage::Vehicle::engine::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::engine:: -> Coverage::Vehicle implied=true
 effective_features(Coverage::Vehicle::engine::): 0 element(s)
+expression(Coverage::Vehicle::engine::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::engine::): 0 end(s)
 children(Coverage::Vehicle::engine::::): 1 element(s)
   Coverage::Vehicle::engine:::::: [Feature] name=<none> library=false
 element(Coverage::Vehicle::engine::::): definition=false abstract=false derived=false end=false multiplicity=<none>
@@ -198,12 +258,16 @@ relationships(Coverage::Vehicle::engine::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::engine:::: -> Coverage::Vehicle implied=true
 effective_features(Coverage::Vehicle::engine::::): 1 element(s)
   Coverage::Vehicle::engine:::::: [Feature] name=<none> library=false
+expression(Coverage::Vehicle::engine::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::engine::::): 0 end(s)
 children(Coverage::Vehicle::engine::::::): 0 element(s)
 element(Coverage::Vehicle::engine::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Vehicle::engine::::::): <untyped>
 relationships(Coverage::Vehicle::engine::::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::engine:::::: -> Coverage::Vehicle::engine:::: implied=true
 effective_features(Coverage::Vehicle::engine::::::): 0 element(s)
+expression(Coverage::Vehicle::engine::::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::engine::::::): 0 end(s)
 children(Coverage::Vehicle::spare): 1 element(s)
   Coverage::Vehicle::spare:: [MultiplicityRange] name=<none> library=false
 element(Coverage::Vehicle::spare): definition=false abstract=false derived=false end=false multiplicity=0..1
@@ -215,6 +279,8 @@ effective_features(Coverage::Vehicle::spare): 3 element(s)
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
   Coverage::Powered::power [AttributeUsage] name=power library=false
+expression(Coverage::Vehicle::spare): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::spare): 0 end(s)
 children(Coverage::Vehicle::spare::): 2 element(s)
   Coverage::Vehicle::spare:::: [LiteralInteger] name=<none> library=false
   Coverage::Vehicle::spare:::: [LiteralInteger] name=<none> library=false
@@ -223,6 +289,8 @@ typed_by(Coverage::Vehicle::spare::): <untyped>
 relationships(Coverage::Vehicle::spare::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::spare:: -> Coverage::Vehicle implied=true
 effective_features(Coverage::Vehicle::spare::): 0 element(s)
+expression(Coverage::Vehicle::spare::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::spare::): 0 end(s)
 children(Coverage::Vehicle::spare::::): 1 element(s)
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
 element(Coverage::Vehicle::spare::::): definition=false abstract=false derived=false end=false multiplicity=<none>
@@ -231,6 +299,8 @@ relationships(Coverage::Vehicle::spare::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::spare:::: -> Coverage::Vehicle implied=true
 effective_features(Coverage::Vehicle::spare::::): 1 element(s)
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
+expression(Coverage::Vehicle::spare::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::spare::::): 0 end(s)
 children(Coverage::Vehicle::spare::::): 1 element(s)
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
 element(Coverage::Vehicle::spare::::): definition=false abstract=false derived=false end=false multiplicity=<none>
@@ -239,18 +309,164 @@ relationships(Coverage::Vehicle::spare::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::spare:::: -> Coverage::Vehicle implied=true
 effective_features(Coverage::Vehicle::spare::::): 1 element(s)
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
+expression(Coverage::Vehicle::spare::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::spare::::): 0 end(s)
 children(Coverage::Vehicle::spare::::::): 0 element(s)
 element(Coverage::Vehicle::spare::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Vehicle::spare::::::): <untyped>
 relationships(Coverage::Vehicle::spare::::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::spare:::::: -> Coverage::Vehicle::spare:::: implied=true
 effective_features(Coverage::Vehicle::spare::::::): 0 element(s)
+expression(Coverage::Vehicle::spare::::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::spare::::::): 0 end(s)
 children(Coverage::Vehicle::spare::::::): 0 element(s)
 element(Coverage::Vehicle::spare::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Vehicle::spare::::::): <untyped>
 relationships(Coverage::Vehicle::spare::::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::spare:::::: -> Coverage::Vehicle::spare:::: implied=true
 effective_features(Coverage::Vehicle::spare::::::): 0 element(s)
+expression(Coverage::Vehicle::spare::::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::Vehicle::spare::::::): 0 end(s)
+children(Coverage::booleanLiteral): 1 element(s)
+  Coverage::booleanLiteral:: [LiteralBoolean] name=<none> library=false
+element(Coverage::booleanLiteral): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::booleanLiteral): <untyped>
+relationships(Coverage::booleanLiteral): 1 edge(s)
+  subsetting Coverage::booleanLiteral -> Coverage::booleanLiteral:::: implied=true
+effective_features(Coverage::booleanLiteral): 0 element(s)
+expression(Coverage::booleanLiteral): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Boolean(true), units: [] }
+connector_ends(Coverage::booleanLiteral): 0 end(s)
+children(Coverage::booleanLiteral::): 1 element(s)
+  Coverage::booleanLiteral:::: [Feature] name=<none> library=false
+element(Coverage::booleanLiteral::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::booleanLiteral::): <untyped>
+relationships(Coverage::booleanLiteral::): 0 edge(s)
+effective_features(Coverage::booleanLiteral::): 1 element(s)
+  Coverage::booleanLiteral:::: [Feature] name=<none> library=false
+expression(Coverage::booleanLiteral::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Boolean(true), units: [] }
+connector_ends(Coverage::booleanLiteral::): 0 end(s)
+children(Coverage::booleanLiteral::::): 0 element(s)
+element(Coverage::booleanLiteral::::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::booleanLiteral::::): <untyped>
+relationships(Coverage::booleanLiteral::::): 1 edge(s)
+  typeFeaturing Coverage::booleanLiteral:::: -> Coverage::booleanLiteral:: implied=true
+effective_features(Coverage::booleanLiteral::::): 0 element(s)
+expression(Coverage::booleanLiteral::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::booleanLiteral::::): 0 end(s)
+children(Coverage::booleanText): 1 element(s)
+  Coverage::booleanText:: [LiteralString] name=<none> library=false
+element(Coverage::booleanText): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::booleanText): <untyped>
+relationships(Coverage::booleanText): 1 edge(s)
+  subsetting Coverage::booleanText -> Coverage::booleanText:::: implied=true
+effective_features(Coverage::booleanText): 0 element(s)
+expression(Coverage::booleanText): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: String("true"), units: [] }
+connector_ends(Coverage::booleanText): 0 end(s)
+children(Coverage::booleanText::): 1 element(s)
+  Coverage::booleanText:::: [Feature] name=<none> library=false
+element(Coverage::booleanText::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::booleanText::): <untyped>
+relationships(Coverage::booleanText::): 0 edge(s)
+effective_features(Coverage::booleanText::): 1 element(s)
+  Coverage::booleanText:::: [Feature] name=<none> library=false
+expression(Coverage::booleanText::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: String("true"), units: [] }
+connector_ends(Coverage::booleanText::): 0 end(s)
+children(Coverage::booleanText::::): 0 element(s)
+element(Coverage::booleanText::::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::booleanText::::): <untyped>
+relationships(Coverage::booleanText::::): 1 edge(s)
+  typeFeaturing Coverage::booleanText:::: -> Coverage::booleanText:: implied=true
+effective_features(Coverage::booleanText::::): 0 element(s)
+expression(Coverage::booleanText::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::booleanText::::): 0 end(s)
+children(Coverage::integerLiteral): 1 element(s)
+  Coverage::integerLiteral:: [LiteralInteger] name=<none> library=false
+element(Coverage::integerLiteral): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::integerLiteral): <untyped>
+relationships(Coverage::integerLiteral): 1 edge(s)
+  subsetting Coverage::integerLiteral -> Coverage::integerLiteral:::: implied=true
+effective_features(Coverage::integerLiteral): 0 element(s)
+expression(Coverage::integerLiteral): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Integer(1), units: [] }
+connector_ends(Coverage::integerLiteral): 0 end(s)
+children(Coverage::integerLiteral::): 1 element(s)
+  Coverage::integerLiteral:::: [Feature] name=<none> library=false
+element(Coverage::integerLiteral::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::integerLiteral::): <untyped>
+relationships(Coverage::integerLiteral::): 0 edge(s)
+effective_features(Coverage::integerLiteral::): 1 element(s)
+  Coverage::integerLiteral:::: [Feature] name=<none> library=false
+expression(Coverage::integerLiteral::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Integer(1), units: [] }
+connector_ends(Coverage::integerLiteral::): 0 end(s)
+children(Coverage::integerLiteral::::): 0 element(s)
+element(Coverage::integerLiteral::::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::integerLiteral::::): <untyped>
+relationships(Coverage::integerLiteral::::): 1 edge(s)
+  typeFeaturing Coverage::integerLiteral:::: -> Coverage::integerLiteral:: implied=true
+effective_features(Coverage::integerLiteral::::): 0 element(s)
+expression(Coverage::integerLiteral::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::integerLiteral::::): 0 end(s)
+children(Coverage::integerText): 1 element(s)
+  Coverage::integerText:: [LiteralString] name=<none> library=false
+element(Coverage::integerText): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::integerText): <untyped>
+relationships(Coverage::integerText): 1 edge(s)
+  subsetting Coverage::integerText -> Coverage::integerText:::: implied=true
+effective_features(Coverage::integerText): 0 element(s)
+expression(Coverage::integerText): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: String("1"), units: [] }
+connector_ends(Coverage::integerText): 0 end(s)
+children(Coverage::integerText::): 1 element(s)
+  Coverage::integerText:::: [Feature] name=<none> library=false
+element(Coverage::integerText::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::integerText::): <untyped>
+relationships(Coverage::integerText::): 0 edge(s)
+effective_features(Coverage::integerText::): 1 element(s)
+  Coverage::integerText:::: [Feature] name=<none> library=false
+expression(Coverage::integerText::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: String("1"), units: [] }
+connector_ends(Coverage::integerText::): 0 end(s)
+children(Coverage::integerText::::): 0 element(s)
+element(Coverage::integerText::::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::integerText::::): <untyped>
+relationships(Coverage::integerText::::): 1 edge(s)
+  typeFeaturing Coverage::integerText:::: -> Coverage::integerText:: implied=true
+effective_features(Coverage::integerText::::): 0 element(s)
+expression(Coverage::integerText::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::integerText::::): 0 end(s)
+children(Coverage::realLiteral): 1 element(s)
+  Coverage::realLiteral:: [LiteralRational] name=<none> library=false
+element(Coverage::realLiteral): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::realLiteral): <untyped>
+relationships(Coverage::realLiteral): 1 edge(s)
+  subsetting Coverage::realLiteral -> Coverage::realLiteral:::: implied=true
+effective_features(Coverage::realLiteral): 0 element(s)
+expression(Coverage::realLiteral): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Real(1.0), units: [] }
+connector_ends(Coverage::realLiteral): 0 end(s)
+children(Coverage::realLiteral::): 1 element(s)
+  Coverage::realLiteral:::: [Feature] name=<none> library=false
+element(Coverage::realLiteral::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::realLiteral::): <untyped>
+relationships(Coverage::realLiteral::): 0 edge(s)
+effective_features(Coverage::realLiteral::): 1 element(s)
+  Coverage::realLiteral:::: [Feature] name=<none> library=false
+expression(Coverage::realLiteral::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Real(1.0), units: [] }
+connector_ends(Coverage::realLiteral::): 0 end(s)
+children(Coverage::realLiteral::::): 0 element(s)
+element(Coverage::realLiteral::::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::realLiteral::::): <untyped>
+relationships(Coverage::realLiteral::::): 1 edge(s)
+  typeFeaturing Coverage::realLiteral:::: -> Coverage::realLiteral:: implied=true
+effective_features(Coverage::realLiteral::::): 0 element(s)
+expression(Coverage::realLiteral::::): not-applicable root=<none> nodes=0
+connector_ends(Coverage::realLiteral::::): 0 end(s)
 children(Coverage::vehicle): 0 element(s)
 element(Coverage::vehicle): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::vehicle): Coverage::Vehicle
@@ -260,4 +476,6 @@ effective_features(Coverage::vehicle): 3 element(s)
   Coverage::Vehicle::engine [PartUsage] name=engine library=false
   Coverage::Vehicle::spare [PartUsage] name=spare library=false
   Coverage::Component::mass [AttributeUsage] name=mass library=false
+expression(Coverage::vehicle): not-applicable root=<none> nodes=0
+connector_ends(Coverage::vehicle): 0 end(s)
 element(<bogus>): error

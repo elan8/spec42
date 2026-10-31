@@ -6859,7 +6859,7 @@ package TimerGeometry {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:8eb280d508cd92ee1f1db8a39d0ddc0f3de84ef3a98d714f0450332619e318b7",
+  "modelDigest": "blake3:17709ccaf387cdc7783b94b3811d245f06e025d82c8033737d515170f44218d1",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_geometry.md",
