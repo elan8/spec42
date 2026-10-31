@@ -504,6 +504,7 @@ impl ResolvedSemanticModel {
                     effective_imports: Some(&effective),
                     exported_imports: Some(&exported),
                     inherited_names: Some(&resolution.inherited_names),
+                    memberships: None,
                 },
                 scope,
                 name,

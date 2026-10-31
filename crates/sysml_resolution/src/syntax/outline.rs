@@ -201,8 +201,9 @@ pub(super) fn folding_regions(
             &mut self,
             open: &sysml_v2_parser::Span,
             _: &[sysml_v2_parser::Node<E>],
-            close: &sysml_v2_parser::Span,
+            close: &sysml_v2_parser::ast::BodyClose,
         ) {
+            let close = close.span();
             // Recovery may synthesize a missing delimiter. It is not an authored folding end.
             if open.len == 0 || close.len == 0 {
                 return;
@@ -242,12 +243,10 @@ fn split_body<E>(
     match body {
         sysml_v2_parser::ast::Body::Semicolon { .. } => (range, None),
         sysml_v2_parser::ast::Body::Brace {
-            open_span,
-            close_span,
-            ..
+            open_span, close, ..
         } => {
             let open = node_range(document, open_span);
-            let close = node_range(document, close_span);
+            let close = node_range(document, close.span());
             let head = SyntaxRange {
                 start_line: range.start_line,
                 start_character: range.start_character,

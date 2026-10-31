@@ -74,11 +74,12 @@ use sysml_v2_parser::ast::StringLiteral;
 use sysml_v2_parser::ast::{
     AliasBody, AliasDef, AnnotatingMember, CommentAnnotation, Dependency, DocComment, ExposeMember,
     Expression, ExtendedDefinition, FeatureValue, FeatureValueKind as ParserFeatureValueKind,
-    Import, ImportShape, LibraryPackage, Membership, MembershipKind as ParserMembershipKind,
-    NamespaceDecl, Node, Package, PackageBody, PackageBodyElement, QualifiedIdentification,
-    QualifiedReferenceId, RelationshipBodyElement, RootElement, Span, SubsettingKind,
-    SubsettingRelationship, TextualRepresentation, TypeCheckKind, VariantTypedUsage, VariantUsage,
-    VariantUsageForm, Visibility as ParserVisibility,
+    Import, ImportShape, ImportVisibility, LibraryPackage, Membership,
+    MembershipKind as ParserMembershipKind, NamespaceDecl, Node, Package, PackageBody,
+    PackageBodyElement, QualifiedIdentification, QualifiedReferenceId, RelationshipBodyElement,
+    RootElement, Span, SubsettingKind, SubsettingRelationship, TextualRepresentation,
+    TypeCheckKind, VariantTypedUsage, VariantUsage, VariantUsageForm,
+    Visibility as ParserVisibility,
 };
 use sysml_v2_parser::{ParseError, ParsedDocument};
 
@@ -2461,8 +2462,11 @@ impl SemanticModelBuilder {
         self.push_membership(
             declaration,
             MembershipKind::Owning,
-            Visibility::Default,
-            node.span,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span,
         )?;
         self.lower_package_body(document, Some(declaration), &node.value.body)
     }
@@ -2493,8 +2497,11 @@ impl SemanticModelBuilder {
         self.push_membership(
             declaration,
             MembershipKind::Owning,
-            Visibility::Default,
-            node.span,
+            self.member_visibility(
+                &node.value.membership,
+                ParserMembershipKind::OwningMembership,
+            )?,
+            node.value.membership.span,
         )?;
         self.lower_package_body(document, Some(declaration), &node.value.body)
     }
@@ -2864,18 +2871,22 @@ impl SemanticModelBuilder {
             // recursive/wildcard/filter facts belong to the authored import reference below.
             DeclarationFacts::none(),
         )?;
-        let membership = &node.value.membership;
-        self.push_membership(
-            declaration,
-            MembershipKind::Import,
-            self.member_visibility(membership, ParserMembershipKind::Import)?,
-            membership.span,
-        )?;
+        let (visibility, span) = match node.value.visibility {
+            ImportVisibility::Authored { visibility, span } => (Self::visibility(visibility), span),
+            // The grammar requires the prefix. Keeping the import lets its names resolve;
+            // the parser already reports the missing keyword.
+            ImportVisibility::Missing {
+                import_keyword_span,
+            } => (Visibility::Default, import_keyword_span),
+        };
+        self.push_membership(declaration, MembershipKind::Import, visibility, span)?;
+        let import_all = node.value.target.all_span.is_some();
         let (kind, flags) = match &node.value.target.shape {
             ImportShape::Membership { recursive_suffix } => (
                 ReferenceKind::MembershipImport,
                 RelationshipFlags {
                     recursive: recursive_suffix.is_some(),
+                    import_all,
                     ..RelationshipFlags::default()
                 },
             ),
@@ -2885,6 +2896,7 @@ impl SemanticModelBuilder {
                 ReferenceKind::NamespaceImport,
                 RelationshipFlags {
                     recursive: recursive_suffix.is_some(),
+                    import_all,
                     wildcard: true,
                     ..RelationshipFlags::default()
                 },
@@ -2895,6 +2907,7 @@ impl SemanticModelBuilder {
                 ReferenceKind::FilterImport,
                 RelationshipFlags {
                     recursive: recursive_suffix.is_some(),
+                    import_all,
                     ..RelationshipFlags::default()
                 },
             ),
@@ -2916,7 +2929,7 @@ impl SemanticModelBuilder {
             span: node.value.target.span,
             import,
         })?;
-        if let Some(elements) = &node.value.body_elements {
+        if let sysml_v2_parser::ast::Body::Brace { elements, .. } = &node.value.body {
             self.lower_relationship_body_elements(document, Some(declaration), elements)?;
         }
         Ok(())

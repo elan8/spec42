@@ -522,29 +522,39 @@ pub(crate) fn build_direct_name_index(
     NameIndex::build(entries)
 }
 
+/// The names an import can reach, from the previous fixed-point iteration. An ordinary import
+/// reads the exported pair, which holds public memberships only. `import all` reads the direct
+/// and effective pair, which hold all of them (KerML 8.3.2.4 `isImportAll`).
+pub(crate) struct ImportNameSources<'a> {
+    pub(crate) direct_names: &'a NameIndex,
+    pub(crate) exported_names: &'a NameIndex,
+    pub(crate) effective_imports: &'a NameIndex,
+    pub(crate) exported_imports: &'a NameIndex,
+}
+
 pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     memberships: &MembershipIndex,
     references: &[R],
     import_slots: &[usize],
-    exported_names: &NameIndex,
-    previous_exported_imports: &NameIndex,
+    sources: ImportNameSources<'_>,
     outcomes: &[ResolutionStatus],
 ) -> Result<(NameIndex, NameIndex), ResolutionError> {
     let mut entries = Vec::new();
     let mut exported_entries = Vec::new();
     // A recursive import (`::**`) re-exports the importable members of the target namespace's whole
     // subtree, so it needs the owner -> nested-namespace map. Built once, and only when at least
-    // one authored import is recursive.
-    let recursive_children = import_slots
-        .iter()
-        .copied()
-        .any(|index| {
-            references
-                .get(index)
-                .is_some_and(|reference| reference.flags().recursive)
+    // one authored import is recursive. `import all` also descends through non-public namespaces.
+    let is_recursive = |all: bool| {
+        import_slots.iter().copied().any(|index| {
+            references.get(index).is_some_and(|reference| {
+                reference.flags().recursive && reference.flags().import_all == all
+            })
         })
-        .then(|| public_namespace_children(declarations, memberships));
+    };
+    let public_children =
+        is_recursive(false).then(|| namespace_children(declarations, Some(memberships)));
+    let all_children = is_recursive(true).then(|| namespace_children(declarations, None));
     for index in import_slots.iter().copied() {
         let reference = references
             .get(index)
@@ -557,6 +567,20 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             .ok_or(ResolutionError::InvalidStorage)?
             .owner;
         let import_is_public = memberships.is_public(reference.source());
+        let import_all = reference.flags().import_all;
+        let (names, imports, recursive_children) = if import_all {
+            (
+                sources.direct_names,
+                sources.effective_imports,
+                &all_children,
+            )
+        } else {
+            (
+                sources.exported_names,
+                sources.exported_imports,
+                &public_children,
+            )
+        };
         match reference.kind() {
             ReferenceKind::NamespaceImport => {
                 // `::*` re-exports the target's own members; `::*::**` additionally re-exports the
@@ -565,8 +589,8 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                     extend_from_recursive_namespaces(
                         &mut entries,
                         &mut exported_entries,
-                        exported_names,
-                        previous_exported_imports,
+                        names,
+                        imports,
                         import_owner,
                         &recursive_import_owners(
                             recursive_children.as_deref().unwrap_or(&[]),
@@ -578,8 +602,8 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                     extend_from_namespace(
                         &mut entries,
                         &mut exported_entries,
-                        exported_names,
-                        previous_exported_imports,
+                        names,
+                        imports,
                         import_owner,
                         target,
                         import_is_public,
@@ -590,7 +614,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                 let declaration = declarations
                     .get(target.index())
                     .ok_or(ResolutionError::InvalidStorage)?;
-                if memberships.is_public(target) {
+                if import_all || memberships.is_public(target) {
                     if let Some(name) = declaration.name.resolved() {
                         extend_import_entries(
                             &mut entries,
@@ -608,8 +632,8 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                     extend_from_recursive_namespaces(
                         &mut entries,
                         &mut exported_entries,
-                        exported_names,
-                        previous_exported_imports,
+                        names,
+                        imports,
                         import_owner,
                         &recursive_import_owners(
                             recursive_children.as_deref().unwrap_or(&[]),
@@ -763,12 +787,12 @@ fn extend_from_recursive_namespaces(
     }
 }
 
-/// `owner index -> its publicly-visible owned Namespaces`, in source order. Every Package, Type
-/// and Feature is a Namespace, and a recursive import descends through each public one; only a
-/// public owned namespace is importable, so recursion never descends through a private one.
-fn public_namespace_children(
+/// `owner index -> its owned Namespaces`, in source order. Every Package, Type and Feature is a
+/// Namespace. An ordinary recursive import passes `public_only` and descends only through public
+/// ones; `import all` passes `None` and descends through all of them.
+fn namespace_children(
     declarations: &[Declaration],
-    memberships: &MembershipIndex,
+    public_only: Option<&MembershipIndex>,
 ) -> Vec<Vec<DeclarationId>> {
     let mut children = vec![Vec::new(); declarations.len()];
     for (index, declaration) in declarations.iter().enumerate() {
@@ -778,7 +802,7 @@ fn public_namespace_children(
         let Ok(child) = DeclarationId::from_index(index) else {
             continue;
         };
-        if !memberships.is_public(child) {
+        if public_only.is_some_and(|memberships| !memberships.is_public(child)) {
             continue;
         }
         if let Some(slot) = declaration

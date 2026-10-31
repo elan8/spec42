@@ -1788,7 +1788,7 @@ fn collect_semantic_ranges_in_out(
             SyntaxRole::Property,
         ));
     }
-    for element in declaration.body.iter().flatten() {
+    for element in declaration.body.braced_elements().into_iter().flatten() {
         collect_semantic_ranges_action_def_body_element(ctx, element, out);
     }
 }

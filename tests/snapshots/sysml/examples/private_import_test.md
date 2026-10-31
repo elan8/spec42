@@ -44,18 +44,6 @@ package PrivateImportTest {
 (fixture-diagnostics
   (document "memory://snapshot/private_import_test.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "missing_library_context")
-        (source "semantic")
-        (range (start 5 17) (end 5 22))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 30 11) (end 30 12))
-      )
     )
   )
 )
@@ -95,7 +83,7 @@ package PrivateImportTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P2")))))
     (reference (id (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P4::z1"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")))))
     (reference (id (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::x"))) (kind featureTyping) (ordinal 0))
       (authored-target "P1::A")
       (outcome (status resolved) (target (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")))))
@@ -104,6 +92,7 @@ package PrivateImportTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P3::B")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P4::z1"))) (target (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P4::z1"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::x"))) (target (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::x"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::z"))) (target (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P3::B"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::z"))) (kind featureTyping) (ordinal 0)))
   )
@@ -115,10 +104,16 @@ package PrivateImportTest {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")))
+      (subtype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P4::z1")) (scopes any))
       (subtype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::x")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P3::B")))
       (subtype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::z")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P4::z1")))
+      (type (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")) (source direct))
+      (supertype (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::x")))
       (type (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")) (provenance authored))
@@ -157,7 +152,7 @@ package PrivateImportTest {
   )
   (query (document "memory://snapshot/private_import_test.md") (range (start 30 11) (end 30 12)) (probe (position 30 11))
     (reference (id (source (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P4::z1"))) (kind featureTyping) (ordinal 0) (authored-target "A")
-      (outcome (status unresolved)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest::P1::A")))))
     )
   )
   (query (document "memory://snapshot/private_import_test.md") (range (start 8 9) (end 8 14)) (probe (position 8 9))

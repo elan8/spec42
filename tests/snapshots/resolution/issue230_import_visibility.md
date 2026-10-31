@@ -48,13 +48,17 @@ package Imports {
   (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c23ec1ecd6a527ea983b4f94f59f62f22d60991c6b3c5669bc93dd407b1eb647"))
   (declarations
     (declaration (id (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Imports"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/issue230_import_visibility.md") (path (named (kind package) (name "Imports")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Lib") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/issue230_import_visibility.md") (path (named (kind package) (name "Imports")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "Lib") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/issue230_import_visibility.md") (path (named (kind package) (name "Imports")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Lib") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Imports::retained"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Lib"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Lib::Thing"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/issue230_import_visibility.md") (path (named (kind package) (name "Imports")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Lib")
+      (outcome (status resolved) (target (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Lib")))))
+    (reference (id (source (node (document "memory://snapshot/issue230_import_visibility.md") (path (named (kind package) (name "Imports")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Lib")
       (outcome (status resolved) (target (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Lib")))))
     (reference (id (source (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Imports::retained"))) (kind featureTyping) (ordinal 0))
@@ -84,8 +88,13 @@ package Imports {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/issue230_import_visibility.md") (range (start 3 19) (end 3 25)) (probe (position 3 19))
+  (query (document "memory://snapshot/issue230_import_visibility.md") (range (start 2 11) (end 2 17)) (probe (position 2 11))
     (reference (id (source (node (document "memory://snapshot/issue230_import_visibility.md") (path (named (kind package) (name "Imports")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "Lib")
+      (outcome (status resolved) (target (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Lib")))))
+    )
+  )
+  (query (document "memory://snapshot/issue230_import_visibility.md") (range (start 3 19) (end 3 25)) (probe (position 3 19))
+    (reference (id (source (node (document "memory://snapshot/issue230_import_visibility.md") (path (named (kind package) (name "Imports")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "Lib")
       (outcome (status resolved) (target (node (document "memory://snapshot/issue230_import_visibility.md") (qualified-name "Lib")))))
     )
   )

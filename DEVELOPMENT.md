@@ -320,6 +320,16 @@ If `SYSML_V2_RELEASE_DIR` is not set or does not contain the expected validation
 
 ### VS Code
 
+Use Node.js 22.12 or newer (CI uses Node.js 24). Regenerate npm lockfiles with npm 11;
+npm 10 can fail while resolving Vitest's optional peer dependencies. Install the resulting
+lockfiles with `npm ci` in both `vscode/diagram-renderer` and `vscode` before compiling.
+
+The extension's `glob` and `minimatch` overrides select patched releases while upstream
+dependency ranges still require vulnerable major versions. Keep the packaging and test tools
+on versions using the named-export APIs; the language client uses the `Minimatch` constructor.
+Remove these overrides when upstream ranges admit patched versions. Verify editor workflows,
+test discovery, coverage and VSIX packaging when changing this dependency group.
+
 ```bash
 cd vscode
 npm install
