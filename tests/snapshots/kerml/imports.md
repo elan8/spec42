@@ -59,12 +59,6 @@ package Imports {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "recovered_package_body_element")
-        (source "parser")
-        (range (start 16 3) (end 18 4))
-      )
-      (diagnostic
-        (severity error)
         (code "ambiguous_reference")
         (source "semantic")
         (range (start 34 13) (end 34 14))
@@ -102,7 +96,7 @@ package Imports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:35dba43b7dc97f319787afcdbe6cb938dcdf130b5eb33d1ccbc170799f176517"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:35dba43b7dc97f319787afcdbe6cb938dcdf130b5eb33d1ccbc170799f176517"))
   (declarations
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::P"))) (kind package) (membership (kind owning) (visibility default)))
@@ -116,6 +110,8 @@ package Imports {
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1::D"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1::E"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1::Q1a"))) (kind package) (membership (kind owning) (visibility private)))
+    (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1::Q1a::G"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q2::F"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::R"))) (kind package) (membership (kind owning) (visibility default)))
