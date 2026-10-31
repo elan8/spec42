@@ -266,7 +266,7 @@ package ProvenanceExample {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:bf494a84e1bd72d80af5e1ba3a8996e3142ec69b749e91861d910e4d55d92e93",
+  "modelDigest": "blake3:eaa9d1ce459edc361595f5b2843b0533c2ab818ebdf564cf7e7a28f2c16319f8",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_relationship_provenance.md",

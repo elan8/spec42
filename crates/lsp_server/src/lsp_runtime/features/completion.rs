@@ -6,9 +6,7 @@ use crate::common::util;
 use crate::session::snapshot::ServerStateSnapshot;
 use crate::session::ServerState;
 
-use language_service::{
-    complete as ls_complete, CompletionItemDto, CompletionItemKindDto, WorkspaceSnapshot,
-};
+use language_service::{CompletionItemDto, CompletionItemKindDto, WorkspaceSnapshot};
 
 const COMPLETION_RESOLVE_DATA_KEY: &str = "spec42Completion";
 
@@ -16,6 +14,103 @@ const COMPLETION_RESOLVE_DATA_KEY: &str = "spec42Completion";
 struct CompletionResolveData {
     detail: Option<String>,
     documentation: Option<String>,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+struct ImportResolveData {
+    uri: Url,
+    version: i32,
+    open_interval: String,
+    model_digest: String,
+    selection: language_service::dto::ImportCompletionDto,
+}
+
+fn import_data(item: &CompletionItem) -> Result<Option<ImportResolveData>> {
+    item.data
+        .as_ref()
+        .and_then(|data| data.get(COMPLETION_RESOLVE_DATA_KEY))
+        .and_then(|data| data.get("import"))
+        .map(|data| {
+            serde_json::from_value(data.clone()).map_err(|_| {
+                tower_lsp::jsonrpc::Error::invalid_params("Invalid completion import identity")
+            })
+        })
+        .transpose()
+}
+
+pub(crate) fn completion_import_uri(item: &CompletionItem) -> Result<Option<Url>> {
+    Ok(import_data(item)?.map(|data| data.uri))
+}
+
+pub(crate) fn same_editor_revision(before: &ServerState, after: &ServerState, uri: &Url) -> bool {
+    let uri = util::normalize_file_uri(uri);
+    let revision = |state: &ServerState| {
+        state
+            .index
+            .get(&uri)
+            .and_then(|entry| entry.editor_revision.as_ref())
+            .map(|revision| (revision.token(), revision.version()))
+    };
+    revision(before) == revision(after)
+}
+
+pub(crate) fn same_edit_context(before: &ServerState, after: &ServerState, uri: &Url) -> bool {
+    same_editor_revision(before, after, uri)
+        && before.session.current().publication().model_digest()
+            == after.session.current().publication().model_digest()
+}
+
+pub(crate) fn completion_resolve_import(
+    state: &ServerState,
+    item: CompletionItem,
+) -> Result<CompletionItem> {
+    let Some(data) = import_data(&item)? else {
+        return completion_resolve(item);
+    };
+    let uri = util::normalize_file_uri(&data.uri);
+    let entry = state
+        .index
+        .get(&uri)
+        .ok_or_else(tower_lsp::jsonrpc::Error::content_modified)?;
+    let revision = entry
+        .editor_revision
+        .as_ref()
+        .ok_or_else(tower_lsp::jsonrpc::Error::content_modified)?;
+    if revision.token().to_string() != data.open_interval
+        || revision.version() != Some(data.version)
+        || state
+            .session
+            .current()
+            .publication()
+            .model_digest()
+            .to_string()
+            != data.model_digest
+    {
+        return Err(tower_lsp::jsonrpc::Error::content_modified());
+    }
+    let snapshot = ServerStateSnapshot::new(state, false);
+    let path = snapshot.path_for_uri(&uri);
+    let (primary, edits) =
+        language_service::resolve_completion_import(&snapshot, &path, &data.selection)
+            .ok_or_else(tower_lsp::jsonrpc::Error::content_modified)?;
+    let expected = CompletionTextEdit::Edit(TextEdit {
+        range: to_lsp_range(primary.range),
+        new_text: primary.new_text,
+    });
+    if item.text_edit.as_ref() != Some(&expected) {
+        return Err(tower_lsp::jsonrpc::Error::content_modified());
+    }
+    let mut item = completion_resolve(item)?;
+    item.additional_text_edits = Some(
+        edits
+            .into_iter()
+            .map(|edit| TextEdit {
+                range: to_lsp_range(edit.range),
+                new_text: edit.replacement,
+            })
+            .collect(),
+    );
+    Ok(item)
 }
 
 fn markdown_documentation(markdown: String) -> Documentation {
@@ -117,18 +212,74 @@ pub(crate) fn completion(
     uri: Url,
     pos: Position,
     perf_logging_enabled: bool,
+    import_resolve_supported: bool,
 ) -> Result<Option<CompletionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
     let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(&uri_norm);
     let position = to_core_position(pos);
-    let Some(result) = ls_complete(&snapshot, &path, position) else {
+    let Some(result) = language_service::completion::complete_with_imports(
+        &snapshot,
+        &path,
+        position,
+        import_resolve_supported,
+    ) else {
         return Ok(None);
     };
 
+    let revision = state
+        .index
+        .get(&uri_norm)
+        .and_then(|entry| entry.editor_revision.as_ref());
+    let guard = revision.and_then(|revision| Some((revision.token(), revision.version()?)));
+    let items = result
+        .items
+        .into_iter()
+        .filter_map(|dto| {
+            let selection = dto.import.clone();
+            if selection.is_some()
+                && (!import_resolve_supported
+                    || guard.is_none()
+                    || util::uri_under_any_library(&uri_norm, &state.library_paths))
+            {
+                return None;
+            }
+            let mut item = map_completion_item(dto);
+            if let (Some(selection), Some((open_interval, version))) = (selection, guard) {
+                // VS Code may commit the primary edit before an asynchronous resolve finishes.
+                // Deliver both validated edits now so even immediate acceptance is atomic.
+                let (_, edits) =
+                    language_service::resolve_completion_import(&snapshot, &path, &selection)?;
+                item.additional_text_edits = Some(
+                    edits
+                        .into_iter()
+                        .map(|edit| TextEdit {
+                            range: to_lsp_range(edit.range),
+                            new_text: edit.replacement,
+                        })
+                        .collect(),
+                );
+                let data = ImportResolveData {
+                    uri: uri_norm.clone(),
+                    version,
+                    open_interval: open_interval.to_string(),
+                    model_digest: state
+                        .session
+                        .current()
+                        .publication()
+                        .model_digest()
+                        .to_string(),
+                    selection,
+                };
+                item.data.as_mut()?.get_mut(COMPLETION_RESOLVE_DATA_KEY)?["import"] =
+                    serde_json::to_value(data).ok()?;
+            }
+            Some(item)
+        })
+        .collect();
     Ok(Some(CompletionResponse::List(CompletionList {
         is_incomplete: result.is_incomplete,
-        items: result.items.into_iter().map(map_completion_item).collect(),
+        items,
     })))
 }
 
@@ -160,6 +311,7 @@ mod tests {
             deprecated: false,
             resolve_detail: None,
             resolve_documentation: None,
+            import: None,
         });
         assert_eq!(item.kind, Some(CompletionItemKind::SNIPPET));
         assert_eq!(

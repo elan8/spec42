@@ -21,7 +21,10 @@ pub mod uri;
 pub mod workspace;
 pub mod workspace_symbols;
 
-pub use code_actions::{explicit_redefinition_quick_fix, reference_quick_fixes};
+pub use code_actions::{
+    explicit_redefinition_quick_fix, fix_all_missing_imports, reference_quick_fixes,
+    resolve_completion_import,
+};
 pub use completion::{
     complete, completion_edit_shape, detect_completion_context, CompletionContext,
     ATTRIBUTE_TYPE_LOOKUP_KINDS, PART_TYPE_LOOKUP_KINDS, PORT_TYPE_LOOKUP_KINDS,

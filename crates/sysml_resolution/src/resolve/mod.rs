@@ -95,6 +95,7 @@ impl ResolutionReferenceFact for AuthoredReference {
 pub(crate) struct ResolutionStartingState<'a> {
     pub provisional_relationships: &'a [ImpliedRelationship],
     pub settled_outcomes: Option<&'a [ResolutionStatus]>,
+    pub settled_ambiguous_candidates: &'a [DeclarationId],
     /// Standard-library root declarations a workspace root of the same name shadows. They stay in
     /// storage for role-filtered anchor resolution but must not be bare-name lexical candidates, or
     /// an explicit `import <Name>::*` over the workspace package resolves to both and is reported
@@ -105,6 +106,8 @@ pub(crate) struct ResolutionStartingState<'a> {
     pub owned_end_features: &'a [OwnedEndRecord],
     /// Canonical last-chaining-feature typing dependencies, not specialization edges.
     pub feature_type_dependencies: &'a [(DeclarationId, DeclarationId)],
+    /// Ephemeral private imports for an editor transaction; never published.
+    pub proposed_imports: &'a [(names::NameKey, DeclarationId)],
 }
 
 /// The settled direct specialization edges `(specific, general)` over resolved `references` and
@@ -237,9 +240,11 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let ResolutionStartingState {
         provisional_relationships,
         settled_outcomes: seed,
+        settled_ambiguous_candidates,
         shadowed_library_roots,
         owned_end_features,
         feature_type_dependencies,
+        proposed_imports,
     } = starting_state;
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
@@ -555,9 +560,9 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .map_err(|_| ResolutionError::Capacity)?,
         ..ResolutionWork::default()
     };
-    let mut effective_imports = NameIndex::build(Vec::new())?;
+    let mut effective_imports = NameIndex::build(proposed_imports.to_vec())?;
     let mut exported_imports = NameIndex::build(Vec::new())?;
-    let mut ambiguous_candidates = Vec::new();
+    let mut ambiguous_candidates = settled_ambiguous_candidates.to_vec();
     let mut candidates = Vec::new();
     let mut next_candidates = Vec::new();
     let mut converged = false;
@@ -568,6 +573,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .checked_add(1)
             .ok_or(ResolutionError::Capacity)?;
         ambiguous_candidates.clear();
+        ambiguous_candidates.extend_from_slice(settled_ambiguous_candidates);
         for index in import_slots.iter().copied() {
             work.import_evaluations = work
                 .import_evaluations
@@ -608,6 +614,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             },
             &outcomes,
         )?;
+        let next_effective_imports = next_effective_imports.with_additional(proposed_imports)?;
         if next_effective_imports == effective_imports && next_exported_imports == exported_imports
         {
             effective_imports = next_effective_imports;
@@ -641,6 +648,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             outcomes[index] = ResolutionStatus::NonConverged;
         }
         ambiguous_candidates.clear();
+        ambiguous_candidates.extend_from_slice(settled_ambiguous_candidates);
         SolverStatus::NonConverged
     };
 

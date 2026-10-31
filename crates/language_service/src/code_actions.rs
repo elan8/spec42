@@ -85,6 +85,125 @@ pub fn reference_quick_fixes(
     }
 }
 
+/// Materialise a canonical import plan using the same syntax-owned anchors as a single fix.
+/// Multiple imports at one anchor form one insertion, so the transaction cannot overlap itself.
+pub(crate) fn import_edits(
+    workspace: &impl WorkspaceSnapshot,
+    document_path: &str,
+    choices: &[sysml_query::resolved_slice::ImportChoice],
+) -> Option<Vec<TextEditDto>> {
+    let document = PublishedDocument::current(workspace, document_path)?;
+    let parsed = workspace.parsed(&document.uri)?;
+    let mut ordered = choices
+        .iter()
+        .map(|choice| {
+            Some((
+                document
+                    .model
+                    .edits()
+                    .import_path(choice.candidate.target)?,
+                choice,
+            ))
+        })
+        .collect::<Option<Vec<_>>>()?;
+    ordered.sort_by(|(a, left), (b, right)| {
+        left.namespace
+            .map(|n| n.symbol)
+            .cmp(&right.namespace.map(|n| n.symbol))
+            .then_with(|| a.cmp(b))
+    });
+    ordered.dedup_by(|(_, a), (_, b)| {
+        a.namespace == b.namespace && a.candidate.target == b.candidate.target
+    });
+    let mut grouped = std::collections::BTreeMap::new();
+    for (_, choice) in ordered {
+        let fix =
+            document.import_fix(&parsed, choice.namespace.as_ref(), &choice.candidate, false)?;
+        for edit in fix.edits {
+            grouped
+                .entry((edit.range.start, edit.range.end))
+                .or_insert_with(String::new)
+                .push_str(&edit.replacement);
+        }
+    }
+    Some(
+        grouped
+            .into_iter()
+            .map(|((start, end), replacement)| {
+                document.edit(TextRange::new(start, end), replacement)
+            })
+            .collect(),
+    )
+}
+
+/// A whole-file source action; remaining cases keep their individual diagnostics and choices.
+pub fn fix_all_missing_imports(
+    workspace: &impl WorkspaceSnapshot,
+    document_path: &str,
+) -> Option<TextEditSuggestion> {
+    let document = PublishedDocument::current(workspace, document_path)?;
+    let QueryAnswer::Resolved(plan) = document
+        .model
+        .edits()
+        .missing_import_plan(document.uri.as_str())
+        .answer
+    else {
+        return None;
+    };
+    if plan.imports.is_empty() {
+        return None;
+    }
+    let edits = import_edits(workspace, document_path, &plan.imports)?;
+    let title = format!(
+        "Add all unambiguous missing imports ({} reference{}; {} remaining)",
+        plan.repaired.len(),
+        if plan.repaired.len() == 1 { "" } else { "s" },
+        plan.remaining.len()
+    );
+    Some(TextEditSuggestion::new(title, edits).with_preferred(false))
+}
+
+/// Validate and materialise the import chosen by a completion consumer. Hosts must also guard
+/// the captured document revision before returning or applying these position-addressed edits.
+pub fn resolve_completion_import(
+    workspace: &impl WorkspaceSnapshot,
+    document_path: &str,
+    selection: &crate::dto::ImportCompletionDto,
+) -> Option<(crate::dto::CompletionTextEditDto, Vec<TextEditDto>)> {
+    let document = PublishedDocument::current(workspace, document_path)?;
+    let target =
+        document
+            .model
+            .resolve_token(&sysml_query::resolved_slice::SymbolToken::from_encoded(
+                selection.target_token.as_str(),
+            ))?;
+    let QueryAnswer::Resolved(choice) = document
+        .model
+        .edits()
+        .validate_completion_import(document.uri.as_str(), selection.position, target)
+        .answer
+    else {
+        return None;
+    };
+    let edits = import_edits(workspace, document_path, std::slice::from_ref(&choice))?;
+    if edits
+        .iter()
+        .any(|edit| edit.range.start >= choice.range.start && edit.range.start <= choice.range.end)
+    {
+        return None;
+    }
+    Some((
+        crate::dto::CompletionTextEditDto {
+            range: choice.range,
+            new_text: document
+                .model
+                .edits()
+                .import_reference_spelling(choice.candidate.target)?,
+        },
+        edits,
+    ))
+}
+
 /// The fix that writes `:>>` before a declaration whose value silently overrides the inherited
 /// member its name implicitly redefines.
 pub fn explicit_redefinition_quick_fix(
@@ -113,6 +232,7 @@ struct PublishedDocument<'w> {
     uri: Url,
     path: String,
     text: &'w str,
+    line_ending: &'static str,
     model: &'w sysml_query::resolved_slice::PublishedModel,
 }
 
@@ -126,8 +246,9 @@ impl<'w> PublishedDocument<'w> {
         Some(Self {
             path: workspace.path_for_uri(&uri),
             model: workspace.published_model()?,
-            uri,
+            uri: uri.clone(),
             text,
+            line_ending: workspace.line_ending(&uri).as_str(),
         })
     }
 
@@ -156,10 +277,16 @@ impl<'w> PublishedDocument<'w> {
         &line[..line.len() - line.trim_start().len()]
     }
 
+    fn newline(&self) -> &'static str {
+        self.line_ending
+    }
+
     /// Whether only whitespace follows `characters` on `line`.
     fn rest_is_blank(&self, line: u32, characters: u32) -> bool {
-        crate::text::position_to_byte_offset(self.line(line), 0, characters)
-            .is_some_and(|offset| self.line(line)[offset..].chars().all(char::is_whitespace))
+        crate::text::position_to_byte_offset(self.line(line), 0, characters).is_some_and(|offset| {
+            let rest = self.line(line)[offset..].trim_start();
+            rest.is_empty() || rest.starts_with("//")
+        })
     }
 
     /// The indentation of a member of `body`: that of its first non-blank line, or one level
@@ -183,7 +310,7 @@ impl<'w> PublishedDocument<'w> {
         if self.rest_is_blank(line, characters) && (line as usize) + 1 < self.text.lines().count() {
             self.insert(
                 TextPosition::new(line + 1, 0),
-                format!("{indent}{statement}\n"),
+                format!("{indent}{statement}{}", self.newline()),
             )
         } else {
             self.insert(self.position(line, characters), format!(" {statement}"))
@@ -197,7 +324,7 @@ impl<'w> PublishedDocument<'w> {
         candidate: &ImportCandidate,
         preferred: bool,
     ) -> Option<TextEditSuggestion> {
-        let path = self.model.element_qualified_name(candidate.target)?;
+        let path = self.model.edits().import_path(candidate.target)?;
         let statement = format!("private import {path};");
         let edit = match namespace {
             Some(namespace) => {
@@ -249,7 +376,10 @@ impl<'w> PublishedDocument<'w> {
                         self.indent(range.start_line),
                         &statement,
                     ),
-                    None => self.insert(TextPosition::new(0, 0), format!("{statement}\n")),
+                    None => self.insert(
+                        TextPosition::new(0, 0),
+                        format!("{statement}{}", self.newline()),
+                    ),
                 }
             }
         };
@@ -331,7 +461,12 @@ impl<'w> PublishedDocument<'w> {
 fn package(parsed: &ParsedSource, namespace: &RepairNamespace) -> Option<SyntaxOutlineNode> {
     let mut found = Vec::new();
     collect_packages(&parsed.outline(), &mut found);
-    found.retain(|node| node.selection_range.start_line == namespace.identifier.start.line);
+    found.retain(|node| {
+        node.selection_range.start_line == namespace.identifier.start.line
+            && node.selection_range.start_character == namespace.identifier.start.character
+            && node.selection_range.end_line == namespace.identifier.end.line
+            && node.selection_range.end_character == namespace.identifier.end.character
+    });
     match <[_; 1]>::try_from(found) {
         Ok([package]) => Some(package),
         Err(_) => None,

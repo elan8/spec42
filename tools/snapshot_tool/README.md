@@ -115,7 +115,14 @@ the explicit `:>>` repair for a declaration whose value silently overrides an in
 
 ```text
 probe model.sysml 6 17 repairs
+probe model.sysml 6 17 imports=Mot
+probe model.sysml 6 17 fix-imports
 ```
+
+`imports=PREFIX` records the canonical completion candidates whose private import and reference
+replacement preserve existing bindings. `fix-imports` records the jointly validated file plan,
+including deduplicated imports, repaired reference ranges, and explicit reasons for remaining
+references. These probes evaluate proposed transactions without modifying the published model.
 
 `EDITOR QUERIES` uses zero-based line and UTF-16 character positions. A normal probe exercises the
 canonical editor queries. Add the `hover` option to also append the presentation-independent

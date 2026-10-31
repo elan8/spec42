@@ -100,4 +100,73 @@ describe("Multi-file VS Code Flows", () => {
     assert.ok(subtypes?.some(item => item.name === "widget"));
   });
 
+  it("accepts an import completion and undoes the reference and import together", async function () {
+    this.timeout(60000);
+    const uri = vscode.Uri.joinPath(getTestWorkspaceFolder().uri, "import-completion.sysml");
+    const original = "package CompletionClient {\n    part widget : Spec42SmokeWid;\n}\n";
+    await vscode.workspace.fs.writeFile(uri, Buffer.from(original));
+    const doc = await vscode.workspace.openTextDocument(uri);
+    const editor = await vscode.window.showTextDocument(doc);
+    try {
+      assert.strictEqual(doc.languageId, "sysml");
+      await waitForLanguageServerReady(doc);
+      const at = doc.positionAt(original.indexOf("Spec42SmokeWid") + "Spec42SmokeWid".length);
+      editor.selection = new vscode.Selection(at, at);
+      await waitFor("resolved import completion", () =>
+        vscode.commands.executeCommand<vscode.CompletionList>(
+          "vscode.executeCompletionItemProvider", uri, at, undefined, 100
+        ), list => Boolean(list?.items.some(item =>
+          (typeof item.label === "string" ? item.label : item.label.label) === "Spec42SmokeWidget"
+            && item.additionalTextEdits?.length
+        )));
+      await vscode.commands.executeCommand("editor.action.triggerSuggest");
+      // The prefix has exactly one matching definition. Accept through the editor so its
+      // completion transaction, including resolved additionalTextEdits, owns the undo stop.
+      await waitFor("accepted completion and import", async () => {
+        // triggerSuggest can return before the suggestion widget has populated. Once the
+        // acceptance changes the text, never issue another accept command.
+        if (doc.getText() === original) {
+          await vscode.commands.executeCommand("acceptSelectedSuggestion");
+        }
+        return doc.getText();
+      }, text =>
+        text === "package CompletionClient {\n    private import Spec42MultiFileDefinitions::Spec42SmokeWidget;\n    part widget : Spec42SmokeWidget;\n}\n");
+      await vscode.commands.executeCommand("undo");
+      await waitFor("completion undone", async () => doc.getText(), text => text === original);
+      assert.strictEqual(doc.getText(), original);
+    } finally {
+      await vscode.commands.executeCommand("workbench.action.revertAndCloseActiveEditor");
+      await vscode.workspace.fs.delete(uri);
+    }
+  });
+
+  it("applies all missing imports as one undoable workspace edit", async function () {
+    this.timeout(60000);
+    const uri = vscode.Uri.joinPath(getTestWorkspaceFolder().uri, "import-fix-all.sysml");
+    const original = "package ImportClient {\n    part a : Spec42SmokeWidget;\n    part b : Spec42SmokeWidget;\n}\n";
+    await vscode.workspace.fs.writeFile(uri, Buffer.from(original));
+    const doc = await vscode.workspace.openTextDocument(uri);
+    await vscode.window.showTextDocument(doc);
+    try {
+      assert.strictEqual(doc.languageId, "sysml");
+      await waitForLanguageServerReady(doc);
+      const actions = await waitFor("fix all missing imports", () =>
+        vscode.commands.executeCommand<vscode.CodeAction[]>(
+          "vscode.executeCodeActionProvider", uri, new vscode.Range(0, 0, 0, 0),
+          "source.fixAll.spec42.imports", 100
+        ), value => Boolean(value?.some(action => action.edit)));
+      const action = actions.find(item => item.kind?.value === "source.fixAll.spec42.imports");
+      assert.ok(action?.edit);
+      assert.strictEqual(await vscode.workspace.applyEdit(action.edit), true);
+      assert.strictEqual(doc.getText(),
+        "package ImportClient {\n    private import Spec42MultiFileDefinitions::Spec42SmokeWidget;\n    part a : Spec42SmokeWidget;\n    part b : Spec42SmokeWidget;\n}\n");
+      await vscode.commands.executeCommand("undo");
+      await waitFor("import action undone", async () => doc.getText(), text => text === original);
+      assert.strictEqual(doc.getText(), original);
+    } finally {
+      await vscode.commands.executeCommand("workbench.action.revertAndCloseActiveEditor");
+      await vscode.workspace.fs.delete(uri);
+    }
+  });
+
 });
