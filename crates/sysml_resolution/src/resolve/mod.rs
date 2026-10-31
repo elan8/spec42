@@ -2397,27 +2397,9 @@ pub(crate) struct ResolutionIndexes<'a> {
     /// for the Subclassification pass itself (it is built from Subclassification's own settled
     /// outcomes) and present for reference kinds resolved afterward, such as FeatureTyping.
     pub(crate) inherited_names: Option<&'a InheritedNameIndex>,
-    /// Effective membership visibility. When present, a qualified-name segment does not reach a
-    /// private member of a namespace that does not enclose the reference (KerML 8.2.3.5).
+    /// Effective membership visibility. When present, a qualified-name segment resolves only
+    /// among the public memberships of the previous segment (KerML 8.2.3.5.3).
     pub(crate) memberships: Option<&'a MembershipIndex>,
-}
-
-/// Whether `namespace` is `element` or one of its owners.
-fn encloses(
-    declarations: &[Declaration],
-    namespace: DeclarationId,
-    element: DeclarationId,
-) -> bool {
-    let mut cursor = Some(element);
-    while let Some(current) = cursor {
-        if current == namespace {
-            return true;
-        }
-        cursor = declarations
-            .get(current.index())
-            .and_then(|declaration| declaration.owner);
-    }
-    false
 }
 
 pub(crate) struct ResolutionScratch<'a> {
@@ -2597,10 +2579,14 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
             // `inherited_names` index also carries effective-type members for Features, so paths
             // such as `ConeOrCylinder::faces::edges` traverse `faces` to the members of its type.
             // Import fallback remains last for owners reached through an imported namespace.
-            // A private member is visible only to references the namespace encloses.
-            let private_hidden = indexes
-                .memberships
-                .filter(|_| !encloses(declarations, candidate, reference.source()));
+            // Only public memberships are visible (KerML 8.2.3.5.3), wherever the reference is.
+            let visible = |member: &DeclarationId| {
+                indexes.memberships.is_none_or(|memberships| {
+                    memberships.get(*member).is_none_or(|membership| {
+                        membership.visibility == EffectiveVisibility::Public
+                    })
+                })
+            };
             let before = scratch.next_candidates.len();
             scratch.next_candidates.extend(
                 indexes
@@ -2608,22 +2594,20 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
                     .candidates(Some(candidate), *segment)
                     .iter()
                     .copied()
-                    .filter(|member| {
-                        private_hidden.is_none_or(|memberships| {
-                            memberships.get(*member).is_none_or(|membership| {
-                                membership.visibility != EffectiveVisibility::Private
-                            })
-                        })
-                    }),
+                    .filter(visible),
             );
             if scratch.next_candidates.len() > before {
                 continue;
             }
-            let inherited = indexes
-                .inherited_names
-                .map_or(&[][..], |names| names.candidates(Some(candidate), *segment));
-            if !inherited.is_empty() {
-                scratch.next_candidates.extend_from_slice(inherited);
+            scratch.next_candidates.extend(
+                indexes
+                    .inherited_names
+                    .map_or(&[][..], |names| names.candidates(Some(candidate), *segment))
+                    .iter()
+                    .copied()
+                    .filter(visible),
+            );
+            if scratch.next_candidates.len() > before {
                 continue;
             }
             if let Some(imports) = indexes.exported_imports {

@@ -23,17 +23,17 @@ use crate::TextRange;
 use sysml_v2_parser::ParseError;
 use sysml_v2_parser::ParsedDocument;
 
-/// The note attached to the private member a qualified name failed to reach.
-const RELATED_PRIVATE_MEMBER: &str = "Private member the qualified name names.";
+/// The note attached to the non-public member a qualified name failed to reach.
+const RELATED_HIDDEN_MEMBER: &str = "Non-public member the qualified name names.";
 
 impl<D> SemanticModel<D> {
-    /// The private segment that made an unresolved qualified name fail: the path resolves once
-    /// visibility is ignored, and one of the namespaces it passes through owns that segment
-    /// privately without enclosing the reference (KerML 8.2.3.5).
-    fn private_qualified_segment(
+    /// The non-public segment that made an unresolved qualified name fail: the path resolves once
+    /// visibility is ignored, and a namespace it passes through does not own that segment publicly
+    /// (KerML 8.2.3.5.3).
+    fn hidden_qualified_segment(
         &self,
         reference: &crate::lower::facts::AuthoredReference,
-    ) -> Result<Option<crate::model::DeclarationId>, ResolutionError> {
+    ) -> Result<Option<(crate::model::DeclarationId, &'static str)>, ResolutionError> {
         let path = self.authored_path(reference.path);
         let segments = path
             .split("::")
@@ -49,30 +49,23 @@ impl<D> SemanticModel<D> {
         let [target] = self.resolve_qualifier_scopes(source.owner, &path)?[..] else {
             return Ok(None);
         };
-        let encloses_source = |namespace: crate::model::DeclarationId| {
-            let mut cursor = Some(reference.source);
-            while let Some(current) = cursor {
-                if current == namespace {
-                    return true;
-                }
-                cursor = self
-                    .storage
-                    .declaration(current)
-                    .and_then(|declaration| declaration.owner);
-            }
-            false
-        };
         let mut segment = target;
         for _ in 1..segments {
             let Some(owner) = self.storage.declaration(segment).and_then(|d| d.owner) else {
                 break;
             };
-            if !encloses_source(owner)
-                && self.memberships.get(segment).is_some_and(|membership| {
-                    membership.visibility == crate::resolve::names::EffectiveVisibility::Private
-                })
+            match self
+                .memberships
+                .get(segment)
+                .map(|membership| membership.visibility)
             {
-                return Ok(Some(segment));
+                Some(crate::resolve::names::EffectiveVisibility::Private) => {
+                    return Ok(Some((segment, "private")))
+                }
+                Some(crate::resolve::names::EffectiveVisibility::Protected) => {
+                    return Ok(Some((segment, "protected")))
+                }
+                Some(crate::resolve::names::EffectiveVisibility::Public) | None => {}
             }
             segment = owner;
         }
@@ -192,15 +185,17 @@ impl<D> SemanticModel<D> {
                     let mut related = Vec::new();
                     let mut message: Box<str> = code.describe().into();
                     if matches!(status, ResolutionStatus::Unresolved) {
-                        if let Some(hidden) = self.private_qualified_segment(reference)? {
+                        if let Some((hidden, visibility)) =
+                            self.hidden_qualified_segment(reference)?
+                        {
                             let name = self.display_name(hidden);
                             message = format!(
-                                "'{name}' is private, so this qualified name cannot reach it from \
-                                 here. Make '{name}' public, or refer to it from inside its \
+                                "'{name}' is {visibility}, so a qualified name cannot reach it. \
+                                 Make '{name}' public, or use its simple name inside its \
                                  namespace."
                             )
                             .into();
-                            related.push(self.related_declaration(hidden, RELATED_PRIVATE_MEMBER)?);
+                            related.push(self.related_declaration(hidden, RELATED_HIDDEN_MEMBER)?);
                         }
                     }
                     if let ResolutionStatus::Ambiguous(candidates) = status {
