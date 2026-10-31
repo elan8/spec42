@@ -1305,7 +1305,10 @@ impl SemanticModelBuilder {
             DeclarationKind::KermlBooleanExpression,
             None,
             guard.span,
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                is_succession_guard: true,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             expression,
