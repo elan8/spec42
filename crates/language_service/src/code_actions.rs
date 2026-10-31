@@ -147,18 +147,8 @@ impl<'w> PublishedDocument<'w> {
         self.text.lines().nth(line as usize).unwrap_or_default()
     }
 
-    /// The UTF-16 column of a syntax column, which counts characters.
-    fn column(&self, line: u32, characters: u32) -> u32 {
-        let line = self.line(line);
-        let end = line
-            .char_indices()
-            .nth(characters as usize)
-            .map_or(line.len(), |(offset, _)| offset);
-        utf16_len(&line[..end])
-    }
-
     fn position(&self, line: u32, characters: u32) -> TextPosition {
-        TextPosition::new(line, self.column(line, characters))
+        TextPosition::new(line, characters)
     }
 
     fn indent(&self, line: u32) -> &str {
@@ -168,10 +158,8 @@ impl<'w> PublishedDocument<'w> {
 
     /// Whether only whitespace follows `characters` on `line`.
     fn rest_is_blank(&self, line: u32, characters: u32) -> bool {
-        self.line(line)
-            .chars()
-            .skip(characters as usize)
-            .all(char::is_whitespace)
+        crate::text::position_to_byte_offset(self.line(line), 0, characters)
+            .is_some_and(|offset| self.line(line)[offset..].chars().all(char::is_whitespace))
     }
 
     /// The indentation of a member of `body`: that of its first non-blank line, or one level
@@ -288,7 +276,9 @@ impl<'w> PublishedDocument<'w> {
             Some(namespace) => {
                 let body = package(parsed, &namespace)?.body_range?;
                 let close = body.end_character.checked_sub(1)?;
-                let mut before_close = self.line(body.end_line).chars().take(close as usize);
+                let offset =
+                    crate::text::position_to_byte_offset(self.line(body.end_line), 0, close)?;
+                let mut before_close = self.line(body.end_line)[..offset].chars();
                 if body.end_line > body.start_line && before_close.all(char::is_whitespace) {
                     self.insert(
                         TextPosition::new(body.end_line, 0),

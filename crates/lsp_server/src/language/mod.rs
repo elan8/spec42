@@ -106,14 +106,11 @@ pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdi
             insert_spaces: options.insert_spaces,
         },
     );
-    let lines: Vec<&str> = source.lines().collect();
-    if lines.is_empty() {
-        let range = Range::new(Position::new(0, 0), Position::new(0, 0));
-        return vec![TextEdit { range, new_text }];
+    if new_text == source {
+        return Vec::new();
     }
-    let last_line = (lines.len() - 1) as u32;
-    let last_char = lines.last().map(|l| l.len()).unwrap_or(0) as u32;
-    let range = Range::new(Position::new(0, 0), Position::new(last_line, last_char));
+    let end = language_service::text::document_end(source);
+    let range = Range::new(Position::new(0, 0), Position::new(end.line, end.character));
     vec![TextEdit { range, new_text }]
 }
 
@@ -389,12 +386,7 @@ mod tests {
             .next()
             .expect("first edit")
             .new_text;
-        let second = format_document(&first, &options)
-            .into_iter()
-            .next()
-            .expect("second edit")
-            .new_text;
-        assert_eq!(first, second);
+        assert!(format_document(&first, &options).is_empty());
     }
 
     #[test]

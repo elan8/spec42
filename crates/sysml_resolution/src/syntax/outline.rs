@@ -170,6 +170,7 @@ pub(super) fn document_outline(
             out.push(s);
         }
     }
+    complete_outline(document, &mut out);
     normalize_outline_symbols(&mut out);
     out
 }
@@ -794,4 +795,184 @@ fn outline_symbols_from_port_def_body(
         }
     }
     out
+}
+
+/// Complete the additional declaration families through the parser-owned structural visitor.
+/// Existing authored containment is retained; source extents place newly exposed syntax nodes.
+fn complete_outline(
+    document: &sysml_v2_parser::ParsedDocument,
+    nodes: &mut Vec<SyntaxOutlineNode>,
+) {
+    use sysml_v2_parser::ast::{
+        self,
+        visit::{self, Visitor},
+        DeclarationName, Node,
+    };
+    struct Outline<'a> {
+        document: &'a sysml_v2_parser::ParsedDocument,
+        added: Vec<SyntaxOutlineNode>,
+        names: Vec<(String, SyntaxRange)>,
+    }
+    impl Outline<'_> {
+        fn definition<E>(
+            &mut self,
+            span: &sysml_v2_parser::Span,
+            id: &ast::Identification,
+            body: &ast::Body<E>,
+            kind: SyntaxOutlineKind,
+        ) {
+            let range = node_range(self.document, span);
+            let (head_range, body_range) = split_body(self.document, body, range);
+            self.added.push(SyntaxOutlineNode {
+                name: identification_name(self.document, id),
+                short_name: declaration_name_text(self.document, id.short_name),
+                kind,
+                head_range,
+                body_range,
+                ..SyntaxOutlineNode::bare(range)
+            });
+        }
+        fn usage<E>(
+            &mut self,
+            span: &sysml_v2_parser::Span,
+            name: Option<DeclarationName>,
+            body: &ast::Body<E>,
+            kind: SyntaxOutlineKind,
+        ) {
+            let range = node_range(self.document, span);
+            let (head_range, body_range) = split_body(self.document, body, range);
+            self.added.push(SyntaxOutlineNode {
+                name: declaration_name_text(self.document, name).unwrap_or_default(),
+                kind,
+                head_range,
+                body_range,
+                ..SyntaxOutlineNode::bare(range)
+            });
+        }
+    }
+    impl Visitor for Outline<'_> {
+        fn visit_qualified_declaration_name(&mut self, name: &ast::QualifiedDeclarationName) {
+            if let Some(view) = self.document.qualified_declaration_name(*name) {
+                self.names.push((
+                    view.authored_text().to_string(),
+                    node_range(self.document, &view.metadata.span),
+                ));
+            }
+            visit::walk_qualified_declaration_name(self, name);
+        }
+        fn visit_declaration_name(&mut self, name: &DeclarationName) {
+            if let Some(text) = self.document.decoded_declaration_name(*name) {
+                self.names
+                    .push((text.into_owned(), node_range(self.document, name.span())));
+            }
+        }
+        fn visit_enum_def(&mut self, node: &Node<ast::EnumDef>) {
+            self.definition(
+                &node.span,
+                &node.identification,
+                &node.body,
+                SyntaxOutlineKind::EnumDef,
+            );
+            visit::walk_enum_def(self, node);
+        }
+        fn visit_state_def(&mut self, node: &Node<ast::StateDef>) {
+            self.definition(
+                &node.span,
+                &node.identification,
+                &node.body,
+                SyntaxOutlineKind::StateDef,
+            );
+            visit::walk_state_def(self, node);
+        }
+        fn visit_calc_def(&mut self, node: &Node<ast::CalcDef>) {
+            self.definition(
+                &node.span,
+                &node.identification,
+                &node.body,
+                SyntaxOutlineKind::CalcDef,
+            );
+            visit::walk_calc_def(self, node);
+        }
+        fn visit_constraint_def(&mut self, node: &Node<ast::ConstraintDef>) {
+            self.definition(
+                &node.span,
+                &node.identification,
+                &node.body,
+                SyntaxOutlineKind::ConstraintDef,
+            );
+            visit::walk_constraint_def(self, node);
+        }
+        fn visit_state_usage(&mut self, node: &Node<ast::StateUsage>) {
+            self.usage(
+                &node.span,
+                node.name,
+                &node.body,
+                SyntaxOutlineKind::StateUsage,
+            );
+            visit::walk_state_usage(self, node);
+        }
+        fn visit_calc_usage(&mut self, node: &Node<ast::CalcUsage>) {
+            self.definition(
+                &node.span,
+                &node.identification,
+                &node.body,
+                SyntaxOutlineKind::CalcUsage,
+            );
+            visit::walk_calc_usage(self, node);
+        }
+        fn visit_constraint_usage(&mut self, node: &Node<ast::ConstraintUsage>) {
+            self.usage(
+                &node.span,
+                node.name,
+                &node.body,
+                SyntaxOutlineKind::ConstraintUsage,
+            );
+            visit::walk_constraint_usage(self, node);
+        }
+    }
+    fn contains(outer: SyntaxRange, inner: SyntaxRange) -> bool {
+        (outer.start_line, outer.start_character) <= (inner.start_line, inner.start_character)
+            && (inner.end_line, inner.end_character) <= (outer.end_line, outer.end_character)
+    }
+    fn insert(nodes: &mut Vec<SyntaxOutlineNode>, node: SyntaxOutlineNode) {
+        for parent in nodes.iter_mut() {
+            if parent.range == node.range {
+                return;
+            }
+            if contains(parent.range, node.range) {
+                insert(&mut parent.children, node);
+                return;
+            }
+        }
+        nodes.push(node);
+    }
+    fn selections(nodes: &mut [SyntaxOutlineNode], names: &[(String, SyntaxRange)]) {
+        nodes.sort_by_key(|node| (node.range.start_line, node.range.start_character));
+        for node in nodes {
+            if let Some((_, range)) = names
+                .iter()
+                .find(|(name, range)| *name == node.name && contains(node.head_range, *range))
+            {
+                node.selection_range = *range;
+            }
+            selections(&mut node.children, names);
+        }
+    }
+    let mut outline = Outline {
+        document,
+        added: Vec::new(),
+        names: Vec::new(),
+    };
+    outline.visit_root_namespace(document);
+    outline.added.sort_by_key(|node| {
+        (
+            node.range.start_line,
+            node.range.start_character,
+            std::cmp::Reverse((node.range.end_line, node.range.end_character)),
+        )
+    });
+    for node in outline.added {
+        insert(nodes, node);
+    }
+    selections(nodes, &outline.names);
 }

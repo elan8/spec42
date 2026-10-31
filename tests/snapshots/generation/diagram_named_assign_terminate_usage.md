@@ -106,8 +106,10 @@ package NamedUsage {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedUsage")) (named (kind action) (name "run")) (anonymous (kind terminate-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::terminateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedUsage")) (named (kind action) (name "run")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedUsage::run"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedUsage")) (named (kind action) (name "run")) (anonymous (kind terminate-action) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedUsage::run"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedUsage")) (named (kind action) (name "run")) (anonymous (kind terminate-action) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedUsage::run::advance"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedUsage")) (named (kind action) (name "run")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedUsage::run::advance"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedUsage::run::advance"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedUsage::run::advance"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::assignmentActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NamedUsage::run::advance"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedUsage::run"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedUsage")) (named (kind action) (name "run")) (named (kind assign) (name "advance")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::assignments::target"))) (provenance implied))
@@ -463,7 +465,7 @@ package NamedUsage {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:4d2cdb10846f447546642c3706e7df8b1a0dab79851485ba103fb67ed9ead5cb",
+  "modelDigest": "blake3:5bfe94f1814332fd40aad58c2025feb6e78575ee8ff2b10a2d7f21bd9f24443e",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -744,7 +746,7 @@ package NamedUsage {
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 25,
       "relationshipKind": "terminateTarget",
       "source": 2
     },
@@ -786,13 +788,13 @@ package NamedUsage {
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "ordinal": 19,
       "relationshipKind": "typing",
       "source": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "ordinal": 28,
       "relationshipKind": "redefinition",
       "source": 9
     },
@@ -804,7 +806,7 @@ package NamedUsage {
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 27,
       "relationshipKind": "typing",
       "source": 9
     }

@@ -5,8 +5,13 @@ specification; `crates/generator_sdk` is one implementation of it, not its defin
 guest written in any language that can emit the imports and exports below is equally valid.
 
 <!-- generated:abi-header -->
-Current version: **ABI 6**. Compatibility token: `0xa1ef8f10d2f199a6`.
+Current version: **ABI 7**. Compatibility token: `0xc4c20ef3eb84e8d3`.
 <!-- /generated:abi-header -->
+
+Expression literals carry an `ExpressionLiteral` with a typed `LiteralValue` (`Boolean`,
+`Integer`, `Real`, or `String`) and an ordered `units` list. The list is empty for scalars;
+quantity wrappers retain authored unit text from the innermost wrapper to the outermost.
+Display formatting belongs to the guest.
 
 The tables below and `generator-abi.json` are generated from the contract declaration in
 `crates/generator_protocol/src/contract.rs`; run `node scripts/sync-generator-abi.mjs` after
@@ -118,6 +123,8 @@ impossible and `0` unambiguously means "success, nothing written".
 | 11 | `diagram_views` | `()` | `Vec<DiagramViewSummary>` |
 | 12 | `diagram_view` | `String` | `DiagramViewProjection` |
 | 13 | `derivation_relationships` | `()` | `Vec<DerivationRelationship>` |
+| 14 | `expression` | `String` | `ExpressionTree` |
+| 15 | `connector_ends` | `String` | `Vec<ConnectorEnd>` |
 <!-- /generated:abi-operations -->
 
 Note that `find` takes `Option<String>`: `None` means "every element". An empty string is
@@ -215,6 +222,41 @@ struct ElementDetail {
 }
 
 struct Relationship { kind: RelationshipKind, source: ElementSummary, target: ElementSummary, implied: bool }
+
+/// An implied `succession` on a `then` member names the predecessor that succession starts from.
+/// The member is the succession's target; `target` is its source.
+
+enum ExpressionStatus { NotApplicable, Resolved, Unsupported }
+
+struct ExpressionTree { outcome: ExpressionStatus, root: Option<u32>, nodes: Vec<ExpressionNode> }
+
+struct ExpressionNode { kind: ExpressionNodeKind, range: SourceRange }
+
+enum ExpressionNodeKind {
+    Literal(ExpressionLiteral),
+    FeatureReference { target: Option<ElementSummary>, authored: String },
+    Operator { operator: String, operands: Vec<u32> },
+    Unsupported { children: Vec<u32> },
+}
+
+struct ExpressionLiteral { value: LiteralValue, units: Vec<String> }
+
+enum LiteralValue { Boolean(bool), Integer(i64), Real(f64), String(String) }
+
+struct ConnectorEnd { index: u32, declaration: Option<ElementSummary>, endpoint: ConnectorEndEndpoint }
+
+enum ConnectorEndEndpoint {
+    Feature(EndpointTarget),
+    FeatureChain { path: Vec<EndpointTarget>, authored: String },
+    Unconnected,
+}
+
+enum EndpointTarget {
+    Resolved(ElementSummary),
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
 
 struct Artifact { file_path: String, contents: Vec<u8> }
 ```

@@ -46,7 +46,6 @@ export function registerExplorerCommands(context: vscode.ExtensionContext, _hand
       await vscode.commands.executeCommand("workbench.actions.view.problems");
     }),
     vscode.commands.registerCommand("sysml.showTypeHierarchy", () => vscode.commands.executeCommand("editor.showTypeHierarchy")),
-    vscode.commands.registerCommand("sysml.showCallHierarchy", () => vscode.commands.executeCommand("editor.showCallHierarchy")),
     vscode.commands.registerCommand("spec42.showInheritedAttributeInfo", () => {}),
     vscode.commands.registerCommand("spec42.showReferencesCount", async (uri: vscode.Uri, position: vscode.Position) => {
       const targetUri = uri ?? vscode.window.activeTextEditor?.document.uri; const targetPosition = position ?? vscode.window.activeTextEditor?.selection.active;

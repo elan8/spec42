@@ -46,6 +46,14 @@ pub fn position_to_byte_offset(source: &str, line: u32, character: u32) -> Optio
         .sum::<usize>();
     Some(line_start + byte_in_line)
 }
+/// The exact document end, including a final empty line, in UTF-16 editor coordinates.
+pub fn document_end(source: &str) -> TextPosition {
+    TextPosition::new(
+        source.bytes().filter(|byte| *byte == b'\n').count() as u32,
+        utf16_len(source.rsplit('\n').next().unwrap_or_default()),
+    )
+}
+
 /// Where a position in `current` falls in `previous`, an older revision of the same document.
 ///
 /// Text is matched from both ends at character boundaries, preserving positions within unchanged
@@ -95,7 +103,8 @@ pub fn line_prefix_at_position(text: &str, line: u32, character: u32) -> String 
         Some(l) => l,
         None => return String::new(),
     };
-    line_str.chars().take(character as usize).collect()
+    let end = position_to_byte_offset(line_str, 0, character).unwrap_or(line_str.len());
+    line_str[..end].to_string()
 }
 
 /// Returns the last token (identifier or keyword prefix) before the cursor for completion.

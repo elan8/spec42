@@ -380,7 +380,7 @@ package ScenarioViews {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:b110bacc440fe16a2e7c53c694bfcd12081ed8bde923559ef0ca1cf39783f48d",
+  "modelDigest": "blake3:70a2ae9319ff5a0492d4d2fbf90af4f782784988e3a9821f60b5ff78a4dac3d4",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_configuration_change.md",

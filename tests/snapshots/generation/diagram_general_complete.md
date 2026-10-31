@@ -145,7 +145,7 @@ package GeneralExample {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:e519d8d22fe920dacb007b8bf1f93b49f819d9f4424a3d451e7e92e5133a847c",
+  "modelDigest": "blake3:e49fbf68bb50ee98fc89fca05cc72871086196711d48a8bc7262996a58c9eb8c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_complete.md",

@@ -8,13 +8,19 @@ use tower_lsp::lsp_types::{DocumentLink, Position, Range, Url};
 /// a two-line import from two imports.
 pub(crate) fn collect_document_links(
     imports: &[SyntaxImport],
-    symbol_uri_for_import_name: impl Fn(&str) -> Option<Url>,
+    symbol_uri_for_import: impl Fn(&SyntaxImport) -> Option<Url>,
 ) -> Vec<DocumentLink> {
     let mut links = Vec::new();
     for import in imports {
         let range = Range::new(
-            Position::new(import.range.start_line, import.range.start_character),
-            Position::new(import.range.end_line, import.range.end_character),
+            Position::new(
+                import.target_range.start_line,
+                import.target_range.start_character,
+            ),
+            Position::new(
+                import.target_range.end_line,
+                import.target_range.end_character,
+            ),
         );
         if let Some(file_target) = import.file_target {
             if let Ok(target) = Url::parse(file_target.value) {
@@ -33,7 +39,7 @@ pub(crate) fn collect_document_links(
                 continue;
             }
         }
-        if let Some(uri) = symbol_uri_for_import_name(import.target) {
+        if let Some(uri) = symbol_uri_for_import(import) {
             links.push(DocumentLink {
                 range,
                 target: Some(uri),
@@ -63,16 +69,18 @@ pub(crate) fn selection_ranges_for_positions(
         let line_len = text
             .lines()
             .nth(pos.line as usize)
-            .map(|l| l.chars().count() as u32)
+            .map(language_service::utf16_len)
             .unwrap_or(0);
         ranges.push(Range::new(
             Position::new(pos.line, 0),
             Position::new(pos.line, line_len),
         ));
+        let end = language_service::text::document_end(text);
         ranges.push(Range::new(
             Position::new(0, 0),
-            Position::new(text.lines().count().saturating_sub(1) as u32, 0),
+            Position::new(end.line, end.character),
         ));
+        ranges.dedup();
         let mut current: Option<tower_lsp::lsp_types::SelectionRange> = None;
         for r in ranges.into_iter().rev() {
             current = Some(tower_lsp::lsp_types::SelectionRange {

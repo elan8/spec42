@@ -161,6 +161,9 @@ package Controls {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind if) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::a"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::a"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind if) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind then-continuation) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind then-continuation) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
@@ -183,6 +186,7 @@ package Controls {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::forLoops"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::forLoopActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::a"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind for-loop) (name "iteration")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind for-loop) (name "iteration")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind for-loop) (name "iteration")) (anonymous (kind kerml-literal-integer) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalIntegerEvaluations"))) (provenance implied))
@@ -209,6 +213,7 @@ package Controls {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::whileLoops"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::whileLoopActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind while) (name "polling")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalBooleanEvaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling::repeat"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling::repeat"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
@@ -216,6 +221,7 @@ package Controls {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::retrying"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::whileLoops"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::retrying"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::whileLoopActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::retrying"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::retrying"))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind if) (ordinal 0))))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind loop) (name "retrying")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::WhileLoopAction::whileTest"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind loop) (name "retrying")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::retrying"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind loop) (name "retrying")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::literalBooleanEvaluations"))) (provenance implied))
@@ -1097,7 +1103,7 @@ package Controls {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:3f71790fd5d34bd656cab3e8cbc9a4683f1af687ca7ec7aa2d5c7c7caa18d343",
+  "modelDigest": "blake3:04739be0a292b45745006cb0f4e8a92bff089e639b58ec7e72209dc7baa482ea",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1604,13 +1610,13 @@ package Controls {
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 44,
       "relationshipKind": "thenTarget",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 48,
       "relationshipKind": "thenTarget",
       "source": 1
     },
@@ -1718,13 +1724,13 @@ package Controls {
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
+      "ordinal": 54,
       "relationshipKind": "typing",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 62,
       "relationshipKind": "typing",
       "source": 10
     },
@@ -1766,7 +1772,7 @@ package Controls {
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 58,
       "relationshipKind": "typing",
       "source": 16
     },
