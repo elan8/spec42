@@ -360,6 +360,7 @@ impl ResolvedExpressionIndex {
                                     effective_imports: Some(inputs.effective_imports),
                                     exported_imports: Some(inputs.effective_imports),
                                     inherited_names: Some(&inputs.resolution.inherited_names),
+                                    memberships: None,
                                 },
                                 crate::resolve::ResolutionScratch {
                                     ambiguous_candidates: &mut ambiguous_candidates,

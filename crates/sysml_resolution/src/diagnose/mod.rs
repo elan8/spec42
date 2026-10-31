@@ -23,7 +23,55 @@ use crate::TextRange;
 use sysml_v2_parser::ParseError;
 use sysml_v2_parser::ParsedDocument;
 
+/// The note attached to the non-public member a qualified name failed to reach.
+const RELATED_HIDDEN_MEMBER: &str = "Non-public member the qualified name names.";
+
 impl<D> SemanticModel<D> {
+    /// The non-public segment that made an unresolved qualified name fail: the path resolves once
+    /// visibility is ignored, and a namespace it passes through does not own that segment publicly
+    /// (KerML 8.2.3.5.3).
+    fn hidden_qualified_segment(
+        &self,
+        reference: &crate::lower::facts::AuthoredReference,
+    ) -> Result<Option<(crate::model::DeclarationId, &'static str)>, ResolutionError> {
+        let path = self.authored_path(reference.path);
+        let segments = path
+            .split("::")
+            .filter(|segment| !segment.is_empty())
+            .count();
+        if segments < 2 {
+            return Ok(None);
+        }
+        let source = self
+            .storage
+            .declaration(reference.source)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        let [target] = self.resolve_qualifier_scopes(source.owner, &path)?[..] else {
+            return Ok(None);
+        };
+        let mut segment = target;
+        for _ in 1..segments {
+            let Some(owner) = self.storage.declaration(segment).and_then(|d| d.owner) else {
+                break;
+            };
+            match self
+                .memberships
+                .get(segment)
+                .map(|membership| membership.visibility)
+            {
+                Some(crate::resolve::names::EffectiveVisibility::Private) => {
+                    return Ok(Some((segment, "private")))
+                }
+                Some(crate::resolve::names::EffectiveVisibility::Protected) => {
+                    return Ok(Some((segment, "protected")))
+                }
+                Some(crate::resolve::names::EffectiveVisibility::Public) | None => {}
+            }
+            segment = owner;
+        }
+        Ok(None)
+    }
+
     /// Every diagnostic this publication settled, as facts rather than rendered text.
     ///
     /// Derived once while the model is sealed, for the same reason the other indexes are: a query
@@ -135,6 +183,21 @@ impl<D> SemanticModel<D> {
                         continue;
                     };
                     let mut related = Vec::new();
+                    let mut message: Box<str> = code.describe().into();
+                    if matches!(status, ResolutionStatus::Unresolved) {
+                        if let Some((hidden, visibility)) =
+                            self.hidden_qualified_segment(reference)?
+                        {
+                            let name = self.display_name(hidden);
+                            message = format!(
+                                "'{name}' is {visibility}, so a qualified name cannot reach it. \
+                                 Make '{name}' public, or use its simple name inside its \
+                                 namespace."
+                            )
+                            .into();
+                            related.push(self.related_declaration(hidden, RELATED_HIDDEN_MEMBER)?);
+                        }
+                    }
                     if let ResolutionStatus::Ambiguous(candidates) = status {
                         // Every candidate, in the resolver's canonical candidate order: choosing one
                         // would settle an ambiguity the publication deliberately left open.
@@ -154,7 +217,7 @@ impl<D> SemanticModel<D> {
                                         .into_boxed_str(),
                                 },
                             ),
-                        message: code.describe().into(),
+                        message,
                         subject: self.symbol_id(reference.source),
                         code,
                         severity,

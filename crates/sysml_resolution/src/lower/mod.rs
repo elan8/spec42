@@ -2871,11 +2871,13 @@ impl SemanticModelBuilder {
             self.member_visibility(membership, ParserMembershipKind::Import)?,
             membership.span,
         )?;
+        let import_all = node.value.target.all_span.is_some();
         let (kind, flags) = match &node.value.target.shape {
             ImportShape::Membership { recursive_suffix } => (
                 ReferenceKind::MembershipImport,
                 RelationshipFlags {
                     recursive: recursive_suffix.is_some(),
+                    import_all,
                     ..RelationshipFlags::default()
                 },
             ),
@@ -2885,6 +2887,7 @@ impl SemanticModelBuilder {
                 ReferenceKind::NamespaceImport,
                 RelationshipFlags {
                     recursive: recursive_suffix.is_some(),
+                    import_all,
                     wildcard: true,
                     ..RelationshipFlags::default()
                 },
@@ -2895,6 +2898,7 @@ impl SemanticModelBuilder {
                 ReferenceKind::FilterImport,
                 RelationshipFlags {
                     recursive: recursive_suffix.is_some(),
+                    import_all,
                     ..RelationshipFlags::default()
                 },
             ),
