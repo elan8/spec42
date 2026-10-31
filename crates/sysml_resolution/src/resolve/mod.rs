@@ -41,6 +41,7 @@ use crate::resolve::names::lookup_lexical_into;
 use crate::resolve::names::CandidateRange;
 use crate::resolve::names::EffectiveVisibility;
 use crate::resolve::names::FirstScopePolicy;
+use crate::resolve::names::ImportNameSources;
 use crate::resolve::names::InheritedNameIndex;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::names::MembershipIndex;
@@ -599,8 +600,12 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             &memberships,
             references,
             &all_import_slots,
-            &exported_names,
-            &exported_imports,
+            ImportNameSources {
+                direct_names: &direct_names,
+                exported_names: &exported_names,
+                effective_imports: &effective_imports,
+                exported_imports: &exported_imports,
+            },
             &outcomes,
         )?;
         if next_effective_imports == effective_imports && next_exported_imports == exported_imports
@@ -2580,12 +2585,18 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
             // such as `ConeOrCylinder::faces::edges` traverse `faces` to the members of its type.
             // Import fallback remains last for owners reached through an imported namespace.
             // Only public memberships are visible (KerML 8.2.3.5.3), wherever the reference is.
+            // `import all` names a membership without regard to its visibility; a namespace
+            // import still reaches its namespace visibly and considers all of that namespace's
+            // memberships, which `build_effective_import_indexes` owns.
+            let regardless_of_visibility =
+                reference.kind() == ReferenceKind::MembershipImport && reference.flags().import_all;
             let visible = |member: &DeclarationId| {
-                indexes.memberships.is_none_or(|memberships| {
-                    memberships.get(*member).is_none_or(|membership| {
-                        membership.visibility == EffectiveVisibility::Public
+                regardless_of_visibility
+                    || indexes.memberships.is_none_or(|memberships| {
+                        memberships.get(*member).is_none_or(|membership| {
+                            membership.visibility == EffectiveVisibility::Public
+                        })
                     })
-                })
             };
             let before = scratch.next_candidates.len();
             scratch.next_candidates.extend(
