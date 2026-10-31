@@ -569,6 +569,125 @@ impl GeneratorModelView {
         Ok(values)
     }
 
+    /// The resolved expression tree of one element.
+    ///
+    /// A feature with no expression of its own answers with its value expression. A `while`
+    /// condition and a braced `if` guard are the control node's expression. A `then` guard is the
+    /// boolean expression that member owns.
+    pub fn expression(
+        &self,
+        handle: &str,
+    ) -> Result<spec42_generator_protocol::ExpressionTree, ModelQueryError> {
+        use spec42_generator_protocol::{
+            ExpressionNode, ExpressionNodeKind as WireKind, ExpressionStatus, ExpressionTree,
+        };
+        use sysml_query::resolved_slice::{ExpressionNodeKind as OwnedKind, ExpressionOutcome};
+        let identity = self.resolve_handle(handle)?;
+        let expression = outcome(self.model.structure().expression(identity), "expression")?;
+        let outcome = match expression.outcome {
+            ExpressionOutcome::NotApplicable => ExpressionStatus::NotApplicable,
+            ExpressionOutcome::Resolved => ExpressionStatus::Resolved,
+            ExpressionOutcome::Unsupported => ExpressionStatus::Unsupported,
+        };
+        let nodes = expression
+            .nodes
+            .iter()
+            .map(|node| {
+                let kind = match &node.kind {
+                    OwnedKind::Literal(value) => WireKind::Literal(expression_literal(value)),
+                    OwnedKind::FeatureReference { symbol, authored } => {
+                        WireKind::FeatureReference {
+                            target: symbol
+                                .map(|symbol| self.summary(symbol).map(wire_summary))
+                                .transpose()?,
+                            authored: authored.to_string(),
+                        }
+                    }
+                    OwnedKind::Operator { operator, operands } => WireKind::Operator {
+                        operator: operator.as_str().to_owned(),
+                        operands: operands.to_vec(),
+                    },
+                    OwnedKind::Unsupported { children } => WireKind::Unsupported {
+                        children: children.to_vec(),
+                    },
+                };
+                Ok(ExpressionNode {
+                    kind,
+                    range: wire_range(source_range(node.location.range)),
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        self.enforce_limit(nodes.len())?;
+        Ok(ExpressionTree {
+            outcome,
+            root: expression.root,
+            nodes,
+        })
+    }
+
+    /// Authored ends of one connector. Empty when `handle` is not a workspace connector.
+    ///
+    /// A dotted end's `path` is every hop in authored order, so the usage the end traverses is
+    /// part of the chain and not only the feature it ends on.
+    pub fn connector_ends(
+        &self,
+        handle: &str,
+    ) -> Result<Vec<spec42_generator_protocol::ConnectorEnd>, ModelQueryError> {
+        use spec42_generator_protocol::{ConnectorEnd, ConnectorEndEndpoint, EndpointTarget};
+        use sysml_query::resolved_slice::{ConnectorEndpoint, RelationshipTarget};
+        let identity = self.resolve_handle(handle)?;
+        let Some(connector) = outcome(self.model.structure().connector(identity), "connector")?
+        else {
+            return Ok(Vec::new());
+        };
+        let target = |value: &RelationshipTarget| -> Result<EndpointTarget, ModelQueryError> {
+            Ok(match value {
+                RelationshipTarget::Resolved(symbol) => {
+                    EndpointTarget::Resolved(wire_summary(self.summary(*symbol)?))
+                }
+                RelationshipTarget::Ambiguous(values) => EndpointTarget::Ambiguous(
+                    values
+                        .iter()
+                        .map(|symbol| self.summary(*symbol).map(wire_summary))
+                        .collect::<Result<Vec<_>, _>>()?,
+                ),
+                RelationshipTarget::Unresolved => EndpointTarget::Unresolved,
+                RelationshipTarget::Unsupported => EndpointTarget::Unsupported,
+            })
+        };
+        let ends = connector
+            .ends
+            .iter()
+            .enumerate()
+            .map(|(index, end)| {
+                let endpoint = match &end.endpoint {
+                    ConnectorEndpoint::Feature(value) => {
+                        ConnectorEndEndpoint::Feature(target(value)?)
+                    }
+                    ConnectorEndpoint::FeatureChain { path, authored, .. } => {
+                        ConnectorEndEndpoint::FeatureChain {
+                            path: path.iter().map(target).collect::<Result<Vec<_>, _>>()?,
+                            authored: authored.to_string(),
+                        }
+                    }
+                    ConnectorEndpoint::Unconnected => ConnectorEndEndpoint::Unconnected,
+                };
+                Ok(ConnectorEnd {
+                    index: u32::try_from(index).map_err(|_| {
+                        ModelQueryError::Unsupported("connector end index exceeds u32".into())
+                    })?,
+                    declaration: end
+                        .declaration
+                        .map(|symbol| self.summary(symbol).map(wire_summary))
+                        .transpose()?,
+                    endpoint,
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        self.enforce_limit(ends.len())?;
+        Ok(ends)
+    }
+
     /// Workspace requirement derivations (`RequirementDerivation` library) with their ends
     /// classified as original, derived or unclassified.
     pub fn derivation_relationships(
@@ -2598,6 +2717,26 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         Metaclass::Unrecognized(_) => DiagramNotationRole::Unsupported,
     }
 }
+fn wire_summary(value: ElementSummary) -> spec42_generator_protocol::ElementSummary {
+    spec42_generator_protocol::ElementSummary {
+        handle: value.handle,
+        semantic_id: value.semantic_id,
+        metaclass: value.metaclass,
+        name: value.name,
+        qualified_name: value.qualified_name,
+        library_element: value.library_element,
+    }
+}
+
+fn wire_range(range: SourceRange) -> spec42_generator_protocol::SourceRange {
+    spec42_generator_protocol::SourceRange {
+        start_line: range.start_line,
+        start_character: range.start_character,
+        end_line: range.end_line,
+        end_character: range.end_character,
+    }
+}
+
 fn source_range(range: sysml_query::resolved_slice::TextRange) -> SourceRange {
     SourceRange {
         start_line: range.start.line,
@@ -2638,6 +2777,25 @@ fn bound(value: MultiplicityBound) -> Result<Option<String>, ModelQueryError> {
         }
     }
 }
+fn expression_literal(value: &EvaluatedScalar) -> spec42_generator_protocol::ExpressionLiteral {
+    use spec42_generator_protocol::{ExpressionLiteral, LiteralValue};
+    let mut value = value;
+    let mut units = Vec::new();
+    while let EvaluatedScalar::Quantity { magnitude, unit } = value {
+        units.push(unit.to_string());
+        value = magnitude;
+    }
+    units.reverse();
+    let value = match value {
+        EvaluatedScalar::Boolean(value) => LiteralValue::Boolean(*value),
+        EvaluatedScalar::Integer(value) => LiteralValue::Integer(*value),
+        EvaluatedScalar::Real(value) => LiteralValue::Real(*value),
+        EvaluatedScalar::String(value) => LiteralValue::String(value.to_string()),
+        EvaluatedScalar::Quantity { .. } => unreachable!("quantity wrappers were consumed"),
+    };
+    ExpressionLiteral { value, units }
+}
+
 fn scalar(value: &EvaluatedScalar) -> String {
     match value {
         EvaluatedScalar::Boolean(v) => v.to_string(),
@@ -2863,5 +3021,173 @@ mod tests {
             .roots()
             .expect("settled partial roots remain usable")
             .is_empty());
+    }
+
+    fn view_for(source: &str) -> GeneratorModelView {
+        let services = Services::new();
+        let admitted = services
+            .source
+            .admit_memory(
+                "generator-test",
+                "model.sysml",
+                source,
+                SourceKind::Workspace,
+            )
+            .unwrap();
+        let model = services.publication.publish(&[admitted], []).unwrap();
+        GeneratorModelView::new(model, "digest", "version", QueryLimits::default()).unwrap()
+    }
+
+    fn named(view: &GeneratorModelView, name: &str) -> ElementSummary {
+        view.find(None)
+            .unwrap()
+            .into_iter()
+            .find(|element| element.qualified_name == name)
+            .unwrap_or_else(|| panic!("missing {name}"))
+    }
+
+    #[test]
+    fn expression_literal_mapping_preserves_scalar_types() {
+        use spec42_generator_protocol::{ExpressionLiteral, LiteralValue as Wire};
+        let cases = [
+            (EvaluatedScalar::Boolean(true), Wire::Boolean(true)),
+            (
+                EvaluatedScalar::String("true".into()),
+                Wire::String("true".into()),
+            ),
+            (EvaluatedScalar::Integer(1), Wire::Integer(1)),
+            (
+                EvaluatedScalar::String("1".into()),
+                Wire::String("1".into()),
+            ),
+            (EvaluatedScalar::Real(1.0), Wire::Real(1.0)),
+        ];
+        for (owned, expected) in cases {
+            assert_eq!(
+                expression_literal(&owned),
+                ExpressionLiteral {
+                    value: expected,
+                    units: vec![]
+                }
+            );
+        }
+        let quantity = EvaluatedScalar::Quantity {
+            magnitude: Box::new(EvaluatedScalar::Quantity {
+                magnitude: Box::new(EvaluatedScalar::Real(1.25)),
+                unit: "SI::m".into(),
+            }),
+            unit: "SI::s".into(),
+        };
+        assert_eq!(
+            expression_literal(&quantity),
+            ExpressionLiteral {
+                value: Wire::Real(1.25),
+                units: vec!["SI::m".into(), "SI::s".into()],
+            }
+        );
+    }
+
+    #[test]
+    fn expression_query_returns_value_loop_and_guard_trees() {
+        use spec42_generator_protocol::{ExpressionNodeKind, ExpressionStatus};
+        let view = view_for(
+            "package Flow {
+                action def Check {
+                    attribute score;
+                    attribute doubled = score;
+                    action pass;
+                    if score then pass;
+                    while score { action step; }
+                }
+            }",
+        );
+        let doubled = named(&view, "Flow::Check::doubled");
+        let doubled_expression = view.expression(&doubled.handle).unwrap();
+        assert_eq!(doubled_expression.outcome, ExpressionStatus::Resolved);
+        let root = doubled_expression.root.expect("value root");
+        match &doubled_expression.nodes[root as usize].kind {
+            ExpressionNodeKind::FeatureReference { authored, target } => {
+                assert_eq!(authored, "score");
+                assert!(target.is_some());
+            }
+            other => panic!("expected a feature reference, got {other:?}"),
+        }
+
+        let while_loop = view
+            .find(None)
+            .unwrap()
+            .into_iter()
+            .find(|element| element.metaclass.as_str() == "WhileLoopActionUsage")
+            .expect("while loop");
+        let condition = view.expression(&while_loop.handle).unwrap();
+        assert_eq!(condition.outcome, ExpressionStatus::Resolved);
+
+        let guard = view
+            .find(None)
+            .unwrap()
+            .into_iter()
+            .find(|element| {
+                element.metaclass.as_str() == "BooleanExpression"
+                    && view.expression(&element.handle).unwrap().outcome
+                        == ExpressionStatus::Resolved
+            })
+            .expect("succession guard expression");
+        let guard_tree = view.expression(&guard.handle).unwrap();
+        let root = guard_tree.root.expect("guard root");
+        match &guard_tree.nodes[root as usize].kind {
+            ExpressionNodeKind::FeatureReference { authored, .. } => assert_eq!(authored, "score"),
+            other => panic!("expected the guard reference, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn connector_ends_keep_the_usage_hop_of_a_dotted_end() {
+        use spec42_generator_protocol::{ConnectorEndEndpoint, EndpointTarget};
+        let view = view_for(
+            "package Sense {
+                part def Sensor { attribute reading; }
+                part def Calibrator { attribute raw; }
+                part def SensingSystem {
+                    part sensor : Sensor;
+                    part calibrator : Calibrator;
+                    connect sensor.reading to calibrator.raw;
+                }
+            }",
+        );
+        let connector = view
+            .find(None)
+            .unwrap()
+            .into_iter()
+            .find(|element| element.metaclass.as_str() == "ConnectionUsage")
+            .expect("connection");
+        let ends = view.connector_ends(&connector.handle).unwrap();
+        assert_eq!(ends.len(), 2);
+        assert_eq!(ends[0].index, 0);
+        assert_eq!(ends[1].index, 1);
+        let path = |end: &spec42_generator_protocol::ConnectorEnd| match &end.endpoint {
+            ConnectorEndEndpoint::FeatureChain { path, authored } => {
+                let names = path
+                    .iter()
+                    .map(|hop| match hop {
+                        EndpointTarget::Resolved(element) => element.qualified_name.clone(),
+                        other => panic!("unresolved hop {other:?}"),
+                    })
+                    .collect::<Vec<_>>();
+                (authored.clone(), names)
+            }
+            other => panic!("expected a feature chain, got {other:?}"),
+        };
+        let (authored, hops) = path(&ends[0]);
+        assert_eq!(authored, "sensor::reading");
+        assert_eq!(
+            hops,
+            vec!["Sense::SensingSystem::sensor", "Sense::Sensor::reading",]
+        );
+        let (authored, hops) = path(&ends[1]);
+        assert_eq!(authored, "calibrator::raw");
+        assert_eq!(
+            hops,
+            vec!["Sense::SensingSystem::calibrator", "Sense::Calibrator::raw",]
+        );
     }
 }

@@ -428,6 +428,24 @@ export function startLanguageClient(
     clientOptions
   );
 
+  // tower-lsp's current capability type exposes type hierarchy through experimental.
+  // Reuse the language client's standard provider, including its opaque item data handling.
+  const hierarchyClient = client;
+  client.registerFeature({
+    fillClientCapabilities() {},
+    initialize(capabilities, documentSelector) {
+      if (!capabilities.typeHierarchyProvider &&
+          capabilities.experimental?.typeHierarchyProvider === true && documentSelector) {
+        hierarchyClient.getFeature("textDocument/prepareTypeHierarchy").register({
+          id: "spec42.experimental.typeHierarchy",
+          registerOptions: { documentSelector },
+        });
+      }
+    },
+    clear() {},
+    getState: () => ({ kind: "static" as const }),
+  });
+
   context.subscriptions.push(
     client.onDidChangeState(({ newState }) => {
       if (newState === State.Starting) {

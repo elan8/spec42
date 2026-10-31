@@ -134,13 +134,15 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
 
 pub mod model {
     pub use spec42_generator_protocol::{
-        DerivationEndpoint, DerivationRelationship, DiagramCompartment, DiagramCompartmentKind,
-        DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
-        DiagramElementType, DiagramElementTyping, DiagramEndpointOccurrence,
-        DiagramIncompleteReason, DiagramNotationRole, DiagramOccurrenceIdentity,
-        DiagramRelationship, DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene,
-        DiagramSemanticReference, DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata,
-        DiagramViewProjection, DiagramViewSummary, ElementDetail, ElementIdentity, ElementSummary,
+        ConnectorEnd, ConnectorEndEndpoint, DerivationEndpoint, DerivationRelationship,
+        DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
+        DiagramEdgeKind, DiagramElement, DiagramElementType, DiagramElementTyping,
+        DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramNotationRole,
+        DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+        DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
+        DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
+        ElementDetail, ElementIdentity, ElementSummary, EndpointTarget, ExpressionLiteral,
+        ExpressionNode, ExpressionNodeKind, ExpressionStatus, ExpressionTree, LiteralValue,
         Metaclass, ModelInfo, Multiplicity, ProjectionCompleteness, ProjectionFeature,
         Relationship, RelationshipKind, RelationshipProvenance, RelationshipTarget,
         RequirementUsageTyping, RequirementVerification, SatisfyEndpoint, SatisfyPolarity,
@@ -208,6 +210,14 @@ pub mod model {
 
     pub fn diagram_view(handle: &str) -> Result<DiagramViewProjection, String> {
         call::<query::DiagramView>(&handle.to_owned())
+    }
+
+    pub fn expression(handle: &str) -> Result<ExpressionTree, String> {
+        call::<query::Expression>(&handle.to_owned())
+    }
+
+    pub fn connector_ends(handle: &str) -> Result<Vec<ConnectorEnd>, String> {
+        call::<query::ConnectorEnds>(&handle.to_owned())
     }
 }
 

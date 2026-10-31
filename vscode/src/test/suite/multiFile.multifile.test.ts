@@ -83,4 +83,21 @@ describe("Multi-file VS Code Flows", () => {
     );
   });
 
+  it("registers type hierarchy and follows the referenced type across files", async () => {
+    const useDoc = await vscode.workspace.openTextDocument(getFixturePath("use.sysml"));
+    const items = await waitFor(
+      "type hierarchy provider",
+      () => vscode.commands.executeCommand<vscode.TypeHierarchyItem[]>(
+        "vscode.prepareTypeHierarchy", useDoc.uri, findPosition(useDoc, "Spec42SmokeWidget")
+      ),
+      value => Array.isArray(value) && value.length > 0,
+    );
+    assert.strictEqual(items[0].name, "Spec42SmokeWidget");
+    assert.ok(items[0].uri.fsPath.endsWith("def.sysml"));
+    const subtypes = await vscode.commands.executeCommand<vscode.TypeHierarchyItem[]>(
+      "vscode.provideSubtypes", items[0]
+    );
+    assert.ok(subtypes?.some(item => item.name === "widget"));
+  });
+
 });

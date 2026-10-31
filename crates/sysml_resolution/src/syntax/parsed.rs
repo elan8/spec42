@@ -27,6 +27,7 @@ pub(crate) const fn parser_name_language(
 type ParseIdentity = (SourceLanguage, ContentDigest);
 
 struct Inner {
+    positions: crate::positions::LineIndex,
     /// Shared with the semantic build's admitted documents and the library stratum: admitting a
     /// parsed source is two reference-count bumps, never a tree clone.
     document: Arc<ParsedDocument>,
@@ -117,6 +118,7 @@ impl ParsedSource {
                 let mut source = Self::from_result(empty, digest, true);
                 let inner = Arc::get_mut(&mut source.0).expect("freshly built handle is unique");
                 inner.diagnostics = Box::new([SyntaxDiagnostic {
+                    source_range: None,
                     severity: SyntaxDiagnosticSeverity::Error,
                     category: SyntaxDiagnosticCategory::ParserFailure,
                     message: "the parser panicked on this document".to_owned(),
@@ -140,18 +142,42 @@ impl ParsedSource {
         digest: ContentDigest,
         parser_failed: bool,
     ) -> Self {
+        let positions = crate::positions::LineIndex::build(result.document.source.as_str());
         let diagnostics = result
             .errors
             .iter()
-            .map(SyntaxDiagnostic::from_parse_error)
+            .map(|error| {
+                let mut diagnostic = SyntaxDiagnostic::from_parse_error(error);
+                diagnostic.source_range = match error.offset {
+                    Some(offset) => positions.position(offset).and_then(|start| {
+                        let end =
+                            positions.position(offset.checked_add(error.length.unwrap_or(0))?)?;
+                        Some(super::SyntaxRange {
+                            start_line: start.line,
+                            start_character: start.character,
+                            end_line: end.line,
+                            end_character: end.character,
+                        })
+                    }),
+                    None => diagnostic
+                        .source_range
+                        .and_then(|range| positions.syntax_range(range)),
+                };
+                diagnostic
+            })
             .collect();
         Self(Arc::new(Inner {
+            positions,
             document: Arc::new(result.document),
             errors: result.errors,
             diagnostics,
             digest,
             parser_failed,
         }))
+    }
+
+    pub(crate) fn positions(&self) -> &crate::positions::LineIndex {
+        &self.0.positions
     }
 
     /// The source this document was parsed from, after BOM stripping.
@@ -590,6 +616,7 @@ mod tests {
         let empty = sysml_v2_parser::parse_for_editor_owned(String::new());
         let mut failed = ParsedSource::from_result(empty, digest, true);
         Arc::get_mut(&mut failed.0).unwrap().diagnostics = Box::new([SyntaxDiagnostic {
+            source_range: None,
             severity: SyntaxDiagnosticSeverity::Error,
             category: SyntaxDiagnosticCategory::ParserFailure,
             message: String::new(),

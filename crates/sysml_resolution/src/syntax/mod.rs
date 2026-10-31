@@ -169,7 +169,27 @@ use serde::{Deserialize, Serialize};
 impl ParsedSource {
     /// The document outline, as the grammar sees it.
     pub fn outline(&self) -> Vec<SyntaxOutlineNode> {
+        fn project(
+            parsed: &ParsedSource,
+            mut node: SyntaxOutlineNode,
+        ) -> Option<SyntaxOutlineNode> {
+            node.range = parsed.positions().syntax_range(node.range)?;
+            node.selection_range = parsed.positions().syntax_range(node.selection_range)?;
+            node.head_range = parsed.positions().syntax_range(node.head_range)?;
+            node.body_range = node
+                .body_range
+                .and_then(|range| parsed.positions().syntax_range(range));
+            node.children = node
+                .children
+                .into_iter()
+                .filter_map(|child| project(parsed, child))
+                .collect();
+            Some(node)
+        }
         outline::document_outline(self.inner())
+            .into_iter()
+            .filter_map(|node| project(self, node))
+            .collect()
     }
 
     /// The innermost declaration whose extent covers `line` (zero-based), if any.
@@ -207,6 +227,9 @@ impl ParsedSource {
     /// Every span the grammar gives a role, in source order.
     pub fn token_roles(&self) -> Vec<(SyntaxRange, SyntaxRole)> {
         token_ranges::semantic_token_roles(self.inner(), self.source())
+            .into_iter()
+            .filter_map(|(range, role)| Some((self.positions().syntax_range(range)?, role)))
+            .collect()
     }
 
     /// The declared names of every top-level package.
@@ -232,6 +255,12 @@ impl ParsedSource {
     /// One rule for what continues an identifier, and one place that knows `::` is part of a
     /// qualified name — rather than a copy per host, each slightly different.
     pub fn token_at(&self, line: u32, character: u32) -> Option<SyntaxToken<'_>> {
+        let offset = self
+            .positions()
+            .offset(crate::TextPosition::new(line, character))?;
+        if !cursor::is_code_at(self.source(), offset) {
+            return None;
+        }
         cursor::token_at(self.source(), &self.token_roles(), line, character)
     }
 
@@ -241,6 +270,12 @@ impl ParsedSource {
     /// lexical answer the authority owns, next to the fact that a source uses unit literals at
     /// all.
     pub fn unit_literal_at(&self, line: u32, character: u32) -> Option<SyntaxUnitLiteral<'_>> {
+        let offset = self
+            .positions()
+            .offset(crate::TextPosition::new(line, character))?;
+        if !cursor::is_code_at(self.source(), offset) {
+            return None;
+        }
         cursor::unit_literal_at(self.source(), line, character)
     }
 
@@ -277,12 +312,12 @@ impl ParsedSource {
                 if !valid || seen.contains(name) {
                     continue;
                 }
-                let start_character = line[..start].chars().count() as u32;
+                let start_character = line[..start].encode_utf16().count() as u32;
                 let expected = SyntaxRange {
                     start_line: line_index as u32,
                     start_character,
                     end_line: line_index as u32,
-                    end_character: start_character + name.chars().count() as u32,
+                    end_character: start_character + name.encode_utf16().count() as u32,
                 };
                 // The token query excludes comments and string literals. Recovery scanning stays
                 // beside the parser and cannot turn presentation text into a search fact.
@@ -304,6 +339,16 @@ impl ParsedSource {
     /// Every `import` the source writes, in source order, with its range and owning package.
     pub fn imports(&self) -> Vec<SyntaxImport<'_>> {
         imports::imports(self.inner())
+            .into_iter()
+            .filter_map(|mut import| {
+                import.range = self.positions().syntax_range(import.range)?;
+                import.target_range = self.positions().syntax_range(import.target_range)?;
+                if let Some(target) = &mut import.file_target {
+                    target.range = self.positions().syntax_range(target.range)?;
+                }
+                Some(import)
+            })
+            .collect()
     }
 
     /// Every type a declaration in this source names, in source order.
@@ -375,6 +420,8 @@ pub const SYNTAX_AST_VERSION: u32 = sysml_v2_parser::PARSE_AST_VERSION;
 /// `sysml_diagnostics`, and it must not depend on the parser's own error type to say what it saw.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SyntaxDiagnostic {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    source_range: Option<SyntaxRange>,
     pub severity: SyntaxDiagnosticSeverity,
     pub category: SyntaxDiagnosticCategory,
     pub message: String,
@@ -390,24 +437,26 @@ pub struct SyntaxDiagnostic {
 }
 
 impl SyntaxDiagnostic {
-    /// The zero-based range this diagnostic points at, when it carries a position.
+    /// The zero-based UTF-16 range this diagnostic points at, when it carries a position.
     ///
     /// One owner for the 1-based-to-0-based conversion, so no consumer has to remember which
     /// convention the parser reports in.
     pub fn range(&self) -> Option<SyntaxRange> {
-        let (line, column) = (self.line?, self.column?);
-        let start_line = line.saturating_sub(1);
-        let start_character = column.saturating_sub(1);
-        Some(SyntaxRange {
-            start_line,
-            start_character,
-            end_line: start_line,
-            end_character: start_character + self.length.unwrap_or(0) as u32,
-        })
+        self.source_range
     }
 
     pub(super) fn from_parse_error(error: &sysml_v2_parser::ParseError) -> Self {
         Self {
+            source_range: error
+                .line
+                .zip(error.column)
+                .map(|(line, column)| SyntaxRange {
+                    start_line: line.saturating_sub(1),
+                    start_character: (column as u32).saturating_sub(1),
+                    end_line: line.saturating_sub(1),
+                    end_character: (column as u32).saturating_sub(1)
+                        + error.length.unwrap_or(0) as u32,
+                }),
             severity: match error.severity {
                 Some(sysml_v2_parser::DiagnosticSeverity::Warning) => {
                     SyntaxDiagnosticSeverity::Warning
@@ -455,7 +504,7 @@ pub enum SyntaxDiagnosticCategory {
 }
 
 /// A zero-based source range, in the LSP convention.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SyntaxRange {
     pub start_line: u32,
     pub start_character: u32,
@@ -505,6 +554,8 @@ pub struct SyntaxImport<'p> {
     pub target: &'p str,
     pub scope: ImportScope,
     pub range: SyntaxRange,
+    /// Exact authored reference, excluding the import keyword and shape suffix.
+    pub target_range: SyntaxRange,
     /// A file-URI literal target and its exact authored range, when this import names one.
     pub file_target: Option<SyntaxFileImport<'p>>,
     /// The qualified name of the package the import is written in, if any.

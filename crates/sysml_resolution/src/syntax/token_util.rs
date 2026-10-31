@@ -72,11 +72,7 @@ pub fn word_range_within_span(source: &str, span: &SyntaxRange, word: &str) -> O
     if line_end <= line_start {
         return None;
     }
-    let slice: String = line
-        .chars()
-        .skip(line_start)
-        .take(line_end - line_start)
-        .collect();
+    let slice = line.get(line_start..line_end)?;
     let mut search_at = 0usize;
     while let Some(rel) = slice[search_at..].find(word) {
         let abs = search_at + rel;
@@ -84,8 +80,8 @@ pub fn word_range_within_span(source: &str, span: &SyntaxRange, word: &str) -> O
         let after = abs + word.len();
         let after_ok = after >= slice.len() || !is_ident_byte(slice.as_bytes().get(after).copied());
         if before_ok && after_ok {
-            let char_start = slice[..abs].chars().count();
-            let char_end = char_start + word.chars().count();
+            let char_start = abs;
+            let char_end = char_start + word.len();
             return Some(SyntaxRange {
                 start_line: span.start_line,
                 start_character: line_start as u32 + char_start as u32,
@@ -93,7 +89,7 @@ pub fn word_range_within_span(source: &str, span: &SyntaxRange, word: &str) -> O
                 end_character: line_start as u32 + char_end as u32,
             });
         }
-        search_at = abs + 1;
+        search_at = abs + slice[abs..].chars().next()?.len_utf8();
     }
     None
 }

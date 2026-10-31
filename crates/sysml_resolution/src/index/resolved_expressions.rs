@@ -965,7 +965,12 @@ impl<D> SemanticModel<D> {
         declaration: DeclarationId,
         element: SymbolId,
     ) -> Option<PublishedExpression> {
-        let Some(row) = self.resolved_expressions.body(declaration) else {
+        // A feature's value lives on its value expression. The feature itself authors no row, so
+        // the query follows that link rather than reporting the value as absent.
+        let Some(row) = self.resolved_expressions.body(declaration).or_else(|| {
+            let value = self.value_expression(declaration)?;
+            self.resolved_expressions.body(value)
+        }) else {
             return Some(PublishedExpression {
                 element,
                 outcome: ExpressionOutcome::NotApplicable,

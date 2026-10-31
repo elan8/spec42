@@ -96,6 +96,7 @@ fn push_import<'p>(
         target,
         scope: scope_of(&import.value.target.shape),
         range: import_range(document, &import.span),
+        target_range: import_range(document, &view.metadata.span),
         file_target: file_target(document, target, &import.span),
         owner_package: owner.map(str::to_string),
     });
@@ -122,7 +123,7 @@ fn file_target<'p>(
         let Some(byte_start) = line.find(value) else {
             continue;
         };
-        let start_character = line[..byte_start].chars().count() as u32;
+        let start_character = byte_start as u32;
         let line = import_range.start_line + line_offset as u32;
         return Some(SyntaxFileImport {
             value,
@@ -130,7 +131,7 @@ fn file_target<'p>(
                 start_line: line,
                 start_character,
                 end_line: line,
-                end_character: start_character + value.chars().count() as u32,
+                end_character: start_character + value.len() as u32,
             },
         });
     }

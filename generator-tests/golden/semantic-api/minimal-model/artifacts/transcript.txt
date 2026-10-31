@@ -1,4 +1,4 @@
-info: model_digest=<present> spec42_version=<present> semantic_api_version=0.4.0
+info: model_digest=<present> spec42_version=<present> semantic_api_version=0.5.0
 roots: 1 element(s)
   Minimal [Package] name=Minimal library=false
 find(None): 2 element(s)
@@ -12,9 +12,13 @@ element(Minimal): definition=false abstract=false derived=false end=false multip
 typed_by(Minimal): <untyped>
 relationships(Minimal): 0 edge(s)
 effective_features(Minimal): 0 element(s)
+expression(Minimal): not-applicable root=<none> nodes=0
+connector_ends(Minimal): 0 end(s)
 children(Minimal::Widget): 0 element(s)
 element(Minimal::Widget): definition=true abstract=false derived=false end=false multiplicity=<none>
 typed_by(Minimal::Widget): <untyped>
 relationships(Minimal::Widget): 0 edge(s)
 effective_features(Minimal::Widget): 0 element(s)
+expression(Minimal::Widget): not-applicable root=<none> nodes=0
+connector_ends(Minimal::Widget): 0 end(s)
 element(<bogus>): error

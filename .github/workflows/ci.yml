@@ -34,6 +34,19 @@ jobs:
       - name: Mini CI (lint)
         run: scripts/minici.sh lint
 
+  rust-docs:
+    name: Rust documentation
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/prepare-rust-ci
+
+      - name: Mini CI (documentation)
+        run: scripts/minici.sh docs
+
   rust-tests-workspace:
     name: Rust tests (workspace)
     runs-on: ubuntu-24.04
@@ -153,6 +166,7 @@ jobs:
     if: ${{ always() }}
     needs:
       - rust-lint
+      - rust-docs
       - rust-tests-workspace
       - rust-tests-lsp
       - rust-tests-sysml-release
@@ -163,6 +177,7 @@ jobs:
       - name: Confirm all Rust suites passed
         run: |
           test "${{ needs.rust-lint.result }}" = success
+          test "${{ needs.rust-docs.result }}" = success
           test "${{ needs.rust-tests-workspace.result }}" = success
           test "${{ needs.rust-tests-lsp.result }}" = success
           test "${{ needs.rust-tests-sysml-release.result }}" = success

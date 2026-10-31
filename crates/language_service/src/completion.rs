@@ -252,7 +252,7 @@ pub fn completion_edit_shape(pos: TextPosition, prefix: &str) -> CompletionEditS
         replace_range: TextRange::new(
             TextPosition::new(
                 pos.line,
-                pos.character.saturating_sub(prefix.chars().count() as u32),
+                pos.character.saturating_sub(crate::text::utf16_len(prefix)),
             ),
             pos,
         ),

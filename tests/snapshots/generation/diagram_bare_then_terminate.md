@@ -74,7 +74,9 @@ package BareTerminate {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "BareTerminate")) (named (kind action-def) (name "Stop")) (anonymous (kind terminate-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::terminateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "BareTerminate")) (named (kind action-def) (name "Stop")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "BareTerminate::Stop"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "BareTerminate")) (named (kind action-def) (name "Stop")) (anonymous (kind terminate-action) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "BareTerminate::Stop"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "BareTerminate")) (named (kind action-def) (name "Stop")) (anonymous (kind terminate-action) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "BareTerminate::Stop::work"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "BareTerminate")) (named (kind action-def) (name "Stop")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (qualified-name "BareTerminate::Stop::work"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::start"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "BareTerminate::Stop::work"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "BareTerminate::Stop::work"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "BareTerminate::Stop::work"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "BareTerminate::Stop"))) (provenance implied))
@@ -225,7 +227,7 @@ package BareTerminate {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:4c27e54805c17e1feff9a3d2cbb2855febbde4e9f7ab3786d4bc928f93331342",
+  "modelDigest": "blake3:cc60f15b9d02ecd92e2ce90f4941104a8ad5de595e6c7605b700c2b48597fb2f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -411,7 +413,7 @@ package BareTerminate {
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "ordinal": 13,
       "relationshipKind": "redefinition",
       "source": 5
     },
@@ -423,7 +425,7 @@ package BareTerminate {
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "ordinal": 12,
       "relationshipKind": "typing",
       "source": 5
     }
