@@ -494,20 +494,6 @@ fn unit_hover_report(model: Option<&PublishedModel>, unit: &AuthoredUnit) -> Hov
 ///
 /// Prefers what a reference under the cursor points at, and falls back to the declaration the
 /// cursor is inside, mirroring what hover renders for the same position.
-fn element_evaluation_at(
-    workspace: &impl WorkspaceSnapshot,
-    uri: &url::Url,
-    position: TextPosition,
-) -> Option<ElementEvaluation> {
-    let model = workspace.published_model()?;
-    let at = resolved(model.inspection().inspect_at(uri.as_str(), position))?;
-    let symbol = match &at.referenced {
-        ReferenceAt::Resolved(inspection) => Some(inspection.identity),
-        _ => at.containing.as_ref().map(|containing| containing.identity),
-    }?;
-    element_evaluation(model, symbol)
-}
-
 fn element_evaluation(model: &PublishedModel, symbol: SymbolId) -> Option<ElementEvaluation> {
     resolved(model.evaluation().evaluate(symbol))
 }
