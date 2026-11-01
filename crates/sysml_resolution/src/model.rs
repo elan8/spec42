@@ -436,14 +436,6 @@ pub(crate) enum DeclarationKind {
     /// <target>;` body element (BNF `ThenStmt.state_reference`), owned by the enclosing state
     /// declaration, mirroring `EntryActionBinding`'s nested-declaration shape.
     InitialState,
-    /// A named final pseudo-state declared by a state def/usage's `final <name>;`/`final state
-    /// <name>;` body element (BNF `FinalState`, `ast::FinalState`), owned by the enclosing state
-    /// declaration. Unlike `InitialState` (which references an existing sibling state), `final
-    /// <name>;` *declares* a brand-new nested state feature -- there is no separate reference to
-    /// resolve, so this mirrors `lower_state_usage`'s plain named-declaration shape rather than
-    /// `EntryActionBinding`'s reference-binding shape. `FinalState.state_name` is a plain `String`
-    /// (not a structured typing/reference), so no other relationship is lowered.
-    FinalState,
     /// A directed `in`/`out`/`inout` parameter declaration (BNF `InOutDecl`, `ast::InOutDecl`)
     /// found in a `calc def`/`constraint def`/`action def` body, e.g. `in partMasses :
     /// MassValue[0..*];`. Mirrors `ItemUsage`/`MetadataUsage` lowering: ownership, membership,

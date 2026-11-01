@@ -2132,7 +2132,6 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::DoActionBinding
             | DeclarationKind::ExitActionBinding
             | DeclarationKind::InitialState
-            | DeclarationKind::FinalState
             | DeclarationKind::PerformParameterBinding
     )
 }
@@ -2284,9 +2283,7 @@ pub(crate) fn definition_usage_candidate_matches(
         Collection::DefinitionOwnedState | Collection::UsageNestedState => {
             matches!(
                 kind,
-                DeclarationKind::StateUsage
-                    | DeclarationKind::ExhibitStateUsage
-                    | DeclarationKind::FinalState
+                DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage
             )
         }
         Collection::DefinitionOwnedTransition | Collection::UsageNestedTransition => {

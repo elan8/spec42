@@ -864,8 +864,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "multiple_final_states",
         severity: "warning",
-        meaning: "Modeling guidance: a state definition declares more than one explicit `final`/`final state` marker (not counting `then done` transitions per SysML 7.18.3).",
-        typical_fix: "Keep a single explicit `final` marker, or express finality with transitions to `done`.",
+        meaning: "Retired modeling guidance; no longer emitted. The grammar has no `final` state member, so there is nothing to count.",
+        typical_fix: "No change required. Express finality with a transition to `done` (SysML 7.18).",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

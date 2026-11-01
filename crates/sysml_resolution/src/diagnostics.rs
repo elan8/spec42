@@ -762,9 +762,9 @@ semantic_diagnostic_codes! {
         "This state definition owns states but declares no finality indicator.";
     }
     Validation {
-    /// A state definition declares more than one explicit final state.
+    /// Retired: the grammar has no final state member, so this is no longer emitted.
     MultipleFinalStates => "multiple_final_states",
-        "A state definition declares more than one explicit final state.";
+        "Retired; no longer emitted.";
     /// An `accept` payload is typed by something that cannot be an action payload.
     AcceptPayloadIncompatible => "accept_payload_incompatible",
         "An accept payload must be typed by an item, part, attribute or occurrence.";

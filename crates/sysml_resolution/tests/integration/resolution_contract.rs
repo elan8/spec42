@@ -2851,23 +2851,6 @@ fn require_and_assume_constraint_members_resolve() {
     );
 }
 
-/// A state def/usage body's `final <name>;` body element (BNF `FinalState`) declares a new
-/// named final pseudo-state, distinct from `then <target>;`'s reference-to-an-existing-state
-/// shape. Must lower as its own `DeclarationKind::FinalState` feature, not fall through to
-/// `unsupported_state_definition_member`.
-#[test]
-fn final_state_declares_named_pseudo_state() {
-    let sexpr = semantic_sexpr_for("package P { state def S { final done; } }");
-    assert!(
-        sexpr.contains("(kind final-state)"),
-        "expected a final-state declaration, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("unsupported_state_definition_member"),
-        "did not expect unsupported_state_definition_member, got: {sexpr}"
-    );
-}
-
 /// A `while <condition> { ... }` loop must lower as an anonymous `while` declaration whose
 /// condition resolves its operand and whose nested body recurses back into the same action-
 /// body-element dispatch (a nested `action x;` usage must be reachable), not fall through to

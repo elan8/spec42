@@ -9,11 +9,11 @@ use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody, ActionUsageBodyElement,
     AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
     ConstraintDefBody, ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement,
-    EndIdentity, EnumerationBody, FinalState, FlowDeclaration, InterfaceDefBody,
-    InterfaceDefBodyElement, MetadataAnnotation, MetadataBody, MetadataBodyElement,
-    MetadataKeywordUsage, OccurrenceBodyElement, OccurrenceUsageBody, PackageBody,
-    PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody, PartUsageBodyElement,
-    PayloadClause, PortBody, PortBodyElement, PortDefBody, PortDefBodyElement, RequirementDefBody,
+    EndIdentity, EnumerationBody, FlowDeclaration, InterfaceDefBody, InterfaceDefBodyElement,
+    MetadataAnnotation, MetadataBody, MetadataBodyElement, MetadataKeywordUsage,
+    OccurrenceBodyElement, OccurrenceUsageBody, PackageBody, PackageBodyElement, PartDefBody,
+    PartDefBodyElement, PartUsageBody, PartUsageBodyElement, PayloadClause, PortBody,
+    PortBodyElement, PortDefBody, PortDefBodyElement, RequirementDefBody,
     RequirementDefBodyElement, RootElement, StateDefBody, StateDefBodyElement, StateUsage,
     ThenStmt, Transition, TransitionAccept, ViewBody, ViewBodyElement, ViewDefBody,
     ViewDefBodyElement, ViewUsage,
@@ -1149,16 +1149,6 @@ fn collect_semantic_ranges_then_stmt(
     }
 }
 
-fn collect_semantic_ranges_final_state(
-    final_state: &FinalState,
-    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
-) {
-    out.push((
-        span_to_source_range(final_state.state_name.span()),
-        SyntaxRole::Property,
-    ));
-}
-
 fn collect_semantic_ranges_transition(
     transition: &sysml_v2_parser::Node<Transition>,
     out: &mut Vec<(SyntaxRange, SyntaxRole)>,
@@ -1235,9 +1225,6 @@ fn collect_semantic_ranges_state_def_body_element(
         SDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         SDBE::Transition(transition) => collect_semantic_ranges_transition(transition, out),
         SDBE::Then(then_stmt) => collect_semantic_ranges_then_stmt(ctx, &then_stmt.value, out),
-        SDBE::FinalState(final_state) => {
-            collect_semantic_ranges_final_state(&final_state.value, out)
-        }
         SDBE::Ref(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
         SDBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);

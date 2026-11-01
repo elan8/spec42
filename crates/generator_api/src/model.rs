@@ -1729,6 +1729,25 @@ impl GeneratorModelView {
                         .relationships
                         .iter()
                         .any(|r| r.kind == "transitionEffect");
+                    // SysML 7.18: a transition to the inherited `done` marks a final state.
+                    let target_token = self.token(target);
+                    if matches!(
+                        self.model.qualified_name(target).as_deref(),
+                        Some("States::StateAction::done" | "Actions::Action::done")
+                    ) && !nodes.iter().any(|node| node.semantic_id == target_token)
+                    {
+                        nodes.push(StateTransitionNode {
+                            semantic_id: target_token,
+                            label: "done".to_owned(),
+                            kind: StateTransitionNodeKind::Final,
+                            source: inspection_source(
+                                &inspection,
+                                self.model
+                                    .document_identity(inspection.location.document)
+                                    .unwrap_or_default(),
+                            ),
+                        });
+                    }
                     transitions.push(StateTransitionEdge {
                         semantic_id: self.token(child.entry.identity),
                         label: child.entry.name.as_deref().map(str::to_owned),
@@ -2253,6 +2272,18 @@ fn diagram_metadata(
             .map(|element| element.occurrence.clone())
             .collect::<Vec<_>>()
     };
+    // `done` is the only final node: the grammar has no final state of its own.
+    let final_nodes = elements
+        .iter()
+        .filter(|element| {
+            matches!(
+                &element.reference,
+                DiagramSemanticReference::Qualified { qualified_name, .. }
+                    if qualified_name == "States::StateAction::done"
+            )
+        })
+        .map(|element| element.occurrence.clone())
+        .collect::<Vec<_>>();
     match kind {
         DiagramViewKind::GeneralView => DiagramViewMetadata::General {
             roots: roots.to_vec(),
@@ -2300,7 +2331,10 @@ fn diagram_metadata(
             }
         }
         DiagramViewKind::StateTransitionView => DiagramViewMetadata::StateTransition {
-            states: ids(&[Metaclass::StateDefinition, Metaclass::StateUsage]),
+            states: ids(&[Metaclass::StateDefinition, Metaclass::StateUsage])
+                .into_iter()
+                .filter(|occurrence| !final_nodes.contains(occurrence))
+                .collect(),
             initial_nodes: relationships
                 .iter()
                 .filter(|relationship| {
@@ -2308,7 +2342,7 @@ fn diagram_metadata(
                 })
                 .map(|relationship| relationship.source_occurrence.clone())
                 .collect(),
-            final_nodes: ids(&[Metaclass::FinalState]),
+            final_nodes,
         },
         DiagramViewKind::SequenceView => DiagramViewMetadata::Sequence {
             participants: match scene {

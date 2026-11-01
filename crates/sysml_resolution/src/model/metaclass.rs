@@ -124,7 +124,6 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::DoActionBinding
         | K::ExitActionBinding
         | K::InitialState
-        | K::FinalState
         | K::ParameterUsage
         | K::SubjectUsage
         | K::PerformActionUsage
