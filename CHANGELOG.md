@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.58.0] - 2026-11-01
+
+- **Upgrade notes.** **Models may report new errors.** The parser now follows the grammar more
+  strictly: a `/* */` comment between the tokens of a declaration, a `;` after a result expression
+  (`1 + 2;`) and `library standard package` are parse errors, and a qualified name resolves only
+  through public members. Use `//` or `//* */` notes, remove the `;`, write
+  `standard library package`, and reach private or protected members by simple name from inside
+  their namespace. Diagram products are **schema 11**, with node `presentationKey` and
+  `multiplicity` and interconnection `metadata.portFamilies`; consumers must accept
+  `schemaVersion` 11. The generator ABI is **version 7** with semantic API **0.5.0**: **a generator
+  plugin built against 0.57.0 must be rebuilt.** The semantic contract version is now
+  `import-edit-plans-v61`, so earlier publications and serialised models are not reused. Hierarchy
+  clients must retain item data in follow-up requests. Building the VS Code extension requires
+  Node.js 22.12 or newer, and regenerating its lockfiles requires npm 11.
+
+- **Responsive editing.** Rapid changes replace obsolete analysis instead of queueing it, the
+  editor shows the current analysis status, and the previous source and analysis stay coherent
+  when a rebuild fails. Stale editor updates no longer replace newer text or a reopened buffer,
+  and views keep their viewport and disclosure across publications. Library configuration rescans
+  are bounded, and project and library changes preserve unsaved editors.
+- **Imports repair themselves.** Quick fixes import or qualify a referenced element, create a
+  missing definition, and make an implicit redefinition explicit. Completion offers out-of-scope
+  types and adds their private import in one step, and **Add all unambiguous missing imports**
+  repairs a whole file.
+- **Completion keeps up while you type.** It no longer opens on every space or hijacks Enter, and
+  offers only a namespace's or feature's members after `::` and `.`.
+- **Diagnostics catch more real mistakes.**
+  - Non-Boolean guards are reported on transitions and on conditional successions, and non-Boolean
+    constraint, assert and require bodies are judged by their result type, not only when they fold
+    to a literal.
+  - A definition that specializes a usage, or a usage that subsets, redefines or references a
+    definition, is reported.
+  - A qualified name to a private or protected member names that member and links to it.
+  - A `;` directly after a closing `}` is reported.
+  - A body still open at end of input keeps its members, and an import without visibility keeps its
+    target, so one unfinished line no longer hides the rest of the file.
+  - The validation guide documents how follow-on diagnostics are reported.
+- **Name resolution follows the specification.** `import all` imports members whatever their
+  visibility, a nested package honours its visibility, and references through an alias, including
+  one re-exported by a public import, resolve to the aliased element.
+- **More valid models parse.** Case and analysis bodies accept control nodes, `item` members and
+  structured action nodes. `include` accepts feature chains and a full usage declaration.
+- **Sequence views are reliable.** Repeated and anonymous messages no longer produce false ordering
+  cycles, useful partial drawings are preserved, and projection limitations are shown with
+  actionable detail.
+- **Action flows read better.** Parameters use SysML parameter notation instead of port squares, a
+  nested action draws its own start and done inside it, `then assign` connects to the member before
+  it, and named terminate and assign nodes are single nodes.
+- **Interconnection views** colour connectors by port family, so related and conjugated ports
+  share a colour, and show a legend.
+- **Diagram labels** show a usage's multiplicity (`joints : Motor [6]`) instead of drawing
+  multiplicity and expression internals as boxes.
+- **Editor fixes.** Multiline documentation formatting, folding, structured loop semantics, nested
+  state readability, and semantic highlighting of statement keywords, action names and terminate
+  targets. Navigation, rename, formatting, outlines and selection are safe with Unicode text and
+  current editor versions. Readiness is announced before diagnostics are published.
+- **Generators** retain resolved relationships beside unsettled ones, receive named metaclasses for
+  every element kind, and can query expression trees, connector feature chains and the succession
+  a `then` member declares.
+- **Security.** Update the archive reader, WebAssembly runtime and extension dependencies to fix
+  security advisories.
+- **Performance measurement.** Opt-in measurements cover edit-to-view refresh and diagram rendering
+  phases, and live editor benchmarks use reproducible inputs.
+
 ## [0.57.0] - 2026-10-22
 
 - **Upgrade notes.** Diagram products are **schema 7**: browser metadata carries `rows` (row
