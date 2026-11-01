@@ -1138,6 +1138,11 @@ pub(crate) enum ReferenceKind {
     /// filter statement's owner), mirroring `ExpressionOperand`'s "no anonymous nested-declaration
     /// scope shift" shape. See `lower_filter_expression`.
     FilterMetadataTest,
+    /// A name inside the brackets of a quantity expression: `A` in `30 [A]`, or each name of
+    /// `[m / s]`. KerML's `[` is an ordinary invocation, so its operand resolves like any feature
+    /// reference, in the scope of the expression. Kept apart from `ExpressionOperand` because the
+    /// expression walk numbers those operands and does not descend into a unit.
+    QuantityUnit,
     /// The satisfied requirement named by a satisfy usage's reference alternative
     /// (`SatisfiedRequirement::Reference`, BNF `SatisfyRequirementUsage`'s
     /// `OwnedReferenceSubsetting`), resolved through the same `DeclarationDomain::Any` lexical
@@ -1458,6 +1463,7 @@ reference_kinds![
     MetadataAnnotationAbout,
     Annotation,
     FilterMetadataTest,
+    QuantityUnit,
     SatisfySource,
     SatisfyTarget,
     AllocateSource,

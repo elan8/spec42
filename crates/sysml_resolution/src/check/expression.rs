@@ -322,6 +322,7 @@ impl<D> SemanticModel<D> {
                 // parser contract this engine does not extend, the second an input the workspace
                 // did not supply.
                 UnitOutcome::UnsupportedExpression | UnitOutcome::CatalogUnavailable => {}
+                UnitOutcome::Unresolved => {}
                 UnitOutcome::Resolved { dimensions, .. } => {
                     let receiver = self
                         .storage

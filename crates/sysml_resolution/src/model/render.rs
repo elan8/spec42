@@ -1523,6 +1523,7 @@ pub(crate) fn write_units(
                     }
                 }
                 expression::UnitOutcome::UnknownSymbol => write!(output, "(status unknown)")?,
+                expression::UnitOutcome::Unresolved => write!(output, "(status unresolved)")?,
                 expression::UnitOutcome::Ambiguous(candidates) => {
                     write!(output, "(status ambiguous)")?;
                     for candidate in candidates.iter() {
@@ -2326,6 +2327,7 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::MetadataAnnotationAbout => "metadataAnnotationAbout",
         ReferenceKind::Annotation => "annotation",
         ReferenceKind::FilterMetadataTest => "filterMetadataTest",
+        ReferenceKind::QuantityUnit => "quantityUnit",
         ReferenceKind::SatisfySource => "satisfySource",
         ReferenceKind::SatisfyTarget => "satisfyTarget",
         ReferenceKind::AllocateSource => "allocateSource",
@@ -2361,10 +2363,11 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
 ///
 /// Distinct from [`reference_kind`], which names the production that wrote it: `featureTyping` is
 /// the reference an author writes and `typing` is the relationship it establishes. `None` for the
-/// import kinds, which bring names into scope rather than relating two elements.
+/// import kinds, which bring names into scope rather than relating two elements, and for a quantity
+/// unit, which the expression facts publish.
 pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
     match kind {
-        ReferenceKind::ExplicitRelationshipEndpoint => None,
+        ReferenceKind::ExplicitRelationshipEndpoint | ReferenceKind::QuantityUnit => None,
         ReferenceKind::FeatureTyping => Some("typing"),
         ReferenceKind::TypeFeaturing => Some("typeFeaturing"),
         ReferenceKind::FeatureChaining => Some("featureChaining"),

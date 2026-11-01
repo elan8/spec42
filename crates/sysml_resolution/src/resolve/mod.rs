@@ -466,6 +466,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::ExitActionBinding
                     | ReferenceKind::InitialState
                     | ReferenceKind::ExpressionOperand
+                    | ReferenceKind::QuantityUnit
                     | ReferenceKind::TransitionSource
                     | ReferenceKind::TransitionTarget
                     | ReferenceKind::TransitionTrigger
@@ -603,6 +604,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         }
         let (next_effective_imports, next_exported_imports) = build_effective_import_indexes(
             declarations,
+            declaration_facts,
             &memberships,
             references,
             &all_import_slots,
@@ -1940,6 +1942,7 @@ pub(crate) fn supported_import_domain(
         | ReferenceKind::ExitActionBinding
         | ReferenceKind::InitialState
         | ReferenceKind::ExpressionOperand
+        | ReferenceKind::QuantityUnit
         | ReferenceKind::TransitionSource
         | ReferenceKind::TransitionTarget
         | ReferenceKind::TransitionTrigger
@@ -2508,6 +2511,7 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
         } else if matches!(
             reference.kind(),
             ReferenceKind::ExpressionOperand
+                | ReferenceKind::QuantityUnit
                 | ReferenceKind::SatisfySource
                 | ReferenceKind::SatisfyTarget
         ) {

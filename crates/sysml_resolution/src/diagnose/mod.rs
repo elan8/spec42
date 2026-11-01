@@ -178,6 +178,19 @@ impl<D> SemanticModel<D> {
                     if self.resolution.alias_failures.contains(&reference_id) {
                         continue;
                     }
+                    // Without the measurement library a unit cannot be checked at all, and its
+                    // absence is an input the workspace did not supply, not a fault at each unit.
+                    if reference.kind == ReferenceKind::QuantityUnit
+                        && self.expressions.anchors.measurement_unit.is_none()
+                    {
+                        continue;
+                    }
+                    // The unit check reports this one, with the units it could be.
+                    if reference.kind == ReferenceKind::QuantityUnit
+                        && matches!(status, ResolutionStatus::Ambiguous(_))
+                    {
+                        continue;
+                    }
                     let Some((severity, code)) = reference_diagnostic(reference.kind, status)
                     else {
                         continue;

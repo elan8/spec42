@@ -695,7 +695,7 @@ package NestedOwners {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:e5ac98eacc11f9d5f1129534e2781e1348881e947e04a23f06c733c92f619d64",
+  "modelDigest": "blake3:4451113027424aa32952b26966534f20f41cb0290f42cf2ae08c9f172e27c0ee",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
