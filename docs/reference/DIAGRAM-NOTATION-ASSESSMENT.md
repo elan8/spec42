@@ -63,7 +63,7 @@ them.
 | Name compartment | `«state»`, then the name | `«state»`, then the name | Conforms |
 | Entry, do and exit actions | A state actions compartment listing `entry x`, `do x`, `exit x` | A labelled state actions compartment with those lines. An action without a name is listed by the action it is typed by | Conforms |
 | Start node | Filled circle | Filled circle | Conforms |
-| Done node | Circle around a filled circle | Drawn for a final state | Conforms |
+| Done node | Circle around a filled circle | Drawn for a transition to `done` | Conforms |
 | Terminate node | Circle with a cross | Circle with a cross | Conforms |
 | Transition | Solid line, open arrowhead | Solid line, open arrowhead since this change; it was filled | Conforms |
 | Transition label | Plain text: trigger, guard, `/` effect | Plain text. Trigger, guard and effect are joined as published. Three or more transitions with one label into one state share a line and one label at that state | Conforms; the shared line is an extension |

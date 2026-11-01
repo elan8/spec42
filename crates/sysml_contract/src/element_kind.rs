@@ -163,11 +163,6 @@ element_kinds! {
     /// written is recoverable from the published references, and the initial-state case from the
     /// owner being a state.
     SuccessionAsUsage,
-    /// A `final` pseudo-state.
-    ///
-    /// Parser-local: `'final'` does not appear in the SysML grammar at all, so there is no OMG
-    /// metaclass to name. Nearest element shape is `StateUsage`.
-    FinalState,
 
     // --- Relationship-shaped usages -----------------------------------------------------
     SatisfyRequirementUsage,
@@ -344,7 +339,6 @@ impl ElementKind {
             | K::ControlNode
             | K::StateUsage => &[K::ActionUsage],
             K::DecisionNode | K::MergeNode | K::ForkNode | K::JoinNode => &[K::ControlNode],
-            K::FinalState => &[K::StateUsage],
             K::ExhibitStateUsage => &[K::StateUsage, K::PerformActionUsage],
             K::CalculationUsage => &[K::ActionUsage, K::Expression],
             K::ConstraintUsage => &[K::OccurrenceUsage, K::BooleanExpression],

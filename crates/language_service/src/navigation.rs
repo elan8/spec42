@@ -400,12 +400,29 @@ fn unit_literal_hover_report(
     uri: &url::Url,
     position: TextPosition,
 ) -> Option<HoverReport> {
-    let unit = element_evaluation_at(workspace, uri, position)?
-        .units
-        .iter()
-        .find(|unit| range_covers(unit.location.range, position))
-        .cloned()?;
-    Some(unit_hover_report(workspace.published_model(), &unit))
+    let model = workspace.published_model()?;
+    let at = resolved(model.inspection().inspect_at(uri.as_str(), position))?;
+    // A unit name is a reference, so the cursor can be on its target. The literal that wrote it
+    // belongs to the containing element.
+    let referenced = match &at.referenced {
+        ReferenceAt::Resolved(inspection) => Some(inspection.identity),
+        _ => None,
+    };
+    let unit = at
+        .containing
+        .as_ref()
+        .map(|containing| containing.identity)
+        .into_iter()
+        .chain(referenced)
+        .filter_map(|symbol| element_evaluation(model, symbol))
+        .find_map(|evaluation| {
+            evaluation
+                .units
+                .iter()
+                .find(|unit| range_covers(unit.location.range, position))
+                .cloned()
+        })?;
+    Some(unit_hover_report(Some(model), &unit))
 }
 
 /// Formats one published unit outcome.
@@ -477,20 +494,6 @@ fn unit_hover_report(model: Option<&PublishedModel>, unit: &AuthoredUnit) -> Hov
 ///
 /// Prefers what a reference under the cursor points at, and falls back to the declaration the
 /// cursor is inside, mirroring what hover renders for the same position.
-fn element_evaluation_at(
-    workspace: &impl WorkspaceSnapshot,
-    uri: &url::Url,
-    position: TextPosition,
-) -> Option<ElementEvaluation> {
-    let model = workspace.published_model()?;
-    let at = resolved(model.inspection().inspect_at(uri.as_str(), position))?;
-    let symbol = match &at.referenced {
-        ReferenceAt::Resolved(inspection) => Some(inspection.identity),
-        _ => at.containing.as_ref().map(|containing| containing.identity),
-    }?;
-    element_evaluation(model, symbol)
-}
-
 fn element_evaluation(model: &PublishedModel, symbol: SymbolId) -> Option<ElementEvaluation> {
     resolved(model.evaluation().evaluate(symbol))
 }

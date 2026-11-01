@@ -351,7 +351,7 @@ pub const MEASUREMENT_LIBRARY_SOURCE: &str = concat!(
 
 /// A workspace exercising every migrated expression-conformance rule that reads the library.
 pub const MEASUREMENT_WORKSPACE: &str = concat!(
-    "package W { ",
+    "package W { private import SI::*; part def zz; ",
     "attribute good : Quantities::MassValue = 1 [kg]; ",
     "attribute wrongDimension : Quantities::MassValue = 1 [s]; ",
     "attribute unknownUnit : Quantities::MassValue = 1 [zz]; ",

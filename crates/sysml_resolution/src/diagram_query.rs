@@ -774,9 +774,14 @@ impl PublishedResolution {
             children.sort_by_key(|left| left.identity);
             children.dedup_by(|left, right| left.identity == right.identity);
             // An action flow names nodes its action inherits from the library, the `start`
-            // and `done` of `Actions::Action`, as the ends of its successions. Such a feature
-            // is a node of the flow where a succession of this owner begins or ends at it.
-            let library_ends = if view_entry.kind == DiagramViewKind::ActionFlow {
+            // and `done` of `Actions::Action`, as the ends of its successions, and a state
+            // machine names the `done` of `States::StateAction` as a transition target. Such a
+            // feature is a node of the view where a succession or transition of this owner
+            // begins or ends at it.
+            let library_ends = if matches!(
+                view_entry.kind,
+                DiagramViewKind::ActionFlow | DiagramViewKind::StateTransition
+            ) {
                 self.library_succession_ends(&children, &workspace)
             } else {
                 BTreeSet::new()
@@ -1903,8 +1908,8 @@ impl PublishedResolution {
         entries
     }
 
-    /// The features outside the workspace that successions among `members` begin or end at:
-    /// the resolved ends of each succession, the feature a `then` names, and the source the
+    /// The features outside the workspace that successions and transitions among `members`
+    /// begin or end at: the resolved ends of each, the feature a `then` names, and the source the
     /// lowering settled for a `then`.
     fn library_succession_ends(
         &self,
@@ -1917,7 +1922,10 @@ impl PublishedResolution {
             .filter(|member| workspace.contains(&member.identity))
         {
             ends.extend(self.model.then_source(member.identity));
-            if member.kind != ElementKind::SuccessionAsUsage {
+            if !matches!(
+                member.kind,
+                ElementKind::SuccessionAsUsage | ElementKind::TransitionUsage
+            ) {
                 continue;
             }
             let Some(inspection) = usable_value(self.inspect(member.identity)) else {
@@ -1926,7 +1934,12 @@ impl PublishedResolution {
             for relationship in inspection.relationships.iter() {
                 let is_end = matches!(
                     relationship_kind_from_name(relationship.kind),
-                    Some(DiagramRelationshipKind::Succession | DiagramRelationshipKind::ThenTarget)
+                    Some(
+                        DiagramRelationshipKind::Succession
+                            | DiagramRelationshipKind::ThenTarget
+                            | DiagramRelationshipKind::TransitionSource
+                            | DiagramRelationshipKind::TransitionTarget
+                    )
                 );
                 if let (true, RelationshipTarget::Resolved(target)) = (is_end, &relationship.target)
                 {
@@ -2204,9 +2217,7 @@ fn compartment_kind(kind: ElementKind) -> Option<DiagramCompartmentKind> {
         | ElementKind::IfActionUsage
         | ElementKind::WhileLoopActionUsage
         | ElementKind::ForLoopActionUsage => Compartment::Actions,
-        ElementKind::StateUsage | ElementKind::ExhibitStateUsage | ElementKind::FinalState => {
-            Compartment::States
-        }
+        ElementKind::StateUsage | ElementKind::ExhibitStateUsage => Compartment::States,
         ElementKind::CalculationUsage => Compartment::Calculations,
         ElementKind::ConnectionUsage
         | ElementKind::FlowConnectionUsage
@@ -2257,10 +2268,15 @@ fn diagram_scene(
                         DiagramStateVertexKind::Initial
                     } else {
                         match element.kind {
+                            // SysML 7.18: a transition to `done` makes its source the final state.
+                            ElementKind::StateUsage | ElementKind::ExhibitStateUsage
+                                if is_library_done(element.semantic_id, entries) =>
+                            {
+                                DiagramStateVertexKind::Final
+                            }
                             ElementKind::StateUsage | ElementKind::ExhibitStateUsage => {
                                 DiagramStateVertexKind::State
                             }
-                            ElementKind::FinalState => DiagramStateVertexKind::Final,
                             _ => return None,
                         }
                     };
@@ -2331,6 +2347,25 @@ fn diagram_scene(
             })
         }
     }
+}
+
+/// Whether `symbol` is the `done` that every state and action inherits from the library.
+fn is_library_done(symbol: SymbolId, entries: &BTreeMap<SymbolId, SymbolEntry>) -> bool {
+    let owner_of = |entry: &SymbolEntry| entry.owner.and_then(|owner| entries.get(&owner));
+    let Some(done) = entries.get(&symbol) else {
+        return false;
+    };
+    let Some(owner) = owner_of(done) else {
+        return false;
+    };
+    let Some(package) = owner_of(owner) else {
+        return false;
+    };
+    done.name.as_deref() == Some("done")
+        && matches!(
+            (owner.name.as_deref(), package.name.as_deref()),
+            (Some("StateAction"), Some("States")) | (Some("Action"), Some("Actions"))
+        )
 }
 
 fn sequence_scene(

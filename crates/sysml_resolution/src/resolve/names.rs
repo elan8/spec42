@@ -534,6 +534,7 @@ pub(crate) struct ImportNameSources<'a> {
 
 pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
+    declaration_facts: Option<&[DeclarationFacts]>,
     memberships: &MembershipIndex,
     references: &[R],
     import_slots: &[usize],
@@ -615,7 +616,12 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                     .get(target.index())
                     .ok_or(ResolutionError::InvalidStorage)?;
                 if import_all || memberships.is_public(target) {
-                    if let Some(name) = declaration.name.resolved() {
+                    // A membership resolves by its short name as well as its name (KerML
+                    // 8.2.3.5.1), so `import SI::ampere` brings in `A` too.
+                    let short_name = declaration_facts
+                        .and_then(|facts| facts.get(target.index()))
+                        .and_then(|facts| facts.short_name.resolved());
+                    for name in declaration.name.resolved().into_iter().chain(short_name) {
                         extend_import_entries(
                             &mut entries,
                             &mut exported_entries,
@@ -668,6 +674,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::ExitActionBinding
             | ReferenceKind::InitialState
             | ReferenceKind::ExpressionOperand
+            | ReferenceKind::QuantityUnit
             | ReferenceKind::TransitionSource
             | ReferenceKind::TransitionTarget
             | ReferenceKind::TransitionTrigger

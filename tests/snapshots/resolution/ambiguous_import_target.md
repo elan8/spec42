@@ -28,6 +28,18 @@ package Use {
   )
   (document "memory://snapshot/B.sysml"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_root_package")
+        (source "semantic")
+        (range (start 0 0) (end 0 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/A.sysml")
+            (range (start 0 0) (end 0 34))
+          )
+        )
+      )
     )
   )
   (document "memory://snapshot/Use.sysml"

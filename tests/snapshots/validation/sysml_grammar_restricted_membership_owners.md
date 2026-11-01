@@ -20,7 +20,7 @@ type=file
 ~~~sysml
 // ControlNode appears only through ActionNode in ActionBodyItem. Action bodies and calculation
 // bodies admit it (see sysml_control_node_owning_type.md); a part definition body does not.
-package P {
+package A {
     part def Holder {
         fork f;
     }
@@ -29,7 +29,7 @@ package P {
 ## subject.sysml
 ~~~sysml
 // SubjectMember appears only in RequirementBodyItem and CaseBodyItem.
-package P {
+package B {
     part def C;
     part def Holder {
         subject s : C;
@@ -39,7 +39,7 @@ package P {
 ## actor.sysml
 ~~~sysml
 // ActorMember appears only in RequirementBodyItem and CaseBodyItem.
-package P {
+package C {
     part def C;
     part def Holder {
         actor a : C;
@@ -49,7 +49,7 @@ package P {
 ## stakeholder.sysml
 ~~~sysml
 // StakeholderMember appears only in RequirementBodyItem.
-package P {
+package D {
     part def C;
     part def Holder {
         stakeholder s : C;
@@ -59,7 +59,7 @@ package P {
 ## objective.sysml
 ~~~sysml
 // ObjectiveMember appears only in CaseBodyItem, not in RequirementBodyItem.
-package P {
+package E {
     requirement def Holder {
         objective o;
     }
@@ -68,7 +68,7 @@ package P {
 ## state_subaction.sysml
 ~~~sysml
 // EntryActionMember, DoActionMember and ExitActionMember appear only in StateBodyItem.
-package P {
+package F {
     part def Holder {
         entry action started;
     }
@@ -207,23 +207,23 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:da551eafebdb2ec0a9d6546b9fd539d8df7d9803ebd1489cd1b1c508e5f9634a"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:250b36208a819102f9268cf6140e2ee2e7d6ac69b82133ed1c41f83a2397db8b"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "P::C"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "P::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/control_node.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/control_node.sysml") (qualified-name "P::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/objective.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/objective.sysml") (qualified-name "P::Holder"))) (kind requirement-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/stakeholder.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/stakeholder.sysml") (qualified-name "P::C"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/stakeholder.sysml") (qualified-name "P::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/state_subaction.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/state_subaction.sysml") (qualified-name "P::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/subject.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/subject.sysml") (qualified-name "P::C"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/subject.sysml") (qualified-name "P::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "C"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "C::C"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "C::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/control_node.sysml") (qualified-name "A"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/control_node.sysml") (qualified-name "A::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/objective.sysml") (qualified-name "E"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/objective.sysml") (qualified-name "E::Holder"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/stakeholder.sysml") (qualified-name "D"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/stakeholder.sysml") (qualified-name "D::C"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/stakeholder.sysml") (qualified-name "D::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/state_subaction.sysml") (qualified-name "F"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/state_subaction.sysml") (qualified-name "F::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/subject.sysml") (qualified-name "B"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/subject.sysml") (qualified-name "B::C"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/subject.sysml") (qualified-name "B::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references
   )

@@ -31,7 +31,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.57.0"
+version = "0.58.0"
 edition = "2021"
 authors = ["Elan8"]
 license = "MIT"
@@ -50,7 +50,7 @@ clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
 blake3 = "1"
-sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "7532e00a69580080460891219932088beb6b966a", features = ["serde"] }
+sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "5bca41bc02453b6717ad8b11107105fca98609c5", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
 zstd = "0.13"
 toml = "0.8"

@@ -35,6 +35,18 @@ resolve * StandardViewDefinitions::GeneralView ViewDefinition
   )
   (document "memory://snapshot/b.sysml"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_root_package")
+        (source "semantic")
+        (range (start 0 0) (end 2 1))
+        (related-information
+          (related
+            (uri "memory://snapshot/a.sysml")
+            (range (start 0 0) (end 3 1))
+          )
+        )
+      )
     )
   )
 )

@@ -1404,7 +1404,7 @@ package Families {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:cb84da6da387f471f5535665f7f6e172fe5b3a8055d69b37fa2f32fe92386419",
+  "modelDigest": "blake3:8d3c8ca8884a002bef7fe6285a97226a76cde8749b00a7bcf280800ecb67a791",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

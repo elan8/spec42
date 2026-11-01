@@ -12,27 +12,31 @@ Spec42 is open, local-first tooling for [SysML v2](https://www.omg.org/sysml/sys
 
 ## Why Spec42
 
-SysML v2 is powerful, but textual models only help when the tooling keeps pace: clear feedback while editing, a trustworthy picture of structure and behavior, and validation that does not change meaning when it leaves the IDE.
-
-Spec42 is built for that continuity. One immutable analysis publication backs the VS Code extension, CLI validation, GitHub Actions, generators, and assistant integrations. What you see while modeling is what CI will check.
-
-It stays local-first: the language server, standard library, and Elan8 domain libraries ship with Spec42. You can work offline, keep models in your own repositories, and adopt automation without a proprietary runtime.
+One analysis engine backs the editor, the CLI, GitHub Actions, generators and assistant
+integrations, so what you see while modeling is what CI checks. The language server, standard
+library and Elan8 domain libraries ship with Spec42: it works offline, and your models stay in your
+own repositories.
 
 ## What you get
 
-- **A capable SysML v2 / KerML editor** — diagnostics, semantic highlighting, completion, hover, navigation, rename, symbols, and formatting for day-to-day modeling.
-- **Ways to understand the model, not just the text** — navigation and Feature Inspector consume typed semantic queries for resolved typing, inheritance, relationships, and values.
-- **Validation you can trust in automation** — the same engine in `spec42 check`, with text/JSON/SARIF/JUnit output for local scripts and CI quality gates.
-- **Extensible model products** — generators consume the immutable publication; the VS Code diagram experience is backed by a repository-owned generator plugin and a versioned render product rather than a built-in semantic subsystem.
-- **Libraries ready to use** — bundled OMG SysML libraries plus searchable Elan8 domain libraries, with room for your own library roots.
-- **Room for assistants** — Copilot Language Model Tools in VS Code, plus CLI helpers for other AI hosts.
+- **An editor for SysML v2 and KerML** — diagnostics, highlighting, navigation, rename and
+  formatting, with completion and quick fixes that add missing imports for you.
+- **Views of the model, not just the text** — diagrams and the Feature Inspector show resolved
+  typing, inheritance, relationships and values.
+- **Validation for automation** — `spec42 check` uses the same engine, with text, JSON, SARIF and
+  JUnit output.
+- **Generators** — sandboxed WebAssembly plugins read the same analysis as the editor.
+- **Libraries** — the OMG SysML libraries and searchable Elan8 domain libraries are bundled, and
+  you can add your own.
+- **Assistant support** — Copilot Language Model Tools in VS Code, and CLI helpers for other AI
+  hosts.
 
 ## Where Spec42 fits
 
 | Surface | Role |
 | --- | --- |
 | **VS Code** | Primary modeling environment: edit, navigate, diagram, inspect. |
-| **CLI** | Doctor, check, model export (validation plus a typed structural JSON projection), generation, and assistant-oriented commands. |
+| **CLI** | `check`, `model-export`, `generate`, `diagram`, `doctor` and library management. |
 | **GitHub Action** | Repeatable model validation with optional SARIF upload. |
 | **LM Tools** | Validation and model context for AI-assisted workflows. |
 | **Zed** | Lightweight editor support with the same server family. |

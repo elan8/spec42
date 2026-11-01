@@ -750,6 +750,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "duplicate_root_package",
+        severity: "warning",
+        meaning: "Modeling guidance: two root packages in the workspace share a name. KerML permits it, but a reference that reaches both is ambiguous (KerML 8.2.3.5.4).",
+        typical_fix: "Rename one package, or check the projects separately.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "connection_endpoint_not_port",
         severity: "warning",
         meaning: "A connection endpoint is not a port-like feature.",
@@ -864,8 +871,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "multiple_final_states",
         severity: "warning",
-        meaning: "Modeling guidance: a state definition declares more than one explicit `final`/`final state` marker (not counting `then done` transitions per SysML 7.18.3).",
-        typical_fix: "Keep a single explicit `final` marker, or express finality with transitions to `done`.",
+        meaning: "Retired modeling guidance; no longer emitted. The grammar has no `final` state member, so there is nothing to count.",
+        typical_fix: "No change required. Express finality with a transition to `done` (SysML 7.18).",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
@@ -1239,6 +1246,7 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
 
 /// Diagnostics that reflect modeling/tooling guidance rather than normative SysML constraints.
 const MODELING_GUIDANCE_CODES: &[&str] = &[
+    "duplicate_root_package",
     "missing_final_state",
     "missing_initial_state",
     "missing_library_context",
