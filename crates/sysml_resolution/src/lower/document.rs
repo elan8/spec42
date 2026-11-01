@@ -527,6 +527,7 @@ impl SemanticModelBuilder {
                 ordinal: token.ordinal,
                 text: relocation.symbol(token.text)?,
                 span: token.span,
+                reference: token.reference,
             });
         }
 

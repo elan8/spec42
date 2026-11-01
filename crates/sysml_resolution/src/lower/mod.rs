@@ -2083,6 +2083,7 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         text: &str,
         span: Span,
+        reference: Option<u32>,
     ) -> Result<(), ConstructionError> {
         let text = self.symbols.intern(text)?;
         let ordinal = self
@@ -2097,6 +2098,7 @@ impl SemanticModelBuilder {
             ordinal: assigned,
             text,
             span,
+            reference,
         });
         Ok(())
     }

@@ -188,7 +188,6 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::MergeNode
         | ElementKind::ForkNode
         | ElementKind::JoinNode
-        | ElementKind::FinalState
         | ElementKind::Feature
         | ElementKind::FlowEnd
         | ElementKind::Step

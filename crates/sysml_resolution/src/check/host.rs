@@ -87,7 +87,7 @@ pub(crate) const STANDARD_VIEW_DEFINITIONS: &[&str] = &[
 /// Whether a declaration kind states a state, either half of the family.
 ///
 /// The two authored halves only. A final pseudo-state is a state a transition may name but not a
-/// context that owns one, which is why the endpoint rules use [`is_state_endpoint_kind`] instead.
+/// context that owns one, which is why the endpoint rules use [`is_state_kind`] instead.
 pub(crate) fn is_state_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
@@ -95,14 +95,6 @@ pub(crate) fn is_state_kind(kind: DeclarationKind) -> bool {
             | DeclarationKind::StateUsage
             | DeclarationKind::ExhibitStateUsage
     )
-}
-
-/// Whether a declaration kind is something a transition or initial marker may name.
-///
-/// A `final <name>;` declares a final pseudo-state, so a transition into it is the authored way to
-/// terminate a machine.
-pub(crate) fn is_state_endpoint_kind(kind: DeclarationKind) -> bool {
-    is_state_kind(kind) || kind == DeclarationKind::FinalState
 }
 
 /// Whether a declaration kind states behavior a `perform` or a succession can name.
@@ -248,7 +240,7 @@ impl<D> SemanticModel<D> {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         self.collect_connection_structure(declared, diagnostics)?;
-        self.collect_behavior_structure(document, declared, diagnostics)?;
+        self.collect_behavior_structure(declared, diagnostics)?;
         self.collect_requirement_case_structure(declared, diagnostics)?;
         self.collect_view_structure(document, declared, diagnostics)?;
         self.collect_declaration_rules(document, declared, diagnostics)?;
@@ -538,6 +530,50 @@ impl<D> SemanticModel<D> {
                     .find(|earlier| self.first_collision(&[**earlier, *member]).is_some())
                     .map(|earlier| (*earlier, *member))
             })
+    }
+
+    /// Each workspace root package whose name an earlier one already has, with that earlier one.
+    ///
+    /// The root namespace admits this (KerML 8.2.3.5.4 allows a name several global resolutions),
+    /// so it is advice about the model, and says nothing about which package a name resolves to.
+    /// Library roots are left out: a workspace package may shadow one on purpose.
+    pub(crate) fn duplicate_root_packages(
+        &self,
+    ) -> Result<BTreeMap<DeclarationId, DeclarationId>, ResolutionError> {
+        let mut by_name: BTreeMap<_, Vec<DeclarationId>> = BTreeMap::new();
+        for (index, declaration) in self.storage.declarations.iter().enumerate() {
+            let is_package = crate::model::element_kind::element_kind(declaration.kind)
+                .conforms_to(sysml_contract::ElementKind::Package);
+            let in_workspace = self
+                .storage
+                .documents
+                .get(declaration.document.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .role
+                == source_identity::SourceRole::Workspace;
+            if declaration.owner.is_some() || !is_package || !in_workspace {
+                continue;
+            }
+            if let Some(name) = declaration.name.resolved() {
+                let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+                by_name.entry(name).or_default().push(id);
+            }
+        }
+        let mut duplicates = BTreeMap::new();
+        for mut roots in by_name.into_values() {
+            roots.sort_by_key(|root| {
+                (
+                    self.storage
+                        .declaration(*root)
+                        .map(|declaration| writer::document_identity(self, declaration.document)),
+                    self.declaration_range(*root),
+                )
+            });
+            if let Some((first, later)) = roots.split_first() {
+                duplicates.extend(later.iter().map(|root| (*root, *first)));
+            }
+        }
+        Ok(duplicates)
     }
 
     /// The first pair of same-named members whose kinds must be distinguishable.
@@ -969,12 +1005,10 @@ impl<D> SemanticModel<D> {
 
     pub(crate) fn collect_behavior_structure(
         &self,
-        document: DocumentIdx,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         let mut initial_by_context: BTreeMap<DeclarationId, Vec<DeclarationId>> = BTreeMap::new();
-        let mut final_by_context: BTreeMap<DeclarationId, Vec<DeclarationId>> = BTreeMap::new();
 
         for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
@@ -1026,7 +1060,7 @@ impl<D> SemanticModel<D> {
                         let Some(target_kind) = self.kind_of(target) else {
                             continue;
                         };
-                        if is_state_endpoint_kind(target_kind) {
+                        if is_state_kind(target_kind) {
                             continue;
                         }
                         diagnostics.push(self.reference_message_diagnostic(
@@ -1042,11 +1076,6 @@ impl<D> SemanticModel<D> {
                     }
                     if let Some(context) = self.enclosing(id, is_state_kind) {
                         initial_by_context.entry(context).or_default().push(id);
-                    }
-                }
-                DeclarationKind::FinalState => {
-                    if let Some(context) = self.enclosing(id, is_state_kind) {
-                        final_by_context.entry(context).or_default().push(id);
                     }
                 }
                 DeclarationKind::Succession => {
@@ -1118,13 +1147,7 @@ impl<D> SemanticModel<D> {
             }
         }
 
-        self.collect_state_machine_shape(
-            document,
-            declared,
-            &initial_by_context,
-            &final_by_context,
-            diagnostics,
-        )?;
+        self.collect_state_machine_shape(declared, &initial_by_context, diagnostics)?;
         Ok(())
     }
 
@@ -1196,7 +1219,7 @@ impl<D> SemanticModel<D> {
         else {
             return Ok(());
         };
-        if !is_state_endpoint_kind(source_kind) || !is_state_endpoint_kind(target_kind) {
+        if !is_state_kind(source_kind) || !is_state_kind(target_kind) {
             let mut diagnostic = self.declaration_message_diagnostic(
                 id,
                 DiagnosticCode::TransitionEndpointInvalidState,
@@ -1217,7 +1240,20 @@ impl<D> SemanticModel<D> {
         let source_context = self.enclosing(*source, is_state_kind);
         let target_context = self.enclosing(*target, is_state_kind);
         if let (Some(source_context), Some(target_context)) = (source_context, target_context) {
-            if source_context != target_context {
+            // An inherited state is a member of the machine too, as is the `done` every state
+            // inherits from `States::StateAction`: a transition to it is how a machine finishes.
+            let specialization = self.types.specialization();
+            let related = |specific, general| {
+                specialization.reaches(
+                    specific,
+                    general,
+                    crate::index::types::ScopeBits::AnySpecialization,
+                )
+            };
+            if source_context != target_context
+                && !related(source_context, target_context)
+                && !related(target_context, source_context)
+            {
                 let mut diagnostic = self.declaration_diagnostic(
                     id,
                     DiagnosticCode::TransitionEndpointInvalidContext,
@@ -1236,10 +1272,8 @@ impl<D> SemanticModel<D> {
     /// The cardinality and completeness rules of each state definition in `document`.
     pub(crate) fn collect_state_machine_shape(
         &self,
-        document: DocumentIdx,
         declared: &[DeclarationId],
         initial_by_context: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
-        final_by_context: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         // The cardinality of initial transitions is deliberately not reported. The pinned parser
@@ -1247,29 +1281,6 @@ impl<D> SemanticModel<D> {
         // nested state the same shape, so both lower as an initial-state declaration, and counting
         // them would report an ordinary continuation as a second initial transition. Distinguishing
         // them needs a parser fact this publication does not have.
-        for (context, markers) in final_by_context {
-            if markers.len() < 2
-                || self
-                    .storage
-                    .declaration(*context)
-                    .ok_or(ResolutionError::InvalidStorage)?
-                    .document
-                    != document
-            {
-                continue;
-            }
-            diagnostics.push(self.declaration_message_diagnostic(
-                *context,
-                DiagnosticCode::MultipleFinalStates,
-                DiagnosticSeverity::Warning,
-                Some(format!(
-                    "State definition '{}' declares {} final states; one is expected.",
-                    self.display_name(*context),
-                    markers.len()
-                )),
-            )?);
-        }
-
         for id in declared.iter().copied() {
             if self.kind_of(id) != Some(DeclarationKind::StateDefinition) {
                 continue;

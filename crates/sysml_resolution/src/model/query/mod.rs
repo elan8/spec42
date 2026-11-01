@@ -2506,7 +2506,6 @@ impl<D> SemanticModel<D> {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(usage_projection(&[
                     DeclarationKind::StateUsage,
                     DeclarationKind::ExhibitStateUsage,
-                    DeclarationKind::FinalState,
                 ])))
             }
             ActionDerivedFactCollection::CalculationDefinitionCalculation

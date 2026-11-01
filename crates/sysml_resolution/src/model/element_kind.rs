@@ -136,7 +136,6 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::Succession
         | DeclarationKind::ThenContinuation
         | DeclarationKind::InitialState => ElementKind::SuccessionAsUsage,
-        DeclarationKind::FinalState => ElementKind::FinalState,
 
         DeclarationKind::Satisfy => ElementKind::SatisfyRequirementUsage,
         DeclarationKind::Bind => ElementKind::BindingConnectorAsUsage,
@@ -299,7 +298,6 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::Succession
         | DeclarationKind::ThenContinuation
         | DeclarationKind::InitialState
-        | DeclarationKind::FinalState
         | DeclarationKind::Satisfy
         | DeclarationKind::Bind
         | DeclarationKind::Import
@@ -456,7 +454,6 @@ mod tests {
         DeclarationKind::DoActionBinding,
         DeclarationKind::ExitActionBinding,
         DeclarationKind::InitialState,
-        DeclarationKind::FinalState,
         DeclarationKind::ParameterUsage,
         DeclarationKind::SubjectUsage,
         DeclarationKind::PerformActionUsage,

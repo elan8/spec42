@@ -47,10 +47,12 @@ use crate::lower::facts::ParameterDirection;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
+use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
 use crate::model::NameId;
+use crate::model::ReferenceKind;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -217,6 +219,8 @@ pub(crate) enum UnitOutcome {
         dimensions: Box<[DeclarationId]>,
     },
     UnknownSymbol,
+    /// The name is not in scope. Name resolution reports that, so nothing is reported here.
+    Unresolved,
     Ambiguous(Box<[DeclarationId]>),
     UnsupportedExpression,
     CatalogUnavailable,
@@ -416,6 +420,14 @@ impl ExpressionIndex {
         let anchors = LibraryAnchors::build(storage);
         let catalog = UnitCatalog::build(model, &anchors)?;
 
+        let mut unit_references = std::collections::BTreeMap::new();
+        for (index, reference) in storage.references.iter().enumerate() {
+            if reference.kind == ReferenceKind::QuantityUnit {
+                let id = AuthoredReferenceId::from_index(index)
+                    .map_err(|_| ResolutionError::Capacity)?;
+                unit_references.insert((reference.source, reference.ordinal), id);
+            }
+        }
         let mut units = storage
             .unit_tokens
             .iter()
@@ -425,7 +437,13 @@ impl ExpressionIndex {
                 ordinal: token.ordinal,
                 text: token.text,
                 span: token.span,
-                outcome: catalog.resolve(storage, token.text),
+                outcome: match token
+                    .reference
+                    .and_then(|ordinal| unit_references.get(&(token.declaration, ordinal)))
+                {
+                    Some(id) => catalog.settle(storage, token.text, model.resolution.outcome(*id)),
+                    None => catalog.resolve(storage, token.text),
+                },
             })
             .collect::<Vec<_>>();
         units.sort_by_key(|unit| (unit.declaration, unit.ordinal));
@@ -678,6 +696,32 @@ impl UnitCatalog {
             dimensions,
             admitted: true,
         })
+    }
+
+    /// What a unit written as one name settled to.
+    ///
+    /// Name resolution decides what the name means; the catalog then says whether that is a unit
+    /// and of what dimension. A name that resolves to something else fails the quantity check.
+    pub(crate) fn settle(
+        &self,
+        storage: &SemanticModelStorage,
+        text: NameId,
+        outcome: Option<ResolutionStatus>,
+    ) -> UnitOutcome {
+        if !self.admitted {
+            return UnitOutcome::CatalogUnavailable;
+        }
+        match outcome {
+            Some(ResolutionStatus::Resolved(unit)) => match self.dimensions.get(&unit) {
+                Some(dimensions) => UnitOutcome::Resolved {
+                    unit,
+                    dimensions: dimensions.clone(),
+                },
+                None => UnitOutcome::UnknownSymbol,
+            },
+            Some(ResolutionStatus::Unresolved) => UnitOutcome::Unresolved,
+            _ => self.resolve(storage, text),
+        }
     }
 
     /// What one authored token names.
@@ -1008,7 +1052,9 @@ impl<D> SemanticModel<D> {
                     }),
                     None => UnitResolution::UnknownSymbol,
                 },
-                UnitOutcome::UnknownSymbol => UnitResolution::UnknownSymbol,
+                UnitOutcome::UnknownSymbol | UnitOutcome::Unresolved => {
+                    UnitResolution::UnknownSymbol
+                }
                 UnitOutcome::Ambiguous(candidates) => {
                     UnitResolution::Ambiguous(self.symbols(candidates.iter().copied()))
                 }

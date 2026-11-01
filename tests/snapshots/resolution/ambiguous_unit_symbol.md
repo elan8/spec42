@@ -7,6 +7,8 @@ libraries=standard
 # SOURCE
 ~~~sysml
 package Ambiguity {
+	private import SI::*;
+	private import Local::*;
 	package Local {
 		attribute <kg> kilogramme : ISQ::MassUnit;
 	}
@@ -24,7 +26,7 @@ package Ambiguity {
         (severity warning)
         (code "ambiguous_unit_symbol")
         (source "semantic")
-        (range (start 5 42) (end 5 44))
+        (range (start 7 42) (end 7 44))
         (related-information
           (related
             (uri "memory://snapshot/sysml.library/si.md")
@@ -32,7 +34,7 @@ package Ambiguity {
           )
           (related
             (uri "memory://snapshot/ambiguous_unit_symbol.md")
-            (range (start 2 2) (end 2 44))
+            (range (start 4 2) (end 4 44))
           )
         )
       )
@@ -43,24 +45,35 @@ package Ambiguity {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:350eb6212caf9f649d5f40a4ef6414270ad09151a3bd5e9f9763a74146bff336") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:233d0527684a490df5259c60a136d1e36f7b3bd18b15d527330219aa9a71ea02") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Local") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (short-name "kg")) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::MassUnit")))))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ISQ::MassValue")))))
-    (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (quantityUnit (reference "kg")))))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "SI")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI")))))
+    (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0))
+      (authored-target "Local")
+      (outcome (status resolved) (target (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local")))))
     (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme"))) (kind featureTyping) (ordinal 0))
       (authored-target "ISQ::MassUnit")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::MassUnit")))))
     (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Vehicle::mass"))) (kind featureTyping) (ordinal 0))
       (authored-target "ISQ::MassValue")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::MassValue")))))
+    (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind quantityUnit) (ordinal 0))
+      (authored-target "kg")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::kilogram")) (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme"))) (target (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::MassUnit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme"))) (kind featureTyping) (ordinal 0)))
@@ -78,7 +91,7 @@ package Ambiguity {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg")))
-    (unit (declaration (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "kg") (start 5 42) (end 5 44) (outcome (status ambiguous) (candidate (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::kilogram"))) (candidate (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme")))))
+    (unit (declaration (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (ordinal 0) (authored "kg") (start 7 42) (end 7 44) (outcome (status ambiguous) (candidate (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::kilogram"))) (candidate (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme")))))
     (measurement (declaration (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Vehicle::mass"))) (status required) (dimension (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::MassUnit"))))
   )
 )
@@ -190,14 +203,29 @@ package Ambiguity {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/ambiguous_unit_symbol.md") (range (start 2 30) (end 2 43)) (probe (position 2 30))
+  (query (document "memory://snapshot/ambiguous_unit_symbol.md") (range (start 1 16) (end 1 21)) (probe (position 1 16))
+    (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "SI")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI")))))
+    )
+  )
+  (query (document "memory://snapshot/ambiguous_unit_symbol.md") (range (start 2 16) (end 2 24)) (probe (position 2 16))
+    (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (anonymous (kind import) (ordinal 1))))) (kind namespaceImport) (ordinal 0) (authored-target "Local")
+      (outcome (status resolved) (target (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local")))))
+    )
+  )
+  (query (document "memory://snapshot/ambiguous_unit_symbol.md") (range (start 4 30) (end 4 43)) (probe (position 4 30))
     (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme"))) (kind featureTyping) (ordinal 0) (authored-target "ISQ::MassUnit")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::MassUnit")))))
     )
   )
-  (query (document "memory://snapshot/ambiguous_unit_symbol.md") (range (start 5 19) (end 5 33)) (probe (position 5 19))
+  (query (document "memory://snapshot/ambiguous_unit_symbol.md") (range (start 7 19) (end 7 33)) (probe (position 7 19))
     (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Vehicle::mass"))) (kind featureTyping) (ordinal 0) (authored-target "ISQ::MassValue")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/isq_base.md") (qualified-name "ISQBase::MassValue")))))
+    )
+  )
+  (query (document "memory://snapshot/ambiguous_unit_symbol.md") (range (start 7 42) (end 7 44)) (probe (position 7 42))
+    (reference (id (source (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind quantityUnit) (ordinal 0) (authored-target "kg")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/sysml.library/si.md") (qualified-name "SI::kilogram")) (node (document "memory://snapshot/ambiguous_unit_symbol.md") (qualified-name "Ambiguity::Local::kilogramme")))))
     )
   )
 )

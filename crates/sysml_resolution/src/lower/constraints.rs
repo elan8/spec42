@@ -415,7 +415,47 @@ impl SemanticModelBuilder {
         let Some(text) = quantity_unit_text(&parsed, &operands.value) else {
             return Ok(());
         };
-        self.push_unit_token(declaration, document, &text, operands.span)
+        let mut names = Vec::new();
+        for element in &operands.value.elements {
+            unit_reference_names(&element.expression.value, &mut names);
+        }
+        let mut reference = None;
+        for &target in &names {
+            let span = parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            let ordinal = self
+                .next_reference_ordinals
+                .get(&(declaration, ReferenceKind::QuantityUnit))
+                .copied()
+                .unwrap_or(0);
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::QuantityUnit,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+            reference = Some(ordinal);
+        }
+        let single = matches!(
+            operands.value.elements.as_slice(),
+            [element] if matches!(
+                element.expression.value,
+                Expression::FeatureRef(_) | Expression::FeatureChainRef(_)
+            )
+        );
+        self.push_unit_token(
+            declaration,
+            document,
+            &text,
+            operands.span,
+            reference.filter(|_| single),
+        )
     }
 
     /// Lowers one authored `filter` condition: its references, and the classified expression that
@@ -1378,6 +1418,27 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         self.lower_calc_def_body(document, declaration, &node.value.body)
+    }
+}
+
+/// The names a unit expression is written with, left to right. An exponent is a literal and names
+/// nothing.
+fn unit_reference_names(
+    expression: &Expression,
+    names: &mut Vec<sysml_v2_parser::ast::QualifiedReferenceId>,
+) {
+    match expression {
+        Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => names.push(*target),
+        Expression::BinaryOp { left, right, .. } => {
+            unit_reference_names(&left.value, names);
+            unit_reference_names(&right.value, names);
+        }
+        Expression::Sequence { operands, .. } => {
+            for element in &operands.value.elements {
+                unit_reference_names(&element.expression.value, names);
+            }
+        }
+        _ => {}
     }
 }
 

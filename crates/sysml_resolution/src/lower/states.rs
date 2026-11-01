@@ -22,7 +22,7 @@ use crate::MembershipRole;
 use crate::StateSubactionKind;
 use sysml_v2_parser::ast::{
     ActionDefBody, DoAction, EntryAction, ExhibitState as ParserExhibitState, ExitAction,
-    Expression, FinalState, MembershipKind as ParserMembershipKind, Node, PerformActionTarget,
+    Expression, MembershipKind as ParserMembershipKind, Node, PerformActionTarget,
     QualifiedReferenceId, Span, StateActionUsage, StateBodyModifier, StateDef, StateDefBody,
     StateDefBodyElement, StateUsage as ParserStateUsage, ThenStmt, Transition, TransitionAccept,
     TransitionEffect,
@@ -185,9 +185,6 @@ impl SemanticModelBuilder {
                 }
                 StateDefBodyElement::Ref(node) => {
                     self.lower_ref_decl(document, Some(owner), node)?;
-                }
-                StateDefBodyElement::FinalState(node) => {
-                    self.lower_final_state(document, owner, node)?;
                 }
                 StateDefBodyElement::AttributeUsage(node) => {
                     self.lower_attribute_usage(document, Some(owner), node)?;
@@ -507,38 +504,6 @@ impl SemanticModelBuilder {
             ReferenceKind::InitialState,
             node.value.state_reference,
         )
-    }
-
-    /// Lowers a state def/usage's `final <name>;`/`final state <name>;` body element (BNF
-    /// `FinalState`) as a named `DeclarationKind::FinalState` feature owned by the enclosing state
-    /// `owner` declaration, mirroring `lower_state_usage`'s plain named-declaration shape.
-    /// `FinalState.state_name` is always a non-empty declared name per the grammar (`final` is
-    /// always followed by a mandatory `name`), so this declares a genuine new nested state rather
-    /// than referencing an existing one -- unlike `lower_state_then_stmt`'s `InitialState`, there
-    /// is no target reference to resolve.
-    pub(crate) fn lower_final_state(
-        &mut self,
-        document: DocumentIdx,
-        owner: DeclarationId,
-        node: &Node<FinalState>,
-    ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.state_name))?;
-        let declaration = self.push_typed_declaration(
-            document,
-            Some(owner),
-            DeclarationKind::FinalState,
-            name,
-            node.span,
-            // `ast::FinalState` carries only its state name.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span,
-        )?;
-        Ok(())
     }
 
     /// Shared helper for `lower_state_entry_action`/`lower_state_do_action`/

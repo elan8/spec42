@@ -1361,6 +1361,9 @@ pub(crate) struct AuthoredUnitToken {
     pub(crate) text: NameId,
     /// The token's own range: the text between `[` and `]`, excluding the brackets.
     pub(crate) span: Span,
+    /// The ordinal of the `QuantityUnit` reference of `declaration` that names this unit. `None`
+    /// for a compound unit, which is not one name.
+    pub(crate) reference: Option<u32>,
 }
 
 /// Which member form a `filter` statement was written in.

@@ -128,11 +128,10 @@ fn definition_keywords_stay_keyword_after_ast_merge() {
 }
 
 #[test]
-fn state_def_body_tokenizes_final_state_and_transition_target() {
+fn state_def_body_tokenizes_transition_to_done() {
     let content = r#"package P {
   state def Lamp {
     state off;
-    final state done;
     transition off_to_done first off accept ButtonPress then done;
   }
 }"#;
@@ -140,12 +139,12 @@ fn state_def_body_tokenizes_final_state_and_transition_target() {
     let ranges = ast_semantic_ranges(&parsed, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
-    assert!(token_text(content, &decoded, "done"), "final state name");
+    assert!(token_text(content, &decoded, "done"), "transition target");
     assert!(
         token_text(content, &decoded, "off"),
         "transition source/target"
     );
-    let transition_line = tokens_on_line(content, &decoded, 4);
+    let transition_line = tokens_on_line(content, &decoded, 3);
     assert_eq!(
         transition_line
             .iter()
