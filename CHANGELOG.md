@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.58.1] - 2026-11-01
+
+- **Upgrade notes.** The semantic contract version is now `measurement-reference-operands-v63`, so
+  earlier publications and serialised models are not reused. The generator ABI and diagram schema
+  are unchanged.
+
+- **Coordinate frames and scales in `[ ]` are accepted.** The library defines `[` for any
+  measurement reference, not only units. `(0, 0, 0) [spatialCF]` and `20 ['°C_abs']` no longer
+  report `unknown_unit_symbol`, which clears those warnings on valid OMG models, including Annex A.
+  A name that is not a measurement reference still reports it.
+
 ## [0.58.0] - 2026-11-01
 
 - **Upgrade notes.** **Models may report new errors.** The parser now follows the grammar more

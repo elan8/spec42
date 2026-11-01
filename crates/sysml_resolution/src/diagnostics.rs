@@ -632,7 +632,7 @@ semantic_diagnostic_codes! {
         "An individual occurrence usage must be typed by an individual occurrence definition.";
     /// A unit token names no unit in the admitted measurement catalog.
     UnknownUnitSymbol => "unknown_unit_symbol",
-        "This unit token names no unit in the admitted measurement catalog.";
+        "This name is not a measurement reference in the admitted libraries.";
     /// A unit token names several admitted units, so it identifies none of them.
     AmbiguousUnitSymbol => "ambiguous_unit_symbol",
         "This unit token names several admitted units, so it identifies none of them.";

@@ -84,6 +84,10 @@ pub(crate) type Anchor = Option<DeclarationId>;
 
 /// `MeasurementReferences::MeasurementUnit`: the root every measurement unit's type conforms to.
 pub(crate) const MEASUREMENT_UNIT_PATH: &[&str] = &["MeasurementReferences", "MeasurementUnit"];
+/// `MeasurementReferences::TensorMeasurementReference`: the root of every measurement reference,
+/// including units, coordinate frames and scales.
+pub(crate) const TENSOR_MEASUREMENT_REFERENCE_PATH: &[&str] =
+    &["MeasurementReferences", "TensorMeasurementReference"];
 /// `Quantities::TensorQuantityValue`: the root every quantity value's type conforms to.
 pub(crate) const QUANTITY_VALUE_PATH: &[&str] = &["Quantities", "TensorQuantityValue"];
 /// `Quantities::TensorQuantityValue::mRef`: the feature every quantity value redefines to state
@@ -100,6 +104,7 @@ pub(crate) const REAL_PATH: &[&str] = &["ScalarValues", "Real"];
 #[derive(Debug, Default)]
 pub(crate) struct LibraryAnchors {
     pub(crate) measurement_unit: Anchor,
+    pub(crate) tensor_measurement_reference: Anchor,
     pub(crate) quantity_value: Anchor,
     pub(crate) measurement_reference: Anchor,
     pub(crate) boolean: Anchor,
@@ -115,6 +120,7 @@ impl LibraryAnchors {
     pub(crate) fn build(storage: &SemanticModelStorage) -> Self {
         Self {
             measurement_unit: find_anchor(storage, MEASUREMENT_UNIT_PATH),
+            tensor_measurement_reference: find_anchor(storage, TENSOR_MEASUREMENT_REFERENCE_PATH),
             quantity_value: find_anchor(storage, QUANTITY_VALUE_PATH),
             measurement_reference: find_anchor(storage, MEASUREMENT_REFERENCE_PATH),
             boolean: find_anchor(storage, BOOLEAN_PATH),
@@ -441,7 +447,9 @@ impl ExpressionIndex {
                     .reference
                     .and_then(|ordinal| unit_references.get(&(token.declaration, ordinal)))
                 {
-                    Some(id) => catalog.settle(storage, token.text, model.resolution.outcome(*id)),
+                    Some(id) => {
+                        catalog.settle(model, &anchors, token.text, model.resolution.outcome(*id))
+                    }
                     None => catalog.resolve(storage, token.text),
                 },
             })
@@ -701,10 +709,13 @@ impl UnitCatalog {
     /// What a unit written as one name settled to.
     ///
     /// Name resolution decides what the name means; the catalog then says whether that is a unit
-    /// and of what dimension. A name that resolves to something else fails the quantity check.
+    /// and of what dimension. The library's `[` functions take any measurement reference, so a
+    /// coordinate frame or a scale is valid but has no unit outcome to publish. A name that
+    /// resolves to anything else fails the quantity check.
     pub(crate) fn settle(
         &self,
-        storage: &SemanticModelStorage,
+        model: &ExpressionInputs<'_>,
+        anchors: &LibraryAnchors,
         text: NameId,
         outcome: Option<ResolutionStatus>,
     ) -> UnitOutcome {
@@ -717,10 +728,16 @@ impl UnitCatalog {
                     unit,
                     dimensions: dimensions.clone(),
                 },
+                None if anchors
+                    .tensor_measurement_reference
+                    .is_some_and(|reference| conforms(model.types, unit, reference)) =>
+                {
+                    UnitOutcome::UnsupportedExpression
+                }
                 None => UnitOutcome::UnknownSymbol,
             },
             Some(ResolutionStatus::Unresolved) => UnitOutcome::Unresolved,
-            _ => self.resolve(storage, text),
+            _ => self.resolve(model.storage, text),
         }
     }
 
