@@ -585,7 +585,7 @@ package Trace {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:987eb229fbb040513812de445fb5c950735f3d83d0fa902518e522eb247c1c16",
+  "modelDigest": "blake3:45a3e27cee184aec218895b63a699e93ff58398d764fdbfc813e50305fdebc6a",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

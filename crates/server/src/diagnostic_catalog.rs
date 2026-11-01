@@ -689,8 +689,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "unknown_unit_symbol",
         severity: "warning",
-        meaning: "A value unit suffix names no unit in the admitted measurement libraries.",
-        typical_fix: "Use a unit declared by an admitted library, or fix the unit symbol.",
+        meaning: "The name in a quantity's brackets is not a unit, coordinate frame or scale in the admitted libraries.",
+        typical_fix: "Name a measurement reference declared by an admitted library, or fix the name.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
