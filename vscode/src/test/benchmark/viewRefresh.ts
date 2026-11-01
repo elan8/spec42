@@ -47,12 +47,21 @@ class OutputRecords {
   readonly events: Event[] = [];
   private readonly offsets = new Map<string, number>();
   private readonly partial = new Map<string, string>();
+  private logFiles: string[] = [];
 
   constructor(private readonly logRoot: string) {}
 
+  /** The channel's log does not move, so find it once. This runs in the measured ExtensionHost
+   * every 50 ms, and re-walking the logs tree here is CPU the extension did not spend. */
+  private discover(): string[] {
+    if (this.logFiles.length === 0 && fs.existsSync(this.logRoot)) {
+      this.logFiles = filesUnder(this.logRoot).filter(file => /[\\/]\d+-SysML\.log$/.test(file));
+    }
+    return this.logFiles;
+  }
+
   poll(): void {
-    if (!fs.existsSync(this.logRoot)) return;
-    for (const file of filesUnder(this.logRoot).filter(file => /[\\/]\d+-SysML\.log$/.test(file))) {
+    for (const file of this.discover()) {
       const offset = this.offsets.get(file) ?? 0;
       const size = fs.statSync(file).size;
       assert.ok(size >= offset, "SysML log was truncated during measurement");
