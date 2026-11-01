@@ -25,6 +25,18 @@ package P {
   )
   (document "memory://snapshot/beta.sysml"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_root_package")
+        (source "semantic")
+        (range (start 0 0) (end 2 1))
+        (related-information
+          (related
+            (uri "memory://snapshot/alpha.sysml")
+            (range (start 0 0) (end 2 1))
+          )
+        )
+      )
     )
   )
 )

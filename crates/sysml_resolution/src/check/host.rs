@@ -532,6 +532,50 @@ impl<D> SemanticModel<D> {
             })
     }
 
+    /// Each workspace root package whose name an earlier one already has, with that earlier one.
+    ///
+    /// The root namespace admits this (KerML 8.2.3.5.4 allows a name several global resolutions),
+    /// so it is advice about the model, and says nothing about which package a name resolves to.
+    /// Library roots are left out: a workspace package may shadow one on purpose.
+    pub(crate) fn duplicate_root_packages(
+        &self,
+    ) -> Result<BTreeMap<DeclarationId, DeclarationId>, ResolutionError> {
+        let mut by_name: BTreeMap<_, Vec<DeclarationId>> = BTreeMap::new();
+        for (index, declaration) in self.storage.declarations.iter().enumerate() {
+            let is_package = crate::model::element_kind::element_kind(declaration.kind)
+                .conforms_to(sysml_contract::ElementKind::Package);
+            let in_workspace = self
+                .storage
+                .documents
+                .get(declaration.document.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .role
+                == source_identity::SourceRole::Workspace;
+            if declaration.owner.is_some() || !is_package || !in_workspace {
+                continue;
+            }
+            if let Some(name) = declaration.name.resolved() {
+                let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+                by_name.entry(name).or_default().push(id);
+            }
+        }
+        let mut duplicates = BTreeMap::new();
+        for mut roots in by_name.into_values() {
+            roots.sort_by_key(|root| {
+                (
+                    self.storage
+                        .declaration(*root)
+                        .map(|declaration| writer::document_identity(self, declaration.document)),
+                    self.declaration_range(*root),
+                )
+            });
+            if let Some((first, later)) = roots.split_first() {
+                duplicates.extend(later.iter().map(|root| (*root, *first)));
+            }
+        }
+        Ok(duplicates)
+    }
+
     /// The first pair of same-named members whose kinds must be distinguishable.
     pub(crate) fn first_collision(
         &self,

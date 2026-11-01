@@ -750,6 +750,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "duplicate_root_package",
+        severity: "warning",
+        meaning: "Modeling guidance: two root packages in the workspace share a name. KerML permits it, but a reference that reaches both is ambiguous (KerML 8.2.3.5.4).",
+        typical_fix: "Rename one package, or check the projects separately.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "connection_endpoint_not_port",
         severity: "warning",
         meaning: "A connection endpoint is not a port-like feature.",
@@ -1239,6 +1246,7 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
 
 /// Diagnostics that reflect modeling/tooling guidance rather than normative SysML constraints.
 const MODELING_GUIDANCE_CODES: &[&str] = &[
+    "duplicate_root_package",
     "missing_final_state",
     "missing_initial_state",
     "missing_library_context",

@@ -96,6 +96,7 @@ impl<D> SemanticModel<D> {
         // quadratic in the admitted corpus -- invisible while only workspace documents were
         // derived, and the reason a library's own documents could not be.
         let declarations_by_document = self.declarations_by_document()?;
+        let duplicate_root_packages = self.duplicate_root_packages()?;
         for document_index in self.reported_document_indices(reported) {
             let document_id = DocumentIdx(document_index as u32);
             // Preserve the source context of failures from every descendant diagnostic check.
@@ -257,6 +258,20 @@ impl<D> SemanticModel<D> {
                     &mut diagnostics,
                 )?;
                 namespace_checks += namespace_started.elapsed();
+                for root in declared {
+                    if let Some(first) = duplicate_root_packages.get(root) {
+                        let mut diagnostic = self.declaration_diagnostic(
+                            *root,
+                            DiagnosticCode::DuplicateRootPackage,
+                            DiagnosticSeverity::Warning,
+                        )?;
+                        diagnostic.related = Box::from([self.related_declaration(
+                            *first,
+                            crate::check::host::RELATED_FIRST_DECLARATION,
+                        )?]);
+                        diagnostics.push(diagnostic);
+                    }
+                }
                 self.collect_host_conformance(document_id, declared, &mut diagnostics)?;
                 self.collect_library_context(
                     document_id,

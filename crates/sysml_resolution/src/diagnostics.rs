@@ -660,6 +660,10 @@ semantic_diagnostic_codes! {
     /// A namespace declares two members whose names resolution cannot tell apart.
     DuplicateNamespaceMember => "duplicate_namespace_member",
         "A namespace must not declare two members resolution cannot tell apart.";
+    /// Two root packages in the workspace share a name. KerML permits it, but a name that reaches
+    /// both is ambiguous.
+    DuplicateRootPackage => "duplicate_root_package",
+        "Another root package in the workspace has this name, so a reference to it is ambiguous.";
 
     // --- Connection conformance ---------------------------------------------------------------
     /// A connector end resolves to something that is not a port.
