@@ -2217,9 +2217,7 @@ fn compartment_kind(kind: ElementKind) -> Option<DiagramCompartmentKind> {
         | ElementKind::IfActionUsage
         | ElementKind::WhileLoopActionUsage
         | ElementKind::ForLoopActionUsage => Compartment::Actions,
-        ElementKind::StateUsage | ElementKind::ExhibitStateUsage | ElementKind::FinalState => {
-            Compartment::States
-        }
+        ElementKind::StateUsage | ElementKind::ExhibitStateUsage => Compartment::States,
         ElementKind::CalculationUsage => Compartment::Calculations,
         ElementKind::ConnectionUsage
         | ElementKind::FlowConnectionUsage
@@ -2279,7 +2277,6 @@ fn diagram_scene(
                             ElementKind::StateUsage | ElementKind::ExhibitStateUsage => {
                                 DiagramStateVertexKind::State
                             }
-                            ElementKind::FinalState => DiagramStateVertexKind::Final,
                             _ => return None,
                         }
                     };

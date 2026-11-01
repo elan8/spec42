@@ -11,14 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Upgrade notes.** **Models may report new errors.** The parser now follows the grammar more
   strictly: a `/* */` comment between the tokens of a declaration, a `;` after a result expression
-  (`1 + 2;`) and `library standard package` are parse errors, and a qualified name resolves only
-  through public members. Use `//` or `//* */` notes, remove the `;`, write
-  `standard library package`, and reach private or protected members by simple name from inside
-  their namespace. Diagram products are **schema 11**, with node `presentationKey` and
+  (`1 + 2;`), `library standard package`, `final name;` and `final state name;` are parse errors,
+  and a qualified name resolves only through public members. Use `//` or `//* */` notes, remove the
+  `;`, write `standard library package`, finish a state machine with a transition to `done`, and
+  reach private or protected members by simple name from inside their namespace. A unit in `[ ]`
+  must now be in scope: `30 [A]` needs an import of `SI::ampere` or `SI::*`, or `SI::A`. Diagram products are **schema 11**, with node `presentationKey` and
   `multiplicity` and interconnection `metadata.portFamilies`; consumers must accept
   `schemaVersion` 11. The generator ABI is **version 7** with semantic API **0.5.0**: **a generator
   plugin built against 0.57.0 must be rebuilt.** The semantic contract version is now
-  `import-edit-plans-v61`, so earlier publications and serialised models are not reused. Hierarchy
+  `state-done-finality-v62`, so earlier publications and serialised models are not reused. Hierarchy
   clients must retain item data in follow-up requests. Building the VS Code extension requires
   Node.js 22.12 or newer, and regenerating its lockfiles requires npm 11.
 
@@ -41,17 +42,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     definition, is reported.
   - A qualified name to a private or protected member names that member and links to it.
   - A `;` directly after a closing `}` is reported.
+  - A bracketed unit resolves by name, so a unit out of scope is reported, and a name that is not a
+    unit reports `unknown_unit_symbol`.
+  - `duplicate_root_package` warns when two root packages in a workspace share a name.
+  - `multiple_final_states` is retired, and a transition to `done` or to an inherited state no
+    longer reports `transition_endpoint_invalid_context`.
   - A body still open at end of input keeps its members, and an import without visibility keeps its
     target, so one unfinished line no longer hides the rest of the file.
   - The validation guide documents how follow-on diagnostics are reported.
 - **Name resolution follows the specification.** `import all` imports members whatever their
   visibility, a nested package honours its visibility, and references through an alias, including
-  one re-exported by a public import, resolve to the aliased element.
+  one re-exported by a public import, resolve to the aliased element. Importing a single member
+  brings in its short name too, so `import SI::ampere` makes `A` visible.
 - **More valid models parse.** Case and analysis bodies accept control nodes, `item` members and
   structured action nodes. `include` accepts feature chains and a full usage declaration.
 - **Sequence views are reliable.** Repeated and anonymous messages no longer produce false ordering
   cycles, useful partial drawings are preserved, and projection limitations are shown with
   actionable detail.
+- **State Transition Views show `done`.** A transition to `done` is drawn, ending at a final node.
+  It was dropped before.
 - **Action flows read better.** Parameters use SysML parameter notation instead of port squares, a
   nested action draws its own start and done inside it, `then assign` connects to the member before
   it, and named terminate and assign nodes are single nodes.

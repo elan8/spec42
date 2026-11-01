@@ -144,7 +144,7 @@ fn state_def_body_tokenizes_transition_to_done() {
         token_text(content, &decoded, "off"),
         "transition source/target"
     );
-    let transition_line = tokens_on_line(content, &decoded, 4);
+    let transition_line = tokens_on_line(content, &decoded, 3);
     assert_eq!(
         transition_line
             .iter()

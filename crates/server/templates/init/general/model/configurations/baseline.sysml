@@ -1,7 +1,7 @@
 package BaselineConfiguration {
     doc /* Default system configuration. */
 
-    import SystemDefinitions::*;
+    private import SystemDefinitions::*;
 
     part baseline : System {
         doc /* Baseline configuration of the system. */

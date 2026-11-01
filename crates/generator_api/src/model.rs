@@ -1646,23 +1646,19 @@ impl GeneratorModelView {
         for child in &children {
             let inspection = self.inspection(child.entry.identity, "state-machine member")?;
             match child.entry.kind {
-                ElementKind::StateUsage
-                | ElementKind::ExhibitStateUsage
-                | ElementKind::FinalState => nodes.push(StateTransitionNode {
-                    semantic_id: self.token(child.entry.identity),
-                    label: display_label(&self.model, &child.entry),
-                    kind: if child.entry.kind == ElementKind::FinalState {
-                        StateTransitionNodeKind::Final
-                    } else {
-                        StateTransitionNodeKind::State
-                    },
-                    source: inspection_source(
-                        &inspection,
-                        self.model
-                            .document_identity(inspection.location.document)
-                            .unwrap_or_default(),
-                    ),
-                }),
+                ElementKind::StateUsage | ElementKind::ExhibitStateUsage => {
+                    nodes.push(StateTransitionNode {
+                        semantic_id: self.token(child.entry.identity),
+                        label: display_label(&self.model, &child.entry),
+                        kind: StateTransitionNodeKind::State,
+                        source: inspection_source(
+                            &inspection,
+                            self.model
+                                .document_identity(inspection.location.document)
+                                .unwrap_or_default(),
+                        ),
+                    })
+                }
                 ElementKind::SuccessionAsUsage => {
                     if let Some(target) = resolved_relationship(&inspection, "initialState")? {
                         let initial_id = format!("{}#initial", self.token(child.entry.identity));
@@ -1732,7 +1728,7 @@ impl GeneratorModelView {
                     // SysML 7.18: a transition to the inherited `done` marks a final state.
                     let target_token = self.token(target);
                     if matches!(
-                        self.model.qualified_name(target).as_deref(),
+                        self.model.qualified_name(target),
                         Some("States::StateAction::done" | "Actions::Action::done")
                     ) && !nodes.iter().any(|node| node.semantic_id == target_token)
                     {
