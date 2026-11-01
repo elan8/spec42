@@ -500,22 +500,3 @@ jobs:
             artifacts/extension/*.vsix \
             artifacts/zed-extension/* \
             SHA256SUMS.txt
-
-  publish-zed-extension:
-    name: Bump Zed extension registry
-    needs: [create-release]
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    steps:
-      - name: Update sysml-v2 in zed-industries/extensions
-        uses: huacnlee/zed-extension-action@v2
-        with:
-          extension-name: sysml-v2
-          push-to: elan8/extensions
-          tag: ${{ needs.create-release.outputs.tag }}
-        env:
-          # PAT with repo + workflow scopes; pushes to elan8/extensions and opens
-          # a PR against zed-industries/extensions to bump the submodule + version.
-          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
