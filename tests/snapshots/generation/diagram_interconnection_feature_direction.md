@@ -615,7 +615,7 @@ package Feed {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:28d1eac7830d870fe64c4b03850554904b5faa91db3fd45eed04fba68ce52adf",
+  "modelDigest": "blake3:df7e0e4aa7c2467e6de19102b2ebacaca6168d20d96c2868b80c467314b1bcd6",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

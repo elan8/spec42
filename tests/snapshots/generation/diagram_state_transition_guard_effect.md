@@ -1187,7 +1187,7 @@ package Door {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:f7ba8e0947cd5d5acb65598dde62a23d24fa1a9868be1139de04e10fd7dc0746",
+  "modelDigest": "blake3:11aad5f398e6fc531fb8068e48930f1a5b3fdc39297a3adccc84fc988de22932",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

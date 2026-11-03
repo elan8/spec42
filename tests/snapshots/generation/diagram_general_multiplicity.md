@@ -1078,7 +1078,7 @@ package Product {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:ecd2e36c854f702673d9cdcba3a86ba311cbe4c8b1838ebe3ce416349b4a245e",
+  "modelDigest": "blake3:6debe2ae20d34c97f1eef62a030718bab1bda2051d093dfc2ca3c74ce53ca8dd",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

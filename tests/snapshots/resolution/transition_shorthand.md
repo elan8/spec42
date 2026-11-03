@@ -851,7 +851,7 @@ package Shorthand {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:fe8b70f9147dac3050727a3df0879030f8eefdff43240d52991ab256970a2da1",
+  "modelDigest": "blake3:4182c0ea174de2841b0e0cc5d53340e1b48842f9623cc7fae04edec2282c27d8",
   "documents": [
     {
       "uri": "memory://snapshot/transition_shorthand.md",

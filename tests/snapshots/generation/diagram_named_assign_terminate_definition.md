@@ -715,7 +715,7 @@ package NamedNodes {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:5aa46c73809a74a2cf6b0cc0b1aee36d1819d84a15c9cf7feab5a0b95106c7e0",
+  "modelDigest": "blake3:1d00c7fc1f619da83525d9ef909901f22e55097b9e1109efd38b1a8a48816546",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
