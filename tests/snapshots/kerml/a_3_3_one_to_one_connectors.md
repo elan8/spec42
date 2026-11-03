@@ -572,8 +572,8 @@ package OneToOneConnectorsExecution {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-connector) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
-  (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-connector) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # METADATA ANNOTATIONS

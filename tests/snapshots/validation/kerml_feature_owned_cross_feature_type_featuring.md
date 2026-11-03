@@ -121,8 +121,8 @@ package Crossings {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (path (named (kind package) (name "Crossings")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "target")) (named (kind kerml-end) (name "crossTarget")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (path (named (kind package) (name "Crossings")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "target")) (named (kind kerml-end) (name "crossTarget")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (path (named (kind package) (name "Crossings")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "target")) (named (kind kerml-end) (name "crossTarget")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_type_featuring.md") (path (named (kind package) (name "Crossings")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "target")) (named (kind kerml-end) (name "crossTarget")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

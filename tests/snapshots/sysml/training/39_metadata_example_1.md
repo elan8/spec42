@@ -302,8 +302,8 @@ package 'Metadata Example-1' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "frontSeat")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
-  (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "frontSeat")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # METADATA ANNOTATIONS

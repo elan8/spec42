@@ -432,7 +432,7 @@ package VehicleRequirementDerivation {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "<=" (feature-reference "mass" (target (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::MassRequirement::mass")))) (feature-reference "massLimit" (target (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::MassRequirement::massLimit"))))))
+  (declaration (id (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (operator "<=" (feature-reference "mass" (target (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::MassRequirement::mass")))) (feature-reference "massLimit" (target (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::MassRequirement::massLimit"))))))
 )
 ~~~
 # METADATA ANNOTATIONS

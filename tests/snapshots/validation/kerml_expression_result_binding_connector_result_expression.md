@@ -110,7 +110,7 @@ package Expressions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector_result_expression.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-expression) (name "Value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "input" (target (node (document "memory://snapshot/kerml_expression_result_binding_connector_result_expression.md") (qualified-name "Expressions::Value::input")))))
+  (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector_result_expression.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-expression) (name "Value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/kerml_expression_result_binding_connector_result_expression.md") (qualified-name "Expressions::Thing")))) (feature-reference "input" (target (node (document "memory://snapshot/kerml_expression_result_binding_connector_result_expression.md") (qualified-name "Expressions::Value::input")))))
 )
 ~~~
 # NAVIGATION

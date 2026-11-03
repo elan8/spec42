@@ -63,7 +63,7 @@ package P {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/fuzz_featured_by_value.md") (path (named (kind package) (name "P")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 42))))
+  (declaration (id (node (document "memory://snapshot/fuzz_featured_by_value.md") (path (named (kind package) (name "P")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 42))))
 )
 ~~~
 # NAVIGATION

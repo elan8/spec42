@@ -115,7 +115,7 @@ package Expressions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_result.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "referent" (target (node (document "memory://snapshot/kerml_feature_reference_expression_result.md") (qualified-name "Expressions::Holder::referent")))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_result.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "reference")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/kerml_feature_reference_expression_result.md") (qualified-name "Expressions::Thing")))) (feature-reference "referent" (target (node (document "memory://snapshot/kerml_feature_reference_expression_result.md") (qualified-name "Expressions::Holder::referent")))))
 )
 ~~~
 # NAVIGATION

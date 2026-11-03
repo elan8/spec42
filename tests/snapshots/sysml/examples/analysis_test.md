@@ -234,7 +234,7 @@ package AnalysisTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (outcome resolved) (feature-reference "v::m" (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V::m")))))
+  (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "v::m" (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V::m")))))
 )
 ~~~
 # NAVIGATION

@@ -388,8 +388,8 @@ part def Vehicle {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 100))))
-  (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "weights")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 100))))
+  (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "weights")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 3))))
 )
 ~~~
 # NAVIGATION

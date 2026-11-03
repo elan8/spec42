@@ -313,8 +313,8 @@ package '3c-Function-based Behavior-structure mod-2' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-2")) (named (kind part) (name "vehicle-trailer system")) (named (kind connection) (name "trailerHitch")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-2")) (named (kind part) (name "vehicle-trailer system")) (named (kind connection) (name "trailerHitch")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-2")) (named (kind part) (name "vehicle-trailer system")) (named (kind connection) (name "trailerHitch")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-2")) (named (kind part) (name "vehicle-trailer system")) (named (kind connection) (name "trailerHitch")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # CONNECTIONS

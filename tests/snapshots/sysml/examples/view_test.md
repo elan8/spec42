@@ -315,9 +315,9 @@ package ViewTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind rendering) (name "r1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind rendering) (name "r1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind view) (name "v")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind rendering) (name "r1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind rendering) (name "r1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind view) (name "v")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

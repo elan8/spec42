@@ -128,8 +128,8 @@ package Expansion {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "w" (target (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 2)) (named (kind parameter) (name "w")))))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported) (result-typing (status unsupported)))
+  (declaration (id (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (operator "+" (feature-reference "w" (target (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 2)) (named (kind parameter) (name "w")))))) (literal (value (kind integer) (integer 1)))))
 )
 ~~~
 # NAVIGATION

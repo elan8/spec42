@@ -1125,6 +1125,23 @@ pub(crate) fn synthesize_implied_relationships(
         return Ok(resolution.implied_relationships.clone());
     }
     let mut implied = resolution.implied_relationships.to_vec();
+    // EnumeratedValue is an EnumerationUsage of its owning EnumerationDefinition
+    // (SysML 8.3.8.2-3). Preserve that typing as implied, rather than teaching
+    // expression consumers a special case for enumeration literals.
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if declaration.kind == DeclarationKind::EnumerationLiteral {
+            if let Some(owner) = declaration.owner.filter(|owner| {
+                storage.declarations[owner.index()].kind == DeclarationKind::EnumerationDefinition
+            }) {
+                implied.push(ImpliedRelationship {
+                    kind: ReferenceKind::FeatureTyping,
+                    source: DeclarationId::from_index(index)
+                        .map_err(|_| ResolutionError::Capacity)?,
+                    target: owner,
+                });
+            }
+        }
+    }
     implied.extend(
         synthesize_generated_library_specializations(
             storage,

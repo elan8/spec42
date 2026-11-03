@@ -353,8 +353,8 @@ package BodyMemberDispatch {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (path (named (kind package) (name "BodyMemberDispatch")) (named (kind constraint-def) (name "CReq")) (named (kind require-constraint) (name "nestedRequire")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator ">" (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 0)))))
-  (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (path (named (kind package) (name "BodyMemberDispatch")) (named (kind requirement-def) (name "R")) (named (kind calc) (name "nestedCalc")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (path (named (kind package) (name "BodyMemberDispatch")) (named (kind constraint-def) (name "CReq")) (named (kind require-constraint) (name "nestedRequire")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (operator ">" (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 0)))))
+  (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (path (named (kind package) (name "BodyMemberDispatch")) (named (kind requirement-def) (name "R")) (named (kind calc) (name "nestedCalc")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # CONNECTIONS

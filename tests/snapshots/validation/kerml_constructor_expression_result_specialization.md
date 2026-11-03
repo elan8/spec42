@@ -102,8 +102,8 @@ package Model {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "classified")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported))
-  (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "subsetted")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "classified")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "subsetted")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (unsupported))
 )
 ~~~
 # NAVIGATION

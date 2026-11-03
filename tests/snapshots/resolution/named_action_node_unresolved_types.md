@@ -196,8 +196,8 @@ action owner {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/named_action_node_unresolved_types.md") (qualified-name "Owner::update"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/named_action_node_unresolved_types.md") (qualified-name "owner::update"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/named_action_node_unresolved_types.md") (qualified-name "Owner::update"))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/named_action_node_unresolved_types.md") (qualified-name "owner::update"))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

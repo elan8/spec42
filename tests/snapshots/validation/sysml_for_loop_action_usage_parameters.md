@@ -140,8 +140,8 @@ package Actions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (feature-reference "components" (target (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act::components")))))
-  (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (named (kind part) (name "components")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Component")))) (feature-reference "components" (target (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (qualified-name "Actions::Act::components")))))
+  (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (named (kind part) (name "components")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

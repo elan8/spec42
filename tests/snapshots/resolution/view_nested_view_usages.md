@@ -295,7 +295,7 @@ package NestedViewCoverage {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/view_nested_view_usages.md") (path (named (kind package) (name "NestedViewCoverage")) (named (kind view-def) (name "DocumentType")) (named (kind view) (name "appendices")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/view_nested_view_usages.md") (path (named (kind package) (name "NestedViewCoverage")) (named (kind view-def) (name "DocumentType")) (named (kind view) (name "appendices")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

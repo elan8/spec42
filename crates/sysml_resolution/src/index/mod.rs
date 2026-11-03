@@ -4,6 +4,7 @@ pub(crate) mod bindings;
 pub(crate) mod connector_context;
 pub(crate) mod documents;
 pub(crate) mod elements;
+pub(crate) mod expression_typing;
 pub(crate) mod expressions;
 pub(crate) mod identity;
 pub(crate) mod qualified;

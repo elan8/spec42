@@ -1176,8 +1176,8 @@ package '2a-Parts Interconnection' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (named (kind package) (name "Definitions")) (named (kind port-def) (name "VehicleToRoadPort")) (named (kind port) (name "wheelToRoadPort")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
-  (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "rearAxleAssembly")) (named (kind part) (name "rearWheel")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (named (kind package) (name "Definitions")) (named (kind port-def) (name "VehicleToRoadPort")) (named (kind port) (name "wheelToRoadPort")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "rearAxleAssembly")) (named (kind part) (name "rearWheel")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # CONNECTIONS

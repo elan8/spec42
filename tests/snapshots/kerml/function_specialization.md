@@ -181,7 +181,7 @@ package FuncSpec {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "not" (feature-reference "x" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (operator "not" (feature-reference "x" (target unresolved))))
 )
 ~~~
 # NAVIGATION

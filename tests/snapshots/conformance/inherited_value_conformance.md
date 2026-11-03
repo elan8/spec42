@@ -135,6 +135,7 @@ package Inheritance {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Implicit::mass"))) (target (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Implicit")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Implicit")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Implicit"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Implicit")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Implicit")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status::approved"))) (target (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status::approved"))) (target (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::StringWhereTheMemberIsEnumerated::status"))) (target (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Base::status"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::StringWhereTheMemberIsEnumerated::status"))) (target (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::StringWhereTheMemberIsEnumerated"))) (provenance implied))
@@ -199,9 +200,13 @@ package Inheritance {
     )
     (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status")))
       (subtype (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Base::status")) (scopes any))
+      (subtype (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status::approved")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status::approved")))
       (featured-by (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status")))
+      (type (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status")) (source direct))
+      (supertype (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Status")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::StringWhereTheMemberIsEnumerated")))
       (supertype (node (document "memory://snapshot/inherited_value_conformance.md") (qualified-name "Inheritance::Base")) (scopes any subclassification))
@@ -225,9 +230,9 @@ package Inheritance {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Explicit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1200))))
-  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Implicit")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1200))))
-  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "StringWhereTheMemberIsEnumerated")) (named (kind attribute) (name "status")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "approved"))))
+  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Explicit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1200))))
+  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Implicit")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1200))))
+  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "StringWhereTheMemberIsEnumerated")) (named (kind attribute) (name "status")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind string) (value "approved"))))
 )
 ~~~
 # NAVIGATION

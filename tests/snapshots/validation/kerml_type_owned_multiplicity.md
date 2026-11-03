@@ -103,9 +103,9 @@ package Multiplicities {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "One")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "One")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # NAVIGATION

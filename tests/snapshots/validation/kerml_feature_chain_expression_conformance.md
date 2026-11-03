@@ -219,8 +219,9 @@ package Expressions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "outer::elsewhere" (target unresolved)))
-  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "outer::inner" (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing::inner")))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "outer::elsewhere" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing")))) (feature-reference "outer::inner" (target (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Thing::inner")))))
+  (contextual (context (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder"))) (element (node (document "memory://snapshot/kerml_feature_chain_expression_conformance.md") (qualified-name "Expressions::Holder::bad"))) (outcome unresolved))
 )
 ~~~
 # NAVIGATION

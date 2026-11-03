@@ -266,7 +266,7 @@ package VerificationTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (outcome unsupported) (result-typing (status unsupported)))
 )
 ~~~
 # NAVIGATION

@@ -544,7 +544,7 @@ package 'Change and Time Triggers' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (path (named (kind package) (name "Change and Time Triggers")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "vehicle::maintenanceTime" (target (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime")))) (feature-reference "vehicle::maintenanceInterval" (target (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle::maintenanceInterval"))))))
+  (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (path (named (kind package) (name "Change and Time Triggers")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (operator "+" (feature-reference "vehicle::maintenanceTime" (target (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime")))) (feature-reference "vehicle::maintenanceInterval" (target (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers::Vehicle::maintenanceInterval"))))))
 )
 ~~~
 # NAVIGATION

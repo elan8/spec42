@@ -120,6 +120,18 @@ pub(crate) fn fold_literal_comparison(
         }
     }
     let result = match (left, right) {
+        (
+            EvaluatedValue::Quantity(left, left_unit),
+            EvaluatedValue::Quantity(right, right_unit),
+        ) => {
+            if left_unit != right_unit {
+                return EvaluatedValue::UnsupportedUnitOperation;
+            }
+            return fold_literal_comparison(op, *left, *right);
+        }
+        (EvaluatedValue::Quantity(..), _) | (_, EvaluatedValue::Quantity(..)) => {
+            return EvaluatedValue::UnsupportedUnitOperation
+        }
         (EvaluatedValue::Integer(left), EvaluatedValue::Integer(right)) => Some(match op {
             BinaryOperator::Eq | BinaryOperator::StrictEq => left == right,
             BinaryOperator::Ne | BinaryOperator::StrictNe => left != right,

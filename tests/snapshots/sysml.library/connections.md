@@ -459,8 +459,8 @@ standard library package Connections {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "binaryConnections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "connections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "binaryConnections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "connections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # CONNECTIONS

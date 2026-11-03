@@ -55,6 +55,17 @@ never a failing verdict. Expression nodes distinguish invocations, sequences and
 this does not imply that the evaluator executes those operations. Generator ABI v7 continues to
 represent these newer operators as explicitly unsupported nodes with their operands retained.
 
+Expression `result_typing` reports static result types separately from evaluated values.
+Computed Integer results do not become Natural merely because their value is nonnegative.
+Operator signatures come from admitted standard-library specializations; named invocations
+retain their declared return type. Unresolved, ambiguous and unsupported typings remain explicit.
+`contextual_evaluations` identifies the requested, effective and authored elements for each
+inherited expression evaluated in a usage. A false contextual constraint reports at that usage
+and links to its authored declaration. Derived values use the same evaluator with contextual
+bindings; cycles and nonconstant inputs remain explicit. Quantity comparisons currently fold
+matching unit spellings only; unit conversion and arbitrary user calculation execution remain
+unsupported. Generator ABI v7 does not expose these additional static/contextual fields.
+
 ### `spec42 check` response
 
 - **`summary`**: `error_count`, `warning_count`, `document_count`

@@ -14,13 +14,10 @@
 //! wrong exactly where a model is unusual -- an inherited type, a renamed library, a value that is
 //! a computed constant rather than a literal.
 //!
-//! # Why comparability, not conformance
-//!
-//! KerML types the literal `3` as `ScalarValues::Integer`, and a feature declared `Natural` is
-//! *narrower* than that. Asking "does the value's type conform to the declared type" would report
-//! every authored natural number; asking the reverse would report every widening. What is
-//! genuinely wrong is a value from an unrelated branch of the hierarchy, which is exactly a pair
-//! with no specialization path between them in either direction.
+//! Computed scalar expressions use settled static result typing from canonical function
+//! signatures. Literal reporting retains the existing comparability policy: an Integer
+//! literal may denote a value in a narrower datatype such as Natural. A computed Integer
+//! result does not acquire that narrower static type from its evaluated magnitude.
 
 use crate::check::conformance;
 use crate::index::expressions::conforms;
@@ -60,7 +57,7 @@ pub(crate) const RELATED_CALLEE: &str = "Calculation invoked here.";
 
 /// Whether two types are comparable: one is the other, or one specialises the other.
 ///
-/// The value rules ask this rather than "does the value's type conform to the declared type".
+/// Literal compatibility uses this rather than rejecting every integer literal bound to Natural.
 /// KerML types a literal `3` as `ScalarValues::Integer`, and a feature declared `Natural` is
 /// narrower than that, so a conformance test in either single direction would report every
 /// authored natural number. What is genuinely wrong is a value from an unrelated branch of the
@@ -245,17 +242,51 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// Whether `expression`'s settled value is incompatible with one of `receiver`'s effective types.
-    ///
-    /// Answers `false` for every state that is not a settled value, for a value whose datatype the
-    /// admitted libraries do not declare, and for a receiver with no effective type: each of those
-    /// is a question this publication cannot answer, and answering it as "incompatible" would
-    /// report the absence of an input as a fault in the model.
+    /// Whether an expression's static result (or literal value) conflicts with the receiver.
+    /// Static results do not require a constant value. Unavailable static typing falls back
+    /// to the existing literal/value compatibility policy; missing inputs are not faults.
     pub(crate) fn value_type_conflicts(
         &self,
         expression: DeclarationId,
         receiver: DeclarationId,
     ) -> bool {
+        let row = self.resolved_expressions.body(expression).or_else(|| {
+            self.resolved_expressions
+                .body(self.value_expression(expression)?)
+        });
+        if let Some(row) = row {
+            let literal = row
+                .root
+                .and_then(|root| row.nodes.get(root as usize))
+                .is_some_and(|node| {
+                    matches!(
+                        node.kind,
+                        crate::index::resolved_expressions::RawExpressionNodeKind::Literal(_)
+                    )
+                });
+            if !literal {
+                if let crate::index::expression_typing::RawResultTyping::Resolved(actual) =
+                    &row.result_typing
+                {
+                    let declared = self.types.effective_types(receiver);
+                    // Quantity conformance is owned by the dimensional rule below. A
+                    // generic quantity function's static result does not encode its unit.
+                    let quantity = self.expressions.anchors.quantity_value;
+                    if !declared.is_empty()
+                        && !declared.iter().any(|(target, _)| {
+                            quantity
+                                .is_some_and(|quantity| conforms(&self.types, *target, quantity))
+                        })
+                    {
+                        return !declared.iter().all(|(target, _)| {
+                            actual
+                                .iter()
+                                .any(|actual| conforms(&self.types, *actual, *target))
+                        });
+                    }
+                }
+            }
+        }
         let Some(value) = self.evaluated_value(expression) else {
             return false;
         };

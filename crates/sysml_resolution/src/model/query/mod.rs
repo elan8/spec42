@@ -5043,6 +5043,7 @@ impl<D> SemanticModel<D> {
                         .unwrap_or(PublishedExpression {
                             element,
                             outcome: ExpressionOutcome::NotApplicable,
+                            result_typing: crate::ExpressionResultTyping::Unresolved,
                             nodes: Box::default(),
                             root: None,
                         }),
@@ -5180,6 +5181,7 @@ impl<D> SemanticModel<D> {
                 _ => PublishedExpression {
                     element: symbol,
                     outcome: ExpressionOutcome::NotApplicable,
+                    result_typing: crate::ExpressionResultTyping::Unresolved,
                     nodes: Box::default(),
                     root: None,
                 },
@@ -5209,6 +5211,7 @@ impl<D> SemanticModel<D> {
                 multiplicity_expressions,
                 exposure,
                 expression,
+                contextual_evaluations: self.contextual_evaluations_for_projection(symbol),
                 metadata_annotations,
             });
         }
@@ -5236,6 +5239,44 @@ impl<D> SemanticModel<D> {
                 elements_incomplete,
             },
         })
+    }
+
+    fn contextual_evaluations_for_projection(
+        &self,
+        symbol: SymbolId,
+    ) -> Box<[crate::ProjectedContextualEvaluation]> {
+        use crate::index::resolved_expressions::ContextualExpressionResult;
+        use crate::{ContextualEvaluationOutcome, ProjectedContextualEvaluation};
+        let Some(context) = self.declaration_of(symbol) else {
+            return Box::default();
+        };
+        self.resolved_expressions
+            .contextual
+            .range((context, DeclarationId(0))..=(context, DeclarationId(u32::MAX)))
+            .filter_map(|((_, element), contextual)| {
+                Some(ProjectedContextualEvaluation {
+                    element: self.symbol_id(*element)?,
+                    authored_element: self.symbol_id(contextual.authored)?,
+                    effective_element: self.symbol_id(contextual.effective)?,
+                    outcome: match &contextual.result {
+                        ContextualExpressionResult::Resolved(_) => {
+                            ContextualEvaluationOutcome::Resolved(contextual.evaluation.clone())
+                        }
+                        ContextualExpressionResult::Unresolved => {
+                            ContextualEvaluationOutcome::Unresolved
+                        }
+                        ContextualExpressionResult::Ambiguous(candidates) => {
+                            ContextualEvaluationOutcome::Ambiguous(
+                                candidates
+                                    .iter()
+                                    .map(|id| self.symbol_id(*id))
+                                    .collect::<Option<_>>()?,
+                            )
+                        }
+                    },
+                })
+            })
+            .collect()
     }
 
     fn effective_name_for_projection(&self, symbol: SymbolId) -> Option<Box<str>> {

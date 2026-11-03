@@ -132,7 +132,7 @@ package Model {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "outer::inner" (target (node (document "memory://snapshot/kerml_feature_chain_expression_result_specialization.md") (qualified-name "Model::Thing::inner")))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/kerml_feature_chain_expression_result_specialization.md") (qualified-name "Model::Thing")))) (feature-reference "outer::inner" (target (node (document "memory://snapshot/kerml_feature_chain_expression_result_specialization.md") (qualified-name "Model::Thing::inner")))))
 )
 ~~~
 # NAVIGATION

@@ -369,9 +369,9 @@ standard library package UseCases {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case-def) (name "UseCase")) (named (kind use-case) (name "includedUseCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case-def) (name "UseCase")) (named (kind use-case) (name "subUseCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case) (name "useCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case-def) (name "UseCase")) (named (kind use-case) (name "includedUseCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case-def) (name "UseCase")) (named (kind use-case) (name "subUseCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case) (name "useCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

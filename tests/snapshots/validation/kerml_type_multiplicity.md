@@ -90,8 +90,8 @@ package Model {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "sizedFeature")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "sizedFeature")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # NAVIGATION

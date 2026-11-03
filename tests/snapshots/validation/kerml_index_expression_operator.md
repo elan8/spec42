@@ -118,7 +118,7 @@ package Expressions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_index_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "first")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "items" (target (node (document "memory://snapshot/kerml_index_expression_operator.md") (qualified-name "Expressions::Holder::items")))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/kerml_index_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "first")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (unsupported (feature-reference "items" (target (node (document "memory://snapshot/kerml_index_expression_operator.md") (qualified-name "Expressions::Holder::items")))) (literal (value (kind integer) (integer 1)))))
 )
 ~~~
 # NAVIGATION

@@ -209,8 +209,8 @@ package 'Metadata Example-2' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (path (named (kind package) (name "Metadata Example-2")) (named (kind action) (name "computeDynamics")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "toolName")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "ModelCenter"))))
-  (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (path (named (kind package) (name "Metadata Example-2")) (named (kind action) (name "computeDynamics")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "uri")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "aserv://localhost/Vehicle/Equation1"))))
+  (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (path (named (kind package) (name "Metadata Example-2")) (named (kind action) (name "computeDynamics")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "toolName")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind string) (value "ModelCenter"))))
+  (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (path (named (kind package) (name "Metadata Example-2")) (named (kind action) (name "computeDynamics")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "uri")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind string) (value "aserv://localhost/Vehicle/Equation1"))))
 )
 ~~~
 # METADATA ANNOTATIONS

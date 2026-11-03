@@ -115,7 +115,7 @@ package Constructors {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition_violated.md") (path (named (kind package) (name "Constructors")) (named (kind kerml-feature) (name "tooMany")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
+  (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition_violated.md") (path (named (kind package) (name "Constructors")) (named (kind kerml-feature) (name "tooMany")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (unsupported (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
 )
 ~~~
 # NAVIGATION

@@ -153,8 +153,8 @@ package UsageValues {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/parser_284_usage_value_operands.md") (path (named (kind package) (name "UsageValues")) (named (kind requirement-def) (name "R")) (named (kind frame) (name "framed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "missingConcern" (target unresolved)))
-  (declaration (id (node (document "memory://snapshot/parser_284_usage_value_operands.md") (path (named (kind package) (name "UsageValues")) (named (kind extended-usage) (name "decorated")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "missingExtended" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/parser_284_usage_value_operands.md") (path (named (kind package) (name "UsageValues")) (named (kind requirement-def) (name "R")) (named (kind frame) (name "framed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "missingConcern" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/parser_284_usage_value_operands.md") (path (named (kind package) (name "UsageValues")) (named (kind extended-usage) (name "decorated")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "missingExtended" (target unresolved)))
 )
 ~~~
 # METADATA ANNOTATIONS

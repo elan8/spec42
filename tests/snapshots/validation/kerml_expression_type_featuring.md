@@ -130,8 +130,8 @@ package Expressions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_expression_type_featuring.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "referent" (target (node (document "memory://snapshot/kerml_expression_type_featuring.md") (qualified-name "Expressions::Holder::referent")))))
-  (declaration (id (node (document "memory://snapshot/kerml_expression_type_featuring.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_expression_type_featuring.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/kerml_expression_type_featuring.md") (qualified-name "Expressions::Thing")))) (feature-reference "referent" (target (node (document "memory://snapshot/kerml_expression_type_featuring.md") (qualified-name "Expressions::Holder::referent")))))
+  (declaration (id (node (document "memory://snapshot/kerml_expression_type_featuring.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

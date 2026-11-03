@@ -252,7 +252,7 @@ package WithoutConnectorsExecution {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/a_3_2_without_connectors.md") (path (named (kind package) (name "WithoutConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/a_3_2_without_connectors.md") (path (named (kind package) (name "WithoutConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # METADATA ANNOTATIONS

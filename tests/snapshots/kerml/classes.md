@@ -301,7 +301,7 @@ package Classes {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/classes.md") (path (named (kind package) (name "Classes")) (named (kind kerml-structure) (name "C")) (named (kind default-reference) (name "y")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/classes.md") (path (named (kind package) (name "Classes")) (named (kind kerml-structure) (name "C")) (named (kind default-reference) (name "y")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

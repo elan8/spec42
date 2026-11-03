@@ -87,7 +87,7 @@ package Model {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "values" (target (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (qualified-name "Model::values")))) (feature-reference "values" (target (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (qualified-name "Model::values"))))))
+  (declaration (id (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (unsupported (feature-reference "values" (target (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (qualified-name "Model::values")))) (feature-reference "values" (target (node (document "memory://snapshot/kerml_select_expression_result_specialization.md") (qualified-name "Model::values"))))))
 )
 ~~~
 # NAVIGATION

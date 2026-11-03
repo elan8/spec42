@@ -61,6 +61,7 @@ package Demo {
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind"))) (target (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Level"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind"))) (kind specialization) (ordinal 0)))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/enumeration_literal_body_members.md") (path (named (kind package) (name "Demo")) (named (kind enum-def) (name "Kind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Level::code"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enumeration_literal_body_members.md") (path (named (kind package) (name "Demo")) (named (kind enum-def) (name "Kind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind::secret"))) (target (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind::secret"))) (target (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enumeration_literal_body_members.md") (path (named (kind package) (name "Demo")) (named (kind enum-def) (name "Kind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind::secret"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enumeration_literal_body_members.md") (path (named (kind package) (name "Demo")) (named (kind enum-def) (name "Kind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-literal-string) (ordinal 0))))) (target (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind::secret"))) (provenance implied))
@@ -77,9 +78,14 @@ package Demo {
 (types
     (declaration (id (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind")))
       (supertype (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Level")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind::secret")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind::secret")))
       (featured-by (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind")))
+      (type (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind")) (source direct))
+      (supertype (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind")) (scopes any))
+      (supertype (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Level")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/enumeration_literal_body_members.md") (path (named (kind package) (name "Demo")) (named (kind enum-def) (name "Kind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind::secret")))
@@ -103,7 +109,7 @@ package Demo {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/enumeration_literal_body_members.md") (path (named (kind package) (name "Demo")) (named (kind enum-def) (name "Kind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "secr"))))
+  (declaration (id (node (document "memory://snapshot/enumeration_literal_body_members.md") (path (named (kind package) (name "Demo")) (named (kind enum-def) (name "Kind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind string) (value "secr"))))
 )
 ~~~
 # NAVIGATION

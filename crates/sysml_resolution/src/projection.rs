@@ -150,8 +150,25 @@ pub struct ProjectedElement {
     /// The element's resolved constraint / calc / value expression, or
     /// [`crate::ExpressionOutcome::NotApplicable`] when it authored none.
     pub expression: PublishedExpression,
+    /// Inherited expressions interpreted with this element's effective bindings.
+    pub contextual_evaluations: Box<[ProjectedContextualEvaluation]>,
     /// Every metadata annotation bound to the element, in canonical order.
     pub metadata_annotations: Box<[PublishedMetadataAnnotation]>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ProjectedContextualEvaluation {
+    pub element: SymbolId,
+    pub authored_element: SymbolId,
+    pub effective_element: SymbolId,
+    pub outcome: ContextualEvaluationOutcome,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ContextualEvaluationOutcome {
+    Resolved(crate::EvaluationState),
+    Unresolved,
+    Ambiguous(Box<[SymbolId]>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

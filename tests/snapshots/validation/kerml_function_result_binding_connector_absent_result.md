@@ -67,7 +67,7 @@ package Functions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector_absent_result.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector_absent_result.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

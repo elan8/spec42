@@ -110,7 +110,7 @@ package Functions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector_result_expression.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Identity")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "input" (target (node (document "memory://snapshot/kerml_function_result_binding_connector_result_expression.md") (qualified-name "Functions::Identity::input")))))
+  (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector_result_expression.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Identity")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/kerml_function_result_binding_connector_result_expression.md") (qualified-name "Functions::Thing")))) (feature-reference "input" (target (node (document "memory://snapshot/kerml_function_result_binding_connector_result_expression.md") (qualified-name "Functions::Identity::input")))))
 )
 ~~~
 # NAVIGATION

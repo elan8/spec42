@@ -27,11 +27,35 @@ use crate::{SourceLocation, SymbolId};
 pub struct PublishedExpression {
     pub element: SymbolId,
     pub outcome: ExpressionOutcome,
+    /// Static result types, independent of a computed scalar value. Ambiguity retains
+    /// the applicable function identities rather than choosing an overload.
+    pub result_typing: ExpressionResultTyping,
     /// The expression's nodes in a flat arena, children named by index. Empty unless
     /// [`Self::outcome`] is [`ExpressionOutcome::Resolved`].
     pub nodes: Box<[ExpressionNode]>,
     /// The index of the root node in [`Self::nodes`], or `None` when there is no tree.
     pub root: Option<u32>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ExpressionResultTyping {
+    NotApplicable,
+    Resolved(Box<[SymbolId]>),
+    Unresolved,
+    Ambiguous(Box<[SymbolId]>),
+    Unsupported,
+}
+
+impl ExpressionResultTyping {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::NotApplicable => "not-applicable",
+            Self::Resolved(_) => "resolved",
+            Self::Unresolved => "unresolved",
+            Self::Ambiguous(_) => "ambiguous",
+            Self::Unsupported => "unsupported",
+        }
+    }
 }
 
 /// An expression interpreted in a specific inheriting type or usage. Source locations and
@@ -41,6 +65,9 @@ pub struct PublishedContextualExpression {
     pub context: SymbolId,
     pub authored_element: SymbolId,
     pub expression: PublishedExpression,
+    /// Evaluation after substituting the effective bindings of this context. The
+    /// authored declaration's evaluation remains unchanged.
+    pub evaluation: crate::EvaluationState,
 }
 
 #[derive(Debug, Clone, PartialEq)]

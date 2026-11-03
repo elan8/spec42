@@ -56,7 +56,9 @@ package Enumerations {
   (references
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::high"))) (target (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::high"))) (target (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::low"))) (target (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::low"))) (target (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level"))) (provenance implied))
   )
   (evaluation
@@ -66,11 +68,21 @@ package Enumerations {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")))
+      (subtype (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::high")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::low")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::high")))
       (featured-by (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")))
+      (type (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::low")))
       (featured-by (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")))
+      (type (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level")) (scopes any))
     )
 )
 ~~~

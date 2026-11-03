@@ -527,9 +527,9 @@ package P {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (anonymous (kind perform-action) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (qualified-name "P::Q::Declared::setter"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (named (kind state-def) (name "SD")) (anonymous (kind exit-action-binding) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (anonymous (kind perform-action) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (qualified-name "P::Q::Declared::setter"))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (named (kind state-def) (name "SD")) (anonymous (kind exit-action-binding) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

@@ -670,8 +670,8 @@ package CauseAndEffectExample {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "isNecessary")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
-  (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "probability")) (anonymous (kind kerml-literal-rational) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0.1))))
+  (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "isNecessary")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "probability")) (anonymous (kind kerml-literal-rational) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind real) (real 0.1))))
 )
 ~~~
 # METADATA ANNOTATIONS

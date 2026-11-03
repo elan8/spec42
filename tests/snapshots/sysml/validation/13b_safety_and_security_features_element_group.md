@@ -250,8 +250,8 @@ package '13b-Safety and Security Features Element Group' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "frontSeat")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
-  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "frontSeat")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # NAVIGATION

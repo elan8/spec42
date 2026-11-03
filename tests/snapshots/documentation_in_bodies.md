@@ -77,6 +77,7 @@ package DocTests {
   (relationships
     (relationship (kind aliasBinding) (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Car"))) (target (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Car"))) (kind aliasBinding) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle"))) (target (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color::red"))) (target (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color::red"))) (target (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle::speed"))) (target (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle"))) (provenance implied))
   )
@@ -87,8 +88,14 @@ package DocTests {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color")))
+      (subtype (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color::red")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color::red")))
       (featured-by (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color")))
+      (type (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color")) (source direct))
+      (supertype (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Color")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::Vehicle")))
       (subtype (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests::vehicle")) (scopes any))

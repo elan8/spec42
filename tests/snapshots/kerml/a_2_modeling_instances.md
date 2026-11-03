@@ -303,9 +303,9 @@ package ModelingInstancesWithAtoms {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (path (named (kind package) (name "ModelingInstances")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (path (named (kind package) (name "ModelingInstances")) (named (kind kerml-classifier) (name "YourBike")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (path (named (kind package) (name "ModelingInstancesWithAtoms")) (named (kind kerml-classifier) (name "OurGarage")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (path (named (kind package) (name "ModelingInstances")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (path (named (kind package) (name "ModelingInstances")) (named (kind kerml-classifier) (name "YourBike")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/a_2_modeling_instances.md") (path (named (kind package) (name "ModelingInstancesWithAtoms")) (named (kind kerml-classifier) (name "OurGarage")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # METADATA ANNOTATIONS

@@ -152,9 +152,9 @@ package BindingNamedMult {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "instantNum" (target unresolved)))
-  (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "instantNum" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

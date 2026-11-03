@@ -246,9 +246,9 @@ behavior TakePicture {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/take_picture.md") (path (named (kind kerml-behavior) (name "TakePicture")) (named (kind kerml-feature) (name "camera")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/take_picture.md") (path (named (kind kerml-behavior) (name "TakePicture")) (named (kind kerml-step) (name "step1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/take_picture.md") (path (named (kind kerml-behavior) (name "TakePicture")) (named (kind kerml-step) (name "step2")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/take_picture.md") (path (named (kind kerml-behavior) (name "TakePicture")) (named (kind kerml-feature) (name "camera")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/take_picture.md") (path (named (kind kerml-behavior) (name "TakePicture")) (named (kind kerml-step) (name "step1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/take_picture.md") (path (named (kind kerml-behavior) (name "TakePicture")) (named (kind kerml-step) (name "step2")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

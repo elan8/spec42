@@ -831,7 +831,7 @@ impl Evaluated {
             direct_names: &self.direct_names,
             effective_imports: &self.effective_imports,
         })?;
-        let indexed = Indexed {
+        let mut indexed = Indexed {
             storage: self.storage,
             direct_names: self.direct_names,
             effective_imports: self.effective_imports,
@@ -856,6 +856,8 @@ impl Evaluated {
                 has_evaluation,
             },
         };
+        crate::index::expression_typing::settle(&mut indexed);
+        crate::evaluate::contextual::settle(&mut indexed, &self.sources)?;
         Ok((indexed, self.sources))
     }
 }

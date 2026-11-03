@@ -358,7 +358,7 @@ package 'State Actions' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/24_state_actions.md") (path (named (kind package) (name "State Actions")) (named (kind state) (name "vehicleStates")) (named (kind state) (name "on")) (anonymous (kind entry-action-binding) (ordinal 0)) (named (kind parameter) (name "vehicle")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "operatingVehicle" (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::operatingVehicle")))))
+  (declaration (id (node (document "memory://snapshot/24_state_actions.md") (path (named (kind package) (name "State Actions")) (named (kind state) (name "vehicleStates")) (named (kind state) (name "on")) (anonymous (kind entry-action-binding) (ordinal 0)) (named (kind parameter) (name "vehicle")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::Vehicle")))) (feature-reference "operatingVehicle" (target (node (document "memory://snapshot/24_state_actions.md") (qualified-name "State Actions::vehicleStates::operatingVehicle")))))
 )
 ~~~
 # NAVIGATION

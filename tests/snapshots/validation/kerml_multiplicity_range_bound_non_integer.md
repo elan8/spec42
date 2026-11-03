@@ -99,9 +99,9 @@ package Multiplicities {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
-  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fractional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-rational) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 1.5))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fractional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-rational) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind real) (real 1.5))))
 )
 ~~~
 # NAVIGATION

@@ -97,6 +97,7 @@ package Demo {
     (relationship (kind specialization) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Derived"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Derived"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Derived"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base::value"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode::approved"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode::approved"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-literal-string) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
@@ -124,8 +125,14 @@ package Demo {
       (supertype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode")))
+      (subtype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode::approved")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode::approved")))
       (featured-by (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode")))
+      (type (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode")) (source direct))
+      (supertype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StatusNamedType")))
       (subtype (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::Base::value")) (scopes any))
@@ -152,7 +159,7 @@ package Demo {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "approved"))))
+  (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind string) (value "approved"))))
 )
 ~~~
 # NAVIGATION

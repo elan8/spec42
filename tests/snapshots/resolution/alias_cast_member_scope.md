@@ -164,7 +164,7 @@ package Demo {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (path (named (kind package) (name "Demo")) (named (kind assert-constraint) (name "castScope")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "==" (feature-reference "raw::mRefs" (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Frame::mRefs")))) (feature-reference "raw" (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::raw"))))))
+  (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (path (named (kind package) (name "Demo")) (named (kind assert-constraint) (name "castScope")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (operator "==" (feature-reference "raw::mRefs" (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Frame::mRefs")))) (feature-reference "raw" (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::raw"))))))
 )
 ~~~
 # NAVIGATION

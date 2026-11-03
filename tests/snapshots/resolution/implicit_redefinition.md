@@ -106,7 +106,7 @@ package P {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1200))))
+  (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1200))))
 )
 ~~~
 # NAVIGATION
