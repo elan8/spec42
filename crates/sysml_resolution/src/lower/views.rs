@@ -29,9 +29,8 @@ use sysml_v2_parser::ast::{
 impl SemanticModelBuilder {
     /// Lowers a `view def` (BNF ViewDefinition), mirroring `lower_interface_def`: ownership,
     /// membership, an optional `:>` specialization relationship (participates in the shared
-    /// Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point). View-specific
-    /// body members (`render`, `filter`) are out of scope -- see `DeclarationKind::ViewDefinition`'s
-    /// doc comment and planning/UPSTREAM_PARSER_GAPS.md #8.
+    /// Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point). Body members
+    /// use the same canonical attribute, filter and rendering walkers as view usages.
     pub(crate) fn lower_view_def(
         &mut self,
         document: DocumentIdx,
@@ -74,9 +73,8 @@ impl SemanticModelBuilder {
         self.lower_view_def_body(document, declaration, &node.value.body)
     }
 
-    /// Body walker for `view def` bodies (`ViewDefBody`/`ViewDefBodyElement`). `filter`/`render`
-    /// members are out of scope for this slice and fall through to
-    /// `unsupported_view_definition_member`.
+    /// Body walker for `view def` bodies. Unsupported member families stay explicit rather
+    /// than disappearing from the publication.
     pub(crate) fn lower_view_def_body(
         &mut self,
         document: DocumentIdx,
@@ -86,6 +84,9 @@ impl SemanticModelBuilder {
         if let ViewDefBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    ViewDefBodyElement::AttributeUsage(node) => {
+                        self.lower_attribute_usage(document, Some(declaration), node)?;
+                    }
                     ViewDefBodyElement::ExtendedDefinition(node) => {
                         self.lower_extended_definition(document, Some(declaration), node)?;
                     }
@@ -245,6 +246,9 @@ impl SemanticModelBuilder {
         if let ViewBody::Brace { elements, .. } = body {
             for element in elements {
                 match &element.value {
+                    ViewBodyElement::AttributeUsage(node) => {
+                        self.lower_attribute_usage(document, Some(declaration), node)?;
+                    }
                     ViewBodyElement::ExtendedDefinition(node) => {
                         self.lower_extended_definition(document, Some(declaration), node)?;
                     }

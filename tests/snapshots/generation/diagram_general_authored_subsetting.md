@@ -390,7 +390,7 @@ package GeneralSubsetting {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:5a59b77872ad3bfece6ad286f46faed7821f0188295568fd50508fb028fbc2d4",
+  "modelDigest": "blake3:434a574d5fd6eb2e94ff33d453cfc6599dcc5eeaea90d3d212195730fa38854c",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_authored_subsetting.md",
