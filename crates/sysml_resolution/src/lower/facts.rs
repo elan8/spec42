@@ -515,6 +515,8 @@ pub(crate) struct DeclarationFacts {
     pub(crate) is_initial_node_marker: bool,
     /// On the continuation or the node a `then` declares: where its succession starts.
     pub(crate) then_source: Option<ThenSource>,
+    /// SysML 7.18.3 shorthand transition source: the preceding state or entry action.
+    pub(crate) implicit_transition_source: Option<DeclarationId>,
     /// On a conditional succession: when it is taken.
     pub(crate) succession_guard: Option<SuccessionGuard>,
     /// On the expression a conditional succession owns as its guard. `GuardedSuccession` is a

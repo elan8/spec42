@@ -285,7 +285,7 @@ package SequenceOutside {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:eea9819dbe66775b282791477803cd6420be74e1e2f63ff9515dd189829cb75b",
+  "modelDigest": "blake3:f283e0b1c305ea43d96d92c932d4fe3c27feb11bcf6c1c9cadc7c9b36affcdb3",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_outside_lifeline.md",

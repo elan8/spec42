@@ -704,7 +704,7 @@ semantic_diagnostic_codes! {
         "A transition endpoint must resolve to a state.";
     /// A transition's ends belong to different state definitions.
     TransitionEndpointInvalidContext => "transition_endpoint_invalid_context",
-        "A transition's source and target must belong to the same state definition.";
+        "Transition endpoints must share a state-machine context without crossing parallel-state boundaries.";
     /// An initial-state marker names something that is not a state.
     InitialStateInvalidTarget => "initial_state_invalid_target",
         "An initial-state marker must name a state.";

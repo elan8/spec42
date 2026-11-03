@@ -633,7 +633,7 @@ package Deployment {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:ee3ba5fe7783d533758b4338eaea749c7eff8b2fec5a5cb7c75a5bd7b47d6bfb",
+  "modelDigest": "blake3:785eefd2c926494fbf15bac2df4f8b0b9afb03202095766dc577f480786509dc",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_incident_allocation.md",

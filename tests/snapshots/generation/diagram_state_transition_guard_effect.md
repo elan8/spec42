@@ -79,7 +79,7 @@ package Door {
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (kind perform-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (transitionEffect (reference "CountReopen")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "CountReopen")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::shut"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "nudging")) (transitionTarget (reference "closed")) (transitionTrigger (reference "Closed")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "shut")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "nudging")) (succession (reference "closed")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "shut")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
@@ -149,7 +149,7 @@ package Door {
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
       (authored-target "limit")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::limit")))))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (kind transitionEffect) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (kind featureTyping) (ordinal 0))
       (authored-target "CountReopen")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::CountReopen")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::shut"))) (kind transitionSource) (ordinal 0))
@@ -192,7 +192,7 @@ package Door {
     (relationship (kind succession) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::opening"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::attempts"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::limit"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 1)))
-    (relationship (kind transitionEffect) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::CountReopen"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (kind transitionEffect) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::CountReopen"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind transitionSource) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::shut"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::nudging"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::shut"))) (kind transitionSource) (ordinal 0)))
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::shut"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::closed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::shut"))) (kind transitionTarget) (ordinal 0)))
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::shut"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Closed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::shut"))) (kind transitionTrigger) (ordinal 0)))
@@ -250,6 +250,7 @@ package Door {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::opening"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle"))) (provenance implied))
+    (relationship (kind transitionEffect) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
@@ -267,6 +268,7 @@ package Door {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::guard"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Door")) (named (kind state-def) (name "Cycle")) (named (kind transition) (name "reopen")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::effect"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen"))) (provenance implied))
@@ -308,6 +310,7 @@ package Door {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle")))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
@@ -842,6 +845,8 @@ package Door {
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count")))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen")))
+      (type (node (document "memory://snapshot/model.sysml") (qualified-name "Door::CountReopen")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Door::CountReopen")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::effect"))))
@@ -852,6 +857,7 @@ package Door {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Door::CountReopen")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::effect")) (scopes any feature))
@@ -1135,7 +1141,7 @@ package Door {
     )
   )
   (query (document "memory://snapshot/model.sysml") (range (start 16 30) (end 16 41)) (probe (position 16 30))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (kind transitionEffect) (ordinal 0) (authored-target "CountReopen")
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Door::Cycle::reopen::count"))) (kind featureTyping) (ordinal 0) (authored-target "CountReopen")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Door::CountReopen")))))
     )
   )
@@ -1181,7 +1187,7 @@ package Door {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:d749cf87075412671f682cbdade4538d18f26556ba423fe241f0080c7550487d",
+  "modelDigest": "blake3:595a0934f17399133523e490ba0837772c1ec9fb4990b62187fed30cad5009cd",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1743,7 +1749,7 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
+      "ordinal": 92,
       "relationshipKind": "typing",
       "source": 4
     },
@@ -1887,38 +1893,32 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 34,
+      "ordinal": 33,
       "relationshipKind": "containment",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 68,
-      "relationshipKind": "transitionSource",
       "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 69,
-      "relationshipKind": "transitionTarget",
+      "relationshipKind": "transitionSource",
       "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 70,
+      "relationshipKind": "transitionTarget",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 71,
       "relationshipKind": "transitionTrigger",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
+      "ordinal": 34,
       "relationshipKind": "containment",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "succession",
       "source": 13
     },
     {
@@ -1929,8 +1929,14 @@ package Door {
     },
     {
       "kind": "relationship",
-      "ordinal": 88,
-      "relationshipKind": "transitionEffect",
+      "ordinal": 82,
+      "relationshipKind": "succession",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "typing",
       "source": 14
     },
     {
@@ -2302,10 +2308,19 @@ package Door {
       },
       {
         "kind": "containment",
+        "navigation": 16,
+        "origin": 20,
+        "provenance": "authored",
+        "reference": 70,
+        "source": 15,
+        "target": 20
+      },
+      {
+        "kind": "containment",
         "navigation": 12,
         "origin": 17,
         "provenance": "authored",
-        "reference": 70,
+        "reference": 71,
         "source": 15,
         "target": 17
       },
@@ -2317,15 +2332,6 @@ package Door {
         "reference": 75,
         "source": 17,
         "target": 18
-      },
-      {
-        "kind": "containment",
-        "navigation": 16,
-        "origin": 19,
-        "provenance": "authored",
-        "reference": 71,
-        "source": 15,
-        "target": 19
       },
       {
         "kind": "containment",
@@ -2740,7 +2746,7 @@ package Door {
             "kind": "actions",
             "members": [
               17,
-              19
+              20
             ],
             "provenance": "direct"
           }
@@ -2832,25 +2838,6 @@ package Door {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "PerformActionUsage",
-        "multiplicity": null,
-        "name": "count",
-        "notationRole": "usage",
-        "owner": 15,
-        "presentationKey": "p:9c436f146a060767eb86473b95796a1eb36392986f2151552feebcf3340c601c",
-        "reference": 14,
-        "source": 16,
-        "stateSubaction": null,
-        "successionGuard": null,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,
@@ -2863,6 +2850,31 @@ package Door {
         "successionGuard": null,
         "typing": {
           "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "ActionUsage",
+        "multiplicity": null,
+        "name": "count",
+        "notationRole": "usage",
+        "owner": 15,
+        "presentationKey": "p:6ad2952f3ffa66fd9edad2a61073ce9319185b52af3cf0bf4c9921d41aac71df",
+        "reference": 14,
+        "source": 16,
+        "stateSubaction": null,
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "CountReopen",
+              "reference": 1
+            }
+          ]
         }
       },
       {
@@ -3257,11 +3269,11 @@ package Door {
         }
       },
       {
-        "kind": "transitionEffect",
+        "kind": "typing",
         "navigation": 17,
         "provenance": "authored",
         "reference": 78,
-        "source": 19,
+        "source": 20,
         "target": {
           "reference": 1,
           "status": "resolved"
@@ -3355,7 +3367,7 @@ package Door {
         {
           "effect": {
             "label": "count",
-            "navigation": 17,
+            "navigation": 13,
             "status": "supported"
           },
           "guard": {

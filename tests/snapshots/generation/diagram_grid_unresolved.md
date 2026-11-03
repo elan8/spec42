@@ -136,7 +136,7 @@ package GridNegative {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:46ccf956a810a125211f5683a24320dfd9e0b4de4d17f784168e0d420c2a82d1",
+  "modelDigest": "blake3:8fb3770ce18ddfb95319230fbf6a7afd488a0a8efb9bd88614687a761b43b0f3",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_grid_unresolved.md",

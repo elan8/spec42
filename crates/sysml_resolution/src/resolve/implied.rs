@@ -1230,6 +1230,36 @@ pub(crate) fn synthesize_implied_relationships(
     );
     implied.extend(synthesize_port_conjugations(storage, &resolution.outcomes)?);
     implied.extend(synthesize_then_successions(storage, resolution)?);
+    for (index, facts) in storage.declaration_facts.iter().enumerate() {
+        let member = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if let Some(source) = facts.implicit_transition_source {
+            implied.push(ImpliedRelationship {
+                kind: ReferenceKind::TransitionSource,
+                source: member,
+                target: source,
+            });
+        }
+        if facts.is_transition_succession {
+            if let Some(source) = storage.declarations[index].owner.and_then(|transition| {
+                storage.declaration_facts[transition.index()].implicit_transition_source
+            }) {
+                implied.push(ImpliedRelationship {
+                    kind: ReferenceKind::Succession,
+                    source: member,
+                    target: source,
+                });
+            }
+        }
+        if facts.transition_feature_role == Some(TransitionFeatureRole::Effect) {
+            if let Some(transition) = storage.declarations[index].owner {
+                implied.push(ImpliedRelationship {
+                    kind: ReferenceKind::TransitionEffect,
+                    source: transition,
+                    target: member,
+                });
+            }
+        }
+    }
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,
@@ -1948,6 +1978,14 @@ pub(crate) fn synthesize_transition_succession_sources(
             status = TransitionSuccessionSourceStatus::Unresolved;
             continue;
         };
+        if let Some(source) =
+            storage.declaration_facts[transition.index()].implicit_transition_source
+        {
+            transition_source[transition.index()] = Some(source);
+            succession_source[succession.index()] = Some(source);
+            transition_has_source[transition.index()] = true;
+            succession_has_source[succession.index()] = true;
+        }
         let slot = succession_by_transition
             .get_mut(transition.index())
             .ok_or(ResolutionError::InvalidStorage)?;

@@ -299,6 +299,10 @@ impl SemanticModelBuilder {
             self.declaration_facts.push(DeclarationFacts {
                 short_name: relocation.declared_name(facts.short_name)?,
                 derived_name: relocation.optional_symbol(facts.derived_name)?,
+                view_rendering_reference: facts
+                    .view_rendering_reference
+                    .map(|reference| relocation.reference(reference))
+                    .transpose()?,
                 cross_feature_projection: facts
                     .cross_feature_projection
                     .map(|projection| {
@@ -312,6 +316,10 @@ impl SemanticModelBuilder {
                 expression_result: facts
                     .expression_result
                     .map(|result| relocation.declaration(result))
+                    .transpose()?,
+                implicit_transition_source: facts
+                    .implicit_transition_source
+                    .map(|source| relocation.declaration(source))
                     .transpose()?,
                 then_source: facts
                     .then_source
