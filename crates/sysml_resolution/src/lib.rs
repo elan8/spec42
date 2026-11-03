@@ -132,8 +132,9 @@ pub use model::query::{
 };
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
 pub use projection::{
-    AdmittedSourceCounts, ProjectedElement, ProjectionEnvelope, ProjectionPhase,
-    ProjectionTruncation, PublishedModelProjection, MODEL_PROJECTION_SCHEMA_VERSION,
+    AdmittedSourceCounts, ProjectedElement, ProjectedExposure, ProjectedMultiplicity,
+    ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublishedModelProjection,
+    MODEL_PROJECTION_SCHEMA_VERSION,
 };
 pub use qualified_reference::{
     AnonymousElementReference, QualifiedElementReference, QualifiedReferenceOutcome,

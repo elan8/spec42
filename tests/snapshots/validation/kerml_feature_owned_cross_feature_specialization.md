@@ -52,7 +52,7 @@ package Crossings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2f520528a6a4139c3aff49eeed7a9251f650da67530fbe94dca73c417ec28cf7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2f520528a6a4139c3aff49eeed7a9251f650da67530fbe94dca73c417ec28cf7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_specialization.md") (qualified-name "Crossings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_specialization.md") (qualified-name "Crossings::Link"))) (kind kerml-association) (membership (kind owning) (visibility default)))
@@ -80,6 +80,7 @@ package Crossings {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_specialization.md") (path (named (kind package) (name "Crossings")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "endpoint")) (named (kind kerml-end) (name "crossing")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_specialization.md") (path (named (kind package) (name "Crossings")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "endpoint")) (named (kind kerml-end) (name "crossing")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_owned_cross_feature_specialization.md") (path (named (kind package) (name "Crossings")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "endpoint")) (named (kind kerml-end) (name "crossing")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -110,6 +111,12 @@ package Crossings {
       (supertype (node (document "memory://snapshot/kerml_feature_owned_cross_feature_specialization.md") (qualified-name "Crossings::Thing")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_feature_owned_cross_feature_specialization.md") (qualified-name "Crossings::Link::endpoint")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_specialization.md") (path (named (kind package) (name "Crossings")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "endpoint")) (named (kind kerml-end) (name "crossing")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

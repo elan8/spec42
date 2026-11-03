@@ -81,7 +81,7 @@ package TradeStudyTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6e0c87a71edf054e93060545f9d4c5199b946a03e8e38a59274f68525e57fc4d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6e0c87a71edf054e93060545f9d4c5199b946a03e8e38a59274f68525e57fc4d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))
@@ -160,6 +160,7 @@ package TradeStudyTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (target (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engineTradeStudy"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind subject) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -231,6 +232,12 @@ package TradeStudyTest {
     (declaration (id (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engineTradeStudy::objective")))
       (featured-by (node (document "memory://snapshot/trade_study_test.md") (qualified-name "TradeStudyTest::engineTradeStudy")))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind subject) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

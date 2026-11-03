@@ -72,6 +72,7 @@ package GeneratedLiteralInfinity {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/generated_library_specialization_literal_infinity.md") (path (named (kind package) (name "GeneratedLiteralInfinity")) (named (kind kerml-feature) (name "unbounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-function) (name "LiteralIntegerEvaluation")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/generated_library_specialization_literal_infinity.md") (path (named (kind package) (name "GeneratedLiteralInfinity")) (named (kind kerml-feature) (name "ranged")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -244,6 +245,12 @@ package GeneratedLiteralInfinity {
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_literal_infinity.md") (path (named (kind package) (name "GeneratedLiteralInfinity")) (named (kind kerml-feature) (name "ranged")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

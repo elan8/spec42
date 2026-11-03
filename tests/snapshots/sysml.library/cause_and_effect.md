@@ -395,6 +395,8 @@ standard library package CauseAndEffect {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (named (kind metadata-def) (name "CausationMetadata")) (named (kind attribute) (name "isNecessary")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (state literal) (value (kind boolean) (boolean false)))
     (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (named (kind metadata-def) (name "CausationMetadata")) (named (kind attribute) (name "isSufficient")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (state literal) (value (kind boolean) (boolean false)))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (named (kind metadata-def) (name "CausationMetadata")) (named (kind attribute) (name "probability")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (named (kind metadata-def) (name "CausationMetadata")) (named (kind attribute) (name "probability")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -502,6 +504,8 @@ standard library package CauseAndEffect {
 (expressions
   (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (named (kind metadata-def) (name "CausationMetadata")) (named (kind attribute) (name "isNecessary")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
   (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (named (kind metadata-def) (name "CausationMetadata")) (named (kind attribute) (name "isSufficient")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+  (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (named (kind metadata-def) (name "CausationMetadata")) (named (kind attribute) (name "probability")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (named (kind metadata-def) (name "CausationMetadata")) (named (kind attribute) (name "probability")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

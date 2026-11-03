@@ -56,7 +56,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4befc38f914a4b2733d3a1c29b379b27a1a3103c4eb79a93daa7c2adf79f7024"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4befc38f914a4b2733d3a1c29b379b27a1a3103c4eb79a93daa7c2adf79f7024"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (qualified-name "Ends::Multiplicities"))) (kind kerml-association) (membership (kind owning) (visibility default)))
@@ -95,6 +95,9 @@ package Ends {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (path (named (kind package) (name "Ends")) (named (kind kerml-association) (name "Multiplicities")) (named (kind kerml-feature) (name "many")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (path (named (kind package) (name "Ends")) (named (kind kerml-association) (name "Multiplicities")) (named (kind kerml-feature) (name "many")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (path (named (kind package) (name "Ends")) (named (kind kerml-association) (name "Multiplicities")) (named (kind kerml-feature) (name "exactlyOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (path (named (kind package) (name "Ends")) (named (kind kerml-association) (name "Multiplicities")) (named (kind kerml-feature) (name "many")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (path (named (kind package) (name "Ends")) (named (kind kerml-association) (name "Multiplicities")) (named (kind kerml-feature) (name "many")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
@@ -141,6 +144,14 @@ package Ends {
       (subtype (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (qualified-name "Ends::Multiplicities::exactlyOne")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (qualified-name "Ends::Multiplicities::many")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (path (named (kind package) (name "Ends")) (named (kind kerml-association) (name "Multiplicities")) (named (kind kerml-feature) (name "exactlyOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (path (named (kind package) (name "Ends")) (named (kind kerml-association) (name "Multiplicities")) (named (kind kerml-feature) (name "many")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_end_multiplicity.md") (path (named (kind package) (name "Ends")) (named (kind kerml-association) (name "Multiplicities")) (named (kind kerml-feature) (name "many")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # NAVIGATION

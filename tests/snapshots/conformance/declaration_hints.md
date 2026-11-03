@@ -52,7 +52,7 @@ package Declarations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:22ca0f3217afe51a8671935032a7f5441d40b57ffd4e9e80dc13d1b87dc4983d"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:22ca0f3217afe51a8671935032a7f5441d40b57ffd4e9e80dc13d1b87dc4983d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (qualified-name "Declarations::Redefines"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -93,6 +93,10 @@ package Declarations {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "conformingBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "conformingBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -128,6 +132,15 @@ package Declarations {
     (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "conformingBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "conformingBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/declaration_hints.md") (path (named (kind package) (name "Declarations")) (named (kind part) (name "crossedBounds")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

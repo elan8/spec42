@@ -165,7 +165,7 @@ package Moments {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d6cc955a42b447ef2b188812b33cbe31d5eb008743d8ea5126eafd29d00f45ef"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d6cc955a42b447ef2b188812b33cbe31d5eb008743d8ea5126eafd29d00f45ef"))
   (declarations
     (declaration (id (node (document "memory://snapshot/moments.md") (qualified-name "Moments"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Occurrences::Life") (import (shape membership) (recursive false))))))
@@ -331,6 +331,15 @@ package Moments {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind kerml-feature) (name "universalEternity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind kerml-feature) (name "universalEternity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "InstantOccurrence")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Moment")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Period")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind kerml-feature) (name "coincidentUEPortion")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind kerml-feature) (name "universalEternity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -467,6 +476,20 @@ package Moments {
     (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind kerml-feature) (name "universalEternity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind kerml-feature) (name "universalEternity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Eternity")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "InstantOccurrence")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Moment")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "Period")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind class-def) (name "UniversalEternity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind kerml-feature) (name "coincidentUEPortion")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/moments.md") (path (named (kind package) (name "Moments")) (named (kind kerml-feature) (name "universalEternity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

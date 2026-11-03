@@ -73,7 +73,7 @@ package '3c-Function-based Behavior-structure mod-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:711e3b0f37e10ecfaae8347e45e7526ebd8918445a39fbe7336f211d3750ad41"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:711e3b0f37e10ecfaae8347e45e7526ebd8918445a39fbe7336f211d3750ad41"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::HitchBall"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -181,6 +181,8 @@ package '3c-Function-based Behavior-structure mod-2' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle::vehicleFrame::hitch"))) (target (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle::vehicleFrame"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-2")) (named (kind part) (name "vehicle-trailer system")) (named (kind connection) (name "trailerHitch")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-2")) (named (kind part) (name "vehicle-trailer system")) (named (kind connection) (name "trailerHitch")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -306,6 +308,13 @@ package '3c-Function-based Behavior-structure mod-2' {
       (effective-type (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::HitchBall")) (source direct))
       (supertype (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::HitchBall")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-2")) (named (kind part) (name "vehicle-trailer system")) (named (kind connection) (name "trailerHitch")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-2")) (named (kind part) (name "vehicle-trailer system")) (named (kind connection) (name "trailerHitch")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # CONNECTIONS

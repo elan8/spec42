@@ -167,7 +167,7 @@ package Structural {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3818c4e236071fe61af9e0cd43337db258ffde67ba266b81965db738806cfd24"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3818c4e236071fe61af9e0cd43337db258ffde67ba266b81965db738806cfd24"))
   (declarations
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete"))) (kind connection-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
@@ -433,6 +433,9 @@ package Structural {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Unrelated::mine"))) (target (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Unrelated"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/structural_feature_conformance.md") (path (named (kind package) (name "Structural")) (named (kind part-def) (name "Uniqueness")) (named (kind attribute) (name "distinct")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/structural_feature_conformance.md") (path (named (kind package) (name "Structural")) (named (kind part-def) (name "Uniqueness")) (named (kind attribute) (name "pool")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/structural_feature_conformance.md") (path (named (kind package) (name "Structural")) (named (kind part-def) (name "Uniqueness")) (named (kind attribute) (name "repeated")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -736,6 +739,14 @@ package Structural {
       (supertype (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Pump")) (scopes any))
       (subtype (node (document "memory://snapshot/structural_feature_conformance.md") (path (named (kind package) (name "Structural")) (named (kind part-def) (name "Choice")) (anonymous (kind ref) (ordinal 0)))) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (path (named (kind package) (name "Structural")) (named (kind part-def) (name "Uniqueness")) (named (kind attribute) (name "distinct")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (path (named (kind package) (name "Structural")) (named (kind part-def) (name "Uniqueness")) (named (kind attribute) (name "pool")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (path (named (kind package) (name "Structural")) (named (kind part-def) (name "Uniqueness")) (named (kind attribute) (name "repeated")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # CONNECTIONS

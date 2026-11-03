@@ -115,7 +115,7 @@ package PartTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:211c1860ae4b74e63a4ba19cf64b1230f8eac81916c4023dd603d4f1a5582bac"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:211c1860ae4b74e63a4ba19cf64b1230f8eac81916c4023dd603d4f1a5582bac"))
   (declarations
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::A"))) (kind part-def) (membership (kind owning) (visibility public)))
@@ -330,6 +330,12 @@ package PartTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::C::y::B_x"))) (target (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::C::y"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "A")) (named (kind attribute) (name "x")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "A")) (named (kind attribute) (name "x")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "B")) (named (kind part) (name "a")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "B")) (named (kind part) (name "a")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "B")) (named (kind part) (name "c")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "B")) (named (kind part) (name "c")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -560,6 +566,17 @@ package PartTest {
     (declaration (id (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::p4"))) (cyclic true)
       (subtype (node (document "memory://snapshot/part_test.md") (qualified-name "PartTest::p4")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "A")) (named (kind attribute) (name "x")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "A")) (named (kind attribute) (name "x")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "B")) (named (kind part) (name "a")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "B")) (named (kind part) (name "a")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "B")) (named (kind part) (name "c")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/part_test.md") (path (named (kind package) (name "PartTest")) (named (kind part-def) (name "B")) (named (kind part) (name "c")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

@@ -42,7 +42,7 @@ package 'Redefinition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fb58b0defcf50adb69a20715d3a09b4e63359e2a064e3f47e921c07f87e2f96d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fb58b0defcf50adb69a20715d3a09b4e63359e2a064e3f47e921c07f87e2f96d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::BigEngine"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Engine")))))
@@ -140,6 +140,10 @@ package 'Redefinition Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Vehicle::eng"))) (target (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::Vehicle"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "BigEngine")) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 6)))
+    (evaluated (declaration (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "Engine")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "Engine")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 6)))
+    (evaluated (declaration (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "SmallEngine")) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
   )
 )
 ~~~
@@ -251,6 +255,15 @@ package 'Redefinition Example' {
       (subtype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::BigVehicle::bigEng")) (scopes any feature))
       (subtype (node (document "memory://snapshot/05_redefinition_example.md") (qualified-name "Redefinition Example::SmallVehicle::smallEng")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "BigEngine")) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 6))))
+  (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "Engine")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "Engine")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 6))))
+  (declaration (id (node (document "memory://snapshot/05_redefinition_example.md") (path (named (kind package) (name "Redefinition Example")) (named (kind part-def) (name "SmallEngine")) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
 )
 ~~~
 # NAVIGATION

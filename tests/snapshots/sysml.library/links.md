@@ -169,7 +169,7 @@ standard library package Links {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c6ba3a3ee4c8a232cf5073b16b90b1709171a97ed142090bbfdf21e878355781"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c6ba3a3ee4c8a232cf5073b16b90b1709171a97ed142090bbfdf21e878355781"))
   (declarations
     (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines associations and features that are related to the typing of links.\n"))))
@@ -374,6 +374,14 @@ standard library package Links {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/links.md") (qualified-name "Links::selfLinks::thisThing"))) (target (node (document "memory://snapshot/links.md") (qualified-name "Links::selfLinks"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "BinaryLink")) (named (kind kerml-feature) (name "participant")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "BinaryLink")) (named (kind kerml-feature) (name "source")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "BinaryLink")) (named (kind kerml-feature) (name "target")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "participant")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "SelfLink")) (named (kind kerml-feature) (name "sameThing")) (named (kind kerml-end) (name "self2")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-feature) (name "binaryLinks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-feature) (name "links")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-feature) (name "selfLinks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -545,6 +553,19 @@ standard library package Links {
       (supertype (node (document "memory://snapshot/links.md") (qualified-name "Links::SelfLink::sameThing")) (scopes any feature))
       (supertype (node (document "memory://snapshot/links.md") (qualified-name "Links::SelfLink::thisThing")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "BinaryLink")) (named (kind kerml-feature) (name "participant")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "BinaryLink")) (named (kind kerml-feature) (name "source")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "BinaryLink")) (named (kind kerml-feature) (name "target")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "Link")) (named (kind kerml-feature) (name "participant")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-association) (name "SelfLink")) (named (kind kerml-feature) (name "sameThing")) (named (kind kerml-end) (name "self2")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-feature) (name "binaryLinks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-feature) (name "links")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (named (kind kerml-feature) (name "selfLinks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

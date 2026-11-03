@@ -252,7 +252,7 @@ standard library package Connections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:293782ae91a6fe45f98462e03630f11f0b98fef17b183b72a97ccaf8c97dbff2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:293782ae91a6fe45f98462e03630f11f0b98fef17b183b72a97ccaf8c97dbff2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines the base types for connections and related structural elements \nin the SysML language.\n"))))
@@ -406,6 +406,8 @@ standard library package Connections {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "connections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "connections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "binaryConnections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "connections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -452,6 +454,13 @@ standard library package Connections {
     (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "connections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "connections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "binaryConnections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (named (kind connection) (name "connections")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # CONNECTIONS

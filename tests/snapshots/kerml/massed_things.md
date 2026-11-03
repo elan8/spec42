@@ -117,6 +117,9 @@ package MassedThings {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind class-def) (name "MassedThing")) (named (kind default-reference) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "assembly")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "assembly")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "parts")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -183,6 +186,9 @@ package MassedThings {
 ~~~sexpr
 (expressions
   (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind class-def) (name "MassedThing")) (named (kind default-reference) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "assembly")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "assembly")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind kerml-association) (name "MassedThingAssembly")) (named (kind kerml-feature) (name "parts")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

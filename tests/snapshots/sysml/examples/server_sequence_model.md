@@ -108,7 +108,7 @@ package ServerSequenceModel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0c5b8f7b6bacb19552a78b136bf5411f3ea6d8a5ae50772a48f697c26bb788cc"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0c5b8f7b6bacb19552a78b136bf5411f3ea6d8a5ae50772a48f697c26bb788cc"))
   (declarations
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false))))))
@@ -233,6 +233,8 @@ package ServerSequenceModel {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::topic"))) (target (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (named (kind part-def) (name "PubSubSequence")) (named (kind part) (name "producer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (named (kind part-def) (name "PubSubSequence")) (named (kind part) (name "server")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -347,6 +349,13 @@ package ServerSequenceModel {
     (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::topic")))
       (featured-by (node (document "memory://snapshot/server_sequence_model.md") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe")))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (named (kind part-def) (name "PubSubSequence")) (named (kind part) (name "producer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (named (kind part-def) (name "PubSubSequence")) (named (kind part) (name "server")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

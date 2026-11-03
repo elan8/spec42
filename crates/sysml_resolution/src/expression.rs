@@ -90,14 +90,26 @@ pub struct ExpressionNode {
 
 /// What one resolved expression node is.
 ///
-/// This first slice structures the shapes constant folding already recognises: literals, feature
-/// references, and the arithmetic / comparison / boolean / prefix operators. A shape it does not
-/// model yet -- an invocation, a `select` / `collect` body, a constructor, an index expression, a
-/// meta cast, a type check -- is an [`Self::Unsupported`] node that still lists its subtree's
+/// This slice structures literals, feature references, scalar operators, invocations, sequences
+/// and meta casts. Structured representation does not imply execution. Shapes it does not
+/// model yet -- a `select` / `collect` body, a constructor, an index expression or a type check --
+/// are [`Self::Unsupported`] nodes that still list their subtree's
 /// resolved nodes, so a consumer sees *what* an unmodelled operator ranges over without this crate
 /// claiming a structure it has not settled.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ExpressionNodeKind {
+    /// An invocation preserves its callee and authored argument order without claiming execution.
+    Invocation {
+        callee: u32,
+        arguments: Box<[u32]>,
+    },
+    Sequence {
+        elements: Box<[u32]>,
+    },
+    MetaCast {
+        operand: u32,
+        metaclass: u32,
+    },
     /// A literal value written in the source (`3`, `true`, `1.5`, `"x"`, `10 [kg]`).
     Literal(crate::EvaluatedScalar),
     /// A reference to a feature, resolved to the specific one it names.
@@ -119,7 +131,9 @@ pub enum ExpressionNodeKind {
     /// A shape this slice does not structure. `children` lists the subtree's nodes (its resolved
     /// feature references and any operators over them), so nothing resolved is lost even though
     /// the shape itself is not yet named.
-    Unsupported { children: Box<[u32]> },
+    Unsupported {
+        children: Box<[u32]>,
+    },
 }
 
 /// A resolved expression operator, mirrored from the parser's operator vocabulary so the facade

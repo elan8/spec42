@@ -236,6 +236,10 @@ package RefPrefixFacts {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind part-def) (name "CalcHost")) (named (kind calc) (name "abstractCalc")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind part-def) (name "CalcHost")) (named (kind calc) (name "baseCalc")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind case) (name "boundedCase")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind concern) (name "boundedConcern")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind use-case) (name "boundedUseCase")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind verification) (name "boundedVerification")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -413,6 +417,10 @@ package RefPrefixFacts {
 (expressions
   (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind part-def) (name "CalcHost")) (named (kind calc) (name "abstractCalc")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
   (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind part-def) (name "CalcHost")) (named (kind calc) (name "baseCalc")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind case) (name "boundedCase")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind concern) (name "boundedConcern")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind use-case) (name "boundedUseCase")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (path (named (kind package) (name "RefPrefixFacts")) (named (kind verification) (name "boundedVerification")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

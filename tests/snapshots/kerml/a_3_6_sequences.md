@@ -182,7 +182,7 @@ package SequencesExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:27ee11ccf8395385f72839e2d7f8538a87dc70a53a4c06b30aa9dc8e4cf6dde6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:27ee11ccf8395385f72839e2d7f8538a87dc70a53a4c06b30aa9dc8e4cf6dde6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text ""))))
@@ -465,6 +465,12 @@ package SequencesExecution {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesModelToBeExecuted")) (named (kind kerml-behavior) (name "Manufacture")) (named (kind kerml-step) (name "ship")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesModelToBeExecuted")) (named (kind kerml-behavior) (name "Manufacture")) (named (kind kerml-step) (name "ship")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-step) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-step) (ordinal 2)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind succession) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesModelToBeExecuted")) (named (kind kerml-behavior) (name "Manufacture")) (named (kind kerml-step) (name "paint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -680,6 +686,17 @@ package SequencesExecution {
       (subtype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution::MyShip")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesModelToBeExecuted::Manufacture::ship")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-step) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind kerml-step) (ordinal 2)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (named (kind kerml-behavior) (name "MyManufacture")) (anonymous (kind succession) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesModelToBeExecuted")) (named (kind kerml-behavior) (name "Manufacture")) (named (kind kerml-step) (name "paint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # METADATA ANNOTATIONS

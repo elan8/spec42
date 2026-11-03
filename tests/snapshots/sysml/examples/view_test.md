@@ -100,7 +100,7 @@ package ViewTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9bbab2ed234abd542ed685873a7f5451d797a5782ee2097155590b70389e79d0"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:9bbab2ed234abd542ed685873a7f5451d797a5782ee2097155590b70389e79d0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C"))) (kind concern-def) (membership (kind owning) (visibility default)))
@@ -195,6 +195,9 @@ package ViewTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind concern) (name "c")) (anonymous (kind stakeholder) (ordinal 0))))) (target (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::c"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind rendering) (name "r1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind rendering) (name "r1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind view) (name "v")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -307,6 +310,14 @@ package ViewTest {
       (supertype (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::R")) (scopes any))
       (subtype (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind view) (name "v")) (anonymous (kind rendering) (ordinal 0)))) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind rendering) (name "r1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind rendering) (name "r1")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/view_test.md") (path (named (kind package) (name "ViewTest")) (named (kind view-def) (name "V")) (named (kind view) (name "v")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

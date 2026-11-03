@@ -156,7 +156,7 @@ package Classifications {
 ~~~sexpr
 (expressions
   (declaration (id (node (document "memory://snapshot/classifications.md") (path (named (kind package) (name "Classifications")) (named (kind default-reference) (name "a")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "x" (target (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::x"))))))
-  (declaration (id (node (document "memory://snapshot/classifications.md") (path (named (kind package) (name "Classifications")) (named (kind default-reference) (name "b")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "x" (target (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::x"))))))
+  (declaration (id (node (document "memory://snapshot/classifications.md") (path (named (kind package) (name "Classifications")) (named (kind default-reference) (name "b")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (meta-cast (feature-reference "x" (target (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::x")))) (feature-reference "KerML::Feature" (target unresolved))))
   (declaration (id (node (document "memory://snapshot/classifications.md") (path (named (kind package) (name "Classifications")) (named (kind default-reference) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
   (declaration (id (node (document "memory://snapshot/classifications.md") (path (named (kind package) (name "Classifications")) (named (kind default-reference) (name "z")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )

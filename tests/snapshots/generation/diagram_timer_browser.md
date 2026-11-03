@@ -6933,7 +6933,7 @@ package TimerBrowser {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:f1fc432f6d92d9ec541775def109003d6114ce346ca763608d45c150a7493278",
+  "modelDigest": "blake3:eb2c7eb4ee3a963a0141a5e3b38de7ecf0cb0932fcce93a1e7ccc06bd5397879",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_browser.md",

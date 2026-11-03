@@ -46,6 +46,11 @@ use crate::TextPosition;
 use crate::TextRange;
 use crate::{ContextualExpressionOutcome, PublishedContextualExpression};
 
+type RoleReferenceIndex = std::collections::BTreeMap<
+    (DocumentIdx, ReferenceKind, usize, usize),
+    Vec<AuthoredReferenceId>,
+>;
+
 /// One node of a settled tree, before its span and target are projected onto the published
 /// contract. `span`/`document` become a `SourceLocation` and `target` a `SymbolId` at query time,
 /// exactly as `SettledUnit` is projected onto `AuthoredUnit`.
@@ -57,6 +62,17 @@ pub(crate) struct RawExpressionNode {
 
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) enum RawExpressionNodeKind {
+    Invocation {
+        callee: u32,
+        arguments: Box<[u32]>,
+    },
+    Sequence {
+        elements: Box<[u32]>,
+    },
+    MetaCast {
+        operand: u32,
+        metaclass: u32,
+    },
     Literal(EvaluatedScalar),
     FeatureReference {
         target: Option<DeclarationId>,
@@ -135,6 +151,31 @@ impl ResolvedExpressionIndex {
         let count = inputs.storage.declarations.len();
         let mut rows: Vec<Option<ResolvedExpressionRow>> =
             std::iter::repeat_with(|| None).take(count).collect();
+        let mut role_references = RoleReferenceIndex::new();
+        for (index, reference) in inputs.storage.references.iter().enumerate() {
+            if matches!(
+                reference.kind,
+                ReferenceKind::InvocationCallee | ReferenceKind::MetaCastTarget
+            ) {
+                let document = inputs
+                    .storage
+                    .declaration(reference.source)
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .document;
+                role_references
+                    .entry((
+                        document,
+                        reference.kind,
+                        reference.span.offset,
+                        reference.span.len,
+                    ))
+                    .or_default()
+                    .push(
+                        AuthoredReferenceId::from_index(index)
+                            .map_err(|_| ResolutionError::Capacity)?,
+                    );
+            }
+        }
 
         // The `ExpressionOperand` references a declaration authored, in ordinal order. Slot `n`
         // pairs with the `n`-th `FeatureReference` the walk produces for that declaration.
@@ -184,6 +225,7 @@ impl ResolvedExpressionIndex {
                 &pendings,
                 ordered.get(&declaration).unwrap_or(&empty),
                 member_access.get(&declaration).unwrap_or(&empty),
+                &role_references,
             );
             if let Some(slot) = rows.get_mut(declaration.index()) {
                 *slot = Some(row);
@@ -523,6 +565,7 @@ fn classify_declaration(
     pendings: &[&PendingEvaluationFact],
     operands: &[AuthoredReferenceId],
     member_access: &[AuthoredReferenceId],
+    role_references: &RoleReferenceIndex,
 ) -> ResolvedExpressionRow {
     let document = pendings
         .first()
@@ -544,6 +587,8 @@ fn classify_declaration(
         storage: inputs.storage,
         resolution: inputs.resolution,
         parsed: None,
+        document,
+        role_references,
         operands,
         member_access: member_access.to_vec(),
         next_ordinal: 0,
@@ -555,6 +600,7 @@ fn classify_declaration(
             return ResolvedExpressionRow::unsupported(document);
         };
         builder.parsed = Some(parsed);
+        builder.document = pending.expression.document;
         match builder.walk(&pending.expression.node, Span::dummy()) {
             Some(root) => roots.push(root),
             None => return ResolvedExpressionRow::unsupported(document),
@@ -605,6 +651,8 @@ struct TreeBuilder<'a> {
     storage: &'a SemanticModelStorage,
     resolution: &'a ResolutionResults,
     parsed: Option<&'a ParsedDocument>,
+    document: DocumentIdx,
+    role_references: &'a RoleReferenceIndex,
     operands: &'a [AuthoredReferenceId],
     /// `MemberAccessOperand` references still available to pair with a dotted chain, matched by
     /// source span so an invocation callee is not consumed as an operand leaf.
@@ -616,6 +664,32 @@ struct TreeBuilder<'a> {
 }
 
 impl TreeBuilder<'_> {
+    /// A callee or metaclass has its own reference role and never consumes an operand ordinal.
+    fn role_reference(&mut self, kind: ReferenceKind, span: Span) -> Option<u32> {
+        let ids = self
+            .role_references
+            .get(&(self.document, kind, span.offset, span.len))?;
+        let reference_id = *ids.first()?;
+        let reference = &self.storage.references[reference_id.index()];
+        let resolved = |id| match self.resolution.outcome(id) {
+            Some(ResolutionStatus::Resolved(target)) => Some(target),
+            _ => None,
+        };
+        let first = resolved(reference_id);
+        let target = if ids.iter().all(|id| resolved(*id) == first) {
+            first
+        } else {
+            None
+        };
+        Some(self.push(
+            RawExpressionNodeKind::FeatureReference {
+                target,
+                authored: authored_path(self.storage, reference.path).into_boxed_str(),
+                reference: Some(reference_id),
+            },
+            span,
+        ))
+    }
     fn push(&mut self, kind: RawExpressionNodeKind, span: Span) -> u32 {
         let index = self.nodes.len() as u32;
         self.nodes.push(RawExpressionNode { kind, span });
@@ -717,7 +791,10 @@ impl TreeBuilder<'_> {
                 }
                 let children =
                     self.walk_children(elements.iter().map(|element| &element.expression))?;
-                Some(self.push(RawExpressionNodeKind::Unsupported { children }, outer_span))
+                Some(self.push(
+                    RawExpressionNodeKind::Sequence { elements: children },
+                    outer_span,
+                ))
             }
             Expression::BodyExpr(body) if body.value.parameters.is_empty() => {
                 let result = body.value.result.as_ref()?;
@@ -773,7 +850,23 @@ impl TreeBuilder<'_> {
                     base.span,
                 ))
             }
-            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+            Expression::Invocation { callee, args } => {
+                let callee_node =
+                    self.role_reference(ReferenceKind::InvocationCallee, callee.span)?;
+                let arguments = self.walk_children(args.iter().map(|arg| &arg.value))?;
+                Some(self.push(
+                    RawExpressionNodeKind::Invocation {
+                        callee: callee_node,
+                        arguments,
+                    },
+                    if outer_span == Span::dummy() {
+                        callee.span
+                    } else {
+                        outer_span
+                    },
+                ))
+            }
+            Expression::Constructor { args, .. } => {
                 let children = self.walk_children(args.iter().map(|arg| &arg.value))?;
                 Some(self.push(RawExpressionNodeKind::Unsupported { children }, outer_span))
             }
@@ -794,13 +887,17 @@ impl TreeBuilder<'_> {
                 };
                 Some(self.push(RawExpressionNodeKind::Unsupported { children }, outer_span))
             }
-            Expression::MetaCast { base, .. } => {
+            Expression::MetaCast { base, metaclass } => {
                 let child = self.walk(&base.value, base.span)?;
+                let metaclass_span = self.parsed?.qualified_reference(*metaclass)?.metadata.span;
+                let metaclass =
+                    self.role_reference(ReferenceKind::MetaCastTarget, metaclass_span)?;
                 Some(self.push(
-                    RawExpressionNodeKind::Unsupported {
-                        children: Box::from([child]),
+                    RawExpressionNodeKind::MetaCast {
+                        operand: child,
+                        metaclass,
                     },
-                    base.span,
+                    base.span.covering(&metaclass_span),
                 ))
             }
             _ => None,
@@ -1012,6 +1109,21 @@ impl<D> SemanticModel<D> {
             role: OccurrenceRole::Reference,
         };
         let kind = match &raw.kind {
+            RawExpressionNodeKind::Invocation { callee, arguments } => {
+                ExpressionNodeKind::Invocation {
+                    callee: *callee,
+                    arguments: arguments.clone(),
+                }
+            }
+            RawExpressionNodeKind::Sequence { elements } => ExpressionNodeKind::Sequence {
+                elements: elements.clone(),
+            },
+            RawExpressionNodeKind::MetaCast { operand, metaclass } => {
+                ExpressionNodeKind::MetaCast {
+                    operand: *operand,
+                    metaclass: *metaclass,
+                }
+            }
             RawExpressionNodeKind::Literal(value) => ExpressionNodeKind::Literal(value.clone()),
             RawExpressionNodeKind::FeatureReference {
                 target, authored, ..

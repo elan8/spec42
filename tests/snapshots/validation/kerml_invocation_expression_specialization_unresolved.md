@@ -73,7 +73,7 @@ package Model {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_specialization_unresolved.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "invoked")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_specialization_unresolved.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "invoked")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (invocation (callee (feature-reference "Missing" (target unresolved))) (arguments)))
 )
 ~~~
 # NAVIGATION

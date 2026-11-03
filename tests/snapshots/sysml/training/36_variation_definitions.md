@@ -89,7 +89,7 @@ package 'Variation Definitions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:4699d1023c895afda97d20079090234aa96d56a5447f60cb27c6b51c0bab4dc1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:4699d1023c895afda97d20079090234aa96d56a5447f60cb27c6b51c0bab4dc1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))
@@ -194,6 +194,10 @@ package 'Variation Definitions' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part-def) (name "Engine")) (named (kind part) (name "cylinder")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part-def) (name "Engine")) (named (kind part) (name "cylinder")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part) (name "4cylEngine")) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part) (name "6cylEngine")) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 6)))
+    (evaluated (declaration (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part-def) (name "Cylinder")) (named (kind attribute) (name "diameter")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part-def) (name "Engine")) (named (kind part) (name "cylinder")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
@@ -308,6 +312,15 @@ package 'Variation Definitions' {
       (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::6cylEngine")) (scopes any feature))
       (supertype (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions::Engine")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part) (name "4cylEngine")) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part) (name "6cylEngine")) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 6))))
+  (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part-def) (name "Cylinder")) (named (kind attribute) (name "diameter")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (named (kind part-def) (name "Engine")) (named (kind part) (name "cylinder")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # NAVIGATION

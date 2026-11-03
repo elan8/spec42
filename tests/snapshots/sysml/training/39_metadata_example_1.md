@@ -134,7 +134,7 @@ package 'Metadata Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:046662b60e905a8cb9a6184043d76113d1d951f711423f4bbfc0ce425b1290a9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:046662b60e905a8cb9a6184043d76113d1d951f711423f4bbfc0ce425b1290a9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (qualified-name "Metadata Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "SafetyFeature")) (metadataAnnotationAbout (reference "vehicle::interior::seatBelt")) (metadataAnnotationAbout (reference "vehicle::interior::driverAirBag")) (metadataAnnotationAbout (reference "vehicle::bodyAssy::bumper")))))
@@ -222,6 +222,8 @@ package 'Metadata Example-1' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "frontSeat")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
@@ -295,6 +297,13 @@ package 'Metadata Example-1' {
     (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "frontSeat")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/39_metadata_example_1.md") (path (named (kind package) (name "Metadata Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # METADATA ANNOTATIONS

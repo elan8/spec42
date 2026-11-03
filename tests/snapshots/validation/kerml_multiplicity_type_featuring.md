@@ -53,7 +53,7 @@ package Multiplicities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d09a0501fda954d2911cf96f509293d88e00edf07c66415c98e324315257f1ad"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d09a0501fda954d2911cf96f509293d88e00edf07c66415c98e324315257f1ad"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (qualified-name "Multiplicities::Fleet"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 0) (upper 1))))
@@ -84,6 +84,10 @@ package Multiplicities {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fleet")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fleet")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -111,6 +115,15 @@ package Multiplicities {
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fleet")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fleet")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_type_featuring.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

@@ -233,7 +233,7 @@ standard library package ModelingMetadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ca4b8e00ceef47eef5680ada9662c167c2e8e58600fe7967308921ecac6a6ae4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ca4b8e00ceef47eef5680ada9662c167c2e8e58600fe7967308921ecac6a6ae4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package contains definitions of metadata generally useful for annotating models.\n"))))
@@ -374,6 +374,14 @@ standard library package ModelingMetadata {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind::tbr"))) (target (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "Rationale")) (named (kind ref) (name "explanation")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "Rationale")) (named (kind ref) (name "explanation")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind attribute) (name "originator")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind attribute) (name "originator")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind attribute) (name "owner")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind attribute) (name "owner")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind item) (name "risk")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind item) (name "risk")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -488,6 +496,19 @@ standard library package ModelingMetadata {
     (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind::tbr")))
       (featured-by (node (document "memory://snapshot/modeling_metadata.md") (qualified-name "ModelingMetadata::StatusKind")))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "Rationale")) (named (kind ref) (name "explanation")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "Rationale")) (named (kind ref) (name "explanation")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind attribute) (name "originator")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind attribute) (name "originator")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind attribute) (name "owner")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind attribute) (name "owner")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind item) (name "risk")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/modeling_metadata.md") (path (named (kind library-package) (name "ModelingMetadata")) (named (kind metadata-def) (name "StatusInfo")) (named (kind item) (name "risk")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

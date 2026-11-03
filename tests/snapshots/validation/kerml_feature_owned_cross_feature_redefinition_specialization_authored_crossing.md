@@ -36,7 +36,7 @@ package Redefinition {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9a22892273d3fea29b293a6a03988c2bbd90be50263168f80346b26be5946968"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9a22892273d3fea29b293a6a03988c2bbd90be50263168f80346b26be5946968"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (qualified-name "Redefinition::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -97,6 +97,7 @@ package Redefinition {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (qualified-name "Redefinition::Parent::b"))) (target (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (qualified-name "Redefinition::Parent"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-association) (name "Child")) (named (kind kerml-feature) (name "x")) (named (kind kerml-end) (name "narrowed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -172,6 +173,12 @@ package Redefinition {
       (supertype (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (qualified-name "Redefinition::B")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (qualified-name "Redefinition::Child::y")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-association) (name "Child")) (named (kind kerml-feature) (name "x")) (named (kind kerml-end) (name "narrowed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

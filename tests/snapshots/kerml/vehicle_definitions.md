@@ -86,7 +86,7 @@ package VehicleDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:74943c21b987c8049d7231738b19dc8d88897435ddcff2ef27ccf4d60119d603"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:74943c21b987c8049d7231738b19dc8d88897435ddcff2ef27ccf4d60119d603"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (path (named (kind package) (name "VehicleDefinitions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "Example vehicle definitions model.\n"))))
@@ -148,6 +148,7 @@ package VehicleDefinitions {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::WheelHubIF::appliedTorque"))) (target (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::WheelHubIF"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_definitions.md") (path (named (kind package) (name "VehicleDefinitions")) (named (kind class-def) (name "Lugbolt")) (named (kind default-reference) (name "tighteningTorque")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -193,6 +194,12 @@ package VehicleDefinitions {
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::WheelHubIF::appliedTorque")))
       (featured-by (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::WheelHubIF")))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (path (named (kind package) (name "VehicleDefinitions")) (named (kind class-def) (name "Lugbolt")) (named (kind default-reference) (name "tighteningTorque")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

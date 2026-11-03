@@ -1412,7 +1412,7 @@ impl<D> SemanticModel<D> {
             || self
                 .storage
                 .declaration(declaration)
-                .is_none_or(|value| !DeclarationDomain::Type.accepts(value.kind))
+                .is_none_or(|value| !DeclarationDomain::MetamodelType.accepts(value.kind))
         {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
@@ -5188,10 +5188,26 @@ impl<D> SemanticModel<D> {
                 QueryAnswer::Resolved(annotations) => annotations,
                 _ => Box::default(),
             };
+            let effective_name = self.effective_name_for_projection(symbol);
+            let effective_qualified_name = self.effective_qualified_name_for_projection(symbol);
+            let multiplicity_expressions = self.multiplicity_for_projection(symbol);
+            let exposure = self.declaration_of(symbol).and_then(|declaration| {
+                self.authored_references(declaration, &[ReferenceKind::ViewExpose])
+                    .first()
+                    .map(|(_, reference)| crate::projection::ProjectedExposure {
+                        namespace: reference.flags.wildcard,
+                        recursive: reference.flags.recursive,
+                        filtered: reference.flags.filtered,
+                    })
+            });
             elements.push(ProjectedElement {
                 identity: symbol,
                 source: ElementSource::Workspace,
                 details,
+                effective_name,
+                effective_qualified_name,
+                multiplicity_expressions,
+                exposure,
                 expression,
                 metadata_annotations,
             });
@@ -5219,6 +5235,57 @@ impl<D> SemanticModel<D> {
                 elements_returned,
                 elements_incomplete,
             },
+        })
+    }
+
+    fn effective_name_for_projection(&self, symbol: SymbolId) -> Option<Box<str>> {
+        let QueryAnswer::Resolved(identification) = self.effective_identification(symbol).answer
+        else {
+            return None;
+        };
+        match identification.name {
+            crate::EffectiveName::Resolved(name) => Some(name.into()),
+            _ => None,
+        }
+    }
+
+    fn effective_qualified_name_for_projection(&self, symbol: SymbolId) -> Option<Box<str>> {
+        let mut current = self.declaration_of(symbol)?;
+        let mut segments = Vec::new();
+        loop {
+            segments.push(self.effective_name_for_projection(self.symbol_id(current)?)?);
+            let Some(owner) = self.storage.declaration(current)?.owner else {
+                break;
+            };
+            current = owner;
+        }
+        segments.reverse();
+        Some(segments.join("::").into_boxed_str())
+    }
+
+    fn multiplicity_for_projection(
+        &self,
+        symbol: SymbolId,
+    ) -> Option<crate::projection::ProjectedMultiplicity> {
+        let QueryAnswer::Resolved(crate::TypeDerivedFactOutcome::Values(values)) = self
+            .type_derived_fact(symbol, TypeDerivedFactCollection::Multiplicity)
+            .answer
+        else {
+            return None;
+        };
+        let [crate::TypeDerivedFactValue::Multiplicity { element }] = values.as_ref() else {
+            return None;
+        };
+        let bound = |collection| match self.action_derived_fact(*element, collection).answer {
+            QueryAnswer::Resolved(crate::ActionDerivedFactOutcome::Values(values)) => {
+                values.first().copied()
+            }
+            _ => None,
+        };
+        Some(crate::projection::ProjectedMultiplicity {
+            range: *element,
+            lower: bound(ActionDerivedFactCollection::MultiplicityRangeLowerBound),
+            upper: bound(ActionDerivedFactCollection::MultiplicityRangeUpperBound),
         })
     }
 

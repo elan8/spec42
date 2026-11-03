@@ -373,7 +373,7 @@ package ExpressionCoverage {
   (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "s")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "hello"))))
   (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "sel")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
   (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "sel")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "seq")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "seq")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (sequence (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
 )
 ~~~
 # NAVIGATION

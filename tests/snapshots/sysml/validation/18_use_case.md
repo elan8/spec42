@@ -131,7 +131,7 @@ package '18-Use Case' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:10ad18231327ee98feafa66eaa08a3c5201a68c506db8da9c38a5a9f67c0dc44"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:10ad18231327ee98feafa66eaa08a3c5201a68c506db8da9c38a5a9f67c0dc44"))
   (declarations
     (declaration (id (node (document "memory://snapshot/18_use_case.md") (qualified-name "18-Use Case"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/18_use_case.md") (qualified-name "18-Use Case::Environment"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -284,6 +284,12 @@ package '18-Use Case' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/18_use_case.md") (qualified-name "18-Use Case::provide transportation::vehicle"))) (target (node (document "memory://snapshot/18_use_case.md") (qualified-name "18-Use Case::provide transportation"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "enter vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "enter vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "exit vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "exit vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "provide transportation")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "provide transportation")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 4)))
   )
 )
 ~~~
@@ -446,6 +452,17 @@ package '18-Use Case' {
       (effective-type (node (document "memory://snapshot/18_use_case.md") (qualified-name "18-Use Case::Vehicle")) (source direct))
       (supertype (node (document "memory://snapshot/18_use_case.md") (qualified-name "18-Use Case::Vehicle")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "enter vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "enter vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "exit vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "exit vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "provide transportation")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/18_use_case.md") (path (named (kind package) (name "18-Use Case")) (named (kind use-case) (name "provide transportation")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
 )
 ~~~
 # NAVIGATION

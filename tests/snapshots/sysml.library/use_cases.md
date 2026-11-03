@@ -141,7 +141,7 @@ standard library package UseCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a8dc5ba9484a6fc3a40f90a07b7781017fc56a8e268b915a70f40d927c19a663"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a8dc5ba9484a6fc3a40f90a07b7781017fc56a8e268b915a70f40d927c19a663"))
   (declarations
     (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines the base types for use cases and related behavioral elements in the SysML language.\n"))))
@@ -264,6 +264,9 @@ standard library package UseCases {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case) (name "useCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case) (name "useCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case-def) (name "UseCase")) (named (kind use-case) (name "includedUseCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case-def) (name "UseCase")) (named (kind use-case) (name "subUseCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case) (name "useCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -361,6 +364,14 @@ standard library package UseCases {
     (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case) (name "useCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case) (name "useCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case-def) (name "UseCase")) (named (kind use-case) (name "includedUseCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case-def) (name "UseCase")) (named (kind use-case) (name "subUseCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (named (kind use-case) (name "useCases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

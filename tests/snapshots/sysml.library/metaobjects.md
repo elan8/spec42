@@ -136,7 +136,7 @@ standard library package Metaobjects {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:995f788811ad6c61d9dd9f969cbac49dd581c41765ce84c9126d14be5d007aad"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:995f788811ad6c61d9dd9f969cbac49dd581c41765ce84c9126d14be5d007aad"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metaobjects.md") (qualified-name "Metaobjects"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines Metaclasses and Features that are related to the typing of syntactic and semantic metadata.\n"))))
@@ -242,6 +242,10 @@ standard library package Metaobjects {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-feature) (name "metaobjects")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-feature) (name "metaobjects")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-metaclass) (name "Metaobject")) (named (kind kerml-feature) (name "annotatedElement")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-metaclass) (name "SemanticMetadata")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-metaclass) (name "SemanticMetadata")) (named (kind kerml-feature) (name "baseType")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-feature) (name "metaobjects")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -317,6 +321,15 @@ standard library package Metaobjects {
     (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-feature) (name "metaobjects")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-feature) (name "metaobjects")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-metaclass) (name "Metaobject")) (named (kind kerml-feature) (name "annotatedElement")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-metaclass) (name "SemanticMetadata")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-metaclass) (name "SemanticMetadata")) (named (kind kerml-feature) (name "baseType")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/metaobjects.md") (path (named (kind library-package) (name "Metaobjects")) (named (kind kerml-feature) (name "metaobjects")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

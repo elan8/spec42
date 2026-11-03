@@ -46,7 +46,7 @@ package Multiplicities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3860eb27360e8ef3e091dc3defd11dd483685e5eeb60c570ed91f35436cefc86"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3860eb27360e8ef3e091dc3defd11dd483685e5eeb60c570ed91f35436cefc86"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (qualified-name "Multiplicities::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -73,6 +73,8 @@ package Multiplicities {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 3)))
   )
 )
 ~~~
@@ -103,6 +105,13 @@ package Multiplicities {
     (declaration (id (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (qualified-name "Multiplicities::Thing")))
       (subtype (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (qualified-name "Multiplicities::Holder::bounded")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_multiplicity_domain.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
 )
 ~~~
 # NAVIGATION

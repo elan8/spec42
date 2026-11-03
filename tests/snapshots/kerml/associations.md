@@ -45,7 +45,7 @@ package Associations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:421a6f740c8dfa37702d83e241b889d750ed6aa0a14acf3a4364296a2f7335cf"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:421a6f740c8dfa37702d83e241b889d750ed6aa0a14acf3a4364296a2f7335cf"))
   (declarations
     (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/associations.md") (qualified-name "Associations::A"))) (kind kerml-association) (membership (kind owning) (visibility default)))
@@ -157,6 +157,13 @@ package Associations {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY::y"))) (target (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "A")) (named (kind kerml-feature) (name "x")) (named (kind kerml-end) (name "x_cross")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "A")) (named (kind kerml-feature) (name "x")) (named (kind kerml-end) (name "x_cross")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "A")) (named (kind kerml-feature) (name "y")) (named (kind kerml-end) (name "y_cross")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "B")) (named (kind kerml-feature) (name "y1")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association-structure) (name "C")) (named (kind kerml-feature) (name "a")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "XY")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "XY")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -287,6 +294,18 @@ package Associations {
       (subtype (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "B")) (named (kind kerml-feature) (name "y1")) (anonymous (kind kerml-end) (ordinal 0)))) (scopes any))
       (subtype (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY::y")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "A")) (named (kind kerml-feature) (name "x")) (named (kind kerml-end) (name "x_cross")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "A")) (named (kind kerml-feature) (name "x")) (named (kind kerml-end) (name "x_cross")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "A")) (named (kind kerml-feature) (name "y")) (named (kind kerml-end) (name "y_cross")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "B")) (named (kind kerml-feature) (name "y1")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association-structure) (name "C")) (named (kind kerml-feature) (name "a")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "XY")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/associations.md") (path (named (kind package) (name "Associations")) (named (kind kerml-association) (name "XY")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-end) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # METADATA ANNOTATIONS

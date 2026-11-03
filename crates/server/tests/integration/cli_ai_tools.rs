@@ -109,7 +109,7 @@ fn cli_model_export_emits_the_typed_projection() {
         let projection = full.get("projection").expect("projection object");
         assert_eq!(
             projection.get("schema_version").and_then(|v| v.as_u64()),
-            Some(1)
+            Some(2)
         );
         let envelope = projection.get("envelope").expect("envelope object");
         assert_eq!(

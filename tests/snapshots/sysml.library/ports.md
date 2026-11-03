@@ -126,7 +126,7 @@ standard library package Ports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c933abe93970607fe517b114967282b7f39be65cc8ec87e4261d6b40c29ab896"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c933abe93970607fe517b114967282b7f39be65cc8ec87e4261d6b40c29ab896"))
   (declarations
     (declaration (id (node (document "memory://snapshot/ports.md") (qualified-name "Ports"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines the base types for ports and related structural elements \nin the SysML language.\n"))))
@@ -234,6 +234,9 @@ standard library package Ports {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port) (name "ports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port) (name "ports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (named (kind port) (name "interfacingPorts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (named (kind port) (name "subports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port) (name "ports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -321,6 +324,14 @@ standard library package Ports {
     (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port) (name "ports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port) (name "ports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (named (kind port) (name "interfacingPorts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (named (kind port) (name "subports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port) (name "ports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

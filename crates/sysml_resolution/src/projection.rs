@@ -33,9 +33,10 @@ use crate::{ElementSource, PublicationCompleteness, SymbolId};
 
 /// The schema version of [`PublishedModelProjection`] and everything it carries.
 ///
-/// Bumped only when a field is removed or retyped; adding a field is backwards-compatible and
-/// does not bump it. A consumer that pins a major version can refuse an unknown one.
-pub const MODEL_PROJECTION_SCHEMA_VERSION: u32 = 1;
+/// Bumped when a field is removed or retyped, including the closed expression-node vocabulary;
+/// adding optional fields alone does not bump it. Schema 2 adds invocation, sequence and meta-cast
+/// nodes. A consumer that pins a major version can refuse an unknown one.
+pub const MODEL_PROJECTION_SCHEMA_VERSION: u32 = 2;
 
 /// A read-only, deterministic projection of one publication's workspace-authored structure.
 ///
@@ -131,7 +132,7 @@ pub struct ProjectedElement {
     /// Stable within this publication; materialise a [`crate::SymbolToken`] through
     /// `PublishedModel` to cross a boundary.
     pub identity: SymbolId,
-    /// Always [`ElementSource::Workspace`] in schema version 1; kept explicit so a later version
+    /// Always [`ElementSource::Workspace`] in schemas 1 and 2; kept explicit so a later version
     /// can widen the element set without a breaking change.
     pub source: ElementSource,
     /// The same answer `inspection().element_details()` publishes: kind, name, location,
@@ -139,9 +140,31 @@ pub struct ProjectedElement {
     /// families, effective typing, inherited features, metadata bindings, and incoming / outgoing
     /// relationships.
     pub details: ElementDetails,
+    /// Settled effective names, separate from the declaration's authored identification.
+    /// An absent value means no complete effective name is available.
+    pub effective_name: Option<Box<str>>,
+    pub effective_qualified_name: Option<Box<str>>,
+    /// Authored bound expressions; a single-bound range has only an upper expression.
+    pub multiplicity_expressions: Option<ProjectedMultiplicity>,
+    pub exposure: Option<ProjectedExposure>,
     /// The element's resolved constraint / calc / value expression, or
     /// [`crate::ExpressionOutcome::NotApplicable`] when it authored none.
     pub expression: PublishedExpression,
     /// Every metadata annotation bound to the element, in canonical order.
     pub metadata_annotations: Box<[PublishedMetadataAnnotation]>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ProjectedMultiplicity {
+    pub range: SymbolId,
+    pub lower: Option<SymbolId>,
+    pub upper: Option<SymbolId>,
+}
+
+/// Authored exposure shape, read from the canonical ViewExpose relationship flags.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ProjectedExposure {
+    pub namespace: bool,
+    pub recursive: bool,
+    pub filtered: bool,
 }

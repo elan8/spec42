@@ -30,7 +30,7 @@ package PictureTaking {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0466ad03f9aaa722f989c1a464ce05555f5a74e12552a0198749b4ef3f419e0c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0466ad03f9aaa722f989c1a464ce05555f5a74e12552a0198749b4ef3f419e0c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/picture_taking.md") (qualified-name "PictureTaking::Exposure"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -101,6 +101,8 @@ package PictureTaking {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/picture_taking.md") (path (named (kind package) (name "PictureTaking")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/picture_taking.md") (path (named (kind package) (name "PictureTaking")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/picture_taking.md") (path (named (kind package) (name "PictureTaking")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/picture_taking.md") (path (named (kind package) (name "PictureTaking")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -175,6 +177,13 @@ package PictureTaking {
     (declaration (id (node (document "memory://snapshot/picture_taking.md") (path (named (kind package) (name "PictureTaking")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/picture_taking.md") (path (named (kind package) (name "PictureTaking")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/picture_taking.md") (path (named (kind package) (name "PictureTaking")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/picture_taking.md") (path (named (kind package) (name "PictureTaking")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

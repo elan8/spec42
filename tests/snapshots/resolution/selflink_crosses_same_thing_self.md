@@ -39,7 +39,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4b53a5c1ce6d96cbad86b8c2655132aa30c046ac49d0c4cc25269fc22446d2ca"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4b53a5c1ce6d96cbad86b8c2655132aa30c046ac49d0c4cc25269fc22446d2ca"))
   (declarations
     (declaration (id (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (qualified-name "P::Anything"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
@@ -86,6 +86,7 @@ package P {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (qualified-name "P::SelfLink::thisThing"))) (target (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (qualified-name "P::SelfLink"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (path (named (kind package) (name "P")) (named (kind kerml-classifier) (name "Anything")) (named (kind kerml-feature) (name "self")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -137,6 +138,12 @@ package P {
       (supertype (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (qualified-name "P::SelfLink::sameThing")) (scopes any feature))
       (subtype (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (qualified-name "P::SelfLink::sameThing")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (path (named (kind package) (name "P")) (named (kind kerml-classifier) (name "Anything")) (named (kind kerml-feature) (name "self")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

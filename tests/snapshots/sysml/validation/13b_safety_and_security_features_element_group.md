@@ -118,7 +118,7 @@ package '13b-Safety and Security Features Element Group' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:79ea50579ebd42df77f9f251dbe269a4b81a743eef509f29a28014c1fd665f0c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:79ea50579ebd42df77f9f251dbe269a4b81a743eef509f29a28014c1fd665f0c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features"))) (kind package) (membership (kind owning) (visibility default)))
@@ -192,6 +192,8 @@ package '13b-Safety and Security Features Element Group' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "frontSeat")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
@@ -243,6 +245,13 @@ package '13b-Safety and Security Features Element Group' {
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "frontSeat")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # NAVIGATION

@@ -594,6 +594,19 @@ impl GeneratorModelView {
             .iter()
             .map(|node| {
                 let kind = match &node.kind {
+                    // ABI v7 has no invocation, sequence or meta-cast operator. Retain their
+                    // structured operands explicitly without claiming that protocol supports them.
+                    OwnedKind::Invocation { callee, arguments } => WireKind::Unsupported {
+                        children: std::iter::once(*callee)
+                            .chain(arguments.iter().copied())
+                            .collect(),
+                    },
+                    OwnedKind::Sequence { elements } => WireKind::Unsupported {
+                        children: elements.to_vec(),
+                    },
+                    OwnedKind::MetaCast { operand, metaclass } => WireKind::Unsupported {
+                        children: vec![*operand, *metaclass],
+                    },
                     OwnedKind::Literal(value) => WireKind::Literal(expression_literal(value)),
                     OwnedKind::FeatureReference { symbol, authored } => {
                         WireKind::FeatureReference {
