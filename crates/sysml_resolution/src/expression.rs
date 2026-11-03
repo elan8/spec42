@@ -267,7 +267,8 @@ pub(crate) struct ResolvedExpressionRow {
     pub(crate) result_typing: RawResultTyping,
     pub(crate) outcome: ExpressionOutcome,
     pub(crate) document: DocumentIdx,
-    pub(crate) nodes: Box<[RawExpressionNode]>,
+    /// Contexts share the authored arena until canonical binding changes a target.
+    pub(crate) nodes: std::sync::Arc<[RawExpressionNode]>,
     pub(crate) root: Option<u32>,
 }
 

@@ -1112,12 +1112,6 @@ standard library package Occurrences {
         (range (start 34 17) (end 34 37))
       )
       (diagnostic
-        (severity error)
-        (code "attribute_value_type_mismatch")
-        (source "semantic")
-        (range (start 36 50) (end 36 63))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

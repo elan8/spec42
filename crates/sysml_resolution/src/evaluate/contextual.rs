@@ -100,7 +100,7 @@ pub(crate) fn settle<D>(
                 .ok_or(ResolutionError::InvalidStorage)?;
             let mut operands = BTreeMap::new();
             let mut callees = super::CalleeTargets::new();
-            for node in &row.nodes {
+            for node in row.nodes.iter() {
                 let RawExpressionNodeKind::FeatureReference {
                     target,
                     reference: Some(reference),

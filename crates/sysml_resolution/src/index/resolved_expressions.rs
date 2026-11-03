@@ -60,7 +60,7 @@ impl ResolvedExpressionRow {
             result_typing: crate::index::expression_typing::RawResultTyping::Unsettled,
             outcome: ExpressionOutcome::Unsupported,
             document,
-            nodes: Box::default(),
+            nodes: Default::default(),
             root: None,
         }
     }
@@ -202,7 +202,7 @@ impl ResolvedExpressionIndex {
             relevant[index] = expression_elements[index];
         }
         for row in rows.iter().flatten() {
-            for node in &row.nodes {
+            for node in row.nodes.iter() {
                 if let RawExpressionNodeKind::FeatureReference {
                     target, reference, ..
                 } = &node.kind
@@ -314,13 +314,17 @@ impl ResolvedExpressionIndex {
                 let mut row = body(origin).ok_or(ResolutionError::InvalidStorage)?.clone();
                 let mut ambiguous = Vec::new();
                 let mut unresolved = false;
-                for node in row.nodes.iter_mut() {
+                let mut replacements = Vec::new();
+                for (node_index, node) in row.nodes.iter().enumerate() {
                     let RawExpressionNodeKind::FeatureReference {
-                        target, reference, ..
-                    } = &mut node.kind
+                        target: original_target,
+                        reference,
+                        ..
+                    } = &node.kind
                     else {
                         continue;
                     };
+                    let mut target = *original_target;
                     if let Some(reference_id) = reference {
                         let root = inputs
                             .resolution
@@ -358,17 +362,20 @@ impl ResolvedExpressionIndex {
                                 },
                             )?;
                             match status {
-                                ResolutionStatus::Resolved(resolved) => *target = Some(resolved),
+                                ResolutionStatus::Resolved(resolved) => target = Some(resolved),
                                 ResolutionStatus::Ambiguous(range) => ambiguous.extend_from_slice(
                                     &ambiguous_candidates
                                         [range.start as usize..(range.start + range.len) as usize],
                                 ),
                                 _ => unresolved = true,
                             }
+                            if target != *original_target {
+                                replacements.push((node_index, target));
+                            }
                             continue;
                         }
                     }
-                    let Some(target) = target else {
+                    let Some(target) = &mut target else {
                         continue;
                     };
                     let Some(target_owner) = inputs
@@ -396,6 +403,19 @@ impl ResolvedExpressionIndex {
                             unresolved = true;
                         }
                         many => ambiguous.extend_from_slice(many),
+                    }
+                    if Some(*target) != *original_target {
+                        replacements.push((node_index, Some(*target)));
+                    }
+                }
+                if !replacements.is_empty() {
+                    let nodes = std::sync::Arc::make_mut(&mut row.nodes);
+                    for (index, replacement) in replacements {
+                        if let RawExpressionNodeKind::FeatureReference { target, .. } =
+                            &mut nodes[index].kind
+                        {
+                            *target = replacement;
+                        }
                     }
                 }
                 ambiguous.sort_unstable();
@@ -582,7 +602,7 @@ fn classify_declaration(
         result_typing: crate::index::expression_typing::RawResultTyping::Unsettled,
         outcome: ExpressionOutcome::Resolved,
         document,
-        nodes: builder.nodes.into_boxed_slice(),
+        nodes: builder.nodes.into(),
         root: Some(root),
     }
 }

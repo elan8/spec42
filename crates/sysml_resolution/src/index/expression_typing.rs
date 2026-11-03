@@ -13,22 +13,28 @@ use crate::index::resolved_expressions::{
 };
 use crate::lower::facts::ParameterDirection;
 use crate::model::resolver::SemanticModel;
-use crate::model::{DeclarationId, DeclarationKind};
+use crate::model::{DeclarationId, DeclarationKind, ReferenceKind};
 use crate::{EvaluatedScalar, MembershipRole, MultiplicityBound, MultiplicityFacts};
 
 pub(crate) use crate::expression::RawResultTyping;
 
-#[derive(Clone)]
+struct Input {
+    types: Box<[DeclarationId]>,
+    optional: bool,
+}
+
 struct Signature {
-    inputs: Vec<DeclarationId>,
+    inputs: Vec<Input>,
     result: Box<[DeclarationId]>,
 }
 
 struct Registry<'a, D> {
     model: &'a SemanticModel<D>,
     natural: Option<DeclarationId>,
+    positive: Option<DeclarationId>,
+    sequence_size: Option<DeclarationId>,
     operators: Vec<(ExpressionOperator, Vec<DeclarationId>)>,
-    signatures: BTreeMap<DeclarationId, Option<Signature>>,
+    signatures: BTreeMap<DeclarationId, Option<std::sync::Arc<Signature>>>,
 }
 
 impl<'a, D> Registry<'a, D> {
@@ -77,6 +83,8 @@ impl<'a, D> Registry<'a, D> {
         Self {
             model,
             natural: find_anchor(&model.storage, &["ScalarValues", "Natural"]),
+            positive: find_anchor(&model.storage, &["ScalarValues", "Positive"]),
+            sequence_size: find_anchor(&model.storage, &["SequenceFunctions", "size"]),
             operators,
             signatures: BTreeMap::new(),
         }
@@ -101,7 +109,7 @@ impl<'a, D> Registry<'a, D> {
         values.into_boxed_slice()
     }
 
-    fn signature(&mut self, function: DeclarationId) -> Option<Signature> {
+    fn signature(&mut self, function: DeclarationId) -> Option<std::sync::Arc<Signature>> {
         if let Some(signature) = self.signatures.get(&function) {
             return signature.clone();
         }
@@ -113,9 +121,8 @@ impl<'a, D> Registry<'a, D> {
                     == Some(MembershipRole::ReturnParameter)
             })
             .map(|member| self.types(*member));
-        let signature = result
-            .filter(|result| !result.is_empty())
-            .map(|result| Signature {
+        let signature = result.filter(|result| !result.is_empty()).map(|result| {
+            std::sync::Arc::new(Signature {
                 inputs: members
                     .into_iter()
                     .filter(|member| {
@@ -124,9 +131,20 @@ impl<'a, D> Registry<'a, D> {
                             .declaration_facts(*member)
                             .is_some_and(|facts| facts.direction == Some(ParameterDirection::In))
                     })
+                    .map(|input| Input {
+                        types: self.types(input),
+                        optional: matches!(
+                            self.model.multiplicity(input),
+                            MultiplicityFacts::Declared {
+                                lower: MultiplicityBound::Literal(0),
+                                ..
+                            }
+                        ),
+                    })
                     .collect(),
                 result,
-            });
+            })
+        });
         self.signatures.insert(function, signature.clone());
         signature
     }
@@ -156,15 +174,38 @@ impl<'a, D> Registry<'a, D> {
             RawExpressionNodeKind::FeatureReference { target: None, .. } => {
                 RawResultTyping::Unresolved
             }
-            RawExpressionNodeKind::Invocation { callee, .. } => {
+            RawExpressionNodeKind::Invocation { callee, arguments } => {
                 match row.nodes.get(*callee as usize).map(|node| &node.kind) {
                     Some(RawExpressionNodeKind::FeatureReference {
                         target: Some(target),
                         ..
-                    }) => self
-                        .signature(*target)
-                        .map(|signature| RawResultTyping::Resolved(signature.result))
-                        .unwrap_or(RawResultTyping::Unsupported),
+                    }) => {
+                        // Sequence size counts occurrences. A canonical positive lower
+                        // multiplicity proves Positive independently of evaluated values.
+                        if Some(*target) == self.sequence_size && arguments.len() == 1 {
+                            if let (
+                                Some(positive),
+                                Some(RawExpressionNodeKind::FeatureReference {
+                                    target: Some(argument),
+                                    reference: Some(reference),
+                                    ..
+                                }),
+                            ) = (
+                                self.positive,
+                                row.nodes.get(arguments[0] as usize).map(|node| &node.kind),
+                            ) {
+                                if self.model.storage.references[reference.index()].kind
+                                    == ReferenceKind::ExpressionOperand
+                                    && matches!(self.model.multiplicity(*argument), MultiplicityFacts::Declared { lower: MultiplicityBound::Literal(lower), .. } if lower > 0)
+                                {
+                                    return RawResultTyping::Resolved(Box::from([positive]));
+                                }
+                            }
+                        }
+                        self.signature(*target)
+                            .map(|signature| RawResultTyping::Resolved(signature.result.clone()))
+                            .unwrap_or(RawResultTyping::Unsupported)
+                    }
                     _ => RawResultTyping::Unresolved,
                 }
             }
@@ -195,19 +236,14 @@ impl<'a, D> Registry<'a, D> {
                     if signature.inputs.len() < operands.len() {
                         continue;
                     }
-                    if signature.inputs[operands.len()..].iter().any(|input| {
-                        !matches!(
-                            self.model.multiplicity(*input),
-                            MultiplicityFacts::Declared {
-                                lower: MultiplicityBound::Literal(0),
-                                ..
-                            }
-                        )
-                    }) {
+                    if signature.inputs[operands.len()..]
+                        .iter()
+                        .any(|input| !input.optional)
+                    {
                         continue;
                     }
                     let matches = signature.inputs.iter().zip(&arguments).zip(operands).all(|((input, argument), operand)| {
-                        let required = self.types(*input);
+                        let required = &input.types;
                         let RawResultTyping::Resolved(actual) = argument else { return false };
                         !required.is_empty() && required.iter().all(|required| {
                             actual.iter().any(|actual| conforms(&self.model.types, *actual, *required))
@@ -217,7 +253,7 @@ impl<'a, D> Registry<'a, D> {
                         })
                     });
                     if matches {
-                        applicable.push((function, signature.result));
+                        applicable.push((function, signature.result.clone()));
                     }
                 }
                 let all = applicable
@@ -273,6 +309,23 @@ pub(crate) fn settle<D>(model: &mut SemanticModel<D>) {
             let ContextualExpressionResult::Resolved(row) = &value.result else {
                 return None;
             };
+            // Copy-on-write binding retains the authored arena exactly when no
+            // target changed. Static typing is a function of that tree and the
+            // same frozen type/signature indexes, so reuse its settled answer.
+            let authored = if model.resolved_expressions.row(value.authored).is_some() {
+                Some(value.authored)
+            } else {
+                model.value_expression(value.authored)
+            };
+            if let Some((authored, base)) =
+                authored.and_then(|id| Some((id, model.resolved_expressions.row(id)?)))
+            {
+                if row.root == base.root && std::sync::Arc::ptr_eq(&row.nodes, &base.nodes) {
+                    if let Some(typing) = &rows[authored.index()] {
+                        return Some((*key, typing.clone()));
+                    }
+                }
+            }
             Some((*key, registry.row(row)))
         })
         .collect::<Vec<_>>();

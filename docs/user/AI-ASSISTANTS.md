@@ -56,9 +56,14 @@ this does not imply that the evaluator executes those operations. Generator ABI 
 represent these newer operators as explicitly unsupported nodes with their operands retained.
 
 Expression `result_typing` reports static result types separately from evaluated values.
-Computed Integer results do not become Natural merely because their value is nonnegative.
+The strict conformance diagnostic covers bound scalar datatype values and assignments; defaults
+retain the existing declaration reporting policy, while structural and unit bindings need their
+own intersection/measurement rules. Computed Integer results do not become Natural merely
+because their value is nonnegative.
 Operator signatures come from admitted standard-library specializations; named invocations
-retain their declared return type. Unresolved, ambiguous and unsupported typings remain explicit.
+retain their declared return type; sequence size can refine to Positive when a direct feature
+operand has a proven positive lower multiplicity. Unresolved, ambiguous and unsupported typings
+remain explicit.
 `contextual_evaluations` identifies the requested, effective and authored elements for each
 inherited expression evaluated in a usage. A false contextual constraint reports at that usage
 and links to its authored declaration. Derived values use the same evaluator with contextual

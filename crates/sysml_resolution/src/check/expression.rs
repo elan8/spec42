@@ -122,7 +122,7 @@ impl<D> SemanticModel<D> {
             if declaration.document != document || value.is_expression_body {
                 continue;
             }
-            if !self.value_type_conflicts(value.declaration, value.declaration) {
+            if !self.value_type_conflicts(value.declaration, value.declaration, !value.is_default) {
                 continue;
             }
             diagnostics.push(Diagnostic {
@@ -160,7 +160,7 @@ impl<D> SemanticModel<D> {
             let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(id) else {
                 continue;
             };
-            if !self.value_type_conflicts(reference.source, target) {
+            if !self.value_type_conflicts(reference.source, target, true) {
                 continue;
             }
             diagnostics.push(Diagnostic {
@@ -249,6 +249,7 @@ impl<D> SemanticModel<D> {
         &self,
         expression: DeclarationId,
         receiver: DeclarationId,
+        static_binding: bool,
     ) -> bool {
         let row = self.resolved_expressions.body(expression).or_else(|| {
             self.resolved_expressions
@@ -264,21 +265,34 @@ impl<D> SemanticModel<D> {
                         crate::index::resolved_expressions::RawExpressionNodeKind::Literal(_)
                     )
                 });
-            if !literal {
+            if static_binding && !literal {
                 if let crate::index::expression_typing::RawResultTyping::Resolved(actual) =
                     &row.result_typing
                 {
-                    let declared = self.types.effective_types(receiver);
-                    // Quantity conformance is owned by the dimensional rule below. A
-                    // generic quantity function's static result does not encode its unit.
-                    let quantity = self.expressions.anchors.quantity_value;
-                    if !declared.is_empty()
-                        && !declared.iter().any(|(target, _)| {
-                            quantity
-                                .is_some_and(|quantity| conforms(&self.types, *target, quantity))
+                    // This diagnostic's static policy covers scalar datatype bindings.
+                    // Structural/unit bindings need intersection and measurement semantics,
+                    // not a directional test of their declared nominal result types.
+                    // Defaults are bound at invocation, not at their declaration (KerML
+                    // 8.4.4.11); the declaration retains the literal policy below.
+                    let scalar_anchors = [
+                        self.expressions.anchors.boolean,
+                        self.expressions.anchors.string,
+                        self.expressions.anchors.real,
+                        self.expressions.anchors.integer,
+                    ];
+                    let mut declared = self
+                        .types
+                        .effective_types(receiver)
+                        .iter()
+                        .filter(|(target, _)| {
+                            scalar_anchors
+                                .iter()
+                                .flatten()
+                                .any(|anchor| conforms(&self.types, *target, *anchor))
                         })
-                    {
-                        return !declared.iter().all(|(target, _)| {
+                        .peekable();
+                    if declared.peek().is_some() {
+                        return !declared.all(|(target, _)| {
                             actual
                                 .iter()
                                 .any(|actual| conforms(&self.types, *actual, *target))

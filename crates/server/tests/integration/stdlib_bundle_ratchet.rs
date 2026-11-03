@@ -30,7 +30,14 @@ const EXPECTED_KPAR_COUNT: usize = 10;
 /// a change here is a deliberate inventory change that belongs in the same commit.
 const EXPECTED_DOCUMENT_COUNT: usize = 94;
 
-const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[("ambiguous_reference", 2)];
+// The scalar binding check also exposes ShapeItems::Pyramid::wallNumber:
+// SequenceFunctions::size has static type Natural, while wallNumber is Positive.
+// Its positivity depends on separate geometric constraints, not a declared positive
+// multiplicity; the checker does not propagate those constraints into static types.
+const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[
+    ("ambiguous_reference", 2),
+    ("attribute_value_type_mismatch", 1),
+];
 
 fn base_cli() -> Cli {
     Cli {
@@ -162,9 +169,31 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
             .map(|(code, count)| ((*code).to_owned(), *count))
             .collect::<std::collections::BTreeMap<_, _>>();
 
+        let narrowing_locations = report
+            .documents
+            .iter()
+            .flat_map(|document| {
+                document
+                    .diagnostics
+                    .iter()
+                    .filter(|diagnostic| diagnostic.code == "attribute_value_type_mismatch")
+                    .map(move |diagnostic| {
+                        (
+                            document.uri.rsplit('/').next().unwrap_or(&document.uri),
+                            diagnostic.range.start.line,
+                        )
+                    })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            narrowing_locations,
+            [("ShapeItems.sysml", 840)],
+            "only the reviewed static narrowing finding is admitted"
+        );
+
         assert_eq!(
             report.summary.error_count,
-            2,
+            3,
             "bundled standard-library errors changed:\n  {}",
             offenders.join("\n  ")
         );
