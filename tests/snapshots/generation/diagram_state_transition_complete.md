@@ -403,7 +403,7 @@ package StateExample {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:380fbd80c0ffea70fd0b44e1ca26345c1d3dfbee5bb87437a4420759d37a68e1",
+  "modelDigest": "blake3:caa2bcde1ac9acbc7570af6a2b64311f04b73b59b9140ebec8579b69c9ec51c5",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_complete.md",
@@ -1066,7 +1066,7 @@ package StateExample {
         "compartments": [],
         "conjugated": false,
         "direction": "inout",
-        "featureDirection": null,
+        "featureDirection": "inout",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,
@@ -1104,7 +1104,7 @@ package StateExample {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,
@@ -1123,7 +1123,7 @@ package StateExample {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,

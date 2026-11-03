@@ -465,7 +465,7 @@ package NamedUsage {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:466f73ceefc49d4f17a24ce044dd28e17210c0b4520d61207ec3edb4804a6b08",
+  "modelDigest": "blake3:e84d5d742e89436c55cbbb9b28e4e7ad73d6076d32ffc8a68790f8c3c8e72268",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1039,7 +1039,7 @@ package NamedUsage {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,

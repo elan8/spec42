@@ -726,7 +726,7 @@ package Control {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:287f4c11268d7daa5a7f04be1f04cbc723736764808d19177cd74c31c39da8d2",
+  "modelDigest": "blake3:7d3965417d13bdb766bba28ea23c5c5557b0beaedbf06819f5399ba4d84ced66",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1698,7 +1698,7 @@ package Control {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,

@@ -895,7 +895,7 @@ package Flow {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:32873ca26cdefb53e8a61930c2fd081a01dbc8bb2c01686c2e08444fb501e4b7",
+  "modelDigest": "blake3:4b1442c3259c62804bc3f5b9af424de4e6947c358ff237a6132be28443e99cf5",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -2655,7 +2655,7 @@ package Flow {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ItemUsage",
         "multiplicity": null,
         "name": "order",
@@ -2745,7 +2745,7 @@ package Flow {
         "compartments": [],
         "conjugated": false,
         "direction": "out",
-        "featureDirection": null,
+        "featureDirection": "out",
         "metaclass": "ItemUsage",
         "multiplicity": null,
         "name": "order",

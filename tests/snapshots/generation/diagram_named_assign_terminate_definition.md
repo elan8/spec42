@@ -715,7 +715,7 @@ package NamedNodes {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:7be576c3cbbb0486a25e182e9b3e6891b0db739e25bb91fefbc033ae440c7418",
+  "modelDigest": "blake3:95bdbd0bb1c9688080e6f605d5f84c4c966082d8a5a7bd15a3ed23b444544035",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1364,7 +1364,7 @@ package NamedNodes {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,
