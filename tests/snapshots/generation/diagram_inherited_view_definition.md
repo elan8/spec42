@@ -658,7 +658,7 @@ package InheritedViews {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:fbd23eb101f8ac161ee540c682931a835f96ba0ffd4857edc1580e5aea7bd15b",
+  "modelDigest": "blake3:6e67c07547e630227ff1d38da0274c514c7290b0cf43f19dc8af6dd766a00bd6",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

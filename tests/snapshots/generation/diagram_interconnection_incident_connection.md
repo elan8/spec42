@@ -292,7 +292,7 @@ package Model {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:969864627e00b4536ed5c488d56382b2c0fca4d76cab305ea8f6a249700f35ad",
+  "modelDigest": "blake3:9224e4e9716f965e11fe9561cdaf57175328af3ef89870487af1a0187189cad4",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

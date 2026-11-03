@@ -1042,12 +1042,17 @@ impl SemanticModelBuilder {
                 op: CollectionOperator::Select,
                 base,
                 args,
-                brace_body: None,
+                brace_body,
                 ..
             } => (
                 OperatorExpressionKind::Select,
                 std::iter::once(site(base))
                     .chain(args.iter().map(|argument| site(&argument.value)))
+                    .chain(
+                        brace_body
+                            .iter()
+                            .map(|body| (body.span, DeclarationKind::KermlExpression)),
+                    )
                     .collect::<Vec<_>>(),
             ),
             _ => return Ok(()),
@@ -1283,7 +1288,7 @@ impl SemanticModelBuilder {
             node: &'a Node<Expression>,
             chain: &mut Vec<QualifiedReferenceId>,
             casts: &mut Vec<(usize, QualifiedReferenceId)>,
-            indexed_base: &mut Option<&'a Node<Expression>>,
+            operator_base: &mut Option<&'a Node<Expression>>,
         ) -> bool {
             match &node.value {
                 Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
@@ -1291,14 +1296,14 @@ impl SemanticModelBuilder {
                     true
                 }
                 Expression::MemberAccess { base, member, .. } => {
-                    if !collect(base, chain, casts, indexed_base) {
+                    if !collect(base, chain, casts, operator_base) {
                         return false;
                     }
                     chain.push(*member);
                     true
                 }
                 Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
-                    [only] => collect(&only.expression, chain, casts, indexed_base),
+                    [only] => collect(&only.expression, chain, casts, operator_base),
                     _ => false,
                 },
                 Expression::TypeCheck {
@@ -1306,7 +1311,7 @@ impl SemanticModelBuilder {
                     operand: Some(operand),
                     type_name,
                 } => {
-                    if !collect(operand, chain, casts, indexed_base) {
+                    if !collect(operand, chain, casts, operator_base) {
                         return false;
                     }
                     if *kind == TypeCheckKind::As {
@@ -1314,8 +1319,12 @@ impl SemanticModelBuilder {
                     }
                     true
                 }
-                Expression::Index { .. } => {
-                    *indexed_base = Some(node);
+                Expression::Index { .. }
+                | Expression::CollectionOp {
+                    op: CollectionOperator::Select,
+                    ..
+                } => {
+                    *operator_base = Some(node);
                     true
                 }
                 _ => false,
@@ -1324,18 +1333,18 @@ impl SemanticModelBuilder {
 
         let mut chain = Vec::new();
         let mut casts = Vec::new();
-        let mut indexed_base = None;
-        if !collect(node, &mut chain, &mut casts, &mut indexed_base) || chain.is_empty() {
+        let mut operator_base = None;
+        if !collect(node, &mut chain, &mut casts, &mut operator_base) || chain.is_empty() {
             return Ok(None);
         }
         // Occurrence endpoint roles need their own indexed-occurrence contract. Do not
         // reinterpret them as expression-result lookups merely because they share this helper.
-        if indexed_base.is_some() && kind != ReferenceKind::MemberAccessOperand {
+        if operator_base.is_some() && kind != ReferenceKind::MemberAccessOperand {
             return Ok(None);
         }
-        // A nested indexed access is its own FeatureChainExpression, even when the caller
+        // A member access after an operator is its own FeatureChainExpression, even when the caller
         // has not yet materialized the enclosing operator's other operands (#337).
-        let source = if indexed_base.is_some()
+        let source = if operator_base.is_some()
             && kind == ReferenceKind::MemberAccessOperand
             && !self
                 .feature_chain_expressions
@@ -1349,8 +1358,8 @@ impl SemanticModelBuilder {
             source
         };
         let parsed = Arc::clone(&self.documents[document.index()].parsed);
-        let mut narrowings = Vec::with_capacity(casts.len() + usize::from(indexed_base.is_some()));
-        if let Some(base) = indexed_base {
+        let mut narrowings = Vec::with_capacity(casts.len() + usize::from(operator_base.is_some()));
+        if let Some(base) = operator_base {
             let (expression, result) = self.mint_value_expression(document, source, None, base)?;
             self.expression_arguments.push(ExpressionArgumentRecord {
                 expression: source,
@@ -1358,7 +1367,7 @@ impl SemanticModelBuilder {
                 result,
                 ordinal: 0,
             });
-            self.lower_indexed_access_argument(document, expression, base)?;
+            self.lower_access_operator_argument(document, expression, base)?;
             narrowings.push(MemberAccessNarrowing {
                 segment_count: 0,
                 target: MemberAccessTarget::ExpressionResult(result),
@@ -1384,7 +1393,7 @@ impl SemanticModelBuilder {
                 target: MemberAccessTarget::Reference(target_reference),
             });
         }
-        let reference_span = if indexed_base.is_some() {
+        let reference_span = if operator_base.is_some() {
             let first = parsed
                 .qualified_reference(chain[0])
                 .ok_or(ConstructionError::InvalidParserReference)?

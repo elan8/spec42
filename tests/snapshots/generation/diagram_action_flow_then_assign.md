@@ -856,7 +856,7 @@ package Counting {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:7eaf5dd052eb4ac0fe33f156df3d3b0a37a7442d782f223eff5829955f965381",
+  "modelDigest": "blake3:6befc82b3c99b0780bf76b0ab7f4e295e74f6606636e4ade1b2b843021427ecf",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

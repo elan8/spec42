@@ -31,10 +31,10 @@ use crate::model::Visibility;
 use std::sync::Arc;
 use sysml_v2_parser::ast::{
     AssertConstraintMember, CalcDef, CalcDefBody, CalcDefBodyElement, CalcUsage as ParserCalcUsage,
-    CollectionOperatorBody, CollectionOperatorParameterTerminator, ConstraintDef,
-    ConstraintDefBody, ConstraintDefBodyElement, ConstraintUsage as ParserConstraintUsage,
-    Expression, MembershipKind as ParserMembershipKind, Node, RequireConstraint,
-    SequenceExpressionList,
+    CollectionOperator, CollectionOperatorBody, CollectionOperatorParameterTerminator,
+    ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement,
+    ConstraintUsage as ParserConstraintUsage, Expression, MembershipKind as ParserMembershipKind,
+    Node, RequireConstraint, SequenceExpressionList,
 };
 
 use crate::lower::facts::ExpressionOperandRole;
@@ -1060,17 +1060,24 @@ impl SemanticModelBuilder {
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
 
-    /// Retains the indexed primary argument as an owned expression tree. Operator arguments
+    /// Retains an index or selection primary as an owned expression tree. Operator arguments
     /// already have identities; register their shapes and lower each in that identity instead
     /// of flattening indexing into the surrounding feature chain (KerML 8.3.4.8.4, .6).
-    pub(super) fn lower_indexed_access_argument(
+    pub(super) fn lower_access_operator_argument(
         &mut self,
         document: DocumentIdx,
         expression: DeclarationId,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
         let mut site = self.calc_expression_site(document, &node.value);
-        if matches!(node.value, Expression::Index { .. }) {
+        if matches!(
+            node.value,
+            Expression::Index { .. }
+                | Expression::CollectionOp {
+                    op: CollectionOperator::Select,
+                    ..
+                }
+        ) {
             site.operand_scope = crate::lower::facts::ExpressionOperandScope::OwnedArguments;
         }
         self.push_evaluation_fact(expression, site);
@@ -1099,7 +1106,41 @@ impl SemanticModelBuilder {
                     argument.result,
                     operand,
                 )?;
-                self.lower_indexed_access_argument(document, argument.argument, operand)?;
+                self.lower_access_operator_argument(document, argument.argument, operand)?;
+            }
+            Ok(())
+        } else if let Expression::CollectionOp {
+            op: CollectionOperator::Select,
+            base,
+            args,
+            brace_body,
+            ..
+        } = &node.value
+        {
+            self.note_expression_node(expression, node);
+            let arguments = self
+                .expression_arguments
+                .iter()
+                .filter(|argument| argument.expression == expression)
+                .copied()
+                .collect::<Vec<_>>();
+            if arguments.len() != 1 + args.len() + usize::from(brace_body.is_some()) {
+                return Err(ConstructionError::InvalidIdentity);
+            }
+            let nodes =
+                std::iter::once(base.as_ref()).chain(args.iter().map(|argument| &argument.value));
+            for (argument, operand) in arguments.iter().zip(nodes) {
+                self.record_value_expression_shape(
+                    document,
+                    argument.argument,
+                    argument.result,
+                    operand,
+                )?;
+                self.lower_access_operator_argument(document, argument.argument, operand)?;
+            }
+            if let Some(body) = brace_body {
+                let argument = arguments.last().ok_or(ConstructionError::InvalidIdentity)?;
+                self.lower_expression_body_contents(document, argument.argument, body)?;
             }
             Ok(())
         } else {
@@ -1129,6 +1170,15 @@ impl SemanticModelBuilder {
             None,
             body.span,
         )?;
+        self.lower_expression_body_contents(document, expression, body)
+    }
+
+    fn lower_expression_body_contents(
+        &mut self,
+        document: DocumentIdx,
+        expression: DeclarationId,
+        body: &Node<CollectionOperatorBody>,
+    ) -> Result<(), ConstructionError> {
         if let Some(doc) = &body.value.doc {
             self.record_doc_comment(document, expression, doc)?;
         }
