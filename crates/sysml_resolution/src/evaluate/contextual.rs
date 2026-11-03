@@ -7,7 +7,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::classify::{classify_authored, ExpressionEvalShape};
 use super::fold::{fold_eval_node_pending, CallTarget, EvalOperand};
-use crate::index::resolved_expressions::{ContextualExpressionResult, RawExpressionNodeKind};
+use crate::expression::{ContextualExpressionResult, RawExpressionNodeKind};
 use crate::lower::storage::ParsedSources;
 use crate::model::resolver::SemanticModel;
 use crate::model::{DeclarationId, EvaluatedValue, ReferenceKind};

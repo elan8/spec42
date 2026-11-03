@@ -16,14 +16,7 @@ use crate::model::resolver::SemanticModel;
 use crate::model::{DeclarationId, DeclarationKind};
 use crate::{EvaluatedScalar, MembershipRole, MultiplicityBound, MultiplicityFacts};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum RawResultTyping {
-    Unsettled,
-    Resolved(Box<[DeclarationId]>),
-    Unresolved,
-    Ambiguous(Box<[DeclarationId]>),
-    Unsupported,
-}
+pub(crate) use crate::expression::RawResultTyping;
 
 #[derive(Clone)]
 struct Signature {

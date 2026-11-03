@@ -20,6 +20,10 @@ use crate::evaluate::classify::{
     is_unary_operator,
 };
 use crate::evaluate::fold::literal_expression_value;
+pub(crate) use crate::expression::{
+    ContextualExpressionResult, ContextualExpressionRow, RawExpressionNode, RawExpressionNodeKind,
+    ResolvedExpressionRow,
+};
 use crate::expression::{
     ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome, PublishedExpression,
 };
@@ -36,7 +40,6 @@ use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::results::{ResolutionError, ResolutionResults, ResolutionStatus};
-use crate::EvaluatedScalar;
 use crate::OccurrenceRole;
 use crate::QueryAnswer;
 use crate::QueryOutcome;
@@ -50,53 +53,6 @@ type RoleReferenceIndex = std::collections::BTreeMap<
     (DocumentIdx, ReferenceKind, usize, usize),
     Vec<AuthoredReferenceId>,
 >;
-
-/// One node of a settled tree, before its span and target are projected onto the published
-/// contract. `span`/`document` become a `SourceLocation` and `target` a `SymbolId` at query time,
-/// exactly as `SettledUnit` is projected onto `AuthoredUnit`.
-#[derive(Debug, Clone, PartialEq)]
-pub(crate) struct RawExpressionNode {
-    pub(crate) kind: RawExpressionNodeKind,
-    pub(crate) span: Span,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub(crate) enum RawExpressionNodeKind {
-    Invocation {
-        callee: u32,
-        arguments: Box<[u32]>,
-    },
-    Sequence {
-        elements: Box<[u32]>,
-    },
-    MetaCast {
-        operand: u32,
-        metaclass: u32,
-    },
-    Literal(EvaluatedScalar),
-    FeatureReference {
-        target: Option<DeclarationId>,
-        authored: Box<str>,
-        reference: Option<AuthoredReferenceId>,
-    },
-    Operator {
-        operator: ExpressionOperator,
-        operands: Box<[u32]>,
-    },
-    Unsupported {
-        children: Box<[u32]>,
-    },
-}
-
-/// The settled resolved-expression tree of one declaration.
-#[derive(Debug, Clone, PartialEq)]
-pub(crate) struct ResolvedExpressionRow {
-    pub(crate) result_typing: crate::index::expression_typing::RawResultTyping,
-    pub(crate) outcome: ExpressionOutcome,
-    pub(crate) document: DocumentIdx,
-    pub(crate) nodes: Box<[RawExpressionNode]>,
-    pub(crate) root: Option<u32>,
-}
 
 impl ResolvedExpressionRow {
     fn unsupported(document: DocumentIdx) -> Self {
@@ -120,21 +76,6 @@ pub(crate) struct ResolvedExpressionIndex {
     bodies: Box<[Option<DeclarationId>]>,
     pub(crate) contextual:
         std::collections::BTreeMap<(DeclarationId, DeclarationId), ContextualExpressionRow>,
-}
-
-#[derive(Debug)]
-pub(crate) struct ContextualExpressionRow {
-    pub(crate) authored: DeclarationId,
-    pub(crate) effective: DeclarationId,
-    pub(crate) result: ContextualExpressionResult,
-    pub(crate) evaluation: crate::EvaluationState,
-}
-
-#[derive(Debug)]
-pub(crate) enum ContextualExpressionResult {
-    Resolved(ResolvedExpressionRow),
-    Ambiguous(Box<[DeclarationId]>),
-    Unresolved,
 }
 
 /// The settled facts this index reads, borrowed from the phase products that own them.
