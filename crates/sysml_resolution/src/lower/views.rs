@@ -30,7 +30,9 @@ impl SemanticModelBuilder {
     /// Lowers a `view def` (BNF ViewDefinition), mirroring `lower_interface_def`: ownership,
     /// membership, an optional `:>` specialization relationship (participates in the shared
     /// Subclassification/FeatureTyping `DeclarationDomain::Type` fixed point). Body members
-    /// use the same canonical attribute, filter and rendering walkers as view usages.
+    /// use the same canonical attribute, filter and rendering walkers as view usages. This
+    /// covers the parser's current view-body alternatives; remaining DefinitionBodyItem forms
+    /// (including part/item and shorthand reference usages) are tracked in parser issue #224.
     pub(crate) fn lower_view_def(
         &mut self,
         document: DocumentIdx,

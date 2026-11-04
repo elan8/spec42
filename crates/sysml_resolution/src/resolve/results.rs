@@ -628,3 +628,36 @@ impl ResolutionResults {
         self.library_specialization_anchors.outcome(rule_id)
     }
 }
+
+/// Brent's repeated-state detector retains one exact checkpoint, without hash collisions or
+/// history proportional to the number of passes. A converged fixed point is checked first.
+pub(crate) struct FeedbackCycle<T> {
+    checkpoint: Option<T>,
+    distance: usize,
+    power: usize,
+}
+
+impl<T> Default for FeedbackCycle<T> {
+    fn default() -> Self {
+        Self {
+            checkpoint: None,
+            distance: 0,
+            power: 1,
+        }
+    }
+}
+
+impl<T: PartialEq> FeedbackCycle<T> {
+    pub(crate) fn repeats(&mut self, state: T) -> bool {
+        if self.checkpoint.as_ref() == Some(&state) {
+            return true;
+        }
+        if self.checkpoint.is_none() || self.distance == self.power {
+            self.checkpoint = Some(state);
+            self.power = self.power.saturating_mul(2);
+            self.distance = 0;
+        }
+        self.distance = self.distance.saturating_add(1);
+        false
+    }
+}

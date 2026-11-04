@@ -297,22 +297,6 @@ package '5-State-based Behavior-1' {
       )
       (diagnostic
         (severity warning)
-        (code "transition_endpoint_invalid_state")
-        (source "semantic")
-        (range (start 76 4) (end 76 32))
-        (related-information
-          (related
-            (uri "memory://snapshot/5_state_based_behavior_1.md")
-            (range (start 69 4) (end 74 5))
-          )
-          (related
-            (uri "memory://snapshot/5_state_based_behavior_1.md")
-            (range (start 78 4) (end 78 14))
-          )
-        )
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 112 8) (end 112 23))
@@ -331,22 +315,6 @@ package '5-State-based Behavior-1' {
       )
       (diagnostic
         (severity warning)
-        (code "transition_endpoint_invalid_state")
-        (source "semantic")
-        (range (start 135 4) (end 135 35))
-        (related-information
-          (related
-            (uri "memory://snapshot/5_state_based_behavior_1.md")
-            (range (start 128 4) (end 128 25))
-          )
-          (related
-            (uri "memory://snapshot/5_state_based_behavior_1.md")
-            (range (start 137 4) (end 137 17))
-          )
-        )
-      )
-      (diagnostic
-        (severity warning)
         (code "duplicate_namespace_member")
         (source "semantic")
         (range (start 170 4) (end 170 32))
@@ -354,22 +322,6 @@ package '5-State-based Behavior-1' {
           (related
             (uri "memory://snapshot/5_state_based_behavior_1.md")
             (range (start 168 4) (end 168 25))
-          )
-        )
-      )
-      (diagnostic
-        (severity warning)
-        (code "transition_endpoint_invalid_state")
-        (source "semantic")
-        (range (start 170 4) (end 170 32))
-        (related-information
-          (related
-            (uri "memory://snapshot/5_state_based_behavior_1.md")
-            (range (start 168 4) (end 168 25))
-          )
-          (related
-            (uri "memory://snapshot/5_state_based_behavior_1.md")
-            (range (start 172 4) (end 172 14))
           )
         )
       )
@@ -918,10 +870,8 @@ package '5-State-based Behavior-1' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind entry-action-binding) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind transition) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states"))) (provenance implied))
-    (relationship (kind transitionSource) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind transition) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind entry-action-binding) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind transition) (name "initial")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind transition) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind transition) (name "initial")) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind transition) (name "initial"))))) (provenance implied))
-    (relationship (kind succession) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind transition) (name "initial")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind entry-action-binding) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off-on"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "controller states")) (named (kind state) (name "operational controller states")) (named (kind transition) (name "off-on")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off-on"))) (provenance implied))
@@ -951,10 +901,8 @@ package '5-State-based Behavior-1' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "degraded-normal")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "degraded-normal")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind entry-action-binding) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states"))) (provenance implied))
-    (relationship (kind transitionSource) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind entry-action-binding) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "initial")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "initial")) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "initial"))))) (provenance implied))
-    (relationship (kind succession) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "initial")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind entry-action-binding) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::maintenance"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::maintenance-normal"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "health states")) (named (kind transition) (name "maintenance-normal")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::maintenance-normal"))) (provenance implied))
@@ -987,10 +935,8 @@ package '5-State-based Behavior-1' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind entry-action-binding) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind transition) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states"))) (provenance implied))
-    (relationship (kind transitionSource) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind transition) (name "initial"))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind entry-action-binding) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind transition) (name "initial")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind transition) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind transition) (name "initial")) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind transition) (name "initial"))))) (provenance implied))
-    (relationship (kind succession) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind transition) (name "initial")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind entry-action-binding) (name "initial"))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off-starting"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states"))) (provenance implied))
     (relationship (kind transitionEffect) (source (node (document "memory://snapshot/5_state_based_behavior_1.md") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off-starting"))) (target (node (document "memory://snapshot/5_state_based_behavior_1.md") (path (named (kind package) (name "5-State-based Behavior-1")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (named (kind transition) (name "off-starting")) (anonymous (kind send-action) (ordinal 0))))) (provenance implied))

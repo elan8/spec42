@@ -59,6 +59,7 @@ use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
 use crate::resolve::resolve_dense;
+use crate::resolve::results::FeedbackCycle;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -189,13 +190,11 @@ pub(crate) fn resolve_facts(
         .metadata_annotations
         .len()
         .saturating_add(expression_links)
-        .saturating_add(
-            storage
-                .declarations
-                .len()
-                .saturating_mul(import_slots.len()),
-        )
+        .saturating_add(import_slots.len())
         .saturating_add(2);
+    // Import shadowing is not monotone. Detect repeated complete feedback states as well as
+    // retaining a finite dependency budget; a two-state oscillation must not spend that budget.
+    let mut feedback_cycle = FeedbackCycle::default();
     let (direct_names, effective_imports, exported_imports, memberships, resolution) = loop {
         let (direct_names, effective_imports, exported_imports, memberships, resolution) =
             resolve_dense(
@@ -396,7 +395,17 @@ pub(crate) fn resolve_facts(
                 resolution,
             );
         }
-        if relationship_passes_remaining == 0 {
+        let repeated = !import_slots.is_empty()
+            && feedback_cycle.repeats((
+                next_relationships.clone(),
+                effective_imports.clone(),
+                exported_imports.clone(),
+                resolution.effective_names.clone(),
+                resolution.inherited_names.clone(),
+                resolution.outcomes.clone(),
+                resolution.ambiguous_candidates.clone(),
+            ));
+        if relationship_passes_remaining == 0 || repeated {
             resolution.solver_status = SolverStatus::NonConverged;
             break (
                 direct_names,
@@ -1000,6 +1009,18 @@ mod failure_tests {
     use super::{resolution_failure, ResolutionError};
     use crate::model::DocumentIdx;
     use crate::{BuildFailure, ConstructionPhase};
+
+    #[test]
+    fn import_feedback_cycles_stop_without_exhausting_a_model_sized_budget() {
+        let mut cycle = super::FeedbackCycle::default();
+        let repeated_at =
+            (0..20).find(|step| cycle.repeats(if *step < 3 { *step } else { 3 + step % 2 }));
+        assert!(repeated_at.is_some_and(|step| step < 10));
+        let mut cycle = super::FeedbackCycle::default();
+        for state in 0..1024 {
+            assert!(!cycle.repeats(state));
+        }
+    }
 
     #[test]
     fn invalid_storage_reports_the_owning_phase_and_failed_document() {

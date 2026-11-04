@@ -1,5 +1,7 @@
 //! Phase 9: the read-only query surface over a finished model.
 
+use std::collections::BTreeMap;
+
 pub(crate) mod ends;
 mod import_plan;
 mod redefinition;
@@ -5162,6 +5164,7 @@ impl<D> SemanticModel<D> {
         let elements_total = workspace_elements.len();
 
         let mut elements = Vec::new();
+        let mut qualified_names = BTreeMap::new();
         let mut elements_incomplete = 0usize;
         for published in workspace_elements.into_iter().take(max_nodes) {
             let symbol = published.entry.identity;
@@ -5191,7 +5194,8 @@ impl<D> SemanticModel<D> {
                 _ => Box::default(),
             };
             let effective_name = self.effective_name_for_projection(symbol);
-            let effective_qualified_name = self.effective_qualified_name_for_projection(symbol);
+            let effective_qualified_name =
+                self.effective_qualified_name_for_projection(symbol, &mut qualified_names);
             let multiplicity_expressions = self.multiplicity_for_projection(symbol);
             let exposure = self.declaration_of(symbol).and_then(|declaration| {
                 self.authored_references(declaration, &[ReferenceKind::ViewExpose])
@@ -5290,20 +5294,38 @@ impl<D> SemanticModel<D> {
         }
     }
 
-    fn effective_qualified_name_for_projection(&self, symbol: SymbolId) -> Option<Box<str>> {
-        let mut current = self.declaration_of(symbol)?;
-        let mut segments = Vec::new();
-        loop {
-            segments.push(self.effective_name_for_projection(self.symbol_id(current)?)?);
+    fn effective_qualified_name_for_projection(
+        &self,
+        symbol: SymbolId,
+        cache: &mut BTreeMap<DeclarationId, Option<Box<str>>>,
+    ) -> Option<Box<str>> {
+        let declaration = self.declaration_of(symbol)?;
+        let mut current = declaration;
+        let mut pending = Vec::new();
+        while !cache.contains_key(&current) {
+            pending.push(current);
             let Some(owner) = self.storage.declaration(current)?.owner else {
                 break;
             };
             current = owner;
         }
-        segments.reverse();
-        Some(segments.join("::").into_boxed_str())
+        // Owners precede their children in this local memo, including absent/unresolved names.
+        // The memo belongs to this immutable publication and this projection call only.
+        for current in pending.into_iter().rev() {
+            let name = self
+                .symbol_id(current)
+                .and_then(|symbol| self.effective_name_for_projection(symbol));
+            let qualified = name.and_then(|name| match self.storage.declaration(current)?.owner {
+                Some(owner) => cache
+                    .get(&owner)?
+                    .as_ref()
+                    .map(|prefix| format!("{prefix}::{name}").into_boxed_str()),
+                None => Some(name),
+            });
+            cache.insert(current, qualified);
+        }
+        cache.get(&declaration).cloned().flatten()
     }
-
     fn multiplicity_for_projection(
         &self,
         symbol: SymbolId,
