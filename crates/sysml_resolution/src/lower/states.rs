@@ -551,26 +551,12 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
-        let implicit_transition_source = if node.value.source.is_none() {
-            self.declarations
-                .iter()
-                .enumerate()
-                .rev()
-                .find_map(|(index, declaration)| {
-                    if declaration.owner != Some(owner) {
-                        return None;
-                    }
-                    let id = DeclarationId::from_index(index).ok()?;
-                    (declaration.kind == DeclarationKind::StateUsage
-                        || self.memberships.iter().any(|membership| {
-                            membership.member == id
-                                && membership.role
-                                    == Some(MembershipRole::StateSubaction(
-                                        StateSubactionKind::Entry,
-                                    ))
-                        }))
-                    .then_some(id)
-                })
+        // Only TargetTransitionUsage omits both its source and declaration part (SysML 8.2.2.18.3).
+        let implicit_transition_source = if node.value.source.is_none()
+            && node.value.name.is_none()
+            && node.value.short_name.is_none()
+        {
+            self.transition_sources.get(&owner).copied()
         } else {
             None
         };
@@ -939,7 +925,7 @@ impl SemanticModelBuilder {
     ) -> Result<DeclarationId, ConstructionError> {
         let (kind, name) = match effect {
             TransitionEffect::Perform { name, .. } => (
-                DeclarationKind::ActionUsage,
+                DeclarationKind::PerformActionUsage,
                 self.intern_declaration_name(document, *name)?,
             ),
             TransitionEffect::Accept { .. } => (
