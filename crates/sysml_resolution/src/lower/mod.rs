@@ -164,6 +164,8 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) feature_values: Vec<FeatureValueRecord>,
     pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
     pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
+    /// Contiguous argument records minted by each accepted operator expression.
+    operator_argument_ranges: BTreeMap<DeclarationId, std::ops::Range<usize>>,
     pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
     pub(crate) pending_instantiations: Vec<PendingInstantiation>,
     pub(crate) instantiation_scopes: Vec<InstantiationScope>,
@@ -1065,6 +1067,7 @@ impl SemanticModelBuilder {
             result,
             kind,
         });
+        let argument_start = self.expression_arguments.len();
         for (ordinal, (span, kind)) in spans.into_iter().enumerate() {
             self.push_expression_argument(
                 document,
@@ -1074,7 +1077,20 @@ impl SemanticModelBuilder {
                 span,
             )?;
         }
+        self.operator_argument_ranges
+            .insert(expression, argument_start..self.expression_arguments.len());
         Ok(())
+    }
+
+    fn operator_arguments(
+        &self,
+        expression: DeclarationId,
+    ) -> Result<Vec<ExpressionArgumentRecord>, ConstructionError> {
+        let range = self
+            .operator_argument_ranges
+            .get(&expression)
+            .ok_or(ConstructionError::InvalidIdentity)?;
+        Ok(self.expression_arguments[range.clone()].to_vec())
     }
 
     /// Pushes a membership whose OMG metaclass carries a role the member's element kind does not

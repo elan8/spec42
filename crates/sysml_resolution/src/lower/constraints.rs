@@ -1083,12 +1083,7 @@ impl SemanticModelBuilder {
         self.push_evaluation_fact(expression, site);
         if let Expression::Index { base, operands, .. } = &node.value {
             self.note_expression_node(expression, node);
-            let arguments = self
-                .expression_arguments
-                .iter()
-                .filter(|argument| argument.expression == expression)
-                .copied()
-                .collect::<Vec<_>>();
+            let arguments = self.operator_arguments(expression)?;
             let nodes = std::iter::once(base.as_ref()).chain(
                 operands
                     .value
@@ -1118,12 +1113,10 @@ impl SemanticModelBuilder {
         } = &node.value
         {
             self.note_expression_node(expression, node);
-            let arguments = self
-                .expression_arguments
-                .iter()
-                .filter(|argument| argument.expression == expression)
-                .copied()
-                .collect::<Vec<_>>();
+            let arguments = self.operator_arguments(expression)?;
+            // record_operator_expression mints this contiguous range from the same accepted
+            // AST node, including its callback. Recovery cannot supply a different shape here;
+            // a mismatch is an internal identity violation, not malformed user syntax.
             if arguments.len() != 1 + args.len() + usize::from(brace_body.is_some()) {
                 return Err(ConstructionError::InvalidIdentity);
             }
