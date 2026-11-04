@@ -516,6 +516,7 @@ pub(crate) struct DeclarationFacts {
     /// On the continuation or the node a `then` declares: where its succession starts.
     pub(crate) then_source: Option<ThenSource>,
     /// SysML 7.18.3 shorthand transition source: the preceding state or entry action.
+    /// Consumed by transition checks, implied source/succession relationships and role specializations.
     pub(crate) implicit_transition_source: Option<DeclarationId>,
     /// On a conditional succession: when it is taken.
     pub(crate) succession_guard: Option<SuccessionGuard>,
