@@ -398,6 +398,10 @@ pub(crate) fn resolve_facts(
         let repeated = !import_slots.is_empty()
             && feedback_cycle.repeats((
                 next_relationships.clone(),
+                // Each family also feeds a different synthesis prerequisite on the next pass;
+                // an equal union must not hide progress in their derivation provenance.
+                metadata_relationships.clone(),
+                expression_relationships.clone(),
                 effective_imports.clone(),
                 exported_imports.clone(),
                 resolution.effective_names.clone(),
