@@ -54,7 +54,7 @@ impl CandidateRange {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct NameIndex {
     pub(crate) keys: Box<[NameKey]>,
     pub(crate) ranges: Box<[CandidateRange]>,
@@ -309,7 +309,7 @@ pub(crate) fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -
 /// Every child with a non-empty ancestor closure maps to the representative child that shares its
 /// closure; the entries are stored once per distinct closure. Lookups are observably identical to
 /// a per-child materialization.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct InheritedNameIndex {
     representative: Box<[Option<DeclarationId>]>,
     names: NameIndex,
