@@ -190,45 +190,66 @@ pub(crate) fn settle<D>(
                 outcomes.insert(*element, initial);
             }
         }
-        // Each program is tried once initially and only retried after one of its own inputs
-        // settles. This bounds folds by programs plus dependency edges, including reverse-authored
-        // chains; cycles retain their explicit pending outcome. Retrying on individual inputs
-        // preserves the folding algebra's conditional/short-circuit behavior.
-        let mut dependents = BTreeMap::<DeclarationId, BTreeSet<DeclarationId>>::new();
+        let fold_program =
+            |program: &Program, outcomes: &BTreeMap<DeclarationId, EvaluatedValue>| {
+                let ExpressionEvalShape::HasOperand(tree) = &program.shape else {
+                    return None;
+                };
+                fold_eval_node_pending(tree, &mut |operand| {
+                    let Some(target) = program.operands.get(&operand).copied().flatten() else {
+                        return Some(EvaluatedValue::UnresolvedOperand);
+                    };
+                    if programs.contains_key(&target) {
+                        return outcomes.get(&target).cloned();
+                    }
+                    let expression = model.value_expression(target).unwrap_or(target);
+                    Some(
+                        global
+                            .get(&expression)
+                            .cloned()
+                            .unwrap_or(EvaluatedValue::NonConstant),
+                    )
+                })
+            };
+        // Most contexts settle in one ordered pass. Only pending programs allocate a worklist;
+        // thereafter retries follow their own settled inputs, bounding folds by O(P + E) even
+        // for reverse-authored chains. Individual-input retries preserve conditional folding.
+        let mut pending = Vec::new();
         for (element, program) in &programs {
-            for target in program.operands.values().flatten() {
-                if programs.contains_key(target) {
-                    dependents.entry(*target).or_default().insert(*element);
-                }
+            if outcomes.contains_key(element) {
+                continue;
+            }
+            if let Some(result) = fold_program(program, &outcomes) {
+                outcomes.insert(*element, result);
+            } else {
+                pending.push(*element);
             }
         }
-        let mut queue = programs.keys().copied().collect::<VecDeque<_>>();
-        let mut queued = programs.keys().copied().collect::<BTreeSet<_>>();
+        let mut dependents = BTreeMap::<DeclarationId, BTreeSet<DeclarationId>>::new();
+        let mut queue = VecDeque::new();
+        let mut queued = BTreeSet::new();
+        for element in pending {
+            let mut ready = false;
+            for target in programs[&element].operands.values().flatten() {
+                if programs.contains_key(target) {
+                    if outcomes.contains_key(target) {
+                        ready = true;
+                    } else {
+                        dependents.entry(*target).or_default().insert(element);
+                    }
+                }
+            }
+            if ready {
+                queue.push_back(element);
+                queued.insert(element);
+            }
+        }
         while let Some(element) = queue.pop_front() {
             queued.remove(&element);
             if outcomes.contains_key(&element) {
                 continue;
             }
-            let program = &programs[&element];
-            let ExpressionEvalShape::HasOperand(tree) = &program.shape else {
-                continue;
-            };
-            let result = fold_eval_node_pending(tree, &mut |operand| {
-                let Some(target) = program.operands.get(&operand).copied().flatten() else {
-                    return Some(EvaluatedValue::UnresolvedOperand);
-                };
-                if programs.contains_key(&target) {
-                    return outcomes.get(&target).cloned();
-                }
-                let expression = model.value_expression(target).unwrap_or(target);
-                Some(
-                    global
-                        .get(&expression)
-                        .cloned()
-                        .unwrap_or(EvaluatedValue::NonConstant),
-                )
-            });
-            if let Some(result) = result {
+            if let Some(result) = fold_program(&programs[&element], &outcomes) {
                 outcomes.insert(element, result);
                 for dependent in dependents.get(&element).into_iter().flatten() {
                     if !outcomes.contains_key(dependent) && queued.insert(*dependent) {
