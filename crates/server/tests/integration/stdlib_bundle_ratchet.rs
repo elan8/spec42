@@ -30,13 +30,12 @@ const EXPECTED_KPAR_COUNT: usize = 10;
 /// a change here is a deliberate inventory change that belongs in the same commit.
 const EXPECTED_DOCUMENT_COUNT: usize = 94;
 
-// The scalar binding check also exposes ShapeItems::Pyramid::wallNumber:
-// SequenceFunctions::size has static type Natural, while wallNumber is Positive.
-// Its positivity depends on separate geometric constraints, not a declared positive
-// multiplicity; the checker does not propagate those constraints into static types.
+// These are warnings for unproven refinements, never errors on normative library content.
+// Seven defaults narrow generic numeric results; ShapeItems::Pyramid::wallNumber additionally
+// needs positivity from geometric constraints. Canonical refinement proofs are tracked in #437.
 const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[
     ("ambiguous_reference", 2),
-    ("attribute_value_type_mismatch", 1),
+    ("attribute_value_type_mismatch", 8),
 ];
 
 fn base_cli() -> Cli {
@@ -187,19 +186,28 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
             .collect::<Vec<_>>();
         assert_eq!(
             narrowing_locations,
-            [("ShapeItems.sysml", 840)],
-            "only the reviewed static narrowing finding is admitted"
+            [
+                ("IntegerFunctions.kerml", 36),
+                ("IntegerFunctions.kerml", 40),
+                ("RationalFunctions.kerml", 42),
+                ("RationalFunctions.kerml", 46),
+                ("RealFunctions.kerml", 49),
+                ("RealFunctions.kerml", 53),
+                ("SequenceFunctions.kerml", 71),
+                ("ShapeItems.sysml", 840),
+            ],
+            "only the tracked unproven scalar refinements are admitted"
         );
 
         assert_eq!(
             report.summary.error_count,
-            3,
+            2,
             "bundled standard-library errors changed:\n  {}",
             offenders.join("\n  ")
         );
         assert_eq!(
             report.summary.warning_count,
-            0,
+            8,
             "bundled standard-library warnings changed:\n  {}",
             offenders.join("\n  ")
         );

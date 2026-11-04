@@ -37,28 +37,34 @@ package StaticValues {
   (document "memory://snapshot/static_value_result_types.md"
     (diagnostics
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "attribute_value_type_mismatch")
         (source "semantic")
         (range (start 5 35) (end 5 43))
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "attribute_value_type_mismatch")
         (source "semantic")
         (range (start 7 42) (end 7 56))
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "attribute_value_type_mismatch")
         (source "semantic")
         (range (start 10 37) (end 10 51))
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "attribute_value_type_mismatch")
         (source "semantic")
         (range (start 13 38) (end 13 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 15 40) (end 15 56))
       )
     )
   )
@@ -70,28 +76,34 @@ package StaticValues {
   (document "memory://snapshot/static_value_result_types.md"
     (diagnostics
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "attribute_value_type_mismatch")
         (source "semantic")
         (range (start 5 35) (end 5 43))
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "attribute_value_type_mismatch")
         (source "semantic")
         (range (start 7 42) (end 7 56))
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "attribute_value_type_mismatch")
         (source "semantic")
         (range (start 10 37) (end 10 51))
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "attribute_value_type_mismatch")
         (source "semantic")
         (range (start 13 38) (end 13 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 15 40) (end 15 56))
       )
     )
   )

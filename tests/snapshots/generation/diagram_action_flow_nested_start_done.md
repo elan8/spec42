@@ -439,7 +439,7 @@ package Nested {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:2c85ed7683b1ef3d58f83ac3710158dab05b7fba304bfddf6a0b2a1519047d1a",
+  "modelDigest": "blake3:011aa0d6c71d0fd3afb3c516000cf0a6bb8b6c771e83e7e7cdf9fd450f3b62c1",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

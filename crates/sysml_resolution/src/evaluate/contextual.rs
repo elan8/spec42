@@ -3,7 +3,7 @@
 //! This supplies an occurrence-specific environment to the same classifier/folding
 //! algebra as authored evaluation. It never changes an authored declaration's value.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use super::classify::{classify_authored, ExpressionEvalShape};
 use super::fold::{fold_eval_node_pending, CallTarget, EvalOperand};
@@ -44,6 +44,7 @@ fn value(state: &EvaluationState) -> EvaluatedValue {
 }
 
 struct Program {
+    authored: DeclarationId,
     expression: DeclarationId,
     shape: ExpressionEvalShape,
     operands: BTreeMap<EvalOperand, Option<DeclarationId>>,
@@ -79,6 +80,7 @@ pub(crate) fn settle<D>(
             .contextual
             .range((context, DeclarationId(0))..=(context, DeclarationId(u32::MAX)));
         let mut programs = BTreeMap::<DeclarationId, Program>::new();
+        let mut conflicts = BTreeMap::<DeclarationId, BTreeSet<DeclarationId>>::new();
         let mut keys = Vec::new();
         for (key, contextual) in rows {
             let ContextualExpressionResult::Resolved(row) = &contextual.result else {
@@ -147,6 +149,7 @@ pub(crate) fn settle<D>(
                 .clone();
             super::bind_callees(&mut shape, row.document, &callees);
             let program = Program {
+                authored: contextual.authored,
                 expression,
                 shape,
                 operands,
@@ -158,7 +161,11 @@ pub(crate) fn settle<D>(
                     || existing.operands != program.operands
                     || existing.shape != program.shape
                 {
-                    return Err(ResolutionError::InvalidStorage);
+                    // Competing inherited programs are a model ambiguity, not corrupt storage.
+                    conflicts
+                        .entry(contextual.effective)
+                        .or_insert_with(|| BTreeSet::from([existing.authored]))
+                        .insert(program.authored);
                 }
             } else {
                 programs.insert(contextual.effective, program);
@@ -167,7 +174,9 @@ pub(crate) fn settle<D>(
         }
         let mut outcomes = BTreeMap::new();
         for (element, program) in &programs {
-            let initial = if program.skipped {
+            let initial = if conflicts.contains_key(element) {
+                Some(EvaluatedValue::UnresolvedOperand)
+            } else if program.skipped {
                 Some(EvaluatedValue::NotEvaluated)
             } else {
                 match &program.shape {
@@ -181,45 +190,62 @@ pub(crate) fn settle<D>(
                 outcomes.insert(*element, initial);
             }
         }
-        // N programs cover every acyclic dependency chain. Values still pending at the
-        // fixed point depend on a cycle; unavailable external inputs settle nonconstant.
-        for _ in 0..=programs.len() {
-            let mut changed = false;
-            for (element, program) in &programs {
-                if outcomes.contains_key(element) {
-                    continue;
-                }
-                let ExpressionEvalShape::HasOperand(tree) = &program.shape else {
-                    continue;
-                };
-                let result = fold_eval_node_pending(tree, &mut |operand| {
-                    let Some(target) = program.operands.get(&operand).copied().flatten() else {
-                        return Some(EvaluatedValue::UnresolvedOperand);
-                    };
-                    if programs.contains_key(&target) {
-                        return outcomes.get(&target).cloned();
-                    }
-                    let expression = model.value_expression(target).unwrap_or(target);
-                    Some(
-                        global
-                            .get(&expression)
-                            .cloned()
-                            .unwrap_or(EvaluatedValue::NonConstant),
-                    )
-                });
-                if let Some(result) = result {
-                    outcomes.insert(*element, result);
-                    changed = true;
+        // Each program is tried once initially and only retried after one of its own inputs
+        // settles. This bounds folds by programs plus dependency edges, including reverse-authored
+        // chains; cycles retain their explicit pending outcome. Retrying on individual inputs
+        // preserves the folding algebra's conditional/short-circuit behavior.
+        let mut dependents = BTreeMap::<DeclarationId, BTreeSet<DeclarationId>>::new();
+        for (element, program) in &programs {
+            for target in program.operands.values().flatten() {
+                if programs.contains_key(target) {
+                    dependents.entry(*target).or_default().insert(*element);
                 }
             }
-            if !changed {
-                break;
+        }
+        let mut queue = programs.keys().copied().collect::<VecDeque<_>>();
+        let mut queued = programs.keys().copied().collect::<BTreeSet<_>>();
+        while let Some(element) = queue.pop_front() {
+            queued.remove(&element);
+            if outcomes.contains_key(&element) {
+                continue;
+            }
+            let program = &programs[&element];
+            let ExpressionEvalShape::HasOperand(tree) = &program.shape else {
+                continue;
+            };
+            let result = fold_eval_node_pending(tree, &mut |operand| {
+                let Some(target) = program.operands.get(&operand).copied().flatten() else {
+                    return Some(EvaluatedValue::UnresolvedOperand);
+                };
+                if programs.contains_key(&target) {
+                    return outcomes.get(&target).cloned();
+                }
+                let expression = model.value_expression(target).unwrap_or(target);
+                Some(
+                    global
+                        .get(&expression)
+                        .cloned()
+                        .unwrap_or(EvaluatedValue::NonConstant),
+                )
+            });
+            if let Some(result) = result {
+                outcomes.insert(element, result);
+                for dependent in dependents.get(&element).into_iter().flatten() {
+                    if !outcomes.contains_key(dependent) && queued.insert(*dependent) {
+                        queue.push_back(*dependent);
+                    }
+                }
             }
         }
         for (key, element) in keys {
             let program = &programs[&element];
+            let ambiguity = conflicts
+                .get(&element)
+                .map(|candidates| candidates.iter().copied().collect::<Box<[_]>>());
             let state = if program.skipped {
                 EvaluationState::NotRun
+            } else if ambiguity.is_some() {
+                EvaluationState::Failed(EvaluationFailure::UnresolvedOperand)
             } else if matches!(program.shape, ExpressionEvalShape::Unsupported) {
                 EvaluationState::Unsupported
             } else {
@@ -230,16 +256,19 @@ pub(crate) fn settle<D>(
                     &program.shape,
                 )
             };
-            updates.push((key, state));
+            updates.push((key, ambiguity, state));
         }
     }
-    for (key, state) in updates {
-        model
+    for (key, ambiguity, state) in updates {
+        let row = model
             .resolved_expressions
             .contextual
             .get_mut(&key)
-            .ok_or(ResolutionError::InvalidStorage)?
-            .evaluation = state;
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if let Some(candidates) = ambiguity {
+            row.result = ContextualExpressionResult::Ambiguous(candidates);
+        }
+        row.evaluation = state;
     }
     Ok(())
 }

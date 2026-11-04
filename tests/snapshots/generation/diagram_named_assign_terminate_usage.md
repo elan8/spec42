@@ -541,7 +541,7 @@ package NamedUsage {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:b5991cf7fb17688a9abbf32b22d5a20c921097e8731a0509fba4a4ee65ca32bc",
+  "modelDigest": "blake3:fe6ae5655a6eea3314552ca860a75e0bebdcbba2864d5c65cd4c4e8d8b082976",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

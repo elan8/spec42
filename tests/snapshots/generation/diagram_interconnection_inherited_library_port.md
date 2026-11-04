@@ -232,7 +232,7 @@ package Model {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:533b616e4be4390da617fc517f1dae1e23f754f168177ad1a752e7773507131c",
+  "modelDigest": "blake3:0d246b771fa8c6864f75ea4e0645320d2072a3113097279bd61d365c1aa9b9cb",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

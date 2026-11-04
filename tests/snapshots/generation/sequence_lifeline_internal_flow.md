@@ -553,7 +553,7 @@ package Repro {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:10b4ec725fc274b715d523d5a51862f319a1c54556f1595469ca90d7eff2f3fe",
+  "modelDigest": "blake3:29bf30b998bf94486acddf8a955f201619d7213a161753b4d020ab622900ceee",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
