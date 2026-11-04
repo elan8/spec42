@@ -4,6 +4,7 @@
 //! original, not an inconsistency to "fix".
 
 use serde_json::Value;
+use std::collections::HashSet;
 
 use crate::svg::Element;
 use crate::theme::Theme;
@@ -22,12 +23,13 @@ pub fn draw_interconnection_containers(
     layout_containers: &[InterconnectionLayoutContainerDto],
 ) -> Option<Element> {
     if !layout_containers.is_empty() {
+        let node_ids: HashSet<&str> = nodes.iter().map(|node| node.id.as_str()).collect();
         let mut layer = Element::new("g").attr("class", "ibd-containers");
         let mut any = false;
         for container in layout_containers {
             // Layout also records container nodes here for routing and bounds. The node
             // layer owns their frame and label; only separate grouping frames belong here.
-            if nodes.iter().any(|node| node.id == container.id) {
+            if node_ids.contains(container.id.as_str()) {
                 continue;
             }
             any = true;

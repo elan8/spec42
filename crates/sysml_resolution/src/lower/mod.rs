@@ -56,6 +56,7 @@ use crate::model::NameId;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use crate::MembershipRole;
+use crate::StateSubactionKind;
 use hashbrown::HashTable;
 use std::hash::BuildHasher;
 
@@ -155,6 +156,8 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) declarations: Vec<Declaration>,
     pub(crate) declaration_facts: Vec<DeclarationFacts>,
     pub(crate) memberships: Vec<MembershipRecord>,
+    /// Last state or entry action in each body, for TargetTransitionUsage source binding.
+    transition_sources: BTreeMap<DeclarationId, DeclarationId>,
     pub(crate) references: Vec<AuthoredReference>,
     pub(crate) relationship_declarations: Vec<AuthoredRelationshipDeclaration>,
     pub(crate) documentation: Vec<DocumentationRecord>,
@@ -1122,6 +1125,13 @@ impl SemanticModelBuilder {
             role,
             span,
         });
+        if self.declarations[member.index()].kind == DeclarationKind::StateUsage
+            || role == Some(MembershipRole::StateSubaction(StateSubactionKind::Entry))
+        {
+            if let Some(owner) = self.declarations[member.index()].owner {
+                self.transition_sources.insert(owner, member);
+            }
+        }
         Ok(())
     }
 

@@ -851,9 +851,20 @@ impl TreeBuilder<'_> {
                 ))
             }
             Expression::Invocation { callee, args } => {
-                let callee_node =
-                    self.role_reference(ReferenceKind::InvocationCallee, callee.span)?;
+                let callee_node = self
+                    .role_reference(ReferenceKind::InvocationCallee, callee.span)
+                    .or_else(|| self.member_access_feature(callee.span));
                 let arguments = self.walk_children(args.iter().map(|arg| &arg.value))?;
+                let Some(callee_node) = callee_node else {
+                    // Computed callees have no canonical role reference. Keep their argument
+                    // trees with an explicit unsupported call rather than discarding the row.
+                    return Some(self.push(
+                        RawExpressionNodeKind::Unsupported {
+                            children: arguments,
+                        },
+                        outer_span,
+                    ));
+                };
                 Some(self.push(
                     RawExpressionNodeKind::Invocation {
                         callee: callee_node,
