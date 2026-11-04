@@ -3461,18 +3461,27 @@ fn composite_unless_ref(metaclass: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
     fn general_view_uses_names_and_effective_directions_from_the_product() {
-        let snapshot =
-            include_str!("../../../tests/snapshots/generation/diagram_occurrence_presentation.md");
-        let text = snapshot
-            .split_once("## diagram.json\n~~~json\n")
-            .unwrap()
-            .1
-            .split_once("\n~~~")
-            .unwrap()
-            .0;
-        let payload: Value = serde_json::from_str(text).unwrap();
+        // A renderer contract test supplies an already prepared semantic product. The snapshot
+        // corpus separately verifies how occurrence names and directions reach this boundary.
+        let payload = json!({
+            "schemaVersion": diagram_product::SCHEMA_VERSION,
+            "selectedView": {"kind": "general-view", "name": "Occurrences"},
+            "projection": {
+                "kind": "general-view",
+                "nodes": [
+                    {"metaclass": "MetadataUsage", "name": null},
+                    {"metaclass": "BindingConnectorAsUsage", "name": null},
+                    {"metaclass": "ItemUsage", "name": "o", "direction": "out", "featureDirection": "in"},
+                    {"metaclass": "ItemUsage", "name": "o", "direction": "out", "featureDirection": "out"},
+                    {"metaclass": "ItemUsage", "name": "local", "direction": "out", "featureDirection": "out"}
+                ],
+                "edges": []
+            }
+        });
         let input = prepare_view_data(&payload).expect("general view prepares");
         let nodes = input["nodes"].as_array().unwrap();
         for kind in ["MetadataUsage", "BindingConnectorAsUsage"] {
@@ -3495,8 +3504,6 @@ mod tests {
         let local = nodes.iter().find(|node| node["label"] == "local").unwrap();
         assert_eq!(local["attributes"]["direction"], "out");
     }
-
-    use super::*;
 
     #[test]
     fn package_container_groups_keep_encounter_order() {

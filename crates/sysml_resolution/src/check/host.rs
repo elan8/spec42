@@ -1226,7 +1226,14 @@ impl<D> SemanticModel<D> {
         else {
             return Ok(());
         };
-        if !is_state_kind(source_kind) || !is_state_kind(target_kind) {
+        // The entry action is a valid implicit source of TargetTransitionUsage (SysML 7.18.3).
+        let entry_source = self.memberships.get(*source).is_some_and(|membership| {
+            membership.role
+                == Some(crate::MembershipRole::StateSubaction(
+                    crate::StateSubactionKind::Entry,
+                ))
+        });
+        if !(is_state_kind(source_kind) || entry_source) || !is_state_kind(target_kind) {
             let mut diagnostic = self.declaration_message_diagnostic(
                 id,
                 DiagnosticCode::TransitionEndpointInvalidState,

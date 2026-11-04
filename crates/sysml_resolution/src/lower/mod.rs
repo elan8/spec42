@@ -56,6 +56,7 @@ use crate::model::NameId;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use crate::MembershipRole;
+use crate::StateSubactionKind;
 use hashbrown::HashTable;
 use std::hash::BuildHasher;
 
@@ -155,12 +156,16 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) declarations: Vec<Declaration>,
     pub(crate) declaration_facts: Vec<DeclarationFacts>,
     pub(crate) memberships: Vec<MembershipRecord>,
+    /// Last state or entry action in each body, for TargetTransitionUsage source binding.
+    transition_sources: BTreeMap<DeclarationId, DeclarationId>,
     pub(crate) references: Vec<AuthoredReference>,
     pub(crate) relationship_declarations: Vec<AuthoredRelationshipDeclaration>,
     pub(crate) documentation: Vec<DocumentationRecord>,
     pub(crate) feature_values: Vec<FeatureValueRecord>,
     pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
     pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
+    /// Contiguous argument records minted by each accepted operator expression.
+    operator_argument_ranges: BTreeMap<DeclarationId, std::ops::Range<usize>>,
     pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
     pub(crate) pending_instantiations: Vec<PendingInstantiation>,
     pub(crate) instantiation_scopes: Vec<InstantiationScope>,
@@ -1062,6 +1067,7 @@ impl SemanticModelBuilder {
             result,
             kind,
         });
+        let argument_start = self.expression_arguments.len();
         for (ordinal, (span, kind)) in spans.into_iter().enumerate() {
             self.push_expression_argument(
                 document,
@@ -1071,7 +1077,20 @@ impl SemanticModelBuilder {
                 span,
             )?;
         }
+        self.operator_argument_ranges
+            .insert(expression, argument_start..self.expression_arguments.len());
         Ok(())
+    }
+
+    fn operator_arguments(
+        &self,
+        expression: DeclarationId,
+    ) -> Result<Vec<ExpressionArgumentRecord>, ConstructionError> {
+        let range = self
+            .operator_argument_ranges
+            .get(&expression)
+            .ok_or(ConstructionError::InvalidIdentity)?;
+        Ok(self.expression_arguments[range.clone()].to_vec())
     }
 
     /// Pushes a membership whose OMG metaclass carries a role the member's element kind does not
@@ -1122,6 +1141,13 @@ impl SemanticModelBuilder {
             role,
             span,
         });
+        if self.declarations[member.index()].kind == DeclarationKind::StateUsage
+            || role == Some(MembershipRole::StateSubaction(StateSubactionKind::Entry))
+        {
+            if let Some(owner) = self.declarations[member.index()].owner {
+                self.transition_sources.insert(owner, member);
+            }
+        }
         Ok(())
     }
 

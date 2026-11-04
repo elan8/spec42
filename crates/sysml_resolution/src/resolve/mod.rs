@@ -273,6 +273,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         if names.len() != declarations.len() {
             return Err(ResolutionError::InvalidStorage);
         }
+        // This is only a seed. The relationship loop re-derives names before declaring its
+        // fixed point, so stale effective names cannot escape this pass as settled facts.
         names.to_vec()
     } else {
         derive_effective_names(declarations, declaration_facts, references, &outcomes)?
@@ -589,6 +591,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let mut candidates = Vec::new();
     let mut next_candidates = Vec::new();
     let mut converged = false;
+    let mut import_cycle = crate::resolve::results::FeedbackCycle::default();
 
     for _ in 0..pass_limit {
         work.passes = work
@@ -647,8 +650,15 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             converged = true;
             break;
         }
+        let repeated = import_cycle.repeats((
+            next_effective_imports.clone(),
+            next_exported_imports.clone(),
+        ));
         effective_imports = next_effective_imports;
         exported_imports = next_exported_imports;
+        if repeated {
+            break;
+        }
     }
 
     let mut solver_status = if converged {
