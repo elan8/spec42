@@ -62,7 +62,8 @@ own intersection/measurement rules. Computed Integer results do not become Natur
 because their value is nonnegative.
 Operator signatures come from admitted standard-library specializations; named invocations
 retain their declared return type; sequence size can refine to Positive when a direct feature
-operand has a proven positive lower multiplicity. Unresolved, ambiguous and unsupported typings
+operand has a proven positive lower multiplicity. Positive sums and products use static
+operand-domain guarantees. Unresolved, ambiguous and unsupported typings
 remain explicit.
 `contextual_evaluations` identifies the requested, effective and authored elements for each
 inherited expression evaluated in a usage. A false contextual constraint reports at that usage

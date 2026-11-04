@@ -265,7 +265,7 @@ impl<'a, D> Registry<'a, D> {
                         specific != general && conforms(&self.model.types, *specific, *general)
                     })
                 });
-                match applicable.as_slice() {
+                let result = match applicable.as_slice() {
                     [] => RawResultTyping::Unresolved,
                     [(_, result)] => RawResultTyping::Resolved(result.clone()),
                     many if many.iter().all(|(_, result)| result == &many[0].1) => {
@@ -277,7 +277,34 @@ impl<'a, D> Registry<'a, D> {
                             .map(|(function, _)| function)
                             .collect(),
                     ),
+                };
+                // Positive + Natural is Positive; a product of Positive operands is
+                // Positive. These are static operand-domain guarantees, not narrowing
+                // from a folded value (Positive - Positive still returns Integer).
+                if let (Some(natural), Some(positive), RawResultTyping::Resolved(types)) =
+                    (self.natural, self.positive, &result)
+                {
+                    if types.as_ref() == [natural] {
+                        let is_positive = |(argument, operand): (&RawResultTyping, &u32)| {
+                            matches!(argument, RawResultTyping::Resolved(types) if types.iter().any(|actual| conforms(&self.model.types, *actual, positive)))
+                                || matches!(row.nodes.get(*operand as usize).map(|node| &node.kind), Some(RawExpressionNodeKind::Literal(EvaluatedScalar::Integer(value))) if *value > 0)
+                        };
+                        let positive_result = match operator {
+                            ExpressionOperator::Add => {
+                                arguments.iter().zip(operands).any(is_positive)
+                            }
+                            ExpressionOperator::Multiply => {
+                                !arguments.is_empty()
+                                    && arguments.iter().zip(operands).all(is_positive)
+                            }
+                            _ => false,
+                        };
+                        if positive_result {
+                            return RawResultTyping::Resolved(Box::from([positive]));
+                        }
+                    }
                 }
+                result
             }
             RawExpressionNodeKind::Sequence { .. }
             | RawExpressionNodeKind::MetaCast { .. }
