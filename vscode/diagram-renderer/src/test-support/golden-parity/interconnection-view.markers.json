@@ -2,9 +2,8 @@
   "classCounts": {
     "graph-node-background": 4,
     "ibd-connector": 2,
-    "ibd-container": 2,
-    "ibd-containers": 1,
-    "ibd-part": 5,
+    "ibd-container": 1,
+    "ibd-part": 4,
     "node-header": 4,
     "node-name-text": 3,
     "port-direction": 4,

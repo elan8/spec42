@@ -3305,11 +3305,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 && composite_unless_ref(&as_string(field(element, "metaclass"), ""));
             json!({
                 "id": format!("n:{index}"),
-                "label": if field(element, "name").is_string() {
-                    field(element, "name").clone()
-                } else {
-                    Value::String(as_string(field(element, "metaclass"), ""))
-                },
+                "label": as_string(field(element, "name"), ""),
                 "kind": as_string(field(element, "metaclass"), "Unrecognized"),
                 "uri": field(&source, "uri"),
                 "range": field(&source, "range"),
@@ -3320,7 +3316,16 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
                     "multiplicity": field(element, "multiplicity"),
-                    "direction": field(element, "direction"),
+                    // A port's aggregate flow direction supplies IBD arrows, not an
+                    // authored `in`/`out` prefix on the port itself. Directed members
+                    // use their effective occurrence direction under conjugation.
+                    "direction": if matches!(field(element, "metaclass").as_str(),
+                        Some("PortUsage" | "PortDefinition" | "ConjugatedPortDefinition"))
+                        || field(element, "featureDirection").is_null() {
+                        field(element, "direction")
+                    } else {
+                        field(element, "featureDirection")
+                    },
                     "conjugated": field(element, "conjugated"),
                     "referenceMembership": reference_membership,
                     "authoredReference": authored_reference,
@@ -3457,6 +3462,48 @@ fn composite_unless_ref(metaclass: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn general_view_uses_names_and_effective_directions_from_the_product() {
+        // A renderer contract test supplies an already prepared semantic product. The snapshot
+        // corpus separately verifies how occurrence names and directions reach this boundary.
+        let payload = json!({
+            "schemaVersion": diagram_product::SCHEMA_VERSION,
+            "selectedView": {"kind": "general-view", "name": "Occurrences"},
+            "projection": {
+                "kind": "general-view",
+                "nodes": [
+                    {"metaclass": "MetadataUsage", "name": null},
+                    {"metaclass": "BindingConnectorAsUsage", "name": null},
+                    {"metaclass": "ItemUsage", "name": "o", "direction": "out", "featureDirection": "in"},
+                    {"metaclass": "ItemUsage", "name": "o", "direction": "out", "featureDirection": "out"},
+                    {"metaclass": "ItemUsage", "name": "local", "direction": "out", "featureDirection": "out"}
+                ],
+                "edges": []
+            }
+        });
+        let input = prepare_view_data(&payload).expect("general view prepares");
+        let nodes = input["nodes"].as_array().unwrap();
+        for kind in ["MetadataUsage", "BindingConnectorAsUsage"] {
+            let node = nodes
+                .iter()
+                .find(|node| node["kind"] == kind)
+                .unwrap_or_else(|| panic!("missing {kind}: {input}"));
+            assert_eq!(
+                node["label"], "",
+                "an absent name stays absent in the label"
+            );
+        }
+        let mut directions = nodes
+            .iter()
+            .filter(|node| node["label"] == "o")
+            .map(|node| node["attributes"]["direction"].as_str().unwrap())
+            .collect::<Vec<_>>();
+        directions.sort();
+        assert_eq!(directions, ["in", "out"]);
+        let local = nodes.iter().find(|node| node["label"] == "local").unwrap();
+        assert_eq!(local["attributes"]["direction"], "out");
+    }
 
     #[test]
     fn package_container_groups_keep_encounter_order() {

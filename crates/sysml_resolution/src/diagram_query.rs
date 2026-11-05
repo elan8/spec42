@@ -140,9 +140,10 @@ pub struct DiagramElement {
     pub state_subaction: Option<StateSubactionKind>,
     /// On a conditional succession: when it is taken. `None` for every other element.
     pub succession_guard: Option<DiagramSuccessionGuard>,
-    /// On a port: the direction its directed features give it as a whole, with a conjugated
-    /// typing applied. Derived from the port's own features and those of its definitions, and
-    /// kept apart from the authored `direction`. `None` when it has no directed feature.
+    /// Effective direction in this occurrence. On a port this aggregates its directed
+    /// features and applies its conjugated typing. On a directed member it starts with the
+    /// authored direction. Both apply enclosing port conjugations along the occurrence path,
+    /// without changing `direction`. `None` when no direction is available.
     pub feature_direction: Option<FeatureDirection>,
     /// In a browser view: how this row is a member of its parent and whether its own members
     /// are in the projection. `None` in every other view kind.
@@ -1014,6 +1015,34 @@ impl PublishedResolution {
                         (direction, conjugated && is_port_kind(entry.kind))
                     })
                     .unwrap_or_default();
+                let mut feature_direction = if is_port_kind(entry.kind) {
+                    self.model.port_feature_direction_of(entry.identity)
+                } else {
+                    direction
+                };
+                // One declaration can occur below both P and ~P. Apply conjugation to
+                // the occurrence, preserving the declaration's authored direction.
+                for pair in occurrence_id.semantic_path.windows(2) {
+                    // A conjugated typing reverses inherited members, not features
+                    // authored directly in the port usage's own body.
+                    if all
+                        .get(&pair[1])
+                        .is_some_and(|child| child.owner == Some(pair[0]))
+                    {
+                        continue;
+                    }
+                    if self
+                        .model
+                        .port_direction_and_conjugation(pair[0])
+                        .is_some_and(|(_, conjugated)| conjugated)
+                    {
+                        feature_direction = feature_direction.map(|value| match value {
+                            FeatureDirection::In => FeatureDirection::Out,
+                            FeatureDirection::Out => FeatureDirection::In,
+                            FeatureDirection::InOut => FeatureDirection::InOut,
+                        });
+                    }
+                }
                 DiagramElement {
                     occurrence_id: occurrence_id.clone(),
                     semantic_id: entry.identity,
@@ -1044,11 +1073,7 @@ impl PublishedResolution {
                     conjugated,
                     state_subaction: self.model.state_subaction_kind(entry.identity),
                     succession_guard: self.model.succession_guard(entry.identity),
-                    feature_direction: if is_port_kind(entry.kind) {
-                        self.model.port_feature_direction_of(entry.identity)
-                    } else {
-                        None
-                    },
+                    feature_direction,
                     browser_row: (view_entry.kind == DiagramViewKind::Browser).then(|| {
                         DiagramBrowserRow {
                             membership: browser_membership

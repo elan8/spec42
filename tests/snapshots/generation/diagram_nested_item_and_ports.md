@@ -695,7 +695,7 @@ package NestedOwners {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:a70fb8c874aeb330368209b0bf61a92637967a72ba2024bc67ec746c195991da",
+  "modelDigest": "blake3:32af2a2cfdb522872b65162433fd179fcba5d5f73b8f6dbfc55df97ea3be9242",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1659,7 +1659,7 @@ package NestedOwners {
         ],
         "conjugated": false,
         "direction": "inout",
-        "featureDirection": null,
+        "featureDirection": "inout",
         "metaclass": "ItemUsage",
         "multiplicity": null,
         "name": "box",

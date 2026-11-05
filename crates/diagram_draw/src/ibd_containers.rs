@@ -4,6 +4,7 @@
 //! original, not an inconsistency to "fix".
 
 use serde_json::Value;
+use std::collections::HashSet;
 
 use crate::svg::Element;
 use crate::theme::Theme;
@@ -22,8 +23,16 @@ pub fn draw_interconnection_containers(
     layout_containers: &[InterconnectionLayoutContainerDto],
 ) -> Option<Element> {
     if !layout_containers.is_empty() {
+        let node_ids: HashSet<&str> = nodes.iter().map(|node| node.id.as_str()).collect();
         let mut layer = Element::new("g").attr("class", "ibd-containers");
+        let mut any = false;
         for container in layout_containers {
+            // Layout also records container nodes here for routing and bounds. The node
+            // layer owns their frame and label; only separate grouping frames belong here.
+            if node_ids.contains(container.id.as_str()) {
+                continue;
+            }
+            any = true;
             let group = Element::new("g")
                 .attr("class", "ibd-part ibd-container")
                 .attr(
@@ -56,7 +65,7 @@ pub fn draw_interconnection_containers(
                 );
             layer = layer.child(group);
         }
-        return Some(layer);
+        return any.then_some(layer);
     }
 
     let groups = meta.get("packageContainerGroups")?.as_array()?;
@@ -155,4 +164,48 @@ pub fn draw_interconnection_containers(
         );
     }
     any.then_some(layer)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::theme::LIGHT;
+
+    #[test]
+    fn container_nodes_are_painted_by_the_node_layer_only() {
+        let node = LaidOutNode {
+            id: "root".into(),
+            label: "System".into(),
+            kind: "PartDefinition".into(),
+            attributes: Default::default(),
+            x: 20.0,
+            y: 20.0,
+            width: 240.0,
+            height: 160.0,
+            compartments: None,
+        };
+        let container = |id: &str| InterconnectionLayoutContainerDto {
+            id: id.into(),
+            label: "System".into(),
+            x: 20.0,
+            y: 20.0,
+            width: 240.0,
+            height: 160.0,
+        };
+        // Identical label and geometry do not identify a duplicate; layout identity does.
+        assert!(draw_interconnection_containers(
+            &Value::Null,
+            std::slice::from_ref(&node),
+            &LIGHT,
+            &[container("root")],
+        )
+        .is_none());
+        assert!(draw_interconnection_containers(
+            &Value::Null,
+            &[node],
+            &LIGHT,
+            &[container("separate-group")],
+        )
+        .is_some());
+    }
 }

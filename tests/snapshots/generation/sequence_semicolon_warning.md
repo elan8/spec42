@@ -311,7 +311,7 @@ package WarningView {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:cd8833bf1de01373c884b9e2fde40c4136441e9ece2b70bca2b2f029f4fbd555",
+  "modelDigest": "blake3:9749f2ed12cfab0d305d2909379ac55555983958a9bcc63e3c720762b0b7fb0f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

@@ -856,7 +856,7 @@ package Counting {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:f4c0c8b2fcc2e021207067127bde7ecf9fa1f251c114446443e88ee2d9665d7f",
+  "modelDigest": "blake3:7eaf5dd052eb4ac0fe33f156df3d3b0a37a7442d782f223eff5829955f965381",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1904,7 +1904,7 @@ package Counting {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,
@@ -1996,7 +1996,7 @@ package Counting {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,
@@ -2088,7 +2088,7 @@ package Counting {
         "compartments": [],
         "conjugated": false,
         "direction": "in",
-        "featureDirection": null,
+        "featureDirection": "in",
         "metaclass": "ReferenceUsage",
         "multiplicity": null,
         "name": null,

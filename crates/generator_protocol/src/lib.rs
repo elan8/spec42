@@ -1282,8 +1282,9 @@ pub struct DiagramElement {
     /// On a conditional succession, when it is taken: its guard expression as written, or
     /// `"else"`. `None` for every other element.
     pub succession_guard: Option<String>,
-    /// On a port: the direction (`"in"` / `"out"` / `"inout"`) its directed features give it as
-    /// a whole, with a conjugated typing applied. Derived, unlike the authored `direction`.
+    /// Effective occurrence direction (`"in"` / `"out"` / `"inout"`): aggregate directed
+    /// features for a port, or the member's direction, with enclosing conjugations applied.
+    /// Derived, unlike the authored `direction`.
     pub feature_direction: Option<String>,
 }
 
