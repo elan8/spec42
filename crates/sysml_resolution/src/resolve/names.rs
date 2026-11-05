@@ -650,8 +650,6 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                         namespace_sources,
                         import_owner,
                         &recursive_import_owners(
-                            declarations,
-                            namespace_sources,
                             recursive_children.as_deref().unwrap_or(&[]),
                             target,
                         ),
@@ -698,8 +696,6 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                         namespace_sources,
                         import_owner,
                         &recursive_import_owners(
-                            declarations,
-                            namespace_sources,
                             recursive_children.as_deref().unwrap_or(&[]),
                             target,
                         ),
@@ -874,12 +870,16 @@ fn namespace_children(
 }
 
 /// `target` followed by every namespace nested under it in recursion order: depth first, each
-/// namespace before its owned namespaces, siblings in source order, following only the
-/// visible owned and inherited namespace edges. Owned namespaces precede inherited ones;
-/// the visited guard bounds cycles through recursive types and shared inherited memberships.
+/// namespace before its owned namespaces, siblings in source order, following only the visible
+/// owned-namespace edges in `children`.
+///
+/// KerML 8.3.2.4.5 `Namespace::visibleMemberships` recurses through `ownedMember` namespaces
+/// only. Each reached Type contributes its inherited memberships as names
+/// (`Type::visibleMemberships`, 8.3.3.1.10, via `NamespaceImportSources::for_each_entry`), but an
+/// inherited namespace is not itself descended into: otherwise `P::**` would reach every library
+/// namespace an occurrence inherits, such as the parameters of `Clocks::Clock`'s invariant through
+/// `Occurrence::localClock`. Ownership is a tree; the visited guard is defensive.
 fn recursive_import_owners(
-    declarations: &[Declaration],
-    sources: NamespaceImportSources<'_>,
     children: &[Vec<DeclarationId>],
     target: DeclarationId,
 ) -> Vec<DeclarationId> {
@@ -895,25 +895,6 @@ fn recursive_import_owners(
             _ => continue,
         }
         owners.push(current);
-        // Only derive inherited namespace children for namespaces this import reaches.
-        // The visited guard bounds recursive types and shared inherited memberships.
-        let mut inherited = sources
-            .inherited_entries(current)
-            .into_iter()
-            .flat_map(|(_, candidates)| candidates)
-            .filter(|child| {
-                declarations.get(child.index()).is_some_and(|declaration| {
-                    DeclarationDomain::Namespace.accepts(declaration.kind)
-                })
-            })
-            .collect::<Vec<_>>();
-        inherited.sort_by_key(|child| {
-            declarations
-                .get(child.index())
-                .map(|declaration| (declaration.document, declaration.span.offset, *child))
-        });
-        inherited.dedup();
-        stack.extend(inherited.into_iter().rev());
         if let Some(next) = children.get(current.index()) {
             stack.extend(next.iter().rev().copied());
         }
