@@ -895,7 +895,7 @@ package Flow {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:cca69cda7d1c5ce2deba6492dfb725cf2768572b517be035748efb8b998ef580",
+  "modelDigest": "blake3:1e3a788fe518c889ce3e18cd914345f876bcfe83ab06318ead9865d578bd4190",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
