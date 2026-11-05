@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.59.0] - 2026-11-05
+
+- **Upgrade notes.** **Models may report new errors and warnings.** A computed value whose type
+  is unrelated to its feature is now an error (`attribute n : Boolean = 1 + 2`), and one that
+  narrows it without proof is a warning (`attribute n : Natural = 11 - 1`), for bound values and
+  defaults alike. Reference values and `satisfy … by` operands are checked against the receiving
+  feature or requirement subject: an error when the types cannot share an instance (a class and a
+  data type, or disjoint types), a warning otherwise. A constraint inherited by a usage that binds
+  all its inputs and evaluates to false now warns at that usage. The semantic contract version is
+  now `reference-values-state-triggers-v72`, so earlier publications and serialised models are
+  not reused. **Model export is schema 2**: expression trees add `invocation`, `sequence` and
+  `meta-cast` nodes, and elements add `effective_name`, `effective_qualified_name`,
+  `multiplicity_expressions`, `exposure`, `evaluation`, `analysis`, `membership.role` and
+  `trigger_kind`. The generator ABI stays **version 7** and the diagram schema **11**, but an
+  unsupported invocation node now lists its callee before its arguments, and `featureDirection`
+  is set on every directed member, not only ports, so guests must not use it to recognise a port.
+  Direct consumers of the parser AST must handle serialization version **292**.
+
+- **Values are type-checked.** Scalar results are typed from the library's operator and function
+  signatures, so `Integer` arithmetic bound to `Natural` is no longer accepted just because it
+  folds to a nonnegative number, while `Positive` sums and products stay `Positive`. Operator
+  signatures resolve without importing the function packages. The few library findings that need
+  constraint reasoning to prove are warnings, tracked in #437.
+- **Inherited constraints are evaluated in context.** When a usage supplies every input of a
+  constraint or derived value it inherits, Spec42 evaluates it there, including through unnamed
+  redefinitions and contextual `self` and `that` references. A false verdict is reported at the
+  usage, with the authored constraint linked. Unbound inputs, cycles and unsupported calculations
+  stay explicitly unresolved rather than failing.
+- **Model exports carry what the model settles.** Exports keep effective names for unnamed
+  redefinitions (no more `Pkg::c::`), the expressions behind multiplicity bounds and their values,
+  whether an `expose` is recursive, evaluation values and analysis verdicts, and function, calc and
+  `meta` expressions as structured nodes. State exports keep port members, `when`/`at`/`after`
+  trigger kinds and arguments, entry/do/exit roles, and transition effects with their typing.
+- **State machines.** Shorthand transitions (`state a; accept E then b;`) keep their source and
+  are drawn, dotted endpoints such as `first p.x` keep their roles, and effects such as
+  `do action notify : Notify` are modelled as perform actions. A transition may cross into a
+  sibling composite state; transitions between parallel regions and unrelated machines are still
+  reported. Declared `entry`/`do`/`exit` actions are `PerformActionUsage`s, and state bodies may
+  declare ports.
+- **Name resolution.** A recursive import (`P::**`) imports the inherited public members of the
+  namespaces it reaches, such as the features a requirement subject gets from its type, honouring
+  visibility and local redefinitions. It does not reach into members nested inside inherited
+  features, which kept the OMG Annex A model free of false `ambiguous_reference` errors. Imports that keep changing between passes are reported as nonconverged
+  instead of stalling. A feature chain after `->select { … }` resolves through the selection
+  result.
+- **Views.** View definitions and usages may declare attributes such as a document number or a
+  section heading. `render Views::asElementTable;` no longer reports
+  `view_rendering_invalid_target`.
+- **Diagrams.** General views show the effective `in`/`out` direction of members inherited under
+  a conjugated port, label an unnamed redefinition with the name it redefines and leave other
+  unnamed members unlabelled instead of using the metaclass name, and interconnection views of a
+  part definition draw one frame instead of two.
+
 ## [0.58.1] - 2026-11-01
 
 - **Upgrade notes.** The semantic contract version is now `measurement-reference-operands-v63`, so
