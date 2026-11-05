@@ -87,7 +87,8 @@ pub use details::{
 };
 pub use diagnostics::{
     Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
-    DiagnosticSeverity, PublishedDiagnostics, RelatedLocation,
+    DiagnosticSeverity, PublishedDiagnostics, RelatedLocation, UnsupportedConstruct,
+    UnsupportedConstructId,
 };
 pub use diagram_query::{
     DiagramBrowserMembers, DiagramBrowserRow, DiagramCompartment, DiagramCompartmentKind,
@@ -909,6 +910,14 @@ impl PublishedResolution {
     /// family it decides.
     pub fn diagnostics(&self) -> PublishedDiagnostics<'_> {
         self.model.published_diagnostics()
+    }
+
+    /// Read the canonical unsupported diagnostic, independently of a source's reporting scope.
+    pub fn unsupported_construct(
+        &self,
+        id: UnsupportedConstructId,
+    ) -> Option<UnsupportedConstruct> {
+        self.model.unsupported_construct(id)
     }
 
     /// The diagnostics of one admitted document, read from the publication's own index.

@@ -898,8 +898,8 @@ package Control {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:1537dbdcc3d077675eb64aed9ac62bd445937efade101c554aeacde4c83bc307",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:12d4762a88e1e7c787b4effe81068b8f579517a53a8f92175b3aac281b5b9fa8",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

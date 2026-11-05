@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-10 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-12 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};

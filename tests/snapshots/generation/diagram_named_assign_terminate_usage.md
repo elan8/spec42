@@ -540,8 +540,8 @@ package NamedUsage {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:ccf48f371c220ae8604a4a2407fbe89cbd1bf84be16ae7508389532f4b4c281a",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:5543592b9d692c0506900919db62dd482a620d060d37a815428476d064891730",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

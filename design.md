@@ -275,6 +275,15 @@ current editor text, queries the retained publication at the cursor translated i
 publication's revision, takes only names and kinds from it, and marks the result as predating the
 source.
 
+The diagram viewer uses a publication-scoped presentation request rather than positional-query
+retries. One backend operation selects the canonical view and returns its catalog and product
+from the same captured publication. Normal pending analysis is a typed result, followed by an
+analysis-status wake after the owner's readiness transition, independently of diagnostic delivery.
+Clients subscribe before querying and coalesce wakes received in flight. They retain the previous
+frame while pending and reject completed work for obsolete requests. The backend rechecks owner
+and publication version before delivery. Rendering never opens a source editor or creates semantic
+inputs, and progress does not depend on polling, digest changes, or matching error prose.
+
 Import completion and file-wide import repair require current source. The semantic authority
 owns import candidates and validates proposed private imports together through its canonical
 resolver, preserving existing bindings and rejecting ambiguous or incompatible results. These

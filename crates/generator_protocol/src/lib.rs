@@ -1206,7 +1206,9 @@ pub struct DiagramViewSummary {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum DiagramIncompleteReason {
     ParseRecovery,
-    UnsupportedSyntax,
+    UnsupportedSyntax {
+        diagnostics: Vec<DiagramSyntaxDiagnostic>,
+    },
     NonConverged,
     ExposureUnresolved {
         exposure: DiagramSemanticReference,
@@ -1237,6 +1239,13 @@ pub enum DiagramIncompleteReason {
     SequenceContentOmitted {
         elements: Vec<DiagramOccurrenceIdentity>,
     },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DiagramSyntaxDiagnostic {
+    pub code: String,
+    pub message: String,
+    pub source: SourceReference,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1788,7 +1797,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0xc7d504f5df841a57,
+            SCHEMA_FINGERPRINT, 0x748412de5667fe3c,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1796,7 +1805,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xc4c20ef3eb84e8d3,
+            COMPATIBILITY_TOKEN, 0x429556ffc491fc61,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

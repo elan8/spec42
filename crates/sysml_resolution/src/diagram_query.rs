@@ -62,7 +62,9 @@ pub enum DiagramSemanticReference {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DiagramIncompleteReason {
     ParseRecovery,
-    UnsupportedSyntax,
+    UnsupportedSyntax {
+        diagnostics: Box<[crate::UnsupportedConstructId]>,
+    },
     NonConverged,
     ExposureUnresolved {
         exposure: SymbolId,
@@ -634,7 +636,7 @@ impl PublishedResolution {
             .completeness()
             .obstacles()
             .filter(|obstacle| matches!(obstacle, crate::PublicationObstacle::NonConverged))
-            .map(publication_obstacle_reason)
+            .map(|_| DiagramIncompleteReason::NonConverged)
             .collect::<BTreeSet<_>>();
         let exposed = match self.view_exposed_elements(view).answer {
             QueryAnswer::Resolved(exposed) => exposed,
@@ -1627,11 +1629,24 @@ impl PublishedResolution {
             .chain(elements.iter().map(|element| element.source.document))
             .collect::<BTreeSet<_>>();
         for document in documents {
-            reasons.extend(
-                self.model
-                    .document_obstacles(document)
-                    .map(publication_obstacle_reason),
-            );
+            for obstacle in self.model.document_obstacles(document) {
+                reasons.insert(match obstacle {
+                    crate::PublicationObstacle::ParseRecovery => {
+                        DiagramIncompleteReason::ParseRecovery
+                    }
+                    crate::PublicationObstacle::UnsupportedSyntax => {
+                        DiagramIncompleteReason::UnsupportedSyntax {
+                            diagnostics: self
+                                .model
+                                .document_unsupported_constructs(document)
+                                .collect(),
+                        }
+                    }
+                    crate::PublicationObstacle::NonConverged => {
+                        DiagramIncompleteReason::NonConverged
+                    }
+                });
+            }
         }
         let scene = diagram_scene(
             view_entry.kind,
@@ -1995,16 +2010,6 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
                 | DiagramRelationshipKind::BindTarget
         ),
         DiagramViewKind::Browser | DiagramViewKind::Geometry => false,
-    }
-}
-
-/// The boundary form of one element reference.
-///
-fn publication_obstacle_reason(obstacle: crate::PublicationObstacle) -> DiagramIncompleteReason {
-    match obstacle {
-        crate::PublicationObstacle::ParseRecovery => DiagramIncompleteReason::ParseRecovery,
-        crate::PublicationObstacle::UnsupportedSyntax => DiagramIncompleteReason::UnsupportedSyntax,
-        crate::PublicationObstacle::NonConverged => DiagramIncompleteReason::NonConverged,
     }
 }
 

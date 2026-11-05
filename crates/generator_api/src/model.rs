@@ -2019,7 +2019,38 @@ impl GeneratorModelView {
         use sysml_query::resolved_slice::DiagramIncompleteReason as Owned;
         Ok(match reason {
             Owned::ParseRecovery => DiagramIncompleteReason::ParseRecovery,
-            Owned::UnsupportedSyntax => DiagramIncompleteReason::UnsupportedSyntax,
+            Owned::UnsupportedSyntax { diagnostics } => {
+                DiagramIncompleteReason::UnsupportedSyntax {
+                    diagnostics: diagnostics
+                        .iter()
+                        .map(|id| {
+                            let diagnostic = self
+                                .model
+                                .diagnostics()
+                                .unsupported_construct(*id)
+                                .ok_or_else(|| {
+                                    ModelQueryError::Unresolved("diagram diagnostic handle".into())
+                                })?;
+                            Ok(spec42_generator_protocol::DiagramSyntaxDiagnostic {
+                                code: diagnostic.code.as_str().to_owned(),
+                                message: diagnostic.message().to_owned(),
+                                source: SourceReference {
+                                    uri: self
+                                        .model
+                                        .document_identity(diagnostic.document)
+                                        .ok_or_else(|| {
+                                            ModelQueryError::Unresolved(
+                                                "diagram diagnostic document".into(),
+                                            )
+                                        })?
+                                        .to_owned(),
+                                    range: protocol_source_range(diagnostic.range),
+                                },
+                            })
+                        })
+                        .collect::<Result<Vec<_>, ModelQueryError>>()?,
+                }
+            }
             Owned::NonConverged => DiagramIncompleteReason::NonConverged,
             Owned::ExposureUnresolved { exposure } => DiagramIncompleteReason::ExposureUnresolved {
                 exposure: self.diagram_reference(exposure)?,

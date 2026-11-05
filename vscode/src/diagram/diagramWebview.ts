@@ -514,6 +514,9 @@ window.addEventListener("message", (event: MessageEvent) => {
   if (message.type === "render") {
     document.body.classList.remove("busy");
     void render(message as RenderMessage);
+  } else if (message.type === "status") {
+    const status = message as { type: "status"; header: string; error?: string };
+    setStatus(status.header, status.error);
   } else if (message.type === "busy") {
     document.body.classList.toggle("busy", Boolean((message as { busy?: unknown }).busy));
   } else if (message.type === "drawResponse" || message.type === "drawError") {

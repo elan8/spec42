@@ -12,6 +12,13 @@ export type SourceNavigation = {
   endCharacter: number;
 };
 
+/** A webview may navigate an admitted library only at a source range supplied by its product. */
+export function productContainsSourceTarget(product: DiagramProduct, target: SourceNavigation): boolean {
+  return product.sources.some((source) => product.documents[source.document]?.uri === target.uri &&
+    source.range[0] === target.startLine && source.range[1] === target.startCharacter &&
+    source.range[2] === target.endLine && source.range[3] === target.endCharacter);
+}
+
 export function visibleSourceColumn(
   uri: string,
   editors: readonly { uri: string; viewColumn?: number }[],
@@ -32,11 +39,7 @@ export const DIAGRAM_VIEWS = [
 
 export type DiagramViewId = typeof DIAGRAM_VIEWS[number]["id"];
 
-export type DiagramSemanticReference =
-  | { kind: "qualified-name"; document: string; qualifiedName: string; sourceDomain: string }
-  | { kind: "tooling-element-id"; elementId: string; sourceDomain: string }
-  | { kind: "source-anchor"; document: string; ownerQualifiedName: string | null; metaclass: string; sourceDomain: string; range: unknown }
-  | { kind: "relationship"; document: string; sourceQualifiedName: string; relationshipKind: string; ordinal: number; sourceDomain: string };
+export type DiagramSemanticReference = import("../generated/diagram-presentation").DiagramReferenceChoice;
 
 const NOTATION_ROLES = new Set([
   "definition", "usage", "reference-usage", "namespace", "annotation", "unsupported",
@@ -207,30 +210,6 @@ export function resolveDiagramSelection(
     if (kept) return kept;
   }
   return options[0];
-}
-
-/**
- * Backoff for the diagram view's reconcile loop, which runs while the view is visible and its
- * render does not yet match the publication. `attempt` is the 0-based consecutive-failure count;
- * `settled` is set once an answer looks final (no model files, or a genuinely empty catalog) so
- * the loop drops to a slow keep-checking cadence instead of a spinner-speed retry.
- */
-export function reconcileDelayMs(attempt: number, settled: boolean): number {
-  if (settled) return 45_000;
-  const capped = Math.min(Math.max(0, Math.trunc(attempt)), 6);
-  return Math.min(15_000, 600 * 2 ** capped);
-}
-
-/**
- * Whether a `spec42/publicationChanged` notification means the panel's current render is stale.
- * A render with no known digest (nothing drawn yet) is not "stale" — it just has nothing to
- * compare — so this returns false and the caller leaves the panel alone.
- */
-export function diagramRenderIsStale(
-  renderedModelDigest: string | undefined,
-  publishedModelDigest: string,
-): boolean {
-  return renderedModelDigest !== undefined && renderedModelDigest !== publishedModelDigest;
 }
 
 export function parseStateTransitionViewCatalog(value: unknown): StateTransitionViewCatalog {
@@ -499,7 +478,8 @@ export function isDiagramSemanticReference(value: unknown): value is DiagramSema
   if (reference.kind === "source-anchor") {
     return typeof reference.document === "string" && typeof reference.metaclass === "string" &&
       (reference.ownerQualifiedName === null || typeof reference.ownerQualifiedName === "string") &&
-      !!reference.range && typeof reference.range === "object";
+      !!reference.range && typeof reference.range === "object" &&
+      !!parseSourceNavigation({ uri: reference.document, ...reference.range });
   }
   return reference.kind === "relationship" && typeof reference.document === "string" &&
     typeof reference.sourceQualifiedName === "string" && typeof reference.relationshipKind === "string" &&

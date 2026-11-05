@@ -15,7 +15,7 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
 never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 11
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 12
 is the sole renderer product for this contract.
 
 Each projected element carries an opaque `presentationKey`, a domain-separated SHA-256 encoding
@@ -57,6 +57,31 @@ negation preserves unresolved, ambiguous and unsupported predicate outcomes.
 
 ## Explicit degraded states
 
+The VS Code viewer requests `spec42/diagramPresentation`. The backend reads the owning
+session's lifecycle and captures one immutable publication and one generator adapter. It selects
+the requested canonical view reference and produces its catalog and diagram together. Rendering
+does not open source documents. Opening a source belongs exclusively to navigation.
+
+The response distinguishes `updating`, `failed`, `cancelled`, `unavailable`, `superseded`,
+`empty`, `unchanged`, and `ready`. Settled replies carry the session version as a decimal string
+so JavaScript cannot truncate it. Completed work is delivered only while its captured owner and
+publication token remain current. A retained product can be reused only when its model digest,
+canonical view selection, and expanded browser rows match the current request. Fallback selection
+clears expansion keys from the previous view, and replies report the applied keys.
+
+The client subscribes to `spec42/analysisStatusChanged` before its initial request. That notification
+is a wake to read current owner state, including same-digest completions and failures; its payload
+is not a second freshness authority. Readiness is settled before this wake is sent, independently
+of diagnostic fanout. The client coalesces wakes received during a request, rejects superseded
+selection responses, and keeps its existing frame visible while updating. Source navigation from
+a retained frame waits until a current response is accepted. It uses no publication
+polling timer, guessed retry delay, or error-message matching. Webview loading and server restart
+recovery remain separate fault/lifecycle concerns. The older catalog and diagram RPCs remain
+available for existing clients.
+
+`cargo run -p lsp_server --example diagram_presentation_bindings` generates the editor's shared
+request/result declarations from the Rust DTOs; mini-CI checks these bindings for drift.
+
 Unresolved and ambiguous exposure, unsupported syntax or features, parser recovery, non-converged
 publication, absent authoritative geometry, and incomplete relationship endpoints are distinct
 typed reasons. An empty resolved exposure is a valid complete empty projection when the view kind
@@ -64,6 +89,11 @@ permits it. Elements outside the transitive semantic scope of resolved exposures
 An empty drawing explains that no elements are selected and directs the reader to the view's
 exposes and filters. It does not turn an empty selection into an incomplete result or render
 elements excluded by the view's filters.
+
+Unsupported-syntax reasons retain canonical unsupported-construct diagnostics for contributing
+documents, independently of diagnostic reporting scope, with stable codes, messages, and exact source ranges. These may refer to
+another declaration in a document the view draws from. The viewer links to those constructs;
+it does not substitute the view definition for the cause or infer support from the drawing.
 
 Projection completeness includes the publication's parser-recovery, unsupported-syntax, and
 non-convergence obstacles: an incomplete publication cannot establish that its selected content
@@ -108,8 +138,9 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-11 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
-discriminated union keyed by the view kind, so each view carries only its own metadata and scene
+The schema-12 wire shape is declared in `crates/diagram_product/src/wire.rs`. Unsupported-syntax
+reasons carry `diagnostics`, each with a `code`, `message`, and interned `source` index.
+Its `projection` is a discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.
 
 `cargo run -p diagram_product --bin diagram_bindings` generates the checked-in TypeScript types in

@@ -1692,8 +1692,8 @@ package CrowdedPorts {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:4e17d9df1fca08e1cf39813ccbb3895ca168b316f16f196830e26ae8a35260a2",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:d43bff0f0e8c72aa2bfef2aa6c328095f196a02e8a6e297b777e802c6b8a55c2",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

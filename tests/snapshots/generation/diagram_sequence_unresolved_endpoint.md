@@ -294,8 +294,8 @@ package SequenceUnresolved {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:bf8543728992a387c455079bc9e8332638b842bd74754946a730c88f1bfb2930",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:2081d8a7ff17f4b5d9b16a4d26fb610f21b388c8318762596b593df99d086636",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unresolved_endpoint.md",

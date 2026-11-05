@@ -50,7 +50,10 @@ function nodeReferences(product: DiagramProduct, nodes: number[]): number[] {
 function explanation(product: DiagramProduct, reason: IncompleteReason): { text: string; references: number[] } {
   switch (reason.code) {
     case "parse-recovery": return { text: "Source contains syntax errors. This drawing includes only the content recovered by the compiler.", references: [] };
-    case "unsupported-syntax": return { text: "The publication contains syntax whose semantics are not supported yet. The drawing may omit content.", references: [] };
+    case "unsupported-syntax": return {
+      text: reason.diagnostics.map((diagnostic) => `${diagnostic.code}: ${diagnostic.message}`).join("\n"),
+      references: [],
+    };
     case "non-converged": return { text: "Semantic analysis did not converge. Some results remain unsettled.", references: [] };
     case "exposure-unresolved": return { text: "An expose target cannot be resolved. Check its name and imports.", references: [reason.exposure] };
     case "exposure-ambiguous": return { text: "An expose target names several elements. Qualify the intended target.", references: [reason.exposure] };
@@ -84,6 +87,16 @@ export function diagramLimitations(product: DiagramProduct): LimitationDetail[] 
       const target = sourceTarget(product, reference);
       return target ? [{ label: referenceLabel(product, reference), target }] : [];
     });
+    if (reason.code === "unsupported-syntax") {
+      for (const diagnostic of reason.diagnostics) {
+        const source = product.sources[diagnostic.source];
+        const document = source && product.documents[source.document];
+        if (source && document) links.push({
+          label: `${diagnostic.code} · ${document.uri.split(/[\\/]/).pop()}:${source.range[0] + 1}`,
+          target: { uri: document.uri, startLine: source.range[0], startCharacter: source.range[1], endLine: source.range[2], endCharacter: source.range[3] },
+        });
+      }
+    }
     if (links.length === 0) {
       const source = product.sources[product.selectedView.source];
       const document = source && product.documents[source.document];

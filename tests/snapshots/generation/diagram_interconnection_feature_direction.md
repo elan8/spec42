@@ -614,8 +614,8 @@ package Feed {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:2565d85e406907fcd3ef58c02e0ee2821eff5f32f734a37fa55d037166e536b3",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:f2dc2e853809205170db18628564d81515ed7bb186b1cb7d21395faf5477ee17",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

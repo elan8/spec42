@@ -438,8 +438,8 @@ package Nested {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:728ea28d914cbaa11db7f768b682db941c0337a57f97032bc94bc396a6573b85",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:cdf7383bb4607ec1650367796c3935a5cdde7506ff202284291b70498dc6561e",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

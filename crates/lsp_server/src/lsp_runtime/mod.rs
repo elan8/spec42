@@ -9,6 +9,7 @@ mod hierarchy;
 mod layout;
 mod lifecycle;
 mod navigation;
+mod presentation;
 mod project_registry;
 mod references_resolver;
 mod symbols;
@@ -35,6 +36,10 @@ use generation::{
 };
 use layout::{legacy_engine_requested, LayoutEngine, LayoutParams, LayoutResult};
 use project_registry::ProjectRegistry;
+
+pub(crate) fn diagram_presentation_typescript() -> String {
+    generation::diagram_presentation_typescript()
+}
 
 fn require_current_analysis(state: &ServerState) -> Result<()> {
     use sysml_query::publication::AnalysisStatus;
@@ -865,6 +870,13 @@ impl Backend {
             .map_err(tower_lsp::jsonrpc::Error::invalid_params)
     }
 
+    async fn spec42_diagram_presentation(
+        &self,
+        params: generation::DiagramPresentationParams,
+    ) -> Result<generation::DiagramPresentationResult> {
+        self.diagram_presentation(params).await
+    }
+
     async fn spec42_diagram(&self, params: DiagramParams) -> Result<DiagramResult> {
         let model_uri = Url::parse(&params.model_uri).map_err(|error| {
             tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
@@ -1063,6 +1075,10 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("sysml/librarySearch", Backend::sysml_library_search)
     .custom_method("spec42/generate", Backend::spec42_generate)
     .custom_method("spec42/diagramViews", Backend::spec42_diagram_views)
+    .custom_method(
+        generation::DIAGRAM_PRESENTATION_METHOD,
+        Backend::spec42_diagram_presentation,
+    )
     .custom_method("spec42/diagram", Backend::spec42_diagram)
     .custom_method("spec42/layout", Backend::spec42_layout)
     .custom_method("spec42/draw", Backend::spec42_draw)

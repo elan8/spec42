@@ -205,8 +205,8 @@ package RecursiveExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:dbf83ce8dc70f238bdc4e85782607686f5814e7923149346046164bbabd5f0f9",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:c04e67db24022191d081566583bd7586295e201bdb729f84d532684215438ae0",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_recursive_exposure.md",

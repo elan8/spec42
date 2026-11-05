@@ -27,6 +27,19 @@ use sysml_v2_parser::ParsedDocument;
 const RELATED_HIDDEN_MEMBER: &str = "Non-public member the qualified name names.";
 
 impl<D> SemanticModel<D> {
+    /// One diagnostic derivation for reporting and source-linked projections, including libraries
+    /// omitted from the reporting scope. Its public view carries handles and static code vocabulary.
+    pub(crate) fn unsupported_construct_fact(
+        &self,
+        record: &crate::lower::facts::UnsupportedRecord,
+    ) -> Result<crate::UnsupportedConstruct, ResolutionError> {
+        Ok(crate::UnsupportedConstruct {
+            document: crate::DocumentId::from_index(record.document.index())
+                .ok_or(ResolutionError::Capacity)?,
+            range: document_range(&self.storage, record.document, &record.span)?,
+            code: unsupported_construct_code(record.family),
+        })
+    }
     /// The non-public segment that made an unresolved qualified name fail: the path resolves once
     /// visibility is ignored, and a namespace it passes through does not own that segment publicly
     /// (KerML 8.2.3.5.3).
@@ -145,7 +158,8 @@ impl<D> SemanticModel<D> {
                     .iter()
                     .filter(|record| record.document == document_id)
                 {
-                    let code = unsupported_construct_code(record.family);
+                    let construct = self.unsupported_construct_fact(record)?;
+                    let code = construct.code;
                     diagnostics.push(Diagnostic {
                         payload: None,
                         message: code.describe().into(),
@@ -155,7 +169,7 @@ impl<D> SemanticModel<D> {
                         origin: DiagnosticOrigin::Semantic,
                         location: DiagnosticLocation {
                             document: document.identity.clone(),
-                            range: document_range(&self.storage, document_id, &record.span)?,
+                            range: construct.range,
                         },
                         related: Box::default(),
                     });

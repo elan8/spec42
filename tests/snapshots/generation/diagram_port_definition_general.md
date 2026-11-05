@@ -113,8 +113,8 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:9761b6c909ce90db2b89ec93c255b22b08ba135e5cfcea112e4801ada2b537aa",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:65a377a3acc1e196ee4d7602601feb16d7dc200d88c71c7c4745db15438400a6",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_port_definition_general.md",

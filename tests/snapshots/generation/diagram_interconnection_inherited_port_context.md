@@ -249,8 +249,8 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:33c1ad93b7482177eca15d401d95ee6c1bf48015fb79f39c1428df833fbc0544",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:0205082b75d7eb944574316bb4aa39c11154c9d6c5863e7ad9b925948ce05239",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

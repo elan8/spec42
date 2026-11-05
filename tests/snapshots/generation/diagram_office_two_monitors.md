@@ -731,8 +731,8 @@ package Office {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:02afe7df647b21496a02b3b0cf15bdf13656d6209a302f4b70040863c6686a25",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:002ac6d6effbad27f386f33257ffe96fc0e3014941c36169b0545b8a8c8e9fcc",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

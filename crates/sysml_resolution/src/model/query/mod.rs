@@ -942,6 +942,26 @@ impl ResolvedSemanticModel {
     pub(crate) fn diagnostics(&self) -> &[Diagnostic] {
         &self.diagnostics.diagnostics
     }
+
+    pub(crate) fn document_unsupported_constructs(
+        &self,
+        document: DocumentId,
+    ) -> impl Iterator<Item = crate::UnsupportedConstructId> + '_ {
+        self.storage
+            .unsupported
+            .iter()
+            .enumerate()
+            .filter(move |(_, record)| record.document.index() == document.index())
+            .map(|(index, _)| crate::UnsupportedConstructId(index))
+    }
+
+    pub(crate) fn unsupported_construct(
+        &self,
+        id: crate::UnsupportedConstructId,
+    ) -> Option<crate::UnsupportedConstruct> {
+        self.unsupported_construct_fact(self.storage.unsupported.get(id.0)?)
+            .ok()
+    }
     pub(crate) fn write_semantic_sexpr(
         &self,
         source_digest: &source_identity::RootDigest,

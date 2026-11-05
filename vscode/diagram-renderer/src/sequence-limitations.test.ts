@@ -68,11 +68,26 @@ describe("canonical sequence limitation presentation", () => {
     summary.focus();
     expect(document.activeElement).toBe(summary);
     expect(document.querySelector("#limitations")!.hasAttribute("hidden")).toBe(false);
+    const retained = document.createElement("span");
+    document.querySelector("#diagram")!.appendChild(retained);
+    window.dispatchEvent(new MessageEvent("message", { data: { type: "status", header: "Updating view..." } }));
+    expect(document.querySelector("#diagram")!.contains(retained)).toBe(true);
+    expect(document.querySelector("#status")!.textContent).toBe("Updating view...");
+    expect(document.querySelector("#limitations")!.hasAttribute("hidden")).toBe(false);
     const buttons = [...document.querySelectorAll<HTMLButtonElement>("#limitations button")];
     buttons[0].click();
     expect(postMessage).toHaveBeenCalledWith(expect.objectContaining({ type: "openSource", target: expect.objectContaining({ uri: expect.any(String) }) }));
     buttons.at(-1)!.click();
     expect(postMessage).toHaveBeenCalledWith({ type: "copyLimitations", modelDigest: product.modelDigest, viewHandle: "scenario" });
+
+    send(fixture("diagram_sequence_unsupported_details"));
+    await vi.waitFor(() => expect(document.querySelector("#limitations code")!.textContent).toBe("unsupported-syntax"));
+    const diagnosticLink = document.querySelector<HTMLButtonElement>("#limitations li button")!;
+    expect(diagnosticLink.textContent).toContain("unsupported_state_definition_member");
+    diagnosticLink.click();
+    expect(postMessage).toHaveBeenCalledWith({ type: "openSource", target: {
+      uri: "memory://snapshot/diagram_sequence_unsupported_details.md", startLine: 16, startCharacter: 24, endLine: 16, endCharacter: 51,
+    } });
 
     document.querySelector<HTMLDetailsElement>("details")!.open = true;
     send(fixture("sequence_event_cycle"));

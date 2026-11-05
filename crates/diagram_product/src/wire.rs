@@ -1,4 +1,4 @@
-//! The schema-11 JSON wire contract. The Rust writer validates against these types before
+//! The schema-12 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -113,7 +113,7 @@ pub enum CompletenessStatus {
 )]
 pub enum IncompleteReason {
     ParseRecovery,
-    UnsupportedSyntax,
+    UnsupportedSyntax { diagnostics: Vec<SyntaxDiagnostic> },
     NonConverged,
     ExposureUnresolved { exposure: usize },
     ExposureAmbiguous { exposure: usize },
@@ -128,6 +128,14 @@ pub enum IncompleteReason {
     SequenceMessageEndpointOutsideLifeline,
     SequenceOrderingCycle { witness: Vec<SequenceCycleStep> },
     SequenceContentOmitted { elements: Vec<usize> },
+}
+
+#[derive(Deserialize, TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SyntaxDiagnostic {
+    pub code: String,
+    pub message: String,
+    pub source: usize,
 }
 
 #[derive(Deserialize, TS)]

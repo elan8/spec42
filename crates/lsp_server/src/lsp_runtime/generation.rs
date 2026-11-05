@@ -13,6 +13,8 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use sysml_query::resolved_slice::{PublicationModelDigest, PublishedModel};
 
+pub(crate) const DIAGRAM_PRESENTATION_METHOD: &str = "spec42/diagramPresentation";
+
 const MAX_PLUGIN_BYTES: usize = 16 * 1024 * 1024;
 const MAX_PREPARED_MODULES: usize = 8;
 const MAX_MODEL_VIEWS: usize = 4;
@@ -94,7 +96,7 @@ pub(crate) struct DiagramParams {
     pub(crate) expanded: Vec<String>,
 }
 
-/// `spec42/diagram`: the schema-10 diagram product of one catalog view, built natively.
+/// `spec42/diagram`: the schema-12 diagram product of one catalog view, built natively.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramResult {
@@ -113,10 +115,11 @@ pub(crate) struct DiagramViewsResult {
     pub(crate) views: Vec<DiagramViewChoice>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, ts_rs::TS, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramViewChoice {
     pub(crate) handle: String,
+    #[ts(type = "import('./diagram-product/ViewKind').ViewKind")]
     pub(crate) kind: DiagramViewKind,
     pub(crate) reference: DiagramReferenceChoice,
     pub(crate) name: String,
@@ -124,13 +127,13 @@ pub(crate) struct DiagramViewChoice {
     pub(crate) source: DiagramViewSourceChoice,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, ts_rs::TS, Serialize)]
 pub(crate) struct DiagramViewSourceChoice {
     pub(crate) uri: String,
     pub(crate) range: DiagramRangeChoice,
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 #[serde(
     tag = "kind",
     rename_all = "kebab-case",
@@ -162,13 +165,112 @@ pub(crate) enum DiagramReferenceChoice {
     },
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramRangeChoice {
     start_line: u32,
     start_character: u32,
     end_line: u32,
     end_character: u32,
+}
+
+/// The editor selects and draws against one captured immutable publication.
+#[derive(Debug, Deserialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub(crate) struct DiagramPresentationParams {
+    /// A project context URI; it need not name an admitted or open source document.
+    pub project_uri: String,
+    pub selection: Option<DiagramSelection>,
+    pub preferred_document_uri: Option<String>,
+    #[serde(default)]
+    pub expanded: Vec<String>,
+    pub known_product: Option<KnownDiagramProduct>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub(crate) struct DiagramSelection {
+    #[ts(type = "import('./diagram-product/ViewKind').ViewKind")]
+    pub kind: DiagramViewKind,
+    pub reference: DiagramReferenceChoice,
+}
+
+#[derive(Debug, Deserialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub(crate) struct KnownDiagramProduct {
+    pub model_digest: String,
+    pub selection: DiagramSelection,
+    pub expanded: Vec<String>,
+}
+
+#[derive(Debug, Serialize, ts_rs::TS)]
+#[serde(
+    tag = "state",
+    rename_all = "kebab-case",
+    rename_all_fields = "camelCase"
+)]
+pub(crate) enum DiagramPresentationResult {
+    Updating {
+        semantic_state_version: String,
+    },
+    Cancelled {
+        semantic_state_version: String,
+    },
+    Failed {
+        semantic_state_version: String,
+        message: String,
+    },
+    Unavailable {
+        message: String,
+    },
+    Superseded,
+    Unchanged {
+        semantic_state_version: String,
+    },
+    Empty {
+        semantic_state_version: String,
+        model_digest: String,
+    },
+    Ready {
+        semantic_state_version: String,
+        model_digest: String,
+        views: Vec<DiagramViewChoice>,
+        selected_handle: String,
+        selection: Box<DiagramSelection>,
+        product_json: String,
+        expanded: Vec<String>,
+        #[ts(type = "number")]
+        duration_us: u128,
+    },
+}
+
+pub(crate) fn diagram_presentation_typescript() -> String {
+    use ts_rs::TS;
+    let declarations = [
+        DiagramRangeChoice::decl(),
+        DiagramReferenceChoice::decl(),
+        DiagramViewSourceChoice::decl(),
+        DiagramViewChoice::decl(),
+        DiagramSelection::decl(),
+        KnownDiagramProduct::decl(),
+        DiagramPresentationParams::decl(),
+        DiagramPresentationResult::decl(),
+    ];
+    let mut output =
+        String::from("// Generated from the Rust diagram presentation protocol. Do not edit.\n");
+    for declaration in declarations {
+        output.push_str(&format!("export {declaration}\n"));
+    }
+    output.push_str(&format!(
+        "export const DIAGRAM_PRESENTATION_METHOD = {} as const;\n",
+        serde_json::to_string(DIAGRAM_PRESENTATION_METHOD).expect("method name serializes")
+    ));
+    output
+        .lines()
+        .map(str::trim_end)
+        .collect::<Vec<_>>()
+        .join("\n")
+        + "\n"
 }
 
 fn diagram_source_domain(value: generator_api::DiagramSourceDomain) -> String {
@@ -307,6 +409,16 @@ impl GeneratorService {
                 return Err("the semantic publication changed while selecting a view; choose the view again".to_owned());
             }
         }
+        Self::diagram_for(&model, handle, expanded, started)
+    }
+
+    fn diagram_for(
+        model: &GeneratorModelView,
+        handle: &str,
+        expanded: &[String],
+        started: Instant,
+    ) -> Result<DiagramResult, String> {
+        let model_digest = model.model_digest();
         let projection = model
             .diagram_view_expanding(handle, expanded)
             .map_err(|error| error.to_string())?;
@@ -496,11 +608,81 @@ impl GeneratorService {
         })
     }
 
+    pub(crate) fn presentation(
+        &self,
+        publication: Arc<PublishedModel>,
+        params: &DiagramPresentationParams,
+        version: String,
+    ) -> Result<DiagramPresentationResult, String> {
+        let started = Instant::now();
+        let model = self.model_for(publication)?;
+        let catalog = Self::diagram_views_for(&model)?;
+        let selected = params
+            .selection
+            .as_ref()
+            .and_then(|selection| {
+                catalog.views.iter().find(|view| {
+                    view.kind == selection.kind && view.reference == selection.reference
+                })
+            })
+            .or_else(|| {
+                params
+                    .preferred_document_uri
+                    .as_ref()
+                    .and_then(|uri| catalog.views.iter().find(|view| &view.source.uri == uri))
+            })
+            .or_else(|| catalog.views.first());
+        let Some(view) = selected else {
+            return Ok(DiagramPresentationResult::Empty {
+                semantic_state_version: version,
+                model_digest: catalog.model_digest,
+            });
+        };
+        let selection = DiagramSelection {
+            kind: view.kind,
+            reference: view.reference.clone(),
+        };
+        let expanded = if params.selection.as_ref() == Some(&selection) {
+            params.expanded.as_slice()
+        } else {
+            &[]
+        };
+        // Fallback also changes the client's selection/expansion state. Deliver that state
+        // explicitly even if its retained frame happens to depict the fallback view already.
+        if params.selection.as_ref() == Some(&selection)
+            && params.known_product.as_ref().is_some_and(|known| {
+                known.model_digest == catalog.model_digest
+                    && known.selection == selection
+                    && known.expanded == expanded
+            })
+        {
+            return Ok(DiagramPresentationResult::Unchanged {
+                semantic_state_version: version,
+            });
+        }
+        let selected_handle = view.handle.clone();
+        let artifact = Self::diagram_for(&model, &selected_handle, expanded, started)?;
+        Ok(DiagramPresentationResult::Ready {
+            semantic_state_version: version,
+            model_digest: catalog.model_digest,
+            views: catalog.views,
+            selected_handle,
+            selection: Box::new(selection),
+            product_json: artifact.product_json,
+            expanded: expanded.to_vec(),
+            duration_us: artifact.duration_us,
+        })
+    }
+
     pub(crate) fn diagram_views(
         &self,
         publication: Arc<PublishedModel>,
     ) -> Result<DiagramViewsResult, String> {
         let model = self.model_for(publication)?;
+        Self::diagram_views_for(&model)
+    }
+
+    fn diagram_views_for(model: &GeneratorModelView) -> Result<DiagramViewsResult, String> {
         let views = model
             .diagram_views()
             .map_err(|error| error.to_string())?
