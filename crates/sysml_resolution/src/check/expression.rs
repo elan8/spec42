@@ -268,15 +268,17 @@ impl<D> SemanticModel<D> {
         });
         if let Some(row) = row {
             if self.is_reference_value_receiver(receiver) {
-                if let Some(root) = row.root {
-                    if self.reference_expression_conflicts(row, root, receiver) {
-                        return Some(DiagnosticSeverity::Error);
+                let structural = row
+                    .root
+                    .and_then(|root| self.reference_expression_conflict(row, root, receiver));
+                let typed = match &row.result_typing {
+                    crate::expression::RawResultTyping::Resolved(actual) => {
+                        self.static_value_type_conflict(actual, receiver)
                     }
-                }
-                if let crate::expression::RawResultTyping::Resolved(actual) = &row.result_typing {
-                    if self.static_value_type_conflicts(actual, receiver) {
-                        return Some(DiagnosticSeverity::Error);
-                    }
+                    _ => None,
+                };
+                if let Some(severity) = more_severe(structural, typed) {
+                    return Some(severity);
                 }
             }
             let literal = row
@@ -377,28 +379,28 @@ impl<D> SemanticModel<D> {
 
     /// Compare a reference in its canonical featuring context, including inherited self.
     /// Unsettled inputs retain their existing resolution diagnostics.
-    pub(crate) fn reference_value_type_conflicts(
+    pub(crate) fn reference_value_type_conflict(
         &self,
         actual: DeclarationId,
         receiver: DeclarationId,
         context: crate::index::expression_typing::ReferenceContext,
         reference: Option<AuthoredReferenceId>,
-    ) -> bool {
+    ) -> Option<DiagnosticSeverity> {
         if self.specialization_hierarchy_is_unsettled(actual) {
-            return false;
+            return None;
         }
         let types = crate::index::expression_typing::reference_result_types(
             self, context, actual, reference,
         );
-        self.static_value_type_conflicts(&types, receiver)
+        self.static_value_type_conflict(&types, receiver)
     }
 
-    fn reference_expression_conflicts(
+    fn reference_expression_conflict(
         &self,
         row: &crate::expression::ResolvedExpressionRow,
         node: u32,
         receiver: DeclarationId,
-    ) -> bool {
+    ) -> Option<DiagnosticSeverity> {
         use crate::expression::RawExpressionNodeKind;
         match row.nodes.get(node as usize).map(|node| &node.kind) {
             Some(RawExpressionNodeKind::FeatureReference {
@@ -406,10 +408,8 @@ impl<D> SemanticModel<D> {
                 reference,
                 ..
             }) => {
-                let Some(expression) = self.value_expression(receiver) else {
-                    return false;
-                };
-                self.reference_value_type_conflicts(
+                let expression = self.value_expression(receiver)?;
+                self.reference_value_type_conflict(
                     *target,
                     receiver,
                     crate::index::expression_typing::ReferenceContext::Authored(expression),
@@ -418,43 +418,107 @@ impl<D> SemanticModel<D> {
             }
             Some(RawExpressionNodeKind::Sequence { elements }) => elements
                 .iter()
-                .any(|element| self.reference_expression_conflicts(row, *element, receiver)),
+                .map(|element| self.reference_expression_conflict(row, *element, receiver))
+                .fold(None, more_severe),
             Some(RawExpressionNodeKind::Literal(value)) => self
                 .expressions
                 .scalar_type(value)
-                .is_some_and(|actual| self.static_value_type_conflicts(&[actual], receiver)),
-            _ => false,
+                .and_then(|actual| self.static_value_type_conflict(&[actual], receiver)),
+            _ => None,
         }
     }
 
     /// Expression result types are simultaneous constraints, as are the receiver's effective
     /// types. Sequence elements are checked individually rather than treating a union of their
     /// types as an intersection.
-    fn static_value_type_conflicts(
+    ///
+    /// A FeatureValue binds its feature to the expression result, so both identify the same
+    /// things (KerML 8.4.4.11, 8.3.4.5.2). Such a binding is only meaningful when the declared
+    /// co-domains overlap (KerML 7.4.6.1), and no validation constraint requires the value's type
+    /// to conform. A value whose types provably share no instance with an expected type is an
+    /// error. Anything else that does not conform -- narrowing to a specialization, or a
+    /// classifier with no specialization path that could still classify the same instance --
+    /// is reported as a warning, as for unproven scalar refinements.
+    fn static_value_type_conflict(
         &self,
         actual: &[DeclarationId],
         receiver: DeclarationId,
-    ) -> bool {
+    ) -> Option<DiagnosticSeverity> {
         if actual.is_empty()
             || self.specialization_hierarchy_is_unsettled(receiver)
             || actual
                 .iter()
                 .any(|actual| self.specialization_hierarchy_is_unsettled(*actual))
         {
-            return false;
+            return None;
         }
-        self.types
-            .effective_types(receiver)
-            .iter()
-            .any(|(expected, _)| {
-                actual.iter().all(|actual| {
-                    self.conformance(
-                        *actual,
-                        *expected,
-                        crate::SpecializationScope::AnySpecialization,
-                    ) == crate::Conformance::DoesNotConform
-                })
+        let mut finding = None;
+        for (expected, _) in self.types.effective_types(receiver).iter() {
+            if !actual.iter().all(|actual| {
+                self.conformance(
+                    *actual,
+                    *expected,
+                    crate::SpecializationScope::AnySpecialization,
+                ) == crate::Conformance::DoesNotConform
+            }) {
+                continue;
+            }
+            // The value's types are simultaneous constraints: one of them disjoint from the
+            // expected type is enough to rule out every shared instance.
+            if actual
+                .iter()
+                .any(|actual| self.types_are_disjoint(*actual, *expected))
+            {
+                return Some(DiagnosticSeverity::Error);
+            }
+            finding = Some(DiagnosticSeverity::Warning);
+        }
+        finding
+    }
+
+    /// Whether two types provably share no instance: a class and a data type (KerML 7.4.6.1),
+    /// or types under an authored disjoining (KerML 7.3.2.5), which their specializations inherit.
+    fn types_are_disjoint(&self, left: DeclarationId, right: DeclarationId) -> bool {
+        let class_or_data = |id: DeclarationId| {
+            self.kind_of(id).and_then(|kind| {
+                let kind = element_kind(kind);
+                if kind.conforms_to(ElementKind::DataType) {
+                    Some(true)
+                } else if kind.conforms_to(ElementKind::Class) {
+                    Some(false)
+                } else {
+                    None
+                }
             })
+        };
+        if let (Some(left), Some(right)) = (class_or_data(left), class_or_data(right)) {
+            if left != right {
+                return true;
+            }
+        }
+        let conforms = |specific: DeclarationId, general: DeclarationId| {
+            self.conformance(
+                specific,
+                general,
+                crate::SpecializationScope::AnySpecialization,
+            ) == crate::Conformance::Conforms
+        };
+        let disjoint_from = |specific: DeclarationId, other: DeclarationId| {
+            std::iter::once(specific)
+                .chain(
+                    self.types
+                        .specialization()
+                        .entries(specific)
+                        .iter()
+                        .map(|(general, _)| *general),
+                )
+                .any(|general| {
+                    self.types
+                        .operands_of(general, crate::index::types::SetOperator::Disjoint)
+                        .any(|target| conforms(other, target))
+                })
+        };
+        disjoint_from(left, right) || disjoint_from(right, left)
     }
 
     /// Reports unit tokens that name no unit, name several, or name one of the wrong dimension.
@@ -1228,5 +1292,18 @@ impl<D> SemanticModel<D> {
         } else {
             BooleanResult::Undecided
         }
+    }
+}
+
+/// The more severe of two optional findings: an error outranks a warning.
+fn more_severe(
+    left: Option<DiagnosticSeverity>,
+    right: Option<DiagnosticSeverity>,
+) -> Option<DiagnosticSeverity> {
+    match (left, right) {
+        (Some(DiagnosticSeverity::Error), _) | (_, Some(DiagnosticSeverity::Error)) => {
+            Some(DiagnosticSeverity::Error)
+        }
+        (left, right) => left.or(right),
     }
 }

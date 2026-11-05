@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Reference FeatureValues retain resolved operands and sequences and reject incompatible structural values without changing lexical shadowing; KerML 8.4.4.11 feature-value binding semantics
+description=Reference FeatureValues retain resolved operands and sequences warn on structural values that do not conform but may still overlap, and reject a behavior bound to an item (Performances::Performance is disjoint from Objects::Object) without changing lexical shadowing; KerML 8.4.4.11 feature-value binding semantics, 7.4.6.1 overlap
 specification=OMG KerML 1.0 (formal/26-03-01), 8.4.4.11
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 type=file
@@ -35,7 +35,7 @@ package ReferenceValues {
   (document "memory://snapshot/reference_values_and_types.md"
     (diagnostics
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "reference_value_type_mismatch")
         (source "semantic")
         (range (start 10 48) (end 10 55))
@@ -47,7 +47,7 @@ package ReferenceValues {
         )
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "reference_value_type_mismatch")
         (source "semantic")
         (range (start 11 46) (end 11 58))
@@ -80,7 +80,7 @@ package ReferenceValues {
   (document "memory://snapshot/reference_values_and_types.md"
     (diagnostics
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "reference_value_type_mismatch")
         (source "semantic")
         (range (start 10 48) (end 10 55))
@@ -92,7 +92,7 @@ package ReferenceValues {
         )
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "reference_value_type_mismatch")
         (source "semantic")
         (range (start 11 46) (end 11 58))

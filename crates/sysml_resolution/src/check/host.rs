@@ -1620,7 +1620,7 @@ impl<D> SemanticModel<D> {
                     };
                     // The by operand is a subject FeatureValue evaluated in the satisfy
                     // occurrence, so `that` denotes the occurrence featuring that check.
-                    if self.reference_value_type_conflicts(
+                    if let Some(severity) = self.reference_value_type_conflict(
                         target,
                         subject,
                         crate::index::expression_typing::ReferenceContext::Effective(id),
@@ -1629,7 +1629,7 @@ impl<D> SemanticModel<D> {
                         let mut diagnostic = self.reference_diagnostic(
                             reference,
                             DiagnosticCode::SatisfySubjectTypeIncompatible,
-                            DiagnosticSeverity::Error,
+                            severity,
                             Some(subject),
                         )?;
                         diagnostic.related =

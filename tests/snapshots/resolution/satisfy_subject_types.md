@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Satisfying features conform to effective inherited and redefined requirement subject types for referenced and inline requirement usages; SysML 8.4.17.3 binds the satisfying feature to the subject parameter
+description=Satisfying features that do not conform to effective inherited and redefined requirement subject types are warned about (narrowing and unrelated classes may still overlap) for referenced and inline requirement usages; SysML 8.4.17.3 binds the satisfying feature to the subject parameter
 specification=OMG SysML 2.0 Language (formal/26-03-02), 8.4.17.3 and 8.3.21.10
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 type=file
@@ -38,7 +38,7 @@ package SubjectTypes {
   (document "memory://snapshot/satisfy_subject_types.md"
     (diagnostics
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "satisfy_subject_type_mismatch")
         (source "semantic")
         (range (start 14 28) (end 14 39))
@@ -50,7 +50,7 @@ package SubjectTypes {
         )
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "satisfy_subject_type_mismatch")
         (source "semantic")
         (range (start 16 28) (end 16 35))
@@ -62,7 +62,7 @@ package SubjectTypes {
         )
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "satisfy_subject_type_mismatch")
         (source "semantic")
         (range (start 18 61) (end 18 72))
@@ -74,7 +74,7 @@ package SubjectTypes {
         )
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "satisfy_subject_type_mismatch")
         (source "semantic")
         (range (start 20 59) (end 20 63))
@@ -95,7 +95,7 @@ package SubjectTypes {
   (document "memory://snapshot/satisfy_subject_types.md"
     (diagnostics
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "satisfy_subject_type_mismatch")
         (source "semantic")
         (range (start 14 28) (end 14 39))
@@ -107,7 +107,7 @@ package SubjectTypes {
         )
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "satisfy_subject_type_mismatch")
         (source "semantic")
         (range (start 16 28) (end 16 35))
@@ -119,7 +119,7 @@ package SubjectTypes {
         )
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "satisfy_subject_type_mismatch")
         (source "semantic")
         (range (start 18 61) (end 18 72))
@@ -131,7 +131,7 @@ package SubjectTypes {
         )
       )
       (diagnostic
-        (severity error)
+        (severity warning)
         (code "satisfy_subject_type_mismatch")
         (source "semantic")
         (range (start 20 59) (end 20 63))
