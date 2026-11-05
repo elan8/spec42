@@ -886,7 +886,7 @@ package Oven {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:04e88a575623a533cb499be1b9d767410277c53e412f725c6f72ee4ef2f9eb64",
+  "modelDigest": "blake3:b30bdc16fe1fc4d102ffa88137ef3b84716cd3a8976c6b0760728631b0bf9c20",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
