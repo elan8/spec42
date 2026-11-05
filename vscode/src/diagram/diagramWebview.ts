@@ -102,15 +102,8 @@ function onDrawResponse(message: DrawResponseMessage | DrawErrorMessage): void {
 const canvas = must<HTMLElement>("diagram");
 const viewSelect = must<HTMLSelectElement>("view-select");
 const statusEl = must<HTMLElement>("status");
-const homeButton = must<HTMLButtonElement>("home");
-const copyButton = must<HTMLButtonElement>("copy-json");
-const definitionButton = must<HTMLButtonElement>("view-definition");
 const viewKindEl = must<HTMLElement>("view-kind");
-const transparentExport = must<HTMLInputElement>("transparent-export");
 let visibleViews: ViewChoice[] = [];
-
-const exportSvgButton = must<HTMLButtonElement>("export-svg");
-const exportPngButton = must<HTMLButtonElement>("export-png");
 
 let mounted: { controller: RenderController; product: DiagramProduct; identity: DiagramProductIdentity } | undefined;
 let currentProduct: DiagramProduct | undefined;
@@ -230,7 +223,6 @@ function populateSelect(views: RenderMessage["views"], selectedHandle: string): 
 function updateSelectedViewInfo(): void {
   const view = visibleViews.find((choice) => choice.handle === viewSelect.value);
   viewKindEl.textContent = view?.kindLabel ?? "";
-  definitionButton.disabled = !view?.definition;
 }
 
 function setStatus(header: string, error: string | undefined): void {
@@ -425,7 +417,7 @@ function withLoading(text: string): HTMLElement {
   return div;
 }
 
-async function standaloneSvg(): Promise<string> {
+async function standaloneSvg(transparent: boolean): Promise<string> {
   if (!currentProduct || !currentIdentity) throw new Error("Open a view before exporting it.");
   const controller = mounted?.controller;
   if (!controller) throw new Error("Wait for the view to finish rendering before exporting it.");
@@ -444,7 +436,7 @@ async function standaloneSvg(): Promise<string> {
       new AbortController().signal,
     );
     if (!svg) throw new Error("Could not export the view while the language server is unavailable.");
-    return withExportBackground(svg, transparentExport.checked);
+    return withExportBackground(svg, transparent);
   }
   const prepared: PreparedView = prepareViewData(currentProduct);
   const holder = document.createElement("div");
@@ -458,7 +450,7 @@ async function standaloneSvg(): Promise<string> {
     });
     const svg = offscreen.exportSvg();
     offscreen.destroy();
-    return withExportBackground(svg, transparentExport.checked);
+    return withExportBackground(svg, transparent);
   } finally {
     holder.remove();
   }
@@ -485,9 +477,9 @@ async function svgToPng(svg: string, scale = 2): Promise<string> {
   return target.toDataURL("image/png");
 }
 
-async function exportImage(format: "svg" | "png"): Promise<void> {
+async function exportImage(format: "svg" | "png", transparent: boolean): Promise<void> {
   try {
-    const svg = await standaloneSvg();
+    const svg = await standaloneSvg(transparent);
     const data = format === "svg" ? svg : await svgToPng(svg);
     vscode.postMessage({ type: "export", format, data });
   } catch (error) {
@@ -495,18 +487,10 @@ async function exportImage(format: "svg" | "png"): Promise<void> {
   }
 }
 
-definitionButton.addEventListener("click", () => {
-  const target = visibleViews.find((view) => view.handle === viewSelect.value)?.definition;
-  if (target) vscode.postMessage({type:"openSource", target});
-});
 viewSelect.addEventListener("change", () => {
   updateSelectedViewInfo();
   vscode.postMessage({ type: "switchView", handle: viewSelect.value });
 });
-homeButton.addEventListener("click", () => mounted?.controller.reset());
-copyButton.addEventListener("click", () => vscode.postMessage({ type: "copyJson" }));
-exportSvgButton.addEventListener("click", () => void exportImage("svg"));
-exportPngButton.addEventListener("click", () => void exportImage("png"));
 
 window.addEventListener("message", (event: MessageEvent) => {
   const message = event.data as { type?: string } | null;
@@ -517,6 +501,15 @@ window.addEventListener("message", (event: MessageEvent) => {
   } else if (message.type === "status") {
     const status = message as { type: "status"; header: string; error?: string };
     setStatus(status.header, status.error);
+  } else if (message.type === "resetView") {
+    // The view title's Home action: fit and center the whole drawing.
+    mounted?.controller.reset();
+  } else if (message.type === "requestExport") {
+    // The view title's Export action chose a format; the extension host saves the result.
+    const request = message as { format?: unknown; transparent?: unknown };
+    if (request.format === "svg" || request.format === "png") {
+      void exportImage(request.format, request.transparent === true);
+    }
   } else if (message.type === "busy") {
     document.body.classList.toggle("busy", Boolean((message as { busy?: unknown }).busy));
   } else if (message.type === "drawResponse" || message.type === "drawError") {

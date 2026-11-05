@@ -174,6 +174,26 @@
         "category": "Spec42"
       },
       {
+        "command": "spec42.diagram.home",
+        "title": "Fit View",
+        "icon": "$(home)",
+        "category": "Spec42"
+      },
+      {
+        "command": "spec42.diagram.goToDefinition",
+        "title": "Go to View Definition",
+        "icon": "$(go-to-file)",
+        "category": "Spec42",
+        "enablement": "spec42.diagram.canGoToDefinition"
+      },
+      {
+        "command": "spec42.diagram.export",
+        "title": "Export View...",
+        "icon": "$(export)",
+        "category": "Spec42",
+        "enablement": "spec42.diagram.hasFrame"
+      },
+      {
         "command": "spec42.examples.refresh",
         "title": "Refresh Examples View",
         "icon": "$(refresh)",
@@ -308,6 +328,21 @@
           "command": "spec42.examples.refresh",
           "when": "view == spec42Examples",
           "group": "navigation"
+        },
+        {
+          "command": "spec42.diagram.home",
+          "when": "view == spec42DiagramView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "spec42.diagram.goToDefinition",
+          "when": "view == spec42DiagramView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "spec42.diagram.export",
+          "when": "view == spec42DiagramView",
+          "group": "navigation@3"
         }
       ],
       "view/item/context": [
@@ -365,6 +400,18 @@
         },
         {
           "command": "sysml.library.removeLocalLibraryPath"
+        },
+        {
+          "command": "spec42.diagram.home",
+          "when": "spec42.diagram.hasFrame"
+        },
+        {
+          "command": "spec42.diagram.goToDefinition",
+          "when": "spec42.diagram.canGoToDefinition"
+        },
+        {
+          "command": "spec42.diagram.export",
+          "when": "spec42.diagram.hasFrame"
         }
       ]
     },
