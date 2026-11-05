@@ -122,7 +122,7 @@ standard library package Constraints {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:35899b06368f7bafe985ad265150a323a2e694174299f138f031dcdd9bbeb39a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:35899b06368f7bafe985ad265150a323a2e694174299f138f031dcdd9bbeb39a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/constraints.md") (path (named (kind library-package) (name "Constraints")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines the base types for constraints and related elements in the\nSysML language.\n"))))
@@ -196,6 +196,7 @@ standard library package Constraints {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/constraints.md") (path (named (kind library-package) (name "Constraints")) (named (kind constraint) (name "constraintChecks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/constraints.md") (path (named (kind library-package) (name "Constraints")) (named (kind constraint) (name "constraintChecks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/constraints.md") (path (named (kind library-package) (name "Constraints")) (named (kind constraint) (name "constraintChecks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -235,6 +236,12 @@ standard library package Constraints {
       (supertype (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/constraints.md") (path (named (kind library-package) (name "Constraints")) (named (kind constraint) (name "constraintChecks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

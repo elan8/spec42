@@ -192,6 +192,31 @@ pub(crate) fn write_resolved_expression_node(
         return output.write_str("(invalid-node)");
     };
     match &node.kind {
+        RawExpressionNodeKind::Invocation { callee, arguments } => {
+            output.write_str("(invocation (callee ")?;
+            write_resolved_expression_node(model, nodes, *callee, output)?;
+            output.write_str(") (arguments")?;
+            for argument in arguments.iter() {
+                output.write_char(' ')?;
+                write_resolved_expression_node(model, nodes, *argument, output)?;
+            }
+            output.write_str("))")
+        }
+        RawExpressionNodeKind::Sequence { elements } => {
+            output.write_str("(sequence")?;
+            for element in elements.iter() {
+                output.write_char(' ')?;
+                write_resolved_expression_node(model, nodes, *element, output)?;
+            }
+            output.write_char(')')
+        }
+        RawExpressionNodeKind::MetaCast { operand, metaclass } => {
+            output.write_str("(meta-cast ")?;
+            write_resolved_expression_node(model, nodes, *operand, output)?;
+            output.write_char(' ')?;
+            write_resolved_expression_node(model, nodes, *metaclass, output)?;
+            output.write_char(')')
+        }
         RawExpressionNodeKind::Literal(value) => {
             output.write_str("(literal ")?;
             write_evaluated_scalar(value, output)?;
@@ -439,6 +464,67 @@ pub(crate) fn write_projection(
             " (expression {})",
             element.expression.outcome.as_str()
         )?;
+        if let Some(name) = element
+            .effective_name
+            .as_deref()
+            .filter(|name| element.details.inspection.name.as_deref() != Some(*name))
+        {
+            write!(output, " (effective-name ")?;
+            write_quoted(output, name)?;
+            write!(output, ")")?;
+        }
+        if let Some(name) = element
+            .effective_qualified_name
+            .as_deref()
+            .filter(|name| *name != model.qualified_name(id))
+        {
+            write!(output, " (effective-qualified-name ")?;
+            write_quoted(output, name)?;
+            write!(output, ")")?;
+        }
+        if let Some(bounds) = &element.multiplicity_expressions {
+            write!(output, " (multiplicity-expressions")?;
+            for (role, bound) in [
+                ("range", Some(bounds.range)),
+                ("lower", bounds.lower),
+                ("upper", bounds.upper),
+            ] {
+                if let Some(bound) = bound.and_then(|symbol| model.declaration_of(symbol)) {
+                    write!(output, " ({role} ")?;
+                    write_node_identity(model, bound, output)?;
+                    write!(output, ")")?;
+                }
+            }
+            write!(output, ")")?;
+        }
+        if let Some(exposure) = element.exposure {
+            write!(
+                output,
+                " (exposure (namespace {}) (recursive {}) (filtered {}))",
+                exposure.namespace, exposure.recursive, exposure.filtered
+            )?;
+        }
+        if !matches!(
+            element.details.evaluation.state,
+            crate::EvaluationState::NotApplicable
+        ) {
+            write!(
+                output,
+                " (evaluation {})",
+                element.details.evaluation.state.as_str()
+            )?;
+            if let Some(value) = element.details.evaluation.state.value() {
+                write!(output, " ")?;
+                write_evaluated_scalar(value, output)?;
+            }
+        }
+        match &element.details.analysis {
+            crate::AnalysisEvaluation::NotApplicable => {}
+            crate::AnalysisEvaluation::Verdict(passed) => {
+                write!(output, " (analysis (verdict {passed}))")?
+            }
+            analysis => write!(output, " (analysis {})", analysis.as_str())?,
+        }
         if !element.metadata_annotations.is_empty() {
             write!(
                 output,

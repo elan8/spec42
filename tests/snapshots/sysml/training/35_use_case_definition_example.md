@@ -52,7 +52,7 @@ package 'Use Case Definition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:08d14b5ad047da6e970341c2534e4913a55c4ad29443c7a72d3c510ca30a3128"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:08d14b5ad047da6e970341c2534e4913a55c4ad29443c7a72d3c510ca30a3128"))
   (declarations
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Enter Vehicle"))) (kind use-case-def) (membership (kind owning) (visibility default)))
@@ -161,6 +161,12 @@ package 'Use Case Definition Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle"))) (target (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Enter Vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Enter Vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Exit Vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Exit Vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Provide Transportation")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Provide Transportation")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 4)))
   )
 )
 ~~~
@@ -291,6 +297,17 @@ package 'Use Case Definition Example' {
       (subtype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle")) (scopes any))
       (subtype (node (document "memory://snapshot/35_use_case_definition_example.md") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Enter Vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Enter Vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Exit Vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Exit Vehicle")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Provide Transportation")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/35_use_case_definition_example.md") (path (named (kind package) (name "Use Case Definition Example")) (named (kind use-case-def) (name "Provide Transportation")) (named (kind case-actor) (name "passengers")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
 )
 ~~~
 # NAVIGATION

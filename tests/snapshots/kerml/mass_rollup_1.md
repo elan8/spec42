@@ -119,6 +119,7 @@ package MassRollup_1 {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1))))) (target (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "subcomponents")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
     (evaluated (declaration (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
@@ -173,7 +174,8 @@ package MassRollup_1 {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "mass" (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::mass")))) (unsupported (feature-reference "subcomponents::totalMass" (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::totalMass")))))))
+  (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "subcomponents")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "mass" (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::mass")))) (invocation (callee (feature-reference "sum" (target unresolved))) (arguments (feature-reference "subcomponents::totalMass" (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::totalMass"))))))))
 )
 ~~~
 # NAVIGATION

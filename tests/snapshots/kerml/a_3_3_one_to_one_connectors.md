@@ -202,7 +202,7 @@ package OneToOneConnectorsExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9c840753d9d87ddc17abfbb87ce227615a0d68ea0d009d0c9f5d86f89b1c024d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9c840753d9d87ddc17abfbb87ce227615a0d68ea0d009d0c9f5d86f89b1c024d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text ""))))
@@ -432,6 +432,8 @@ package OneToOneConnectorsExecution {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::wheel"))) (target (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-connector) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
@@ -565,6 +567,13 @@ package OneToOneConnectorsExecution {
       (subtype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-association) (name "MyBikeWheel1_Fork1_BWF_Link")) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-association) (name "MyBikeWheel2_Fork2_BWF_Link")) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-connector) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # METADATA ANNOTATIONS

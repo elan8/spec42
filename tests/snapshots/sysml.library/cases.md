@@ -179,7 +179,7 @@ standard library package Cases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bc916a8a65aefd63adc9a34874c12a578c31b187e380d93e507b2979d0daac4f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bc916a8a65aefd63adc9a34874c12a578c31b187e380d93e507b2979d0daac4f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines the base types for cases and related behavioral elements \nin the SysML language.\n"))))
@@ -328,6 +328,12 @@ standard library package Cases {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case) (name "cases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case) (name "cases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind part) (name "actors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind objective-requirement) (name "obj")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind parameter) (name "result")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind case) (name "subcases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind subject) (name "subj")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case) (name "cases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -449,6 +455,17 @@ standard library package Cases {
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case) (name "cases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case) (name "cases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind part) (name "actors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind objective-requirement) (name "obj")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind parameter) (name "result")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind case) (name "subcases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case-def) (name "Case")) (named (kind subject) (name "subj")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (named (kind case) (name "cases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

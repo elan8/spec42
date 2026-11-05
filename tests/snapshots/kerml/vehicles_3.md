@@ -277,6 +277,7 @@ package Vehicles_3 {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::vehicle::vin"))) (target (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::vehicle"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "carParts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
     (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "e")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 100)))
     (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "t")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 50)))
     (evaluated (declaration (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
@@ -456,6 +457,7 @@ package Vehicles_3 {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
+  (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "carParts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
   (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "e")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 100))))
   (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "t")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 50))))
   (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "e" (target (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::e")))))

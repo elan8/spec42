@@ -127,7 +127,7 @@ standard library package Calculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f917d9e8ca3447526bdb2786b1e415ee816ef6efdd89f07e29665bc9ba30d61b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f917d9e8ca3447526bdb2786b1e415ee816ef6efdd89f07e29665bc9ba30d61b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines the base types for calculations and related behavioral elements in the\nSysML language.\n"))))
@@ -206,6 +206,7 @@ standard library package Calculations {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (named (kind calc) (name "calculations")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (named (kind calc) (name "calculations")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (named (kind calc) (name "calculations")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -243,6 +244,12 @@ standard library package Calculations {
     (declaration (id (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (named (kind calc) (name "calculations")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (named (kind calc) (name "calculations")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (named (kind calc) (name "calculations")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

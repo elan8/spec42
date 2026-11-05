@@ -164,7 +164,8 @@ relationships(Coverage::Engine::speed::::): 1 edge(s)
   typeFeaturing Coverage::Engine::speed:::: -> Coverage::Engine implied=true
 effective_features(Coverage::Engine::speed::::): 1 element(s)
   Coverage::Engine::speed:::::: [Feature] name=<none> library=false
-expression(Coverage::Engine::speed::::): not-applicable root=<none> nodes=0
+expression(Coverage::Engine::speed::::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Integer(0), units: [] }
 connector_ends(Coverage::Engine::speed::::): 0 end(s)
 children(Coverage::Engine::speed::::::): 0 element(s)
 element(Coverage::Engine::speed::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
@@ -258,7 +259,8 @@ relationships(Coverage::Vehicle::engine::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::engine:::: -> Coverage::Vehicle implied=true
 effective_features(Coverage::Vehicle::engine::::): 1 element(s)
   Coverage::Vehicle::engine:::::: [Feature] name=<none> library=false
-expression(Coverage::Vehicle::engine::::): not-applicable root=<none> nodes=0
+expression(Coverage::Vehicle::engine::::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Integer(1), units: [] }
 connector_ends(Coverage::Vehicle::engine::::): 0 end(s)
 children(Coverage::Vehicle::engine::::::): 0 element(s)
 element(Coverage::Vehicle::engine::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
@@ -299,7 +301,8 @@ relationships(Coverage::Vehicle::spare::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::spare:::: -> Coverage::Vehicle implied=true
 effective_features(Coverage::Vehicle::spare::::): 1 element(s)
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
-expression(Coverage::Vehicle::spare::::): not-applicable root=<none> nodes=0
+expression(Coverage::Vehicle::spare::::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Integer(0), units: [] }
 connector_ends(Coverage::Vehicle::spare::::): 0 end(s)
 children(Coverage::Vehicle::spare::::): 1 element(s)
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
@@ -309,7 +312,8 @@ relationships(Coverage::Vehicle::spare::::): 1 edge(s)
   typeFeaturing Coverage::Vehicle::spare:::: -> Coverage::Vehicle implied=true
 effective_features(Coverage::Vehicle::spare::::): 1 element(s)
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
-expression(Coverage::Vehicle::spare::::): not-applicable root=<none> nodes=0
+expression(Coverage::Vehicle::spare::::): resolved root=0 nodes=1
+  literal[0]: ExpressionLiteral { value: Integer(1), units: [] }
 connector_ends(Coverage::Vehicle::spare::::): 0 end(s)
 children(Coverage::Vehicle::spare::::::): 0 element(s)
 element(Coverage::Vehicle::spare::::::): definition=false abstract=false derived=false end=false multiplicity=<none>

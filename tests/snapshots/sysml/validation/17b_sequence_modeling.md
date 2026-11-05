@@ -108,7 +108,7 @@ package '17b-Sequence-Modeling' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a8a61944ecd3b60de882f6753560e303a80a83efbeb52962c4bf77858b15cd7c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a8a61944ecd3b60de882f6753560e303a80a83efbeb52962c4bf77858b15cd7c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17b_sequence_modeling.md") (qualified-name "17b-Sequence-Modeling"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17b_sequence_modeling.md") (path (named (kind package) (name "17b-Sequence-Modeling")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
@@ -203,6 +203,9 @@ package '17b-Sequence-Modeling' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17b_sequence_modeling.md") (qualified-name "17b-Sequence-Modeling::PubSubSequence::subscribe_message"))) (target (node (document "memory://snapshot/17b_sequence_modeling.md") (qualified-name "17b-Sequence-Modeling::PubSubSequence"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/17b_sequence_modeling.md") (path (named (kind package) (name "17b-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "consumer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/17b_sequence_modeling.md") (path (named (kind package) (name "17b-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "producer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/17b_sequence_modeling.md") (path (named (kind package) (name "17b-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "server")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -287,6 +290,14 @@ package '17b-Sequence-Modeling' {
     (declaration (id (node (document "memory://snapshot/17b_sequence_modeling.md") (qualified-name "17b-Sequence-Modeling::PubSubSequence::subscribe_message")))
       (featured-by (node (document "memory://snapshot/17b_sequence_modeling.md") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/17b_sequence_modeling.md") (path (named (kind package) (name "17b-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "consumer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/17b_sequence_modeling.md") (path (named (kind package) (name "17b-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "producer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/17b_sequence_modeling.md") (path (named (kind package) (name "17b-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "server")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

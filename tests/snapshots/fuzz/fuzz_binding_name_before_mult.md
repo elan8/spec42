@@ -33,7 +33,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:07e56f401e3c90b26346a222523947d1bcbe988d438d076ab81aeb240800d63b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:07e56f401e3c90b26346a222523947d1bcbe988d438d076ab81aeb240800d63b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 5) (upper 5))) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "a")) (bindTarget (reference "c")))))
@@ -53,6 +53,7 @@ package P {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 5)))
   )
 )
 ~~~
@@ -62,6 +63,12 @@ package P {
     (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 5))))
 )
 ~~~
 # NAVIGATION

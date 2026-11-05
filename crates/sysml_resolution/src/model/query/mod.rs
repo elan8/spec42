@@ -1,5 +1,7 @@
 //! Phase 9: the read-only query surface over a finished model.
 
+use std::collections::BTreeMap;
+
 pub(crate) mod ends;
 mod import_plan;
 mod redefinition;
@@ -1412,7 +1414,7 @@ impl<D> SemanticModel<D> {
             || self
                 .storage
                 .declaration(declaration)
-                .is_none_or(|value| !DeclarationDomain::Type.accepts(value.kind))
+                .is_none_or(|value| !DeclarationDomain::MetamodelType.accepts(value.kind))
         {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
@@ -5161,6 +5163,7 @@ impl<D> SemanticModel<D> {
         let elements_total = workspace_elements.len();
 
         let mut elements = Vec::new();
+        let mut qualified_names = BTreeMap::new();
         let mut elements_incomplete = 0usize;
         for published in workspace_elements.into_iter().take(max_nodes) {
             let symbol = published.entry.identity;
@@ -5188,10 +5191,27 @@ impl<D> SemanticModel<D> {
                 QueryAnswer::Resolved(annotations) => annotations,
                 _ => Box::default(),
             };
+            let effective_name = self.effective_name_for_projection(symbol);
+            let effective_qualified_name =
+                self.effective_qualified_name_for_projection(symbol, &mut qualified_names);
+            let multiplicity_expressions = self.multiplicity_for_projection(symbol);
+            let exposure = self.declaration_of(symbol).and_then(|declaration| {
+                self.authored_references(declaration, &[ReferenceKind::ViewExpose])
+                    .first()
+                    .map(|(_, reference)| crate::projection::ProjectedExposure {
+                        namespace: reference.flags.wildcard,
+                        recursive: reference.flags.recursive,
+                        filtered: reference.flags.filtered,
+                    })
+            });
             elements.push(ProjectedElement {
                 identity: symbol,
                 source: ElementSource::Workspace,
                 details,
+                effective_name,
+                effective_qualified_name,
+                multiplicity_expressions,
+                exposure,
                 expression,
                 metadata_annotations,
             });
@@ -5219,6 +5239,75 @@ impl<D> SemanticModel<D> {
                 elements_returned,
                 elements_incomplete,
             },
+        })
+    }
+
+    fn effective_name_for_projection(&self, symbol: SymbolId) -> Option<Box<str>> {
+        let QueryAnswer::Resolved(identification) = self.effective_identification(symbol).answer
+        else {
+            return None;
+        };
+        match identification.name {
+            crate::EffectiveName::Resolved(name) => Some(name.into()),
+            _ => None,
+        }
+    }
+
+    fn effective_qualified_name_for_projection(
+        &self,
+        symbol: SymbolId,
+        cache: &mut BTreeMap<DeclarationId, Option<Box<str>>>,
+    ) -> Option<Box<str>> {
+        let declaration = self.declaration_of(symbol)?;
+        let mut current = declaration;
+        let mut pending = Vec::new();
+        while !cache.contains_key(&current) {
+            pending.push(current);
+            let Some(owner) = self.storage.declaration(current)?.owner else {
+                break;
+            };
+            current = owner;
+        }
+        // Owners precede their children in this local memo, including absent/unresolved names.
+        // The memo belongs to this immutable publication and this projection call only.
+        for current in pending.into_iter().rev() {
+            let name = self
+                .symbol_id(current)
+                .and_then(|symbol| self.effective_name_for_projection(symbol));
+            let qualified = name.and_then(|name| match self.storage.declaration(current)?.owner {
+                Some(owner) => cache
+                    .get(&owner)?
+                    .as_ref()
+                    .map(|prefix| format!("{prefix}::{name}").into_boxed_str()),
+                None => Some(name),
+            });
+            cache.insert(current, qualified);
+        }
+        cache.get(&declaration).cloned().flatten()
+    }
+    fn multiplicity_for_projection(
+        &self,
+        symbol: SymbolId,
+    ) -> Option<crate::projection::ProjectedMultiplicity> {
+        let QueryAnswer::Resolved(crate::TypeDerivedFactOutcome::Values(values)) = self
+            .type_derived_fact(symbol, TypeDerivedFactCollection::Multiplicity)
+            .answer
+        else {
+            return None;
+        };
+        let [crate::TypeDerivedFactValue::Multiplicity { element }] = values.as_ref() else {
+            return None;
+        };
+        let bound = |collection| match self.action_derived_fact(*element, collection).answer {
+            QueryAnswer::Resolved(crate::ActionDerivedFactOutcome::Values(values)) => {
+                values.first().copied()
+            }
+            _ => None,
+        };
+        Some(crate::projection::ProjectedMultiplicity {
+            range: *element,
+            lower: bound(ActionDerivedFactCollection::MultiplicityRangeLowerBound),
+            upper: bound(ActionDerivedFactCollection::MultiplicityRangeUpperBound),
         })
     }
 

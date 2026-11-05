@@ -173,7 +173,7 @@ package OneToUnrestrictedConnectorsExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9d57b32c0827a0ed92af5195925312023a1b3a70c156504cba4ab78f95ab519f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9d57b32c0827a0ed92af5195925312023a1b3a70c156504cba4ab78f95ab519f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text ""))))
@@ -416,6 +416,9 @@ package OneToUnrestrictedConnectorsExecution {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo"))) (target (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-connector) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
@@ -587,6 +590,14 @@ package OneToUnrestrictedConnectorsExecution {
       (subtype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-association) (name "MyBikeBasket1_Fork1_BBF_Link")) (anonymous (kind kerml-feature) (ordinal 1)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-association) (name "MyBikeBasket2_Fork1_BBF_Link")) (anonymous (kind kerml-feature) (ordinal 1)))) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (named (kind kerml-classifier) (name "MyBike")) (anonymous (kind kerml-connector) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # METADATA ANNOTATIONS

@@ -51,7 +51,7 @@ package Classes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:397d08092406f3f30fa6088bb7e5966161021e1127fa563077334ccb008e7c40"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:397d08092406f3f30fa6088bb7e5966161021e1127fa563077334ccb008e7c40"))
   (declarations
     (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A"))) (kind class-def) (membership (kind owning) (visibility public)) (facts (short-name "1")))
@@ -166,6 +166,7 @@ package Classes {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/classes.md") (path (named (kind package) (name "Classes")) (named (kind kerml-structure) (name "C")) (named (kind default-reference) (name "y")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/classes.md") (path (named (kind package) (name "Classes")) (named (kind kerml-structure) (name "C")) (named (kind default-reference) (name "y")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/classes.md") (path (named (kind package) (name "Classes")) (named (kind kerml-structure) (name "C")) (named (kind default-reference) (name "y")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -300,6 +301,7 @@ package Classes {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
+  (declaration (id (node (document "memory://snapshot/classes.md") (path (named (kind package) (name "Classes")) (named (kind kerml-structure) (name "C")) (named (kind default-reference) (name "y")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

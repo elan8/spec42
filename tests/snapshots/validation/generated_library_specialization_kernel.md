@@ -193,6 +193,8 @@ package GeneratedKernel {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/generated_library_specialization_kernel.md") (path (named (kind package) (name "GeneratedKernel")) (named (kind kerml-boolean-expression) (name "BooleanExpression")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/generated_library_specialization_kernel.md") (path (named (kind package) (name "GeneratedKernel")) (named (kind kerml-expression) (name "Expression")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/generated_library_specialization_kernel.md") (path (named (kind package) (name "GeneratedKernel")) (named (kind kerml-multiplicity) (name "Multiplicity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/generated_library_specialization_kernel.md") (path (named (kind package) (name "GeneratedKernel")) (named (kind kerml-multiplicity) (name "Multiplicity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -555,6 +557,8 @@ package GeneratedKernel {
 (expressions
   (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (path (named (kind package) (name "GeneratedKernel")) (named (kind kerml-boolean-expression) (name "BooleanExpression")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
   (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (path (named (kind package) (name "GeneratedKernel")) (named (kind kerml-expression) (name "Expression")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (path (named (kind package) (name "GeneratedKernel")) (named (kind kerml-multiplicity) (name "Multiplicity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (path (named (kind package) (name "GeneratedKernel")) (named (kind kerml-multiplicity) (name "Multiplicity")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # CONNECTIONS

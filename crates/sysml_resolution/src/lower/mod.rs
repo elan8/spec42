@@ -2405,6 +2405,33 @@ impl SemanticModelBuilder {
                 Some(DeclarationId::from_index(index).map(|id| (id, record.span, bounds)))
             })
             .collect::<Result<Vec<_>, _>>()?;
+        if owners.is_empty() {
+            return Ok(());
+        }
+        // Bound syntax is consumed here, before publication discards parser trees. Retain
+        // the normal evaluation input, so a bound's published expression is not reconstructed
+        // later from its text, span, or simplified Integer/Expression classification.
+        use sysml_v2_parser::ast::visit::{self, Visitor};
+        #[derive(Default)]
+        struct BoundExpressions(BTreeMap<(usize, usize), Node<Expression>>);
+        impl Visitor for BoundExpressions {
+            fn visit_multiplicity(&mut self, node: &Node<sysml_v2_parser::ast::Multiplicity>) {
+                for bound in node
+                    .value
+                    .lower
+                    .iter()
+                    .map(|bound| bound.as_ref())
+                    .chain(std::iter::once(node.value.upper.as_ref()))
+                {
+                    self.0
+                        .insert((bound.span.offset, bound.span.len), bound.clone());
+                }
+                visit::walk_multiplicity(self, node);
+            }
+        }
+        let parsed = Arc::clone(&self.documents[document.index()].parsed);
+        let mut bound_expressions = BoundExpressions::default();
+        bound_expressions.visit_root_namespace(&parsed.root);
         for (owner, span, bounds) in owners {
             let range = self.push_typed_declaration(
                 document,
@@ -2432,6 +2459,14 @@ impl SemanticModelBuilder {
                         operand,
                         crate::lower::facts::ExpressionOperandRole::FeatureReference,
                     )?;
+                }
+                if let Some(bound) = bound_expressions.0.get(&(site.span.offset, site.span.len)) {
+                    if !matches!(bound.value, Expression::LiteralInfinity) {
+                        self.push_evaluation_fact(
+                            expression,
+                            self.calc_expression_site(document, &bound.value),
+                        );
+                    }
                 }
             }
         }

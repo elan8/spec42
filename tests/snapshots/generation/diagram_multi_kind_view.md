@@ -85,6 +85,7 @@ package Garage {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind view) (name "both")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind part-def) (name "Car")) (named (kind part) (name "wheel")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
   )
 )
 ~~~
@@ -229,6 +230,12 @@ package Garage {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind part-def) (name "Car")) (named (kind part) (name "wheel")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
@@ -259,7 +266,7 @@ package Garage {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:312cff37a0e384edf641b75402f280ec3d5c3997f558f84e9fd9ee9af2579bc1",
+  "modelDigest": "blake3:867ed125f19dfbfb600db47df5f72e2aa652ec226096ce580899df956d1be8b8",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

@@ -27,7 +27,7 @@ package Bounds {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:50b215c93c81988aeec3c0a4848a3068da56077492ae408e55830be4714331be"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:50b215c93c81988aeec3c0a4848a3068da56077492ae408e55830be4714331be"))
   (declarations
     (declaration (id (node (document "memory://snapshot/multiplicity_bound_forms.md") (qualified-name "Bounds"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/multiplicity_bound_forms.md") (qualified-name "Bounds::Car"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -94,6 +94,10 @@ package Bounds {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "optional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "optional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "exact")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "many")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "optional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "optional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -178,6 +182,15 @@ package Bounds {
       (subtype (node (document "memory://snapshot/multiplicity_bound_forms.md") (qualified-name "Bounds::Car::many")) (scopes any))
       (subtype (node (document "memory://snapshot/multiplicity_bound_forms.md") (qualified-name "Bounds::Car::optional")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "exact")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "many")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "optional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/multiplicity_bound_forms.md") (path (named (kind package) (name "Bounds")) (named (kind part-def) (name "Car")) (named (kind part) (name "optional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

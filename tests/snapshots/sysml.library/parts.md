@@ -285,7 +285,7 @@ doc
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d85fc1ea748c0ab13f1062adc4a312c63362c53bfade5f9bc05de82dd98e51c6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d85fc1ea748c0ab13f1062adc4a312c63362c53bfade5f9bc05de82dd98e51c6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines the base types for parts and related structural elements in the\nSysML language.\n"))))
@@ -512,6 +512,12 @@ doc
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part) (name "parts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part) (name "parts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind state) (name "exhibitedStates")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind action) (name "ownedActions")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind port) (name "ownedPorts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind state) (name "ownedStates")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind action) (name "performedActions")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part) (name "parts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -660,6 +666,17 @@ doc
     (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part) (name "parts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part) (name "parts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind state) (name "exhibitedStates")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind action) (name "ownedActions")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind port) (name "ownedPorts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind state) (name "ownedStates")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part-def) (name "Part")) (named (kind action) (name "performedActions")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (named (kind part) (name "parts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

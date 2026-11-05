@@ -53,7 +53,7 @@ package Multiplicities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f1469076e860a31bee7f98a88f0458dc937e22d5d5c96cc4a890df5431cbcd4e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f1469076e860a31bee7f98a88f0458dc937e22d5d5c96cc4a890df5431cbcd4e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (qualified-name "Multiplicities::Bounded"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 0) (upper 3))))
@@ -75,6 +75,9 @@ package Multiplicities {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Negative")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Negative")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Negative")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state evaluated) (value (kind integer) (integer -1)))
   )
 )
 ~~~
@@ -90,6 +93,14 @@ package Multiplicities {
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Negative")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Negative")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Negative")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "-" (literal (value (kind integer) (integer 1)))))
 )
 ~~~
 # NAVIGATION

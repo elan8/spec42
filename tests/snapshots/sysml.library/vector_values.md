@@ -252,6 +252,8 @@ standard library package VectorValues {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "NumericalVectorValue")) (named (kind kerml-feature) (name "dimension")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "NumericalVectorValue")) (named (kind kerml-feature) (name "dimension")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 3)))
   )
 )
@@ -326,6 +328,8 @@ standard library package VectorValues {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
+  (declaration (id (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "NumericalVectorValue")) (named (kind kerml-feature) (name "dimension")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "NumericalVectorValue")) (named (kind kerml-feature) (name "dimension")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
   (declaration (id (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
 )
 ~~~

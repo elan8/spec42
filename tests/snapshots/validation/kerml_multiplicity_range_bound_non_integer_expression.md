@@ -107,6 +107,8 @@ package Multiplicities {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::ratio"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -226,6 +228,13 @@ package Multiplicities {
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "count" (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count")))))
+  (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ratio" (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::ratio")))))
 )
 ~~~
 # NAVIGATION

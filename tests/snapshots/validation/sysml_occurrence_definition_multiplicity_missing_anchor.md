@@ -98,7 +98,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:827e8973a7f365858c47042319c2241122a9202e14da4ddf40b9bf45a219a6ba") (admitted (standard-library 1)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:827e8973a7f365858c47042319c2241122a9202e14da4ddf40b9bf45a219a6ba") (admitted (standard-library 1)))
   (declarations
     (declaration (id (node (document "memory://snapshot/fake-base.kerml") (qualified-name "Base"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fake-base.kerml") (qualified-name "Base::zeroOrOne"))) (kind kerml-multiplicity) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 0) (upper 1))))
@@ -123,6 +123,8 @@ package Model {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Base::naturals"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -148,6 +150,13 @@ package Model {
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))
       (supertype (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Base::naturals")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

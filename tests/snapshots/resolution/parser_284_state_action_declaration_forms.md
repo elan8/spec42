@@ -417,7 +417,9 @@ package P {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (qualified-name "P::Q::x"))) (target (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (qualified-name "P::Q"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (anonymous (kind perform-action) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (qualified-name "P::Q::Declared::setter"))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (named (kind state-def) (name "SD")) (anonymous (kind exit-action-binding) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
     (invocation (declaration (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (named (kind state-def) (name "Declared")) (named (kind send-action) (name "sender")) (anonymous (kind kerml-expression) (ordinal 0))))) (callee (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (qualified-name "P::S"))) (supplied 0) (required 0) (start 15 34) (end 15 37))
   )
 )
@@ -525,7 +527,9 @@ package P {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
+  (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (anonymous (kind perform-action) (ordinal 1)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
   (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (qualified-name "P::Q::Declared::setter"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/parser_284_state_action_declaration_forms.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Q")) (named (kind state-def) (name "SD")) (anonymous (kind exit-action-binding) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

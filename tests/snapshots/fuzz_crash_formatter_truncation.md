@@ -213,7 +213,7 @@ package MassRollup2 {
 ~~~sexpr
 (expressions
   (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part-def) (name "MassedThing")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "sLmpleMass" (target unresolved)))
-  (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "composicomackagteThing")) (named (kind default-reference) (name "arValuete")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "simleMass" (target unresolved)) (unsupported (feature-reference "subcomponents::totalMass" (target unresolved)))))
+  (declaration (id (node (document "memory://snapshot/fuzz_crash_formatter_truncation.md") (path (named (kind package) (name "MassRollup2")) (named (kind part) (name "composicomackagteThing")) (named (kind default-reference) (name "arValuete")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "simleMass" (target unresolved)) (invocation (callee (feature-reference "sum" (target unresolved))) (arguments (feature-reference "subcomponents::totalMass" (target unresolved))))))
 )
 ~~~
 # NAVIGATION

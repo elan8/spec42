@@ -41,7 +41,7 @@ package 'Interface Decomposition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1b8004cfd2c55ec7bea1e8fcd0fd2a436953465b549ac20be1c3178d33bd7efe"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b8004cfd2c55ec7bea1e8fcd0fd2a436953465b549ac20be1c3178d33bd7efe"))
   (declarations
     (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::Faucet"))) (kind port-def) (membership (kind owning) (visibility default)))
@@ -132,6 +132,8 @@ package 'Interface Decomposition Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::suppliedBy::hot"))) (target (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::suppliedBy"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/11_interface_decomposition_example.md") (path (named (kind package) (name "Interface Decomposition Example")) (named (kind interface-def) (name "WaterDelivery")) (named (kind port) (name "deliveredTo")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/11_interface_decomposition_example.md") (path (named (kind package) (name "Interface Decomposition Example")) (named (kind interface-def) (name "WaterDelivery")) (named (kind port) (name "suppliedBy")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -211,6 +213,13 @@ package 'Interface Decomposition Example' {
       (effective-type (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::Spigot")) (source direct))
       (supertype (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::Spigot")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (path (named (kind package) (name "Interface Decomposition Example")) (named (kind interface-def) (name "WaterDelivery")) (named (kind port) (name "deliveredTo")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (path (named (kind package) (name "Interface Decomposition Example")) (named (kind interface-def) (name "WaterDelivery")) (named (kind port) (name "suppliedBy")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # CONNECTIONS

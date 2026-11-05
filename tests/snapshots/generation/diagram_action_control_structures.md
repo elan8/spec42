@@ -241,6 +241,7 @@ package Controls {
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind if) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration"))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind for-loop) (name "iteration")) (named (kind action) (name "visit")) (named (kind parameter) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind for-loop) (name "iteration")) (named (kind for-loop-variable) (name "x")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling"))) (state literal) (value (kind boolean) (boolean true)))
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind loop) (name "retrying")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
   )
@@ -1012,8 +1013,9 @@ package Controls {
 ~~~sexpr
 (expressions
   (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
-  (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration"))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration"))) (outcome resolved) (sequence (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
   (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind for-loop) (name "iteration")) (named (kind action) (name "visit")) (named (kind parameter) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "x" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::iteration::x")))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind for-loop) (name "iteration")) (named (kind for-loop-variable) (name "x")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
   (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Controls::Process::polling"))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
   (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Controls")) (named (kind action-def) (name "Process")) (named (kind loop) (name "retrying")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
 )
@@ -1103,7 +1105,7 @@ package Controls {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:08def63a4580c64a9e5907ea991b2980605ece5435025c1d0c316cddd67de756",
+  "modelDigest": "blake3:b6b1c300e196e53144d47ed77a9ccd04c052011d7fc9c6b9e863d0643efe6126",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

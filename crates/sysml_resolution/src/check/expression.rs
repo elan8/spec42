@@ -988,6 +988,9 @@ impl<D> SemanticModel<D> {
                 }
             },
             RawExpressionNodeKind::FeatureReference { target: None, .. }
+            | RawExpressionNodeKind::Invocation { .. }
+            | RawExpressionNodeKind::Sequence { .. }
+            | RawExpressionNodeKind::MetaCast { .. }
             | RawExpressionNodeKind::Unsupported { .. } => BooleanResult::Undecided,
         }
     }

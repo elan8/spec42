@@ -226,6 +226,7 @@ package Spec {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/specialization_redefinition.md") (path (named (kind package) (name "Spec")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/specialization_redefinition.md") (path (named (kind package) (name "Spec")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/specialization_redefinition.md") (path (named (kind package) (name "Spec")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
   )
 )
 ~~~
@@ -534,6 +535,12 @@ package Spec {
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/specialization_redefinition.md") (path (named (kind package) (name "Spec")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
 )
 ~~~
 # NAVIGATION

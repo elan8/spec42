@@ -121,7 +121,7 @@ package Parameters {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_parameter_redefinition_unlowered.md") (path (named (kind package) (name "Parameters")) (named (kind kerml-feature) (name "computed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (operator "+" (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2)))) (literal (value (kind integer) (integer 3)))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_parameter_redefinition_unlowered.md") (path (named (kind package) (name "Parameters")) (named (kind kerml-feature) (name "computed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (invocation (callee (feature-reference "Computing" (target (node (document "memory://snapshot/kerml_feature_parameter_redefinition_unlowered.md") (qualified-name "Parameters::Computing"))))) (arguments (operator "+" (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2)))) (literal (value (kind integer) (integer 3))))))
 )
 ~~~
 # NAVIGATION

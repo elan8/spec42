@@ -159,6 +159,7 @@ package Negative {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/sysml_semantic_keyword_unresolved_member.md") (path (named (kind package) (name "Negative")) (named (kind metadata-def) (name "CallMetadata")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/sysml_semantic_keyword_unresolved_member.md") (path (named (kind package) (name "Negative")) (named (kind port) (name "bases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -413,7 +414,8 @@ package Negative {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/sysml_semantic_keyword_unresolved_member.md") (path (named (kind package) (name "Negative")) (named (kind metadata-def) (name "CallMetadata")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "bases" (target (node (document "memory://snapshot/sysml_semantic_keyword_unresolved_member.md") (qualified-name "Negative::bases"))))))
+  (declaration (id (node (document "memory://snapshot/sysml_semantic_keyword_unresolved_member.md") (path (named (kind package) (name "Negative")) (named (kind metadata-def) (name "CallMetadata")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (meta-cast (feature-reference "bases" (target (node (document "memory://snapshot/sysml_semantic_keyword_unresolved_member.md") (qualified-name "Negative::bases")))) (feature-reference "SysML::Usage" (target (node (document "memory://snapshot/sysml.library/sys_ml.md") (qualified-name "SysML::Systems::Usage"))))))
+  (declaration (id (node (document "memory://snapshot/sysml_semantic_keyword_unresolved_member.md") (path (named (kind package) (name "Negative")) (named (kind port) (name "bases")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # METADATA ANNOTATIONS

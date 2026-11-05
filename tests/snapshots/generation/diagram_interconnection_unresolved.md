@@ -136,7 +136,7 @@ package InterconnectionNegative {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:ff622abeb99c94e45764b6b990ef321f1961320b6bcc79bdeb48ea70ded54931",
+  "modelDigest": "blake3:954d5100f83655c70c81e3dc850ca4ab447f227448f77abf58ab0f86d349181e",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_unresolved.md",

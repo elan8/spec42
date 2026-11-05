@@ -43,6 +43,18 @@ spec42 doctor --format json
 
 Global flags: `--library-path`, `--config`, `--stdlib-path`, `--no-stdlib`.
 
+Model-export schema 2 adds invocation, sequence and meta-cast node kinds; consumers must accept
+these operations or report them as unsupported. Elements retain authored `name` and `qualified_name` separately from
+`effective_name` and `effective_qualified_name`. Use the effective fields to find unnamed
+redefinitions; `null` means no complete effective name is settled. `multiplicity_expressions`
+links to the range and its authored lower/upper expression elements (a single-bound range has
+only an upper expression). `exposure` retains namespace, recursive and filtered exposure flags.
+`evaluation` publishes the settled status and optional value; `analysis` publishes a verdict,
+computed result or an explicit unsettled status. An unsupported or nonconstant expression is
+never a failing verdict. Expression nodes distinguish invocations, sequences and meta casts;
+this does not imply that the evaluator executes those operations. Generator ABI v7 continues to
+represent these newer operators as explicitly unsupported nodes with their operands retained.
+
 ### `spec42 check` response
 
 - **`summary`**: `error_count`, `warning_count`, `document_count`

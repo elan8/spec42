@@ -144,7 +144,7 @@ package Types {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9e1f4b2b4b524f1aec3142018b62b5c08d614d9fc52107ed2647bd4ed17a01a1"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:9e1f4b2b4b524f1aec3142018b62b5c08d614d9fc52107ed2647bd4ed17a01a1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "B")) (explicitRelationshipEndpoint (reference "x")) (explicitRelationshipEndpoint (reference "Base::things")) (explicitRelationshipEndpoint (reference "Conjugate1")) (explicitRelationshipEndpoint (reference "Original")) (explicitRelationshipEndpoint (reference "Conjugate2")) (explicitRelationshipEndpoint (reference "Original")))))
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::A"))) (kind kerml-type) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Anything")))))
@@ -289,6 +289,7 @@ package Types {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/types.md") (qualified-name "Types::Super::f"))) (target (node (document "memory://snapshot/types.md") (qualified-name "Types::Super"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -340,6 +341,12 @@ package Types {
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::x")))
       (supertype (node (document "memory://snapshot/types.md") (qualified-name "Types::A")) (scopes any subclassification))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

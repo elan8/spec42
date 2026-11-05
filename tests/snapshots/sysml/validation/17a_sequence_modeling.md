@@ -108,7 +108,7 @@ package '17a-Sequence-Modeling' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4c430febbb56099e8af6e89af8a120ac8ed1e99ff1dd07e01b56c0fe7be9ad43"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4c430febbb56099e8af6e89af8a120ac8ed1e99ff1dd07e01b56c0fe7be9ad43"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (qualified-name "17a-Sequence-Modeling"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
@@ -251,6 +251,9 @@ package '17a-Sequence-Modeling' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind flow) (name "subscribe_message")) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind flow) (name "subscribe_message")) (anonymous (kind flow-end) (ordinal 1))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "consumer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "producer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "server")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -374,6 +377,14 @@ package '17a-Sequence-Modeling' {
     (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind flow) (name "subscribe_message")) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind flow) (name "subscribe_message")) (anonymous (kind flow-end) (ordinal 1)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "consumer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "producer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/17a_sequence_modeling.md") (path (named (kind package) (name "17a-Sequence-Modeling")) (named (kind occurrence-def) (name "PubSubSequence")) (named (kind part) (name "server")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

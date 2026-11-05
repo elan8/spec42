@@ -318,7 +318,7 @@ package '2a-Parts Interconnection' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:c39b1474e963d678bd433147817bd6ac1df5add57e7f11edcc7d6691766ab10a"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c39b1474e963d678bd433147817bd6ac1df5add57e7f11edcc7d6691766ab10a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false))))))
@@ -773,6 +773,8 @@ package '2a-Parts Interconnection' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::rightWheelToRoadPort"))) (target (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (named (kind package) (name "Definitions")) (named (kind port-def) (name "VehicleToRoadPort")) (named (kind port) (name "wheelToRoadPort")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "rearAxleAssembly")) (named (kind part) (name "rearWheel")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
@@ -1169,6 +1171,13 @@ package '2a-Parts Interconnection' {
       (supertype (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort::wheelToRoadPort")) (scopes any feature))
       (supertype (node (document "memory://snapshot/2a_parts_interconnection.md") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (named (kind package) (name "Definitions")) (named (kind port-def) (name "VehicleToRoadPort")) (named (kind port) (name "wheelToRoadPort")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/2a_parts_interconnection.md") (path (named (kind package) (name "2a-Parts Interconnection")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "rearAxleAssembly")) (named (kind part) (name "rearWheel")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # CONNECTIONS

@@ -174,7 +174,10 @@ package NamedNodes {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind attribute) (name "count")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::increment"))) (state evaluated) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind assign) (name "increment")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -646,7 +649,10 @@ package NamedNodes {
 ~~~sexpr
 (expressions
   (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind attribute) (name "count")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind terminate-action) (name "finish")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
   (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::increment"))) (outcome resolved) (operator "+" (feature-reference "count" (target (node (document "memory://snapshot/model.sysml") (qualified-name "NamedNodes::Count::count")))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NamedNodes")) (named (kind action-def) (name "Count")) (named (kind assign) (name "increment")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION
@@ -709,7 +715,7 @@ package NamedNodes {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:409b6b755769710365cda1662e3a4c25af3f8f6719d9461b282fd03b3f1de40d",
+  "modelDigest": "blake3:7be576c3cbbb0486a25e182e9b3e6891b0db739e25bb91fefbc033ae440c7418",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

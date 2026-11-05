@@ -161,7 +161,7 @@ assoc JustOutsideOf specializes OutsideOf {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2f8e092b56919726b138629e8721c8a3ecfddcb533351add4228dc2c897bbdf8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2f8e092b56919726b138629e8721c8a3ecfddcb533351add4228dc2c897bbdf8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "HappensLink")))))
     (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "HappensDuring::shorterOccurrence"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Occurrence")) (redefinition (reference "sourceOccurrence")) (crossSubsetting (reference "longerOccurrence::timeEnclosedOccurrences")))))
@@ -258,6 +258,7 @@ assoc JustOutsideOf specializes OutsideOf {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth::thatOccurrence"))) (target (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/end_outer_specializations.md") (path (named (kind kerml-association) (name "HappensDuring")) (named (kind kerml-feature) (name "thatOccurrence")) (named (kind kerml-end) (name "happensDuring")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -288,6 +289,12 @@ assoc JustOutsideOf specializes OutsideOf {
     (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth::thatOccurrence")))
       (featured-by (node (document "memory://snapshot/end_outer_specializations.md") (qualified-name "WithinBoth")))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (path (named (kind kerml-association) (name "HappensDuring")) (named (kind kerml-feature) (name "thatOccurrence")) (named (kind kerml-end) (name "happensDuring")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

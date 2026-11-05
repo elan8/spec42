@@ -279,7 +279,7 @@ package Instantiations {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_instantiation_argument_lowering_gap.md") (path (named (kind package) (name "Instantiations")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "doubled")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 2)))))
+  (declaration (id (node (document "memory://snapshot/kerml_instantiation_argument_lowering_gap.md") (path (named (kind package) (name "Instantiations")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "doubled")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (invocation (callee (feature-reference "Double" (target (node (document "memory://snapshot/kerml_instantiation_argument_lowering_gap.md") (qualified-name "Instantiations::Double"))))) (arguments (literal (value (kind integer) (integer 2))))))
   (declaration (id (node (document "memory://snapshot/kerml_instantiation_argument_lowering_gap.md") (path (named (kind package) (name "Instantiations")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1)))))
 )
 ~~~

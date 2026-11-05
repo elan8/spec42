@@ -70,7 +70,7 @@ package Subsettings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4f319d7684a0b7a51582e3152cb53768927aceb99935db2f98e47f4e3dbc38a3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4f319d7684a0b7a51582e3152cb53768927aceb99935db2f98e47f4e3dbc38a3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -137,6 +137,9 @@ package Subsettings {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (path (named (kind package) (name "Subsettings")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "repeated")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (path (named (kind package) (name "Subsettings")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "repeated")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (path (named (kind package) (name "Subsettings")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "base")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (path (named (kind package) (name "Subsettings")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "distinct")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (path (named (kind package) (name "Subsettings")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "repeated")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -217,6 +220,14 @@ package Subsettings {
       (subtype (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::distinct")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (qualified-name "Subsettings::Holder::repeated")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (path (named (kind package) (name "Subsettings")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "base")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (path (named (kind package) (name "Subsettings")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "distinct")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/kerml_subsetting_uniqueness_conformance.md") (path (named (kind package) (name "Subsettings")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "repeated")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

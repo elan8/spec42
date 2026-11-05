@@ -33,7 +33,7 @@ package 'Subsetting Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:900fe49014ff83e668bc8068a19f1642ef71a9e7a3d8776d56b88954cf9ae380"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:900fe49014ff83e668bc8068a19f1642ef71a9e7a3d8776d56b88954cf9ae380"))
   (declarations
     (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Engine"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "VehiclePart")))))
@@ -107,6 +107,7 @@ package 'Subsetting Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/04_subsetting_example.md") (path (named (kind package) (name "Subsetting Example")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/04_subsetting_example.md") (path (named (kind package) (name "Subsetting Example")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/04_subsetting_example.md") (path (named (kind package) (name "Subsetting Example")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
   )
 )
 ~~~
@@ -185,6 +186,12 @@ package 'Subsetting Example' {
       (supertype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::VehiclePart")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Vehicle::wheels")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (path (named (kind package) (name "Subsetting Example")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
 )
 ~~~
 # NAVIGATION

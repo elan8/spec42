@@ -131,7 +131,7 @@ package 'Views Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0fb0e93292c218dcc9ad4f9541793101685e0e846690ae50fab2aefb3e7b9359"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0fb0e93292c218dcc9ad4f9541793101685e0e846690ae50fab2aefb3e7b9359"))
   (declarations
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Views") (import (shape namespace) (recursive false))))))
@@ -231,6 +231,7 @@ package 'Views Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind view) (name "vehicle tabular views")) (named (kind view) (name "safety features view")) (anonymous (kind rendering) (ordinal 0))))) (target (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle tabular views::safety features view"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind rendering) (name "asTextualNotationTable")) (anonymous (kind view) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
     (filter (owner (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::Part Structure View"))) (form view) (state unsupported) (start 7 9) (end 7 26))
   )
 )
@@ -302,6 +303,12 @@ package 'Views Example' {
       (featured-by (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::vehicle tabular views::safety features view")))
       (supertype (node (document "memory://snapshot/42_views_example.md") (qualified-name "Views Example::asTextualNotationTable")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind rendering) (name "asTextualNotationTable")) (anonymous (kind view) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

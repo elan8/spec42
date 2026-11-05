@@ -116,7 +116,7 @@ doc
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:394bf6c7b8dfe58d3b9892a0a6147e92efe8883bf88dfd02771b645607778d0a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:394bf6c7b8dfe58d3b9892a0a6147e92efe8883bf88dfd02771b645607778d0a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/metadata.md") (path (named (kind library-package) (name "Metadata")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package defines the base types for metadata definitions and related \nmetadata annotations in the SysML language.\n"))))
@@ -181,6 +181,7 @@ doc
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/metadata.md") (path (named (kind library-package) (name "Metadata")) (named (kind item) (name "metadataItems")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/metadata.md") (path (named (kind library-package) (name "Metadata")) (named (kind item) (name "metadataItems")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/metadata.md") (path (named (kind library-package) (name "Metadata")) (named (kind item) (name "metadataItems")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -208,6 +209,12 @@ doc
     (declaration (id (node (document "memory://snapshot/metadata.md") (path (named (kind library-package) (name "Metadata")) (named (kind item) (name "metadataItems")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/metadata.md") (path (named (kind library-package) (name "Metadata")) (named (kind item) (name "metadataItems")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/metadata.md") (path (named (kind library-package) (name "Metadata")) (named (kind item) (name "metadataItems")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

@@ -76,7 +76,7 @@ package Remaining {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5ca9e01ca0651a406005ecd9c8c92c6ce5e60394cde182dd29491f7b3d620a34"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ca9e01ca0651a406005ecd9c8c92c6ce5e60394cde182dd29491f7b3d620a34"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (qualified-name "Remaining"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (qualified-name "Remaining::Anything"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
@@ -234,6 +234,9 @@ package Remaining {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (qualified-name "Remaining::Transfer::targetInputLink::transferTarget"))) (target (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (qualified-name "Remaining::Transfer::targetInputLink"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (path (named (kind package) (name "Remaining")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "payload")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (path (named (kind package) (name "Remaining")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "source")) (named (kind kerml-feature) (name "sourceOutput")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (path (named (kind package) (name "Remaining")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "target")) (named (kind kerml-feature) (name "targetInput")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -434,6 +437,14 @@ package Remaining {
       (supertype (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (qualified-name "Remaining::Occurrence")) (scopes any))
       (supertype (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (qualified-name "Remaining::Transfer::target")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (path (named (kind package) (name "Remaining")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "payload")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (path (named (kind package) (name "Remaining")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "source")) (named (kind kerml-feature) (name "sourceOutput")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (path (named (kind package) (name "Remaining")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "target")) (named (kind kerml-feature) (name "targetInput")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # CONNECTIONS

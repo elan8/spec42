@@ -82,7 +82,7 @@ package WithoutConnectorsExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d6d9b77967b1e96534f1347c47701d03517f60875c78a7ba2edcc74df29e61bf"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d6d9b77967b1e96534f1347c47701d03517f60875c78a7ba2edcc74df29e61bf"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_2_without_connectors.md") (qualified-name "WithoutConnectorsExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_2_without_connectors.md") (path (named (kind package) (name "WithoutConnectorsExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text ""))))
@@ -175,6 +175,7 @@ package WithoutConnectorsExecution {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/a_3_2_without_connectors.md") (path (named (kind package) (name "WithoutConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/a_3_2_without_connectors.md") (path (named (kind package) (name "WithoutConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/a_3_2_without_connectors.md") (path (named (kind package) (name "WithoutConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
@@ -246,6 +247,12 @@ package WithoutConnectorsExecution {
       (subtype (node (document "memory://snapshot/a_3_2_without_connectors.md") (qualified-name "WithoutConnectorsExecution::MyWheel2")) (scopes any subclassification))
       (subtype (node (document "memory://snapshot/a_3_2_without_connectors.md") (qualified-name "WithoutConnectorsModelToBeExecuted::Bicycle::rollsOn")) (scopes any))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/a_3_2_without_connectors.md") (path (named (kind package) (name "WithoutConnectorsModelToBeExecuted")) (named (kind kerml-classifier) (name "Bicycle")) (named (kind kerml-feature) (name "rollsOn")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # METADATA ANNOTATIONS

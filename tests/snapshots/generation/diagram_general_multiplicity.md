@@ -230,7 +230,14 @@ package Product {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Product::robot"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "bays")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "bays")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state evaluated) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "motors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
     (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind attribute) (name "n")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "sensors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "sensors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "slots")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 3)))
+    (evaluated (declaration (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
 ~~~
@@ -991,7 +998,14 @@ package Product {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "bays")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "bays")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "n" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Product::Robot::n")))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "motors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
   (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind attribute) (name "n")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "sensors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "sensors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "slots")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Product")) (named (kind part-def) (name "Robot")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION
@@ -1064,7 +1078,7 @@ package Product {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:6af8a50a5314b5586c314e50630904e1d9d5e21f08d544047de610bf8efe752a",
+  "modelDigest": "blake3:dbe9244596676287340a63ec694828cf04cc0d081ea54aac33fa9dd1599f16d6",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

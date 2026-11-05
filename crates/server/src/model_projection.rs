@@ -242,6 +242,15 @@ fn expression_json(model: &PublishedModel, expression: &PublishedExpression) -> 
 
 fn expression_node_json(model: &PublishedModel, node: &ExpressionNode) -> Value {
     let mut value = match &node.kind {
+        ExpressionNodeKind::Invocation { callee, arguments } => json!({
+            "kind": "invocation", "callee": callee, "arguments": arguments,
+        }),
+        ExpressionNodeKind::Sequence { elements } => json!({
+            "kind": "sequence", "elements": elements,
+        }),
+        ExpressionNodeKind::MetaCast { operand, metaclass } => json!({
+            "kind": "meta-cast", "operand": operand, "metaclass": metaclass,
+        }),
         ExpressionNodeKind::Literal(scalar) => json!({
             "kind": "literal",
             "value": scalar_json(scalar),
@@ -338,6 +347,8 @@ fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
         "source": "workspace",
         "kind": inspection.kind.as_str(),
         "name": inspection.name.as_deref(),
+        "effective_name": element.effective_name.as_deref(),
+        "effective_qualified_name": element.effective_qualified_name.as_deref(),
         "short_name": inspection.short_name.as_deref(),
         "qualified_name": model.qualified_name(element.identity),
         "owner": details.owner.as_ref().and_then(|owner| token(model, owner.identity)),
@@ -353,6 +364,21 @@ fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
             .map(|modifier| modifier.as_str())
             .collect::<Vec<_>>(),
         "multiplicity": multiplicity_json(inspection.multiplicity),
+        "multiplicity_expressions": element.multiplicity_expressions.as_ref().map(|bounds| json!({
+            "range": token(model, bounds.range),
+            "lower": bounds.lower.and_then(|bound| token(model, bound)),
+            "upper": bounds.upper.and_then(|bound| token(model, bound)),
+        })),
+        "exposure": element.exposure.map(|exposure| json!({
+            "namespace": exposure.namespace,
+            "recursive": exposure.recursive,
+            "filtered": exposure.filtered,
+        })),
+        "evaluation": {
+            "status": details.evaluation.state.as_str(),
+            "value": details.evaluation.state.value().map(scalar_json),
+        },
+        "analysis": analysis_json(&details.analysis),
         "direction": inspection.direction.map(direction),
         "documentation": inspection
             .documentation
@@ -389,6 +415,24 @@ fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
             .map(|annotation| annotation_json(model, annotation))
             .collect::<Vec<_>>(),
     })
+}
+
+fn analysis_json(analysis: &sysml_query::resolved_slice::AnalysisEvaluation) -> Value {
+    use sysml_query::resolved_slice::AnalysisEvaluation;
+    match analysis {
+        AnalysisEvaluation::Verdict(passed) => {
+            json!({ "status": analysis.as_str(), "passed": passed })
+        }
+        AnalysisEvaluation::Computed(value) => {
+            json!({ "status": analysis.as_str(), "value": scalar_json(value) })
+        }
+        AnalysisEvaluation::Unsettled(state) => {
+            json!({ "status": analysis.as_str(), "reason": state.as_str() })
+        }
+        AnalysisEvaluation::NotApplicable | AnalysisEvaluation::NotRun => {
+            json!({ "status": analysis.as_str() })
+        }
+    }
 }
 
 fn membership_kind(kind: sysml_query::resolved_slice::MembershipKind) -> &'static str {

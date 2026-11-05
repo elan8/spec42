@@ -45,7 +45,7 @@ package 'Time Slice and Snapshot Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:583e8fabd043dff5154bd20ffa4848ce9d886c7262cb14f7db170f80fd242696"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:583e8fabd043dff5154bd20ffa4848ce9d886c7262cb14f7db170f80fd242696"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Date"))) (kind attribute-def) (membership (kind owning) (visibility default)))
@@ -140,6 +140,10 @@ package 'Time Slice and Snapshot Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind occurrence) (name "sale")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind occurrence) (name "sale")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind occurrence) (name "driven")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
+    (evaluated (declaration (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind occurrence) (name "driven")) (named (kind item) (name "driver")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind item) (name "owner")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -256,6 +260,15 @@ package 'Time Slice and Snapshot Example' {
       (featured-by (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind occurrence) (name "sale")) (anonymous (kind kerml-expression) (ordinal 0)))))
       (subtype (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::sale")) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind occurrence) (name "driven")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind occurrence) (name "driven")) (named (kind item) (name "driver")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/27_time_slice_and_snapshot_example.md") (path (named (kind package) (name "Time Slice and Snapshot Example")) (named (kind part-def) (name "Vehicle")) (named (kind occurrence) (name "ownership")) (named (kind item) (name "owner")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

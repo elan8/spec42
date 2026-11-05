@@ -154,7 +154,7 @@ package ConnectionTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:65e0294a3b2870ca6100893b7cfffec204d70608d76f8f091ae91a2545dc654b"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:65e0294a3b2870ca6100893b7cfffec204d70608d76f8f091ae91a2545dc654b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (anonymous (kind connection) (ordinal 0))))) (kind connection) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "C")))))
@@ -339,6 +339,7 @@ package ConnectionTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::p::x::x1"))) (target (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::p::x"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (named (kind connection-def) (name "AB")) (named (kind item) (name "a")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
@@ -490,6 +491,12 @@ package ConnectionTest {
     (declaration (id (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::p::x::x1")))
       (featured-by (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::p::x")))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/connection_test.md") (path (named (kind package) (name "ConnectionTest")) (named (kind connection-def) (name "AB")) (named (kind item) (name "a")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # METADATA ANNOTATIONS

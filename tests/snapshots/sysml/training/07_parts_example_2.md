@@ -47,7 +47,7 @@ package 'Parts Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1e631cf22edf9c1225bb805109a34ba640a19e05f9789e7b9c75cf0bc89aff56"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1e631cf22edf9c1225bb805109a34ba640a19e05f9789e7b9c75cf0bc89aff56"))
   (declarations
     (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (qualified-name "Parts Example-2::Cylinder"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -132,6 +132,10 @@ package 'Parts Example-2' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "eng")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "eng")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "bigVehicle")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 6)))
+    (evaluated (declaration (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "smallVehicle")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "eng")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 4)))
+    (evaluated (declaration (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "eng")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 6)))
   )
 )
 ~~~
@@ -237,6 +241,15 @@ package 'Parts Example-2' {
     (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "eng")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "eng")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "bigVehicle")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 6))))
+  (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "smallVehicle")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "eng")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/07_parts_example_2.md") (path (named (kind package) (name "Parts Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "eng")) (named (kind part) (name "cyl")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 6))))
 )
 ~~~
 # NAVIGATION
