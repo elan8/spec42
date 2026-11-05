@@ -34,7 +34,7 @@ impl Notification for AnalysisStatusChanged {
     const METHOD: &'static str = crate::views::dto::ANALYSIS_STATUS_CHANGED_METHOD;
 }
 
-fn ensure_analysis_notifications(
+pub(super) fn ensure_analysis_notifications(
     client: &Client,
     handle: &WorkspaceHandle,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
@@ -50,6 +50,27 @@ fn ensure_analysis_notifications(
         use crate::session::handle::AnalysisEvent;
         loop {
             let event = events.borrow_and_update().clone();
+            // Complete the owner's readiness transition before waking semantic consumers.
+            // A diagram must not depend on the later, potentially slow diagnostic fanout.
+            if let AnalysisEvent::Completed {
+                inputs,
+                result: Ok(report),
+            } = &event
+            {
+                if handle.snapshot().session.is_input_current(inputs)
+                    && report.outcome == sysml_query::publication::PublicationOutcome::Published
+                {
+                    let snapshot = handle.snapshot();
+                    let readiness = snapshot
+                        .diagnostic_readiness
+                        .needs_publication_notification()
+                        .then(|| snapshot.diagnostic_readiness.token());
+                    drop(snapshot);
+                    if let Some(readiness) = readiness {
+                        send_semantic_ready_notification(&client, &handle, readiness).await;
+                    }
+                }
+            }
             // A wake-up only: the client reads the current registry's canonical status.
             client.send_notification::<AnalysisStatusChanged>(()).await;
             if let AnalysisEvent::Closed = event {
@@ -64,16 +85,6 @@ fn ensure_analysis_notifications(
                             if report.outcome
                                 == sysml_query::publication::PublicationOutcome::Published
                             {
-                                let snapshot = handle.snapshot();
-                                let readiness = snapshot
-                                    .diagnostic_readiness
-                                    .needs_publication_notification()
-                                    .then(|| snapshot.diagnostic_readiness.token());
-                                drop(snapshot);
-                                if let Some(readiness) = readiness {
-                                    send_semantic_ready_notification(&client, &handle, readiness)
-                                        .await;
-                                }
                                 // A coalesced job can include changes to several documents. A
                                 // workspace sweep also clears former dependants; open libraries
                                 // remain authoring surfaces and must receive their diagnostics.

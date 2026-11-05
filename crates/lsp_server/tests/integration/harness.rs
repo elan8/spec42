@@ -548,6 +548,50 @@ impl TestSession {
         serde_json::from_str(&raw).expect("json response")
     }
 
+    /// Drive the presentation protocol from lifecycle notifications, without a sleep/retry timer.
+    /// Wakes received before the pending response are retained just as in the real client.
+    pub fn diagram_presentation_when_ready(
+        &mut self,
+        params: serde_json::Value,
+    ) -> serde_json::Value {
+        loop {
+            let id = next_id();
+            send_message(&mut self.stdin, &serde_json::json!({"jsonrpc":"2.0","id":id,"method":"spec42/diagramPresentation","params":params}).to_string());
+            let mut wake = false;
+            let response = loop {
+                let message: serde_json::Value = serde_json::from_str(
+                    &read_message(&mut self.stdout).expect("presentation response"),
+                )
+                .unwrap();
+                if message["method"] == lsp_server::views::dto::ANALYSIS_STATUS_CHANGED_METHOD {
+                    wake = true;
+                }
+                if message["id"] == id {
+                    break message;
+                }
+            };
+            match response["result"]["state"].as_str() {
+                Some("superseded") => continue,
+                Some("updating") => {
+                    if !wake {
+                        loop {
+                            let message: serde_json::Value = serde_json::from_str(
+                                &read_message(&mut self.stdout).expect("analysis completion wake"),
+                            )
+                            .unwrap();
+                            if message["method"]
+                                == lsp_server::views::dto::ANALYSIS_STATUS_CHANGED_METHOD
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                _ => return response,
+            }
+        }
+    }
+
     /// Synchronization barrier for integration tests.
     ///
     /// Sends a cheap request and waits for its response so prior notifications

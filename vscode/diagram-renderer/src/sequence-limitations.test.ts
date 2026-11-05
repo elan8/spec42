@@ -68,6 +68,12 @@ describe("canonical sequence limitation presentation", () => {
     summary.focus();
     expect(document.activeElement).toBe(summary);
     expect(document.querySelector("#limitations")!.hasAttribute("hidden")).toBe(false);
+    const retained = document.createElement("span");
+    document.querySelector("#diagram")!.appendChild(retained);
+    window.dispatchEvent(new MessageEvent("message", { data: { type: "status", header: "Updating view..." } }));
+    expect(document.querySelector("#diagram")!.contains(retained)).toBe(true);
+    expect(document.querySelector("#status")!.textContent).toBe("Updating view...");
+    expect(document.querySelector("#limitations")!.hasAttribute("hidden")).toBe(false);
     const buttons = [...document.querySelectorAll<HTMLButtonElement>("#limitations button")];
     buttons[0].click();
     expect(postMessage).toHaveBeenCalledWith(expect.objectContaining({ type: "openSource", target: expect.objectContaining({ uri: expect.any(String) }) }));

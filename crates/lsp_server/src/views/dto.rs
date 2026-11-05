@@ -252,6 +252,10 @@ pub struct SysmlFeatureInspectorResultDto {
 /// A notification to re-read the current registry's analysis status, carrying no stale owner data.
 pub const ANALYSIS_STATUS_CHANGED_METHOD: &str = "spec42/analysisStatusChanged";
 
+pub fn diagram_presentation_typescript() -> String {
+    crate::lsp_runtime::diagram_presentation_typescript()
+}
+
 #[derive(Debug, Clone, Copy, Serialize, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum SysmlAnalysisStateDto {

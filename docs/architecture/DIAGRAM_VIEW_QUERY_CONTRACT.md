@@ -57,6 +57,31 @@ negation preserves unresolved, ambiguous and unsupported predicate outcomes.
 
 ## Explicit degraded states
 
+The VS Code viewer requests `spec42/diagramPresentation`. The backend reads the owning
+session's lifecycle and captures one immutable publication and one generator adapter. It selects
+the requested canonical view reference and produces its catalog and diagram together. Rendering
+does not open source documents. Opening a source belongs exclusively to navigation.
+
+The response distinguishes `updating`, `failed`, `cancelled`, `unavailable`, `superseded`,
+`empty`, `unchanged`, and `ready`. Settled replies carry the session version as a decimal string
+so JavaScript cannot truncate it. Completed work is delivered only while its captured owner and
+publication token remain current. A retained product can be reused only when its model digest,
+canonical view selection, and expanded browser rows match the current request. Fallback selection
+clears expansion keys from the previous view, and replies report the applied keys.
+
+The client subscribes to `spec42/analysisStatusChanged` before its initial request. That notification
+is a wake to read current owner state, including same-digest completions and failures; its payload
+is not a second freshness authority. Readiness is settled before this wake is sent, independently
+of diagnostic fanout. The client coalesces wakes received during a request, rejects superseded
+selection responses, and keeps its existing frame visible while updating. Source navigation from
+a retained frame waits until a current response is accepted. It uses no publication
+polling timer, guessed retry delay, or error-message matching. Webview loading and server restart
+recovery remain separate fault/lifecycle concerns. The older catalog and diagram RPCs remain
+available for existing clients.
+
+`cargo run -p lsp_server --example diagram_presentation_bindings` generates the editor's shared
+request/result declarations from the Rust DTOs; mini-CI checks these bindings for drift.
+
 Unresolved and ambiguous exposure, unsupported syntax or features, parser recovery, non-converged
 publication, absent authoritative geometry, and incomplete relationship endpoints are distinct
 typed reasons. An empty resolved exposure is a valid complete empty projection when the view kind

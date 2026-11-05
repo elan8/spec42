@@ -4,7 +4,6 @@ import { describe, it } from "node:test";
 import {
   allDiagramViewOptions,
   authoredDiagramViewOptions,
-  diagramRenderIsStale,
   diagramViewsForDocument,
   diagramViewKindForHandle,
   DIAGRAM_VIEWS,
@@ -17,14 +16,40 @@ import {
   parseStateTransitionViewCatalog,
   parseSourceNavigation,
   productContainsSourceTarget,
-  reconcileDelayMs,
   resolveDiagramSelection,
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct, remapDisclosureState } from "../../diagram/diagramProductState";
 import { diagramLimitations } from "../../diagram/diagramLimitations";
+import { DiagramRefreshQueue } from "../../diagram/diagramRefreshQueue";
 import type { DiagramProduct } from "../../generated/diagram-product/DiagramProduct";
 import { isPresentedFrame, parseRenderMeasurement, RenderMeasurementTracker, type RenderMeasurement } from "../../diagram/diagramPerformance";
+
+describe("diagram request ownership", () => {
+  it("coalesces wakes received during work and rejects the old completion", () => {
+    const queue = new DiagramRefreshQueue();
+    queue.request();
+    const first = queue.begin()!;
+    assert.ok(queue.isCurrent(first));
+    queue.request(); queue.request();
+    assert.equal(queue.begin(), undefined);
+    assert.equal(queue.isCurrent(first), false);
+    queue.finish(first);
+    const next = queue.begin()!;
+    assert.ok(queue.isCurrent(next));
+    queue.finish(first);
+    assert.ok(queue.isCurrent(next), "an obsolete completion cannot release its replacement");
+    queue.finish(next);
+    assert.equal(queue.begin(), undefined, "there is no periodic retry");
+  });
+  it("cancellation fences late completions while a new owner can start immediately", () => {
+    const queue = new DiagramRefreshQueue(); queue.request(); const first = queue.begin()!;
+    queue.cancel(); queue.request(); const next = queue.begin()!;
+    queue.finish(first);
+    assert.equal(queue.isCurrent(first), false);
+    assert.ok(queue.isCurrent(next));
+  });
+});
 
 describe("unsupported syntax provenance", () => {
   it("admits only exact canonical source targets outside the workspace", () => {
@@ -398,22 +423,6 @@ describe("diagram viewer core", () => {
     assert.throws(()=>parseDiagramViewCatalog({...catalog, views:[{...catalog.views[0], source:{uri:"file:///w/views.sysml",range:{startLine:-1}}}]}));
     const multiple = allDiagramViewOptions({...catalog, views:[catalog.views[0], {...catalog.views[0],handle:"h2",kind:"sequence-view"}]});
     assert.deepEqual(multiple.map(view=>view.label),["A::quoted name · General View", "A::quoted name · Sequence View"]);
-  });
-
-  it("backs the reconcile loop off exponentially, then settles slow", () => {
-    assert.equal(reconcileDelayMs(0, false), 600);
-    assert.equal(reconcileDelayMs(1, false), 1_200);
-    assert.equal(reconcileDelayMs(4, false), 9_600);
-    assert.equal(reconcileDelayMs(6, false), 15_000);
-    assert.equal(reconcileDelayMs(20, false), 15_000, "capped");
-    assert.equal(reconcileDelayMs(-3, false), 600, "clamped to attempt 0");
-    assert.equal(reconcileDelayMs(0, true), 45_000, "settled cadence ignores attempt");
-  });
-
-  it("treats a publication digest as stale only against a known rendered digest", () => {
-    assert.equal(diagramRenderIsStale(undefined, "blake3:new"), false);
-    assert.equal(diagramRenderIsStale("blake3:old", "blake3:new"), true);
-    assert.equal(diagramRenderIsStale("blake3:same", "blake3:same"), false);
   });
 
   it("validates bounded source navigation", () => {
