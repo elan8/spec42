@@ -96,7 +96,7 @@ pub(crate) struct DiagramParams {
     pub(crate) expanded: Vec<String>,
 }
 
-/// `spec42/diagram`: the schema-10 diagram product of one catalog view, built natively.
+/// `spec42/diagram`: the schema-12 diagram product of one catalog view, built natively.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramResult {

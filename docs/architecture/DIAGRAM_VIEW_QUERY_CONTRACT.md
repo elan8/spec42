@@ -15,7 +15,7 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
 never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 11
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 12
 is the sole renderer product for this contract.
 
 Each projected element carries an opaque `presentationKey`, a domain-separated SHA-256 encoding
