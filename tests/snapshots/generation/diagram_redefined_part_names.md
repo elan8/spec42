@@ -540,7 +540,7 @@ package RedefinedParts {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:25d40b4da6a525917afa7cf9a24cffba7311948a676b9ebb7ed02509ea74134d",
+  "modelDigest": "blake3:589af413b228b73836236bd6c0f6083a4241f77e414903b2dd533ddc64098ca5",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

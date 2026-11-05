@@ -428,11 +428,12 @@ impl SemanticModelBuilder {
             node.value.membership.span,
         )?;
         self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
-        // Constructs the canonical value Expression/result and preserves its authored spelling.
-        // This usage family does not yet classify the expression operands.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(document, declaration, feature_value)?;
-        }
+        self.lower_value_assignment(
+            document,
+            declaration,
+            UnsupportedFamily::PartUsageMember,
+            node.value.value.as_ref(),
+        )?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship_impl(
                 document,
@@ -743,11 +744,12 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        // Constructs the canonical value Expression/result and preserves its authored spelling.
-        // This usage family does not yet classify the expression operands.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(document, declaration, feature_value)?;
-        }
+        self.lower_value_assignment(
+            document,
+            declaration,
+            UnsupportedFamily::ReferenceUsageMember,
+            node.value.value.as_ref(),
+        )?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
@@ -1538,11 +1540,12 @@ impl SemanticModelBuilder {
             node.value.membership.span,
         )?;
         self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
-        // Constructs the canonical value Expression/result and preserves its authored spelling.
-        // This usage family does not yet classify the expression operands.
-        if let Some(feature_value) = &node.value.value {
-            self.record_feature_value(document, declaration, feature_value)?;
-        }
+        self.lower_value_assignment(
+            document,
+            declaration,
+            UnsupportedFamily::AttributeMember,
+            node.value.value.as_ref(),
+        )?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship_impl(
                 document,

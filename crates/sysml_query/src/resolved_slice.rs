@@ -54,7 +54,7 @@ pub use sysml_resolution::{
     ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
     SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
     SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
-    SymbolToken, TextId, TextPosition, TextRange, TypeDerivedElementCollection,
+    SymbolToken, TextId, TextPosition, TextRange, TriggerKind, TypeDerivedElementCollection,
     TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
     TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
     TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,

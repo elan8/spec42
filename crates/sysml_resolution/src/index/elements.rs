@@ -723,6 +723,7 @@ impl<D> SemanticModel<D> {
             identity: self.symbol_id(id)?,
             kind: element_kind::element_kind(declaration.kind),
             role: self.effective_membership_role(id),
+            trigger_kind: facts.trigger_kind,
             name: declaration
                 .name
                 .resolved()

@@ -1587,16 +1587,61 @@ impl<D> SemanticModel<D> {
             // SysML 8.3.21.10 `validateSatisfyRequirementUsageReference`: the satisfied feature
             // is a RequirementUsage. A requirement definition is not one, so `satisfy ReqDef by
             // x;` is reported; a viewpoint or concern usage is a RequirementUsage.
-            (false, false) => self.collect_target_kind(
-                id,
-                &[ReferenceKind::SatisfySource],
-                |kind| {
-                    crate::model::element_kind::element_kind(kind)
-                        .conforms_to(sysml_contract::ElementKind::RequirementUsage)
-                },
-                DiagnosticCode::SatisfyInvalidEndpointKind,
-                diagnostics,
-            ),
+            (false, false) => {
+                self.collect_target_kind(
+                    id,
+                    &[ReferenceKind::SatisfySource],
+                    |kind| {
+                        crate::model::element_kind::element_kind(kind)
+                            .conforms_to(sysml_contract::ElementKind::RequirementUsage)
+                    },
+                    DiagnosticCode::SatisfyInvalidEndpointKind,
+                    diagnostics,
+                )?;
+                let sources = self.settled_targets(id, &[ReferenceKind::SatisfySource]);
+                let requirement = match sources.as_slice() {
+                    [requirement] => *requirement,
+                    [] if self
+                        .authored_references(id, &[ReferenceKind::SatisfySource])
+                        .is_empty() =>
+                    {
+                        id
+                    }
+                    _ => return Ok(()),
+                };
+                let Some(subject) = self.subject_parameter(requirement) else {
+                    return Ok(());
+                };
+                for (reference_id, reference) in
+                    self.authored_references(id, &[ReferenceKind::SatisfyTarget])
+                {
+                    let Some(target) = self.settled_target(reference_id) else {
+                        continue;
+                    };
+                    // The by operand is a subject FeatureValue evaluated in the satisfy
+                    // occurrence, so `that` denotes the occurrence featuring that check.
+                    if self.reference_value_type_conflicts(
+                        target,
+                        subject,
+                        crate::index::expression_typing::ReferenceContext::Effective(id),
+                        Some(reference_id),
+                    ) {
+                        let mut diagnostic = self.reference_diagnostic(
+                            reference,
+                            DiagnosticCode::SatisfySubjectTypeIncompatible,
+                            DiagnosticSeverity::Error,
+                            Some(subject),
+                        )?;
+                        diagnostic.related =
+                            Box::from([self.related_declaration(
+                                subject,
+                                "Required subject declared here.",
+                            )?]);
+                        diagnostics.push(diagnostic);
+                    }
+                }
+                Ok(())
+            }
         }
     }
 

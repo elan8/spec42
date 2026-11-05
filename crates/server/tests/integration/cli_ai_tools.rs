@@ -51,6 +51,36 @@ fn spec42_bin() -> PathBuf {
         .expect("CARGO_BIN_EXE_spec42 (run via cargo test)")
 }
 
+#[test]
+fn cli_model_export_serializes_state_membership_and_trigger_kind() {
+    with_isolated_data_dir(|| {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("state.sysml");
+        // Semantic ownership and expression trees are pinned in state_ports_and_trigger_exports.md.
+        // This check protects the JSON boundary's additional optional vocabulary fields.
+        std::fs::write(&path, "package P { state def Controller { attribute enabled : ScalarValues::Boolean; entry; then idle; state idle { entry action start; do action run; exit action stop; } state active; transition change first idle accept when enabled then active; } }").unwrap();
+        let output = run_spec42_json(&["model-export", path.to_str().unwrap(), "--format", "json"]);
+        let elements = output["projection"]["elements"].as_array().unwrap();
+        for (name, role) in [("start", "entry"), ("run", "do"), ("stop", "exit")] {
+            let element = elements
+                .iter()
+                .find(|element| element["name"] == name)
+                .unwrap();
+            assert_eq!(element["membership"]["role"], role);
+            assert_eq!(element["kind"], "PerformActionUsage");
+        }
+        let trigger = elements
+            .iter()
+            .find(|element| element["trigger_kind"] == "when")
+            .unwrap();
+        assert_eq!(trigger["expression"]["outcome"], "resolved");
+        assert!(!trigger["expression"]["nodes"]
+            .as_array()
+            .unwrap()
+            .is_empty());
+    });
+}
+
 fn run_spec42_json(args: &[&str]) -> Value {
     let output = Command::new(spec42_bin())
         .args(args)

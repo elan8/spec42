@@ -1226,6 +1226,7 @@ fn collect_semantic_ranges_state_def_body_element(
         SDBE::Transition(transition) => collect_semantic_ranges_transition(transition, out),
         SDBE::Then(then_stmt) => collect_semantic_ranges_then_stmt(ctx, &then_stmt.value, out),
         SDBE::Ref(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
+        SDBE::PortUsage(port) => collect_semantic_ranges_port_usage(port, out),
         SDBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
         }

@@ -18,6 +18,149 @@ use crate::{EvaluatedScalar, MembershipRole, MultiplicityBound, MultiplicityFact
 
 pub(crate) use crate::expression::RawResultTyping;
 
+#[derive(Clone, Copy)]
+pub(crate) enum ReferenceContext {
+    /// An authored expression whose featuring types are already settled.
+    Authored(DeclarationId),
+    /// The explicit type of the occurrence in which a contextual expression is evaluated.
+    Effective(DeclarationId),
+}
+
+fn is_self_reference<D>(model: &SemanticModel<D>, target: DeclarationId) -> bool {
+    model
+        .expressions
+        .anchors
+        .anything_self
+        .is_some_and(|anchor| {
+            target == anchor
+                || model.types.specialization().reaches(
+                    target,
+                    anchor,
+                    crate::index::types::ScopeBits::FeatureSpecialization,
+                )
+        })
+}
+
+fn is_that_reference<D>(model: &SemanticModel<D>, target: DeclarationId) -> bool {
+    model.expressions.anchors.things_that.is_some_and(|anchor| {
+        target == anchor
+            || model.types.specialization().reaches(
+                target,
+                anchor,
+                crate::index::types::ScopeBits::FeatureSpecialization,
+            )
+    })
+}
+
+fn context_dependent_reference<D>(
+    model: &SemanticModel<D>,
+    target: DeclarationId,
+    reference: Option<crate::model::AuthoredReferenceId>,
+) -> bool {
+    is_self_reference(model, target)
+        || is_that_reference(model, target)
+        || reference
+            .and_then(|reference| model.resolution.member_access_paths.get(&reference))
+            .is_some_and(|path| {
+                path.iter().any(|hop| {
+                    matches!(hop,
+                crate::resolve::results::ResolutionStatus::Resolved(target)
+                    if is_self_reference(model, *target) || is_that_reference(model, *target))
+                })
+            })
+}
+
+/// Self denotes the current featuring occurrence; Base::things::that navigates to its featuring
+/// instance. Their broad library typings must not replace the canonical occurrence path.
+pub(crate) fn reference_result_types<D>(
+    model: &SemanticModel<D>,
+    context: ReferenceContext,
+    target: DeclarationId,
+    reference: Option<crate::model::AuthoredReferenceId>,
+) -> Box<[DeclarationId]> {
+    let values = if context_dependent_reference(model, target, reference) {
+        let mut contexts = match context {
+            ReferenceContext::Authored(expression) => model
+                .types
+                .featuring_types(expression)
+                .iter()
+                .map(|(target, _)| *target)
+                .collect::<Vec<_>>(),
+            ReferenceContext::Effective(context) => vec![context],
+        };
+        // Base::things::that is the inverse featuring instance. Walk settled hop identities,
+        // keeping feature occurrences (not just their classifier types) until navigation ends.
+        let path =
+            reference.and_then(|reference| model.resolution.member_access_paths.get(&reference));
+        let mut contextual_end = false;
+        for hop in path
+            .into_iter()
+            .flat_map(|path| path.iter())
+            .cloned()
+            .chain(
+                path.is_none()
+                    .then_some(crate::resolve::results::ResolutionStatus::Resolved(target)),
+            )
+        {
+            let crate::resolve::results::ResolutionStatus::Resolved(hop) = hop else {
+                return Box::default();
+            };
+            if is_self_reference(model, hop) {
+                contextual_end = true;
+            } else if is_that_reference(model, hop) {
+                contexts = contexts
+                    .iter()
+                    .flat_map(|context| {
+                        model
+                            .types
+                            .featuring_types(*context)
+                            .iter()
+                            .map(|(target, _)| *target)
+                    })
+                    .collect();
+                contextual_end = true;
+            } else {
+                contexts = vec![hop];
+                contextual_end = false;
+            }
+        }
+        if contextual_end {
+            contexts
+        } else {
+            // A contextual binding may replace the terminal member while retaining authored
+            // path provenance; its frozen replacement is the result, not the old final hop.
+            model
+                .types
+                .effective_types(target)
+                .iter()
+                .map(|(target, _)| *target)
+                .collect()
+        }
+    } else {
+        model
+            .types
+            .effective_types(target)
+            .iter()
+            .map(|(target, _)| *target)
+            .collect()
+    };
+    minimal_types(model, values)
+}
+
+fn minimal_types<D>(
+    model: &SemanticModel<D>,
+    mut values: Vec<DeclarationId>,
+) -> Box<[DeclarationId]> {
+    values.sort_unstable();
+    values.dedup();
+    let all = values.clone();
+    values.retain(|general| {
+        !all.iter()
+            .any(|specific| specific != general && conforms(&model.types, *specific, *general))
+    });
+    values.into_boxed_slice()
+}
+
 struct Input {
     types: Box<[DeclarationId]>,
     optional: bool,
@@ -91,22 +234,14 @@ impl<'a, D> Registry<'a, D> {
     }
 
     fn types(&self, feature: DeclarationId) -> Box<[DeclarationId]> {
-        let mut values = self
+        let values = self
             .model
             .types
             .effective_types(feature)
             .iter()
             .map(|(target, _)| *target)
             .collect::<Vec<_>>();
-        values.sort_unstable();
-        values.dedup();
-        let all = values.clone();
-        values.retain(|general| {
-            !all.iter().any(|specific| {
-                specific != general && conforms(&self.model.types, *specific, *general)
-            })
-        });
-        values.into_boxed_slice()
+        minimal_types(self.model, values)
     }
 
     fn signature(&mut self, function: DeclarationId) -> Option<std::sync::Arc<Signature>> {
@@ -149,7 +284,12 @@ impl<'a, D> Registry<'a, D> {
         signature
     }
 
-    fn node(&mut self, row: &ResolvedExpressionRow, index: u32) -> RawResultTyping {
+    fn node(
+        &mut self,
+        row: &ResolvedExpressionRow,
+        index: u32,
+        context: ReferenceContext,
+    ) -> RawResultTyping {
         let Some(node) = row.nodes.get(index as usize) else {
             return RawResultTyping::Unresolved;
         };
@@ -162,9 +302,10 @@ impl<'a, D> Registry<'a, D> {
                 .unwrap_or(RawResultTyping::Unsupported),
             RawExpressionNodeKind::FeatureReference {
                 target: Some(target),
+                reference,
                 ..
             } => {
-                let types = self.types(*target);
+                let types = reference_result_types(self.model, context, *target, *reference);
                 if types.is_empty() {
                     RawResultTyping::Unresolved
                 } else {
@@ -220,7 +361,7 @@ impl<'a, D> Registry<'a, D> {
                 let candidates = candidates.clone();
                 let arguments = operands
                     .iter()
-                    .map(|operand| self.node(row, *operand))
+                    .map(|operand| self.node(row, *operand, context))
                     .collect::<Vec<_>>();
                 if arguments
                     .iter()
@@ -312,9 +453,9 @@ impl<'a, D> Registry<'a, D> {
         }
     }
 
-    fn row(&mut self, row: &ResolvedExpressionRow) -> RawResultTyping {
+    fn row(&mut self, row: &ResolvedExpressionRow, context: ReferenceContext) -> RawResultTyping {
         row.root
-            .map(|root| self.node(row, root))
+            .map(|root| self.node(row, root, context))
             .unwrap_or(RawResultTyping::Unsupported)
     }
 }
@@ -326,7 +467,12 @@ pub(crate) fn settle<D>(model: &mut SemanticModel<D>) {
         .resolved_expressions
         .rows
         .iter()
-        .map(|row| row.as_ref().map(|row| registry.row(row)))
+        .enumerate()
+        .map(|(index, row)| {
+            row.as_ref().map(|row| {
+                registry.row(row, ReferenceContext::Authored(DeclarationId(index as u32)))
+            })
+        })
         .collect::<Vec<_>>();
     let contextual = model
         .resolved_expressions
@@ -347,13 +493,17 @@ pub(crate) fn settle<D>(model: &mut SemanticModel<D>) {
             if let Some((authored, base)) =
                 authored.and_then(|id| Some((id, model.resolved_expressions.row(id)?)))
             {
-                if row.root == base.root && std::sync::Arc::ptr_eq(&row.nodes, &base.nodes) {
+                let context_free = row.nodes.iter().all(|node| {
+                    !matches!(&node.kind, RawExpressionNodeKind::FeatureReference { target: Some(target), reference, .. }
+                        if context_dependent_reference(model, *target, *reference))
+                });
+                if context_free && row.root == base.root && std::sync::Arc::ptr_eq(&row.nodes, &base.nodes) {
                     if let Some(typing) = &rows[authored.index()] {
                         return Some((*key, typing.clone()));
                     }
                 }
             }
-            Some((*key, registry.row(row)))
+            Some((*key, registry.row(row, ReferenceContext::Effective(key.0))))
         })
         .collect::<Vec<_>>();
     drop(registry);

@@ -59,7 +59,7 @@ pub use sysml_contract::{
     PublicationCompleteness, PublicationEvaluationPolicy, PublicationModelDigest,
     PublicationObstacle, QueryAnswer, QueryOutcome, RequirementConstraintKind,
     StandardLibraryAvailability, StateSubactionKind, SymbolId, SymbolToken, TextId, TextPosition,
-    TextRange,
+    TextRange, TriggerKind,
 };
 
 pub use sysml_source as source;

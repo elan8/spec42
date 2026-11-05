@@ -671,7 +671,7 @@ package Seq {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:b1c3647dc7476b019579b9f256ae16fafa98ff5ffc17bc5b46a69568da1c80f8",
+  "modelDigest": "blake3:eee1ba2a69b65cbb1e78369dbbd7124c9b0993a17d6569f51b95eac41fa19f08",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_event_order_semantic_names.md",

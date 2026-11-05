@@ -54,31 +54,6 @@ fn render(publication: &PublishedResolution) -> String {
     output
 }
 
-fn diagnostics_sexpr(publication: &PublishedResolution) -> String {
-    let mut output = String::new();
-    publication
-        .debug()
-        .write_diagnostics_sexpr(&mut output)
-        .expect("diagnostics");
-    output
-}
-
-fn diagnostic_codes(diagnostics: &str) -> Vec<String> {
-    let mut codes = Vec::new();
-    let mut rest = diagnostics;
-    while let Some(idx) = rest.find("(code \"") {
-        rest = &rest[idx + "(code \"".len()..];
-        match rest.find('"') {
-            Some(end) => {
-                codes.push(rest[..end].to_owned());
-                rest = &rest[end + 1..];
-            }
-            None => break,
-        }
-    }
-    codes
-}
-
 /// Builds `documents` warm (against `warm`) and cold, and asserts the two publications are
 /// indistinguishable. Returns the warm publication so the caller can record its canonical
 /// identity and diagnostics.
@@ -273,7 +248,11 @@ fn edit_sequence(sources: &SourceAuthority) -> Vec<Step> {
 }
 
 fn report_step(label: &str, publication: &PublishedResolution) -> String {
-    let codes = diagnostic_codes(&diagnostics_sexpr(publication));
+    let codes = publication
+        .diagnostics()
+        .iter()
+        .map(|diagnostic| diagnostic.code().as_str().to_owned())
+        .collect::<Vec<_>>();
     let codes = if codes.is_empty() {
         "[]".to_owned()
     } else {
@@ -358,5 +337,59 @@ fn an_edit_sequence_lowers_only_the_changed_documents() {
             "{}: expected {} document(s) lowered, got {}",
             step.label, step.expected_lowered, measurements.documents_lowered
         );
+    }
+}
+
+/// The language facts are pinned by standalone snapshots. This checks publication reuse and
+/// invalidation when values, subject bindings and trigger kinds change in one source revision.
+#[test]
+fn reference_and_state_edits_agree_warm_and_cold() {
+    let sources = SourceAuthority::new();
+    let warm = authority();
+    let library = admit(&sources, "memory://library/Types.sysml", "package Types { item def Value; item def Other; port def Signal; part def System; part def Subsystem; requirement def Required { subject system : System; } }", SourceKind::StandardLibrary);
+    let model = |value: &str, satisfying: &str, trigger: &str| {
+        format!("package Model {{ private import Types::*; item a : Value; item b : Other; item def Holder {{ ref item value : Value; }} item holder : Holder {{ ref item :>> value = {value}; }} requirement required : Required; part system : System; part sub : Subsystem; satisfy required by {satisfying}; state def Machine {{ port signal : Signal; entry; then idle; state idle {{ entry action enter; }} state active; transition change first idle accept {trigger} then active; }} }}")
+    };
+    let steps = [
+        model("a", "system", "when true"),
+        model("b", "sub", "after 2"),
+        model("a", "system", "when false"),
+        model("a", "system", "when true"),
+    ];
+    let baseline = warm
+        .publish(
+            &[
+                library.clone(),
+                admit(
+                    &sources,
+                    "memory://workspace/model.sysml",
+                    &steps[0],
+                    SourceKind::Workspace,
+                ),
+            ],
+            [],
+        )
+        .expect("seed publication")
+        .identity()
+        .clone();
+    for (index, text) in steps.iter().enumerate() {
+        let documents = [
+            library.clone(),
+            admit(
+                &sources,
+                "memory://workspace/model.sysml",
+                text,
+                SourceKind::Workspace,
+            ),
+        ];
+        let (publication, _) =
+            assert_warm_matches_cold(&warm, &documents, &format!("reference-state edit {index}"));
+        if index == steps.len() - 1 {
+            assert_eq!(
+                publication.identity(),
+                &baseline,
+                "reverting restores the canonical publication identity"
+            );
+        }
     }
 }

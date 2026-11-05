@@ -126,12 +126,16 @@ impl<D> SemanticModel<D> {
             else {
                 continue;
             };
+            let reference_value = self.is_reference_value_receiver(value.declaration);
+            let code = if reference_value {
+                DiagnosticCode::ReferenceValueTypeIncompatible
+            } else {
+                DiagnosticCode::AttributeValueTypeIncompatible
+            };
             diagnostics.push(Diagnostic {
                 payload: None,
-                message: DiagnosticCode::AttributeValueTypeIncompatible
-                    .describe()
-                    .into(),
-                code: DiagnosticCode::AttributeValueTypeIncompatible,
+                message: code.describe().into(),
+                code,
                 severity,
                 origin: DiagnosticOrigin::Semantic,
                 subject: self.symbol_id(value.declaration),
@@ -139,7 +143,14 @@ impl<D> SemanticModel<D> {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &value.span)?,
                 },
-                related: Box::default(),
+                related: if reference_value {
+                    Box::from([self.related_declaration(
+                        value.declaration,
+                        "Receiving feature declared here.",
+                    )?])
+                } else {
+                    Box::default()
+                },
             });
         }
 
@@ -256,6 +267,18 @@ impl<D> SemanticModel<D> {
                 .body(self.value_expression(expression)?)
         });
         if let Some(row) = row {
+            if self.is_reference_value_receiver(receiver) {
+                if let Some(root) = row.root {
+                    if self.reference_expression_conflicts(row, root, receiver) {
+                        return Some(DiagnosticSeverity::Error);
+                    }
+                }
+                if let crate::expression::RawResultTyping::Resolved(actual) = &row.result_typing {
+                    if self.static_value_type_conflicts(actual, receiver) {
+                        return Some(DiagnosticSeverity::Error);
+                    }
+                }
+            }
             let literal = row
                 .root
                 .and_then(|root| row.nodes.get(root as usize))
@@ -329,6 +352,109 @@ impl<D> SemanticModel<D> {
         // Anything must not make an incompatible, more specific typing disappear.
         (!declared.all(|target| comparable(&self.types, target, value_type)))
             .then_some(DiagnosticSeverity::Error)
+    }
+
+    fn is_reference_value_receiver(&self, receiver: DeclarationId) -> bool {
+        let reference = self
+            .storage
+            .declaration(receiver)
+            .is_some_and(|declaration| declaration.kind == DeclarationKind::ReferenceUsage)
+            || self
+                .storage
+                .declaration_facts(receiver)
+                .is_some_and(|facts| facts.modifiers.reference);
+        // Datatype bindings retain the scalar refinement and measurement policies below.
+        reference
+            && !self
+                .types
+                .effective_types(receiver)
+                .iter()
+                .any(|(target, _)| {
+                    self.kind_of(*target)
+                        .is_some_and(|kind| element_kind(kind).conforms_to(ElementKind::DataType))
+                })
+    }
+
+    /// Compare a reference in its canonical featuring context, including inherited self.
+    /// Unsettled inputs retain their existing resolution diagnostics.
+    pub(crate) fn reference_value_type_conflicts(
+        &self,
+        actual: DeclarationId,
+        receiver: DeclarationId,
+        context: crate::index::expression_typing::ReferenceContext,
+        reference: Option<AuthoredReferenceId>,
+    ) -> bool {
+        if self.specialization_hierarchy_is_unsettled(actual) {
+            return false;
+        }
+        let types = crate::index::expression_typing::reference_result_types(
+            self, context, actual, reference,
+        );
+        self.static_value_type_conflicts(&types, receiver)
+    }
+
+    fn reference_expression_conflicts(
+        &self,
+        row: &crate::expression::ResolvedExpressionRow,
+        node: u32,
+        receiver: DeclarationId,
+    ) -> bool {
+        use crate::expression::RawExpressionNodeKind;
+        match row.nodes.get(node as usize).map(|node| &node.kind) {
+            Some(RawExpressionNodeKind::FeatureReference {
+                target: Some(target),
+                reference,
+                ..
+            }) => {
+                let Some(expression) = self.value_expression(receiver) else {
+                    return false;
+                };
+                self.reference_value_type_conflicts(
+                    *target,
+                    receiver,
+                    crate::index::expression_typing::ReferenceContext::Authored(expression),
+                    *reference,
+                )
+            }
+            Some(RawExpressionNodeKind::Sequence { elements }) => elements
+                .iter()
+                .any(|element| self.reference_expression_conflicts(row, *element, receiver)),
+            Some(RawExpressionNodeKind::Literal(value)) => self
+                .expressions
+                .scalar_type(value)
+                .is_some_and(|actual| self.static_value_type_conflicts(&[actual], receiver)),
+            _ => false,
+        }
+    }
+
+    /// Expression result types are simultaneous constraints, as are the receiver's effective
+    /// types. Sequence elements are checked individually rather than treating a union of their
+    /// types as an intersection.
+    fn static_value_type_conflicts(
+        &self,
+        actual: &[DeclarationId],
+        receiver: DeclarationId,
+    ) -> bool {
+        if actual.is_empty()
+            || self.specialization_hierarchy_is_unsettled(receiver)
+            || actual
+                .iter()
+                .any(|actual| self.specialization_hierarchy_is_unsettled(*actual))
+        {
+            return false;
+        }
+        self.types
+            .effective_types(receiver)
+            .iter()
+            .any(|(expected, _)| {
+                actual.iter().all(|actual| {
+                    self.conformance(
+                        *actual,
+                        *expected,
+                        crate::SpecializationScope::AnySpecialization,
+                    ) == crate::Conformance::DoesNotConform
+                })
+            })
     }
 
     /// Reports unit tokens that name no unit, name several, or name one of the wrong dimension.
@@ -752,7 +878,12 @@ impl<D> SemanticModel<D> {
         let time_instant = anchor("Time::TimeInstantValue");
         let duration = anchor("ISQBase::DurationValue");
         for trigger in triggers {
-            let (expected, code) = match trigger.kind {
+            let trigger_kind = self
+                .storage
+                .declaration_facts(trigger.expression)
+                .and_then(|facts| facts.trigger_kind)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let (expected, code) = match trigger_kind {
                 TriggerInvocationKind::When => {
                     (boolean, DiagnosticCode::TriggerWhenArgumentNotBoolean)
                 }
@@ -768,7 +899,7 @@ impl<D> SemanticModel<D> {
                 // A Boolean literal is a `LiteralBoolean`; no other literal's type is Boolean, a
                 // time instant or a duration, whatever the library admits.
                 TriggerArgument::Literal(kind) => Some(
-                    kind == LiteralKind::Boolean && trigger.kind == TriggerInvocationKind::When,
+                    kind == LiteralKind::Boolean && trigger_kind == TriggerInvocationKind::When,
                 ),
                 TriggerArgument::FeatureReference(reference) => {
                     match (self.resolution.outcome(reference), expected) {

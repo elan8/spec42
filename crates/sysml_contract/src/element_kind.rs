@@ -374,13 +374,32 @@ impl fmt::Display for ElementKind {
 
 /// Which subaction slot of a state an action fills.
 ///
-/// Mirrors the Pilot's `StateSubactionKind`. The three are the same element kind
-/// ([`ElementKind::ActionUsage`]); only the membership distinguishes them.
+/// All three roles belong to StateSubactionMembership; its member may be any admitted
+/// [`ElementKind::ActionUsage`] subtype. The membership distinguishes the role.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum StateSubactionKind {
     Entry,
     Do,
     Exit,
+}
+
+/// The temporal/change semantics of a SysML TriggerInvocationExpression.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum TriggerKind {
+    When,
+    At,
+    After,
+}
+
+impl TriggerKind {
+    /// Stable lower-case spelling used by the publication's serializers.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::When => "when",
+            Self::At => "at",
+            Self::After => "after",
+        }
+    }
 }
 
 /// Whether a constraint framed by a requirement is an assumption or a required constraint.

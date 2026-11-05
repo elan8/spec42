@@ -2023,6 +2023,10 @@ impl SemanticModelBuilder {
         )?;
         self.push_membership(result, MembershipKind::Feature, Visibility::Default, span)?;
         self.declaration_facts[expression.index()].expression_result = Some(result);
+        self.push_evaluation_fact(
+            expression,
+            self.constraint_expression_site(document, &argument.value),
+        );
         let argument_fact = match &argument.value {
             Expression::LiteralBoolean(_) => TriggerArgument::Literal(LiteralKind::Boolean),
             Expression::LiteralInteger(_) => TriggerArgument::Literal(LiteralKind::Integer),
@@ -2046,14 +2050,14 @@ impl SemanticModelBuilder {
         if argument_fact == TriggerArgument::Other {
             self.lower_constraint_expression(document, expression, family, argument)?;
         }
+        self.declaration_facts[expression.index()].trigger_kind = Some(match kind {
+            sysml_v2_parser::ast::TriggerKind::When => TriggerInvocationKind::When,
+            sysml_v2_parser::ast::TriggerKind::At => TriggerInvocationKind::At,
+            sysml_v2_parser::ast::TriggerKind::After => TriggerInvocationKind::After,
+        });
         self.trigger_invocations
             .push(crate::lower::facts::TriggerInvocationRecord {
                 expression,
-                kind: match kind {
-                    sysml_v2_parser::ast::TriggerKind::When => TriggerInvocationKind::When,
-                    sysml_v2_parser::ast::TriggerKind::At => TriggerInvocationKind::At,
-                    sysml_v2_parser::ast::TriggerKind::After => TriggerInvocationKind::After,
-                },
                 argument: argument_fact,
             });
         Ok(())

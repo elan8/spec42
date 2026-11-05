@@ -583,7 +583,6 @@ impl SemanticModelBuilder {
             self.trigger_invocations
                 .push(crate::lower::facts::TriggerInvocationRecord {
                     expression: relocation.declaration(record.expression)?,
-                    kind: record.kind,
                     argument: match record.argument {
                         TriggerArgument::FeatureReference(reference) => {
                             TriggerArgument::FeatureReference(relocation.reference(reference)?)

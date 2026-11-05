@@ -100,6 +100,8 @@ pub struct ElementInspection {
     pub kind: ElementKind,
     /// The role this element plays in its owner, where the OMG carries it on the membership.
     pub role: Option<MembershipRole>,
+    /// Present on a temporal/change trigger invocation; its expression tree is the argument.
+    pub trigger_kind: Option<sysml_contract::TriggerKind>,
     /// The authored name, absent for an anonymous element.
     pub name: Option<Box<str>>,
     pub short_name: Option<Box<str>>,

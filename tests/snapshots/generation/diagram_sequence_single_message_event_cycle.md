@@ -357,7 +357,7 @@ package SingleCycle {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:d92e87ca551082ec088eb59c47034e4c5dfba1a7173e86a772fdd77671b75952",
+  "modelDigest": "blake3:187a8c5626f9b212258d43f4f6fb68f42982012f431110799de15caee0f79478",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_single_message_event_cycle.md",
