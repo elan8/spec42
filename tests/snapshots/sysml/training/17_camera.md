@@ -103,7 +103,7 @@ package Camera {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e5589f58e107131c8fa01c663ddeffa9f6da73cc2f131ba65d89f894b78af996"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e5589f58e107131c8fa01c663ddeffa9f6da73cc2f131ba65d89f894b78af996"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Action Decomposition") (import (shape namespace) (recursive false))))))
@@ -119,7 +119,7 @@ package Camera {
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus::realImage"))) (kind item) (membership (kind feature) (visibility default)) (facts (modifiers reference) (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Image")))))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus::scene"))) (kind item) (membership (kind feature) (visibility default)) (facts (modifiers reference) (direction in)) (feature-value (kind bind) (value (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scene")))))
-    (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "camera::scene")))))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::focusedImage"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Image")))))
@@ -149,6 +149,9 @@ package Camera {
     (reference (id (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus::scene"))) (kind featureTyping) (ordinal 0))
       (authored-target "Scene")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "camera::scene")
+      (outcome (status resolved) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene")))))
     (reference (id (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::focusedImage"))) (kind featureTyping) (ordinal 0))
       (authored-target "Image")
       (outcome (status unresolved)))
@@ -169,6 +172,7 @@ package Camera {
     (relationship (kind typing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::Camera"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind flowSource) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus::realImage"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0)))
     (relationship (kind flowTarget) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::focusedImage"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (anonymous (kind flow) (ordinal 0))))) (kind flowTarget) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::photo"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::photo"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (anonymous (kind flow) (ordinal 0))))) (provenance implied))
@@ -180,6 +184,7 @@ package Camera {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus::scene"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::focusedImage"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::photo"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager"))) (provenance implied))
@@ -190,6 +195,7 @@ package Camera {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -234,6 +240,7 @@ package Camera {
     )
     (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager")))
       (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
@@ -260,7 +267,14 @@ package Camera {
     )
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene")))
       (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
+      (subtype (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "camera::scene" (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene")))))
 )
 ~~~
 # NAVIGATION
@@ -294,6 +308,11 @@ package Camera {
   (query (document "memory://snapshot/17_camera.md") (range (start 12 23) (end 12 28)) (probe (position 12 23))
     (reference (id (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::autoFocus::scene"))) (kind featureTyping) (ordinal 0) (authored-target "Scene")
       (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/17_camera.md") (range (start 12 31) (end 12 44)) (probe (position 12 31))
+    (reference (id (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "autoFocus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "camera::scene")
+      (outcome (status resolved) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene")))))
     )
   )
   (query (document "memory://snapshot/17_camera.md") (range (start 19 26) (end 19 31)) (probe (position 19 26))

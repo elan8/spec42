@@ -81,6 +81,12 @@ package 'Binding Connectors Example-2' {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 15 30) (end 15 53))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 16 21) (end 16 25))
@@ -97,6 +103,12 @@ package 'Binding Connectors Example-2' {
         (source "semantic")
         (range (start 21 21) (end 21 25))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 21 28) (end 21 51))
+      )
     )
   )
 )
@@ -104,7 +116,7 @@ package 'Binding Connectors Example-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:08ed38f0fb2635d6b2741e5d5673eecc1b2ff70dba09f219587938a417093958"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:08ed38f0fb2635d6b2741e5d5673eecc1b2ff70dba09f219587938a417093958"))
   (declarations
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Port Example") (import (shape namespace) (recursive false))))))
@@ -119,14 +131,14 @@ package 'Binding Connectors Example-2' {
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::pump"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelPump")))))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::pump::pumpIn"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Fuel")))))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::pump::pumpOut"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction out)) (feature-value (kind bind) (value (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Fuel")))))
-    (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "fuelTankPort::fuelSupply")))))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2))))) (kind kerml-feature) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "FuelTank")))))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank::fuelIn"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)) (feature-value (kind bind) (value (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Fuel")))))
-    (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "fuelTankPort::fuelReturn")))))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2))))) (kind kerml-feature) (membership (kind owning) (visibility default)))
@@ -161,11 +173,17 @@ package 'Binding Connectors Example-2' {
     (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::pump::pumpOut"))) (kind featureTyping) (ordinal 0))
       (authored-target "Fuel")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "fuelTankPort::fuelSupply")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank"))) (kind featureTyping) (ordinal 0))
       (authored-target "FuelTank")
       (outcome (status resolved) (target (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::FuelTank")))))
     (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank::fuelIn"))) (kind featureTyping) (ordinal 0))
       (authored-target "Fuel")
+      (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "fuelTankPort::fuelReturn")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank::fuelOut"))) (kind featureTyping) (ordinal 0))
       (authored-target "Fuel")
@@ -201,6 +219,8 @@ package 'Binding Connectors Example-2' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank::fuelOut"))) (target (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -291,6 +311,13 @@ package 'Binding Connectors Example-2' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "fuelTankPort::fuelSupply" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "fuelTankPort::fuelReturn" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
@@ -339,6 +366,11 @@ package 'Binding Connectors Example-2' {
       (outcome (status unresolved)))
     )
   )
+  (query (document "memory://snapshot/12_binding_connectors_example_2.md") (range (start 15 30) (end 15 53)) (probe (position 15 30))
+    (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "pump")) (named (kind item) (name "pumpOut")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "fuelTankPort::fuelSupply")
+      (outcome (status unresolved)))
+    )
+  )
   (query (document "memory://snapshot/12_binding_connectors_example_2.md") (range (start 19 15) (end 19 23)) (probe (position 19 15))
     (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank"))) (kind featureTyping) (ordinal 0) (authored-target "FuelTank")
       (outcome (status resolved) (target (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::FuelTank")))))
@@ -346,6 +378,11 @@ package 'Binding Connectors Example-2' {
   )
   (query (document "memory://snapshot/12_binding_connectors_example_2.md") (range (start 21 21) (end 21 25)) (probe (position 21 21))
     (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank::fuelIn"))) (kind featureTyping) (ordinal 0) (authored-target "Fuel")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/12_binding_connectors_example_2.md") (range (start 21 28) (end 21 51)) (probe (position 21 28))
+    (reference (id (source (node (document "memory://snapshot/12_binding_connectors_example_2.md") (path (named (kind package) (name "Binding Connectors Example-2")) (named (kind part) (name "vehicle")) (named (kind part) (name "tank")) (named (kind part) (name "tank")) (named (kind item) (name "fuelIn")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "fuelTankPort::fuelReturn")
       (outcome (status unresolved)))
     )
   )

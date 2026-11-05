@@ -54,6 +54,12 @@ package VariabilityTest {
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 20 14) (end 20 18))
+      )
+      (diagnostic
+        (severity warning)
         (code "unsupported_action_definition_member")
         (source "semantic")
         (range (start 23 2) (end 23 20))
@@ -71,7 +77,7 @@ package VariabilityTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b60606b8ef9ac9089778efeb0a3f45b01c3f744a1bd9c96046dfa0bba506c72d"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b60606b8ef9ac9089778efeb0a3f45b01c3f744a1bd9c96046dfa0bba506c72d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -94,7 +100,7 @@ package VariabilityTest {
     (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "v")) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (subsetting (reference "q")))))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "v")) (anonymous (kind ref) (ordinal 0)) (named (kind attribute) (name "b"))))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B")) (redefinition (reference "a")))))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y"))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "P")))))
-    (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "v::q")))))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
@@ -131,6 +137,9 @@ package VariabilityTest {
     (reference (id (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y"))) (kind featureTyping) (ordinal 0))
       (authored-target "P")
       (outcome (status resolved) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")))))
+    (reference (id (source (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "v::q")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q"))) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::Q"))) (kind specialization) (ordinal 0)))
@@ -150,6 +159,7 @@ package VariabilityTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -230,6 +240,7 @@ package VariabilityTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
+  (declaration (id (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "v::q" (target unresolved)))
 )
 ~~~
 # NAVIGATION
@@ -288,6 +299,11 @@ package VariabilityTest {
   (query (document "memory://snapshot/variability_test.md") (range (start 20 10) (end 20 11)) (probe (position 20 10))
     (reference (id (source (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::y"))) (kind featureTyping) (ordinal 0) (authored-target "P")
       (outcome (status resolved) (target (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::P")))))
+    )
+  )
+  (query (document "memory://snapshot/variability_test.md") (range (start 20 14) (end 20 18)) (probe (position 20 14))
+    (reference (id (source (node (document "memory://snapshot/variability_test.md") (path (named (kind package) (name "VariabilityTest")) (named (kind part) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "v::q")
+      (outcome (status unresolved)))
     )
   )
 )

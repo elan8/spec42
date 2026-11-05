@@ -1707,19 +1707,23 @@ impl<D> SemanticModel<D> {
         let matched = self
             .feature_members(declaration)
             .into_iter()
-            .filter(|candidate_id| {
-                self.storage
-                    .declaration(*candidate_id)
-                    .is_some_and(|candidate| {
-                        element_kind::membership_role(candidate.kind) == Some(role)
-                    })
-            });
-        let values = if first_only {
+            .filter(|candidate_id| self.effective_membership_role(*candidate_id) == Some(role));
+        let values = if role == crate::MembershipRole::Subject {
+            self.symbols_in_order(self.subject_parameter(declaration).into_iter())
+        } else if first_only {
             self.symbols_in_order(matched.take(1))
         } else {
             self.symbols(matched)
         };
         self.resolved_outcome(RequirementDerivedFactOutcome::Elements(values))
+    }
+
+    /// SysML subjectParameter is the first effective SubjectMembership, including inherited
+    /// memberships after redefinition reduction. Checks and projections share this selection.
+    pub(crate) fn subject_parameter(&self, owner: DeclarationId) -> Option<DeclarationId> {
+        self.feature_members(owner).into_iter().find(|member| {
+            self.effective_membership_role(*member) == Some(crate::MembershipRole::Subject)
+        })
     }
 
     fn composite_viewpoint_usages(&self, owner: DeclarationId) -> Box<[SymbolId]> {
@@ -2426,7 +2430,7 @@ impl<D> SemanticModel<D> {
             ));
             return self.resolved_outcome(ActionDerivedFactOutcome::Values(values));
         }
-        let state_subaction = |kind: DeclarationKind| {
+        let first_owned_kind = |kind: DeclarationKind| {
             self.symbols_in_order(
                 self.child_declarations(declaration)
                     .iter()
@@ -2435,6 +2439,17 @@ impl<D> SemanticModel<D> {
                         self.storage
                             .declaration(*member)
                             .is_some_and(|member| member.kind == kind)
+                    })
+                    .take(1),
+            )
+        };
+        let state_subaction = |kind: crate::StateSubactionKind| {
+            self.symbols_in_order(
+                self.feature_members(declaration)
+                    .into_iter()
+                    .filter(|member| {
+                        self.effective_membership_role(*member)
+                            == Some(crate::MembershipRole::StateSubaction(kind))
                     })
                     .take(1),
             )
@@ -2455,21 +2470,21 @@ impl<D> SemanticModel<D> {
                 if source_kind == Some(DeclarationKind::StateDefinition) =>
             {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
-                    DeclarationKind::EntryActionBinding,
+                    crate::StateSubactionKind::Entry,
                 )))
             }
             ActionDerivedFactCollection::StateDefinitionDoAction
                 if source_kind == Some(DeclarationKind::StateDefinition) =>
             {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
-                    DeclarationKind::DoActionBinding,
+                    crate::StateSubactionKind::Do,
                 )))
             }
             ActionDerivedFactCollection::StateDefinitionExitAction
                 if source_kind == Some(DeclarationKind::StateDefinition) =>
             {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
-                    DeclarationKind::ExitActionBinding,
+                    crate::StateSubactionKind::Exit,
                 )))
             }
             ActionDerivedFactCollection::StateUsageEntryAction
@@ -2479,7 +2494,7 @@ impl<D> SemanticModel<D> {
                 ) =>
             {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
-                    DeclarationKind::EntryActionBinding,
+                    crate::StateSubactionKind::Entry,
                 )))
             }
             ActionDerivedFactCollection::StateUsageDoAction
@@ -2489,7 +2504,7 @@ impl<D> SemanticModel<D> {
                 ) =>
             {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
-                    DeclarationKind::DoActionBinding,
+                    crate::StateSubactionKind::Do,
                 )))
             }
             ActionDerivedFactCollection::StateUsageExitAction
@@ -2499,7 +2514,7 @@ impl<D> SemanticModel<D> {
                 ) =>
             {
                 self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
-                    DeclarationKind::ExitActionBinding,
+                    crate::StateSubactionKind::Exit,
                 )))
             }
             ActionDerivedFactCollection::StateDefinitionState
@@ -2576,7 +2591,7 @@ impl<D> SemanticModel<D> {
             ActionDerivedFactCollection::PortDefinitionConjugatedPortDefinition
                 if source_kind == Some(DeclarationKind::PortDefinition) =>
             {
-                self.resolved_outcome(ActionDerivedFactOutcome::Values(state_subaction(
+                self.resolved_outcome(ActionDerivedFactOutcome::Values(first_owned_kind(
                     DeclarationKind::ConjugatedPortDefinition,
                 )))
             }

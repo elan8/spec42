@@ -366,6 +366,7 @@ fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
         "location": location_json(model, &inspection.location),
         "membership": {
             "kind": membership_kind(inspection.membership.kind),
+            "role": inspection.role.map(|role| role.as_str()),
             "visibility": visibility(inspection.membership.visibility),
             "provenance": visibility_provenance(inspection.membership.provenance),
         },
@@ -385,6 +386,7 @@ fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
             "recursive": exposure.recursive,
             "filtered": exposure.filtered,
         })),
+        "trigger_kind": inspection.trigger_kind.map(|kind| kind.as_str()),
         "evaluation": {
             "status": details.evaluation.state.as_str(),
             "value": details.evaluation.state.value().map(scalar_json),

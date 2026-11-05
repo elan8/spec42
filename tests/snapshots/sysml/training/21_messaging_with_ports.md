@@ -63,6 +63,12 @@ package 'Messaging Example' {
         (source "semantic")
         (range (start 17 1) (end 38 2))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
+        (range (start 25 20) (end 25 33))
+      )
     )
   )
 )
@@ -70,7 +76,7 @@ package 'Messaging Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1054f473fc80e648c4631f8343c6aac41bb5ddd32b89bac3a6ab8d7393fba92b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1054f473fc80e648c4631f8343c6aac41bb5ddd32b89bac3a6ab8d7393fba92b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -100,7 +106,7 @@ package 'Messaging Example' {
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::camera::takePicture::focus"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Focus")))))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::camera::takePicture::focus::image"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::camera::takePicture::focus::scene"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)) (feature-value (kind bind) (value (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
-    (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "trigger::scene")))))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2))))) (kind kerml-feature) (membership (kind owning) (visibility default)))
@@ -150,6 +156,9 @@ package 'Messaging Example' {
     (reference (id (source (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::camera::takePicture::focus"))) (kind featureTyping) (ordinal 0))
       (authored-target "Focus")
       (outcome (status resolved) (target (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Focus")))))
+    (reference (id (source (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "trigger::scene")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::camera::takePicture::shoot"))) (kind featureTyping) (ordinal 0))
       (authored-target "Shoot")
       (outcome (status resolved) (target (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Shoot")))))
@@ -218,6 +227,7 @@ package 'Messaging Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::screen::displayPort"))) (target (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::screen"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -385,6 +395,12 @@ package 'Messaging Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "trigger::scene" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
@@ -446,6 +462,11 @@ package 'Messaging Example' {
   (query (document "memory://snapshot/21_messaging_with_ports.md") (range (start 24 23) (end 24 28)) (probe (position 24 23))
     (reference (id (source (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::camera::takePicture::focus"))) (kind featureTyping) (ordinal 0) (authored-target "Focus")
       (outcome (status resolved) (target (node (document "memory://snapshot/21_messaging_with_ports.md") (qualified-name "Messaging Example::Focus")))))
+    )
+  )
+  (query (document "memory://snapshot/21_messaging_with_ports.md") (range (start 25 20) (end 25 33)) (probe (position 25 20))
+    (reference (id (source (node (document "memory://snapshot/21_messaging_with_ports.md") (path (named (kind package) (name "Messaging Example")) (named (kind part) (name "camera")) (named (kind action) (name "takePicture")) (named (kind action) (name "focus")) (named (kind item) (name "scene")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "trigger::scene")
+      (outcome (status unresolved)))
     )
   )
   (query (document "memory://snapshot/21_messaging_with_ports.md") (range (start 31 23) (end 31 28)) (probe (position 31 23))

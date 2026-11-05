@@ -44,7 +44,16 @@ spec42 doctor --format json
 Global flags: `--library-path`, `--config`, `--stdlib-path`, `--no-stdlib`.
 
 Model-export schema 2 adds invocation, sequence and meta-cast node kinds; consumers must accept
-these operations or report them as unsupported. Elements retain authored `name` and `qualified_name` separately from
+these operations or report them as unsupported. `membership.role` identifies entry/do/exit
+state subactions for both inline and reference forms. A trigger invocation's `trigger_kind`
+is `when`, `at` or `after`; its `expression` tree carries the condition, instant or duration.
+Read connector topology from `projection.connectors`, whose ordered `ends` retain each
+feature-chain endpoint's `root`, `terminal` and full `path` with per-hop resolution outcomes.
+For example, `connect left.output to right.input;` retains the `left` and `right` occurrence
+roots even when both ports are inherited from shared definitions. Generic element relationships
+alone do not describe that topology. End order does not by itself imply directed signal flow.
+
+Elements retain authored `name` and `qualified_name` separately from
 `effective_name` and `effective_qualified_name`. Use the effective fields to find unnamed
 redefinitions; `null` means no complete effective name is settled. `multiplicity_expressions`
 links to the range and its authored lower/upper expression elements (a single-bound range has

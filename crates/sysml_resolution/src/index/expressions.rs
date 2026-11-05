@@ -114,6 +114,8 @@ pub(crate) struct LibraryAnchors {
     /// `Base::Anything::self`, the self-reference feature a model-level evaluable feature
     /// reference may name (KerML 8.3.4.8.5).
     pub(crate) anything_self: Anchor,
+    /// The inverse featuring-instance feature defined by the standard Base package.
+    pub(crate) things_that: Anchor,
 }
 
 impl LibraryAnchors {
@@ -128,6 +130,7 @@ impl LibraryAnchors {
             integer: find_anchor(storage, INTEGER_PATH),
             real: find_anchor(storage, REAL_PATH),
             anything_self: find_anchor(storage, &["Base", "Anything", "self"]),
+            things_that: find_anchor(storage, &["Base", "things", "that"]),
         }
     }
 

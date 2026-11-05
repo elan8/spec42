@@ -138,6 +138,9 @@ impl SemanticModelBuilder {
                         node.span,
                     );
                 }
+                StateDefBodyElement::PortUsage(node) => {
+                    self.lower_port_usage(document, Some(owner), node)?;
+                }
                 StateDefBodyElement::ConstraintUsage(node) => {
                     // New upstream member kind: kept visible as unsupported rather than dropped.
                     self.push_unsupported(
@@ -290,7 +293,7 @@ impl SemanticModelBuilder {
         body: &ActionDefBody,
         span: Span,
     ) -> Result<(), ConstructionError> {
-        let binding_kind = match kind {
+        let empty_kind = match kind {
             StateSubactionKind::Entry => DeclarationKind::EntryActionBinding,
             StateSubactionKind::Do => DeclarationKind::DoActionBinding,
             StateSubactionKind::Exit => DeclarationKind::ExitActionBinding,
@@ -325,7 +328,8 @@ impl SemanticModelBuilder {
                 TransitionEffect::Perform { .. } => DeclarationKind::PerformActionUsage,
                 TransitionEffect::Expression(_) => DeclarationKind::ActionUsage,
             },
-            _ => binding_kind,
+            StateActionUsage::Empty => empty_kind,
+            StateActionUsage::Perform { .. } => DeclarationKind::PerformActionUsage,
         };
         let declaration = self.push_typed_declaration(
             document,

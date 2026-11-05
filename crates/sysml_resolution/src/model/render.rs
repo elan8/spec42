@@ -491,6 +491,12 @@ pub(crate) fn write_projection(
         };
         write!(output, "  (element ")?;
         write_node_identity(model, id, output)?;
+        if let Some(role) = element.details.inspection.role {
+            write!(output, " (membership-role {})", role.as_str())?;
+        }
+        if let Some(kind) = element.details.inspection.trigger_kind {
+            write!(output, " (trigger-kind {})", kind.as_str())?;
+        }
         write!(
             output,
             " (expression {})",
@@ -1277,11 +1283,15 @@ pub(crate) fn write_declaration_facts(
         && facts.positional_end.is_none()
         && facts.cross_feature_projection.is_none()
         && facts.expression_result.is_none()
+        && facts.trigger_kind.is_none()
         && !facts.is_individual_multiplicity
     {
         return Ok(());
     }
     output.write_str(" (facts")?;
+    if let Some(kind) = facts.trigger_kind {
+        write!(output, " (trigger-kind {})", kind.as_str())?;
+    }
     match facts.short_name {
         crate::lower::facts::DeclaredName::Absent => {}
         crate::lower::facts::DeclaredName::Malformed => {

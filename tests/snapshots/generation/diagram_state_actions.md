@@ -59,11 +59,11 @@ package Oven {
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Oven")) (named (kind state-def) (name "Machine")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default) (role entry)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Oven")) (named (kind state-def) (name "Machine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "idle")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (kind state) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (kind do-action-binding) (membership (kind feature) (visibility default) (role do)) (authored (membership (kind feature) (visibility default) (role do)) (relationships (featureTyping (reference "Heat")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (kind perform-action) (membership (kind feature) (visibility default) (role do)) (authored (membership (kind feature) (visibility default) (role do)) (relationships (featureTyping (reference "Heat")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (kind state) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (kind exit-action-binding) (membership (kind feature) (visibility default) (role exit)) (authored (membership (kind feature) (visibility default) (role exit)) (relationships (featureTyping (reference "Cool")))))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (kind do-action-binding) (membership (kind feature) (visibility default) (role do)) (authored (membership (kind feature) (visibility default) (role do)) (relationships (featureTyping (reference "Heat")))))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::warmUp"))) (kind entry-action-binding) (membership (kind feature) (visibility default) (role entry)) (authored (membership (kind feature) (visibility default) (role entry)) (relationships (featureTyping (reference "Log")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (kind perform-action) (membership (kind feature) (visibility default) (role exit)) (authored (membership (kind feature) (visibility default) (role exit)) (relationships (featureTyping (reference "Cool")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (kind perform-action) (membership (kind feature) (visibility default) (role do)) (authored (membership (kind feature) (visibility default) (role do)) (relationships (featureTyping (reference "Heat")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::warmUp"))) (kind perform-action) (membership (kind feature) (visibility default) (role entry)) (authored (membership (kind feature) (visibility default) (role entry)) (relationships (featureTyping (reference "Log")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::start"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "baking")) (transitionTrigger (reference "Go")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Oven")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "start")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "idle")) (succession (reference "baking")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Oven")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "start")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
@@ -171,7 +171,6 @@ package Oven {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking::bake"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::doAction"))) (provenance implied))
@@ -180,15 +179,12 @@ package Oven {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::coolDown"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exitAction"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::hold"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::doAction"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::warmUp"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::warmUp"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::warmUp"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle::warmUp"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::entryAction"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::start"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
@@ -352,29 +348,23 @@ package Oven {
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::baking")))
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (provenance authored))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (source direct))
-      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::doAction"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::do")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
@@ -423,7 +413,6 @@ package Oven {
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exitAction"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
@@ -434,7 +423,6 @@ package Oven {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
@@ -447,29 +435,23 @@ package Oven {
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Machine::idle")))
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (provenance authored))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (source direct))
-      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::doAction"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Heat")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::do")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
@@ -481,7 +463,6 @@ package Oven {
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Oven::Log")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
@@ -492,7 +473,6 @@ package Oven {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
@@ -886,7 +866,7 @@ package Oven {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:6ed0905a74949932a8d61e89de12c5fb0379260a0840e9c16453e54380790266",
+  "modelDigest": "blake3:009184947b3bb5a8c18cb78d49b2d15f8c4f95d78fc05f47bdc9703a53179c1c",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1325,7 +1305,7 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "ordinal": 25,
       "relationshipKind": "initialState",
       "source": 6
     },
@@ -1349,7 +1329,7 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 21,
       "relationshipKind": "typing",
       "source": 8
     },
@@ -1385,7 +1365,7 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 13,
       "relationshipKind": "typing",
       "source": 10
     },
@@ -1397,7 +1377,7 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "ordinal": 9,
       "relationshipKind": "typing",
       "source": 12
     },
@@ -1433,19 +1413,19 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 52,
       "relationshipKind": "transitionSource",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 53,
       "relationshipKind": "transitionTarget",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 54,
       "relationshipKind": "transitionTrigger",
       "source": 13
     },
@@ -1457,13 +1437,13 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 64,
       "relationshipKind": "succession",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 69,
+      "ordinal": 65,
       "relationshipKind": "succession",
       "source": 14
     },
@@ -1499,19 +1479,19 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
+      "ordinal": 31,
       "relationshipKind": "transitionSource",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 32,
       "relationshipKind": "transitionTarget",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "ordinal": 33,
       "relationshipKind": "transitionTrigger",
       "source": 15
     },
@@ -1523,13 +1503,13 @@ package Oven {
     },
     {
       "kind": "relationship",
-      "ordinal": 47,
+      "ordinal": 43,
       "relationshipKind": "succession",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 44,
       "relationshipKind": "succession",
       "source": 16
     }
@@ -1567,20 +1547,20 @@ package Oven {
       {
         "kind": "containment",
         "navigation": 5,
-        "origin": 20,
+        "origin": 19,
         "provenance": "authored",
         "reference": 41,
         "source": 17,
-        "target": 20
+        "target": 19
       },
       {
         "kind": "containment",
         "navigation": 9,
-        "origin": 19,
+        "origin": 20,
         "provenance": "authored",
         "reference": 42,
         "source": 17,
-        "target": 19
+        "target": 20
       },
       {
         "kind": "containment",
@@ -2229,12 +2209,12 @@ package Oven {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "ActionUsage",
+        "metaclass": "PerformActionUsage",
         "multiplicity": null,
         "name": "hold",
         "notationRole": "usage",
         "owner": 17,
-        "presentationKey": "p:ff03df1ec6bd676b3eea0237735ac89e2d66b0aa9954d52d9425a42d1ba7f57b",
+        "presentationKey": "p:cd3f855a5d78c87e98a5cd80eaafc40030e4900d657e74fdc6dd7e9a3e56fb4e",
         "reference": 11,
         "source": 7,
         "stateSubaction": "do",
@@ -2254,37 +2234,12 @@ package Oven {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "ActionUsage",
-        "multiplicity": null,
-        "name": "coolDown",
-        "notationRole": "usage",
-        "owner": 17,
-        "presentationKey": "p:503f87c8394e266aa0d6527bfb5e89a4c50cc311c2b2fa34b67b31b9aade80a3",
-        "reference": 10,
-        "source": 9,
-        "stateSubaction": "exit",
-        "successionGuard": null,
-        "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "Cool",
-              "reference": 0
-            }
-          ]
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "featureDirection": null,
-        "metaclass": "ActionUsage",
+        "metaclass": "PerformActionUsage",
         "multiplicity": null,
         "name": "warmUp",
         "notationRole": "usage",
         "owner": 17,
-        "presentationKey": "p:0f5c11bf19a7c7d72f18c46f035042f08fa9bba30d87479c714927733db2f2f5",
+        "presentationKey": "p:3f247eea480ccd2475312d1c237345992d2a5aa8f02e275da2ff1948d321689d",
         "reference": 12,
         "source": 5,
         "stateSubaction": "entry",
@@ -2295,6 +2250,31 @@ package Oven {
             {
               "label": "Log",
               "reference": 4
+            }
+          ]
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "featureDirection": null,
+        "metaclass": "PerformActionUsage",
+        "multiplicity": null,
+        "name": "coolDown",
+        "notationRole": "usage",
+        "owner": 17,
+        "presentationKey": "p:b568dd82291d2fca8684cec1e492116614274e235cd65e2302623ab9408de4e9",
+        "reference": 10,
+        "source": 9,
+        "stateSubaction": "exit",
+        "successionGuard": null,
+        "typing": {
+          "status": "resolved",
+          "types": [
+            {
+              "label": "Cool",
+              "reference": 0
             }
           ]
         }
@@ -2331,12 +2311,12 @@ package Oven {
         "conjugated": false,
         "direction": null,
         "featureDirection": null,
-        "metaclass": "ActionUsage",
+        "metaclass": "PerformActionUsage",
         "multiplicity": null,
         "name": "bake",
         "notationRole": "usage",
         "owner": 21,
-        "presentationKey": "p:2d189bf4bb48269858333995eae9afd02168a767484c0357d46a643e3bb23638",
+        "presentationKey": "p:fd181d4a056eb1945ac925b0d5cb2a96fccaa920d1a2b14390f93361ff30697c",
         "reference": 8,
         "source": 12,
         "stateSubaction": "do",
@@ -2369,7 +2349,7 @@ package Oven {
         "navigation": 6,
         "provenance": "authored",
         "reference": 47,
-        "source": 20,
+        "source": 19,
         "target": {
           "reference": 4,
           "status": "resolved"
@@ -2380,7 +2360,7 @@ package Oven {
         "navigation": 10,
         "provenance": "authored",
         "reference": 45,
-        "source": 19,
+        "source": 20,
         "target": {
           "reference": 0,
           "status": "resolved"

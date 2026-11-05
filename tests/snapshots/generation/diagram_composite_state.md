@@ -1184,7 +1184,7 @@ package Lamp {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:13beead12fd26e68c6f2b263c1fb25cc64014317a1374677d5b381fd4e902d42",
+  "modelDigest": "blake3:e1519c61e1d389283a1f89d9506a1a43d492a7826d957f61273dcf72baaa4835",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

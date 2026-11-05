@@ -55,12 +55,6 @@ package Q {
   (document "memory://snapshot/feature_path_test.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "semantic")
-        (range (start 8 4) (end 8 17))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
@@ -78,6 +72,12 @@ package Q {
         (source "semantic")
         (range (start 40 2) (end 40 25))
       )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_part_usage_member")
+        (source "semantic")
+        (range (start 40 11) (end 40 24))
+      )
     )
   )
 )
@@ -85,12 +85,12 @@ package Q {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:60918c3c97d0b661e3161fc92b53f64e8bdf09ded3be16c882d9fd0336038edd"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:60918c3c97d0b661e3161fc92b53f64e8bdf09ded3be16c882d9fd0336038edd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (kind part) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
-    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "f::a")))))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2))))) (kind kerml-feature) (membership (kind owning) (visibility default)))
@@ -126,6 +126,9 @@ package Q {
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "f::a")
+      (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")))))
     (reference (id (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")))))
@@ -176,6 +179,7 @@ package Q {
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F")))))
   )
   (relationships
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::f"))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::f"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind flowSource) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (kind flowSource) (ordinal 0)))
@@ -200,6 +204,7 @@ package Q {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2))))) (provenance implied))
     (relationship (kind featureChaining) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2))))) (target (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1))))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::f"))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::C"))) (provenance implied))
@@ -228,6 +233,8 @@ package Q {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1))))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -240,6 +247,7 @@ package Q {
     )
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g")))
       (featured-by (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")))
+      (effective-type (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (source inherited) (from (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))))
       (supertype (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2)))) (scopes any feature))
     )
@@ -248,6 +256,7 @@ package Q {
     )
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (source inherited) (from (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))))
       (supertype (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2)))) (scopes any feature))
       (subtype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g")) (scopes any feature))
     )
@@ -255,10 +264,14 @@ package Q {
       (featured-by (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)))))
     )
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 2)))))
+      (effective-type (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (source inherited) (from (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))))
       (subtype (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)))))
+      (effective-type (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (source inherited) (from (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))))
+      (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (scopes any))
+      (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B")))
       (subtype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::C::b")) (scopes any))
@@ -339,6 +352,7 @@ package Q {
       (type (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (provenance authored))
       (effective-type (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (source direct))
       (supertype (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")) (scopes any))
+      (subtype (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part) (name "e1")) (anonymous (kind bind) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::e1")))
@@ -374,6 +388,15 @@ package Q {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")))) (feature-reference "f::a" (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")))))
+  (declaration (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported) (result-typing (status unsupported)))
+  (contextual (context (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (element (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (effective-element (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (authored-element (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")))) (evaluation non-constant) (feature-reference "f::a" (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")))))
+  (contextual (context (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))) (element (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (effective-element (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (authored-element (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")))) (evaluation non-constant) (feature-reference "f::a" (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")))))
+)
+~~~
 # CONNECTIONS
 ~~~sexpr
 (connections
@@ -383,6 +406,11 @@ package Q {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/feature_path_test.md") (range (start 8 13) (end 8 16)) (probe (position 8 13))
+    (reference (id (source (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "A")) (named (kind part) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "f::a")
+      (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a")))))
+    )
+  )
   (query (document "memory://snapshot/feature_path_test.md") (range (start 13 12) (end 13 13)) (probe (position 13 12))
     (reference (id (source (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::B::a"))) (kind featureTyping) (ordinal 0) (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A")))))

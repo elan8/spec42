@@ -46,7 +46,7 @@ pub use element::{
     MultiplicityBound, MultiplicityFacts, PortionKind, ValueKind, Visibility, VisibilityProvenance,
 };
 pub use element_kind::{
-    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind,
+    ElementKind, MembershipRole, RequirementConstraintKind, StateSubactionKind, TriggerKind,
 };
 pub use identification::{EffectiveIdentification, EffectiveName, EffectiveNameProvenance};
 pub use membership::MembershipId;

@@ -904,6 +904,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "satisfy_subject_type_mismatch",
+        severity: "error",
+        meaning: "The satisfying feature does not conform to the effective subject type of the requirement. It is an error when the types provably share no instance (a class and a data type, or disjoint types) and a warning otherwise.",
+        typical_fix: "Satisfy the requirement with a feature of its subject type or a compatible subtype.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "reference_value_type_mismatch",
+        severity: "error",
+        meaning: "A reference value does not conform to the receiving feature's effective type. It is an error when the types provably share no instance (a class and a data type, or disjoint types) and a warning otherwise.",
+        typical_fix: "Use a compatible value and qualify a reference if a local declaration shadows its intended target.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "verified_requirement_invalid_target",
         severity: "warning",
         meaning: "A verification case references a requirement that does not resolve.",

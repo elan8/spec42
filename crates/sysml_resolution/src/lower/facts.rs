@@ -409,6 +409,8 @@ pub(crate) struct DeclarationFacts {
     /// records the trigger shape on `TransitionAccept`; lowering publishes it on the synthesized
     /// accept action so generated rules never infer it from an owner name or reference spelling.
     pub(crate) is_trigger_action: Option<bool>,
+    /// Kind of this authored TriggerInvocationExpression; shared by checks and publication.
+    pub(crate) trigger_kind: Option<sysml_contract::TriggerKind>,
     /// Whether an `AcceptActionUsage`'s first input parameter owns an authored value expression.
     /// Typed payload declarations still synthesize the required payload parameter, but have no
     /// argument expression; shorthand/time triggers do.
@@ -1459,16 +1461,7 @@ pub(crate) struct AssignmentRecord {
     pub(crate) referent: Option<AuthoredReferenceId>,
 }
 
-/// The kind of a SysML `TriggerInvocationExpression` (`TriggerKind`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum TriggerInvocationKind {
-    /// `accept when <condition>`: a change trigger on a Boolean condition.
-    When,
-    /// `accept at <instant>`: a time trigger at a time instant.
-    At,
-    /// `accept after <duration>`: a time trigger after a duration.
-    After,
-}
+pub(crate) use sysml_contract::TriggerKind as TriggerInvocationKind;
 
 /// The literal kind of a literal argument, as the parser types it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -1498,7 +1491,6 @@ pub(crate) enum TriggerArgument {
 pub(crate) struct TriggerInvocationRecord {
     /// The TriggerInvocationExpression element.
     pub(crate) expression: DeclarationId,
-    pub(crate) kind: TriggerInvocationKind,
     pub(crate) argument: TriggerArgument,
 }
 

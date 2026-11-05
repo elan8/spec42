@@ -597,6 +597,8 @@ semantic_diagnostic_codes! {
     /// A feature value has an incompatible static result or literal type.
     AttributeValueTypeIncompatible => "attribute_value_type_mismatch",
         "This expression's result type is incompatible with the feature it is bound to.";
+    ReferenceValueTypeIncompatible => "reference_value_type_mismatch",
+        "This reference value's type is incompatible with the feature it is bound to.";
     /// An assignment value has an incompatible static result or literal type.
     AssignmentValueIncompatible => "assignment_value_incompatible",
         "This expression's result type is incompatible with the feature it is assigned to.";
@@ -783,6 +785,8 @@ semantic_diagnostic_codes! {
     /// A satisfy relationship relates endpoints of incompatible kinds.
     SatisfyInvalidEndpointKind => "satisfy_invalid_endpoint_kind",
         "This satisfy relationship relates endpoints of incompatible kinds.";
+    SatisfySubjectTypeIncompatible => "satisfy_subject_type_mismatch",
+        "The satisfying feature's type is incompatible with the requirement subject.";
     /// A `verify` target does not resolve to a requirement.
     VerifiedRequirementInvalidTarget => "verified_requirement_invalid_target",
         "A verify target must resolve to a requirement definition or usage.";
