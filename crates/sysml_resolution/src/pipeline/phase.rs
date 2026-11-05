@@ -59,6 +59,7 @@ use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
 use crate::resolve::resolve_dense;
+use crate::resolve::results::FeedbackCycle;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
@@ -175,11 +176,25 @@ pub(crate) fn resolve_facts(
     } else {
         0
     };
+    let import_slots = storage
+        .references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            crate::resolve::supported_import_domain(reference).map(|_| index)
+        })
+        .collect::<Vec<_>>();
+    let mut inherited_import_scopes = None;
+    let mut effective_import_names = None;
     let mut relationship_passes_remaining = storage
         .metadata_annotations
         .len()
         .saturating_add(expression_links)
+        .saturating_add(import_slots.len())
         .saturating_add(2);
+    // Import shadowing is not monotone. Detect repeated complete feedback states as well as
+    // retaining a finite dependency budget; a two-state oscillation must not spend that budget.
+    let mut feedback_cycle = FeedbackCycle::default();
     let (direct_names, effective_imports, exported_imports, memberships, resolution) = loop {
         let (direct_names, effective_imports, exported_imports, memberships, resolution) =
             resolve_dense(
@@ -198,6 +213,8 @@ pub(crate) fn resolve_facts(
                     owned_end_features: &storage.owned_end_features,
                     feature_type_dependencies: &feature_type_dependencies,
                     proposed_imports,
+                    inherited_import_scopes: inherited_import_scopes.as_ref(),
+                    effective_import_names: effective_import_names.as_deref(),
                 },
             )?;
         let resolution = resolution.follow_aliases(&storage.declarations, &storage.references);
@@ -335,7 +352,41 @@ pub(crate) fn resolve_facts(
         });
         next_relationships.dedup();
         relationship_passes_remaining -= 1;
-        if next_relationships == provisional_relationships {
+        // Imports include inherited visible memberships. Rebuild against this pass's
+        // settled scopes, then give resolution another pass if imports changed. This
+        // shares the existing bounded construction barrier with expression/metadata edges.
+        let imports_settled = if resolution.solver_status != SolverStatus::Converged {
+            // A failed resolution pass has no settled inherited scope to feed back.
+            // Preserve its explicit failure instead of retrying its partial imports.
+            true
+        } else {
+            let exported_names = crate::resolve::names::build_direct_name_index(
+                &storage.declarations,
+                Some(&storage.declaration_facts),
+                Some(&resolution.effective_names),
+                Some(&memberships),
+                &shadowed_library_roots,
+            )?;
+            let (next_imports, next_exported_imports) =
+                crate::resolve::names::build_effective_import_indexes(
+                    &storage.declarations,
+                    Some(&storage.declaration_facts),
+                    &memberships,
+                    &storage.references,
+                    &import_slots,
+                    crate::resolve::names::ImportNameSources {
+                        direct_names: &direct_names,
+                        exported_names: &exported_names,
+                        effective_imports: &effective_imports,
+                        exported_imports: &exported_imports,
+                        inherited_names: Some(&resolution.inherited_names),
+                    },
+                    &resolution.outcomes,
+                )?;
+            next_imports.with_additional(proposed_imports)? == effective_imports
+                && next_exported_imports == exported_imports
+        };
+        if next_relationships == provisional_relationships && imports_settled {
             break (
                 direct_names,
                 effective_imports,
@@ -344,7 +395,21 @@ pub(crate) fn resolve_facts(
                 resolution,
             );
         }
-        if relationship_passes_remaining == 0 {
+        let repeated = !import_slots.is_empty()
+            && feedback_cycle.repeats((
+                next_relationships.clone(),
+                // Each family also feeds a different synthesis prerequisite on the next pass;
+                // an equal union must not hide progress in their derivation provenance.
+                metadata_relationships.clone(),
+                expression_relationships.clone(),
+                effective_imports.clone(),
+                exported_imports.clone(),
+                resolution.effective_names.clone(),
+                resolution.inherited_names.clone(),
+                resolution.outcomes.clone(),
+                resolution.ambiguous_candidates.clone(),
+            ));
+        if relationship_passes_remaining == 0 || repeated {
             resolution.solver_status = SolverStatus::NonConverged;
             break (
                 direct_names,
@@ -357,6 +422,8 @@ pub(crate) fn resolve_facts(
         provisional_relationships = next_relationships;
         previous_metadata_relationships = metadata_relationships;
         previous_expression_relationships = expression_relationships;
+        inherited_import_scopes = Some(resolution.inherited_names);
+        effective_import_names = Some(resolution.effective_names);
     };
     let resolution = if storage
         .declaration_facts
@@ -944,6 +1011,18 @@ mod failure_tests {
     use super::{resolution_failure, ResolutionError};
     use crate::model::DocumentIdx;
     use crate::{BuildFailure, ConstructionPhase};
+
+    #[test]
+    fn import_feedback_cycles_stop_without_exhausting_a_model_sized_budget() {
+        let mut cycle = super::FeedbackCycle::default();
+        let repeated_at =
+            (0..20).find(|step| cycle.repeats(if *step < 3 { *step } else { 3 + step % 2 }));
+        assert!(repeated_at.is_some_and(|step| step < 10));
+        let mut cycle = super::FeedbackCycle::default();
+        for state in 0..1024 {
+            assert!(!cycle.repeats(state));
+        }
+    }
 
     #[test]
     fn invalid_storage_reports_the_owning_phase_and_failed_document() {

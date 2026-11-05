@@ -266,7 +266,7 @@ package Garage {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:111a6bc67b1c197109021d8fca9329891e2dc9458a78324773c7a39085f90426",
+  "modelDigest": "blake3:eab8e778ff3a4eac077bb230869ed7d9fb674c8685d7d280cb03ebda035b7d9c",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

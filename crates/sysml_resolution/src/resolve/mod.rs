@@ -108,6 +108,12 @@ pub(crate) struct ResolutionStartingState<'a> {
     pub feature_type_dependencies: &'a [(DeclarationId, DeclarationId)],
     /// Ephemeral private imports for an editor transaction; never published.
     pub proposed_imports: &'a [(names::NameKey, DeclarationId)],
+    /// Inherited scopes from the preceding construction pass. Imports and inheritance
+    /// must reach the same fixed point before publication.
+    pub inherited_import_scopes: Option<&'a InheritedNameIndex>,
+    /// Effective identification for those same scopes: anonymous owned redefinitions
+    /// must keep their names when the next pass decides which inherited names are hidden.
+    pub effective_import_names: Option<&'a [EffectiveNameFacts]>,
 }
 
 /// The settled direct specialization edges `(specific, general)` over resolved `references` and
@@ -245,6 +251,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         owned_end_features,
         feature_type_dependencies,
         proposed_imports,
+        inherited_import_scopes,
+        effective_import_names,
     } = starting_state;
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
@@ -261,8 +269,16 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     if let Some(seed) = seed {
         outcomes[..settled].copy_from_slice(seed);
     }
-    let mut effective_names =
-        derive_effective_names(declarations, declaration_facts, references, &outcomes)?;
+    let mut effective_names = if let Some(names) = effective_import_names {
+        if names.len() != declarations.len() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        // This is only a seed. The relationship loop re-derives names before declaring its
+        // fixed point, so stale effective names cannot escape this pass as settled facts.
+        names.to_vec()
+    } else {
+        derive_effective_names(declarations, declaration_facts, references, &outcomes)?
+    };
     let mut direct_names = build_direct_name_index(
         declarations,
         declaration_facts,
@@ -575,6 +591,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let mut candidates = Vec::new();
     let mut next_candidates = Vec::new();
     let mut converged = false;
+    let mut import_cycle = crate::resolve::results::FeedbackCycle::default();
 
     for _ in 0..pass_limit {
         work.passes = work
@@ -600,7 +617,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     memberships: Some(&memberships),
                     effective_imports: Some(&effective_imports),
                     exported_imports: Some(&exported_imports),
-                    inherited_names: None,
+                    inherited_names: inherited_import_scopes,
                 },
                 ResolutionScratch {
                     ambiguous_candidates: &mut ambiguous_candidates,
@@ -621,6 +638,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 exported_names: &exported_names,
                 effective_imports: &effective_imports,
                 exported_imports: &exported_imports,
+                inherited_names: inherited_import_scopes,
             },
             &outcomes,
         )?;
@@ -632,8 +650,15 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             converged = true;
             break;
         }
+        let repeated = import_cycle.repeats((
+            next_effective_imports.clone(),
+            next_exported_imports.clone(),
+        ));
         effective_imports = next_effective_imports;
         exported_imports = next_exported_imports;
+        if repeated {
+            break;
+        }
     }
 
     let mut solver_status = if converged {

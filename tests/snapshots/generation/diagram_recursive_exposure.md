@@ -206,7 +206,7 @@ package RecursiveExample {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:1990e54c99c30b9f3437990fb5ccc6bfea244a9b57ef9c4a3a21f30e1faae082",
+  "modelDigest": "blake3:7fa48a265cb839d61b32233dcb1ef4a7dcbfa28f351ed4f5ab26fc70f6965ca3",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_recursive_exposure.md",

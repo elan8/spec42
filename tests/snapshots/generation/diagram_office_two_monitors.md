@@ -732,7 +732,7 @@ package Office {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:f8b6aa5e28e69de161062f35237f6fbe7dd68f477e14a282caa39e4531e13b58",
+  "modelDigest": "blake3:e2d8b7d304f8f5223a65552fbb0415096abe9d27f07c7d5478dd3926d4475683",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

@@ -54,7 +54,7 @@ impl CandidateRange {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct NameIndex {
     pub(crate) keys: Box<[NameKey]>,
     pub(crate) ranges: Box<[CandidateRange]>,
@@ -309,7 +309,7 @@ pub(crate) fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -
 /// Every child with a non-empty ancestor closure maps to the representative child that shares its
 /// closure; the entries are stored once per distinct closure. Lookups are observably identical to
 /// a per-child materialization.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct InheritedNameIndex {
     representative: Box<[Option<DeclarationId>]>,
     names: NameIndex,
@@ -525,11 +525,62 @@ pub(crate) fn build_direct_name_index(
 /// The names an import can reach, from the previous fixed-point iteration. An ordinary import
 /// reads the exported pair, which holds public memberships only. `import all` reads the direct
 /// and effective pair, which hold all of them (KerML 8.3.2.4 `isImportAll`).
+/// Inherited scopes come from the preceding construction pass and obey the same visibility
+/// and owned-name precedence as ordinary namespace lookup.
 pub(crate) struct ImportNameSources<'a> {
     pub(crate) direct_names: &'a NameIndex,
     pub(crate) exported_names: &'a NameIndex,
     pub(crate) effective_imports: &'a NameIndex,
     pub(crate) exported_imports: &'a NameIndex,
+    pub(crate) inherited_names: Option<&'a InheritedNameIndex>,
+}
+
+/// Importable memberships of one namespace. Owned memberships shadow inherited ones;
+/// visibility applies to the member identity, including members reached by inheritance.
+#[derive(Clone, Copy)]
+struct NamespaceImportSources<'a> {
+    owned: &'a NameIndex,
+    direct: &'a NameIndex,
+    imported: &'a NameIndex,
+    inherited: Option<&'a InheritedNameIndex>,
+    memberships: &'a MembershipIndex,
+    import_all: bool,
+}
+
+impl NamespaceImportSources<'_> {
+    fn inherited_entries(&self, namespace: DeclarationId) -> Vec<(NameId, Vec<DeclarationId>)> {
+        let Some(inherited) = self.inherited else {
+            return Vec::new();
+        };
+        inherited
+            .entries_for_owner(Some(namespace))
+            .filter(|(name, _)| self.direct.candidates(Some(namespace), *name).is_empty())
+            .filter_map(|(name, candidates)| {
+                let candidates = candidates
+                    .iter()
+                    .copied()
+                    .filter(|candidate| self.import_all || self.memberships.is_public(*candidate))
+                    .collect::<Vec<_>>();
+                (!candidates.is_empty()).then_some((name, candidates))
+            })
+            .collect()
+    }
+
+    fn for_each_entry(
+        &self,
+        namespace: DeclarationId,
+        mut visit: impl FnMut(NameId, &[DeclarationId]),
+    ) {
+        for (name, candidates) in self.owned.entries_for_owner(Some(namespace)) {
+            visit(name, candidates);
+        }
+        for (name, candidates) in self.inherited_entries(namespace) {
+            visit(name, &candidates);
+        }
+        for (name, candidates) in self.imported.entries_for_owner(Some(namespace)) {
+            visit(name, candidates);
+        }
+    }
 }
 
 pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
@@ -553,9 +604,23 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             })
         })
     };
+    let public_sources = NamespaceImportSources {
+        owned: sources.exported_names,
+        direct: sources.direct_names,
+        imported: sources.exported_imports,
+        inherited: sources.inherited_names,
+        memberships,
+        import_all: false,
+    };
+    let all_sources = NamespaceImportSources {
+        owned: sources.direct_names,
+        imported: sources.effective_imports,
+        import_all: true,
+        ..public_sources
+    };
     let public_children =
-        is_recursive(false).then(|| namespace_children(declarations, Some(memberships)));
-    let all_children = is_recursive(true).then(|| namespace_children(declarations, None));
+        is_recursive(false).then(|| namespace_children(declarations, public_sources));
+    let all_children = is_recursive(true).then(|| namespace_children(declarations, all_sources));
     for index in import_slots.iter().copied() {
         let reference = references
             .get(index)
@@ -569,18 +634,10 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             .owner;
         let import_is_public = memberships.is_public(reference.source());
         let import_all = reference.flags().import_all;
-        let (names, imports, recursive_children) = if import_all {
-            (
-                sources.direct_names,
-                sources.effective_imports,
-                &all_children,
-            )
+        let (namespace_sources, recursive_children) = if import_all {
+            (all_sources, &all_children)
         } else {
-            (
-                sources.exported_names,
-                sources.exported_imports,
-                &public_children,
-            )
+            (public_sources, &public_children)
         };
         match reference.kind() {
             ReferenceKind::NamespaceImport => {
@@ -590,10 +647,11 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                     extend_from_recursive_namespaces(
                         &mut entries,
                         &mut exported_entries,
-                        names,
-                        imports,
+                        namespace_sources,
                         import_owner,
                         &recursive_import_owners(
+                            declarations,
+                            namespace_sources,
                             recursive_children.as_deref().unwrap_or(&[]),
                             target,
                         ),
@@ -603,8 +661,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                     extend_from_namespace(
                         &mut entries,
                         &mut exported_entries,
-                        names,
-                        imports,
+                        namespace_sources,
                         import_owner,
                         target,
                         import_is_public,
@@ -638,10 +695,11 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                     extend_from_recursive_namespaces(
                         &mut entries,
                         &mut exported_entries,
-                        names,
-                        imports,
+                        namespace_sources,
                         import_owner,
                         &recursive_import_owners(
+                            declarations,
+                            namespace_sources,
                             recursive_children.as_deref().unwrap_or(&[]),
                             target,
                         ),
@@ -724,13 +782,12 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
 fn extend_from_namespace(
     entries: &mut Vec<(NameKey, DeclarationId)>,
     exported_entries: &mut Vec<(NameKey, DeclarationId)>,
-    exported_names: &NameIndex,
-    previous_exported_imports: &NameIndex,
+    sources: NamespaceImportSources<'_>,
     import_owner: Option<DeclarationId>,
     namespace: DeclarationId,
     import_is_public: bool,
 ) {
-    for (name, candidates) in exported_names.entries_for_owner(Some(namespace)) {
+    sources.for_each_entry(namespace, |name, candidates| {
         extend_import_entries(
             entries,
             exported_entries,
@@ -739,17 +796,7 @@ fn extend_from_namespace(
             candidates,
             import_is_public,
         );
-    }
-    for (name, candidates) in previous_exported_imports.entries_for_owner(Some(namespace)) {
-        extend_import_entries(
-            entries,
-            exported_entries,
-            import_owner,
-            name,
-            candidates,
-            import_is_public,
-        );
-    }
+    });
 }
 
 /// Re-exports the namespaces a recursive import reaches, in recursion order, giving each name
@@ -764,8 +811,7 @@ fn extend_from_namespace(
 fn extend_from_recursive_namespaces(
     entries: &mut Vec<(NameKey, DeclarationId)>,
     exported_entries: &mut Vec<(NameKey, DeclarationId)>,
-    exported_names: &NameIndex,
-    previous_exported_imports: &NameIndex,
+    sources: NamespaceImportSources<'_>,
     import_owner: Option<DeclarationId>,
     namespaces: &[DeclarationId],
     import_is_public: bool,
@@ -774,22 +820,20 @@ fn extend_from_recursive_namespaces(
     let mut reached = Vec::new();
     for namespace in namespaces.iter().copied() {
         reached.clear();
-        for index in [exported_names, previous_exported_imports] {
-            for (name, candidates) in index.entries_for_owner(Some(namespace)) {
-                if taken.contains(&name) {
-                    continue;
-                }
-                reached.push(name);
-                extend_import_entries(
-                    entries,
-                    exported_entries,
-                    import_owner,
-                    name,
-                    candidates,
-                    import_is_public,
-                );
+        sources.for_each_entry(namespace, |name, candidates| {
+            if taken.contains(&name) {
+                return;
             }
-        }
+            reached.push(name);
+            extend_import_entries(
+                entries,
+                exported_entries,
+                import_owner,
+                name,
+                candidates,
+                import_is_public,
+            );
+        });
         taken.extend(reached.iter().copied());
     }
 }
@@ -799,7 +843,7 @@ fn extend_from_recursive_namespaces(
 /// ones; `import all` passes `None` and descends through all of them.
 fn namespace_children(
     declarations: &[Declaration],
-    public_only: Option<&MembershipIndex>,
+    sources: NamespaceImportSources<'_>,
 ) -> Vec<Vec<DeclarationId>> {
     let mut children = vec![Vec::new(); declarations.len()];
     for (index, declaration) in declarations.iter().enumerate() {
@@ -809,7 +853,7 @@ fn namespace_children(
         let Ok(child) = DeclarationId::from_index(index) else {
             continue;
         };
-        if public_only.is_some_and(|memberships| !memberships.is_public(child)) {
+        if !sources.import_all && !sources.memberships.is_public(child) {
             continue;
         }
         if let Some(slot) = declaration
@@ -831,9 +875,11 @@ fn namespace_children(
 
 /// `target` followed by every namespace nested under it in recursion order: depth first, each
 /// namespace before its owned namespaces, siblings in source order, following only the
-/// public-namespace edges in `children`. Ownership is a tree; the visited guard is defensive
-/// against malformed storage rather than expected cycles.
+/// visible owned and inherited namespace edges. Owned namespaces precede inherited ones;
+/// the visited guard bounds cycles through recursive types and shared inherited memberships.
 fn recursive_import_owners(
+    declarations: &[Declaration],
+    sources: NamespaceImportSources<'_>,
     children: &[Vec<DeclarationId>],
     target: DeclarationId,
 ) -> Vec<DeclarationId> {
@@ -849,6 +895,25 @@ fn recursive_import_owners(
             _ => continue,
         }
         owners.push(current);
+        // Only derive inherited namespace children for namespaces this import reaches.
+        // The visited guard bounds recursive types and shared inherited memberships.
+        let mut inherited = sources
+            .inherited_entries(current)
+            .into_iter()
+            .flat_map(|(_, candidates)| candidates)
+            .filter(|child| {
+                declarations.get(child.index()).is_some_and(|declaration| {
+                    DeclarationDomain::Namespace.accepts(declaration.kind)
+                })
+            })
+            .collect::<Vec<_>>();
+        inherited.sort_by_key(|child| {
+            declarations
+                .get(child.index())
+                .map(|declaration| (declaration.document, declaration.span.offset, *child))
+        });
+        inherited.dedup();
+        stack.extend(inherited.into_iter().rev());
         if let Some(next) = children.get(current.index()) {
             stack.extend(next.iter().rev().copied());
         }

@@ -808,7 +808,7 @@ package Presentation {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:64747b3e65b452f3a7304b7ca7844b2f5f894473fe1cee4070d94f49e6d8ba4b",
+  "modelDigest": "blake3:15326b099785bbac7c18e5e537b935e01247a894efee724c3533b70d41b81cb3",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
