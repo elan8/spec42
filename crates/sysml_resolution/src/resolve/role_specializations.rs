@@ -186,6 +186,11 @@ pub(crate) fn library_specialization_role_occupants(
     }
     // `None`: no `transitionSource`; `Some(None)`: a source that did not settle to one target.
     let mut transition_sources: Vec<Option<Option<DeclarationId>>> = vec![None; count];
+    for (index, facts) in storage.declaration_facts.iter().enumerate() {
+        if let Some(source) = facts.implicit_transition_source {
+            transition_sources[index] = Some(Some(source));
+        }
+    }
     for (index, reference) in storage.references.iter().enumerate() {
         if reference.kind != ReferenceKind::TransitionSource {
             continue;

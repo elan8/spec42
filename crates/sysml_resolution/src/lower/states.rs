@@ -551,6 +551,15 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
+        // Only TargetTransitionUsage omits both its source and declaration part (SysML 8.2.2.18.3).
+        let implicit_transition_source = if node.value.source.is_none()
+            && node.value.name.is_none()
+            && node.value.short_name.is_none()
+        {
+            self.transition_sources.get(&owner).copied()
+        } else {
+            None
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -561,6 +570,7 @@ impl SemanticModelBuilder {
             // source/target/trigger/guard/effect facts are lowered as references.
             DeclarationFacts {
                 short_name,
+                implicit_transition_source,
                 ..DeclarationFacts::none()
             },
         )?;
@@ -700,8 +710,16 @@ impl SemanticModelBuilder {
                 self.push_action_binding_reference(
                     document,
                     effect_action.expect("an authored effect always creates its action"),
-                    ReferenceKind::TransitionEffect,
+                    ReferenceKind::FeatureTyping,
                     *type_name,
+                )?;
+                self.lower_state_action_effect(
+                    document,
+                    effect_action.expect("an authored effect always creates its action"),
+                    node.value
+                        .effect
+                        .as_ref()
+                        .expect("matched an authored effect"),
                 )?;
             }
             Some(TransitionEffect::Expression(expression)) => {
@@ -718,11 +736,14 @@ impl SemanticModelBuilder {
             | Some(TransitionEffect::Accept { .. })
             | Some(TransitionEffect::Send { .. })
             | Some(TransitionEffect::Assign { .. }) => {
-                self.push_unsupported(
+                self.lower_state_action_effect(
                     document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span,
-                );
+                    effect_action.expect("an authored effect always creates its action"),
+                    node.value
+                        .effect
+                        .as_ref()
+                        .expect("matched an authored effect"),
+                )?;
             }
         }
         Ok(())
@@ -1022,8 +1043,8 @@ impl SemanticModelBuilder {
     /// effect): its path expression is a structured `Expression` (not a flattened string), so a
     /// simple/qualified name (`Expression::FeatureRef`) resolves as an authored reference of
     /// `kind` through the same shared `DeclarationDomain::Any` lexical lookup as
-    /// `lower_succession_end`. Any other expression shape is left as an explicit unsupported-
-    /// member diagnostic, mirroring `lower_succession_end`'s scope boundary.
+    /// `lower_succession_end`. A dotted feature chain retains the endpoint's role while resolving
+    /// each segment through its effective type. Other shapes remain explicitly unsupported.
     pub(crate) fn lower_transition_end(
         &mut self,
         document: DocumentIdx,
@@ -1049,9 +1070,9 @@ impl SemanticModelBuilder {
                     import: None,
                 })?;
             }
-            Expression::MemberAccess { .. } => {
+            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
                 if self
-                    .push_member_access_expression(owner, document, node)?
+                    .push_member_access_expression_with_kind(owner, document, kind, node)?
                     .is_none()
                 {
                     self.push_unsupported(

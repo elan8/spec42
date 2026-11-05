@@ -505,6 +505,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                         | ReferenceKind::ExplicitRelationshipEndpoint
                         | ReferenceKind::SatisfySource
                         | ReferenceKind::SatisfyTarget
+                        | ReferenceKind::TransitionSource
+                        | ReferenceKind::TransitionTarget
+                        | ReferenceKind::TransitionTrigger
+                        | ReferenceKind::TransitionEffect
                 ) && reference.flags().dotted)
             })
             .unwrap_or(false)
@@ -546,6 +550,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                             | ReferenceKind::FeatureChaining
                             | ReferenceKind::SatisfySource
                             | ReferenceKind::SatisfyTarget
+                            | ReferenceKind::TransitionSource
+                            | ReferenceKind::TransitionTarget
+                            | ReferenceKind::TransitionTrigger
+                            | ReferenceKind::TransitionEffect
                             // A feature's type relationship operand may be an
                             // `OwnedFeatureChain` (`differences b.f`, KerML 8.2.4.3.1).
                             | ReferenceKind::Unioning

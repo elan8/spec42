@@ -830,7 +830,7 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         code: "transition_endpoint_invalid_context",
         severity: "warning",
         meaning: "Transition endpoints belong to different state definition contexts.",
-        typical_fix: "Keep transition source and target within the same state definition.",
+        typical_fix: "Keep endpoints in the same state machine; cross composite boundaries only through exclusive states.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

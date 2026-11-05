@@ -710,7 +710,7 @@ package Seq {
 ~~~json
 {
   "schemaVersion": 11,
-  "modelDigest": "blake3:4072e3213426076bb99f4a3d6126d6e4aa9abfd5d3616a4e0c8cd51044bc580f",
+  "modelDigest": "blake3:4a819ccb489b6ede077eccf986ced1ef5c055906e94ab5fa7a349d489efd2625",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_event_order_event_cycle.md",

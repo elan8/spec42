@@ -1181,7 +1181,14 @@ impl<D> SemanticModel<D> {
         id: DeclarationId,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        let source = self.settled_targets(id, &[ReferenceKind::TransitionSource]);
+        let mut source = self.settled_targets(id, &[ReferenceKind::TransitionSource]);
+        if let Some(implicit) = self
+            .storage
+            .declaration_facts(id)
+            .and_then(|facts| facts.implicit_transition_source)
+        {
+            source.push(implicit);
+        }
         let target = self.settled_targets(id, &[ReferenceKind::TransitionTarget]);
         // SysML 8.3.18.8 `validateTransitionFeatureMembershipGuardExpression`: the guard is the
         // transition's owned guard-role Boolean expression, and it settles through the same
@@ -1219,7 +1226,14 @@ impl<D> SemanticModel<D> {
         else {
             return Ok(());
         };
-        if !is_state_kind(source_kind) || !is_state_kind(target_kind) {
+        // The entry action is a valid implicit source of TargetTransitionUsage (SysML 7.18.3).
+        let entry_source = self.memberships.get(*source).is_some_and(|membership| {
+            membership.role
+                == Some(crate::MembershipRole::StateSubaction(
+                    crate::StateSubactionKind::Entry,
+                ))
+        });
+        if !(is_state_kind(source_kind) || entry_source) || !is_state_kind(target_kind) {
             let mut diagnostic = self.declaration_message_diagnostic(
                 id,
                 DiagnosticCode::TransitionEndpointInvalidState,
@@ -1250,10 +1264,41 @@ impl<D> SemanticModel<D> {
                     crate::index::types::ScopeBits::AnySpecialization,
                 )
             };
-            if source_context != target_context
-                && !related(source_context, target_context)
-                && !related(target_context, source_context)
-            {
+            // SysML 7.18.3 permits transitions across exclusive composite states. Compare
+            // their enclosing state contexts as well as their immediate owners; separate
+            // state definitions still have no common context. Inherited contexts retain
+            // the same specialization compatibility as direct endpoints.
+            let contexts = |start| {
+                let mut contexts = vec![start];
+                let mut current = start;
+                while self.kind_of(current) != Some(DeclarationKind::StateDefinition) {
+                    let Some(parent) = self.enclosing(current, is_state_kind) else {
+                        break;
+                    };
+                    contexts.push(parent);
+                    current = parent;
+                }
+                contexts
+            };
+            let source_contexts = contexts(source_context);
+            let target_contexts = contexts(target_context);
+            let exclusive = |contexts: &[DeclarationId]| {
+                contexts.iter().all(|context| {
+                    !self
+                        .storage
+                        .declaration_facts(*context)
+                        .is_some_and(|facts| facts.modifiers.parallel)
+                })
+            };
+            let same_machine = source_context == target_context
+                || source_contexts.iter().enumerate().any(|(i, source)| {
+                    target_contexts.iter().enumerate().any(|(j, target)| {
+                        (source == target || related(*source, *target) || related(*target, *source))
+                            && exclusive(&source_contexts[..=i])
+                            && exclusive(&target_contexts[..=j])
+                    })
+                });
+            if !same_machine {
                 let mut diagnostic = self.declaration_diagnostic(
                     id,
                     DiagnosticCode::TransitionEndpointInvalidContext,
