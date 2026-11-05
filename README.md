@@ -22,7 +22,8 @@ own repositories.
 - **An editor for SysML v2 and KerML** — diagnostics, highlighting, navigation, rename and
   formatting, with completion and quick fixes that add missing imports for you.
 - **Views of the model, not just the text** — diagrams and the Feature Inspector show resolved
-  typing, inheritance, relationships and values.
+  typing, inheritance, relationships and values. The Views panel has title-bar actions to fit
+  the drawing, open its definition, and export SVG, PNG or view JSON.
 - **Validation for automation** — `spec42 check` uses the same engine, with text, JSON, SARIF and
   JUnit output.
 - **Generators** — sandboxed WebAssembly plugins read the same analysis as the editor.

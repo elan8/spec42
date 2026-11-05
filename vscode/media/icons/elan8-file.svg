@@ -1,0 +1,19 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="14" fill="#0891b2"></rect>
+
+  <!-- Nodes -->
+  <rect x="24" y="10" width="16" height="10" rx="3" fill="#ecfeff"></rect>
+  <rect x="10" y="36" width="18" height="12" rx="3" fill="#ecfeff"></rect>
+  <rect x="36" y="36" width="18" height="12" rx="3" fill="#ecfeff"></rect>
+
+  <!-- Connections -->
+  <path d="M32 20
+           V26
+           H19
+           V36" fill="none" stroke="#ecfeff" stroke-width="2" stroke-linejoin="round"></path>
+
+  <path d="M32 20
+           V26
+           H45
+           V36" fill="none" stroke="#ecfeff" stroke-width="2" stroke-linejoin="round"></path>
+</svg>

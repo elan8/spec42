@@ -48,7 +48,11 @@
         "extensions": [
           ".sysml"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./media/icons/elan8-file.svg",
+          "dark": "./media/icons/elan8-file.svg"
+        }
       },
       {
         "id": "kerml",
@@ -59,7 +63,11 @@
         "extensions": [
           ".kerml"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./media/icons/elan8-file.svg",
+          "dark": "./media/icons/elan8-file.svg"
+        }
       }
     ],
     "semanticTokenScopes": [

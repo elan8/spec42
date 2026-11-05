@@ -21,6 +21,8 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 ## What you get
 
 - Live diagnostics, semantic highlighting, completion, hover, snippets, and formatting.
+- Elan8 file icons for `.sysml` and `.kerml` files in light and dark themes, unless your file
+  icon theme supplies its own matching icons.
 - Import completion for definitions in other packages, including admitted libraries. Accepting
   a suggestion inserts its reference and a private import together; the package path distinguishes
   definitions with the same name.
@@ -31,9 +33,12 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 - **Feature Inspector** for resolved typing, inheritance, relationships, values, and keyword help.
 - Bundled SysML standard library plus searchable Elan8 domain libraries.
 - A persistent **Views** panel in the secondary side bar, backed by the native renderer.
-  Choose an authored view from namespace groups sorted alphabetically, jump to its declaration,
-  or export JSON/SVG/PNG. The canvas follows the editor theme; exports use white by default
-  with a transparent-background option. **Spec42: Open Views** focuses the panel.
+  Choose an authored view from namespace groups sorted alphabetically. The title bar offers
+  **Fit View**, **Go to View Definition**, and **Export View…**. The export menu offers SVG,
+  PNG, transparent-background variants, and **Copy view JSON**. The canvas follows the editor
+  theme; image exports use white by default. Views refresh as analysis completes, and unsupported
+  syntax has clickable diagnostic locations in the view details.
+  **Spec42: Open Views** focuses the panel.
 - Built-in Copilot Language Model Tools for check, doctor, model export, and diagnostic explanation.
 
 ## Views

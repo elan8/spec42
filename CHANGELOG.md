@@ -16,14 +16,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   feature or requirement subject: an error when the types cannot share an instance (a class and a
   data type, or disjoint types), a warning otherwise. A constraint inherited by a usage that binds
   all its inputs and evaluates to false now warns at that usage. The semantic contract version is
-  now `reference-values-state-triggers-v72`, so earlier publications and serialised models are
+  now `diagram-syntax-diagnostics-v73`, so earlier publications and serialised models are
   not reused. **Model export is schema 2**: expression trees add `invocation`, `sequence` and
   `meta-cast` nodes, and elements add `effective_name`, `effective_qualified_name`,
   `multiplicity_expressions`, `exposure`, `evaluation`, `analysis`, `membership.role` and
-  `trigger_kind`. The generator ABI stays **version 7** and the diagram schema **11**, but an
-  unsupported invocation node now lists its callee before its arguments, and `featureDirection`
+  `trigger_kind`. Diagram products are **schema 12**, adding unsupported-syntax diagnostics and
+  their source ranges; consumers must accept the new schema and regenerate diagram products.
+  The generator ABI stays **version 7**, but its compatibility token has changed:
+  **rebuild generator plugins against this release.** An unsupported invocation node now lists
+  its callee before its arguments, and `featureDirection`
   is set on every directed member, not only ports, so guests must not use it to recognise a port.
   Direct consumers of the parser AST must handle serialization version **292**.
+  **Update the backend and VS Code extension together**: the Views panel now requests
+  `spec42/diagramPresentation`, which older servers do not support.
 
 - **Values are type-checked.** Scalar results are typed from the library's operator and function
   signatures, so `Integer` arithmetic bound to `Natural` is no longer accepted just because it
@@ -55,10 +60,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Views.** View definitions and usages may declare attributes such as a document number or a
   section heading. `render Views::asElementTable;` no longer reports
   `view_rendering_invalid_target`.
+- **Views panel.** Fit View, Go to View Definition and Export are icons in the panel title.
+  The export menu offers SVG, PNG, transparent backgrounds and Copy view JSON. The header keeps
+  the view selector with the view kind and status beneath it.
+- **File icons.** SysML and KerML files use the Elan8 icon in light and dark themes, unless the
+  selected file icon theme supplies its own matching icons.
+- **Reliable view updates.** Views refresh from analysis notifications, with the catalog and
+  drawing taken from the same publication. Switching views while analysis is pending recovers
+  automatically, and unsupported syntax has clickable diagnostic locations in the view details.
 - **Diagrams.** General views show the effective `in`/`out` direction of members inherited under
   a conjugated port, label an unnamed redefinition with the name it redefines and leave other
   unnamed members unlabelled instead of using the metaclass name, and interconnection views of a
   part definition draw one frame instead of two.
+- **Zed releases.** Releases still include the Zed extension artifact, but no longer automatically
+  submit an update to the Zed extension registry.
 
 ## [0.58.1] - 2026-11-01
 
