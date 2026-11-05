@@ -12,6 +12,13 @@ export type SourceNavigation = {
   endCharacter: number;
 };
 
+/** A webview may navigate an admitted library only at a source range supplied by its product. */
+export function productContainsSourceTarget(product: DiagramProduct, target: SourceNavigation): boolean {
+  return product.sources.some((source) => product.documents[source.document]?.uri === target.uri &&
+    source.range[0] === target.startLine && source.range[1] === target.startCharacter &&
+    source.range[2] === target.endLine && source.range[3] === target.endCharacter);
+}
+
 export function visibleSourceColumn(
   uri: string,
   editors: readonly { uri: string; viewColumn?: number }[],

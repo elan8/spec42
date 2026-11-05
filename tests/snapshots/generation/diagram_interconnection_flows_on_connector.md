@@ -641,8 +641,8 @@ package Dispatch {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:d0ff711bb80bc83b3bde002a0734a25f701eb3044e30835ecf4147bc60f0d418",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:b74fe4427aadd5dd0d74c025648b2ccb6156c56b755dc8a42ef98afac7ba022f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

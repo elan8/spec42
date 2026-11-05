@@ -850,8 +850,8 @@ package Shorthand {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:c3b0f74df512265005b1b845632c68588f7a0dd79fabcb13d1978bd07c6f7048",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:dae3473ec28a121ecb1657d8b02ee52964281676491f4d9036dd4c39972f461c",
   "documents": [
     {
       "uri": "memory://snapshot/transition_shorthand.md",

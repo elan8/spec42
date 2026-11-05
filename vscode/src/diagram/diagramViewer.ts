@@ -1,6 +1,7 @@
 import { DIAGRAM_PRODUCT_SCHEMA_VERSION } from "../generated/diagram-product/schemaVersion";
 import * as vscode from "vscode";
 import { diagramLimitations } from "./diagramLimitations";
+import { isPendingAnalysisError } from "../providers/lspModelProvider";
 import { State } from "vscode-languageclient/node";
 import type { LspClientHandles } from "../activation/lspClient";
 import { isPerformanceLoggingEnabled, logPerfEvent } from "../logger";
@@ -19,6 +20,7 @@ import {
   parseDiagramViewCatalog,
   parseLspDiagramResult,
   parseSourceNavigation,
+  productContainsSourceTarget,
   reconcileDelayMs,
   visibleSourceColumn,
 } from "./diagramViewerCore";
@@ -449,6 +451,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     }
 
     this.stopReconcile();
+    // A new selection/request has not converged, even if the retained drawing had.
+    // Otherwise a transient failure after switching views leaves retries permanently idle.
+    this.converged = false;
     this.renderMeasurements.invalidate();
     this.activeAbort?.abort();
     const abort = new AbortController();
@@ -544,7 +549,10 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     } catch (error) {
       if (current !== this.generation) return;
       const message = describeError(error);
-      if (this.lastArtifact && !isServerNotReady(error)) {
+      if (isPendingAnalysisError(error)) {
+        if (this.lastArtifact) this.postRender("Updating view…");
+        else this.showWaiting("Loading view…", true);
+      } else if (this.lastArtifact && !isServerNotReady(error)) {
         // Keep the last good render on screen, flagged stale; the loop retries in the background.
         this.postRender(message);
       } else if (isServerNotReady(error) || this.reconcileAttempt < 5) {
@@ -700,7 +708,8 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     let uri: vscode.Uri;
     try { uri = vscode.Uri.parse(target.uri, true); } catch { return; }
     const roots = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) ?? [];
-    if (uri.scheme !== "file" || !isPathInsideWorkspace(uri.fsPath, roots)) return;
+    if (uri.scheme !== "file" || (!isPathInsideWorkspace(uri.fsPath, roots) &&
+      !(this.lastArtifact && productContainsSourceTarget(this.lastArtifact.product, target)))) return;
     try {
       const document = await vscode.workspace.openTextDocument(uri);
       const maxLine = Math.max(0, document.lineCount - 1);

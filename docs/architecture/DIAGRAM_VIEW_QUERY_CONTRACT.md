@@ -65,6 +65,11 @@ An empty drawing explains that no elements are selected and directs the reader t
 exposes and filters. It does not turn an empty selection into an incomplete result or render
 elements excluded by the view's filters.
 
+Unsupported-syntax reasons retain canonical unsupported-construct diagnostics for contributing
+documents, independently of diagnostic reporting scope, with stable codes, messages, and exact source ranges. These may refer to
+another declaration in a document the view draws from. The viewer links to those constructs;
+it does not substitute the view definition for the cause or infer support from the drawing.
+
 Projection completeness includes the publication's parser-recovery, unsupported-syntax, and
 non-convergence obstacles: an incomplete publication cannot establish that its selected content
 is exhaustive. Query-specific reasons remain scoped to the selected exposure. A resolved exposure of a
@@ -108,8 +113,9 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-11 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
-discriminated union keyed by the view kind, so each view carries only its own metadata and scene
+The schema-12 wire shape is declared in `crates/diagram_product/src/wire.rs`. Unsupported-syntax
+reasons carry `diagnostics`, each with a `code`, `message`, and interned `source` index.
+Its `projection` is a discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.
 
 `cargo run -p diagram_product --bin diagram_bindings` generates the checked-in TypeScript types in

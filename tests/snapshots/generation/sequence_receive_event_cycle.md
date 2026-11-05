@@ -478,8 +478,8 @@ package Repro {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:469ffd704d93ce5c4a4a21bb7bdac101d64609d4fb1778a4a9bf7227aaa7480b",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:f9d6b88f49089c1e39228d408568395edb1445e9413e1792437369f59a02a1c7",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

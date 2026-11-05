@@ -670,8 +670,8 @@ package Feed {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:5ed71ee6fd667ad2196da08afb7ca0286d274975978ac6542ea74425fa1165dc",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:e424d3dd7015f788a2833c024e250fb958174ae58651d2a82624526b9eeb97e6",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

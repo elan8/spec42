@@ -74,6 +74,15 @@ describe("canonical sequence limitation presentation", () => {
     buttons.at(-1)!.click();
     expect(postMessage).toHaveBeenCalledWith({ type: "copyLimitations", modelDigest: product.modelDigest, viewHandle: "scenario" });
 
+    send(fixture("diagram_sequence_unsupported_details"));
+    await vi.waitFor(() => expect(document.querySelector("#limitations code")!.textContent).toBe("unsupported-syntax"));
+    const diagnosticLink = document.querySelector<HTMLButtonElement>("#limitations li button")!;
+    expect(diagnosticLink.textContent).toContain("unsupported_state_definition_member");
+    diagnosticLink.click();
+    expect(postMessage).toHaveBeenCalledWith({ type: "openSource", target: {
+      uri: "memory://snapshot/diagram_sequence_unsupported_details.md", startLine: 16, startCharacter: 24, endLine: 16, endCharacter: 51,
+    } });
+
     document.querySelector<HTMLDetailsElement>("details")!.open = true;
     send(fixture("sequence_event_cycle"));
     await vi.waitFor(() => expect(document.querySelectorAll("#limitations li")).toHaveLength(2));

@@ -1,4 +1,4 @@
-//! The schema-11 diagram product: a typed diagram view projection
+//! The schema-12 diagram product: a typed diagram view projection
 //! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
 //! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
 //! once and referenced by index.
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 use spec42_generator_protocol as model;
 
 /// Version of the product format `diagram_draw` consumes.
-pub const SCHEMA_VERSION: u32 = 11;
+pub const SCHEMA_VERSION: u32 = 12;
 
 /// The file name under which generators publish the product.
 pub const ARTIFACT_PATH: &str = "diagram.json";
@@ -257,6 +257,11 @@ impl NormalizedProduct {
         collect_scene_sources(&mut sources, &typed.scene);
         for reason in &typed.incomplete_reasons {
             collect_reason_reference(&mut references, reason);
+            if let model::DiagramIncompleteReason::UnsupportedSyntax { diagnostics } = reason {
+                for diagnostic in diagnostics {
+                    collect_source(&mut sources, &diagnostic.source);
+                }
+            }
         }
         for reference in references.values() {
             if let model::DiagramSemanticReference::SourceAnchor {
@@ -647,8 +652,12 @@ impl NormalizedProduct {
     fn incomplete_reason(&self, value: &model::DiagramIncompleteReason) -> Result<Value, String> {
         Ok(match value {
             model::DiagramIncompleteReason::ParseRecovery => json!({ "code": "parse-recovery" }),
-            model::DiagramIncompleteReason::UnsupportedSyntax => {
-                json!({ "code": "unsupported-syntax" })
+            model::DiagramIncompleteReason::UnsupportedSyntax { diagnostics } => {
+                json!({ "code": "unsupported-syntax", "diagnostics": diagnostics.iter().map(|diagnostic| Ok(json!({
+                    "code": diagnostic.code,
+                    "message": diagnostic.message,
+                    "source": self.source(&diagnostic.source)?,
+                }))).collect::<Result<Vec<Value>, String>>()? })
             }
             model::DiagramIncompleteReason::NonConverged => json!({ "code": "non-converged" }),
             model::DiagramIncompleteReason::ExposureUnresolved { exposure } => {

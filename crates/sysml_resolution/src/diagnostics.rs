@@ -42,6 +42,24 @@ use crate::{PublicationCompleteness, SymbolId, TextRange};
 
 pub use sysml_contract::{DiagnosticCategory, DiagnosticOrigin, DiagnosticSeverity};
 
+/// Opaque handle to an unsupported construct in one publication. Never reuse it across publications.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct UnsupportedConstructId(pub(crate) usize);
+
+/// The canonical unsupported-construct diagnostic, also available for unreported library sources.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct UnsupportedConstruct {
+    pub document: crate::DocumentId,
+    pub range: TextRange,
+    pub code: DiagnosticCode,
+}
+
+impl UnsupportedConstruct {
+    pub fn message(&self) -> &str {
+        self.code.describe()
+    }
+}
+
 /// The resolution-owned diagnostics of one publication, with the phase that produced them.
 ///
 /// `completeness` travels with the diagnostics rather than being a separate lookup because the two

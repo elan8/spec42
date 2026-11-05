@@ -670,8 +670,8 @@ package Seq {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:89a30c242b5d800f9ecee146f221ea26edc94d4a36cd8b3340a562579fdba8ad",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:f58720ad062e84f5c22490e49de7b80c21f394ca26651dd9257af5dbf6bd11e0",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_event_order_reversed_names.md",

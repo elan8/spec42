@@ -58,9 +58,9 @@ pub use sysml_resolution::{
     TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
     TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
     TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
-    TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
-    ViewExposedElements, ViewExposureObstacle, Visibility, VisibilityProvenance, VisibleMemberRef,
-    VisibleMembers,
+    TypeReference, UnitResolution, UnsupportedConstruct, UnsupportedConstructId, ValueKind,
+    VerificationOutcome, VerificationRequirement, ViewExposedElements, ViewExposureObstacle,
+    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
 pub use sysml_resolution::source::RootDigest;
@@ -376,6 +376,14 @@ pub struct DiagnosticQueries<'a> {
 }
 
 impl<'a> DiagnosticQueries<'a> {
+    /// Read an unsupported construct independently of its document's diagnostic reporting scope.
+    pub fn unsupported_construct(
+        &self,
+        id: UnsupportedConstructId,
+    ) -> Option<UnsupportedConstruct> {
+        self.model.unsupported_construct(id)
+    }
+
     /// The published diagnostics, canonically ordered, with the completeness of the publication
     /// that produced them. Only workspace-authored documents are reported.
     pub fn published(&self) -> PublishedDiagnostics<'a> {

@@ -135,8 +135,8 @@ package BrowserNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:91f60caffaf3cde2aafa0a72d95a47176eed05bf366bbea1a6df36ba7b38741b",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:fb1159e2d99a9d3b53fa8a730fdd184973bb33a8704df0977a2e40b46e1190df",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_unresolved.md",

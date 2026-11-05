@@ -310,8 +310,8 @@ package WarningView {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:ca047efb886c4019c5aed80819fb4e30b0aa21d8ba483a5e2fc5273a8525cd44",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:4b7620feb6ed0f852394bc5afc6508c974688594356585a899740205d48e9de9",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

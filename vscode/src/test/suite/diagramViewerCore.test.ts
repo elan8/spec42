@@ -16,12 +16,41 @@ import {
   parseLspDiagramResult,
   parseStateTransitionViewCatalog,
   parseSourceNavigation,
+  productContainsSourceTarget,
   reconcileDelayMs,
   resolveDiagramSelection,
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct, remapDisclosureState } from "../../diagram/diagramProductState";
+import { diagramLimitations } from "../../diagram/diagramLimitations";
+import type { DiagramProduct } from "../../generated/diagram-product/DiagramProduct";
 import { isPresentedFrame, parseRenderMeasurement, RenderMeasurementTracker, type RenderMeasurement } from "../../diagram/diagramPerformance";
+
+describe("unsupported syntax provenance", () => {
+  it("admits only exact canonical source targets outside the workspace", () => {
+    const product = { documents: [{ uri: "file:///library/model.sysml" }], sources: [{ document: 0, range: [2, 1, 3, 4] }] } as unknown as DiagramProduct;
+    const target = { uri: "file:///library/model.sysml", startLine: 2, startCharacter: 1, endLine: 3, endCharacter: 4 };
+    assert.ok(productContainsSourceTarget(product, target));
+    assert.equal(productContainsSourceTarget(product, { ...target, uri: "file:///elsewhere/private.sysml" }), false);
+    assert.equal(productContainsSourceTarget(product, { ...target, startLine: 0 }), false);
+  });
+  it("links the compiler diagnostic rather than the selected view definition", () => {
+    const product = {
+      documents: [{ uri: "file:///workspace/model.sysml", sourceDomain: "workspace" }],
+      sources: [{ document: 0, range: [2, 0, 2, 10] }, { document: 0, range: [15, 8, 17, 9] }],
+      selectedView: { source: 0 },
+      completeness: { status: "incomplete", reasons: [{ code: "unsupported-syntax", diagnostics: [{
+        code: "unsupported_state_definition_member", message: "This member is parsed but not modelled by the semantic publication.", source: 1,
+      }] }] },
+    } as unknown as DiagramProduct;
+    const [detail] = diagramLimitations(product);
+    assert.equal(detail.explanation, "unsupported_state_definition_member: This member is parsed but not modelled by the semantic publication.");
+    assert.deepEqual(detail.links, [{
+      label: "unsupported_state_definition_member · model.sysml:16",
+      target: { uri: "file:///workspace/model.sysml", startLine: 15, startCharacter: 8, endLine: 17, endCharacter: 9 },
+    }]);
+  });
+});
 
 describe("diagram performance correlation", () => {
   const frame = (identity: { renderId: number; modelDigest: string; viewHandle: string }): RenderMeasurement => ({

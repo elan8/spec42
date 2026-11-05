@@ -1029,8 +1029,8 @@ package Counting {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:a804eae508e94fb514cfa664d742b5d305723caf75eeca690a5b990a9d6ded2b",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:20fd4057791abf0a02bf3c95fb75261d43cd8e21be82121b4d16c621200b1b82",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

@@ -226,8 +226,8 @@ package BareTerminate {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 11,
-  "modelDigest": "blake3:4eb9fddc8c4b19c6c4ff835653d8a500edae4c91ba792a5c941baaf32c5b3b20",
+  "schemaVersion": 12,
+  "modelDigest": "blake3:81d426f855ff7379649d7eef6afa69454155f4c2e80537ee5b41ae1ab1c380ea",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
