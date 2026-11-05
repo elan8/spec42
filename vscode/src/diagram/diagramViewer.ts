@@ -14,6 +14,7 @@ import {
   type DiagramProduct,
   type DiagramViewCatalog,
   type DiagramViewOption,
+  type SourceNavigation,
   isPathInsideWorkspace,
   parseDiagramProduct,
   parseDiagramViewCatalog,
@@ -87,6 +88,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private webviewWatchdog: ReturnType<typeof setTimeout> | undefined;
   private readonly disposables: vscode.Disposable[] = [];
   private readonly renderMeasurements = new RenderMeasurementTracker();
+  private actionContext: { hasFrame: boolean; canGoToDefinition: boolean } | undefined;
 
   private logPerformance(event: string, fields: Record<string, unknown>): void {
     logPerfEvent(`view:${event}`, { ...fields, extensionHostMs: performance.now() });
@@ -111,6 +113,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
           this.cancelPresentation();
           this.presentationState = newState === State.Starting ? "loading" : "failed";
           this.showStatus(newState === State.Starting ? "Starting language server..." : "Language server stopped");
+          this.syncActionContext();
         }
       }),
     );
@@ -205,6 +208,63 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     this.requestRefresh();
   }
 
+  /** View title action: fit and center the whole drawing. */
+  home(): void {
+    void this.view?.webview.postMessage({ type: "resetView" });
+  }
+
+  /** View title action: open the selected view's declaration. */
+  async goToDefinition(): Promise<void> {
+    const target = this.selectedDefinition();
+    if (!target) {
+      await vscode.window.showInformationMessage("The selected view has no source definition to open.");
+      return;
+    }
+    await this.navigate({ type: "openSource", target });
+  }
+
+  /** View title action: choose an export format, then save it through the webview renderer. */
+  async exportView(): Promise<void> {
+    if (!this.lastArtifact) {
+      await vscode.window.showInformationMessage("Open a Spec42 view before exporting it.");
+      return;
+    }
+    type ExportChoice = vscode.QuickPickItem & { action: "svg" | "png" | "json"; transparent?: boolean };
+    const choices: ExportChoice[] = [
+      { label: "$(file-media) SVG", description: "Vector image", action: "svg", transparent: false },
+      { label: "$(file-media) SVG, transparent background", description: "Element fills are kept", action: "svg", transparent: true },
+      { label: "$(file-media) PNG", description: "Raster image at 2× scale", action: "png", transparent: false },
+      { label: "$(file-media) PNG, transparent background", description: "Element fills are kept", action: "png", transparent: true },
+      { label: "$(json) Copy view JSON", description: "The generated diagram product", action: "json" },
+    ];
+    const choice = await vscode.window.showQuickPick(choices, { title: "Export view", placeHolder: "Choose an export format" });
+    if (!choice) return;
+    if (choice.action === "json") {
+      await this.copyJson();
+      return;
+    }
+    void this.view?.webview.postMessage({ type: "requestExport", format: choice.action, transparent: choice.transparent === true });
+  }
+
+  private selectedDefinition(): SourceNavigation | undefined {
+    return this.options.find((option) => option.handle === this.selectedHandle)?.definition;
+  }
+
+  /** Enables the view title actions; navigation needs a current presentation, export a frame. */
+  private syncActionContext(): void {
+    const next = {
+      hasFrame: this.lastArtifact !== undefined,
+      canGoToDefinition: this.presentationState === "ready" && this.selectedDefinition() !== undefined,
+    };
+    if (this.actionContext?.hasFrame !== next.hasFrame) {
+      void vscode.commands.executeCommand("setContext", "spec42.diagram.hasFrame", next.hasFrame);
+    }
+    if (this.actionContext?.canGoToDefinition !== next.canGoToDefinition) {
+      void vscode.commands.executeCommand("setContext", "spec42.diagram.canGoToDefinition", next.canGoToDefinition);
+    }
+    this.actionContext = next;
+  }
+
   async copyJson(): Promise<void> {
     if (!this.lastArtifact) {
       await vscode.window.showInformationMessage("Open a Spec42 view before copying its JSON.");
@@ -244,6 +304,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
         this.selectedHandle = handle;
         this.selection = { kind: view.kind, reference: view.reference };
         this.expandedBranches.clear();
+        this.syncActionContext();
         this.requestRefresh();
       }
       return;
@@ -486,6 +547,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       if (current()) void this.view?.webview.postMessage({ type: "busy", busy: this.presentationState === "updating" });
       if (this.activeRequest === cancellation) this.activeRequest = undefined;
       cancellation.dispose();
+      this.syncActionContext();
     }
   }
 
@@ -612,11 +674,13 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   body{padding:0;margin:0;color:var(--vscode-foreground);background:var(--vscode-editor-background);display:flex;flex-direction:column;font:12px var(--vscode-font-family)}
   body.busy .canvas{opacity:.5}
   header{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;padding:6px 8px;border-bottom:1px solid var(--vscode-panel-border)}
-  header select,header button{font:inherit;color:var(--vscode-foreground);background:var(--vscode-button-secondaryBackground);border:1px solid var(--vscode-panel-border);border-radius:3px;padding:2px 5px;cursor:pointer}
+  header select{font:inherit;color:var(--vscode-foreground);background:var(--vscode-button-secondaryBackground);border:1px solid var(--vscode-panel-border);border-radius:3px;padding:2px 5px;cursor:pointer}
   header select{flex:1 1 140px;min-width:0;color:var(--vscode-dropdown-foreground);background:var(--vscode-dropdown-background);border-color:var(--vscode-dropdown-border,var(--vscode-panel-border))}
   header select option,header select optgroup{color:var(--vscode-dropdown-foreground);background:var(--vscode-dropdown-background)}
-  header button:hover,header select:hover{background:var(--vscode-toolbar-hoverBackground)}
-  .status{flex-basis:100%;color:var(--vscode-descriptionForeground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  header select:hover{background:var(--vscode-toolbar-hoverBackground)}
+  .subline{flex-basis:100%;display:flex;gap:6px;min-width:0;color:var(--vscode-descriptionForeground)}
+  .subline .view-kind:not(:empty)::after{content:"·";margin-left:6px}
+  .status{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .error{color:var(--vscode-errorForeground);font-weight:600}
   .canvas{flex:1;min-height:0;position:relative}
   .limitations{padding:6px 10px;border-bottom:1px solid var(--vscode-panel-border);max-height:35vh;overflow:auto}
@@ -625,7 +689,6 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   .limitations button{color:var(--vscode-button-foreground);background:var(--vscode-button-background);border:1px solid var(--vscode-contrastBorder,transparent);padding:3px 6px;margin:3px}
   .limitations button:focus-visible,.limitations summary:focus-visible{outline:1px solid var(--vscode-focusBorder);outline-offset:2px}
   .view-kind{color:var(--vscode-descriptionForeground)}
-  header label{font-size:11px;display:flex;align-items:center;gap:3px}
   .canvas .viz-bg{fill:transparent}
   .canvas svg{display:block;width:100%;height:100%}
   .empty{padding:24px 16px;color:var(--vscode-descriptionForeground);font:13px var(--vscode-font-family)}
@@ -635,14 +698,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
 </style></head><body>
 <header>
   <select id="view-select" title="Select a view by namespace" aria-label="View"></select>
-  <button id="view-definition" title="Go to view definition" aria-label="Go to view definition" disabled>Go to definition</button>
-  <button id="home" title="Fit and center the entire view">Home</button>
-  <button id="copy-json" title="Copy the generated view JSON">JSON</button>
-  <button id="export-svg" title="Export as SVG">SVG</button>
-  <button id="export-png" title="Export as PNG">PNG</button>
-  <label title="Export with a transparent canvas; element fills are retained"><input id="transparent-export" type="checkbox"> Transparent export</label>
-  <span class="view-kind" id="view-kind"></span>
-  <span class="status" id="status"></span>
+  <div class="subline"><span class="view-kind" id="view-kind"></span><span class="status" id="status"></span></div>
 </header>
 <aside id="limitations" class="limitations" aria-label="Projection limitations" hidden></aside>
 <main id="diagram" class="canvas"></main>
@@ -676,5 +732,8 @@ export function registerDiagramViewer(context: vscode.ExtensionContext, handles:
     }),
     vscode.commands.registerCommand("spec42.diagram.open", () => provider.open()),
     vscode.commands.registerCommand("spec42.diagram.copyJson", () => provider.copyJson()),
+    vscode.commands.registerCommand("spec42.diagram.home", () => provider.home()),
+    vscode.commands.registerCommand("spec42.diagram.goToDefinition", () => provider.goToDefinition()),
+    vscode.commands.registerCommand("spec42.diagram.export", () => provider.exportView()),
   );
 }

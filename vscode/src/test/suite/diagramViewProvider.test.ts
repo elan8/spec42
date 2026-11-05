@@ -173,3 +173,70 @@ describe("diagram presentation lifecycle", () => {
     assert.equal(harness.renders("second"), 0);
   });
 });
+
+describe("diagram view title actions", () => {
+  let harness: Harness;
+  beforeEach(() => { harness = new Harness(); });
+  afterEach(() => harness.dispose());
+  const actions = () => (harness.provider as unknown as { actionContext?: { hasFrame: boolean; canGoToDefinition: boolean } }).actionContext;
+
+  it("enables export once a frame exists and definition navigation only while it is current", async () => {
+    harness.handler = async () => ({ state: "updating", semanticStateVersion: "1" });
+    harness.refresh();
+    await until(() => actions() !== undefined);
+    assert.deepStrictEqual(actions(), { hasFrame: false, canGoToDefinition: false });
+    harness.handler = async () => ready();
+    harness.wake();
+    await until(() => harness.renders() === 1);
+    assert.deepStrictEqual(actions(), { hasFrame: true, canGoToDefinition: true });
+    // A retained frame stays exportable while the next publication is being built.
+    harness.handler = async () => ({ state: "updating", semanticStateVersion: "2" });
+    harness.wake();
+    await until(() => actions()?.canGoToDefinition === false);
+    assert.deepStrictEqual(actions(), { hasFrame: true, canGoToDefinition: false });
+  });
+
+  it("fits the view and exports the format chosen in the quick pick", async () => {
+    harness.refresh();
+    await until(() => harness.renders() === 1);
+    harness.provider.home();
+    assert.ok(harness.messages.some((message) => message.type === "resetView"));
+
+    const window = vscode.window as unknown as { showQuickPick: typeof vscode.window.showQuickPick };
+    const original = window.showQuickPick;
+    const offered: string[][] = [];
+    let pick = 3;
+    window.showQuickPick = (async (items: readonly vscode.QuickPickItem[]) => {
+      offered.push(items.map((item) => item.label));
+      return items[pick];
+    }) as unknown as typeof vscode.window.showQuickPick;
+    try {
+      await harness.provider.exportView();
+      assert.deepStrictEqual(harness.messages.at(-1), { type: "requestExport", format: "png", transparent: true });
+      assert.equal(offered[0].length, 5);
+      pick = 0;
+      await harness.provider.exportView();
+      assert.deepStrictEqual(harness.messages.at(-1), { type: "requestExport", format: "svg", transparent: false });
+      const count = harness.messages.length;
+      pick = -1;
+      await harness.provider.exportView();
+      assert.equal(harness.messages.length, count, "a dismissed quick pick exports nothing");
+    } finally { window.showQuickPick = original; }
+  });
+
+  it("contributes Home, Go to definition and Export to the view title in that order", () => {
+    const manifest = require("../../../package.json") as {
+      contributes: { commands: Array<{ command: string; icon?: string; enablement?: string }>; menus: { "view/title": Array<{ command: string; when?: string; group?: string }> } };
+    };
+    const titles = manifest.contributes.menus["view/title"].filter((entry) => entry.when === "view == spec42DiagramView");
+    assert.deepStrictEqual(titles.map((entry) => [entry.command, entry.group]), [
+      ["spec42.diagram.home", "navigation@1"],
+      ["spec42.diagram.goToDefinition", "navigation@2"],
+      ["spec42.diagram.export", "navigation@3"],
+    ]);
+    const command = (id: string) => manifest.contributes.commands.find((entry) => entry.command === id)!;
+    assert.equal(command("spec42.diagram.home").icon, "$(home)");
+    assert.equal(command("spec42.diagram.goToDefinition").enablement, "spec42.diagram.canGoToDefinition");
+    assert.equal(command("spec42.diagram.export").enablement, "spec42.diagram.hasFrame");
+  });
+});

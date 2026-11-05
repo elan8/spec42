@@ -52,8 +52,6 @@ describe("canonical sequence limitation presentation", () => {
   it("keeps accessible details available for nonempty and empty products, and clears stale details", async () => {
     document.body.innerHTML = `
       <select id="view-select"></select><span id="status"></span><span id="view-kind"></span>
-      <button id="home"></button><button id="copy-json"></button><button id="view-definition"></button>
-      <input id="transparent-export" type="checkbox"><button id="export-svg"></button><button id="export-png"></button>
       <aside id="limitations" hidden></aside><main id="diagram"></main>`;
     const postMessage = vi.fn();
     vi.stubGlobal("acquireVsCodeApi", () => ({ postMessage }));

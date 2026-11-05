@@ -29,8 +29,8 @@ vi.mock("./renderer", () => ({
 }));
 
 it("retains the last mounted non-default presentation through supersession/recovery and isolates views", async () => {
-  document.body.innerHTML = ["diagram","status","home","copy-json","view-definition","view-kind","export-svg","export-png","limitations"]
-    .map(id => `<div id="${id}"></div>`).join("") + '<select id="view-select"></select><input id="transparent-export" type="checkbox">';
+  document.body.innerHTML = ["diagram","status","view-kind","limitations"]
+    .map(id => `<div id="${id}"></div>`).join("") + '<select id="view-select"></select>';
   Object.defineProperty(document, "visibilityState", {value:"visible",configurable:true});
   const postMessage = vi.fn();
   vi.stubGlobal("acquireVsCodeApi", () => ({postMessage}));
@@ -89,4 +89,41 @@ it("retains the last mounted non-default presentation through supersession/recov
   await complete(send(["b", "a"], "view:other"));
   expect(harness.calls[7].viewport).toBeUndefined();
   expect(harness.calls[7].disclosureState).toBeUndefined();
+});
+
+it("runs the view title's Home and Export actions against the mounted view", async () => {
+  // The module and its message listener are shared with the previous test in this file.
+  const postMessage = (globalThis as { acquireVsCodeApi: () => { postMessage: ReturnType<typeof vi.fn> } }).acquireVsCodeApi().postMessage;
+  postMessage.mockClear();
+  const modelDigest = "model:actions";
+  window.dispatchEvent(new MessageEvent("message", {data:{type:"render", views:[], selectedHandle:"view:a", header:"View",
+    measurement:{renderId:1000, modelDigest, viewHandle:"view:a"}, productJson:JSON.stringify({modelDigest,
+      selectedView:{kind:"general-view"}, completeness:{status:"complete",reasons:[]},
+      projection:{kind:"general-view",nodes:[{presentationKey:"a"}]}})}}));
+  await vi.waitFor(() => expect(postMessage.mock.calls.some(([event]) => event.type === "renderComplete" && event.renderId === 1000)).toBe(true));
+  const controller = harness.controllers.at(-1)!;
+
+  window.dispatchEvent(new MessageEvent("message", {data:{type:"resetView"}}));
+  expect(controller.reset).toHaveBeenCalledOnce();
+
+  for (const transparent of [true, false]) {
+    postMessage.mockClear();
+    window.dispatchEvent(new MessageEvent("message", {data:{type:"requestExport", format:"svg", transparent}}));
+    await vi.waitFor(() => expect(postMessage.mock.calls.some(([event]) => event.type === "drawRequest")).toBe(true));
+    const [request] = postMessage.mock.calls.find(([event]) => event.type === "drawRequest")!;
+    expect(request).toMatchObject({modelDigest, viewHandle:"view:a", colorScheme:"light"});
+    window.dispatchEvent(new MessageEvent("message", {data:{type:"drawResponse", requestId:request.requestId,
+      modelDigest, viewHandle:"view:a", presentationRevision:request.presentationRevision,
+      svg:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect class="viz-bg"/></svg>'}}));
+    await vi.waitFor(() => expect(postMessage.mock.calls.some(([event]) => event.type === "export")).toBe(true));
+    const [exported] = postMessage.mock.calls.find(([event]) => event.type === "export")!;
+    expect(exported.format).toBe("svg");
+    expect(exported.data.includes("view-export-background")).toBe(!transparent);
+  }
+
+  // An unknown format is ignored rather than exported.
+  postMessage.mockClear();
+  window.dispatchEvent(new MessageEvent("message", {data:{type:"requestExport", format:"pdf"}}));
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  expect(postMessage.mock.calls.some(([event]) => event.type === "drawRequest" || event.type === "export")).toBe(false);
 });
