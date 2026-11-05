@@ -99,7 +99,10 @@ fn cli_model_export_admits_operator_signatures_without_function_imports() {
         std::fs::write(&path, "package P { private import ScalarValues::*; attribute n : Natural = 11 - 1; attribute valid : Natural = 11 + 1; }").unwrap();
         let exported =
             run_spec42_json(&["model-export", path.to_str().unwrap(), "--format", "json"]);
-        assert_eq!(exported["summary"]["error_count"], 1);
+        // Integer -> Natural is related narrowing that the static checker cannot prove,
+        // so it is reported as a warning; `11 + 1` stays Natural and is clean.
+        assert_eq!(exported["summary"]["error_count"], 0);
+        assert_eq!(exported["summary"]["warning_count"], 1);
         let elements = exported["projection"]["elements"].as_array().unwrap();
         let n = elements
             .iter()
