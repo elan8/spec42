@@ -594,12 +594,12 @@ semantic_diagnostic_codes! {
     SingleTypeRelationshipOperand => "single_type_relationship_operand",
         "A union, intersection or difference needs zero or at least two operands.";
 
-    /// A feature's authored value has a type unrelated to the feature's own.
+    /// A feature value has an incompatible static result or literal type.
     AttributeValueTypeIncompatible => "attribute_value_type_mismatch",
-        "This value's type is unrelated to the feature it is bound to.";
-    /// An assignment's value has a type unrelated to the feature it assigns to.
+        "This expression's result type is incompatible with the feature it is bound to.";
+    /// An assignment value has an incompatible static result or literal type.
     AssignmentValueIncompatible => "assignment_value_incompatible",
-        "This value's type is unrelated to the feature it is assigned to.";
+        "This expression's result type is incompatible with the feature it is assigned to.";
     /// SysML 8.3.17.5 `validateAssignmentActionUsage`: the assigned feature is not variable.
     AssignmentTargetNotTimeVarying => "assignment_target_not_time_varying",
         "An assignment's target feature must be able to have time-varying values.";

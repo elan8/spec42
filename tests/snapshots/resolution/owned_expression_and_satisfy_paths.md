@@ -197,7 +197,7 @@ package Resolution {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (path (named (kind package) (name "Resolution")) (named (kind constraint-def) (name "WithinLimit")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "<=" (feature-reference "value" (target (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Resolution::WithinLimit::value")))) (feature-reference "limit" (target (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Resolution::WithinLimit::limit"))))))
+  (declaration (id (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (path (named (kind package) (name "Resolution")) (named (kind constraint-def) (name "WithinLimit")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (operator "<=" (feature-reference "value" (target (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Resolution::WithinLimit::value")))) (feature-reference "limit" (target (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Resolution::WithinLimit::limit"))))))
 )
 ~~~
 # NAVIGATION

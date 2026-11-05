@@ -237,7 +237,7 @@ package TradeStudyTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind subject) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/trade_study_test.md") (path (named (kind package) (name "TradeStudyTest")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind subject) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

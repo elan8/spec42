@@ -215,8 +215,8 @@ package Transitions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_guard_expression.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "bad")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_guard_expression.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "good")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_guard_expression.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "bad")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_guard_expression.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "good")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind boolean) (boolean true))))
 )
 ~~~
 # NAVIGATION

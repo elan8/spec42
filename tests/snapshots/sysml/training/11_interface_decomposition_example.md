@@ -218,8 +218,8 @@ package 'Interface Decomposition Example' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (path (named (kind package) (name "Interface Decomposition Example")) (named (kind interface-def) (name "WaterDelivery")) (named (kind port) (name "deliveredTo")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (path (named (kind package) (name "Interface Decomposition Example")) (named (kind interface-def) (name "WaterDelivery")) (named (kind port) (name "suppliedBy")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (path (named (kind package) (name "Interface Decomposition Example")) (named (kind interface-def) (name "WaterDelivery")) (named (kind port) (name "deliveredTo")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (path (named (kind package) (name "Interface Decomposition Example")) (named (kind interface-def) (name "WaterDelivery")) (named (kind port) (name "suppliedBy")) (anonymous (kind ref) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # CONNECTIONS

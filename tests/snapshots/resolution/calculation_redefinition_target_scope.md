@@ -245,8 +245,8 @@ package Demo {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/calculation_redefinition_target_scope.md") (path (named (kind package) (name "Demo")) (named (kind calc-def) (name "SiblingParameter")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/calculation_redefinition_target_scope.md") (path (named (kind package) (name "Demo")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/calculation_redefinition_target_scope.md") (path (named (kind package) (name "Demo")) (named (kind calc-def) (name "SiblingParameter")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/calculation_redefinition_target_scope.md") (path (named (kind package) (name "Demo")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

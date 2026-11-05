@@ -620,7 +620,7 @@ package StateTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/state_test.md") (path (named (kind package) (name "StateTest")) (named (kind state-def) (name "S")) (named (kind transition) (name "T")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/state_test.md") (path (named (kind package) (name "StateTest")) (named (kind state-def) (name "S")) (named (kind transition) (name "T")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind boolean) (boolean true))))
 )
 ~~~
 # NAVIGATION

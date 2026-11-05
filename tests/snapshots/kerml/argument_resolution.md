@@ -167,7 +167,7 @@ package ArgumentResolutionBug {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/argument_resolution.md") (path (named (kind package) (name "ArgumentResolutionBug")) (named (kind kerml-behavior) (name "B")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "x" (target (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::A::x"))))))
+  (declaration (id (node (document "memory://snapshot/argument_resolution.md") (path (named (kind package) (name "ArgumentResolutionBug")) (named (kind kerml-behavior) (name "B")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (unsupported (feature-reference "x" (target (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::A::x"))))))
 )
 ~~~
 # CONNECTIONS

@@ -2119,10 +2119,9 @@ impl<D> SemanticModel<D> {
 
     /// Reports the settled verdict of an authored analysis, and the analyses that could not settle.
     ///
-    /// Only a declaration that authored the analysis is reported. Evaluation facts are broader on
-    /// purpose -- an inherited requirement constraint stays queryable from every usage -- and
-    /// reporting an inherited template's unresolved result on each use would turn reuse into an
-    /// apparent local error.
+    /// Authored failures are reported at their declaration. A concrete false verdict after
+    /// contextual binding is reported at that context with the authored constraint related.
+    /// Unsettled inherited templates remain quiet.
     ///
     /// The unresolved rule fires only on a genuine evaluation failure. An expression that is
     /// correctly not constant, one whose shape this evaluator does not fold, one that depends on
@@ -2163,6 +2162,44 @@ impl<D> SemanticModel<D> {
                     )?);
                 }
                 _ => {}
+            }
+        }
+        let mut reported = std::collections::BTreeSet::new();
+        for context in declared.iter().copied() {
+            for (_, contextual) in self
+                .resolved_expressions
+                .contextual
+                .range((context, DeclarationId(0))..=(context, DeclarationId(u32::MAX)))
+            {
+                if !matches!(
+                    contextual.evaluation,
+                    EvaluationState::Literal(EvaluatedScalar::Boolean(false))
+                        | EvaluationState::Evaluated(EvaluatedScalar::Boolean(false))
+                ) || !self.authors_an_analysis(contextual.authored)
+                    || matches!(
+                        self.evaluation_for(contextual.authored),
+                        EvaluationState::Literal(EvaluatedScalar::Boolean(false))
+                            | EvaluationState::Evaluated(EvaluatedScalar::Boolean(false))
+                    )
+                    || !reported.insert((context, contextual.effective))
+                {
+                    continue;
+                }
+                let mut diagnostic = self.declaration_message_diagnostic(
+                    context,
+                    DiagnosticCode::AnalysisConstraintFailed,
+                    DiagnosticSeverity::Warning,
+                    Some(format!(
+                        "Constraint '{}' evaluated to false in '{}'.",
+                        self.display_name(contextual.authored),
+                        self.display_name(context)
+                    )),
+                )?;
+                diagnostic.related = Box::from([self.related_declaration(
+                    contextual.authored,
+                    "Constraint evaluated in this context.",
+                )?]);
+                diagnostics.push(diagnostic);
             }
         }
         Ok(())

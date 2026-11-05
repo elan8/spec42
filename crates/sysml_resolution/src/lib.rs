@@ -107,7 +107,7 @@ pub use evaluation::{
 };
 pub use expression::{
     ContextualExpressionOutcome, ExpressionNode, ExpressionNodeKind, ExpressionOperator,
-    ExpressionOutcome, PublishedContextualExpression, PublishedExpression,
+    ExpressionOutcome, ExpressionResultTyping, PublishedContextualExpression, PublishedExpression,
 };
 pub use feature_query::FeatureDerivedRelationshipCollection;
 pub use inspection::{
@@ -132,8 +132,9 @@ pub use model::query::{
 };
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
 pub use projection::{
-    AdmittedSourceCounts, ProjectedElement, ProjectedExposure, ProjectedMultiplicity,
-    ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublishedModelProjection,
+    AdmittedSourceCounts, ContextualEvaluationOutcome, ProjectedContextualEvaluation,
+    ProjectedElement, ProjectedExposure, ProjectedMultiplicity, ProjectionEnvelope,
+    ProjectionPhase, ProjectionTruncation, PublishedModelProjection,
     MODEL_PROJECTION_SCHEMA_VERSION,
 };
 pub use qualified_reference::{

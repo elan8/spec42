@@ -401,7 +401,7 @@ package '12b-Allocation-1' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator ">" (feature-reference "generator::generateTorque::torque" (target (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque::torque")))) (literal (value (kind quantity) (magnitude (value (kind real) (real 0))) (unit "N*m")))))
+  (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (operator ">" (feature-reference "generator::generateTorque::torque" (target (node (document "memory://snapshot/12b_allocation_1.md") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque::torque")))) (literal (value (kind quantity) (magnitude (value (kind real) (real 0))) (unit "N*m")))))
 )
 ~~~
 # NAVIGATION

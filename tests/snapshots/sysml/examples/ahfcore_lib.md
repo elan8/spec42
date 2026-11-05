@@ -512,7 +512,8 @@ library package AHFCoreLib {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "authorization")) (named (kind attribute) (name "protocol")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "HTTP"))))
+  (declaration (id (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "authorization")) (named (kind attribute) (name "protocol")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind string) (value "HTTP"))))
+  (contextual (context (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::authorization_DD"))) (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::authorization::protocol"))) (effective-element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::authorization::protocol"))) (authored-element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::authorization::protocol"))) (outcome resolved) (result-typing (status unsupported)) (evaluation literal) (value (kind string) (value "HTTP")) (literal (value (kind string) (value "HTTP"))))
 )
 ~~~
 # METADATA ANNOTATIONS

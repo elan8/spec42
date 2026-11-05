@@ -113,7 +113,7 @@ package Constraints {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/sysml_calculation_usage_result_binding_connector.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Box")) (named (kind calc) (name "doubled")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "*" (feature-reference "size" (target (node (document "memory://snapshot/sysml_calculation_usage_result_binding_connector.md") (qualified-name "Constraints::Box::size")))) (literal (value (kind integer) (integer 2)))))
+  (declaration (id (node (document "memory://snapshot/sysml_calculation_usage_result_binding_connector.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Box")) (named (kind calc) (name "doubled")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (operator "*" (feature-reference "size" (target (node (document "memory://snapshot/sysml_calculation_usage_result_binding_connector.md") (qualified-name "Constraints::Box::size")))) (literal (value (kind integer) (integer 2)))))
 )
 ~~~
 # NAVIGATION

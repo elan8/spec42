@@ -144,7 +144,7 @@ package Redefinition {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_source_target_redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "vehicle::engine" (target (node (document "memory://snapshot/kerml_feature_chain_expression_source_target_redefinition.md") (qualified-name "Redefinition::Vehicle::engine")))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_source_target_redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/kerml_feature_chain_expression_source_target_redefinition.md") (qualified-name "Redefinition::Engine")))) (feature-reference "vehicle::engine" (target (node (document "memory://snapshot/kerml_feature_chain_expression_source_target_redefinition.md") (qualified-name "Redefinition::Vehicle::engine")))))
 )
 ~~~
 # NAVIGATION

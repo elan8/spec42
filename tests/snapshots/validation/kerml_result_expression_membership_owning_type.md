@@ -97,8 +97,8 @@ package Results {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

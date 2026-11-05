@@ -29,6 +29,23 @@ const QUANTITY_UNIT_CLOSURE_PACKAGES: &[&str] = &[
     "USCustomaryUnits",
 ];
 
+// Static operator typing consumes these normative signatures even when source
+// writes `x + y` rather than an explicit function import. Like implied library
+// specializations, these are standard-library-role anchors, not ordinary imports.
+const SCALAR_OPERATOR_SIGNATURE_PACKAGES: &[&str] = &[
+    "BaseFunctions",
+    "DataFunctions",
+    "ScalarFunctions",
+    "NumericalFunctions",
+    "BooleanFunctions",
+    "StringFunctions",
+    "ComplexFunctions",
+    "RealFunctions",
+    "RationalFunctions",
+    "IntegerFunctions",
+    "NaturalFunctions",
+];
+
 /// One configured library root and the provenance its files carry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LibraryRoot {
@@ -337,6 +354,11 @@ fn references_sysml_namespace(facts: &SyntaxClosureFacts) -> bool {
 
 fn seed_signature(facts: &[SyntaxClosureFacts], options: &LibraryClosureOptions) -> Vec<String> {
     let mut signature = Vec::new();
+    signature.extend(
+        SCALAR_OPERATOR_SIGNATURE_PACKAGES
+            .iter()
+            .map(|package| format!("language-operator-signatures:{package}")),
+    );
     signature.push(format!(
         "option:bootstrap-sysml={}",
         options.bootstrap_sysml_namespace
@@ -432,6 +454,7 @@ fn resolve_closure(
     // resolver looks anchors up by standard-library role, never by bare name.
     let anchor_packages: HashSet<PackageKey> = crate::resolve::implied::library_anchor_packages()
         .into_iter()
+        .chain(SCALAR_OPERATOR_SIGNATURE_PACKAGES.iter().copied())
         .map(|package| PackageKey(package.to_string()))
         .filter(|package| index.standard_packages.contains(package))
         .collect();
@@ -748,6 +771,69 @@ mod tests {
             .iter()
             .map(|document| document.uri().path().to_owned())
             .collect()
+    }
+
+    #[test]
+    fn scalar_operator_signatures_are_standard_role_anchors_without_authored_imports() {
+        let temp = tempfile::tempdir().unwrap();
+        let stdlib = temp.path().join("standard");
+        let project = temp.path().join("project");
+        fs::create_dir_all(&stdlib).unwrap();
+        fs::create_dir_all(&project).unwrap();
+        for (name, source) in [
+            (
+                "NaturalFunctions",
+                "standard library package NaturalFunctions { private import IntegerFunctions::*; }",
+            ),
+            (
+                "IntegerFunctions",
+                "standard library package IntegerFunctions { private import DataFunctions::*; }",
+            ),
+            ("DataFunctions", "standard library package DataFunctions;"),
+            ("Unused", "standard library package Unused;"),
+        ] {
+            fs::write(stdlib.join(format!("{name}.kerml")), source).unwrap();
+        }
+        fs::write(
+            project.join("StringFunctions.sysml"),
+            "package StringFunctions;",
+        )
+        .unwrap();
+        let mut roots = standard(&stdlib);
+        roots.extend(library(&project));
+        let closure = authority()
+            .resolve(
+                &workspace(&[(
+                    "model.sysml",
+                    "package NaturalFunctions; package App { attribute n = 11 - 1; }",
+                )]),
+                &roots,
+                &LibraryClosureOptions::default(),
+            )
+            .unwrap();
+        let names = closure
+            .documents
+            .iter()
+            .map(|document| {
+                (
+                    Path::new(document.uri().path())
+                        .file_stem()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_owned(),
+                    document.kind(),
+                )
+            })
+            .collect::<std::collections::BTreeMap<_, _>>();
+        assert_eq!(
+            names,
+            std::collections::BTreeMap::from([
+                ("DataFunctions".to_owned(), SourceKind::StandardLibrary),
+                ("IntegerFunctions".to_owned(), SourceKind::StandardLibrary),
+                ("NaturalFunctions".to_owned(), SourceKind::StandardLibrary),
+            ])
+        );
     }
 
     #[test]

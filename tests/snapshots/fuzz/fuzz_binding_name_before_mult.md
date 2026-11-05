@@ -68,7 +68,7 @@ package P {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 5))))
+  (declaration (id (node (document "memory://snapshot/fuzz_binding_name_before_mult.md") (path (named (kind package) (name "P")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 5))))
 )
 ~~~
 # NAVIGATION

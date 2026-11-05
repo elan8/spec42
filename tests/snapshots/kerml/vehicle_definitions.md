@@ -199,7 +199,7 @@ package VehicleDefinitions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (path (named (kind package) (name "VehicleDefinitions")) (named (kind class-def) (name "Lugbolt")) (named (kind default-reference) (name "tighteningTorque")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (path (named (kind package) (name "VehicleDefinitions")) (named (kind class-def) (name "Lugbolt")) (named (kind default-reference) (name "tighteningTorque")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

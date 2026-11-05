@@ -89,6 +89,34 @@ fn cli_explain_diagnostic_returns_catalog_entry() {
 }
 
 #[test]
+fn cli_model_export_admits_operator_signatures_without_function_imports() {
+    with_isolated_data_dir(|| {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("operators.sysml");
+        // Scalar value semantics are pinned in static_value_result_types.md. This
+        // artifact test exercises the normal bundled-library admission path and
+        // serialization, where function packages are not explicitly imported.
+        std::fs::write(&path, "package P { private import ScalarValues::*; attribute n : Natural = 11 - 1; attribute valid : Natural = 11 + 1; }").unwrap();
+        let exported =
+            run_spec42_json(&["model-export", path.to_str().unwrap(), "--format", "json"]);
+        // Integer -> Natural is related narrowing that the static checker cannot prove,
+        // so it is reported as a warning; `11 + 1` stays Natural and is clean.
+        assert_eq!(exported["summary"]["error_count"], 0);
+        assert_eq!(exported["summary"]["warning_count"], 1);
+        let elements = exported["projection"]["elements"].as_array().unwrap();
+        let n = elements
+            .iter()
+            .find(|element| element["effective_qualified_name"] == "P::n")
+            .unwrap();
+        assert_eq!(n["expression"]["result_typing"]["status"], "resolved");
+        assert!(!n["expression"]["result_typing"]["types"]
+            .as_array()
+            .unwrap()
+            .is_empty());
+    });
+}
+
+#[test]
 fn cli_model_export_emits_the_typed_projection() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();

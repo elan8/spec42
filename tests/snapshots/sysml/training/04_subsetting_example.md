@@ -191,7 +191,7 @@ package 'Subsetting Example' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (path (named (kind package) (name "Subsetting Example")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (path (named (kind package) (name "Subsetting Example")) (named (kind part-def) (name "Vehicle")) (named (kind part) (name "wheels")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 4))))
 )
 ~~~
 # NAVIGATION

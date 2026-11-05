@@ -1,4 +1,4 @@
-//! The published resolved-expression contract.
+//! Shared settled-expression records and the published resolved-expression contract.
 //!
 //! [`crate::EvaluationState`] is *terminal*: a constraint body with a free variable is
 //! [`crate::EvaluationState::NonConstant`] and there is no way to ask what its structure is. This
@@ -17,7 +17,8 @@
 //! owned slice and a child is named by its `u32` index into it, the same shape the scope and
 //! type indexes use.
 
-use crate::{SourceLocation, SymbolId};
+use crate::model::{AuthoredReferenceId, DeclarationId, DocumentIdx};
+use crate::{EvaluatedScalar, SourceLocation, SymbolId};
 
 /// One element's authored expression, resolved and settled.
 ///
@@ -27,11 +28,35 @@ use crate::{SourceLocation, SymbolId};
 pub struct PublishedExpression {
     pub element: SymbolId,
     pub outcome: ExpressionOutcome,
+    /// Static result types, independent of a computed scalar value. Ambiguity retains
+    /// the applicable function identities rather than choosing an overload.
+    pub result_typing: ExpressionResultTyping,
     /// The expression's nodes in a flat arena, children named by index. Empty unless
     /// [`Self::outcome`] is [`ExpressionOutcome::Resolved`].
     pub nodes: Box<[ExpressionNode]>,
     /// The index of the root node in [`Self::nodes`], or `None` when there is no tree.
     pub root: Option<u32>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ExpressionResultTyping {
+    NotApplicable,
+    Resolved(Box<[SymbolId]>),
+    Unresolved,
+    Ambiguous(Box<[SymbolId]>),
+    Unsupported,
+}
+
+impl ExpressionResultTyping {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::NotApplicable => "not-applicable",
+            Self::Resolved(_) => "resolved",
+            Self::Unresolved => "unresolved",
+            Self::Ambiguous(_) => "ambiguous",
+            Self::Unsupported => "unsupported",
+        }
+    }
 }
 
 /// An expression interpreted in a specific inheriting type or usage. Source locations and
@@ -41,6 +66,9 @@ pub struct PublishedContextualExpression {
     pub context: SymbolId,
     pub authored_element: SymbolId,
     pub expression: PublishedExpression,
+    /// Evaluation after substituting the effective bindings of this context. The
+    /// authored declaration's evaluation remains unchanged.
+    pub evaluation: crate::EvaluationState,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -192,4 +220,78 @@ impl ExpressionOperator {
             Self::Not => "not",
         }
     }
+}
+
+// Shared semantic records. Index construction owns binding and static typing;
+// evaluation consumes these frozen records at the contextual-evaluation barrier.
+/// One node of a settled tree, before its span and target are projected onto the published
+/// contract. `span`/`document` become a `SourceLocation` and `target` a `SymbolId` at query time,
+/// exactly as `SettledUnit` is projected onto `AuthoredUnit`.
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) struct RawExpressionNode {
+    pub(crate) kind: RawExpressionNodeKind,
+    pub(crate) span: sysml_v2_parser::ast::Span,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) enum RawExpressionNodeKind {
+    Invocation {
+        callee: u32,
+        arguments: Box<[u32]>,
+    },
+    Sequence {
+        elements: Box<[u32]>,
+    },
+    MetaCast {
+        operand: u32,
+        metaclass: u32,
+    },
+    Literal(EvaluatedScalar),
+    FeatureReference {
+        target: Option<DeclarationId>,
+        authored: Box<str>,
+        reference: Option<AuthoredReferenceId>,
+    },
+    Operator {
+        operator: ExpressionOperator,
+        operands: Box<[u32]>,
+    },
+    Unsupported {
+        children: Box<[u32]>,
+    },
+}
+
+/// The settled resolved-expression tree of one declaration.
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) struct ResolvedExpressionRow {
+    pub(crate) result_typing: RawResultTyping,
+    pub(crate) outcome: ExpressionOutcome,
+    pub(crate) document: DocumentIdx,
+    /// Contexts share the authored arena until canonical binding changes a target.
+    pub(crate) nodes: std::sync::Arc<[RawExpressionNode]>,
+    pub(crate) root: Option<u32>,
+}
+
+#[derive(Debug)]
+pub(crate) struct ContextualExpressionRow {
+    pub(crate) authored: DeclarationId,
+    pub(crate) effective: DeclarationId,
+    pub(crate) result: ContextualExpressionResult,
+    pub(crate) evaluation: crate::EvaluationState,
+}
+
+#[derive(Debug)]
+pub(crate) enum ContextualExpressionResult {
+    Resolved(ResolvedExpressionRow),
+    Ambiguous(Box<[DeclarationId]>),
+    Unresolved,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum RawResultTyping {
+    Unsettled,
+    Resolved(Box<[DeclarationId]>),
+    Unresolved,
+    Ambiguous(Box<[DeclarationId]>),
+    Unsupported,
 }

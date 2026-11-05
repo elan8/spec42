@@ -294,7 +294,7 @@ assoc JustOutsideOf specializes OutsideOf {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (path (named (kind kerml-association) (name "HappensDuring")) (named (kind kerml-feature) (name "thatOccurrence")) (named (kind kerml-end) (name "happensDuring")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/end_outer_specializations.md") (path (named (kind kerml-association) (name "HappensDuring")) (named (kind kerml-feature) (name "thatOccurrence")) (named (kind kerml-end) (name "happensDuring")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

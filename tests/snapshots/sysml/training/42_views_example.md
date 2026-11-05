@@ -308,7 +308,7 @@ package 'Views Example' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind rendering) (name "asTextualNotationTable")) (anonymous (kind view) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/42_views_example.md") (path (named (kind package) (name "Views Example")) (named (kind rendering) (name "asTextualNotationTable")) (anonymous (kind view) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

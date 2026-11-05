@@ -143,7 +143,7 @@ package P {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (path (named (kind package) (name "P")) (named (kind kerml-classifier) (name "Anything")) (named (kind kerml-feature) (name "self")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (path (named (kind package) (name "P")) (named (kind kerml-classifier) (name "Anything")) (named (kind kerml-feature) (name "self")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

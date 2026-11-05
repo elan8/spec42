@@ -229,8 +229,19 @@ fn scalar_json(scalar: &EvaluatedScalar) -> Value {
 }
 
 fn expression_json(model: &PublishedModel, expression: &PublishedExpression) -> Value {
+    use sysml_query::resolved_slice::ExpressionResultTyping;
+    let result_typing = match &expression.result_typing {
+        ExpressionResultTyping::Resolved(types) => {
+            json!({ "status": "resolved", "types": symbol_tokens(model, types.iter().copied()) })
+        }
+        ExpressionResultTyping::Ambiguous(functions) => {
+            json!({ "status": "ambiguous", "functions": symbol_tokens(model, functions.iter().copied()) })
+        }
+        other => json!({ "status": other.as_str() }),
+    };
     json!({
         "outcome": expression.outcome.as_str(),
+        "result_typing": result_typing,
         "root": expression.root,
         "nodes": expression
             .nodes
@@ -378,6 +389,15 @@ fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
             "status": details.evaluation.state.as_str(),
             "value": details.evaluation.state.value().map(scalar_json),
         },
+        "contextual_evaluations": element.contextual_evaluations.iter().map(|entry| {
+            use sysml_query::resolved_slice::ContextualEvaluationOutcome;
+            let outcome = match &entry.outcome {
+                ContextualEvaluationOutcome::Resolved(state) => json!({ "status": "resolved", "evaluation": { "status": state.as_str(), "value": state.value().map(scalar_json) } }),
+                ContextualEvaluationOutcome::Unresolved => json!({ "status": "unresolved" }),
+                ContextualEvaluationOutcome::Ambiguous(candidates) => json!({ "status": "ambiguous", "candidates": symbol_tokens(model, candidates.iter().copied()) }),
+            };
+            json!({ "element": token(model, entry.element), "authored_element": token(model, entry.authored_element), "effective_element": token(model, entry.effective_element), "outcome": outcome })
+        }).collect::<Vec<_>>(),
         "analysis": analysis_json(&details.analysis),
         "direction": inspection.direction.map(direction),
         "documentation": inspection

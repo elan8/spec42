@@ -143,8 +143,8 @@ package Beta {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/beta.kerml") (path (named (kind package) (name "Beta")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "Thing" (target (node (document "memory://snapshot/beta.kerml") (qualified-name "Beta::Thing")))))
-  (declaration (id (node (document "memory://snapshot/beta.kerml") (path (named (kind package) (name "Beta")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "referent" (target (node (document "memory://snapshot/beta.kerml") (qualified-name "Beta::Holder::referent")))))
+  (declaration (id (node (document "memory://snapshot/beta.kerml") (path (named (kind package) (name "Beta")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "Thing" (target (node (document "memory://snapshot/beta.kerml") (qualified-name "Beta::Thing")))))
+  (declaration (id (node (document "memory://snapshot/beta.kerml") (path (named (kind package) (name "Beta")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/beta.kerml") (qualified-name "Beta::Thing")))) (feature-reference "referent" (target (node (document "memory://snapshot/beta.kerml") (qualified-name "Beta::Holder::referent")))))
 )
 ~~~
 # NAVIGATION

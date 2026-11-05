@@ -160,7 +160,7 @@ package MetadataAnnotationForms {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/metadata_annotation_forms_and_about.md") (path (named (kind package) (name "MetadataAnnotationForms")) (named (kind part) (name "criticalPump")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "severity")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 5))))
+  (declaration (id (node (document "memory://snapshot/metadata_annotation_forms_and_about.md") (path (named (kind package) (name "MetadataAnnotationForms")) (named (kind part) (name "criticalPump")) (anonymous (kind metadata) (ordinal 0)) (named (kind attribute) (name "severity")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 5))))
 )
 ~~~
 # METADATA ANNOTATIONS

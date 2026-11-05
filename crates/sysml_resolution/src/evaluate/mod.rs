@@ -1,6 +1,8 @@
-//! Phase 5: evaluation. The single writer for evaluated values.
+//! Canonical evaluation: authored values in phase 5, contextual values after the
+//! effective-binding index barrier. Both consume the same classifier/folding algebra.
 
 pub(crate) mod classify;
+pub(crate) mod contextual;
 pub(crate) mod fold;
 
 use crate::evaluate::classify::classify_authored;
@@ -32,6 +34,36 @@ type OperandTargets = std::collections::BTreeMap<
 
 type CalleeTargets = std::collections::BTreeMap<(DocumentIdx, usize), CallTarget>;
 
+fn resolved_callee(storage: &SemanticModelStorage, target: Option<DeclarationId>) -> CallTarget {
+    let Some(target) = target else {
+        return CallTarget::Unresolved;
+    };
+    let function = storage.declaration(target).and_then(|declaration| {
+        if declaration.kind != crate::model::DeclarationKind::KermlFunction {
+            return None;
+        }
+        if storage.documents.get(declaration.document.index())?.role
+            != source_identity::SourceRole::StandardLibrary
+        {
+            return None;
+        }
+        let owner = storage.declaration(declaration.owner?)?;
+        if owner.owner.is_some() || storage.symbol(owner.name.resolved()?)? != "NumericalFunctions"
+        {
+            return None;
+        }
+        match storage.symbol(declaration.name.resolved()?)? {
+            "sum" => Some(NumericalFunction::Sum),
+            "max" => Some(NumericalFunction::Max),
+            "min" => Some(NumericalFunction::Min),
+            _ => None,
+        }
+    });
+    function
+        .map(CallTarget::Numerical)
+        .unwrap_or(CallTarget::Unsupported)
+}
+
 /// Intrinsics bind to the resolved, admitted standard-library declaration, never to the
 /// author's callee spelling. A workspace function called `sum` cannot become an intrinsic.
 fn numerical_callees(
@@ -56,33 +88,7 @@ fn numerical_callees(
             continue;
         };
         let target = match resolution.outcome(id) {
-            Some(ResolutionStatus::Resolved(target)) => {
-                let function = storage.declaration(target).and_then(|declaration| {
-                    if declaration.kind != crate::model::DeclarationKind::KermlFunction {
-                        return None;
-                    }
-                    if storage.documents.get(declaration.document.index())?.role
-                        != source_identity::SourceRole::StandardLibrary
-                    {
-                        return None;
-                    }
-                    let owner = storage.declaration(declaration.owner?)?;
-                    if owner.owner.is_some()
-                        || storage.symbol(owner.name.resolved()?)? != "NumericalFunctions"
-                    {
-                        return None;
-                    }
-                    match storage.symbol(declaration.name.resolved()?)? {
-                        "sum" => Some(NumericalFunction::Sum),
-                        "max" => Some(NumericalFunction::Max),
-                        "min" => Some(NumericalFunction::Min),
-                        _ => None,
-                    }
-                });
-                function
-                    .map(CallTarget::Numerical)
-                    .unwrap_or(CallTarget::Unsupported)
-            }
+            Some(ResolutionStatus::Resolved(target)) => resolved_callee(storage, Some(target)),
             _ => CallTarget::Unresolved,
         };
         targets
@@ -388,15 +394,8 @@ fn operand_targets(
 ) -> OperandTargets {
     let mut operand_targets = OperandTargets::new();
     for (index, reference) in storage.references.iter().enumerate() {
-        let operand = match reference.kind {
-            ReferenceKind::ExpressionOperand => EvalOperand::Ordinal(reference.ordinal),
-            ReferenceKind::MemberAccessOperand => {
-                let Some(end) = reference.span.offset.checked_add(reference.span.len) else {
-                    continue;
-                };
-                EvalOperand::MemberAccessEnd(end)
-            }
-            _ => continue,
+        let Some(operand) = operand_key(reference) else {
+            continue;
         };
         let Ok(id) = AuthoredReferenceId::from_index(index) else {
             continue;
@@ -415,6 +414,16 @@ fn operand_targets(
             .or_insert(target);
     }
     operand_targets
+}
+
+fn operand_key(reference: &crate::lower::facts::AuthoredReference) -> Option<EvalOperand> {
+    match reference.kind {
+        ReferenceKind::ExpressionOperand => Some(EvalOperand::Ordinal(reference.ordinal)),
+        ReferenceKind::MemberAccessOperand => Some(EvalOperand::MemberAccessEnd(
+            reference.span.offset.checked_add(reference.span.len)?,
+        )),
+        _ => None,
+    }
 }
 
 /// The model-level evaluability inputs of one classified expression: its feature-reference

@@ -359,7 +359,7 @@ package 'Conditional Succession Example-1' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (feature-reference "focus::image::isWellFocused" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_1.md") (path (named (kind package) (name "Conditional Succession Example-1")) (named (kind action) (name "takePicture")) (anonymous (kind succession) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "focus::image::isWellFocused" (target unresolved)))
 )
 ~~~
 # NAVIGATION

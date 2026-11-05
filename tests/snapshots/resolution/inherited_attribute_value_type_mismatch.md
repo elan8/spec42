@@ -89,6 +89,7 @@ package Demo {
     (relationship (kind specialization) (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::UserRequirement"))) (target (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::UserRequirement"))) (kind specialization) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need"))) (target (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::Need"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement::status"))) (target (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (target (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind::approved"))) (target (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need::status"))) (target (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::need::status"))) (target (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (named (kind attribute) (name "status")) (anonymous (kind kerml-literal-string) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
@@ -119,9 +120,13 @@ package Demo {
     )
     (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind")))
       (subtype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement::status")) (scopes any))
+      (subtype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind::approved")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind::approved")))
       (featured-by (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind")))
+      (type (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind")) (provenance implied))
+      (effective-type (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind")) (source direct))
+      (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::RequirementStatusKind")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::UserRequirement")))
       (supertype (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (qualified-name "Demo::ManagedRequirement")) (scopes any subclassification))
@@ -150,7 +155,7 @@ package Demo {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (named (kind attribute) (name "status")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "approved"))))
+  (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (named (kind attribute) (name "status")) (anonymous (kind kerml-literal-string) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind string) (value "approved"))))
 )
 ~~~
 # NAVIGATION

@@ -178,7 +178,7 @@ package Redefinition {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-association) (name "Child")) (named (kind kerml-feature) (name "x")) (named (kind kerml-end) (name "narrowed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-association) (name "Child")) (named (kind kerml-feature) (name "x")) (named (kind kerml-end) (name "narrowed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

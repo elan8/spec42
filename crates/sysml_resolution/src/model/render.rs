@@ -100,6 +100,7 @@ pub(crate) fn write_expressions(
         write!(output, "  (declaration (id ")?;
         write_node_identity(model, declaration, output)?;
         write!(output, ") (outcome {})", row.outcome.as_str())?;
+        write_result_typing(model, &row.result_typing, output)?;
         if let Some(root) = row.root {
             output.write_char(' ')?;
             write_resolved_expression_node(model, &row.nodes, root, output)?;
@@ -153,6 +154,12 @@ pub(crate) fn write_expressions(
                     output.write_str(") (authored-element ")?;
                     write_node_identity(model, *origin, output)?;
                     write!(output, ") (outcome {})", row.outcome.as_str())?;
+                    write_result_typing(model, &row.result_typing, output)?;
+                    write!(output, " (evaluation {})", contextual.evaluation.as_str())?;
+                    if let Some(value) = contextual.evaluation.value() {
+                        output.write_char(' ')?;
+                        write_evaluated_scalar(value, output)?;
+                    }
                     if let Some(root) = row.root {
                         output.write_char(' ')?;
                         write_resolved_expression_node(model, &row.nodes, root, output)?;
@@ -176,6 +183,31 @@ pub(crate) fn write_expressions(
         }
     }
     writeln!(output, ")")
+}
+
+fn write_result_typing(
+    model: &ResolvedSemanticModel,
+    typing: &crate::index::expression_typing::RawResultTyping,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    use crate::index::expression_typing::RawResultTyping;
+    let (status, collection, values) = match typing {
+        RawResultTyping::Unsettled => return Err(fmt::Error),
+        RawResultTyping::Resolved(types) => ("resolved", "types", types.as_ref()),
+        RawResultTyping::Ambiguous(functions) => ("ambiguous", "functions", functions.as_ref()),
+        RawResultTyping::Unresolved => ("unresolved", "types", &[][..]),
+        RawResultTyping::Unsupported => ("unsupported", "types", &[][..]),
+    };
+    write!(output, " (result-typing (status {status})")?;
+    if !values.is_empty() {
+        write!(output, " ({collection}")?;
+        for value in values {
+            output.write_char(' ')?;
+            write_node_identity(model, *value, output)?;
+        }
+        output.write_char(')')?;
+    }
+    output.write_char(')')
 }
 
 /// Renders one node of a settled resolved-expression tree. Shared by the `EXPRESSIONS` section
@@ -517,6 +549,28 @@ pub(crate) fn write_projection(
                 write!(output, " ")?;
                 write_evaluated_scalar(value, output)?;
             }
+        }
+        for contextual in &element.contextual_evaluations {
+            output.write_str(" (contextual-evaluation (element ")?;
+            let requested = model.declaration_of(contextual.element).ok_or(fmt::Error)?;
+            write_node_identity(model, requested, output)?;
+            output.write_str(")")?;
+            match &contextual.outcome {
+                crate::ContextualEvaluationOutcome::Resolved(state) => {
+                    write!(output, " (status {})", state.as_str())?;
+                    if let Some(value) = state.value() {
+                        output.write_char(' ')?;
+                        write_evaluated_scalar(value, output)?;
+                    }
+                }
+                crate::ContextualEvaluationOutcome::Unresolved => {
+                    output.write_str(" (status unresolved)")?
+                }
+                crate::ContextualEvaluationOutcome::Ambiguous(_) => {
+                    output.write_str(" (status ambiguous)")?
+                }
+            }
+            output.write_char(')')?;
         }
         match &element.details.analysis {
             crate::AnalysisEvaluation::NotApplicable => {}

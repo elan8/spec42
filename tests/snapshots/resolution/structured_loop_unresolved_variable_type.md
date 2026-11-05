@@ -108,8 +108,8 @@ action def Process {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/structured_loop_unresolved_variable_type.md") (path (named (kind action-def) (name "Process")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (sequence (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2)))))
-  (declaration (id (node (document "memory://snapshot/structured_loop_unresolved_variable_type.md") (path (named (kind action-def) (name "Process")) (anonymous (kind for-loop) (ordinal 0)) (named (kind action) (name "visit")) (named (kind parameter) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "x" (target (node (document "memory://snapshot/structured_loop_unresolved_variable_type.md") (path (named (kind action-def) (name "Process")) (anonymous (kind for-loop) (ordinal 0)) (named (kind for-loop-variable) (name "x")))))))
+  (declaration (id (node (document "memory://snapshot/structured_loop_unresolved_variable_type.md") (path (named (kind action-def) (name "Process")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (sequence (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2)))))
+  (declaration (id (node (document "memory://snapshot/structured_loop_unresolved_variable_type.md") (path (named (kind action-def) (name "Process")) (anonymous (kind for-loop) (ordinal 0)) (named (kind action) (name "visit")) (named (kind parameter) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unresolved)) (feature-reference "x" (target (node (document "memory://snapshot/structured_loop_unresolved_variable_type.md") (path (named (kind action-def) (name "Process")) (anonymous (kind for-loop) (ordinal 0)) (named (kind for-loop-variable) (name "x")))))))
 )
 ~~~
 # NAVIGATION

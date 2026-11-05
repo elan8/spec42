@@ -354,8 +354,8 @@ package ServerSequenceModel {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (named (kind part-def) (name "PubSubSequence")) (named (kind part) (name "producer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (named (kind part-def) (name "PubSubSequence")) (named (kind part) (name "server")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (named (kind part-def) (name "PubSubSequence")) (named (kind part) (name "producer")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/server_sequence_model.md") (path (named (kind package) (name "ServerSequenceModel")) (named (kind part-def) (name "PubSubSequence")) (named (kind part) (name "server")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION

@@ -30,7 +30,13 @@ const EXPECTED_KPAR_COUNT: usize = 10;
 /// a change here is a deliberate inventory change that belongs in the same commit.
 const EXPECTED_DOCUMENT_COUNT: usize = 94;
 
-const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[("ambiguous_reference", 2)];
+// These are warnings for unproven refinements, never errors on normative library content.
+// Seven defaults narrow generic numeric results; ShapeItems::Pyramid::wallNumber additionally
+// needs positivity from geometric constraints. Canonical refinement proofs are tracked in #437.
+const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[
+    ("ambiguous_reference", 2),
+    ("attribute_value_type_mismatch", 8),
+];
 
 fn base_cli() -> Cli {
     Cli {
@@ -162,6 +168,37 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
             .map(|(code, count)| ((*code).to_owned(), *count))
             .collect::<std::collections::BTreeMap<_, _>>();
 
+        let narrowing_locations = report
+            .documents
+            .iter()
+            .flat_map(|document| {
+                document
+                    .diagnostics
+                    .iter()
+                    .filter(|diagnostic| diagnostic.code == "attribute_value_type_mismatch")
+                    .map(move |diagnostic| {
+                        (
+                            document.uri.rsplit('/').next().unwrap_or(&document.uri),
+                            diagnostic.range.start.line,
+                        )
+                    })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            narrowing_locations,
+            [
+                ("IntegerFunctions.kerml", 36),
+                ("IntegerFunctions.kerml", 40),
+                ("RationalFunctions.kerml", 42),
+                ("RationalFunctions.kerml", 46),
+                ("RealFunctions.kerml", 49),
+                ("RealFunctions.kerml", 53),
+                ("SequenceFunctions.kerml", 71),
+                ("ShapeItems.sysml", 840),
+            ],
+            "only the tracked unproven scalar refinements are admitted"
+        );
+
         assert_eq!(
             report.summary.error_count,
             2,
@@ -170,7 +207,7 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
         );
         assert_eq!(
             report.summary.warning_count,
-            0,
+            8,
             "bundled standard-library warnings changed:\n  {}",
             offenders.join("\n  ")
         );

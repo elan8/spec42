@@ -329,9 +329,9 @@ standard library package Ports {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (named (kind port) (name "interfacingPorts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (named (kind port) (name "subports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
-  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port) (name "ports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (named (kind port) (name "interfacingPorts")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port-def) (name "Port")) (named (kind port) (name "subports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/ports.md") (path (named (kind library-package) (name "Ports")) (named (kind port) (name "ports")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 0))))
 )
 ~~~
 # NAVIGATION

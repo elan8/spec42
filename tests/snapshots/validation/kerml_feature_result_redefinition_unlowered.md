@@ -111,7 +111,7 @@ package Results {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_result_redefinition_unlowered.md") (path (named (kind package) (name "Results")) (named (kind kerml-feature) (name "computed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (invocation (callee (feature-reference "Computing" (target (node (document "memory://snapshot/kerml_feature_result_redefinition_unlowered.md") (qualified-name "Results::Computing"))))) (arguments (feature-reference "x" (target (node (document "memory://snapshot/kerml_feature_result_redefinition_unlowered.md") (qualified-name "Results::x")))))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_result_redefinition_unlowered.md") (path (named (kind package) (name "Results")) (named (kind kerml-feature) (name "computed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (invocation (callee (feature-reference "Computing" (target (node (document "memory://snapshot/kerml_feature_result_redefinition_unlowered.md") (qualified-name "Results::Computing"))))) (arguments (feature-reference "x" (target (node (document "memory://snapshot/kerml_feature_result_redefinition_unlowered.md") (qualified-name "Results::x")))))))
 )
 ~~~
 # NAVIGATION

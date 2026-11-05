@@ -107,7 +107,7 @@ package Actions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind boolean) (boolean true))))
 )
 ~~~
 # NAVIGATION

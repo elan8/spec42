@@ -120,7 +120,7 @@ probe model.sysml 4 22 imports=Mot fix-imports
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Machine")) (named (kind part) (name "engine")) (named (kind attribute) (name "copy")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "value" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Machine::value")))))
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Machine")) (named (kind part) (name "engine")) (named (kind attribute) (name "copy")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (result-typing (status resolved) (types (node (document "memory://snapshot/model.sysml") (qualified-name "Count")))) (feature-reference "value" (target (node (document "memory://snapshot/model.sysml") (qualified-name "Machine::value")))))
 )
 ~~~
 # NAVIGATION

@@ -20,6 +20,10 @@ use crate::evaluate::classify::{
     is_unary_operator,
 };
 use crate::evaluate::fold::literal_expression_value;
+pub(crate) use crate::expression::{
+    ContextualExpressionResult, ContextualExpressionRow, RawExpressionNode, RawExpressionNodeKind,
+    ResolvedExpressionRow,
+};
 use crate::expression::{
     ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome, PublishedExpression,
 };
@@ -36,7 +40,6 @@ use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::results::{ResolutionError, ResolutionResults, ResolutionStatus};
-use crate::EvaluatedScalar;
 use crate::OccurrenceRole;
 use crate::QueryAnswer;
 use crate::QueryOutcome;
@@ -51,58 +54,13 @@ type RoleReferenceIndex = std::collections::BTreeMap<
     Vec<AuthoredReferenceId>,
 >;
 
-/// One node of a settled tree, before its span and target are projected onto the published
-/// contract. `span`/`document` become a `SourceLocation` and `target` a `SymbolId` at query time,
-/// exactly as `SettledUnit` is projected onto `AuthoredUnit`.
-#[derive(Debug, Clone, PartialEq)]
-pub(crate) struct RawExpressionNode {
-    pub(crate) kind: RawExpressionNodeKind,
-    pub(crate) span: Span,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub(crate) enum RawExpressionNodeKind {
-    Invocation {
-        callee: u32,
-        arguments: Box<[u32]>,
-    },
-    Sequence {
-        elements: Box<[u32]>,
-    },
-    MetaCast {
-        operand: u32,
-        metaclass: u32,
-    },
-    Literal(EvaluatedScalar),
-    FeatureReference {
-        target: Option<DeclarationId>,
-        authored: Box<str>,
-        reference: Option<AuthoredReferenceId>,
-    },
-    Operator {
-        operator: ExpressionOperator,
-        operands: Box<[u32]>,
-    },
-    Unsupported {
-        children: Box<[u32]>,
-    },
-}
-
-/// The settled resolved-expression tree of one declaration.
-#[derive(Debug, Clone, PartialEq)]
-pub(crate) struct ResolvedExpressionRow {
-    pub(crate) outcome: ExpressionOutcome,
-    pub(crate) document: DocumentIdx,
-    pub(crate) nodes: Box<[RawExpressionNode]>,
-    pub(crate) root: Option<u32>,
-}
-
 impl ResolvedExpressionRow {
     fn unsupported(document: DocumentIdx) -> Self {
         Self {
+            result_typing: crate::index::expression_typing::RawResultTyping::Unsettled,
             outcome: ExpressionOutcome::Unsupported,
             document,
-            nodes: Box::default(),
+            nodes: Default::default(),
             root: None,
         }
     }
@@ -111,27 +69,13 @@ impl ResolvedExpressionRow {
 /// Every declaration's resolved expression tree, indexed by declaration ordinal.
 #[derive(Debug)]
 pub(crate) struct ResolvedExpressionIndex {
-    rows: Box<[Option<ResolvedExpressionRow>]>,
+    pub(crate) rows: Box<[Option<ResolvedExpressionRow>]>,
     /// Each Function's or Expression's result expression
     /// ([`crate::lower::storage::SemanticModelStorage::result_expression_of`]): the owner's
     /// expression body is that element's row.
     bodies: Box<[Option<DeclarationId>]>,
     pub(crate) contextual:
         std::collections::BTreeMap<(DeclarationId, DeclarationId), ContextualExpressionRow>,
-}
-
-#[derive(Debug)]
-pub(crate) struct ContextualExpressionRow {
-    pub(crate) authored: DeclarationId,
-    pub(crate) effective: DeclarationId,
-    pub(crate) result: ContextualExpressionResult,
-}
-
-#[derive(Debug)]
-pub(crate) enum ContextualExpressionResult {
-    Resolved(ResolvedExpressionRow),
-    Ambiguous(Box<[DeclarationId]>),
-    Unresolved,
 }
 
 /// The settled facts this index reads, borrowed from the phase products that own them.
@@ -233,7 +177,7 @@ impl ResolvedExpressionIndex {
         }
 
         // A Function or Expression's body is its result expression's row.
-        let bodies = inputs.storage.result_expression_of();
+        let bodies = inputs.storage.value_expressions();
         let body = |declaration: DeclarationId| -> Option<&ResolvedExpressionRow> {
             rows.get(declaration.index())
                 .and_then(Option::as_ref)
@@ -258,7 +202,7 @@ impl ResolvedExpressionIndex {
             relevant[index] = expression_elements[index];
         }
         for row in rows.iter().flatten() {
-            for node in &row.nodes {
+            for node in row.nodes.iter() {
                 if let RawExpressionNodeKind::FeatureReference {
                     target, reference, ..
                 } = &node.kind
@@ -296,6 +240,7 @@ impl ResolvedExpressionIndex {
                     contextual.insert(
                         (context, element),
                         ContextualExpressionRow {
+                            evaluation: crate::EvaluationState::NotRun,
                             authored: element,
                             effective: element,
                             result: ContextualExpressionResult::Ambiguous(
@@ -339,6 +284,7 @@ impl ResolvedExpressionIndex {
                     contextual.insert(
                         (context, element),
                         ContextualExpressionRow {
+                            evaluation: crate::EvaluationState::NotRun,
                             authored: element,
                             effective,
                             result: ContextualExpressionResult::Ambiguous(
@@ -368,13 +314,17 @@ impl ResolvedExpressionIndex {
                 let mut row = body(origin).ok_or(ResolutionError::InvalidStorage)?.clone();
                 let mut ambiguous = Vec::new();
                 let mut unresolved = false;
-                for node in row.nodes.iter_mut() {
+                let mut replacements = Vec::new();
+                for (node_index, node) in row.nodes.iter().enumerate() {
                     let RawExpressionNodeKind::FeatureReference {
-                        target, reference, ..
-                    } = &mut node.kind
+                        target: original_target,
+                        reference,
+                        ..
+                    } = &node.kind
                     else {
                         continue;
                     };
+                    let mut target = *original_target;
                     if let Some(reference_id) = reference {
                         let root = inputs
                             .resolution
@@ -412,17 +362,20 @@ impl ResolvedExpressionIndex {
                                 },
                             )?;
                             match status {
-                                ResolutionStatus::Resolved(resolved) => *target = Some(resolved),
+                                ResolutionStatus::Resolved(resolved) => target = Some(resolved),
                                 ResolutionStatus::Ambiguous(range) => ambiguous.extend_from_slice(
                                     &ambiguous_candidates
                                         [range.start as usize..(range.start + range.len) as usize],
                                 ),
                                 _ => unresolved = true,
                             }
+                            if target != *original_target {
+                                replacements.push((node_index, target));
+                            }
                             continue;
                         }
                     }
-                    let Some(target) = target else {
+                    let Some(target) = &mut target else {
                         continue;
                     };
                     let Some(target_owner) = inputs
@@ -451,12 +404,26 @@ impl ResolvedExpressionIndex {
                         }
                         many => ambiguous.extend_from_slice(many),
                     }
+                    if Some(*target) != *original_target {
+                        replacements.push((node_index, Some(*target)));
+                    }
+                }
+                if !replacements.is_empty() {
+                    let nodes = std::sync::Arc::make_mut(&mut row.nodes);
+                    for (index, replacement) in replacements {
+                        if let RawExpressionNodeKind::FeatureReference { target, .. } =
+                            &mut nodes[index].kind
+                        {
+                            *target = replacement;
+                        }
+                    }
                 }
                 ambiguous.sort_unstable();
                 ambiguous.dedup();
                 contextual.insert(
                     (context, element),
                     ContextualExpressionRow {
+                        evaluation: crate::EvaluationState::NotRun,
                         authored: origin,
                         effective,
                         result: if unresolved {
@@ -632,9 +599,10 @@ fn classify_declaration(
         ),
     };
     ResolvedExpressionRow {
+        result_typing: crate::index::expression_typing::RawResultTyping::Unsettled,
         outcome: ExpressionOutcome::Resolved,
         document,
-        nodes: builder.nodes.into_boxed_slice(),
+        nodes: builder.nodes.into(),
         root: Some(root),
     }
 }
@@ -1026,13 +994,18 @@ impl<D> SemanticModel<D> {
         let Some(effective_element) = self.symbol_id(contextual.effective) else {
             return self.query_outcome(QueryAnswer::Unresolved);
         };
+        let Some(result_typing) = self.project_result_typing(&row.result_typing) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
         self.resolved_outcome(ContextualExpressionOutcome::Resolved(
             PublishedContextualExpression {
                 context,
                 authored_element,
+                evaluation: contextual.evaluation.clone(),
                 expression: PublishedExpression {
                     element: effective_element,
                     outcome: row.outcome,
+                    result_typing,
                     root: row.root,
                     nodes: nodes.into_boxed_slice(),
                 },
@@ -1082,6 +1055,7 @@ impl<D> SemanticModel<D> {
             return Some(PublishedExpression {
                 element,
                 outcome: ExpressionOutcome::NotApplicable,
+                result_typing: crate::ExpressionResultTyping::NotApplicable,
                 nodes: Box::default(),
                 root: None,
             });
@@ -1094,8 +1068,34 @@ impl<D> SemanticModel<D> {
         Some(PublishedExpression {
             element,
             outcome: row.outcome,
+            result_typing: self.project_result_typing(&row.result_typing)?,
             nodes: nodes.into_boxed_slice(),
             root: row.root,
+        })
+    }
+
+    fn project_result_typing(
+        &self,
+        typing: &crate::index::expression_typing::RawResultTyping,
+    ) -> Option<crate::ExpressionResultTyping> {
+        use crate::index::expression_typing::RawResultTyping;
+        use crate::ExpressionResultTyping;
+        Some(match typing {
+            RawResultTyping::Unsettled => return None,
+            RawResultTyping::Resolved(types) => ExpressionResultTyping::Resolved(
+                types
+                    .iter()
+                    .map(|id| self.symbol_id(*id))
+                    .collect::<Option<_>>()?,
+            ),
+            RawResultTyping::Unresolved => ExpressionResultTyping::Unresolved,
+            RawResultTyping::Ambiguous(functions) => ExpressionResultTyping::Ambiguous(
+                functions
+                    .iter()
+                    .map(|id| self.symbol_id(*id))
+                    .collect::<Option<_>>()?,
+            ),
+            RawResultTyping::Unsupported => ExpressionResultTyping::Unsupported,
         })
     }
 

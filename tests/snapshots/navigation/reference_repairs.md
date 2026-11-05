@@ -276,8 +276,9 @@ probe reference_repairs.md 25 40 repairs
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/reference_repairs.md") (path (named (kind package) (name "Base")) (named (kind part-def) (name "Car")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1200))))
-  (declaration (id (node (document "memory://snapshot/reference_repairs.md") (path (named (kind package) (name "Base")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1000))))
+  (declaration (id (node (document "memory://snapshot/reference_repairs.md") (path (named (kind package) (name "Base")) (named (kind part-def) (name "Car")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1200))))
+  (declaration (id (node (document "memory://snapshot/reference_repairs.md") (path (named (kind package) (name "Base")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (result-typing (status unsupported)) (literal (value (kind integer) (integer 1000))))
+  (contextual (context (node (document "memory://snapshot/reference_repairs.md") (qualified-name "Base::Car"))) (element (node (document "memory://snapshot/reference_repairs.md") (qualified-name "Base::Vehicle::mass"))) (effective-element (node (document "memory://snapshot/reference_repairs.md") (qualified-name "Base::Car::mass"))) (authored-element (node (document "memory://snapshot/reference_repairs.md") (qualified-name "Base::Car::mass"))) (outcome resolved) (result-typing (status unsupported)) (evaluation literal) (value (kind integer) (integer 1200)) (literal (value (kind integer) (integer 1200))))
 )
 ~~~
 # NAVIGATION

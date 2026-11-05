@@ -14,13 +14,10 @@
 //! wrong exactly where a model is unusual -- an inherited type, a renamed library, a value that is
 //! a computed constant rather than a literal.
 //!
-//! # Why comparability, not conformance
-//!
-//! KerML types the literal `3` as `ScalarValues::Integer`, and a feature declared `Natural` is
-//! *narrower* than that. Asking "does the value's type conform to the declared type" would report
-//! every authored natural number; asking the reverse would report every widening. What is
-//! genuinely wrong is a value from an unrelated branch of the hierarchy, which is exactly a pair
-//! with no specialization path between them in either direction.
+//! Computed scalar expressions use settled static result typing from canonical function
+//! signatures. Literal reporting retains the existing comparability policy: an Integer
+//! literal may denote a value in a narrower datatype such as Natural. A computed Integer
+//! result does not acquire that narrower static type from its evaluated magnitude.
 
 use crate::check::conformance;
 use crate::index::expressions::conforms;
@@ -60,7 +57,7 @@ pub(crate) const RELATED_CALLEE: &str = "Calculation invoked here.";
 
 /// Whether two types are comparable: one is the other, or one specialises the other.
 ///
-/// The value rules ask this rather than "does the value's type conform to the declared type".
+/// Literal compatibility uses this rather than rejecting every integer literal bound to Natural.
 /// KerML types a literal `3` as `ScalarValues::Integer`, and a feature declared `Natural` is
 /// narrower than that, so a conformance test in either single direction would report every
 /// authored natural number. What is genuinely wrong is a value from an unrelated branch of the
@@ -125,16 +122,17 @@ impl<D> SemanticModel<D> {
             if declaration.document != document || value.is_expression_body {
                 continue;
             }
-            if !self.value_type_conflicts(value.declaration, value.declaration) {
+            let Some(severity) = self.value_type_conflict(value.declaration, value.declaration)
+            else {
                 continue;
-            }
+            };
             diagnostics.push(Diagnostic {
                 payload: None,
                 message: DiagnosticCode::AttributeValueTypeIncompatible
                     .describe()
                     .into(),
                 code: DiagnosticCode::AttributeValueTypeIncompatible,
-                severity: DiagnosticSeverity::Error,
+                severity,
                 origin: DiagnosticOrigin::Semantic,
                 subject: self.symbol_id(value.declaration),
                 location: DiagnosticLocation {
@@ -163,7 +161,7 @@ impl<D> SemanticModel<D> {
             let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(id) else {
                 continue;
             };
-            if !self.value_type_conflicts(reference.source, target) {
+            if self.value_type_conflict(reference.source, target).is_none() {
                 continue;
             }
             diagnostics.push(Diagnostic {
@@ -245,35 +243,92 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// Whether `expression`'s settled value is incompatible with one of `receiver`'s effective types.
-    ///
-    /// Answers `false` for every state that is not a settled value, for a value whose datatype the
-    /// admitted libraries do not declare, and for a receiver with no effective type: each of those
-    /// is a question this publication cannot answer, and answering it as "incompatible" would
-    /// report the absence of an input as a fault in the model.
-    pub(crate) fn value_type_conflicts(
+    /// Whether an expression's static result (or literal value) conflicts with the receiver.
+    /// Static results do not require a constant value. Unavailable static typing falls back
+    /// to the existing literal/value compatibility policy; missing inputs are not faults.
+    fn value_type_conflict(
         &self,
         expression: DeclarationId,
         receiver: DeclarationId,
-    ) -> bool {
-        let Some(value) = self.evaluated_value(expression) else {
-            return false;
-        };
-        let Some(value_type) = self.expressions.scalar_type(&value) else {
-            return false;
-        };
+    ) -> Option<DiagnosticSeverity> {
+        let row = self.resolved_expressions.body(expression).or_else(|| {
+            self.resolved_expressions
+                .body(self.value_expression(expression)?)
+        });
+        if let Some(row) = row {
+            let literal = row
+                .root
+                .and_then(|root| row.nodes.get(root as usize))
+                .is_some_and(|node| {
+                    matches!(
+                        node.kind,
+                        crate::index::resolved_expressions::RawExpressionNodeKind::Literal(_)
+                    )
+                });
+            if !literal {
+                if let crate::index::expression_typing::RawResultTyping::Resolved(actual) =
+                    &row.result_typing
+                {
+                    // This diagnostic's static policy covers scalar datatype bindings.
+                    // Structural/unit bindings need intersection and measurement semantics,
+                    // not a directional test of their declared nominal result types.
+                    // Defaults are FeatureValues too: their result must satisfy the receiving
+                    // feature's type even though invocation decides whether they are applied.
+                    let scalar_anchors = [
+                        self.expressions.anchors.boolean,
+                        self.expressions.anchors.string,
+                        self.expressions.anchors.real,
+                        self.expressions.anchors.integer,
+                    ];
+                    let mut declared = self
+                        .types
+                        .effective_types(receiver)
+                        .iter()
+                        .filter(|(target, _)| {
+                            scalar_anchors
+                                .iter()
+                                .flatten()
+                                .any(|anchor| conforms(&self.types, *target, *anchor))
+                        })
+                        .peekable();
+                    if declared.peek().is_some() {
+                        let mut narrowing = false;
+                        for (target, _) in declared {
+                            if actual
+                                .iter()
+                                .any(|actual| conforms(&self.types, *actual, *target))
+                            {
+                                continue;
+                            }
+                            if !actual
+                                .iter()
+                                .any(|actual| conforms(&self.types, *target, *actual))
+                            {
+                                return Some(DiagnosticSeverity::Error);
+                            }
+                            narrowing = true;
+                        }
+                        // A broader numeric result does not prove an invalid value. Library
+                        // constraints can establish Natural/Positive refinements that this
+                        // nominal checker does not yet prove; report that uncertainty as a warning.
+                        return narrowing.then_some(DiagnosticSeverity::Warning);
+                    }
+                }
+            }
+        }
+        let value = self.evaluated_value(expression)?;
+        let value_type = self.expressions.scalar_type(&value)?;
         let mut declared = self
             .types
             .effective_types(receiver)
             .iter()
             .map(|(target, _)| *target)
             .peekable();
-        if declared.peek().is_none() {
-            return false;
-        }
+        declared.peek()?;
         // Effective typings are simultaneous constraints. A broad inherited type such as
         // Anything must not make an incompatible, more specific typing disappear.
-        !declared.all(|target| comparable(&self.types, target, value_type))
+        (!declared.all(|target| comparable(&self.types, target, value_type)))
+            .then_some(DiagnosticSeverity::Error)
     }
 
     /// Reports unit tokens that name no unit, name several, or name one of the wrong dimension.
