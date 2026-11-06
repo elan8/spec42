@@ -45,6 +45,98 @@ fn cli_model_export_serializes_complete_connector_paths() {
     });
 }
 
+#[test]
+fn cli_model_export_distinguishes_connections_between_shared_port_definitions() {
+    with_isolated_data_dir(|| {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("connections.sysml");
+        std::fs::write(
+            &path,
+            "package Repro32 {
+            port def P { out attribute x : ScalarValues::Boolean; }
+            part def S { port p : P; }
+            part def C { port q : ~P; }
+            part def Sys {
+                part a : S; part b : S; part c : C; part d : C;
+                connect c.q to a.p;
+                connect d.q to b.p;
+            }
+        }",
+        )
+        .unwrap();
+        let output = run_spec42_json(&["model-export", path.to_str().unwrap(), "--format", "json"]);
+        let connectors = output["projection"]["connectors"].as_array().unwrap();
+        assert_eq!(connectors.len(), 2);
+        for (connector, names) in connectors.iter().zip([["c", "a"], ["d", "b"]]) {
+            let ends = connector["ends"].as_array().unwrap();
+            assert_eq!(ends.len(), 2);
+            for (end, name) in ends.iter().zip(names) {
+                let endpoint = &end["endpoint"];
+                assert_eq!(endpoint["kind"], "feature-chain");
+                assert_eq!(
+                    endpoint["root"]["qualified_name"],
+                    format!("Repro32::Sys::{name}")
+                );
+                let hops = endpoint["path"].as_array().unwrap();
+                assert_eq!(hops.len(), 2);
+                assert_eq!(hops.first().unwrap(), &endpoint["root"]);
+                assert_eq!(hops.last().unwrap(), &endpoint["terminal"]);
+            }
+        }
+    });
+}
+
+#[test]
+fn cli_diagram_warns_when_a_filter_excludes_the_exposed_root() {
+    with_isolated_data_dir(|| {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("empty.sysml");
+        for (filter, empty) in [("PartUsage", true), ("PartDefinition", false)] {
+            std::fs::write(
+                &path,
+                format!(
+                    "package Repro17 {{
+                private import StandardViewDefinitions::*;
+                part def Sys;
+                view empty : InterconnectionView {{
+                    expose Sys;
+                    filter @SysML::{filter};
+                }}
+            }}"
+                ),
+            )
+            .unwrap();
+            let output = Command::new(spec42_bin())
+                .args([
+                    "diagram",
+                    path.to_str().unwrap(),
+                    "--view",
+                    "Repro17::empty",
+                    "--format",
+                    "json",
+                ])
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let product: Value = serde_json::from_slice(&output.stdout).unwrap();
+            assert_eq!(product["completeness"]["status"], "complete");
+            assert_eq!(
+                product["projection"]["nodes"]
+                    .as_array()
+                    .unwrap()
+                    .is_empty(),
+                empty
+            );
+            let stderr = String::from_utf8(output.stderr).unwrap();
+            assert_eq!(stderr.contains("warning[empty_diagram]"), empty);
+        }
+    });
+}
+
 fn spec42_bin() -> PathBuf {
     std::env::var_os("CARGO_BIN_EXE_spec42")
         .map(PathBuf::from)

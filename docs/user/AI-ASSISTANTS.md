@@ -53,6 +53,11 @@ For example, `connect left.output to right.input;` retains the `left` and `right
 roots even when both ports are inherited from shared definitions. Generic element relationships
 alone do not describe that topology. End order does not by itself imply directed signal flow.
 
+`spec42 diagram` emits `warning[empty_diagram]` on stderr when a selected view has no
+exposed roots. Check its expose and filter declarations: `filter @SysML::PartUsage;`, for
+example, excludes an exposed part definition. A fully resolved empty selection still reports
+completeness `complete`; the warning does not alter the JSON written to stdout.
+
 Elements retain authored `name` and `qualified_name` separately from
 `effective_name` and `effective_qualified_name`. Use the effective fields to find unnamed
 redefinitions; `null` means no complete effective name is settled. `multiplicity_expressions`
