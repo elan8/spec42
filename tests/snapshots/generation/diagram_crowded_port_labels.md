@@ -1693,7 +1693,7 @@ package CrowdedPorts {
 ~~~json
 {
   "schemaVersion": 12,
-  "modelDigest": "blake3:d43bff0f0e8c72aa2bfef2aa6c328095f196a02e8a6e297b777e802c6b8a55c2",
+  "modelDigest": "blake3:2b4c6d8a2f29f41cfde47a6a81d2d1a58ba45e824a84c3a76dd4cc907875d28e",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

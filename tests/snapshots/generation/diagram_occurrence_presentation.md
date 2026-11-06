@@ -948,7 +948,7 @@ package Presentation {
 ~~~json
 {
   "schemaVersion": 12,
-  "modelDigest": "blake3:6d8107110da090e44f11cb545d5f7c6f41f7707cb5a81764ddd4568c49013536",
+  "modelDigest": "blake3:cd851e2165de586a599dcc3045240bad7b8611a1f5d80e53f3220dca09590d9f",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

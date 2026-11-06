@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.59.1] - 2026-11-06
+
+- **Upgrade notes.** The semantic contract version is now `state-trigger-labels-v74`, so earlier
+  publications and serialised models are not reused. The generator ABI, diagram schema 12 and
+  model export schema 2 are unchanged.
+
+- **State diagrams show what triggers a transition.** Timed triggers such as
+  `accept after dwellTime` and typed payloads such as `accept c : InvokeReset` appear on the
+  arrow, where they were missing or replaced by the transition's name, which now shows in its
+  tooltip. Entry, do and exit actions that refer to an action by name are listed in their state.
+- **Easier-to-read state and sequence diagrams.** States are larger and closer together, and a
+  state with no actions centres its name. A transition from a nested state to one outside its
+  container no longer runs along the container's border. Sequence headers keep long part and
+  type names in full instead of shortening them.
+- **Copilot edits no longer add stale diagnostics.** The VS Code extension only sends files and
+  unsaved new documents to the language server, so Copilot chat edit histories, code blocks and
+  revision previews no longer count as extra copies of your models.
+- **`spec42 diagram` warns about an empty view.** When a view's expose and filter declarations
+  select nothing, the command prints `warning[empty_diagram]` on stderr. The JSON on stdout is
+  unchanged.
+
 ## [0.59.0] - 2026-11-05
 
 - **Upgrade notes.** **Models may report new errors and warnings.** A computed value whose type

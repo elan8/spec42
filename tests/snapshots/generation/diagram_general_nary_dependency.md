@@ -263,7 +263,7 @@ package Trace {
 ~~~json
 {
   "schemaVersion": 12,
-  "modelDigest": "blake3:4b4974144f6c9dfa83eb92d4a32abaff8fd313e4c9ea38a2d98af9cc39ce3e6d",
+  "modelDigest": "blake3:d0397796b1688627d522774a351234673b31dd8e412ea6e63d7eef5982d2d87d",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_nary_dependency.md",
