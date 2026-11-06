@@ -75,9 +75,10 @@ impl PublishedResolution {
     /// ordering is canonical by source location and then opaque identity.
     ///
     /// A name is first matched against each element's own qualified name. When nothing matches,
-    /// it is resolved segment by segment through the namespace's visible memberships (KerML
-    /// 8.2.3.5): the members a namespace owns, then those it publicly imports. So
-    /// `Aliases::mass` names `Budgets::mass` when `Aliases` declares
+    /// it is resolved segment by segment through each namespace's public visible memberships
+    /// (KerML 8.2.3.5), as an authored qualified name is: the members a namespace owns, then
+    /// those it inherits, then those it publicly imports; an alias leads on to its member
+    /// element. So `Aliases::mass` names `Budgets::mass` when `Aliases` declares
     /// `public import Budgets::*;`. A private import is never followed.
     pub fn resolve_qualified_reference(
         &self,
@@ -184,37 +185,49 @@ impl PublishedResolution {
         }
     }
 
-    /// The elements `qualified_name` reaches from the root namespace, one segment at a time:
-    /// through the members each namespace owns, or else the members it publicly imports.
+    /// The elements `qualified_name` reaches from the root namespace, one segment at a time,
+    /// through each namespace's visible memberships: the same traversal
+    /// [`crate::resolve::visible_members_named`] performs for authored qualified names.
     fn visible_membership_targets(&self, qualified_name: &str) -> Vec<QualifiedReferenceTarget> {
         let model = &self.model;
         let Some(segments) = name_segments(qualified_name) else {
             return Vec::new();
         };
-        let mut scopes = vec![None];
-        for segment in &segments {
-            let Some(name) = model.storage.symbols.find(segment) else {
-                return Vec::new();
-            };
-            let mut next = Vec::new();
-            for scope in scopes {
-                let owned = model.direct_names.candidates(scope, name);
-                if owned.is_empty() {
-                    next.extend_from_slice(model.exported_imports.candidates(scope, name));
-                } else {
-                    next.extend_from_slice(owned);
+        let Some(names) = segments
+            .iter()
+            .map(|segment| model.storage.symbols.find(segment))
+            .collect::<Option<Vec<_>>>()
+        else {
+            return Vec::new();
+        };
+        let indexes = crate::resolve::ResolutionIndexes {
+            direct_names: &model.direct_names,
+            exported_names: &model.direct_names,
+            effective_imports: Some(&model.effective_imports),
+            exported_imports: Some(&model.exported_imports),
+            inherited_names: Some(&model.resolution.inherited_names),
+            memberships: Some(&model.memberships),
+        };
+        let mut work = crate::resolve::results::ResolutionWork::default();
+        let mut candidates = model.direct_names.candidates(None, names[0]).to_vec();
+        let mut next = Vec::new();
+        for name in &names[1..] {
+            next.clear();
+            for owner in candidates.iter().copied() {
+                if crate::resolve::visible_members_named(
+                    &indexes, owner, *name, false, &mut next, &mut work,
+                )
+                .is_err()
+                {
+                    return Vec::new();
                 }
             }
             next.sort_unstable();
             next.dedup();
-            if next.is_empty() {
-                return Vec::new();
-            }
-            scopes = next.into_iter().map(Some).collect();
+            std::mem::swap(&mut candidates, &mut next);
         }
-        scopes
+        candidates
             .into_iter()
-            .flatten()
             .filter_map(|id| model.symbol_entry(id))
             .map(QualifiedReferenceTarget::from)
             .collect()
