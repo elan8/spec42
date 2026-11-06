@@ -1,5 +1,6 @@
 import { ANALYSIS_STATUS_CHANGED_METHOD } from "../generated/editor-status";
 import { analysisRequestMiddleware } from "./pendingAnalysis";
+import { MODEL_DOCUMENT_SELECTOR } from "./lspDocumentSelector";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
@@ -377,7 +378,7 @@ export function startLanguageClient(
 
   const clientOptions: LanguageClientOptions = {
     middleware: analysisRequestMiddleware,
-    documentSelector: [{ language: "sysml" }, { language: "kerml" }],
+    documentSelector: MODEL_DOCUMENT_SELECTOR,
     synchronize: {
       fileEvents: [
         vscode.workspace.createFileSystemWatcher("**/*.{sysml,kerml}"),
