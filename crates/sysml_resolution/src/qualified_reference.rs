@@ -73,6 +73,12 @@ impl PublishedResolution {
     /// With `document`, lookup is confined to that normalized document identity. Without it, all
     /// workspace, standard-library, library and external declarations participate. Candidate
     /// ordering is canonical by source location and then opaque identity.
+    ///
+    /// A name is first matched against each element's own qualified name. When nothing matches,
+    /// it is resolved segment by segment through the namespace's visible memberships (KerML
+    /// 8.2.3.5): the members a namespace owns, then those it publicly imports. So
+    /// `Aliases::mass` names `Budgets::mass` when `Aliases` declares
+    /// `public import Budgets::*;`. A private import is never followed.
     pub fn resolve_qualified_reference(
         &self,
         reference: &QualifiedElementReference,
@@ -99,6 +105,17 @@ impl PublishedResolution {
             })
             .map(QualifiedReferenceTarget::from)
             .collect::<Vec<_>>();
+        if named.is_empty() {
+            named = self
+                .visible_membership_targets(&reference.qualified_name)
+                .into_iter()
+                .filter(|target| {
+                    reference.document.as_deref().is_none_or(|document| {
+                        self.document_identity(target.location.document) == Some(document)
+                    })
+                })
+                .collect();
+        }
         canonicalize_targets(&mut named);
 
         let mut matching = named
@@ -167,6 +184,42 @@ impl PublishedResolution {
         }
     }
 
+    /// The elements `qualified_name` reaches from the root namespace, one segment at a time:
+    /// through the members each namespace owns, or else the members it publicly imports.
+    fn visible_membership_targets(&self, qualified_name: &str) -> Vec<QualifiedReferenceTarget> {
+        let model = &self.model;
+        let Some(segments) = name_segments(qualified_name) else {
+            return Vec::new();
+        };
+        let mut scopes = vec![None];
+        for segment in &segments {
+            let Some(name) = model.storage.symbols.find(segment) else {
+                return Vec::new();
+            };
+            let mut next = Vec::new();
+            for scope in scopes {
+                let owned = model.direct_names.candidates(scope, name);
+                if owned.is_empty() {
+                    next.extend_from_slice(model.exported_imports.candidates(scope, name));
+                } else {
+                    next.extend_from_slice(owned);
+                }
+            }
+            next.sort_unstable();
+            next.dedup();
+            if next.is_empty() {
+                return Vec::new();
+            }
+            scopes = next.into_iter().map(Some).collect();
+        }
+        scopes
+            .into_iter()
+            .flatten()
+            .filter_map(|id| model.symbol_entry(id))
+            .map(QualifiedReferenceTarget::from)
+            .collect()
+    }
+
     fn qualified_reference_candidates(&self) -> Vec<SymbolEntry> {
         let mut entries = Vec::new();
         for source in [
@@ -229,6 +282,42 @@ impl From<SymbolEntry> for QualifiedReferenceTarget {
     }
 }
 
+/// The names of a KerML qualified name, unquoted: `A::'b::c'` is `A` then `b::c`. `None` for an
+/// empty segment or an unterminated quote.
+fn name_segments(qualified_name: &str) -> Option<Vec<String>> {
+    let mut segments = Vec::new();
+    let mut rest = qualified_name;
+    loop {
+        let segment;
+        if let Some(quoted) = rest.strip_prefix('\'') {
+            let mut name = String::new();
+            let mut characters = quoted.char_indices();
+            let end = loop {
+                match characters.next()? {
+                    (_, '\\') => name.push(characters.next()?.1),
+                    (index, '\'') => break index + 1,
+                    (_, character) => name.push(character),
+                }
+            };
+            segment = name;
+            rest = &quoted[end..];
+        } else {
+            let end = rest.find("::").unwrap_or(rest.len());
+            segment = rest[..end].to_owned();
+            rest = &rest[end..];
+        }
+        if segment.is_empty() {
+            return None;
+        }
+        segments.push(segment);
+        match rest.strip_prefix("::") {
+            Some(next) => rest = next,
+            None if rest.is_empty() => return Some(segments),
+            None => return None,
+        }
+    }
+}
+
 fn canonicalize_targets(targets: &mut [QualifiedReferenceTarget]) {
     targets.sort_by(|left, right| {
         left.location
@@ -238,4 +327,22 @@ fn canonicalize_targets(targets: &mut [QualifiedReferenceTarget]) {
             .then_with(|| left.kind.cmp(&right.kind))
             .then_with(|| left.identity.cmp(&right.identity))
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::name_segments;
+
+    #[test]
+    fn qualified_names_split_outside_quotes() {
+        assert_eq!(name_segments("A::b"), Some(vec!["A".into(), "b".into()]));
+        assert_eq!(
+            name_segments("A::'TOP-001'::'x::y'"),
+            Some(vec!["A".into(), "TOP-001".into(), "x::y".into()])
+        );
+        assert_eq!(name_segments("'it\\'s'"), Some(vec!["it's".into()]));
+        assert_eq!(name_segments("A::"), None);
+        assert_eq!(name_segments("A::'open"), None);
+        assert_eq!(name_segments("'a'b"), None);
+    }
 }
