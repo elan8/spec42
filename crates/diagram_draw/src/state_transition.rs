@@ -154,27 +154,6 @@ fn draw_state_node(
                 .style("stroke", theme.node_border)
                 .style("stroke-width", "2px"),
         );
-        // SysML 8.2.3.18: the name compartment of a state is its keyword, then its name.
-        g = g.child(
-            Element::new("text")
-                .attr("class", "state-keyword")
-                .attr_f("x", layout.width / 2.0)
-                .attr_f("y", 14.0)
-                .attr("text-anchor", "middle")
-                .style("font-size", "9px")
-                .style("fill", theme.text_secondary)
-                .text("\u{ab}state\u{bb}"),
-        );
-        g = g.child(
-            Element::new("text")
-                .attr_f("x", layout.width / 2.0)
-                .attr_f("y", 28.0)
-                .attr("text-anchor", "middle")
-                .style("font-size", "12px")
-                .style("font-weight", "700")
-                .style("fill", theme.text_primary)
-                .text(&node.label),
-        );
         let mut action_lines = Vec::new();
         // SysML 8.2.3.18: the state actions compartment lists the entry, do and exit actions
         // as they are declared.
@@ -187,6 +166,33 @@ fn draw_state_node(
         if let Some(exit) = &exit {
             action_lines.push(format!("exit {exit}"));
         }
+        // SysML 8.2.3.18: the name compartment of a state is its keyword, then its name. A state
+        // with no other compartment has only that one, centred in its box.
+        let name_offset = if action_lines.is_empty() && !is_composite && !contains_states {
+            ((layout.height - 38.0) / 2.0).max(0.0)
+        } else {
+            0.0
+        };
+        g = g.child(
+            Element::new("text")
+                .attr("class", "state-keyword")
+                .attr_f("x", layout.width / 2.0)
+                .attr_f("y", 14.0 + name_offset)
+                .attr("text-anchor", "middle")
+                .style("font-size", "9px")
+                .style("fill", theme.text_secondary)
+                .text("\u{ab}state\u{bb}"),
+        );
+        g = g.child(
+            Element::new("text")
+                .attr_f("x", layout.width / 2.0)
+                .attr_f("y", 28.0 + name_offset)
+                .attr("text-anchor", "middle")
+                .style("font-size", "12px")
+                .style("font-weight", "700")
+                .style("fill", theme.text_primary)
+                .text(&node.label),
+        );
         if !action_lines.is_empty() || is_composite || contains_states {
             g = g.child(
                 Element::new("line")

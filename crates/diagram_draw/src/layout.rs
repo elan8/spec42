@@ -1453,7 +1453,18 @@ fn layout_nested_behavior(
             .filter(|other| !around.contains(*other))
             .filter_map(|other| rect_of(other))
             .collect();
-        if let Some(route) = crate::ortho_route::route(from, to, &boxes, 10.0) {
+        // The containers of its ends it crosses, but never runs along or through their headers.
+        let borders: Vec<crate::ortho_route::Border> = around
+            .iter()
+            .filter(|container| **container != source && **container != target)
+            .filter_map(|container| {
+                let node = nodes
+                    .iter()
+                    .find(|node| as_string(field(node, "id"), "") == **container)?;
+                Some((rect_of(container)?, container_header(node, mode)))
+            })
+            .collect();
+        if let Some(route) = crate::ortho_route::route_across(from, to, &boxes, &borders, 10.0) {
             let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
             crossing.push((
                 id,
