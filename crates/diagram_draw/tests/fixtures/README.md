@@ -21,3 +21,8 @@ cargo run --offline -p diagram_draw --example render_draw_input -- crates/diagra
 Regenerate both shared General/Interconnection summaries together with
 `node vscode/diagram-renderer/scripts/update-golden-markers.mjs`. The Interconnection summary
 uses `interconnection-view-fidelity.laid-out.json`; both summaries have native regression tests.
+
+`views/` holds one SVG per generated diagram product listed in `tests/view_goldens.rs`, at least
+one for every view kind, rendered from source through preparation, layout and drawing. After an
+intended change, `DIAGRAM_DRAW_UPDATE_FIXTURES=1 cargo test -p diagram_draw --test view_goldens`
+rewrites them; rasterize the changed ones and look at them before accepting the diff.

@@ -2,6 +2,32 @@
 use diagram_draw::{draw_input_from_payload, render_svg_from_payload};
 use serde_json::{json, Value};
 
+#[test]
+fn short_named_states_are_substantial_and_close_without_touching() {
+    let payload = json!({"preparedView": {
+        "view":"state-transition-view", "title":"Compact states", "meta":{"layoutDirection":"horizontal"},
+        "nodes":[
+            {"id":"a", "kind":"state", "label":"Idle", "attributes":{}},
+            {"id":"b", "kind":"state", "label":"Running", "attributes":{}}
+        ],
+        "edges":[{"id":"next", "source":"a", "target":"b", "label":"ready", "attributes":{}}]
+    }});
+    let input = draw_input_from_payload(&payload).unwrap();
+    let positions = &input["behaviorLayout"]["positions"];
+    let a = &positions["a"];
+    let b = &positions["b"];
+    for state in [a, b] {
+        assert!(state["width"].as_f64().unwrap() >= 120.0);
+        assert!(state["height"].as_f64().unwrap() >= 56.0);
+    }
+    let gap = b["x"].as_f64().unwrap() - a["x"].as_f64().unwrap() - a["width"].as_f64().unwrap();
+    assert!(gap >= 28.0, "transition channel is preserved: {gap}");
+    assert!(
+        gap < a["width"].as_f64().unwrap(),
+        "the gap should not dominate a short transition: {gap}"
+    );
+}
+
 fn payload(direction: &str) -> Value {
     json!({"preparedView": {
         "view": "state-transition-view", "title": "Nested states",

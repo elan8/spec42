@@ -20,6 +20,9 @@ pub(crate) type Point = (f64, f64);
 /// What a bend costs, in pixels of extra length. High enough that a route prefers a longer
 /// straight run to a staircase.
 const BEND_COST: f64 = 40.0;
+/// What a pixel of route inside a [`Border`] costs, so that a route leaves the containers of its
+/// ends by the shortest way rather than running inside them.
+const INSIDE_COST: f64 = 2.0;
 /// Routing is skipped for a diagram with more boxes than this; the grid grows with their square.
 const MAX_BOXES: usize = 160;
 
@@ -80,12 +83,33 @@ pub(crate) fn route(from: Rect, to: Rect, boxes: &[Rect], clearance: f64) -> Opt
     if boxes.len() > MAX_BOXES {
         return None;
     }
+    route_across(from, to, boxes, &[], clearance)
+}
+
+/// A container side a [`route_across`] may cross but not run along: its box, and the height of
+/// the header under its top side, which a route crosses as well rather than running through it.
+pub(crate) type Border = (Rect, f64);
+
+/// A [`route`] that may cross the sides of the boxes in `borders`, such as the containers the
+/// ends are nested in, but never runs along one closer than `clearance`, where the line would
+/// merge with the side, nor through a header.
+pub(crate) fn route_across(
+    from: Rect,
+    to: Rect,
+    boxes: &[Rect],
+    borders: &[Border],
+    clearance: f64,
+) -> Option<Vec<Point>> {
+    if boxes.len() + borders.len() > MAX_BOXES {
+        return None;
+    }
     let mut all = boxes.to_vec();
     all.extend([from, to]);
     search(
         &ports(from, clearance),
         &ports(to, clearance),
         &all,
+        borders,
         &[],
         clearance,
     )
@@ -122,16 +146,17 @@ pub(crate) fn pin_route(
     // A line one more clearance out from each end, so that the route can turn into the last
     // stretch even where no box stands further out.
     let beyond = [stub(start.1, out_of), stub(end.1, into)];
-    search(&[start], &[end], boxes, &beyond, clearance)
+    search(&[start], &[end], boxes, &[], &beyond, clearance)
 }
 
 /// The cheapest route from one of `starts` to one of `ends`: each is a point on a box, the point
-/// `clearance` out from it, and the axis of the line there. `extra` adds grid lines through
-/// further points.
+/// `clearance` out from it, and the axis of the line there. A route may cross the sides of
+/// `borders` but not run along them. `extra` adds grid lines through further points.
 fn search(
     starts: &[(Point, Point, usize)],
     ends: &[(Point, Point, usize)],
     boxes: &[Rect],
+    borders: &[Border],
     extra: &[Point],
     clearance: f64,
 ) -> Option<Vec<Point>> {
@@ -147,6 +172,21 @@ fn search(
         let outer = grown(*rect, clearance);
         xs.extend([outer.0, outer.0 + outer.2]);
         ys.extend([outer.1, outer.1 + outer.3]);
+    }
+    // Lines just clear of each side of a border, on both sides of it.
+    for ((x, y, width, height), header) in borders {
+        xs.extend([
+            x - clearance,
+            x + clearance,
+            x + width - clearance,
+            x + width + clearance,
+        ]);
+        ys.extend([
+            y - clearance,
+            y + header + clearance,
+            y + height - clearance,
+            y + height + clearance,
+        ]);
     }
     for point in starts
         .iter()
@@ -173,15 +213,31 @@ fn search(
             .iter()
             .any(|(bx, by, width, height)| x > *bx && x < bx + width && y > *by && y < by + height)
     };
-    // Whether the straight run between two neighbouring grid points passes through a box.
+    // Whether the straight run between two neighbouring grid points passes through a box, or
+    // runs along the side of a border.
+    let near = clearance - 0.5;
     let crosses = |a: Point, b: Point| {
         let (left, right) = (a.0.min(b.0), a.0.max(b.0));
         let (top, bottom) = (a.1.min(b.1), a.1.max(b.1));
+        let horizontal = (a.1 - b.1).abs() < 0.01;
         blocked.iter().any(|(bx, by, width, height)| {
-            if (a.1 - b.1).abs() < 0.01 {
+            if horizontal {
                 a.1 > *by && a.1 < by + height && left < bx + width && right > *bx
             } else {
                 a.0 > *bx && a.0 < bx + width && top < by + height && bottom > *by
+            }
+        }) || borders.iter().any(|((bx, by, width, height), header)| {
+            if horizontal {
+                let along_top = a.1 > by - near && a.1 < by + header + near;
+                (along_top || (a.1 - (by + height)).abs() < near)
+                    && left < bx + width + near
+                    && right > bx - near
+            } else {
+                [*bx, bx + width]
+                    .iter()
+                    .any(|side| (a.0 - side).abs() < near)
+                    && top < by + height + near
+                    && bottom > by - near
             }
         })
     };
@@ -257,7 +313,12 @@ fn search(
             if inside(there.0, there.1) || crosses(here, there) {
                 continue;
             }
-            let step = (there.0 - here.0).abs() + (there.1 - here.1).abs();
+            let middle = ((here.0 + there.0) / 2.0, (here.1 + there.1) / 2.0);
+            let enclosed = borders.iter().any(|((bx, by, width, height), _)| {
+                middle.0 > *bx && middle.0 < bx + width && middle.1 > *by && middle.1 < by + height
+            });
+            let step = ((there.0 - here.0).abs() + (there.1 - here.1).abs())
+                * if enclosed { INSIDE_COST } else { 1.0 };
             let next_cost = cost + step + if next_axis == axis { 0.0 } else { BEND_COST };
             let next = node(next_column, next_row);
             if next_cost < best[next][next_axis] {
@@ -412,6 +473,38 @@ mod tests {
             .windows(2)
             .all(|pair| pair[0].0 == pair[1].0 || pair[0].1 == pair[1].1));
         assert!(points[points.len() - 2].0 < to.0, "{points:?}");
+    }
+
+    #[test]
+    fn a_route_crosses_a_border_but_does_not_run_along_it_or_through_its_header() {
+        // A nested state at the bottom right of its container, to a state outside it whose
+        // middle is level with the container's top.
+        let container = (400.0, 109.0, 380.0, 160.0);
+        let from = (680.0, 189.0, 120.0, 56.0);
+        let to = (80.0, 80.0, 120.0, 56.0);
+        let header = 52.0;
+        let points =
+            route_across(from, to, &[], &[(container, header)], 10.0).expect("a route exists");
+        for pair in points.windows(2) {
+            let (a, b) = (pair[0], pair[1]);
+            if (a.1 - b.1).abs() < 0.01 {
+                let (left, right) = (a.0.min(b.0), a.0.max(b.0));
+                let overlaps = left < container.0 + container.2 && right > container.0;
+                let top = container.1;
+                assert!(
+                    !overlaps || a.1 <= top - 9.5 || a.1 >= top + header + 9.5,
+                    "runs along the container's top or through its header: {points:?}"
+                );
+                let bottom = container.1 + container.3;
+                assert!(
+                    !overlaps || (a.1 - bottom).abs() >= 9.5,
+                    "runs along the container's bottom: {points:?}"
+                );
+            }
+        }
+        // Without the border, it goes straight along the top.
+        let unbounded = route(from, to, &[], 10.0).expect("a route exists");
+        assert!(unbounded.iter().any(|point| (point.1 - 108.0).abs() < 0.01));
     }
 
     #[test]

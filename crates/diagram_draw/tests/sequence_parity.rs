@@ -10,6 +10,38 @@ use diagram_draw::xml;
 use serde_json::json;
 
 #[test]
+fn lifeline_headers_preserve_full_occurrence_and_type_labels() {
+    let name = "supervisoryControllerForCarrierLoading";
+    let type_name = "SussMapperApplication";
+    let prepared: PreparedView = serde_json::from_value(json!({
+        "title":"Loading", "view":"sequence-view", "nodes":[], "edges":[],
+        "meta":{"sequenceDiagram":{"lifelines":[{"id":"scs", "name":name, "typeName":type_name}],
+            "messages":[{"id":"load", "name":"load", "source":"scs", "target":"scs", "order":1}]}}
+    }))
+    .unwrap();
+    let svg = render_sequence_view_svg(&prepared, &LIGHT, 800.0, 600.0);
+    let tree = xml::parse(&svg);
+    let mut pending = vec![&tree];
+    let mut texts = Vec::new();
+    let mut header_width = None;
+    while let Some(node) = pending.pop() {
+        if node.tag == "text" {
+            texts.push(node.text.as_str());
+        }
+        if node.tag == "rect"
+            && node.attrs.get("class").map(String::as_str) == Some("node-background")
+        {
+            header_width = Some(node.attrs["width"].parse::<f64>().unwrap());
+        }
+        pending.extend(&node.children);
+    }
+    assert!(texts.contains(&name));
+    assert!(texts.contains(&format!(": {type_name}").as_str()));
+    assert!(header_width.unwrap() >= name.len() as f64 * 7.0 + 24.0);
+    assert!(header_width.unwrap() >= (type_name.len() + 2) as f64 * 6.0 + 24.0);
+}
+
+#[test]
 fn a_single_lifeline_export_keeps_long_titles_inside_the_view_box() {
     // The normal title is about 246 px in a 14 px bold serif font; the wide-glyph title
     // needs over 500 px. Neither fits in the 164 px available in the old export.

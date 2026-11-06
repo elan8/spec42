@@ -3103,11 +3103,11 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 field(node, "source") == field(vertex, "navigation")
                     && as_string(field(node, "metaclass"), "").contains("State")
             })?;
-            let action = projected_nodes.iter().find(|node| {
+            let (action_index, action) = projected_nodes.iter().enumerate().find(|(_, node)| {
                 field(node, "owner").as_u64() == Some(state as u64)
                     && field(node, "stateSubaction").as_str() == Some(role)
             })?;
-            // Named by its own name, or by the action it is typed by when it has none.
+            // Format the supplied name, type, or explicit state-action binding target.
             field(action, "name")
                 .as_str()
                 .map(str::to_owned)
@@ -3116,6 +3116,42 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                         .first()
                         .and_then(|typed| field(typed, "label").as_str())
                         .map(str::to_owned)
+                })
+                .or_else(|| {
+                    let binding = match role {
+                        "entry" => "entryActionBinding",
+                        "do" => "doActionBinding",
+                        "exit" => "exitActionBinding",
+                        _ => return None,
+                    };
+                    let relationship = as_array(field(projection, "relationships")).iter().find(
+                        |relationship| {
+                            field(relationship, "source").as_u64() == Some(action_index as u64)
+                                && field(relationship, "kind").as_str() == Some(binding)
+                        },
+                    )?;
+                    let target = field(relationship, "target");
+                    if field(target, "status").as_str() != Some("resolved") {
+                        return None;
+                    }
+                    if let Some(node) = field(target, "node")
+                        .as_u64()
+                        .and_then(|index| projected_nodes.get(index as usize))
+                    {
+                        return field(node, "name").as_str().map(str::to_owned);
+                    }
+                    let reference = field(target, "reference").as_u64()?;
+                    projected_nodes
+                        .iter()
+                        .find(|node| field(node, "reference").as_u64() == Some(reference))
+                        .and_then(|node| field(node, "name").as_str())
+                        .map(str::to_owned)
+                        .or_else(|| {
+                            references
+                                .get(reference as usize)
+                                .and_then(|reference| field(reference, "qualifiedName").as_str())
+                                .map(str::to_owned)
+                        })
                 })
         };
         // A state that owns states shows them inside it (SysML 8.2.3.18). The vertex of a
@@ -3232,6 +3268,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 "edgeKind": "transition",
                 "attributes": {
                     "semanticSceneId": field(transition, "id"),
+                    "transitionName": field(transition, "label"),
                     "relationType": "transition",
                     "selfLoop": field(transition, "source") == field(transition, "target"),
                     "trigger": trigger,
