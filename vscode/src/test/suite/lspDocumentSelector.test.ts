@@ -10,7 +10,8 @@ describe("workspace language client document selection", () => {
 
   for (const language of ["sysml", "kerml"]) {
     it(`selects ${language} files`, () => assert.ok(score("file", language) > 0));
-    for (const scheme of ["chat-editing-text-model", "chat-editing-snapshot-text-model", "vscode-chat-code-block", "git", "untitled"]) {
+    it(`selects unsaved ${language} documents`, () => assert.ok(score("untitled", language) > 0));
+    for (const scheme of ["chat-editing-text-model", "chat-editing-snapshot-text-model", "vscode-chat-code-block", "git"]) {
       it(`excludes ${language} ${scheme} documents`, () => assert.strictEqual(score(scheme, language), 0));
     }
   }
