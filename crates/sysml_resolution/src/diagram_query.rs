@@ -1649,6 +1649,7 @@ impl PublishedResolution {
             }
         }
         let scene = diagram_scene(
+            self,
             view_entry.kind,
             &projected_roots,
             &elements,
@@ -2226,7 +2227,9 @@ fn compartment_kind(kind: ElementKind) -> Option<DiagramCompartmentKind> {
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 fn diagram_scene(
+    resolution: &PublishedResolution,
     kind: DiagramViewKind,
     roots: &BTreeSet<SymbolId>,
     elements: &[DiagramElement],
@@ -2308,7 +2311,12 @@ fn diagram_scene(
                         trigger: if edge.kind == DiagramEdgeKind::InitialState {
                             DiagramTransitionFeature::Absent
                         } else {
-                            feature(DiagramRelationshipKind::TransitionTrigger)
+                            match feature(DiagramRelationshipKind::TransitionTrigger) {
+                                DiagramTransitionFeature::Absent => resolution
+                                    .model
+                                    .owned_transition_trigger(origin.semantic_id),
+                                trigger => trigger,
+                            }
                         },
                         // A guard is an expression, not a reference: its text as written, with
                         // the transition as its navigation target (SysML 8.2.3.18).

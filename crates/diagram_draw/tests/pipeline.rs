@@ -982,6 +982,54 @@ fn a_state_lists_its_entry_do_and_exit_actions() {
 }
 
 #[test]
+fn accepting_features_and_referenced_state_actions_are_visible() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_state_accepting_features.md"
+    ));
+    let input = draw_input_from_payload(&payload).unwrap();
+    let nodes = input["prepared"]["nodes"].as_array().unwrap();
+    let moving = nodes.iter().find(|node| node["label"] == "moving").unwrap();
+    assert_eq!(moving["attributes"]["entry"], "startRun");
+    assert_eq!(moving["attributes"]["do"], "rememberLanding");
+    assert_eq!(moving["attributes"]["exit"], "stopRun");
+    let running = nodes
+        .iter()
+        .find(|node| node["label"] == "running")
+        .unwrap();
+    assert_eq!(running["attributes"]["do"], "fullForce");
+    assert_eq!(running["attributes"]["entry"], "Behavior::externalStart");
+    let edges = input["prepared"]["edges"].as_array().unwrap();
+    let accepting = edges
+        .iter()
+        .find(|edge| edge["attributes"]["trigger"] == "InvokeReset")
+        .unwrap();
+    assert_eq!(accepting["attributes"]["transitionName"], "begin");
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).unwrap();
+    let tree = diagram_draw::xml::parse(&svg);
+    let mut pending = vec![&tree];
+    let mut texts = Vec::new();
+    while let Some(node) = pending.pop() {
+        if node.tag == "text" {
+            texts.push(node.text.as_str());
+        }
+        pending.extend(&node.children);
+    }
+    for label in [
+        "after dwellTime [ready]",
+        "after engagementDiscrepancyTime",
+        "InvokeReset",
+        "CommandFinished",
+        "entry startRun",
+        "exit stopRun",
+        "do rememberLanding",
+        "do fullForce",
+        "entry Behavior::externalStart",
+    ] {
+        assert!(texts.contains(&label), "missing visible label {label}");
+    }
+}
+
+#[test]
 fn a_state_that_owns_states_shows_them_inside_it() {
     let payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_composite_state.md"

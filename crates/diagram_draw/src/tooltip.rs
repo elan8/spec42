@@ -181,6 +181,12 @@ pub fn behavior_edge_tooltip_descriptor(
 
     let mut rows = Vec::new();
     let mut technical_rows = Vec::new();
+    if view == "state-transition-view" {
+        let name = attr_text(attrs, "transitionName");
+        if name != edge.label {
+            push_row(&mut rows, "Transition", &name);
+        }
+    }
     if !is_generic {
         push_row(&mut rows, "Name", &edge.label);
     }

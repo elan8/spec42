@@ -178,12 +178,12 @@ fn build_elk_layout_options(
             // Follow the transitions from the initial state, so that the layers read in the
             // order a run passes through the states and only the returns go backwards.
             ("elk.layered.cycleBreaking.strategy", "DEPTH_FIRST"),
-            ("elk.layered.spacing.nodeNodeBetweenLayers", "40"),
-            ("elk.spacing.nodeNode", "28"),
-            ("elk.spacing.edgeNode", "18"),
-            ("elk.spacing.edgeEdge", "14"),
-            ("elk.spacing.edgeLabel", "6"),
-            ("elk.padding", "[top=48,left=24,bottom=24,right=24]"),
+            ("elk.layered.spacing.nodeNodeBetweenLayers", "28"),
+            ("elk.spacing.nodeNode", "20"),
+            ("elk.spacing.edgeNode", "14"),
+            ("elk.spacing.edgeEdge", "10"),
+            ("elk.spacing.edgeLabel", "4"),
+            ("elk.padding", "[top=36,left=18,bottom=18,right=18]"),
         ],
         ElkViewKind::BehaviorAction => &[
             ("elk.layered.crossingMinimization.strategy", "LAYER_SWEEP"),
@@ -894,12 +894,12 @@ fn state_box(node: &Value) -> (f64, f64) {
     // The keyword and the name sit on a 38 px header; the label of the state actions
     // compartment and its lines follow on a 16 px pitch.
     let height = if actions == 0.0 {
-        42.0
+        56.0
     } else {
         width = width.max(96.0);
         62.0 + actions * 16.0
     };
-    (width.max(96.0).ceil(), height)
+    (width.max(120.0).ceil(), height)
 }
 
 /// The room the names of an action's parameters on one side take beside it: the box against the

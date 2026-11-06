@@ -817,6 +817,75 @@ impl<D> SemanticModel<D> {
         }
     }
 
+    /// The accepting feature carried by a transition's canonical trigger action.
+    pub(crate) fn owned_transition_trigger(
+        &self,
+        symbol: SymbolId,
+    ) -> crate::diagram_query::DiagramTransitionFeature {
+        use crate::diagram_query::DiagramTransitionFeature as Feature;
+        let Some(transition) = self.declaration_of(symbol) else {
+            return Feature::Unresolved;
+        };
+        let Some(action) = self
+            .child_declarations(transition)
+            .iter()
+            .copied()
+            .find(|child| {
+                self.effective_membership_role(*child)
+                    == Some(MembershipRole::TransitionTriggerAction)
+            })
+        else {
+            return Feature::Absent;
+        };
+        for child in self.child_declarations(action) {
+            let Some(facts) = self.storage.declaration_facts(*child) else {
+                continue;
+            };
+            if let Some(kind) = facts.trigger_kind {
+                let Some(argument) = &facts.trigger_argument_text else {
+                    return Feature::Unsupported;
+                };
+                let Some(inspection) = self.inspection(*child) else {
+                    return Feature::Unresolved;
+                };
+                return Feature::Resolved {
+                    label: format!("{} {argument}", kind.as_str()).into(),
+                    target: inspection.identity,
+                    source: inspection.location,
+                };
+            }
+            if facts.is_trigger_payload_parameter {
+                let Some(payload) = self.inspection(*child) else {
+                    return Feature::Unresolved;
+                };
+                for reference in self.outgoing_reference_ids(*child) {
+                    if self.storage.references[reference.index()].kind
+                        != ReferenceKind::FeatureTyping
+                    {
+                        continue;
+                    }
+                    return match self.resolution.outcome(*reference) {
+                        Some(ResolutionStatus::Resolved(target)) => match self.inspection(target) {
+                            Some(inspection) => Feature::Resolved {
+                                label: self
+                                    .symbol_name(inspection.identity)
+                                    .unwrap_or_default()
+                                    .into(),
+                                target: inspection.identity,
+                                source: payload.location,
+                            },
+                            None => Feature::Unresolved,
+                        },
+                        Some(ResolutionStatus::Ambiguous(_)) => Feature::Ambiguous,
+                        Some(ResolutionStatus::Unsupported) => Feature::Unsupported,
+                        _ => Feature::Unresolved,
+                    };
+                }
+            }
+        }
+        Feature::Unsupported
+    }
+
     /// When a conditional succession is taken: its guard as written, or `else`. `None` for
     /// every other element. Settled where the succession is lowered.
     pub(crate) fn succession_guard(

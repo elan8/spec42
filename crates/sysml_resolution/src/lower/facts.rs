@@ -411,6 +411,8 @@ pub(crate) struct DeclarationFacts {
     pub(crate) is_trigger_action: Option<bool>,
     /// Kind of this authored TriggerInvocationExpression; shared by checks and publication.
     pub(crate) trigger_kind: Option<sysml_contract::TriggerKind>,
+    /// Authored trigger argument for diagram labels; captured from its expression span.
+    pub(crate) trigger_argument_text: Option<Box<str>>,
     /// Whether an `AcceptActionUsage`'s first input parameter owns an authored value expression.
     /// Typed payload declarations still synthesize the required payload parameter, but have no
     /// argument expression; shorthand/time triggers do.

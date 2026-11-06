@@ -2050,6 +2050,8 @@ impl SemanticModelBuilder {
         if argument_fact == TriggerArgument::Other {
             self.lower_constraint_expression(document, expression, family, argument)?;
         }
+        self.declaration_facts[expression.index()].trigger_argument_text =
+            Some(self.guard_text(document, argument));
         self.declaration_facts[expression.index()].trigger_kind = Some(match kind {
             sysml_v2_parser::ast::TriggerKind::When => TriggerInvocationKind::When,
             sysml_v2_parser::ast::TriggerKind::At => TriggerInvocationKind::At,

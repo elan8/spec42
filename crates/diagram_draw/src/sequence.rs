@@ -136,7 +136,7 @@ fn lifeline_gap(lifelines: &[Value], messages: &[Value]) -> f64 {
             .map(|value| as_str(Some(value), ""))
             .and_then(|id| index_of(&id))
     };
-    let mut gap: f64 = LIFELINE_BOX_WIDTH + 16.0;
+    let mut gap: f64 = lifeline_box_width(lifelines) + 16.0;
     for message in messages {
         let label = message_label(message);
         let characters = label.encode_utf16().count().min(MESSAGE_LABEL_MAX) as f64;
@@ -144,13 +144,34 @@ fn lifeline_gap(lifelines: &[Value], messages: &[Value]) -> f64 {
             end(message, ["source", "from", "sourceId"]),
             end(message, ["target", "to", "targetId"]),
         ) else {
-            return LIFELINE_GAP;
+            return LIFELINE_GAP.max(gap);
         };
         let span = source.abs_diff(target).max(1) as f64;
         // Room for the label and the arrowhead clear of both lifelines.
         gap = gap.max((characters * MESSAGE_LABEL_CHARACTER + 28.0) / span);
     }
     gap.ceil()
+}
+
+/// Reserve enough space for complete occurrence and type labels in every header.
+fn lifeline_box_width(lifelines: &[Value]) -> f64 {
+    lifelines
+        .iter()
+        .fold(LIFELINE_BOX_WIDTH, |width, lifeline| {
+            let name = as_str(
+                get(lifeline, "name")
+                    .or_else(|| get(lifeline, "label"))
+                    .or_else(|| get(lifeline, "id")),
+                "",
+            );
+            let type_name = get(lifeline, "typeName")
+                .and_then(Value::as_str)
+                .unwrap_or("");
+            width
+                .max(name.encode_utf16().count() as f64 * 7.0 + 24.0)
+                .max((type_name.encode_utf16().count() + 2) as f64 * 6.0 + 24.0)
+                .ceil()
+        })
 }
 
 /// Port of `renderSequenceView`. Returns the drawn content plus its `{minX,minY,maxX,maxY}`
@@ -171,6 +192,7 @@ pub fn render_sequence_view(
     let mut messages = as_array(get(&diagram, "messages")).to_vec();
     messages.sort_by(|a, b| as_f64(get(a, "order"), 0.0).total_cmp(&as_f64(get(b, "order"), 0.0)));
     let lifeline_gap = lifeline_gap(&lifelines, &messages);
+    let box_width = lifeline_box_width(&lifelines);
     let activations = as_array(get(&diagram, "activations")).to_vec();
     let fragments = as_array(get(&diagram, "fragments")).to_vec();
     let limitations = prepared
@@ -210,8 +232,7 @@ pub fn render_sequence_view(
     }
 
     let x_offset = (80.0_f64).max(
-        (width - (((lifelines.len() as f64 - 1.0).max(0.0)) * lifeline_gap + LIFELINE_BOX_WIDTH))
-            / 2.0,
+        (width - (((lifelines.len() as f64 - 1.0).max(0.0)) * lifeline_gap + box_width)) / 2.0,
     );
     let lifeline_id =
         |lifeline: &Value| as_str(get(lifeline, "id").or_else(|| get(lifeline, "name")), "");
@@ -243,19 +264,16 @@ pub fn render_sequence_view(
     for lifeline in &lifelines {
         let id = lifeline_id(lifeline);
         let x = x_for(&id).unwrap_or(x_offset);
-        let label = truncate_label(
-            &as_str(
-                get(lifeline, "name")
-                    .or_else(|| get(lifeline, "label"))
-                    .or(Some(&Value::String(id.clone()))),
-                &id,
-            ),
-            18,
+        let label = as_str(
+            get(lifeline, "name")
+                .or_else(|| get(lifeline, "label"))
+                .or(Some(&Value::String(id.clone()))),
+            &id,
         );
         let type_name = get(lifeline, "typeName")
             .and_then(Value::as_str)
             .filter(|name| !name.is_empty())
-            .map(|name| truncate_label(&format!(": {name}"), 22));
+            .map(|name| format!(": {name}"));
         let prepared_node: Option<&PreparedNode> = find_prepared_lifeline(prepared, lifeline);
         let mut group = Element::new("g").attr("class", "sequence-lifeline").attr(
             "data-node-id",
@@ -274,9 +292,9 @@ pub fn render_sequence_view(
                     .attr("class", "node-background")
                     .attr("data-original-stroke", theme.node_border)
                     .attr("data-original-width", "1.5px")
-                    .attr_f("x", x - LIFELINE_BOX_WIDTH / 2.0)
+                    .attr_f("x", x - box_width / 2.0)
                     .attr_f("y", HEADER_Y)
-                    .attr_f("width", LIFELINE_BOX_WIDTH)
+                    .attr_f("width", box_width)
                     .attr_f("height", LIFELINE_BOX_HEIGHT)
                     .attr("rx", "6")
                     .style("fill", theme.node_fill)
@@ -607,7 +625,7 @@ pub fn render_sequence_view(
     }
     root = root.insert_before_child("sequence-messages", fragment_layer);
 
-    let half_box = LIFELINE_BOX_WIDTH / 2.0;
+    let half_box = box_width / 2.0;
     let mut extents = (
         (x_offset - half_box)
             .min(0.0)
