@@ -57,6 +57,11 @@ pub fn run_diagram(cli: &Cli, args: &DiagramArgs) -> Result<ExitCode, String> {
                 model.diagram_view(&summary.handle)
             }
             .map_err(|error| format!("`{view}` could not be projected: {error}"))?;
+            if projection.exposed_roots.is_empty() {
+                eprintln!(
+                    "warning[empty_diagram]: `{view}` has no exposed roots; check its expose and filter declarations."
+                );
+            }
             let product = diagram_product::diagram_product_json(&projection)?;
             let product = String::from_utf8(product).expect("serde_json writes UTF-8");
             if args.stats {
