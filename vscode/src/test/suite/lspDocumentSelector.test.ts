@@ -15,4 +15,12 @@ describe("workspace language client document selection", () => {
     }
   }
   it("excludes other languages", () => assert.strictEqual(score("file", "typescript"), 0));
+  it("excludes a Windows Copilot editing URI with revision query data", () => {
+    const document = {
+      uri: vscode.Uri.parse("chat-editing-text-model:/C%3A/Git/project/Model.sysml?session=test&revision=12"),
+      languageId: "sysml",
+    } as vscode.TextDocument;
+    assert.ok(vscode.languages.match([{ language: "sysml" }], document) > 0);
+    assert.strictEqual(vscode.languages.match(MODEL_DOCUMENT_SELECTOR, document), 0);
+  });
 });
