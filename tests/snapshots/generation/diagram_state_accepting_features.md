@@ -2344,7 +2344,7 @@ package Behavior {
 ~~~json
 {
   "schemaVersion": 12,
-  "modelDigest": "blake3:bf9c35578d64c7687d538798f62a0c78cc4358eebdb133bb9d76c19034665ac0",
+  "modelDigest": "blake3:b3d06db170f5f377e20fab657b35d82aaf6be94f123c65096856e5a3b56c35e4",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
