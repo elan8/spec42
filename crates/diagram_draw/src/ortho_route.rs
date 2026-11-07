@@ -120,6 +120,10 @@ pub(crate) fn route_across(
 pub(crate) enum Heading {
     Left,
     Right,
+    /// The end stands on top of a box: the line leaves or arrives from above.
+    Up,
+    /// The end stands under a box: the line leaves or arrives from below.
+    Down,
 }
 
 /// A route from the point `from` to the point `to`, such as between two parameter squares on the
@@ -140,9 +144,16 @@ pub(crate) fn pin_route(
     let stub = |(x, y): Point, heading: Heading| match heading {
         Heading::Left => (x - clearance, y),
         Heading::Right => (x + clearance, y),
+        Heading::Up => (x, y - clearance),
+        Heading::Down => (x, y + clearance),
     };
-    let start = (from, stub(from, out_of), 0);
-    let end = (to, stub(to, into), 0);
+    // The first and last runs are horizontal from a side, vertical from a top or bottom.
+    let axis = |heading: Heading| match heading {
+        Heading::Left | Heading::Right => 0,
+        Heading::Up | Heading::Down => 1,
+    };
+    let start = (from, stub(from, out_of), axis(out_of));
+    let end = (to, stub(to, into), axis(into));
     // A line one more clearance out from each end, so that the route can turn into the last
     // stretch even where no box stands further out.
     let beyond = [stub(start.1, out_of), stub(end.1, into)];

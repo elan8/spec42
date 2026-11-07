@@ -1,6 +1,8 @@
 //! Flows between parameters run from the box of one parameter to the box of the other (SysML v2
 //! 8.2.3.17), including the parameters of the action that holds the flow. A parameter's box stands
-//! against its action's boundary on the outside and holds its direction mark.
+//! against its action's boundary on the outside and holds its direction mark. In a top-to-bottom
+//! flow an action's inputs stand on its top edge and its outputs on its bottom edge
+//! (`param-t`, `param-b`); an action that holds its own flow keeps them on its sides.
 
 use diagram_draw::{draw_input_from_payload, render_svg_from_payload};
 use serde_json::{json, Value};
@@ -81,34 +83,38 @@ fn flows_between_parameters_start_and_end_on_their_squares() {
     };
     let (a, b, c) = (rect("n:0"), rect("n:3"), rect("n:6"));
     type Rect = (f64, f64, f64, f64);
-    // A parameter's box stands against the left or right side of its action, below its top. A
-    // flow outside the action meets the outer edge of the box, 12 px out; a flow inside the action
-    // that holds the parameter meets the side itself.
+    // The box of an input of `b` or `c` stands on the top edge and that of an output on the
+    // bottom edge; a flow meets its outer edge, 12 px out. The holding action keeps its parameters
+    // on its sides, and a flow inside it meets the side itself.
     const BOX: f64 = 12.0;
+    let across = |x: f64, rect: Rect| x > rect.0 && x < rect.0 + rect.2;
     let within = |y: f64, rect: Rect| y > rect.1 && y < rect.1 + rect.3;
-    let on_left = |(x, y): (f64, f64), rect: Rect| x == rect.0 - BOX && within(y, rect);
-    let on_right = |(x, y): (f64, f64), rect: Rect| x == rect.0 + rect.2 + BOX && within(y, rect);
+    let on_top = |(x, y): (f64, f64), rect: Rect| y == rect.1 - BOX && across(x, rect);
+    let on_bottom = |(x, y): (f64, f64), rect: Rect| y == rect.1 + rect.3 + BOX && across(x, rect);
     let inside_left = |(x, y): (f64, f64), rect: Rect| x == rect.0 && within(y, rect);
     let inside_right = |(x, y): (f64, f64), rect: Rect| x == rect.0 + rect.2 && within(y, rect);
 
-    // From the input of the holding action, on its left side, inwards to the input of `b`.
+    // From the input of the holding action, on its left side, inwards to the input of `b`, which
+    // it enters from above.
     let x_to_p = route("e:0");
     assert!(inside_left(x_to_p[0], a), "{x_to_p:?}");
     // Below the name compartment of the holding action.
     assert!(x_to_p[0].1 > a.1 + 44.0, "{x_to_p:?}");
     assert!(x_to_p[1].0 > a.0, "{x_to_p:?}");
-    assert!(on_left(*x_to_p.last().unwrap(), b), "{x_to_p:?}");
+    assert!(on_top(*x_to_p.last().unwrap(), b), "{x_to_p:?}");
+    assert!(x_to_p[x_to_p.len() - 2].1 < b.1 - BOX, "{x_to_p:?}");
 
-    // From the output of `b`, on its right side, to the input of `c`, on its left side.
+    // From the output of `b`, leaving its bottom edge downwards, to the input of `c` on its top.
     let q_to_r = route("e:1");
-    assert!(on_right(q_to_r[0], b), "{q_to_r:?}");
-    assert!(q_to_r[1].0 > b.0 + b.2, "{q_to_r:?}");
-    assert!(on_left(*q_to_r.last().unwrap(), c), "{q_to_r:?}");
-    assert!(q_to_r[q_to_r.len() - 2].0 < c.0, "{q_to_r:?}");
+    assert!(on_bottom(q_to_r[0], b), "{q_to_r:?}");
+    assert!(q_to_r[1].1 > b.1 + b.3 + BOX, "{q_to_r:?}");
+    assert!(on_top(*q_to_r.last().unwrap(), c), "{q_to_r:?}");
+    assert!(q_to_r[q_to_r.len() - 2].1 < c.1 - BOX, "{q_to_r:?}");
 
-    // To the output of the holding action, on its right side, from inside it.
+    // From the output of `c`, on its bottom edge, to the output of the holding action, on its
+    // right side, from inside it.
     let s_to_y = route("e:2");
-    assert!(on_right(s_to_y[0], c), "{s_to_y:?}");
+    assert!(on_bottom(s_to_y[0], c), "{s_to_y:?}");
     assert!(inside_right(*s_to_y.last().unwrap(), a), "{s_to_y:?}");
     assert!(s_to_y[s_to_y.len() - 2].0 < a.0 + a.2, "{s_to_y:?}");
 
@@ -159,26 +165,41 @@ fn a_parameter_box_holds_its_direction_and_an_action_flow_draws_no_ports() {
         );
     }
 
-    // The box of an input stands left of its action's side, touching it; that of an output right.
+    // The box of an input stands above its action's top edge, touching it; that of an output
+    // below its bottom edge.
     let input = draw_input_from_payload(&payload).expect("action flow lays out");
     let b = &input["behaviorLayout"]["positions"]["n:3"];
-    let (bx, bw) = (b["x"].as_f64().unwrap(), b["width"].as_f64().unwrap());
+    let (by, bh) = (b["y"].as_f64().unwrap(), b["height"].as_f64().unwrap());
     let badges = svg
         .split("<g class=\"activity-action")
         .find(|group| group.contains(">b</text>"))
         .expect("the group of b");
-    assert!(badges.contains("class=\"action-parameter-badge action-parameter-input\" x=\"-12\""));
-    assert!(badges.contains(&format!(
-        "class=\"action-parameter-badge action-parameter-output\" x=\"{}\"",
-        bw
-    )));
-    assert!(bx.is_finite());
+    let tree = diagram_draw::xml::parse(&format!("<g>{badges}"));
+    let mut pending = vec![&tree];
+    let mut boxes = Vec::new();
+    while let Some(element) = pending.pop() {
+        if element.tag == "rect" {
+            if let Some(class) = element.attrs.get("class") {
+                if class.starts_with("action-parameter-badge") {
+                    boxes.push((class.clone(), element.attrs["y"].parse::<f64>().unwrap()));
+                }
+            }
+        }
+        pending.extend(&element.children);
+    }
+    assert!(boxes
+        .iter()
+        .any(|(class, y)| class.ends_with("input") && *y == -12.0));
+    assert!(boxes
+        .iter()
+        .any(|(class, y)| class.ends_with("output") && *y == bh));
+    assert!(by.is_finite());
 }
 
 #[test]
 fn a_flow_goes_around_the_names_of_other_parameters() {
-    // `b` gets a second output below `q`, with a long name. The flow from `q` to `c.r` must not
-    // run through that name, which stands beside `b` above its square.
+    // `b` gets a second output beside `q`, with a long name. The flow from `q` to `c.r` must not
+    // run through that name, which stands beside its box under `b`.
     let mut payload = payload();
     let nodes = payload["projection"]["nodes"].as_array_mut().unwrap();
     nodes.push(node(
@@ -190,14 +211,19 @@ fn a_flow_goes_around_the_names_of_other_parameters() {
     let input = draw_input_from_payload(&payload).expect("action flow lays out");
     let layout = &input["behaviorLayout"];
     let b = &layout["positions"]["n:3"];
-    let (bx, by, bw) = (
+    let (bx, by, bw, bh) = (
         b["x"].as_f64().unwrap(),
         b["y"].as_f64().unwrap(),
         b["width"].as_f64().unwrap(),
+        b["height"].as_f64().unwrap(),
     );
-    // The second output's box is 38 px below the top of `b`; its name is 8 px text whose
-    // baseline is 6 px above the box, starting 3 px beyond the 12 px box.
-    let name = (bx + bw + 15.0, by + 38.0 - 13.0, 22.0 * 5.0, 10.0);
+    // The two outputs share the bottom edge, side by side from 16 px in, each in a slot of its
+    // box, 16 px and its name; the second's name is 8 px text starting 3 px beyond its 12 px box,
+    // level with the box.
+    let first_slot = 5.4 + 12.0 + 16.0; // `q`
+    let centre = bx + 16.0 + first_slot + 6.0;
+    let name = (centre + 9.0, by + bh + 1.0, 22.0 * 5.4, 10.0);
+    assert!(bw > 0.0);
     let section = &layout["edgeSectionsById"]["e:1"][0];
     let mut points = vec![point(&section["startPoint"])];
     points.extend(section["bendPoints"].as_array().unwrap().iter().map(point));

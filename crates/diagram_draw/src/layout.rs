@@ -88,6 +88,7 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
                     "behaviorLayout": behavior_layout,
                 }));
             }
+            let prepared = &with_pin_sides(prepared, horizontal);
             let mut behavior_layout = if let Some(nested) =
                 layout_nested_behavior(prepared, horizontal, BehaviorMode::Action)?
             {
@@ -97,7 +98,7 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
             } else {
                 layout_behavior_graph(prepared, horizontal, BehaviorMode::Action)?.0
             };
-            route_parameter_flows(prepared, &mut behavior_layout);
+            route_parameter_flows(prepared, &mut behavior_layout, horizontal);
             Ok(json!({
                 "prepared": prepared,
                 "behaviorLayout": behavior_layout,
@@ -858,9 +859,15 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             } else if kind.contains("fork") || kind.contains("join") {
                 (220.0, 14.0)
             } else {
-                // An action is high enough for the parameters on its fuller side.
-                let rows = parameter_rows(node);
-                (220.0, (68.0_f64).max(20.0 + rows as f64 * PARAMETER_PITCH))
+                if field(field(node, "attributes"), "pinsTopAndBottom") == &json!(true) {
+                    // An action is wide enough for its parameters side by side on its top and
+                    // bottom edges.
+                    ((220.0_f64).max(top_and_bottom_width(node)).ceil(), 68.0)
+                } else {
+                    // An action is high enough for the parameters on its fuller side.
+                    let rows = parameter_rows(node);
+                    (220.0, (68.0_f64).max(20.0 + rows as f64 * PARAMETER_PITCH))
+                }
             }
         }
     }
@@ -948,6 +955,140 @@ pub(crate) fn parameter_offset(index: usize, container: bool) -> f64 {
     top + 22.0 + index as f64 * PARAMETER_PITCH
 }
 
+/// The edge of an action a parameter's box stands against (SysML v2 8.2.3.17 `param-l`,
+/// `param-r`, `param-t`, `param-b`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum PinSide {
+    Left,
+    Right,
+    Top,
+    Bottom,
+}
+
+/// Whether an action's inputs stand on its top edge and its outputs on its bottom edge, so that
+/// flows in a top-to-bottom view run straight down. An action that holds its own flow keeps them
+/// on its sides, inside its frame, as do all actions in a left-to-right view.
+pub(crate) fn pins_top_and_bottom(horizontal: bool, container: bool) -> bool {
+    !horizontal && !container
+}
+
+/// One parameter box of an action, relative to the action's top-left corner.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct ParameterPin {
+    pub(crate) side: PinSide,
+    /// The top-left corner of the box.
+    pub(crate) origin: (f64, f64),
+    /// Where a flow meets the box: its outer edge, or for an action that holds the flow, the
+    /// boundary the box stands against.
+    pub(crate) anchor: (f64, f64),
+    /// The start of the name's baseline, and how the name runs from it (`start` or `end`).
+    pub(crate) name_at: (f64, f64),
+    pub(crate) name_anchor: &'static str,
+    /// The box the name takes, `(x, y, width, height)`.
+    pub(crate) name_box: (f64, f64, f64, f64),
+}
+
+/// The room one parameter needs along a top or bottom edge: its box, a gap and its name.
+fn pin_slot(name: &str) -> f64 {
+    name.chars().count() as f64 * PARAMETER_NAME_CHARACTER + PARAMETER_SIZE + 16.0
+}
+
+/// How far from the left end of a top or bottom edge its parameters start.
+const PIN_INSET: f64 = 16.0;
+
+/// The `index`th of the parameters named `names` on one side of an action `width` by `height`.
+/// On the top and bottom edges the boxes stand side by side from the left end, each in a slot as
+/// wide as its name, so that the middle of the edge, where successions arrive and leave, stays
+/// free; each name stands beside its box, so that a flow running straight in or out of the box
+/// does not cross it. On the sides they keep the pitch of `parameter_offset` with the name above
+/// the box.
+pub(crate) fn parameter_pin(
+    input: bool,
+    index: usize,
+    names: &[String],
+    (width, height): (f64, f64),
+    container: bool,
+    top_and_bottom: bool,
+) -> ParameterPin {
+    let size = PARAMETER_SIZE;
+    let name = names.get(index).map(String::as_str).unwrap_or_default();
+    let name_width = name.chars().count() as f64 * PARAMETER_NAME_CHARACTER;
+    if top_and_bottom {
+        let before: f64 = names[..index.min(names.len())]
+            .iter()
+            .map(|name| pin_slot(name))
+            .sum();
+        let centre_x = PIN_INSET + before + size / 2.0;
+        let (side, box_y, anchor_y) = if input {
+            (PinSide::Top, -size, -size)
+        } else {
+            (PinSide::Bottom, height, height + size)
+        };
+        let name_x = centre_x + size / 2.0 + 3.0;
+        let baseline = box_y + size / 2.0 + 3.0;
+        return ParameterPin {
+            side,
+            origin: (centre_x - size / 2.0, box_y),
+            anchor: (centre_x, anchor_y),
+            name_at: (name_x, baseline),
+            name_anchor: "start",
+            name_box: (name_x, baseline - 8.0, name_width, PARAMETER_NAME_HEIGHT),
+        };
+    }
+    let centre_y = parameter_offset(index, container);
+    let (side, edge) = if input {
+        (PinSide::Left, 0.0)
+    } else {
+        (PinSide::Right, width)
+    };
+    let anchor_x = match (input, container) {
+        (true, false) => edge - size,
+        (false, false) => edge + size,
+        (_, true) => edge,
+    };
+    let (name_x, name_anchor, name_left) = if input {
+        (-size - 3.0, "end", edge - PARAMETER_NAME_GAP - name_width)
+    } else {
+        (width + size + 3.0, "start", edge + PARAMETER_NAME_GAP)
+    };
+    ParameterPin {
+        side,
+        origin: (if input { -size } else { width }, centre_y - size / 2.0),
+        anchor: (anchor_x, centre_y),
+        name_at: (name_x, centre_y - 6.0),
+        name_anchor,
+        name_box: (
+            name_left,
+            centre_y - PARAMETER_NAME_ABOVE,
+            name_width,
+            PARAMETER_NAME_HEIGHT,
+        ),
+    }
+}
+
+/// How wide an action must be for its parameters side by side on its top and bottom edges.
+fn top_and_bottom_width(node: &Value) -> f64 {
+    let attributes = field(node, "attributes");
+    [
+        ["inputs", "inputParameters"],
+        ["outputs", "outputParameters"],
+    ]
+    .iter()
+    .map(|keys| {
+        keys.iter()
+            .map(|key| as_array(field(attributes, key)))
+            .find(|items| !items.is_empty())
+            .unwrap_or_default()
+            .iter()
+            .map(|item| pin_slot(&crate::action_flow::parameter_name(item)))
+            .sum::<f64>()
+            // The pins start at the left end; the middle stays free for successions.
+            * 2.0
+            + PIN_INSET
+    })
+    .fold(0.0, f64::max)
+}
+
 /// The most parameters an action has on one side.
 fn parameter_rows(node: &Value) -> usize {
     let attributes = field(node, "attributes");
@@ -990,12 +1131,32 @@ fn name_obstacle((x, y, width, height): crate::ortho_route::Rect) -> crate::orth
     )
 }
 
+/// Marks each action whose parameters stand on its top and bottom edges
+/// (`pins_top_and_bottom`), so that its size is computed for them.
+fn with_pin_sides(prepared: &Value, horizontal: bool) -> Value {
+    let containers: HashSet<String> = as_array(field(prepared, "nodes"))
+        .iter()
+        .map(|node| as_string(field(field(node, "attributes"), "containerId"), ""))
+        .filter(|container| !container.is_empty())
+        .collect();
+    let mut prepared = prepared.clone();
+    if let Some(nodes) = prepared["nodes"].as_array_mut() {
+        for node in nodes {
+            let container = containers.contains(&as_string(field(node, "id"), ""));
+            if pins_top_and_bottom(horizontal, container) && node["attributes"].is_object() {
+                node["attributes"]["pinsTopAndBottom"] = json!(true);
+            }
+        }
+    }
+    prepared
+}
+
 /// Draws each flow between two parameters from the box of one to the box of the other,
 /// around the actions and control nodes on its way (SysML v2 8.2.3.17). A flow leaves and enters
 /// an action outwards, on the side its parameter is drawn on; on an action that holds the flow it
 /// leaves and enters inwards. Layout placed the actions with the flows drawn between their boxes;
 /// this replaces those routes. A flow with an end that is not a parameter keeps its route.
-fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
+fn route_parameter_flows(prepared: &Value, layout: &mut Value, horizontal: bool) {
     use crate::ortho_route::{pin_route, Heading};
     let nodes = as_array(field(prepared, "nodes"));
     let rect_of = |layout: &Value, id: &str| -> Option<crate::ortho_route::Rect> {
@@ -1025,10 +1186,11 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
     let mut names: Vec<crate::ortho_route::Rect> = Vec::new();
     for node in nodes {
         let id = as_string(field(node, "id"), "");
-        let Some((x, y, width, _)) = rect_of(layout, &id) else {
+        let Some((x, y, width, height)) = rect_of(layout, &id) else {
             continue;
         };
         let container = containers.contains(&id);
+        let top_and_bottom = pins_top_and_bottom(horizontal, container);
         let attributes = field(node, "attributes");
         for (keys, input) in [
             (["inputs", "inputParameters"], true),
@@ -1039,39 +1201,37 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value) {
                 .map(|key| as_array(field(attributes, key)))
                 .find(|items| !items.is_empty())
                 .unwrap_or_default();
+            let labels: Vec<String> = items
+                .iter()
+                .map(crate::action_flow::parameter_name)
+                .collect();
             for (index, item) in items.iter().enumerate() {
                 let parameter = as_string(field(item, "id"), "");
                 if parameter.is_empty() {
                     continue;
                 }
-                let heading = if input != container {
-                    Heading::Left
-                } else {
-                    Heading::Right
+                let pin = parameter_pin(
+                    input,
+                    index,
+                    &labels,
+                    (width, height),
+                    container,
+                    top_and_bottom,
+                );
+                // A flow outside the action leaves and enters on the side the box stands on;
+                // inside the action that holds it, inwards.
+                let heading = match (pin.side, container) {
+                    (PinSide::Top, _) => Heading::Up,
+                    (PinSide::Bottom, _) => Heading::Down,
+                    (PinSide::Left, false) | (PinSide::Right, true) => Heading::Left,
+                    (PinSide::Right, false) | (PinSide::Left, true) => Heading::Right,
                 };
-                let side = if input { x } else { x + width };
-                // A flow outside the action meets the outer edge of the parameter's box; a flow
-                // inside the action that holds it meets the boundary the box stands against.
-                let anchor = match (input, container) {
-                    (true, false) => side - PARAMETER_SIZE,
-                    (false, false) => side + PARAMETER_SIZE,
-                    (_, true) => side,
-                };
-                let centre = y + parameter_offset(index, container);
-                let name_width = as_string(field(item, "name"), "").chars().count() as f64
-                    * PARAMETER_NAME_CHARACTER;
-                let name_x = if input {
-                    side - PARAMETER_NAME_GAP - name_width
-                } else {
-                    side + PARAMETER_NAME_GAP
-                };
-                names.push(name_obstacle((
-                    name_x,
-                    centre - PARAMETER_NAME_ABOVE,
-                    name_width,
-                    PARAMETER_NAME_HEIGHT,
-                )));
-                pins.insert(parameter, ((anchor, centre), id.clone(), heading));
+                let (nx, ny, nw, nh) = pin.name_box;
+                names.push(name_obstacle((x + nx, y + ny, nw, nh)));
+                pins.insert(
+                    parameter,
+                    ((x + pin.anchor.0, y + pin.anchor.1), id.clone(), heading),
+                );
             }
         }
     }
