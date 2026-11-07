@@ -2446,6 +2446,113 @@ fn container_of_node(node: &Value) -> Option<String> {
     }
 }
 
+/// The total length of the routed connectors of a laid-out graph.
+fn connector_length(laid_out: &Value) -> f64 {
+    fn edges(node: &Value, total: &mut f64) {
+        for edge in as_array(field(node, "edges")) {
+            for section in as_array(field(edge, "sections")) {
+                let point = |value: &Value| (num(field(value, "x")), num(field(value, "y")));
+                let points: Vec<(f64, f64)> = std::iter::once(point(field(section, "startPoint")))
+                    .chain(as_array(field(section, "bendPoints")).iter().map(point))
+                    .chain(std::iter::once(point(field(section, "endPoint"))))
+                    .collect();
+                *total += points
+                    .windows(2)
+                    .map(|run| (run[1].0 - run[0].0).abs() + (run[1].1 - run[0].1).abs())
+                    .sum::<f64>();
+            }
+        }
+        for child in as_array(field(node, "children")) {
+            edges(child, total);
+        }
+    }
+    let mut total = 0.0;
+    edges(laid_out, &mut total);
+    total
+}
+
+/// The side each port of a laid-out interconnection graph would face its connections from:
+/// `WEST` where the other ends of its connectors lie, on balance, left of its part's centre,
+/// otherwise `EAST`. Empty when every port already faces that way. The caller applies the sides
+/// only to ports with no direction of their own.
+fn facing_sides(laid_out: &Value) -> HashMap<String, &'static str> {
+    // Absolute centres of every port and part, and the part each port is on.
+    let mut centres: HashMap<String, (f64, f64)> = HashMap::new();
+    let mut owner: HashMap<String, (String, &'static str)> = HashMap::new();
+    fn visit(
+        node: &Value,
+        (ox, oy): (f64, f64),
+        centres: &mut HashMap<String, (f64, f64)>,
+        owner: &mut HashMap<String, (String, &'static str)>,
+    ) {
+        let (x, y) = (ox + num(field(node, "x")), oy + num(field(node, "y")));
+        let id = as_string(field(node, "id"), "");
+        centres.insert(
+            id.clone(),
+            (
+                x + num(field(node, "width")) / 2.0,
+                y + num(field(node, "height")) / 2.0,
+            ),
+        );
+        for port in as_array(field(node, "ports")) {
+            let port_id = as_string(field(port, "id"), "");
+            centres.insert(
+                port_id.clone(),
+                (
+                    x + num(field(port, "x")) + num(field(port, "width")) / 2.0,
+                    y + num(field(port, "y")) + num(field(port, "height")) / 2.0,
+                ),
+            );
+            let side =
+                match field(field(port, "layoutOptions"), "org.eclipse.elk.port.side").as_str() {
+                    Some("WEST") => "WEST",
+                    _ => "EAST",
+                };
+            owner.insert(port_id, (id.clone(), side));
+        }
+        for child in as_array(field(node, "children")) {
+            visit(child, (x, y), centres, owner);
+        }
+    }
+    for child in as_array(field(laid_out, "children")) {
+        visit(child, (0.0, 0.0), &mut centres, &mut owner);
+    }
+    // For each port, how far left (negative) or right its connections' other ends lie in all.
+    let mut pull: HashMap<String, f64> = HashMap::new();
+    for edge in as_array(field(laid_out, "edges")) {
+        let ends = [field(edge, "sources"), field(edge, "targets")].map(|ends| {
+            as_array(ends)
+                .first()
+                .and_then(Value::as_str)
+                .map(str::to_owned)
+        });
+        let [Some(source), Some(target)] = ends else {
+            continue;
+        };
+        for (port, other) in [(&source, &target), (&target, &source)] {
+            let (Some((part, _)), Some(other)) = (owner.get(port), centres.get(other)) else {
+                continue;
+            };
+            let Some(centre) = centres.get(part) else {
+                continue;
+            };
+            *pull.entry(port.clone()).or_default() += other.0 - centre.0;
+        }
+    }
+    let sides: HashMap<String, &'static str> = pull
+        .into_iter()
+        .filter(|(_, pull)| pull.abs() > 0.5)
+        .map(|(port, pull)| (port, if pull < 0.0 { "WEST" } else { "EAST" }))
+        .collect();
+    if sides
+        .iter()
+        .all(|(port, side)| owner.get(port).is_some_and(|(_, current)| current == side))
+    {
+        return HashMap::new();
+    }
+    sides
+}
+
 fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_layout::LayoutError> {
     let nodes = as_array(field(prepared, "nodes"));
     let nodes_by_id: HashMap<String, Value> = nodes
@@ -2610,6 +2717,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         usage
     };
 
+    let facing: std::cell::RefCell<HashMap<String, &'static str>> = Default::default();
     let side_for_port = |port: &PreparedPort, node: &Value| -> &'static str {
         let side_hint = port.side_hint.to_ascii_lowercase();
         if side_hint == "west" {
@@ -2631,6 +2739,14 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         }
         if direction == "out" {
             return "EAST";
+        }
+        // A port with no direction faces the parts it connects to, once a first layout has
+        // placed them (`facing_sides`).
+        if let Some(side) = facing
+            .borrow()
+            .get(&port_id_for(&as_string(field(node, "id"), ""), &port.name))
+        {
+            return side;
         }
         let usage = usage_for_port(node, port);
         // A port of the outermost part is only used from inside: what it feeds lies to its
@@ -2913,20 +3029,24 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })
     }
 
-    let mut elk_children = Vec::new();
-    for node in &roots {
-        elk_children.push(to_elk_node(
-            node,
-            &children_by_parent,
-            &mut register_elk_id,
-            &port_id_for,
-            &split_ports,
-            &port_details_for,
-            root_header_height,
-            container_top_inset,
-            layer_gap,
-        ));
-    }
+    let mut elk_children_for_sides = || {
+        roots
+            .iter()
+            .map(|node| {
+                to_elk_node(
+                    node,
+                    &children_by_parent,
+                    &mut register_elk_id,
+                    &port_id_for,
+                    &split_ports,
+                    &port_details_for,
+                    root_header_height,
+                    container_top_inset,
+                    layer_gap,
+                )
+            })
+            .collect::<Vec<_>>()
+    };
 
     let connector_port_name = |node: &Value, endpoint: &Value| -> Option<String> {
         let endpoint_text = as_string(endpoint, "").trim().to_string();
@@ -2970,27 +3090,44 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })
         .collect();
 
-    let mut elk_graph_input = json!({
-        "id": "root",
-        "layoutOptions": build_elk_layout_options(
-            ElkViewKind::Interconnection,
-            &[
-                (
-                    "elk.layered.spacing.nodeNodeBetweenLayers",
-                    Some(&layer_gap.to_string()),
-                ),
-            ],
-        ),
-        "children": elk_children,
-        "edges": elk_edges.iter().map(|edge| json!({
-            "id": field(edge, "id"),
-            "sources": field(edge, "sources"),
-            "targets": field(edge, "targets"),
-        })).collect::<Vec<_>>(),
-    });
-
-    spread_crowded_layers(&mut elk_graph_input);
-    let laid_out = diagram_layout::layout_value(&elk_graph_input)?;
+    let mut graph_for_sides = || {
+        let mut graph = json!({
+            "id": "root",
+            "layoutOptions": build_elk_layout_options(
+                ElkViewKind::Interconnection,
+                &[
+                    (
+                        "elk.layered.spacing.nodeNodeBetweenLayers",
+                        Some(&layer_gap.to_string()),
+                    ),
+                ],
+            ),
+            "children": elk_children_for_sides(),
+            "edges": elk_edges.iter().map(|edge| json!({
+                "id": field(edge, "id"),
+                "sources": field(edge, "sources"),
+                "targets": field(edge, "targets"),
+            })).collect::<Vec<_>>(),
+        });
+        spread_crowded_layers(&mut graph);
+        graph
+    };
+    // The side of a port with no direction comes from the order of its connections' ends, which
+    // says nothing about where the parts it connects to are placed; a port on the far side of
+    // its part sends its connector around the part, or around the whole view. A second layout
+    // turns each such port towards the parts the first placed (`facing_sides`). Turning ports
+    // can move the parts too, so the second layout is kept only if its connectors are shorter.
+    let mut laid_out = diagram_layout::layout_value(&graph_for_sides())?;
+    let turned = facing_sides(&laid_out);
+    if !turned.is_empty() {
+        *facing.borrow_mut() = turned;
+        let facing_layout = diagram_layout::layout_value(&graph_for_sides())?;
+        if connector_length(&facing_layout) < connector_length(&laid_out) {
+            laid_out = facing_layout;
+        } else {
+            facing.borrow_mut().clear();
+        }
+    }
 
     let mut laid_out_nodes: HashMap<String, LaidOutNode> = HashMap::new();
     let mut port_centers: HashMap<String, Point> = HashMap::new();
@@ -3613,5 +3750,43 @@ mod succession_route_tests {
         let (prepared, mut layout) = flow(section.clone());
         route_parameter_flows(&prepared, &mut layout, false);
         assert_eq!(layout["edgeSectionsById"]["s"], json!([section]));
+    }
+}
+
+#[cfg(test)]
+mod facing_side_tests {
+    use super::*;
+
+    /// A laid-out graph: `a` at x 300 with the port `a.p` on `side`, joined to `b` at x 0.
+    fn graph(side: &str) -> Value {
+        json!({
+            "children": [
+                { "id": "a", "x": 300.0, "y": 0.0, "width": 100.0, "height": 60.0,
+                  "ports": [{ "id": "a.p", "x": 95.0, "y": 25.0, "width": 10.0, "height": 10.0,
+                              "layoutOptions": { "org.eclipse.elk.port.side": side } }] },
+                { "id": "b", "x": 0.0, "y": 0.0, "width": 100.0, "height": 60.0 },
+            ],
+            "edges": [{ "id": "e", "sources": ["a.p"], "targets": ["b"] }],
+        })
+    }
+
+    #[test]
+    fn a_port_turns_towards_the_part_it_connects_to() {
+        assert_eq!(
+            facing_sides(&graph("EAST")),
+            HashMap::from([("a.p".to_owned(), "WEST")])
+        );
+        // Already facing it: nothing to turn.
+        assert!(facing_sides(&graph("WEST")).is_empty());
+    }
+
+    #[test]
+    fn connector_length_sums_every_run() {
+        let laid_out = json!({ "edges": [{ "sections": [{
+            "startPoint": { "x": 0.0, "y": 0.0 },
+            "bendPoints": [{ "x": 30.0, "y": 0.0 }],
+            "endPoint": { "x": 30.0, "y": 40.0 },
+        }] }] });
+        assert_eq!(connector_length(&laid_out), 70.0);
     }
 }
