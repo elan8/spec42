@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.59.2] - 2026-11-07
+
+- **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
+  `state-trigger-labels-v74`, diagram products stay schema 12, model export schema 2 and the
+  generator ABI version 7.
+
+- **Qualified references resolve through visible memberships.** Looking up an element by a
+  qualified name, as document generators do for names written in prose, now follows public
+  imports, aliases and inherited members, the way names in SysML source already resolve.
+  `Aliases::mass` finds `Budgets::mass` when `Aliases` declares `public import Budgets::*;`, and
+  `Architecture::Module::latency` reaches `latency` through `alias Module for Parts::Integration;`.
+  Private imports are still not followed, a member a namespace owns still wins over an imported
+  one, and a name that ends at an alias still names the alias.
+
 ## [0.59.1] - 2026-11-06
 
 - **Upgrade notes.** The semantic contract version is now `state-trigger-labels-v74`, so earlier
