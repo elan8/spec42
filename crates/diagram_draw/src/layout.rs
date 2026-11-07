@@ -1156,6 +1156,7 @@ fn with_pin_sides(prepared: &Value, horizontal: bool) -> Value {
 /// an action outwards, on the side its parameter is drawn on; on an action that holds the flow it
 /// leaves and enters inwards. Layout placed the actions with the flows drawn between their boxes;
 /// this replaces those routes. A flow with an end that is not a parameter keeps its route.
+/// A succession that layout ran through a parameter or its name is rerouted around them too.
 fn route_parameter_flows(prepared: &Value, layout: &mut Value, horizontal: bool) {
     use crate::ortho_route::{pin_route, Heading};
     let nodes = as_array(field(prepared, "nodes"));
@@ -1184,6 +1185,11 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value, horizontal: bool)
     // The name of each parameter, which stands above its box on the outer side, so that a flow
     // goes around it rather than through it.
     let mut names: Vec<crate::ortho_route::Rect> = Vec::new();
+    // Each parameter's box, and each name as drawn: no succession may cross them.
+    let mut pin_boxes: Vec<crate::ortho_route::Rect> = Vec::new();
+    let mut drawn_names: Vec<crate::ortho_route::Rect> = Vec::new();
+    // Where the parameters on an action's top (`true`) or bottom edge end, from its left side.
+    let mut row_end: HashMap<(String, bool), f64> = HashMap::new();
     for node in nodes {
         let id = as_string(field(node, "id"), "");
         let Some((x, y, width, height)) = rect_of(layout, &id) else {
@@ -1228,6 +1234,17 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value, horizontal: bool)
                 };
                 let (nx, ny, nw, nh) = pin.name_box;
                 names.push(name_obstacle((x + nx, y + ny, nw, nh)));
+                drawn_names.push((x + nx, y + ny, nw, nh));
+                if top_and_bottom {
+                    let end = row_end.entry((id.clone(), input)).or_default();
+                    *end = end.max(nx + nw);
+                }
+                pin_boxes.push((
+                    x + pin.origin.0,
+                    y + pin.origin.1,
+                    PARAMETER_SIZE,
+                    PARAMETER_SIZE,
+                ));
                 pins.insert(
                     parameter,
                     ((x + pin.anchor.0, y + pin.anchor.1), id.clone(), heading),
@@ -1273,15 +1290,72 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value, horizontal: bool)
             .collect();
         let points = pin_route(from.0, from.2, to.0, to.2, &boxes, FLOW_CLEARANCE)
             .unwrap_or_else(|| vec![from.0, to.0]);
-        let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
-        routes.push((
-            as_string(field(edge, "id"), ""),
-            json!([{
-                "startPoint": point(&points[0]),
-                "bendPoints": points[1..points.len() - 1].iter().map(point).collect::<Vec<_>>(),
-                "endPoint": point(&points[points.len() - 1]),
-            }]),
-        ));
+        routes.push((as_string(field(edge, "id"), ""), section(&points)));
+    }
+    // Layout does not know where the parameters stand on an action's edges, so a succession it
+    // attaches off the middle of an edge can cross a parameter or its name. Such a succession runs
+    // instead from the middle of the source's bottom edge to the middle of the target's top edge,
+    // or from side to side in a left-to-right flow, around actions, parameters and names.
+    let (out_of, into) = if horizontal {
+        (Heading::Right, Heading::Left)
+    } else {
+        (Heading::Down, Heading::Up)
+    };
+    let labelled = as_object(field(layout, "edgeLabelsById"));
+
+    for edge in as_array(field(prepared, "edges")) {
+        let id = as_string(field(edge, "id"), "");
+        if field(field(edge, "attributes"), "succession") != &json!(true)
+            || labelled
+                .get(&id)
+                .is_some_and(|labels| !as_array(labels).is_empty())
+        {
+            continue;
+        }
+        let route = route_points(field(field(layout, "edgeSectionsById"), &id));
+        if !route.windows(2).any(|run| {
+            pin_boxes
+                .iter()
+                .chain(&drawn_names)
+                .any(|rect| run_crosses(run[0], run[1], *rect))
+        }) {
+            continue;
+        }
+        let source = as_string(field(edge, "source"), "");
+        let target = as_string(field(edge, "target"), "");
+        let (Some(from), Some(to)) = (rect_of(layout, &source), rect_of(layout, &target)) else {
+            continue;
+        };
+        // The middle of the edge, or of the part of it right of the parameters there.
+        let middle = |id: &str, top: bool, (x, _, width, _): crate::ortho_route::Rect| {
+            x + row_end
+                .get(&(id.to_owned(), top))
+                .map_or(width / 2.0, |end| (end + width) / 2.0)
+        };
+        let (start, end) = if horizontal {
+            (
+                (from.0 + from.2, from.1 + from.3 / 2.0),
+                (to.0, to.1 + to.3 / 2.0),
+            )
+        } else {
+            (
+                (middle(&source, false, from), from.1 + from.3),
+                (middle(&target, true, to), to.1),
+            )
+        };
+        let mut around = ancestors(&source);
+        around.extend(ancestors(&target));
+        let boxes: Vec<crate::ortho_route::Rect> = nodes
+            .iter()
+            .map(|node| as_string(field(node, "id"), ""))
+            .filter(|id| !around.contains(id))
+            .filter_map(|id| rect_of(layout, &id))
+            .chain(drawn_names.iter().copied())
+            .chain(pin_boxes.iter().copied())
+            .collect();
+        if let Some(points) = pin_route(start, out_of, end, into, &boxes, FLOW_CLEARANCE) {
+            routes.push((id, section(&points)));
+        }
     }
     if routes.is_empty() {
         return;
@@ -1292,6 +1366,60 @@ fn route_parameter_flows(prepared: &Value, layout: &mut Value, horizontal: bool)
     for (id, sections) in routes {
         layout["edgeSectionsById"][id] = sections;
     }
+}
+
+/// One edge section through `points`, as layout writes it.
+fn section(points: &[(f64, f64)]) -> Value {
+    let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
+    json!([{
+        "startPoint": point(&points[0]),
+        "bendPoints": points[1..points.len() - 1].iter().map(point).collect::<Vec<_>>(),
+        "endPoint": point(&points[points.len() - 1]),
+    }])
+}
+
+/// The points of an edge's laid-out sections, in order.
+fn route_points(sections: &Value) -> Vec<(f64, f64)> {
+    let point = |value: &Value| (num(field(value, "x")), num(field(value, "y")));
+    as_array(sections)
+        .iter()
+        .flat_map(|section| {
+            std::iter::once(point(field(section, "startPoint")))
+                .chain(as_array(field(section, "bendPoints")).iter().map(point))
+                .chain(std::iter::once(point(field(section, "endPoint"))))
+        })
+        .collect()
+}
+
+/// Whether the straight run from `a` to `b` passes through the inside of `rect`.
+fn run_crosses(
+    a: (f64, f64),
+    b: (f64, f64),
+    (x, y, width, height): crate::ortho_route::Rect,
+) -> bool {
+    // Clip the run to the rectangle (Liang-Barsky).
+    let (dx, dy) = (b.0 - a.0, b.1 - a.1);
+    let (mut low, mut high) = (0.0_f64, 1.0_f64);
+    for (p, q) in [
+        (-dx, a.0 - x),
+        (dx, x + width - a.0),
+        (-dy, a.1 - y),
+        (dy, y + height - a.1),
+    ] {
+        if p == 0.0 {
+            if q <= 0.0 {
+                return false;
+            }
+        } else {
+            let t = q / p;
+            if p < 0.0 {
+                low = low.max(t);
+            } else {
+                high = high.min(t);
+            }
+        }
+    }
+    low < high
 }
 
 /// The laid-out content of one action flow level, relative to its own origin.
@@ -3418,5 +3546,72 @@ mod composite_state_size_tests {
         let (width, height) = node_dimensions(&composite(long), BehaviorMode::State);
         assert!(width >= long.chars().count() as f64 * 7.4, "{width}");
         assert_eq!(height, 320.0);
+    }
+}
+
+#[cfg(test)]
+mod succession_route_tests {
+    use super::*;
+
+    /// `a`, with the outputs `fault` and `odometry` on its bottom edge, then `b`, with the input
+    /// `stopCommand` on its top edge, joined by a succession that layout attached off the middle.
+    fn flow(succession: Value) -> (Value, Value) {
+        let parameter = |name: &str| json!({ "id": format!("p:{name}"), "name": name });
+        let prepared = json!({
+            "nodes": [
+                { "id": "a", "attributes": {
+                    "outputs": [parameter("fault"), parameter("odometry")] } },
+                { "id": "b", "attributes": { "inputs": [parameter("stopCommand")] } },
+            ],
+            "edges": [{ "id": "s", "source": "a", "target": "b",
+                        "attributes": { "succession": true } }],
+        });
+        let layout = json!({
+            "positions": {
+                "a": { "x": 0.0, "y": 0.0, "width": 269.0, "height": 68.0 },
+                "b": { "x": 100.0, "y": 200.0, "width": 220.0, "height": 68.0 },
+            },
+            "edgeSectionsById": { "s": [succession] },
+            "edgeLabelsById": {},
+        });
+        (prepared, layout)
+    }
+
+    #[test]
+    fn a_succession_through_a_parameter_name_runs_from_the_free_middle_of_each_edge() {
+        // Layout ran the succession down into `b` through the name `stopCommand`, which stands
+        // at x 131 to 190.4 just above `b`.
+        let (prepared, mut layout) = flow(json!({
+            "startPoint": { "x": 140.0, "y": 68.0 },
+            "bendPoints": [{ "x": 140.0, "y": 130.0 }, { "x": 150.0, "y": 130.0 }],
+            "endPoint": { "x": 150.0, "y": 200.0 },
+        }));
+        route_parameter_flows(&prepared, &mut layout, false);
+        let route = route_points(field(field(&layout, "edgeSectionsById"), "s"));
+        // From the middle of the part of `a`'s bottom edge right of `odometry` (which ends at
+        // 129.2), to the middle of the part of `b`'s top edge right of `stopCommand`.
+        assert_eq!(route.first(), Some(&((129.2 + 269.0) / 2.0, 68.0)));
+        assert_eq!(route.last(), Some(&(100.0 + (90.4 + 220.0) / 2.0, 200.0)));
+        let names = [(86.0, 57.0, 43.2, 10.0), (131.0, 189.0, 59.4, 10.0)];
+        for run in route.windows(2) {
+            for name in names {
+                assert!(
+                    !run_crosses(run[0], run[1], name),
+                    "{route:?} crosses {name:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_succession_clear_of_the_parameters_keeps_its_route() {
+        let section = json!({
+            "startPoint": { "x": 230.0, "y": 68.0 },
+            "bendPoints": [{ "x": 230.0, "y": 130.0 }, { "x": 280.0, "y": 130.0 }],
+            "endPoint": { "x": 280.0, "y": 200.0 },
+        });
+        let (prepared, mut layout) = flow(section.clone());
+        route_parameter_flows(&prepared, &mut layout, false);
+        assert_eq!(layout["edgeSectionsById"]["s"], json!([section]));
     }
 }
