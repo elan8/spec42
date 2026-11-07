@@ -2618,57 +2618,20 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
 
     for segment in &segments[1..] {
         scratch.next_candidates.clear();
+        // `import all` names a membership without regard to its visibility; a namespace import
+        // still reaches its namespace visibly and considers all of that namespace's memberships,
+        // which `build_effective_import_indexes` owns.
+        let regardless_of_visibility =
+            reference.kind() == ReferenceKind::MembershipImport && reference.flags().import_all;
         for candidate in scratch.candidates.iter().copied() {
-            record_lookup(scratch.work)?;
-            // KerML qualified-name traversal continues through the previous segment's visible
-            // memberships. For a Type, those are its directly owned memberships followed by its
-            // inherited memberships; a direct name shadows the inherited tier. The canonical
-            // `inherited_names` index also carries effective-type members for Features, so paths
-            // such as `ConeOrCylinder::faces::edges` traverse `faces` to the members of its type.
-            // Import fallback remains last for owners reached through an imported namespace.
-            // Only public memberships are visible (KerML 8.2.3.5.3), wherever the reference is.
-            // `import all` names a membership without regard to its visibility; a namespace
-            // import still reaches its namespace visibly and considers all of that namespace's
-            // memberships, which `build_effective_import_indexes` owns.
-            let regardless_of_visibility =
-                reference.kind() == ReferenceKind::MembershipImport && reference.flags().import_all;
-            let visible = |member: &DeclarationId| {
-                regardless_of_visibility
-                    || indexes.memberships.is_none_or(|memberships| {
-                        memberships.get(*member).is_none_or(|membership| {
-                            membership.visibility == EffectiveVisibility::Public
-                        })
-                    })
-            };
-            let before = scratch.next_candidates.len();
-            scratch.next_candidates.extend(
-                indexes
-                    .direct_names
-                    .candidates(Some(candidate), *segment)
-                    .iter()
-                    .copied()
-                    .filter(visible),
-            );
-            if scratch.next_candidates.len() > before {
-                continue;
-            }
-            scratch.next_candidates.extend(
-                indexes
-                    .inherited_names
-                    .map_or(&[][..], |names| names.candidates(Some(candidate), *segment))
-                    .iter()
-                    .copied()
-                    .filter(visible),
-            );
-            if scratch.next_candidates.len() > before {
-                continue;
-            }
-            if let Some(imports) = indexes.exported_imports {
-                record_lookup(scratch.work)?;
-                scratch
-                    .next_candidates
-                    .extend_from_slice(imports.candidates(Some(candidate), *segment));
-            }
+            visible_members_named(
+                &indexes,
+                candidate,
+                *segment,
+                regardless_of_visibility,
+                scratch.next_candidates,
+                scratch.work,
+            )?;
         }
         scratch.next_candidates.sort_unstable();
         scratch.next_candidates.dedup();
@@ -2918,6 +2881,63 @@ pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFa
         }
     }
     status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
+}
+
+/// The members named `segment` that a qualified name reaches through `owner`, appended to `out`.
+///
+/// KerML qualified-name traversal continues through the previous segment's visible memberships.
+/// For a Type, those are its directly owned memberships followed by its inherited memberships; a
+/// direct name shadows the inherited tier. The canonical `inherited_names` index also carries
+/// effective-type members for Features, so paths such as `ConeOrCylinder::faces::edges` traverse
+/// `faces` to the members of its type, and gives an alias a row to its member element. Import
+/// fallback remains last for owners reached through an imported namespace. Only public
+/// memberships are visible (KerML 8.2.3.5.3), wherever the reference is, unless
+/// `regardless_of_visibility` (an `import all`).
+pub(crate) fn visible_members_named(
+    indexes: &ResolutionIndexes<'_>,
+    owner: DeclarationId,
+    segment: crate::model::NameId,
+    regardless_of_visibility: bool,
+    out: &mut Vec<DeclarationId>,
+    work: &mut ResolutionWork,
+) -> Result<(), ResolutionError> {
+    record_lookup(work)?;
+    let visible = |member: &DeclarationId| {
+        regardless_of_visibility
+            || indexes.memberships.is_none_or(|memberships| {
+                memberships
+                    .get(*member)
+                    .is_none_or(|membership| membership.visibility == EffectiveVisibility::Public)
+            })
+    };
+    let before = out.len();
+    out.extend(
+        indexes
+            .direct_names
+            .candidates(Some(owner), segment)
+            .iter()
+            .copied()
+            .filter(visible),
+    );
+    if out.len() > before {
+        return Ok(());
+    }
+    out.extend(
+        indexes
+            .inherited_names
+            .map_or(&[][..], |names| names.candidates(Some(owner), segment))
+            .iter()
+            .copied()
+            .filter(visible),
+    );
+    if out.len() > before {
+        return Ok(());
+    }
+    if let Some(imports) = indexes.exported_imports {
+        record_lookup(work)?;
+        out.extend_from_slice(imports.candidates(Some(owner), segment));
+    }
+    Ok(())
 }
 
 pub(crate) fn record_lookup(work: &mut ResolutionWork) -> Result<(), ResolutionError> {
