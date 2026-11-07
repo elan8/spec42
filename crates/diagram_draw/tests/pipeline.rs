@@ -84,9 +84,12 @@ fn webshop_action_flow_draws_actions_and_successions() {
         .split_whitespace()
         .map(|number| number.parse::<f64>().unwrap())
         .collect::<Vec<_>>();
+    // Neither a thin column nor a thin strip: between a little taller than wide (an upright
+    // page, where actions with their parameters on the top and bottom edges stack in one
+    // column) and twice as wide as tall.
     let aspect = view_box[2] / view_box[3];
     assert!(
-        (0.9..=2.2).contains(&aspect),
+        (0.8..=2.2).contains(&aspect),
         "action flow aspect: {aspect}"
     );
 }

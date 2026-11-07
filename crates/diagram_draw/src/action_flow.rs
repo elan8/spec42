@@ -65,7 +65,7 @@ fn attr_array<'a>(
     }
 }
 
-fn parameter_name(item: &Value) -> String {
+pub(crate) fn parameter_name(item: &Value) -> String {
     match item {
         Value::Object(map) => map
             .get("name")
@@ -81,36 +81,42 @@ fn parameter_name(item: &Value) -> String {
 }
 
 /// The direction mark inside a parameter's box (SysML v2 8.2.3.17 `pdh`): an arrow into the
-/// action for `in`, out of it for `out`, both ways for `inout`. The box of an input stands on the
-/// left of its action and that of an output on the right, so `in` and `out` both point right.
-/// A parameter without an authored direction has no mark.
-fn parameter_direction_mark(direction: &str, centre: (f64, f64)) -> Option<String> {
+/// action for `in`, out of it for `out`, both ways for `inout`. An input stands before its action
+/// in the direction of flow and an output after it, so `in` and `out` both point along the flow:
+/// right for boxes on the sides, down for boxes on the top and bottom edges. A parameter without
+/// an authored direction has no mark.
+fn parameter_direction_mark(
+    direction: &str,
+    centre: (f64, f64),
+    downwards: bool,
+) -> Option<String> {
     let (cx, cy) = centre;
     let half = crate::layout::PARAMETER_SIZE / 2.0 - 2.5;
     let head = 2.5;
-    let (left, right) = (cx - half, cx + half);
-    let shaft = format!("M{},{} L{},{}", n(left), n(cy), n(right), n(cy));
-    let right_head = format!(
-        " M{},{} L{},{} L{},{}",
-        n(right - head),
-        n(cy - head),
-        n(right),
-        n(cy),
-        n(right - head),
-        n(cy + head)
-    );
-    let left_head = format!(
-        " M{},{} L{},{} L{},{}",
-        n(left + head),
-        n(cy - head),
-        n(left),
-        n(cy),
-        n(left + head),
-        n(cy + head)
-    );
+    // Drawn along x, then turned a quarter for the top and bottom edges.
+    let point = |along: f64, across: f64| {
+        if downwards {
+            (cx + across, cy + along)
+        } else {
+            (cx + along, cy + across)
+        }
+    };
+    let path = |points: &[(f64, f64)]| {
+        points
+            .iter()
+            .enumerate()
+            .map(|(index, &(along, across))| {
+                let (x, y) = point(along, across);
+                format!("{}{},{}", if index == 0 { "M" } else { " L" }, n(x), n(y))
+            })
+            .collect::<String>()
+    };
+    let shaft = path(&[(-half, 0.0), (half, 0.0)]);
+    let forward_head = path(&[(half - head, -head), (half, 0.0), (half - head, head)]);
+    let backward_head = path(&[(-half + head, -head), (-half, 0.0), (-half + head, head)]);
     match direction {
-        "in" | "out" => Some(shaft + &right_head),
-        "inout" => Some(shaft + &right_head + &left_head),
+        "in" | "out" => Some(format!("{shaft} {forward_head}")),
+        "inout" => Some(format!("{shaft} {forward_head} {backward_head}")),
         _ => None,
     }
 }
@@ -120,17 +126,26 @@ fn draw_parameters(
     items: &[Value],
     side: &str,
     container: bool,
+    top_and_bottom: bool,
     layout: &crate::behavior_common::LaidOutRect,
     theme: &Theme,
 ) -> Element {
     let size = crate::layout::PARAMETER_SIZE;
+    let names: Vec<String> = items.iter().map(parameter_name).collect();
     for (index, item) in items.iter().enumerate() {
         let name = parameter_name(item);
-        let y = crate::layout::parameter_offset(index, container);
-        // SysML 8.2.3.17 `param-l`/`param-r`: a parameter is a small rounded box standing against
-        // the boundary of its action on the outside, holding its direction mark. (A port's
-        // square straddles the boundary; an action flow view draws no ports.)
-        let left = if side == "input" { -size } else { layout.width };
+        // SysML 8.2.3.17 `param-l`/`param-r`/`param-t`/`param-b`: a parameter is a small rounded
+        // box standing against the boundary of its action on the outside, holding its direction
+        // mark. (A port's square straddles the boundary; an action flow view draws no ports.)
+        let pin = crate::layout::parameter_pin(
+            side == "input",
+            index,
+            &names,
+            (layout.width, layout.height),
+            container,
+            top_and_bottom,
+        );
+        let (left, top) = pin.origin;
         g = g.child(
             Element::new("rect")
                 .attr(
@@ -138,7 +153,7 @@ fn draw_parameters(
                     format!("action-parameter-badge action-parameter-{side}"),
                 )
                 .attr_f("x", left)
-                .attr_f("y", y - size / 2.0)
+                .attr_f("y", top)
                 .attr_f("width", size)
                 .attr_f("height", size)
                 .attr("rx", "3")
@@ -150,7 +165,13 @@ fn draw_parameters(
             .get("direction")
             .and_then(Value::as_str)
             .unwrap_or_default();
-        if let Some(mark) = parameter_direction_mark(direction, (left + size / 2.0, y)) {
+        let downwards = matches!(
+            pin.side,
+            crate::layout::PinSide::Top | crate::layout::PinSide::Bottom
+        );
+        if let Some(mark) =
+            parameter_direction_mark(direction, (left + size / 2.0, top + size / 2.0), downwards)
+        {
             g = g.child(
                 Element::new("path")
                     .attr(
@@ -173,18 +194,10 @@ fn draw_parameters(
                     "class",
                     format!("action-parameter-label action-parameter-{side}-label"),
                 )
-                // Above the box and beyond it, so that a flow leaving the box does not run
-                // through the name.
-                .attr_f(
-                    "x",
-                    if side == "input" {
-                        -size - 3.0
-                    } else {
-                        layout.width + size + 3.0
-                    },
-                )
-                .attr_f("y", y - 6.0)
-                .attr("text-anchor", if side == "input" { "end" } else { "start" })
+                // Beside the box, so that a flow leaving the box does not run through the name.
+                .attr_f("x", pin.name_at.0)
+                .attr_f("y", pin.name_at.1)
+                .attr("text-anchor", pin.name_anchor)
                 .style("font-size", "8px")
                 .style("fill", theme.text_secondary)
                 .text(name),
@@ -196,6 +209,7 @@ fn draw_parameters(
 fn draw_action_node(
     node: &PreparedNode,
     layout: &crate::behavior_common::LaidOutRect,
+    top_and_bottom: bool,
     theme: &Theme,
 ) -> Element {
     let kind = activity_node_kind(node);
@@ -411,8 +425,8 @@ fn draw_action_node(
     );
 
     if !is_initial(&kind) && !is_final(&kind) && !is_decision(&kind) && !is_fork(&kind) {
-        g = draw_parameters(g, inputs, "input", false, layout, theme);
-        g = draw_parameters(g, outputs, "output", false, layout, theme);
+        g = draw_parameters(g, inputs, "input", false, top_and_bottom, layout, theme);
+        g = draw_parameters(g, outputs, "output", false, top_and_bottom, layout, theme);
     }
 
     g
@@ -495,8 +509,8 @@ fn draw_action_container(
     // flows inside it start and end.
     let inputs = attr_array(&node.attributes, "inputs", "inputParameters");
     let outputs = attr_array(&node.attributes, "outputs", "outputParameters");
-    let g = draw_parameters(g, inputs, "input", true, layout, theme);
-    draw_parameters(g, outputs, "output", true, layout, theme)
+    let g = draw_parameters(g, inputs, "input", true, false, layout, theme);
+    draw_parameters(g, outputs, "output", true, false, layout, theme)
 }
 
 struct LaneExtent {
@@ -800,7 +814,9 @@ pub fn render_action_flow_view(
         }
         // `attachBehaviorNodeClick` runs unconditionally for every node; in headless export it
         // always resolves to `.style("cursor", "")`, kept as a literal empty declaration.
-        let node_group = draw_action_node(node, position, theme).style("cursor", "");
+        let top_and_bottom = crate::layout::pins_top_and_bottom(horizontal, false);
+        let node_group =
+            draw_action_node(node, position, top_and_bottom, theme).style("cursor", "");
         node_layer = node_layer.child(node_group);
     }
 
@@ -881,7 +897,7 @@ mod signal_action_tests {
             width: 160.0,
             height: 60.0,
         };
-        draw_action_node(&node, &rect, &LIGHT).to_string()
+        draw_action_node(&node, &rect, false, &LIGHT).to_string()
     }
 
     #[test]
