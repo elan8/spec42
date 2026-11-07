@@ -18,7 +18,7 @@ Target ID: n:9</title></path><path class="activity-flow action-flow-edge aflow-s
 From: a
 To: b
 Source ID: n:11
-Target ID: n:14</title></path><path class="activity-flow action-flow-edge aflow-succession" data-flow-kind="succession" d="M614,220 L614,230 L259,230 L259,284" data-edge-id="e:19" data-base-stroke-width="2" style="fill: none; stroke: #374151; stroke-width: 2px; stroke-dasharray: 7,4; marker-end: url(#action-succession-arrow);"></path><path class="viz-edge-hit-target" data-tooltip-kind="edge" data-tooltip-id="e:19" d="M614,220 L614,230 L259,230 L259,284" aria-label="Succession; From: a; To: c; Source ID: n:11; Target ID: n:17" style="fill: none; stroke: transparent; stroke-width: 12px; pointer-events: stroke;"><title>Succession
+Target ID: n:14</title></path><path class="activity-flow action-flow-edge aflow-succession" data-flow-kind="succession" d="M700.7,220 L700.7,264 L288,264 L288,284" data-edge-id="e:19" data-base-stroke-width="2" style="fill: none; stroke: #374151; stroke-width: 2px; stroke-dasharray: 7,4; marker-end: url(#action-succession-arrow);"></path><path class="viz-edge-hit-target" data-tooltip-kind="edge" data-tooltip-id="e:19" d="M700.7,220 L700.7,264 L288,264 L288,284" aria-label="Succession; From: a; To: c; Source ID: n:11; Target ID: n:17" style="fill: none; stroke: transparent; stroke-width: 12px; pointer-events: stroke;"><title>Succession
 From: a
 To: c
 Source ID: n:11
