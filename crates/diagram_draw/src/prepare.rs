@@ -1593,6 +1593,7 @@ fn map_port_detail(port: &Value) -> Value {
             "parentId": field(port, "ownerNodeId"),
             "scenePortId": field(port, "id"),
             "sideHint": field(port, "sideHint"),
+            "busPortId": field(port, "busPortId"),
         },
     })
 }
@@ -2082,6 +2083,9 @@ fn interconnection_scene_from_typed_projection(
                 "id": id_for(index),
                 "semanticId": qualified_name(index),
                 "ownerNodeId": id_for(owner),
+                // A nested port's outermost port on its part, such as the bus it is a signal of:
+                // a closed part shows only that port.
+                "busPortId": through_ports.first().map(|port| id_for(*port)),
                 "name": display_name(index, &through_ports),
                 "typeName": type_name(element),
                 // The arrow in a port's square shows the direction written on the port, or

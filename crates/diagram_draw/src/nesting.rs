@@ -243,6 +243,34 @@ fn close_interconnection_parts(prepared: &mut Value, open: OpenParts<'_>) {
         names.join(".")
     };
 
+    // A part drawn closed shows a port with nested ports, such as a bus, as that one port: a
+    // nested port of a closed part stands for its outermost port.
+    let bus_port: HashMap<(String, String), String> = nodes
+        .iter()
+        .flat_map(|node| {
+            let id = as_string(field(node, "id"), "");
+            as_array(field(field(node, "attributes"), "portDetails"))
+                .iter()
+                .filter_map(|detail| {
+                    let bus = field(field(detail, "attributes"), "busPortId").as_str()?;
+                    Some((
+                        (id.clone(), as_string(field(detail, "id"), "")),
+                        bus.to_owned(),
+                    ))
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect();
+    let shown_port = |part: &str, port: &Value| -> Value {
+        if is_open(part) {
+            return port.clone();
+        }
+        match bus_port.get(&(part.to_owned(), as_string(port, ""))) {
+            Some(bus) => json!(bus),
+            None => port.clone(),
+        }
+    };
+
     let mut closed: HashMap<String, usize> = HashMap::new();
     for id in by_id.keys().filter(|id| !drawn.contains(*id)) {
         if let Some(owner) = drawn_owner(id) {
@@ -275,7 +303,19 @@ fn close_interconnection_parts(prepared: &mut Value, open: OpenParts<'_>) {
             continue;
         }
         if !moved_source && !moved_target {
-            kept_edges.push(edge.clone());
+            let mut edge = edge.clone();
+            for (end, keys) in [
+                (&source, ["sourcePortId", "sourceId"]),
+                (&target, ["targetPortId", "targetId"]),
+            ] {
+                let port = field(field(&edge, "attributes"), keys[0]).clone();
+                if port.is_string() {
+                    let shown = shown_port(end, &port);
+                    edge["attributes"][keys[0]] = shown.clone();
+                    edge["attributes"][keys[1]] = shown;
+                }
+            }
+            kept_edges.push(edge);
             continue;
         }
         if drawn_source == drawn_target {
@@ -348,6 +388,30 @@ fn close_interconnection_parts(prepared: &mut Value, open: OpenParts<'_>) {
             }
             if let Some(state) = disclosure.get(&id) {
                 node["attributes"]["disclosure"] = json!(state);
+            }
+            if !is_open(&id) {
+                let details = as_array(field(field(&node, "attributes"), "portDetails")).to_vec();
+                let nested: HashSet<String> = details
+                    .iter()
+                    .filter(|detail| field(field(detail, "attributes"), "busPortId").is_string())
+                    .map(|detail| as_string(field(detail, "name"), ""))
+                    .collect();
+                if !nested.is_empty() {
+                    node["attributes"]["portDetails"] = Value::Array(
+                        details
+                            .into_iter()
+                            .filter(|detail| {
+                                !field(field(detail, "attributes"), "busPortId").is_string()
+                            })
+                            .collect(),
+                    );
+                    let names: Vec<Value> = as_array(field(field(&node, "attributes"), "ports"))
+                        .iter()
+                        .filter(|name| !nested.contains(&as_string(name, "")))
+                        .cloned()
+                        .collect();
+                    node["attributes"]["ports"] = Value::Array(names);
+                }
             }
             if let Some(paths) = proxies.get(&id) {
                 let mut details =
@@ -549,6 +613,72 @@ mod tests {
                 1
             );
         }
+    }
+
+    #[test]
+    fn a_closed_part_shows_a_bus_as_one_port_and_an_open_part_its_signals() {
+        // `board` and `module` each have a bus port whose signal `a` is a nested port.
+        let bus_part = |id: &str, bus: &str| {
+            json!({
+                "id": id, "label": id,
+                "attributes": {
+                    "containerId": "robot",
+                    "ports": [bus, format!("{bus}.a")],
+                    "portDetails": [
+                        { "id": bus, "name": bus },
+                        { "id": format!("{bus}.a"), "name": format!("{bus}.a"),
+                          "attributes": { "busPortId": bus } },
+                    ],
+                },
+            })
+        };
+        let view = json!({
+            "view": "interconnection-view",
+            "nodes": [part("robot", None), bus_part("board", "bus"), bus_part("module", "mate")],
+            "edges": [
+                connector("bus", ("board", "bus"), ("module", "mate")),
+                connector("signal", ("board", "bus.a"), ("module", "mate.a")),
+            ],
+            "meta": {},
+        });
+        let port_ids = |prepared: &Value, part: &str| -> Vec<String> {
+            as_array(field(prepared, "nodes"))
+                .iter()
+                .find(|node| as_string(field(node, "id"), "") == part)
+                .map(|node| {
+                    as_array(field(field(node, "attributes"), "portDetails"))
+                        .iter()
+                        .map(|detail| as_string(field(detail, "id"), ""))
+                        .collect()
+                })
+                .unwrap_or_default()
+        };
+        let ends = |prepared: &Value, edge: &str| -> (String, String) {
+            let edge = as_array(field(prepared, "edges"))
+                .iter()
+                .find(|item| as_string(field(item, "id"), "") == edge)
+                .cloned()
+                .unwrap();
+            let attributes = field(&edge, "attributes");
+            (
+                as_string(field(attributes, "sourcePortId"), ""),
+                as_string(field(attributes, "targetPortId"), ""),
+            )
+        };
+
+        // Closed: only the buses, and the signal connection ends on them.
+        let mut closed = view.clone();
+        apply_interconnection_nesting(&mut closed, Nesting::Levels(1));
+        assert_eq!(port_ids(&closed, "board"), ["bus"]);
+        assert_eq!(port_ids(&closed, "module"), ["mate"]);
+        assert_eq!(ends(&closed, "signal"), ("bus".into(), "mate".into()));
+        assert_eq!(ends(&closed, "bus"), ("bus".into(), "mate".into()));
+
+        // Open: the signals are drawn and the signal connection keeps its ends.
+        let mut open = view;
+        apply_interconnection_nesting(&mut open, Nesting::Levels(2));
+        assert_eq!(port_ids(&open, "board"), ["bus", "bus.a"]);
+        assert_eq!(ends(&open, "signal"), ("bus.a".into(), "mate.a".into()));
     }
 
     #[test]
