@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.60.0] - 2026-11-08
+
+- **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
+  `state-trigger-labels-v74`, diagram products stay schema 12, model export schema 2 and the
+  generator ABI version 7. Only diagram drawing changes, so action flow and interconnection
+  figures may lay out differently from 0.59.2.
+
+- **Action flow parameters stand on the top and bottom edges.** In an action flow drawn top to
+  bottom, an action's inputs stand on its top edge and its outputs on its bottom edge (SysML v2
+  `param-t` and `param-b`), so flows between them run straight down instead of looping out to
+  the sides. Parameters are packed from the left end of the edge, which keeps its middle free for
+  successions; a succession that layout still runs through a parameter or its name is rerouted
+  around them. An action that holds its own flow keeps its parameters on its sides, as do all
+  actions in a left-to-right flow.
+
+- **A bus on a closed part is one port.** In an interconnection view limited in depth, a port with
+  nested ports, such as a wiring harness modelled as a bus of signal ports, is drawn on a closed
+  part as that one port, and the connections to its signals end on it, so a harness shows as one
+  line per end. An open part still shows the nested ports its parts connect to. The port-family
+  legend lists only the families of the connections that are drawn.
+
+- **Ports without a direction face what they connect to.** An interconnection view turns a port
+  with no direction, such as a bus port, towards the parts its connectors lead to, so connectors
+  no longer loop around their part or the whole view.
+
 ## [0.59.2] - 2026-11-07
 
 - **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
