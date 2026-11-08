@@ -441,6 +441,7 @@ pub fn port_family_color(theme: &Theme, family: usize) -> &'static str {
 }
 
 /// Number of distinct port family colours before they repeat.
+#[cfg(test)]
 pub const PORT_FAMILY_COLOR_COUNT: usize = PORT_FAMILY_COLORS_LIGHT.len();
 
 pub fn draw_ibd_edges(
