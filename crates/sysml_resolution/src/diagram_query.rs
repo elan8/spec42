@@ -1162,11 +1162,16 @@ impl PublishedResolution {
         for element in &elements {
             if let Some(inspection) = usable_value(self.inspect(element.semantic_id)) {
                 for (index, relationship) in inspection.relationships.iter().enumerate() {
-                    // Every name the authority publishes is one of the canonical reference
-                    // kinds, which is exactly the enum's variant set.
-                    let kind = relationship_kind_from_name(relationship.kind).expect(
-                        "a published relationship names one of the canonical reference kinds",
-                    );
+                    // A reference kind no diagram has a notation for, such as the unit of a
+                    // quantity in a transition's effect, is not a diagram relationship.
+                    let Some(kind) = relationship_kind_from_name(relationship.kind) else {
+                        debug_assert!(
+                            UNDRAWN_REFERENCE_KINDS.contains(&relationship.kind),
+                            "reference kind `{}` is neither a diagram relationship nor undrawn",
+                            relationship.kind
+                        );
+                        continue;
+                    };
                     let target = match &relationship.target {
                         RelationshipTarget::Resolved(target) => {
                             let endpoint = contextual_endpoint(
@@ -3001,6 +3006,18 @@ fn usable_value<T>(outcome: QueryOutcome<T>) -> Option<T> {
 
 /// The canonical reference-kind name the inspection publishes, as the diagram vocabulary variant.
 /// The kind one canonical name states, or `None` where the name is not one of them.
+/// The reference kinds element inspection publishes that no diagram draws: they have no
+/// [`DiagramRelationshipKind`]. Together with `DiagramRelationshipKind::ALL` they cover every
+/// reference kind (`every_reference_kind_is_drawn_or_undrawn`), so a new kind is classified when
+/// it is added.
+const UNDRAWN_REFERENCE_KINDS: [&str; 5] = [
+    "annotation",
+    "explicitRelationshipEndpoint",
+    "featureInverting",
+    "metadataAnnotationAbout",
+    "quantityUnit",
+];
+
 fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
     DiagramRelationshipKind::ALL
         .iter()
@@ -3139,6 +3156,19 @@ mod tests {
     use crate::{
         ElementKind, PublicationCompleteness, PublicationObstacle, QueryAnswer, QueryOutcome,
     };
+
+    #[test]
+    fn every_reference_kind_is_drawn_or_undrawn() {
+        for kind in crate::model::ReferenceKind::ALL {
+            let name = crate::model::render::reference_kind(*kind);
+            let drawn = super::relationship_kind_from_name(name).is_some();
+            let undrawn = super::UNDRAWN_REFERENCE_KINDS.contains(&name);
+            assert!(
+                drawn != undrawn,
+                "`{name}` must be exactly one of a diagram relationship and an undrawn kind"
+            );
+        }
+    }
 
     #[test]
     fn unsupported_outcomes_retain_their_usable_payload() {
