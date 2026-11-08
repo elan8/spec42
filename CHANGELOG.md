@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.60.1] - 2026-11-08
+
+- **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
+  `state-trigger-labels-v74`, diagram products stay schema 12, model export schema 2 and the
+  generator ABI version 7.
+
+- **Diagrams with quantity units no longer stop with an internal error.** A state machine or
+  action whose expressions use quantity units, such as a transition effect that assigns
+  `remaining + 60 [s]`, stopped `spec42 diagram` and every consumer of the diagram product
+  since 0.58.0. Relationship kinds that no diagram has a notation for, such as a quantity's
+  unit, are now skipped, and nothing that was drawn before changes.
+
 ## [0.60.0] - 2026-11-08
 
 - **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
