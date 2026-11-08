@@ -816,9 +816,10 @@ semantic_diagnostic_codes! {
     /// A view satisfies something that is not a viewpoint.
     ViewpointConformanceInvalidTargetKind => "viewpoint_conformance_invalid_target_kind",
         "A view must satisfy a viewpoint definition or usage.";
-    /// A view usage is typed by a definition outside the SysML standard view catalog.
+    /// A view usage is typed by a library view definition that neither is nor specializes a
+    /// SysML standard view definition.
     ViewTypeNonStandard => "view_type_non_standard",
-        "This view is typed by a definition outside the SysML standard view catalog.";
+        "This view is typed by a library view definition that neither is nor specializes a SysML standard view definition.";
     }
     Unresolved {
     /// A view exposes a target that resolves to nothing.

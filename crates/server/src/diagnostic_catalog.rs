@@ -1144,8 +1144,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "view_type_non_standard",
         severity: "warning",
-        meaning: "This view is typed by a definition outside the SysML standard view catalog.",
-        typical_fix: "Follow the diagnostic message; use spec42 check for the exact range and related locations.",
+        meaning: "This view is typed by a library view definition that neither is nor specializes a SysML standard view definition, so no standard view notation draws it.",
+        typical_fix: "Specialize a standard view definition, e.g. `view def ContextView :> GeneralView`, or type the view by one.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

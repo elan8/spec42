@@ -1674,8 +1674,8 @@ impl<D> SemanticModel<D> {
                             DiagnosticCode::ViewTypeNonStandard,
                             DiagnosticSeverity::Warning,
                             format!(
-                                "View type '{}' is not one of the SysML v2 standard view \
-                                 definitions (§9.2.20 Table 34).",
+                                "View type '{}' neither is nor specializes one of the SysML v2 \
+                                 standard view definitions (§9.2.20 Table 34).",
                                 self.display_name(target)
                             ),
                             Some((target, RELATED_TARGET)),
@@ -1811,8 +1811,46 @@ impl<D> SemanticModel<D> {
         if role == source_identity::SourceRole::Workspace {
             return Ok(false);
         }
-        let name = self.display_name(target);
-        Ok(!STANDARD_VIEW_DEFINITIONS.contains(&name))
+        // A view definition that is, or specializes, a standard view definition is drawn with
+        // that standard view's notation, like `view def ContextView :> GeneralView` in a domain
+        // library. Only one that reaches none of them is outside the standard catalog.
+        let subclassification =
+            crate::model::query::internal_scope(SpecializationScope::Subclassification);
+        let reaches_standard = std::iter::once(target)
+            .chain(
+                self.types
+                    .specialization()
+                    .scoped_ancestors(target)
+                    .filter(|(_, scopes)| scopes.contains(&subclassification))
+                    .map(|(ancestor, _)| ancestor),
+            )
+            .try_fold(false, |found, definition| {
+                Ok::<_, ResolutionError>(found || self.is_standard_view_definition(definition)?)
+            })?;
+        Ok(!reaches_standard)
+    }
+
+    /// Whether `definition` is one of the standard view definitions: a view definition of the
+    /// standard library with a name from `STANDARD_VIEW_DEFINITIONS`. A library outside the
+    /// standard library that declares a view definition with the same name does not make it one.
+    fn is_standard_view_definition(
+        &self,
+        definition: DeclarationId,
+    ) -> Result<bool, ResolutionError> {
+        let declaration = self
+            .storage
+            .declaration(definition)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if declaration.kind != DeclarationKind::ViewDefinition {
+            return Ok(false);
+        }
+        let role = self
+            .storage
+            .document(declaration.document)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .role;
+        Ok(role == source_identity::SourceRole::StandardLibrary
+            && STANDARD_VIEW_DEFINITIONS.contains(&self.display_name(definition)))
     }
 
     // ------------------------------------------------------------------------------------------
