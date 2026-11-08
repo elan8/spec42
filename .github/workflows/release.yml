@@ -122,7 +122,8 @@ jobs:
   build-server:
     name: Build server (${{ matrix.runner }})
     runs-on: ${{ matrix.runner }}
-    needs: [preflight]
+    # Starts at once, beside the preflight checks; create-release waits for both before
+    # anything is published.
     strategy:
       fail-fast: false
       matrix:
@@ -264,7 +265,7 @@ jobs:
   package-extension-with-server:
     name: Package extension with server (all platforms)
     runs-on: ubuntu-24.04
-    needs: [preflight, build-server]
+    needs: [build-server]
     steps:
       - name: Resolve tag and version
         id: version
@@ -341,7 +342,6 @@ jobs:
   build-zed-extension:
     name: Build Zed extension
     runs-on: ubuntu-24.04
-    needs: [preflight]
     steps:
       - name: Resolve tag and version
         id: version
