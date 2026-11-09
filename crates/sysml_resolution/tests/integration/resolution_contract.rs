@@ -2384,21 +2384,36 @@ fn default_reference_usage_typed_binding_resolves_its_typing() {
     );
 }
 
-/// The standard-view rule needs a library-admitted definition, and the source role that makes
-/// a document a library is not expressible in the snapshot corpus, so it is pinned here.
+/// The standard-view rule needs library-admitted definitions, and the source roles that make a
+/// document the standard library or a library are not expressible in the snapshot corpus, so it
+/// is pinned here. A stand-in standard library declares two standard view definitions; a domain
+/// library declares the views the workspace uses.
 #[test]
-fn a_view_typed_by_a_non_standard_library_definition_is_reported() {
-    let publish = |library: &str| {
+fn a_view_typed_by_a_library_definition_outside_the_standard_views_is_reported() {
+    let publish = |library: &str, view_type: &str| {
         let request = BuildRequest::new(
             vec![
                 SourceInput::new(
-                    "memory://views.sysml",
-                    format!("library package Views {{ view def {library}; }}"),
+                    "memory://standard.sysml",
+                    "standard library package StandardViewDefinitions { \
+                     view def View; view def GeneralView :> View; }"
+                        .to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://domain.sysml",
+                    format!(
+                        "library package Domain {{ private import StandardViewDefinitions::*; \
+                         {library} }}"
+                    ),
                     SourceKind::Library,
                 ),
                 SourceInput::new(
                     "memory://test.sysml",
-                    format!("package P {{ private import Views::*; view v : {library}; }}"),
+                    format!(
+                        "package P {{ private import StandardViewDefinitions::*; \
+                         private import Domain::*; view v : {view_type}; }}"
+                    ),
                     SourceKind::Workspace,
                 ),
             ],
@@ -2413,21 +2428,26 @@ fn a_view_typed_by_a_non_standard_library_definition_is_reported() {
             .map(|diagnostic| diagnostic.code().as_str().to_string())
             .collect::<Vec<_>>()
     };
-    assert!(
-        publish("RequirementView").contains(&"view_type_non_standard".to_string()),
-        "{:?}",
-        publish("RequirementView")
-    );
-    assert!(
-        !publish("GeneralView").contains(&"view_type_non_standard".to_string()),
-        "a standard view definition is not reported: {:?}",
-        publish("GeneralView")
-    );
-    assert!(
-        !publish("View").contains(&"view_type_non_standard".to_string()),
-        "the normative abstract base View is not reported: {:?}",
-        publish("View")
-    );
+    let reported = |library: &str, view_type: &str| {
+        publish(library, view_type).contains(&"view_type_non_standard".to_string())
+    };
+    // Specializes no standard view definition: no standard notation draws it.
+    assert!(reported("view def RequirementView;", "RequirementView"));
+    // A domain view that specializes a standard one is drawn with its notation, directly or
+    // through another domain view.
+    assert!(!reported(
+        "view def ContextView :> GeneralView;",
+        "ContextView"
+    ));
+    assert!(!reported(
+        "view def ContextView :> GeneralView; view def SystemContextView :> ContextView;",
+        "SystemContextView"
+    ));
+    // The standard definitions themselves, including the normative abstract base View.
+    assert!(!reported("", "GeneralView"));
+    assert!(!reported("", "View"));
+    // A library outside the standard library cannot make a view standard by reusing its name.
+    assert!(reported("view def GeneralView;", "Domain::GeneralView"));
 }
 
 /// A workspace's own `view def` is the author's to define, whatever it is called.
