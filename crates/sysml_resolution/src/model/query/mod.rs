@@ -1,6 +1,6 @@
 //! Phase 9: the read-only query surface over a finished model.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 pub(crate) mod ends;
 mod import_plan;
@@ -50,6 +50,7 @@ use crate::model::ReferenceKind;
 use crate::namespace_query::NamespaceDerivedElementCollection;
 use crate::namespace_query::NamespaceImportDerivedElement;
 use crate::projection::AdmittedSourceCounts;
+use crate::projection::LibraryElementInclusion;
 use crate::projection::ProjectedElement;
 use crate::projection::ProjectionEnvelope;
 use crate::projection::ProjectionPhase;
@@ -5172,7 +5173,96 @@ impl<D> SemanticModel<D> {
         }
     }
 
-    /// The whole-workspace projection: every workspace element with its full details and composed
+    fn elements_for_projection<'a>(
+        &self,
+        elements: &'a [crate::PublishedElement],
+        inclusion: LibraryElementInclusion,
+    ) -> Vec<&'a crate::PublishedElement> {
+        match inclusion {
+            LibraryElementInclusion::None => elements
+                .iter()
+                .filter(|element| element.source == ElementSource::Workspace)
+                .collect(),
+            LibraryElementInclusion::All => elements
+                .iter()
+                .filter(|element| element.source != ElementSource::StandardLibrary)
+                .collect(),
+            LibraryElementInclusion::Referenced => {
+                let selected = self.referenced_projection_symbols(elements);
+                elements
+                    .iter()
+                    .filter(|element| selected.contains(&element.entry.identity))
+                    .collect()
+            }
+        }
+    }
+
+    /// Workspace elements plus the transitive closure of their relationship targets.
+    ///
+    /// Owned members are included for library and external targets, so a referenced definition's
+    /// features are in the same projection. A named standard-library element is included alone:
+    /// following its owned members would pull the standard library into the export.
+    fn referenced_projection_symbols(
+        &self,
+        elements: &[crate::PublishedElement],
+    ) -> BTreeSet<SymbolId> {
+        let mut selected = elements
+            .iter()
+            .filter(|element| element.source == ElementSource::Workspace)
+            .map(|element| element.entry.identity)
+            .collect::<BTreeSet<_>>();
+        let source_of = elements
+            .iter()
+            .map(|element| (element.entry.identity, element.source))
+            .collect::<BTreeMap<_, _>>();
+        let mut pending = selected.iter().copied().collect::<Vec<_>>();
+        while let Some(symbol) = pending.pop() {
+            let QueryAnswer::Resolved(details) = self.element_details(symbol).answer else {
+                continue;
+            };
+            for family in [
+                &details.typing,
+                &details.specialization,
+                &details.subsetting,
+                &details.redefinition,
+            ] {
+                for target in &family.targets {
+                    let Some(source) = source_of.get(&target.identity).copied() else {
+                        continue;
+                    };
+                    if source == ElementSource::Workspace || !selected.insert(target.identity) {
+                        continue;
+                    }
+                    if matches!(source, ElementSource::Library | ElementSource::External) {
+                        pending.push(target.identity);
+                        if let Some(declaration) = self.declaration_of(target.identity) {
+                            self.collect_owned_symbols(declaration, &mut selected, &mut pending);
+                        }
+                    }
+                }
+            }
+        }
+        selected
+    }
+
+    fn collect_owned_symbols(
+        &self,
+        root: crate::model::DeclarationId,
+        into: &mut BTreeSet<SymbolId>,
+        referenced: &mut Vec<SymbolId>,
+    ) {
+        let mut pending = self.child_declarations(root).to_vec();
+        while let Some(child) = pending.pop() {
+            if let Some(symbol) = self.symbol_id(child) {
+                if into.insert(symbol) {
+                    referenced.push(symbol);
+                }
+            }
+            pending.extend(self.child_declarations(child).iter().copied());
+        }
+    }
+
+    /// The whole-workspace projection: every selected element with its full details and composed
     /// resolved facts, every connector, and a publication envelope.
     ///
     /// Adds no analysis -- it composes [`Self::all_elements`], [`Self::element_details`],
@@ -5187,21 +5277,19 @@ impl<D> SemanticModel<D> {
         max_nodes: usize,
         source_digest: RootDigest,
         model_digest: PublicationModelDigest,
+        inclusion: LibraryElementInclusion,
     ) -> QueryOutcome<PublishedModelProjection> {
-        let workspace_elements = match self.all_elements().answer {
+        let published_elements = match self.all_elements().answer {
             QueryAnswer::Resolved(elements) => elements,
             _ => return self.query_outcome(QueryAnswer::Incomplete),
         };
-        let workspace_elements = workspace_elements
-            .iter()
-            .filter(|element| element.source == ElementSource::Workspace)
-            .collect::<Vec<_>>();
-        let elements_total = workspace_elements.len();
+        let selected = self.elements_for_projection(&published_elements, inclusion);
+        let elements_total = selected.len();
 
         let mut elements = Vec::new();
         let mut qualified_names = BTreeMap::new();
         let mut elements_incomplete = 0usize;
-        for published in workspace_elements.into_iter().take(max_nodes) {
+        for published in selected.into_iter().take(max_nodes) {
             let symbol = published.entry.identity;
             let details = match self.element_details(symbol).answer {
                 QueryAnswer::Resolved(details) => details,
@@ -5243,7 +5331,7 @@ impl<D> SemanticModel<D> {
             });
             elements.push(ProjectedElement {
                 identity: symbol,
-                source: ElementSource::Workspace,
+                source: published.source,
                 details,
                 effective_name,
                 effective_qualified_name,
@@ -5393,7 +5481,7 @@ impl<D> SemanticModel<D> {
         let mut counts = AdmittedSourceCounts::default();
         for document in self.storage.documents.iter() {
             match document.role {
-                SourceRole::Workspace => {}
+                SourceRole::Workspace => counts.workspace += 1,
                 SourceRole::StandardLibrary => counts.standard_library += 1,
                 SourceRole::Library => counts.library += 1,
                 SourceRole::External => counts.external += 1,

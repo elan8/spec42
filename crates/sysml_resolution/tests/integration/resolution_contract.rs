@@ -3388,7 +3388,10 @@ fn model_projection_composes_elements_connectors_and_envelope() {
     // No library admitted: every admitted document is workspace-authored.
     assert_eq!(
         projection.envelope.admitted,
-        AdmittedSourceCounts::default()
+        AdmittedSourceCounts {
+            workspace: 1,
+            ..AdmittedSourceCounts::default()
+        }
     );
 
     assert!(projection
@@ -6747,5 +6750,154 @@ fn derived_facts_follow_feature_membership_and_conformance() {
             ActionDerivedFactCollection::ViewDefinitionViewRendering
         ),
         vec![id("Model::detail")]
+    );
+}
+
+/// Library provenance is not expressible as a snapshot source role, so the export scope is
+/// pinned on the typed projection: referenced definitions and their owned members are included,
+/// and an unreferenced definition in the same library document is not.
+#[test]
+fn model_projection_includes_referenced_library_definitions_on_request() {
+    let request = BuildRequest::new(
+        vec![
+            SourceInput::new(
+                "memory://library.sysml",
+                "package SharedInterfaces { port def ExampleExchangePort { item payload; } port def Unused; }".into(),
+                SourceKind::Library,
+            ),
+            SourceInput::new(
+                "memory://project.sysml",
+                "package ExampleProject { private import SharedInterfaces::*; part def Device { port exchange : ExampleExchangePort; } }".into(),
+                SourceKind::Workspace,
+            ),
+        ],
+        ConstructionSchedule::Sequential,
+        "contract-v1",
+    )
+    .unwrap();
+    let published = build(request).unwrap();
+    let names = |inclusion: LibraryElementInclusion| {
+        let projection = settled(published.model_projection_including(usize::MAX, inclusion));
+        projection
+            .elements
+            .iter()
+            .map(|element| {
+                (
+                    element.source,
+                    published
+                        .qualified_name(element.identity)
+                        .unwrap_or("")
+                        .to_string(),
+                )
+            })
+            .collect::<Vec<_>>()
+    };
+    let has = |inclusion: LibraryElementInclusion, source: ElementSource, name: &str| {
+        names(inclusion)
+            .iter()
+            .any(|(element_source, element_name)| *element_source == source && element_name == name)
+    };
+
+    assert!(has(
+        LibraryElementInclusion::None,
+        ElementSource::Workspace,
+        "ExampleProject::Device::exchange"
+    ));
+    assert!(!has(
+        LibraryElementInclusion::None,
+        ElementSource::Library,
+        "SharedInterfaces::ExampleExchangePort"
+    ));
+
+    let referenced = names(LibraryElementInclusion::Referenced);
+    let exchange = referenced
+        .iter()
+        .find(|(_, name)| name == "ExampleProject::Device::exchange");
+    assert!(exchange.is_some(), "{referenced:?}");
+    let projection = settled(
+        published.model_projection_including(usize::MAX, LibraryElementInclusion::Referenced),
+    );
+    let exchange_id = projection
+        .elements
+        .iter()
+        .find(|element| {
+            published.qualified_name(element.identity) == Some("ExampleProject::Device::exchange")
+        })
+        .expect("exchange usage")
+        .identity;
+    let details = settled(published.element_details(exchange_id));
+    assert!(
+        details.typing.targets.iter().any(|target| {
+            published.qualified_name(target.identity)
+                == Some("SharedInterfaces::ExampleExchangePort")
+        }),
+        "typing did not resolve: {:?}",
+        details.typing.targets
+    );
+    assert!(has(
+        LibraryElementInclusion::Referenced,
+        ElementSource::Library,
+        "SharedInterfaces::ExampleExchangePort"
+    ));
+    assert!(has(
+        LibraryElementInclusion::Referenced,
+        ElementSource::Library,
+        "SharedInterfaces::ExampleExchangePort::payload"
+    ));
+    assert!(!has(
+        LibraryElementInclusion::Referenced,
+        ElementSource::Library,
+        "SharedInterfaces::Unused"
+    ));
+    assert!(has(
+        LibraryElementInclusion::All,
+        ElementSource::Library,
+        "SharedInterfaces::Unused"
+    ));
+}
+
+#[test]
+fn referenced_projection_follows_library_types_and_specializations_transitively() {
+    let published = build(
+        BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://library.sysml",
+                    "package Types { part def Base { part inherited : Payload; } part def Used :> Base { part payload : Payload; } part def Payload { part cycle : Used; } part def Unused; }".into(),
+                    SourceKind::Library,
+                ),
+                SourceInput::new(
+                    "memory://project.sysml",
+                    "package App { part component : Types::Used; }".into(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let projection = settled(
+        published.model_projection_including(usize::MAX, LibraryElementInclusion::Referenced),
+    );
+    let mut names = projection
+        .elements
+        .iter()
+        .map(|element| published.qualified_name(element.identity).unwrap())
+        .collect::<Vec<_>>();
+    names.sort_unstable();
+    assert_eq!(
+        names,
+        vec![
+            "App",
+            "App::component",
+            "Types::Base",
+            "Types::Base::inherited",
+            "Types::Payload",
+            "Types::Payload::cycle",
+            "Types::Used",
+            "Types::Used::payload",
+        ]
     );
 }

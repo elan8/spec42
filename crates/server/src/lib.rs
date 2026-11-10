@@ -88,8 +88,9 @@ pub fn build_model_export(
     report: HostValidationReport,
     model: &PublishedModel,
     max_nodes: usize,
+    library_elements: sysml_query::resolved_slice::LibraryElementInclusion,
 ) -> ModelExportResponse {
-    let projection = model_projection::model_projection_json(model, max_nodes);
+    let projection = model_projection::model_projection_json(model, max_nodes, library_elements);
     ModelExportResponse {
         workspace_root: report.workspace_root,
         summary: report.summary,
@@ -301,6 +302,17 @@ fn run_model_export(cli: &Cli, args: &ModelExportArgs) -> Result<ExitCode, Strin
             path: args.path.clone(),
             workspace_root: args.workspace_root.clone(),
             max_nodes: args.max_nodes,
+            library_elements: match args.library_elements {
+                crate::cli::LibraryElements::None => {
+                    sysml_query::resolved_slice::LibraryElementInclusion::None
+                }
+                crate::cli::LibraryElements::Referenced => {
+                    sysml_query::resolved_slice::LibraryElementInclusion::Referenced
+                }
+                crate::cli::LibraryElements::All => {
+                    sysml_query::resolved_slice::LibraryElementInclusion::All
+                }
+            },
         },
     )?;
     match args.format {

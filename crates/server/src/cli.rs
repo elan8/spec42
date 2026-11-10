@@ -247,8 +247,22 @@ pub struct ModelExportArgs {
     /// workspace under an agent's context budget.
     #[arg(long = "max-nodes", default_value_t = usize::MAX)]
     pub max_nodes: usize,
+    /// Which non-workspace elements to include. `none` is the workspace publication.
+    /// `referenced` adds definitions named by workspace typing, specialization, subsetting,
+    /// or redefinition, recursively including library targets and owned members. `all` adds every
+    /// admitted library and external element. The standard library stays out of `all`.
+    #[arg(long = "library-elements", value_enum, default_value_t = LibraryElements::None)]
+    pub library_elements: LibraryElements,
     #[arg(long = "format", value_enum, default_value_t = OutputFormat::Json)]
     pub format: OutputFormat,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, ValueEnum)]
+pub enum LibraryElements {
+    #[default]
+    None,
+    Referenced,
+    All,
 }
 
 #[derive(Debug, Clone, Args)]
@@ -544,6 +558,7 @@ mod tests {
                 assert_eq!(args.path, PathBuf::from("models"));
                 assert_eq!(args.workspace_root, Some(PathBuf::from("workspace")));
                 assert_eq!(args.max_nodes, 1);
+                assert_eq!(args.library_elements, LibraryElements::None);
                 assert_eq!(args.format, OutputFormat::Json);
             }
             other => panic!("expected model-export command, got {other:?}"),
@@ -554,7 +569,10 @@ mod tests {
     fn model_export_max_nodes_defaults_to_unbounded() {
         let cli = Cli::parse_from(["spec42", "model-export", "models"]);
         match cli.command {
-            Some(Command::ModelExport(args)) => assert_eq!(args.max_nodes, usize::MAX),
+            Some(Command::ModelExport(args)) => {
+                assert_eq!(args.max_nodes, usize::MAX);
+                assert_eq!(args.library_elements, LibraryElements::None);
+            }
             other => panic!("expected model-export command, got {other:?}"),
         }
     }

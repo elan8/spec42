@@ -39,28 +39,46 @@ resource identities and optional `versionConstraint` values. Nested manifest pro
 analysis scopes. The configured KerML/SysML standard-library baseline is always preserved; an
 explicit standard-library usage constrains that baseline instead of selecting another copy.
 
-Put source-selection rules in `syside.toml` at the project root (the editor workspace folder for a
-manifestless project):
+Put project settings in `spec42.toml` at the project root (the editor workspace folder for a
+manifestless project). Spec42 does not read `syside.toml`.
 
 ```toml
 include = ["model/**", "library/**"]
 exclude = ["**/scratch/**", "**/draft.sysml"]
 # Optional: the installed environment, relative to this directory.
 # sysand-dir = ".sysand"
+# Extra library roots. Relative paths are resolved from this file, and may point outside
+# the project. These are library roots, not an include whitelist.
+library_paths = ["../shared-library/model"]
 ```
 
-Patterns use `/` separators and are relative to that directory. `*` matches within one path
-component; `**` can cross directories. Exclusions win. An omitted `include` admits all model files
-allowed by the existing filesystem ignore policy; `include = []` admits none. Only `.sysml` and
-`.kerml` files are model sources. The installed environment is excluded from workspace sources.
-Source selection is shared by the CLI and VS Code; opening or changing an excluded file does not
-add it to the editor's project publication. VS Code watches these project inputs and rebuilds the
-project when they change, retaining included unsaved buffers and clearing excluded diagnostics.
+`include` and `exclude` use `/` separators and are relative to that directory. `*` matches within
+one path component; `**` can cross directories. A pattern that leaves the project (`..`, or an
+absolute path) is a configuration error. Exclusions win. An omitted `include` admits all model
+files allowed by the existing filesystem ignore policy; `include = []` admits none. Only `.sysml`
+and `.kerml` files are model sources. The installed environment is excluded from workspace sources.
 
-This supports the project-root `include`, `exclude`, and `sysand-dir` subset of
-[Syside configuration](https://docs.sensmetry.com/editor/configuration/). Global and
-`syside.user.toml` merging and other Syside settings are not implemented. `sysand.toml` is not a
-source-scope manifest and arbitrary strings in it are never treated as library paths.
+`library_paths` entries must be existing directories. The CLI and the language server both admit
+them as library roots, in addition to `--library-path` and `spec42.libraryPaths`. A root already
+admitted is not loaded twice. Files under a library root keep library provenance when that root
+also sits inside the workspace.
+
+`model-export` returns workspace elements by default. Use `--library-elements referenced` to
+include the transitive closure of typing, specialization, subsetting, and redefinition targets,
+and the members owned by those library definitions. Unrelated library definitions remain out of
+the export. `--library-elements all` includes every admitted library and external element;
+`--library-elements none` explicitly selects the default workspace scope. Standard-library
+targets may appear in `referenced`, but their owned members are not expanded and `all` omits
+standard-library elements. `--max-nodes` still limits the returned element count.
+
+Source selection is shared by the CLI and VS Code; opening or changing an excluded file does not
+add it to the editor's project publication. A check or export whose requested sources were all
+excluded does not report a successful empty model. VS Code watches these project inputs and
+rebuilds the project when they change, retaining included unsaved buffers and clearing excluded
+diagnostics.
+
+`sysand.toml` is not a source-scope manifest and arbitrary strings in it are never treated as
+library paths.
 
 [Sysand](https://github.com/sensmetry/sysand) can install the dependencies declared by a project.
 Run dependency installation explicitly (for example, `sysand sync`) before analysis. Spec42 reads

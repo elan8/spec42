@@ -442,7 +442,12 @@ pub(crate) fn write_projection(
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
     let projection = match model
-        .model_projection(usize::MAX, *source_digest, *model_digest)
+        .model_projection(
+            usize::MAX,
+            *source_digest,
+            *model_digest,
+            crate::projection::LibraryElementInclusion::None,
+        )
         .answer
     {
         crate::QueryAnswer::Resolved(projection) => projection,

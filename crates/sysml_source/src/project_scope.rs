@@ -13,7 +13,7 @@ fn normalized_path(path: &Path) -> PathBuf {
         .unwrap_or_else(|| path.to_path_buf())
 }
 
-pub const PROJECT_CONFIG_FILE: &str = "syside.toml";
+pub const PROJECT_CONFIG_FILE: &str = "spec42.toml";
 
 /// Project source admission inside an editor discovery ceiling. Installed projects may own
 /// `.project.json` manifests, but do not become workspace projects when their files are opened.
@@ -53,16 +53,24 @@ struct SourceConfig {
     #[serde(default)]
     exclude: Vec<String>,
     sysand_dir: Option<PathBuf>,
+    /// External library roots. The key stays `library_paths` so it matches the host config
+    /// file; the struct's kebab-case rename would otherwise spell it `library-paths`.
+    #[serde(default, rename = "library_paths")]
+    library_paths: Vec<PathBuf>,
 }
 
-/// Paths are relative to the project configuration directory. Other Syside settings are ignored;
-/// this is a source-selection contract, not an implementation of the Syside tool configuration.
+/// Project source selection and extra library roots from `spec42.toml`.
+///
+/// Paths are relative to the project configuration directory. `include` and `exclude` select
+/// files inside that directory. `library_paths` adds directories, including siblings, as library
+/// roots. Spec42 does not read `syside.toml`.
 #[derive(Debug, Clone)]
 pub struct ProjectSourceScope {
     root: PathBuf,
     include: Option<GlobSet>,
     exclude: GlobSet,
     sysand_dir: PathBuf,
+    library_paths: Vec<PathBuf>,
 }
 
 impl ProjectSourceScope {
@@ -84,6 +92,24 @@ impl ProjectSourceScope {
                 )))
             }
         };
+        if let Some(include) = &config.include {
+            reject_escaping_globs(include, &path)?;
+        }
+        reject_escaping_globs(&config.exclude, &path)?;
+        let library_paths = config
+            .library_paths
+            .iter()
+            .map(|raw| resolve_library_path(&root, raw, &path))
+            .collect::<Result<Vec<_>, _>>()?;
+        let mut library_paths_deduped = Vec::new();
+        for library in library_paths {
+            if !library_paths_deduped
+                .iter()
+                .any(|existing: &PathBuf| existing == &library)
+            {
+                library_paths_deduped.push(library);
+            }
+        }
         let compile = |patterns: &[String]| -> Result<GlobSet, SourceError> {
             let mut builder = GlobSetBuilder::new();
             for pattern in patterns {
@@ -110,8 +136,14 @@ impl ProjectSourceScope {
                     .sysand_dir
                     .unwrap_or_else(|| PathBuf::from(".sysand")),
             ),
+            library_paths: library_paths_deduped,
             root,
         })
+    }
+
+    /// Directories named by `library_paths`, canonicalized. Empty when the file omits the key.
+    pub fn library_paths(&self) -> &[PathBuf] {
+        &self.library_paths
     }
 
     pub fn includes(&self, path: &Path) -> bool {
@@ -137,6 +169,47 @@ impl ProjectSourceScope {
     pub fn sysand_dir(&self) -> &Path {
         &self.sysand_dir
     }
+}
+
+fn reject_escaping_globs(patterns: &[String], config: &Path) -> Result<(), SourceError> {
+    for pattern in patterns {
+        if pattern_stays_in_project(pattern) {
+            continue;
+        }
+        return Err(SourceError::Provider(format!(
+            "Source pattern `{pattern}` in {} escapes the project root. include and exclude select files inside the project; add an external folder with library_paths.",
+            config.display()
+        )));
+    }
+    Ok(())
+}
+
+fn pattern_stays_in_project(pattern: &str) -> bool {
+    let normalized = pattern.replace('\\', "/");
+    if normalized.starts_with('/') {
+        return false;
+    }
+    let bytes = normalized.as_bytes();
+    if bytes.len() >= 2 && bytes[1] == b':' {
+        return false;
+    }
+    normalized.split('/').all(|component| component != "..")
+}
+
+fn resolve_library_path(root: &Path, raw: &Path, config: &Path) -> Result<PathBuf, SourceError> {
+    let joined = if raw.is_absolute() {
+        raw.to_path_buf()
+    } else {
+        root.join(raw)
+    };
+    if !joined.is_dir() {
+        return Err(SourceError::Provider(format!(
+            "Library path {} in {} is not a directory",
+            joined.display(),
+            config.display()
+        )));
+    }
+    Ok(normalized_path(&joined))
 }
 
 #[cfg(test)]
@@ -239,7 +312,7 @@ mod tests {
         std::fs::create_dir(temp.path().join("project/.git")).unwrap();
         let source = temp.path().join("project/model/Model.sysml");
         std::fs::write(&source, "package Model;").unwrap();
-        std::fs::write(temp.path().join("syside.toml"), "include = []").unwrap();
+        std::fs::write(temp.path().join(PROJECT_CONFIG_FILE), "include = []").unwrap();
         assert!(crate::discover_enclosing_project_root(&source).is_none());
         std::fs::write(temp.path().join("project/.project.json"), "{}").unwrap();
         assert_eq!(
@@ -257,7 +330,7 @@ mod tests {
             std::fs::write(root.join(".project.json"), "{}").unwrap();
         }
         std::fs::write(
-            temp.path().join("child/syside.toml"),
+            temp.path().join("child").join(PROJECT_CONFIG_FILE),
             "sysand-dir = 'installed'",
         )
         .unwrap();
@@ -321,5 +394,64 @@ mod tests {
             temp.path()
         )
         .unwrap());
+    }
+
+    #[test]
+    fn escaping_include_patterns_are_configuration_errors() {
+        let temp = tempfile::tempdir().unwrap();
+        for text in ["include = ['../library']", "exclude = ['C:/secret/**']"] {
+            std::fs::write(temp.path().join(PROJECT_CONFIG_FILE), text).unwrap();
+            let error = ProjectSourceScope::load(temp.path()).unwrap_err();
+            assert!(
+                error.to_string().contains("library_paths"),
+                "{text}: {error}"
+            );
+        }
+    }
+
+    #[test]
+    fn syside_toml_is_not_a_project_config() {
+        let temp = tempfile::tempdir().unwrap();
+        let source = temp.path().join("Model.sysml");
+        std::fs::write(&source, "package Model;").unwrap();
+        std::fs::write(temp.path().join("syside.toml"), "include = []").unwrap();
+        assert!(crate::discover_enclosing_project_root(&source).is_none());
+        assert!(ProjectSourceScope::load(temp.path())
+            .unwrap()
+            .includes(&source));
+        std::fs::write(temp.path().join(PROJECT_CONFIG_FILE), "include = []").unwrap();
+        assert_eq!(
+            crate::discover_enclosing_project_root(&source),
+            Some(std::fs::canonicalize(temp.path()).unwrap())
+        );
+        assert!(!ProjectSourceScope::load(temp.path())
+            .unwrap()
+            .includes(&source));
+    }
+
+    #[test]
+    fn library_paths_resolve_relative_to_the_project_root() {
+        let temp = tempfile::tempdir().unwrap();
+        let library = temp.path().join("sibling");
+        std::fs::create_dir(&library).unwrap();
+        std::fs::write(
+            temp.path().join(PROJECT_CONFIG_FILE),
+            "library_paths = ['sibling', 'sibling']",
+        )
+        .unwrap();
+        let scope = ProjectSourceScope::load(temp.path()).unwrap();
+        assert_eq!(scope.library_paths(), &[normalized_path(&library)]);
+    }
+
+    #[test]
+    fn a_missing_library_path_is_an_explicit_error() {
+        let temp = tempfile::tempdir().unwrap();
+        std::fs::write(
+            temp.path().join(PROJECT_CONFIG_FILE),
+            "library_paths = ['missing']",
+        )
+        .unwrap();
+        let error = ProjectSourceScope::load(temp.path()).unwrap_err();
+        assert!(error.to_string().contains("not a directory"), "{error}");
     }
 }

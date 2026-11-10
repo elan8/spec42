@@ -1,10 +1,10 @@
 //! Immutable workspace snapshot assembly.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
 
-use sysml_query::source::{SourceDocument, SourceProvider, Url};
+use sysml_query::source::{ProjectSourceScope, SourceDocument, SourceProvider, Url};
 
 use crate::engine::HostEngineMetadata;
 use crate::error::{map_provider_error, WorkspaceError, WorkspaceResult};
@@ -144,6 +144,13 @@ pub(crate) fn build_workspace_snapshot(
         .map_err(WorkspaceError::unresolved_library_environment)?;
     let standard_library_availability = admission.standard_library_availability;
     let project_dependencies = admission.resolutions;
+    let scope = ProjectSourceScope::load(&workspace_root).map_err(map_provider_error)?;
+    let mut library_paths = admission.library_roots.clone();
+    for path in scope.library_paths() {
+        if !library_paths.contains(path) {
+            library_paths.push(path.clone());
+        }
+    }
     // A batch snapshot is all-or-nothing: a file the provider could not admit is an error here,
     // not a warning.
     let loaded = engine
@@ -172,8 +179,7 @@ pub(crate) fn build_workspace_snapshot(
             .filter(|document| !document.kind().is_library())
             .map(|document| engine.services().syntax.parse(document))
             .collect::<Vec<_>>();
-        let roots = admission
-            .library_roots
+        let roots = library_paths
             .iter()
             .map(|path| sysml_query::library::LibraryRoot {
                 path: path.clone(),
@@ -213,8 +219,7 @@ pub(crate) fn build_workspace_snapshot(
                 return false;
             };
             let path = path.canonicalize().unwrap_or(path);
-            admission
-                .library_roots
+            library_paths
                 .iter()
                 .map(|root| root.canonicalize().unwrap_or_else(|_| root.clone()))
                 .any(|root| path.starts_with(root))
@@ -225,12 +230,38 @@ pub(crate) fn build_workspace_snapshot(
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
     let target_files = discover_target_files(&request.targets)?;
-    let reported_documents = target_files
+    let admitted_any = documents
+        .iter()
+        .map(|document| document.uri().clone())
+        .collect::<BTreeSet<_>>();
+    let mut reported_targets = Vec::new();
+    let mut excluded_by_scope = 0usize;
+    for path in &target_files {
+        let uri = path_to_file_url(path)?;
+        if admitted_any.contains(&uri) {
+            reported_targets.push(path.clone());
+        } else if !scope.includes(path) {
+            excluded_by_scope += 1;
+        }
+    }
+    if reported_targets.is_empty() {
+        let requested = target_files.len();
+        let message = if excluded_by_scope > 0 {
+            format!(
+                "None of the {requested} requested source(s) were admitted. {excluded_by_scope} were excluded by spec42.toml include/exclude. include selects files inside the project; add an external folder with library_paths."
+            )
+        } else {
+            format!(
+                "None of the {requested} requested source(s) were admitted to the workspace publication."
+            )
+        };
+        return Err(WorkspaceError::unresolved_library_environment(message));
+    }
+    let reported_documents = reported_targets
         .iter()
         .map(|path| path_to_file_url(path).map(|uri| Box::<str>::from(uri.as_str())))
         .collect::<WorkspaceResult<Vec<_>>>()?;
 
-    let library_paths = admission.library_roots;
     let library_urls = library_paths
         .iter()
         .map(|path| path_to_file_url(path.as_path()))
@@ -254,7 +285,7 @@ pub(crate) fn build_workspace_snapshot(
             ValidationTiming::Eager,
             collect_host_validation_report(
                 &published_model,
-                &target_files,
+                &reported_targets,
                 Some(workspace_root.as_path()),
                 &library_paths,
                 request.strict_diagnostics,
@@ -281,7 +312,7 @@ pub(crate) fn build_workspace_snapshot(
         documents,
         published_model,
         validation_report,
-        validation_target_files: target_files,
+        validation_target_files: reported_targets,
         strict_diagnostics: request.strict_diagnostics,
         validation_timing: request.validation_timing,
         library_urls,

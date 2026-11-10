@@ -4,6 +4,8 @@ use std::path::PathBuf;
 
 use serde::Serialize;
 
+use sysml_query::resolved_slice::LibraryElementInclusion;
+
 use crate::cli::{CheckArgs, Cli, OutputFormat};
 use crate::diagnostic_catalog;
 use crate::{
@@ -23,6 +25,7 @@ pub struct ModelExportArgs {
     pub path: PathBuf,
     pub workspace_root: Option<PathBuf>,
     pub max_nodes: usize,
+    pub library_elements: LibraryElementInclusion,
 }
 
 #[derive(Debug, Serialize)]
@@ -124,5 +127,10 @@ pub fn perform_model_export(
         strict_diagnostics: false,
     };
     let (report, model) = perform_check_with_publication(cli, &check_args)?;
-    Ok(build_model_export(report, &model, args.max_nodes))
+    Ok(build_model_export(
+        report,
+        &model,
+        args.max_nodes,
+        args.library_elements,
+    ))
 }

@@ -382,7 +382,7 @@ export function startLanguageClient(
     synchronize: {
       fileEvents: [
         vscode.workspace.createFileSystemWatcher("**/*.{sysml,kerml}"),
-        vscode.workspace.createFileSystemWatcher("**/{.project.json,syside.toml,sysand-lock.toml,env.toml}"),
+        vscode.workspace.createFileSystemWatcher("**/{.project.json,spec42.toml,sysand-lock.toml,env.toml}"),
       ],
     },
     initializationOptions: {
