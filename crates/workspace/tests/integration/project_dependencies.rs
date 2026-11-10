@@ -21,7 +21,7 @@ fn installed_sysand_sources_and_source_scope_are_admitted_by_the_batch_loader() 
     )
     .unwrap();
     std::fs::write(root.join("scratch/Draft.sysml"), "package Draft;").unwrap();
-    std::fs::write(root.join("syside.toml"), "exclude = ['scratch/**']").unwrap();
+    std::fs::write(root.join("spec42.toml"), "exclude = ['scratch/**']").unwrap();
     std::fs::write(
         root.join(".sysand/lib/types/Types.sysml"),
         "package Types { part def Item; }",

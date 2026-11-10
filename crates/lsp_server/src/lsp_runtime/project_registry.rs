@@ -578,14 +578,28 @@ impl ProjectRegistry {
         StandardLibraryAvailability,
         Option<String>,
     ) {
-        if let Err(error) = sysml_query::source::ProjectSourceScope::load(root) {
-            return (
-                Vec::new(),
-                Vec::new(),
-                self.standard_library_availability,
-                Some(error.to_string()),
-            );
-        }
+        let scope = match sysml_query::source::ProjectSourceScope::load(root) {
+            Ok(scope) => scope,
+            Err(error) => {
+                return (
+                    Vec::new(),
+                    Vec::new(),
+                    self.standard_library_availability,
+                    Some(error.to_string()),
+                );
+            }
+        };
+        let with_project_libraries = |mut paths: Vec<Url>| {
+            for library in scope.library_paths() {
+                let Some(url) = library_root_url(library) else {
+                    continue;
+                };
+                if !paths.iter().any(|existing| existing == &url) {
+                    paths.push(url);
+                }
+            }
+            paths
+        };
         let Some(catalog) = &self.library_catalog else {
             let manifest = root.join(sysml_query::source::PROJECT_MANIFEST_FILE);
             if manifest.is_file() {
@@ -603,7 +617,7 @@ impl ProjectRegistry {
                     };
                 if resolutions.is_empty() {
                     return (
-                        fallback_standard_library_paths.to_vec(),
+                        with_project_libraries(fallback_standard_library_paths.to_vec()),
                         fallback_standard_library_paths.to_vec(),
                         self.standard_library_availability,
                         None,
@@ -622,7 +636,7 @@ impl ProjectRegistry {
                 );
             }
             return (
-                fallback_library_paths.to_vec(),
+                with_project_libraries(fallback_library_paths.to_vec()),
                 fallback_standard_library_paths.to_vec(),
                 self.standard_library_availability,
                 None,
@@ -630,11 +644,13 @@ impl ProjectRegistry {
         };
         match library_catalog::resolve_project_dependency_admission(root, catalog) {
             Ok(admission) if admission.manifest_present => (
-                admission
-                    .library_roots
-                    .iter()
-                    .filter_map(|root| library_root_url(root))
-                    .collect(),
+                with_project_libraries(
+                    admission
+                        .library_roots
+                        .iter()
+                        .filter_map(|root| library_root_url(root))
+                        .collect(),
+                ),
                 admission
                     .standard_library_roots
                     .iter()
@@ -644,7 +660,7 @@ impl ProjectRegistry {
                 None,
             ),
             Ok(_) => (
-                fallback_library_paths.to_vec(),
+                with_project_libraries(fallback_library_paths.to_vec()),
                 fallback_standard_library_paths.to_vec(),
                 self.standard_library_availability,
                 None,
@@ -875,6 +891,43 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn project_config_library_paths_are_admitted_for_the_editor_project() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path().join("workspace");
+        let library = temp.path().join("library");
+        fs::create_dir(&root).unwrap();
+        fs::create_dir(&library).unwrap();
+        fs::write(root.join("App.sysml"), "package App;").unwrap();
+        fs::write(library.join("Types.sysml"), "package Types;").unwrap();
+        fs::write(root.join("spec42.toml"), "library_paths = ['../library']").unwrap();
+        fs::write(root.join("syside.toml"), "include = []").unwrap();
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
+        registry
+            .configure(
+                vec![library_root_url(&root).unwrap()],
+                Vec::new(),
+                Vec::new(),
+            )
+            .await;
+        let snapshot = registry.handles().pop().unwrap().snapshot();
+        let library_root = library_root_url(&library).unwrap();
+        assert!(
+            snapshot
+                .library_paths
+                .iter()
+                .any(|path| path == &library_root),
+            "{:?}",
+            snapshot.library_paths
+        );
+        let app = sysml_query::source::path_to_file_url(&root.join("App.sysml")).unwrap();
+        assert!(registry.handle_for_uri(&app).await.is_some());
+    }
+
+    #[tokio::test]
     async fn source_scope_applies_to_open_watch_and_query_routing_after_rediscovery() {
         let temp = tempfile::tempdir().unwrap();
         let root = temp.path();
@@ -905,7 +958,7 @@ mod tests {
             .await
             .unwrap();
         assert!(registry.handle_for_uri(&draft).await.is_some());
-        fs::write(root.join("syside.toml"), "exclude = ['scratch/**']").unwrap();
+        fs::write(root.join("spec42.toml"), "exclude = ['scratch/**']").unwrap();
         registry.rediscover().await;
         assert!(registry.handle_for_uri(&draft).await.is_none());
         assert!(registry.query_handle_for_uri(&draft, None).is_err());
@@ -914,7 +967,7 @@ mod tests {
             replacement.snapshot().index.get(&model).unwrap().content(),
             "package Unsaved;"
         );
-        fs::remove_file(root.join("syside.toml")).unwrap();
+        fs::remove_file(root.join("spec42.toml")).unwrap();
         registry.rediscover().await;
         assert!(registry.handle_for_uri(&draft).await.is_some());
     }
@@ -922,7 +975,7 @@ mod tests {
     #[tokio::test]
     async fn malformed_source_configuration_is_an_explicit_project_admission_error() {
         let temp = tempfile::tempdir().unwrap();
-        fs::write(temp.path().join("syside.toml"), "include = 4").unwrap();
+        fs::write(temp.path().join("spec42.toml"), "include = 4").unwrap();
         let uri = Url::from_file_path(temp.path().join("Model.sysml")).unwrap();
         let registry = ProjectRegistry::new(
             Services::default(),

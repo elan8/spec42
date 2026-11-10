@@ -107,10 +107,12 @@ New capability lands in this order: implementation in the owning authority, a ty
 ## Filesystem project inputs
 
 Source selection is owned by `sysml_source`: host discovery ceilings, nearest `.project.json`
-boundaries, and project-root `syside.toml` include/exclude rules. Both hosts use that selection;
-editor opens and watched-file events cannot add excluded files to a project. Explicitly admitted
-in-memory sources remain the embedder's responsibility. Configuration is read on discovery rather
-than cached independently of the publication's inputs.
+boundaries, and project-root `spec42.toml` include/exclude rules. `library_paths` in that file
+are additional library roots. Both hosts use that selection and those roots, together with
+`--library-path` and `spec42.libraryPaths`; editor opens and watched-file events cannot add
+excluded files to a project. Spec42 does not read `syside.toml`. Explicitly admitted in-memory
+sources remain the embedder's responsibility. Configuration is read on discovery rather than
+cached independently of the publication's inputs.
 
 `library_catalog` owns dependency admission from KPAR resource usages and locally installed,
 versioned Sysand lock/environment metadata. Both hosts consume its selected roots and explicit

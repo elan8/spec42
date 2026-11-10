@@ -456,7 +456,7 @@ mod tests {
         let root = temp.path();
         std::fs::create_dir(root.join("tools")).unwrap();
         std::fs::rename(root.join(".sysand"), root.join("tools/env")).unwrap();
-        std::fs::write(root.join("syside.toml"), "sysand-dir = 'tools/env'").unwrap();
+        std::fs::write(root.join("spec42.toml"), "sysand-dir = 'tools/env'").unwrap();
         let file = root.join("tools/env/env.toml");
         let text = std::fs::read_to_string(&file).unwrap().replace(
             "path = 'lib/installed'",

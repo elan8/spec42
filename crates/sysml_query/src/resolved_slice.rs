@@ -34,33 +34,34 @@ pub use sysml_resolution::{
     ExpectedMeasurement, ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome,
     ExpressionResultTyping, FeatureDerivedRelationshipCollection, FeatureDirection,
     ImplicitRedefinitionRepair, ImportCandidate, ImportChoice, ImportPlan, ImportRemainder,
-    ImportRemainderReason, InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts,
-    MembershipId, MembershipKind, MembershipRelationship, MembershipRole, MetadataAnnotationForm,
-    MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
-    NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
-    OccurrenceRole, PortionKind, ProjectedContextualEvaluation, ProjectedElement,
-    ProjectedExposure, ProjectedMultiplicity, ProjectionEnvelope, ProjectionPhase,
-    ProjectionTruncation, PublicationCompleteness, PublicationIdentity, PublicationModelDigest,
-    PublicationObstacle, PublishedConnectionGraph, PublishedConnector, PublishedConnectorEnd,
-    PublishedDiagnostics, PublishedElement, PublishedExpression, PublishedMetadataAnnotation,
-    PublishedModelProjection, QualificationCandidate, QualifiedElementReference,
-    QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer, QueryOutcome,
-    RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt,
-    ReferenceRepair, ReferenceRepairOutcome, ReferencedDetails, RelatedLocation,
-    RelationshipFamily, RelationshipOutcome, RelationshipProvenance, RelationshipTarget,
-    RenameOutcome, RepairNamespace, RepairSlot, RequirementConstraintKind,
-    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
-    RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
-    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
-    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
-    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
-    SymbolToken, TextId, TextPosition, TextRange, TriggerKind, TypeDerivedElementCollection,
-    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
-    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
-    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
-    TypeReference, UnitResolution, UnsupportedConstruct, UnsupportedConstructId, ValueKind,
-    VerificationOutcome, VerificationRequirement, ViewExposedElements, ViewExposureObstacle,
-    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    ImportRemainderReason, InheritedFeature, LibraryElementInclusion,
+    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId, MembershipKind,
+    MembershipRelationship, MembershipRole, MetadataAnnotationForm, MetadataAnnotationValue,
+    MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
+    NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
+    ProjectedContextualEvaluation, ProjectedElement, ProjectedExposure, ProjectedMultiplicity,
+    ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublicationCompleteness,
+    PublicationIdentity, PublicationModelDigest, PublicationObstacle, PublishedConnectionGraph,
+    PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics, PublishedElement,
+    PublishedExpression, PublishedMetadataAnnotation, PublishedModelProjection,
+    QualificationCandidate, QualifiedElementReference, QualifiedReferenceOutcome,
+    QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
+    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferenceRepair,
+    ReferenceRepairOutcome, ReferencedDetails, RelatedLocation, RelationshipFamily,
+    RelationshipOutcome, RelationshipProvenance, RelationshipTarget, RenameOutcome,
+    RepairNamespace, RepairSlot, RequirementConstraintKind, RequirementDerivedFactCollection,
+    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
+    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
+    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
+    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
+    TextPosition, TextRange, TriggerKind, TypeDerivedElementCollection, TypeDerivedFactCollection,
+    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
+    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
+    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, UnsupportedConstruct,
+    UnsupportedConstructId, ValueKind, VerificationOutcome, VerificationRequirement,
+    ViewExposedElements, ViewExposureObstacle, Visibility, VisibilityProvenance, VisibleMemberRef,
+    VisibleMembers,
 };
 
 pub use sysml_resolution::source::RootDigest;
@@ -466,6 +467,15 @@ impl ProjectionQueries<'_> {
     /// `usize::MAX` for the whole workspace.
     pub fn model(&self, max_nodes: usize) -> QueryOutcome<PublishedModelProjection> {
         self.model.model_projection(max_nodes)
+    }
+
+    /// [`Self::model`] with an explicit library-element scope. `None` is the workspace publication.
+    pub fn model_including(
+        &self,
+        max_nodes: usize,
+        inclusion: LibraryElementInclusion,
+    ) -> QueryOutcome<PublishedModelProjection> {
+        self.model.model_projection_including(max_nodes, inclusion)
     }
 }
 

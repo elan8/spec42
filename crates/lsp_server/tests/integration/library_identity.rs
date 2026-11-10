@@ -313,7 +313,7 @@ fn library_overlay_restart_parity(rediscover: bool) {
     edited.did_change_full(&library_uri, unsaved, 2);
     publication(&mut edited, &library_uri, 2);
     if rediscover {
-        let config = root.join("syside.toml");
+        let config = root.join("spec42.toml");
         std::fs::write(&config, "include = ['**/*.sysml']").unwrap();
         edited.notify(
             "workspace/didChangeWatchedFiles",

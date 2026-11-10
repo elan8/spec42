@@ -133,9 +133,9 @@ pub use model::query::{
 };
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
 pub use projection::{
-    AdmittedSourceCounts, ContextualEvaluationOutcome, ProjectedContextualEvaluation,
-    ProjectedElement, ProjectedExposure, ProjectedMultiplicity, ProjectionEnvelope,
-    ProjectionPhase, ProjectionTruncation, PublishedModelProjection,
+    AdmittedSourceCounts, ContextualEvaluationOutcome, LibraryElementInclusion,
+    ProjectedContextualEvaluation, ProjectedElement, ProjectedExposure, ProjectedMultiplicity,
+    ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublishedModelProjection,
     MODEL_PROJECTION_SCHEMA_VERSION,
 };
 pub use qualified_reference::{
@@ -1372,10 +1372,20 @@ impl PublishedResolution {
     /// publication envelope. `max_nodes` bounds the element list (and the per-element composition
     /// work); use `usize::MAX` for the whole workspace.
     pub fn model_projection(&self, max_nodes: usize) -> QueryOutcome<PublishedModelProjection> {
+        self.model_projection_including(max_nodes, LibraryElementInclusion::None)
+    }
+
+    /// [`Self::model_projection`] with an explicit library-element scope.
+    pub fn model_projection_including(
+        &self,
+        max_nodes: usize,
+        inclusion: LibraryElementInclusion,
+    ) -> QueryOutcome<PublishedModelProjection> {
         self.model.model_projection(
             max_nodes,
             *self.identity.source_digest(),
             self.identity.model_digest(),
+            inclusion,
         )
     }
 

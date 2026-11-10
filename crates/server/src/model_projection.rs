@@ -10,11 +10,11 @@
 use serde::Serialize;
 use serde_json::{json, Value};
 use sysml_query::resolved_slice::{
-    ConnectedElement, ConnectorEndpoint, ElementDetails, EvaluatedScalar, ExpressionNode,
-    ExpressionNodeKind, MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
-    ProjectedElement, ProjectionEnvelope, PublishedConnector, PublishedExpression,
-    PublishedMetadataAnnotation, PublishedModel, RelationshipFamily, RelationshipTarget,
-    SourceLocation, SymbolId, SymbolToken,
+    ConnectedElement, ConnectorEndpoint, ElementDetails, ElementSource, EvaluatedScalar,
+    ExpressionNode, ExpressionNodeKind, LibraryElementInclusion, MetadataAnnotationValue,
+    MultiplicityBound, MultiplicityFacts, ProjectedElement, ProjectionEnvelope, PublishedConnector,
+    PublishedExpression, PublishedMetadataAnnotation, PublishedModel, RelationshipFamily,
+    RelationshipTarget, SourceLocation, SymbolId, SymbolToken,
 };
 
 /// The JSON form of one publication's whole-model projection.
@@ -41,6 +41,7 @@ pub struct EnvelopeJson {
 
 #[derive(Debug, Serialize)]
 pub struct AdmittedJson {
+    pub workspace: usize,
     pub standard_library: usize,
     pub library: usize,
     pub external: usize,
@@ -58,9 +59,15 @@ pub struct TruncationJson {
 /// `model_projection` composes [`sysml_query::resolved_slice::QueryAnswer::Resolved`]-only
 /// queries (`all_elements`), so it always resolves; there is no non-`Resolved` answer for this
 /// caller to fall back on.
-pub fn model_projection_json(model: &PublishedModel, max_nodes: usize) -> ModelProjectionJson {
-    let sysml_query::resolved_slice::QueryAnswer::Resolved(projection) =
-        model.projection().model(max_nodes).answer
+pub fn model_projection_json(
+    model: &PublishedModel,
+    max_nodes: usize,
+    inclusion: LibraryElementInclusion,
+) -> ModelProjectionJson {
+    let sysml_query::resolved_slice::QueryAnswer::Resolved(projection) = model
+        .projection()
+        .model_including(max_nodes, inclusion)
+        .answer
     else {
         unreachable!(
             "model_projection composes only Resolved-answer queries (all_elements), so this \
@@ -104,6 +111,7 @@ fn envelope_json(envelope: &ProjectionEnvelope) -> EnvelopeJson {
         source_digest: envelope.source_digest.to_string(),
         model_digest: envelope.model_digest.to_string(),
         admitted: AdmittedJson {
+            workspace: envelope.admitted.workspace,
             standard_library: envelope.admitted.standard_library,
             library: envelope.admitted.library,
             external: envelope.admitted.external,
@@ -350,12 +358,21 @@ fn connector_json(model: &PublishedModel, connector: &PublishedConnector) -> Val
     })
 }
 
+fn element_source_name(source: ElementSource) -> &'static str {
+    match source {
+        ElementSource::Workspace => "workspace",
+        ElementSource::StandardLibrary => "standard-library",
+        ElementSource::Library => "library",
+        ElementSource::External => "external",
+    }
+}
+
 fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
     let details: &ElementDetails = &element.details;
     let inspection = &details.inspection;
     json!({
         "token": token(model, element.identity),
-        "source": "workspace",
+        "source": element_source_name(element.source),
         "kind": inspection.kind.as_str(),
         "name": inspection.name.as_deref(),
         "effective_name": element.effective_name.as_deref(),

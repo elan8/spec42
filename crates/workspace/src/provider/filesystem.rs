@@ -9,7 +9,8 @@ use std::path::{Path, PathBuf};
 
 use sysml_query::library::{LibraryClosureOptions, LibraryRoot};
 use sysml_query::source::{
-    FilesystemProvider, SourceAuthority, SourceError, SourceKind, SourceLoadReport, SourceProvider,
+    FilesystemProvider, ProjectSourceScope, SourceAuthority, SourceError, SourceKind,
+    SourceLoadReport, SourceProvider,
 };
 use sysml_query::Services;
 
@@ -102,6 +103,15 @@ impl SourceProvider for FileSystemDocumentProvider {
             .map(|path| canonicalize_or_self(path))
             .collect::<Vec<_>>();
 
+        let project_libraries = if workspace_root.exists() {
+            ProjectSourceScope::load(&workspace_root)?
+                .library_paths()
+                .to_vec()
+        } else {
+            Vec::new()
+        };
+        let library_paths = merge_library_paths(&self.library_paths, &project_libraries);
+
         let mut report = SourceLoadReport::default();
         if workspace_root.exists() {
             let workspace =
@@ -112,7 +122,7 @@ impl SourceProvider for FileSystemDocumentProvider {
         }
 
         if self.full_library_scan {
-            for library_path in &self.library_paths {
+            for library_path in &library_paths {
                 let library_root = canonicalize_or_self(library_path);
                 if !library_root.exists() {
                     continue;
@@ -124,8 +134,7 @@ impl SourceProvider for FileSystemDocumentProvider {
             return Ok(report);
         }
 
-        let roots: Vec<LibraryRoot> = self
-            .library_paths
+        let roots: Vec<LibraryRoot> = library_paths
             .iter()
             .map(|path| {
                 let path = canonicalize_or_self(path);
@@ -210,6 +219,17 @@ fn library_source_kind(root: &Path, standard_library_paths: &[PathBuf]) -> Sourc
     }
 }
 
+fn merge_library_paths(configured: &[PathBuf], project: &[PathBuf]) -> Vec<PathBuf> {
+    let mut merged = Vec::new();
+    for path in configured.iter().chain(project) {
+        let path = canonicalize_or_self(path);
+        if !merged.iter().any(|existing: &PathBuf| existing == &path) {
+            merged.push(path);
+        }
+    }
+    merged
+}
+
 fn canonicalize_or_self(path: &Path) -> PathBuf {
     std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
 }
@@ -256,5 +276,38 @@ mod tests {
         let report = services.source.load(&provider).expect("overlapping load");
         assert_eq!(report.documents.len(), 1);
         assert_eq!(report.documents[0].kind(), SourceKind::StandardLibrary);
+    }
+
+    #[test]
+    fn project_library_paths_admit_a_sibling_directory() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let root = temp.path().join("project");
+        let library = temp.path().join("library");
+        std::fs::create_dir(&root).expect("project");
+        std::fs::create_dir(&library).expect("library");
+        std::fs::write(
+            root.join("App.sysml"),
+            "package App { private import Types::*; }",
+        )
+        .expect("workspace source");
+        std::fs::write(library.join("Types.sysml"), "package Types;").expect("library source");
+        std::fs::write(root.join("spec42.toml"), "library_paths = ['../library']")
+            .expect("project config");
+
+        let services = Services::new();
+        let provider =
+            FileSystemDocumentProvider::from_paths(&root, Some(&root), &[], services.clone());
+        let report = services
+            .source
+            .load(&provider)
+            .expect("project library load");
+        assert!(report
+            .documents
+            .iter()
+            .any(|document| document.kind() == SourceKind::Workspace));
+        assert!(report
+            .documents
+            .iter()
+            .any(|document| document.kind() == SourceKind::Library));
     }
 }

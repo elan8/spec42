@@ -114,16 +114,32 @@ impl ProjectionPhase {
     }
 }
 
-/// How many non-workspace documents took part in resolution, by provenance.
+/// How many documents took part in resolution, by provenance.
 ///
-/// Their elements are not enumerated in [`PublishedModelProjection::elements`]; a consumer that
-/// needs to know a library participated reads it here rather than inferring it from an opaque
-/// source digest.
+/// The snapshot renderer still reports only the non-workspace counts. JSON export includes
+/// `workspace` as well, so a publication that admitted no workspace documents is visible without
+/// inferring it from an empty element list.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct AdmittedSourceCounts {
+    pub workspace: usize,
     pub standard_library: usize,
     pub library: usize,
     pub external: usize,
+}
+
+/// Which non-workspace elements a model projection includes.
+///
+/// The default is the workspace publication. `Referenced` adds elements named by workspace
+/// typing, specialization, subsetting, or redefinition, plus members owned by library and
+/// external targets. `All` adds every admitted library and external element. Standard-library
+/// elements stay out of `All`; a standard-library element appears in `Referenced` only when a
+/// workspace relationship names it, and its owned members are not pulled in with it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum LibraryElementInclusion {
+    #[default]
+    None,
+    Referenced,
+    All,
 }
 
 /// One workspace element, with everything the publication settled about it.
@@ -132,8 +148,7 @@ pub struct ProjectedElement {
     /// Stable within this publication; materialise a [`crate::SymbolToken`] through
     /// `PublishedModel` to cross a boundary.
     pub identity: SymbolId,
-    /// Always [`ElementSource::Workspace`] in schemas 1 and 2; kept explicit so a later version
-    /// can widen the element set without a breaking change.
+    /// [`ElementSource::Workspace`] unless the caller asked for library elements.
     pub source: ElementSource,
     /// The same answer `inspection().element_details()` publishes: kind, name, location,
     /// membership, modifiers, multiplicity, direction, documentation, the four relationship

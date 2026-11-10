@@ -1,10 +1,10 @@
 //! Immutable workspace snapshot assembly.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
 
-use sysml_query::source::{SourceDocument, SourceProvider, Url};
+use sysml_query::source::{ProjectSourceScope, SourceDocument, SourceKind, SourceProvider, Url};
 
 use crate::engine::HostEngineMetadata;
 use crate::error::{map_provider_error, WorkspaceError, WorkspaceResult};
@@ -225,7 +225,47 @@ pub(crate) fn build_workspace_snapshot(
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
     let target_files = discover_target_files(&request.targets)?;
-    let reported_documents = target_files
+    let scope = ProjectSourceScope::load(&workspace_root).map_err(map_provider_error)?;
+    let admitted_workspace = documents
+        .iter()
+        .filter(|document| document.kind() == SourceKind::Workspace)
+        .map(|document| document.uri().clone())
+        .collect::<BTreeSet<_>>();
+    let admitted_any = documents
+        .iter()
+        .map(|document| document.uri().clone())
+        .collect::<BTreeSet<_>>();
+    let mut reported_targets = Vec::new();
+    let mut excluded_by_scope = 0usize;
+    let mut admitted_as_library = 0usize;
+    for path in &target_files {
+        let uri = path_to_file_url(path)?;
+        if admitted_workspace.contains(&uri) {
+            reported_targets.push(path.clone());
+        } else if !scope.includes(path) {
+            excluded_by_scope += 1;
+        } else if admitted_any.contains(&uri) {
+            admitted_as_library += 1;
+        }
+    }
+    if reported_targets.is_empty() {
+        let requested = target_files.len();
+        let message = if excluded_by_scope > 0 {
+            format!(
+                "None of the {requested} requested source(s) were admitted. {excluded_by_scope} were excluded by spec42.toml include/exclude. include selects files inside the project; add an external folder with library_paths."
+            )
+        } else if admitted_as_library > 0 {
+            format!(
+                "None of the {requested} requested source(s) were admitted as workspace sources. {admitted_as_library} are under a library root and were admitted as library sources."
+            )
+        } else {
+            format!(
+                "None of the {requested} requested source(s) were admitted to the workspace publication."
+            )
+        };
+        return Err(WorkspaceError::unresolved_library_environment(message));
+    }
+    let reported_documents = reported_targets
         .iter()
         .map(|path| path_to_file_url(path).map(|uri| Box::<str>::from(uri.as_str())))
         .collect::<WorkspaceResult<Vec<_>>>()?;
@@ -254,7 +294,7 @@ pub(crate) fn build_workspace_snapshot(
             ValidationTiming::Eager,
             collect_host_validation_report(
                 &published_model,
-                &target_files,
+                &reported_targets,
                 Some(workspace_root.as_path()),
                 &library_paths,
                 request.strict_diagnostics,
@@ -281,7 +321,7 @@ pub(crate) fn build_workspace_snapshot(
         documents,
         published_model,
         validation_report,
-        validation_target_files: target_files,
+        validation_target_files: reported_targets,
         strict_diagnostics: request.strict_diagnostics,
         validation_timing: request.validation_timing,
         library_urls,
