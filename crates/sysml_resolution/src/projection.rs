@@ -130,10 +130,11 @@ pub struct AdmittedSourceCounts {
 /// Which non-workspace elements a model projection includes.
 ///
 /// The default is the workspace publication. `Referenced` adds elements named by workspace
-/// typing, specialization, subsetting, or redefinition, plus members owned by library and
-/// external targets. `All` adds every admitted library and external element. Standard-library
-/// elements stay out of `All`; a standard-library element appears in `Referenced` only when a
-/// workspace relationship names it, and its owned members are not pulled in with it.
+/// typing, specialization, subsetting, or redefinition, recursively including relationship
+/// targets and owned members of library and external elements. `All` adds every admitted
+/// library and external element. Standard-library elements stay out of `All`; a standard-library
+/// element appears in `Referenced` only when a selected element's relationship names it, and its
+/// owned members are not pulled in with it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum LibraryElementInclusion {
     #[default]

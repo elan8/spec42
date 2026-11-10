@@ -249,7 +249,7 @@ pub struct ModelExportArgs {
     pub max_nodes: usize,
     /// Which non-workspace elements to include. `none` is the workspace publication.
     /// `referenced` adds definitions named by workspace typing, specialization, subsetting,
-    /// or redefinition, plus the members those library definitions own. `all` adds every
+    /// or redefinition, recursively including library targets and owned members. `all` adds every
     /// admitted library and external element. The standard library stays out of `all`.
     #[arg(long = "library-elements", value_enum, default_value_t = LibraryElements::None)]
     pub library_elements: LibraryElements,

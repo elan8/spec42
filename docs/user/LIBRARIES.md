@@ -63,6 +63,14 @@ them as library roots, in addition to `--library-path` and `spec42.libraryPaths`
 admitted is not loaded twice. Files under a library root keep library provenance when that root
 also sits inside the workspace.
 
+`model-export` returns workspace elements by default. Use `--library-elements referenced` to
+include the transitive closure of typing, specialization, subsetting, and redefinition targets,
+and the members owned by those library definitions. Unrelated library definitions remain out of
+the export. `--library-elements all` includes every admitted library and external element;
+`--library-elements none` explicitly selects the default workspace scope. Standard-library
+targets may appear in `referenced`, but their owned members are not expanded and `all` omits
+standard-library elements. `--max-nodes` still limits the returned element count.
+
 Source selection is shared by the CLI and VS Code; opening or changing an excluded file does not
 add it to the editor's project publication. A check or export whose requested sources were all
 excluded does not report a successful empty model. VS Code watches these project inputs and

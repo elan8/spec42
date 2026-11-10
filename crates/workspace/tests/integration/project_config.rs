@@ -82,3 +82,40 @@ fn excluded_files_are_omitted_from_the_validation_report() {
     assert_eq!(uris.len(), 1);
     assert!(uris[0].contains("Model.sysml"));
 }
+
+#[test]
+fn project_library_paths_survive_manifest_dependency_filtering() {
+    let temp = tempfile::tempdir().unwrap();
+    let root = temp.path().join("project");
+    let library = temp.path().join("library");
+    std::fs::create_dir(&root).unwrap();
+    std::fs::create_dir(&library).unwrap();
+    std::fs::write(
+        root.join(".project.json"),
+        r#"{"name":"App","version":"1.0.0"}"#,
+    )
+    .unwrap();
+    std::fs::write(root.join("spec42.toml"), "library_paths = ['../library']").unwrap();
+    std::fs::write(
+        root.join("Model.sysml"),
+        "package Model { private import Types::*; part item : Item; }",
+    )
+    .unwrap();
+    let library_source = library.join("Types.sysml");
+    std::fs::write(&library_source, "package Types { part def Item; }").unwrap();
+    let library_uri = workspace::path_to_file_url(&library_source).unwrap();
+
+    let snapshot = load(&root).expect("configured libraries supplement manifest dependencies");
+    let document = snapshot
+        .documents()
+        .iter()
+        .find(|document| document.uri() == &library_uri)
+        .expect("configured library document retained");
+    assert_eq!(document.kind(), workspace::SourceKind::Library);
+    let library_url = workspace::path_to_file_url(&library).unwrap();
+    assert!(snapshot
+        .library_paths()
+        .iter()
+        .any(|path| { workspace::path_to_file_url(path).unwrap() == library_url }));
+    assert!(snapshot.library_urls().contains(&library_url));
+}

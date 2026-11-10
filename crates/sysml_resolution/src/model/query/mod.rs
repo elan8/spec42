@@ -5197,7 +5197,7 @@ impl<D> SemanticModel<D> {
         }
     }
 
-    /// Workspace elements plus non-workspace elements their authored relationship families name.
+    /// Workspace elements plus the transitive closure of their relationship targets.
     ///
     /// Owned members are included for library and external targets, so a referenced definition's
     /// features are in the same projection. A named standard-library element is included alone:
@@ -5215,8 +5215,8 @@ impl<D> SemanticModel<D> {
             .iter()
             .map(|element| (element.entry.identity, element.source))
             .collect::<BTreeMap<_, _>>();
-        let workspace = selected.iter().copied().collect::<Vec<_>>();
-        for symbol in workspace {
+        let mut pending = selected.iter().copied().collect::<Vec<_>>();
+        while let Some(symbol) = pending.pop() {
             let QueryAnswer::Resolved(details) = self.element_details(symbol).answer else {
                 continue;
             };
@@ -5234,8 +5234,9 @@ impl<D> SemanticModel<D> {
                         continue;
                     }
                     if matches!(source, ElementSource::Library | ElementSource::External) {
+                        pending.push(target.identity);
                         if let Some(declaration) = self.declaration_of(target.identity) {
-                            self.collect_owned_symbols(declaration, &mut selected);
+                            self.collect_owned_symbols(declaration, &mut selected, &mut pending);
                         }
                     }
                 }
@@ -5248,11 +5249,14 @@ impl<D> SemanticModel<D> {
         &self,
         root: crate::model::DeclarationId,
         into: &mut BTreeSet<SymbolId>,
+        referenced: &mut Vec<SymbolId>,
     ) {
         let mut pending = self.child_declarations(root).to_vec();
         while let Some(child) = pending.pop() {
             if let Some(symbol) = self.symbol_id(child) {
-                into.insert(symbol);
+                if into.insert(symbol) {
+                    referenced.push(symbol);
+                }
             }
             pending.extend(self.child_declarations(child).iter().copied());
         }
