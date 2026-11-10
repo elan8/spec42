@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.60.2] - 2026-11-10
+
+- **Upgrade notes.** Project settings now live in `spec42.toml`; Spec42 no longer reads
+  `syside.toml`. Copy settings needed by Spec42 into `spec42.toml`, and move external library
+  folders from `include` to `library_paths`. Keep `syside.toml` if another tool needs it.
+  `include` and `exclude` select in-project sources; patterns that leave the project are errors.
+  Model export schema 2 adds `envelope.admitted.workspace`. The semantic contract stays
+  `state-trigger-labels-v74`, diagram products stay schema 12, and the generator ABI stays version 7.
+
+- **Project configuration no longer silently empties a model.** `spec42.toml` source filters and
+  `library_paths` work in the CLI and language server, including projects with `.project.json`
+  dependencies. A check or export fails when every requested source was excluded. Explicitly
+  targeted library documents continue to report diagnostics.
+
+- **Model exports can include referenced library definitions.** Use
+  `model-export --library-elements referenced` to include typing, specialization, subsetting,
+  and redefinition targets transitively, together with their owned library members. Unrelated
+  definitions remain out of the export. The default `none` keeps workspace-only elements;
+  `all` includes all admitted library and external elements, excluding the standard library.
+
+- **Views can use definitions that specialize standard views.** A view typed by a library
+  definition such as `view def ContextView :> GeneralView` no longer reports
+  `view_type_non_standard`.
+
 ## [0.60.1] - 2026-11-08
 
 - **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
