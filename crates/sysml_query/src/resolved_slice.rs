@@ -42,9 +42,10 @@ pub use sysml_resolution::{
     ProjectedContextualEvaluation, ProjectedElement, ProjectedExposure, ProjectedMultiplicity,
     ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublicationCompleteness,
     PublicationIdentity, PublicationModelDigest, PublicationObstacle, PublishedConnectionGraph,
-    PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics, PublishedElement,
-    PublishedExpression, PublishedMetadataAnnotation, PublishedModelProjection,
-    QualificationCandidate, QualifiedElementReference, QualifiedReferenceOutcome,
+    PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics, PublishedEffect,
+    PublishedElement, PublishedExpression, PublishedGuard, PublishedMetadataAnnotation,
+    PublishedModelProjection, PublishedState, PublishedStateMachine, PublishedTransition,
+    PublishedTrigger, QualificationCandidate, QualifiedElementReference, QualifiedReferenceOutcome,
     QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
     RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferenceRepair,
     ReferenceRepairOutcome, ReferencedDetails, RelatedLocation, RelationshipFamily,
@@ -450,6 +451,15 @@ impl StructureQueries<'_> {
     /// `None` when `symbol` is not a workspace `connect` / `interface` connector.
     pub fn connector(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedConnector>> {
         self.model.connector(symbol)
+    }
+
+    /// The states and transitions one state usage or state definition owns directly.
+    ///
+    /// `None` when `symbol` is not a state usage or state definition. Nested states are
+    /// separate machines. An unresolved source, target, trigger or effect stays that
+    /// outcome; it is not omitted.
+    pub fn state_machine(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedStateMachine>> {
+        self.model.state_machine(symbol)
     }
 }
 

@@ -96,6 +96,12 @@ use crate::resolve::ResolutionIndexes;
 use crate::specialization_query::SpecializationCheckKind;
 use crate::specialization_query::SpecializationCheckOutcome;
 use crate::specialization_query::SpecializationCheckPrerequisite;
+use crate::state_query::PublishedEffect;
+use crate::state_query::PublishedGuard;
+use crate::state_query::PublishedState;
+use crate::state_query::PublishedStateMachine;
+use crate::state_query::PublishedTransition;
+use crate::state_query::PublishedTrigger;
 use crate::traceability::BindingConnector;
 use crate::traceability::BindingConnectorCheckKind;
 use crate::traceability::BindingConnectorValidationOutcome;
@@ -5529,6 +5535,196 @@ impl<D> SemanticModel<D> {
         self.resolved_outcome(PublishedConnectionGraph { root, connectors })
     }
 
+    /// The states and transitions one state usage or state definition owns directly.
+    ///
+    /// `Ok(None)` when `symbol` is not a state. Nested states are their own machines.
+    /// This projects facts already settled: it does not reconstruct a trigger, guard or
+    /// effect from child order or from a state-transition view.
+    pub(crate) fn state_machine(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<Option<PublishedStateMachine>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let Some(record) = self.storage.declaration(declaration) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        if !is_state_machine(record.kind) {
+            return self.resolved_outcome(None);
+        }
+        let mut initial = None;
+        let mut states = Vec::new();
+        let mut transitions = Vec::new();
+        for child in self.child_declarations(declaration).iter().copied() {
+            let Some(child_record) = self.storage.declaration(child) else {
+                continue;
+            };
+            match child_record.kind {
+                DeclarationKind::InitialState if initial.is_none() => {
+                    initial = Some(self.reference_target(child, ReferenceKind::InitialState));
+                }
+                kind if is_state_machine(kind) => {
+                    if let Some(state) = self.project_state(child) {
+                        states.push(state);
+                    }
+                }
+                DeclarationKind::Transition => {
+                    if let Some(transition) = self.project_transition(child) {
+                        transitions.push(transition);
+                    }
+                }
+                _ => {}
+            }
+        }
+        self.resolved_outcome(Some(PublishedStateMachine {
+            identity: symbol,
+            name: self.symbol_name(symbol).map(Into::into),
+            initial,
+            states: states.into(),
+            transitions: transitions.into(),
+        }))
+    }
+
+    fn project_state(&self, declaration: DeclarationId) -> Option<PublishedState> {
+        let identity = self.symbol_id(declaration)?;
+        let subaction = |kind| {
+            self.child_declarations(declaration)
+                .iter()
+                .copied()
+                .find(|child| {
+                    self.effective_membership_role(*child)
+                        == Some(crate::MembershipRole::StateSubaction(kind))
+                })
+                .and_then(|child| self.symbol_id(child))
+        };
+        Some(PublishedState {
+            identity,
+            name: self.symbol_name(identity).map(Into::into),
+            entry: subaction(crate::StateSubactionKind::Entry),
+            do_action: subaction(crate::StateSubactionKind::Do),
+            exit: subaction(crate::StateSubactionKind::Exit),
+        })
+    }
+
+    fn project_transition(&self, declaration: DeclarationId) -> Option<PublishedTransition> {
+        let identity = self.symbol_id(declaration)?;
+        let mut source = self.reference_target(declaration, ReferenceKind::TransitionSource);
+        if source == RelationshipTarget::Unresolved {
+            if let Some(implicit) = self
+                .storage
+                .declaration_facts(declaration)
+                .and_then(|facts| facts.implicit_transition_source)
+                .and_then(|source| self.symbol_id(source))
+            {
+                source = RelationshipTarget::Resolved(implicit);
+            }
+        }
+        Some(PublishedTransition {
+            identity,
+            name: self.symbol_name(identity).map(Into::into),
+            source,
+            target: self.reference_target(declaration, ReferenceKind::TransitionTarget),
+            trigger: self.transition_trigger(declaration, identity),
+            guard: self.succession_guard(identity).map(published_guard),
+            effect: self.transition_effect(declaration),
+        })
+    }
+
+    fn reference_target(
+        &self,
+        declaration: DeclarationId,
+        kind: ReferenceKind,
+    ) -> RelationshipTarget {
+        self.relationships_of_kinds(declaration, &[kind])
+            .first()
+            .map(|relationship| relationship.target.clone())
+            .unwrap_or(RelationshipTarget::Unresolved)
+    }
+
+    fn transition_effect(&self, declaration: DeclarationId) -> PublishedEffect {
+        let owned = self
+            .child_declarations(declaration)
+            .iter()
+            .copied()
+            .find(|child| {
+                self.storage
+                    .declaration_facts(*child)
+                    .and_then(|facts| facts.transition_feature_role)
+                    == Some(crate::lower::facts::TransitionFeatureRole::Effect)
+            })
+            .and_then(|child| self.symbol_id(child));
+        if let Some(identity) = owned {
+            return PublishedEffect::Resolved(identity);
+        }
+        // No owned effect, and no authored effect reference, is absence. A reference
+        // that was written and did not settle is not absence.
+        let Some(relationship) = self
+            .relationships_of_kinds(declaration, &[ReferenceKind::TransitionEffect])
+            .first()
+            .cloned()
+        else {
+            return PublishedEffect::Absent;
+        };
+        match relationship.target {
+            RelationshipTarget::Resolved(identity) => PublishedEffect::Resolved(identity),
+            RelationshipTarget::Unresolved => PublishedEffect::Unresolved,
+            RelationshipTarget::Ambiguous(_) => PublishedEffect::Ambiguous,
+            RelationshipTarget::Unsupported => PublishedEffect::Unsupported,
+        }
+    }
+
+    /// The transition's accepting feature.
+    ///
+    /// `accept when` / `at` / `after` and `accept name : Type` are the trigger action's
+    /// settled facts. `accept Name` is a trigger reference on the transition itself; the
+    /// payload parameter of that form is untyped, so it is not a missing type.
+    fn transition_trigger(
+        &self,
+        declaration: DeclarationId,
+        identity: SymbolId,
+    ) -> PublishedTrigger {
+        use crate::diagram_query::DiagramTransitionFeature as Feature;
+        let feature = self.owned_transition_trigger(identity);
+        match &feature {
+            Feature::Absent => return PublishedTrigger::Absent,
+            Feature::Resolved { label, target, .. } => {
+                return PublishedTrigger::Accept {
+                    label: label.clone(),
+                    target: *target,
+                };
+            }
+            Feature::Ambiguous => return PublishedTrigger::Ambiguous,
+            Feature::Unresolved | Feature::Unsupported => {}
+        }
+        let Some(relationship) = self
+            .relationships_of_kinds(declaration, &[ReferenceKind::TransitionTrigger])
+            .first()
+            .cloned()
+        else {
+            return match feature {
+                Feature::Unsupported => PublishedTrigger::Unsupported,
+                _ => PublishedTrigger::Unresolved,
+            };
+        };
+        match relationship.target {
+            RelationshipTarget::Resolved(target) => {
+                let Some(label) = self
+                    .symbol_name(target)
+                    .map(Box::<str>::from)
+                    .or(relationship.authored)
+                else {
+                    return PublishedTrigger::Unresolved;
+                };
+                PublishedTrigger::Accept { label, target }
+            }
+            RelationshipTarget::Unresolved => PublishedTrigger::Unresolved,
+            RelationshipTarget::Ambiguous(_) => PublishedTrigger::Ambiguous,
+            RelationshipTarget::Unsupported => PublishedTrigger::Unsupported,
+        }
+    }
+
     /// Every workspace `connect` / `interface` connector in the publication, canonically ordered.
     ///
     /// The whole-workspace form of [`Self::connection_graph`], for the model projection. Not
@@ -6381,6 +6577,23 @@ pub(crate) fn connector_kind(kind: DeclarationKind) -> Option<ConnectorKind> {
             Some(ConnectorKind::Interface)
         }
         _ => None,
+    }
+}
+
+fn is_state_machine(kind: DeclarationKind) -> bool {
+    matches!(
+        kind,
+        DeclarationKind::StateUsage
+            | DeclarationKind::StateDefinition
+            | DeclarationKind::ExhibitStateUsage
+    )
+}
+
+fn published_guard(guard: crate::diagram_query::DiagramSuccessionGuard) -> PublishedGuard {
+    use crate::diagram_query::DiagramSuccessionGuard as Guard;
+    match guard {
+        Guard::Condition(text) => PublishedGuard::Condition(text),
+        Guard::Else => PublishedGuard::Else,
     }
 }
 

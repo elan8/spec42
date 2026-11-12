@@ -40,6 +40,7 @@ mod redefinition_query;
 mod requirement_query;
 mod resolve;
 mod specialization_query;
+mod state_query;
 pub mod syntax;
 
 /// The semantic contract version every resolved publication is recorded under.
@@ -151,6 +152,10 @@ pub use requirement_query::{
 };
 pub use specialization_query::{
     SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
+};
+pub use state_query::{
+    PublishedEffect, PublishedGuard, PublishedState, PublishedStateMachine, PublishedTransition,
+    PublishedTrigger,
 };
 pub use sysml_contract::EffectiveNameProvenance;
 pub use traceability::{
@@ -1039,6 +1044,15 @@ impl PublishedResolution {
     /// segment, the same path [`PublishedConnector`] publishes for model export.
     pub fn connector(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedConnector>> {
         self.model.connector(symbol)
+    }
+
+    /// The states and transitions one state usage or state definition owns directly.
+    ///
+    /// `Ok(None)` when `symbol` is not a state usage or state definition. Sources, targets,
+    /// triggers, guards and effects are the facts resolution already settled; this performs
+    /// no new analysis and does not require a state-transition view.
+    pub fn state_machine(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedStateMachine>> {
+        self.model.state_machine(symbol)
     }
 
     /// The effective expression body and bindings in a derived type or typed usage, with
