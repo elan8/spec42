@@ -1,12 +1,15 @@
 //! The published body of one action.
 //!
 //! Entry, do, and effect actions own a sequence of steps (`assign`, `if`, `while`,
-//! `accept`). Those steps are already lowered. This projects them in source order,
+//! `accept`, `send`). Those steps are already lowered. This projects them in source order,
 //! with each condition and assigned value as the expression the publication already
 //! settled. It does not execute the action, and it does not decide which statements
 //! belong to an `if` branch when lowering left that unmarked.
 
-use crate::expression::PublishedExpression;
+use crate::expression::{
+    ExpressionNode, ExpressionNodeKind, ExpressionOutcome, ExpressionResultTyping,
+    PublishedExpression,
+};
 use crate::inspection::RelationshipTarget;
 use crate::lower::facts::ThenSource;
 use crate::model::resolver::ResolvedSemanticModel;
@@ -54,6 +57,18 @@ pub enum PublishedActionStep {
         trigger: PublishedTrigger,
         /// The trigger argument expression (`1 [s]` in `accept after 1 [s]`).
         argument: PublishedExpression,
+        then_source: Option<SymbolId>,
+    },
+    /// `send <payload> to <receiver>`. `receiver` is absent when no `to` clause was written.
+    ///
+    /// `send new Signal()` with no arguments publishes `Signal` as the payload reference.
+    /// The expression slice leaves constructors unstructured, and the signal type is already
+    /// resolved as the constructor's callee. A constructor that carries arguments is not
+    /// rewritten into that reference.
+    Send {
+        identity: SymbolId,
+        payload: PublishedExpression,
+        receiver: Option<RelationshipTarget>,
         then_source: Option<SymbolId>,
     },
     /// A nested action usage and the steps it owns.
@@ -155,6 +170,20 @@ impl ResolvedSemanticModel {
                     then_source,
                 }
             }
+            DeclarationKind::SendActionUsage => {
+                let has_receiver = self
+                    .storage
+                    .declaration_facts(declaration)
+                    .and_then(|facts| facts.send_has_receiver_argument)
+                    == Some(true);
+                PublishedActionStep::Send {
+                    identity,
+                    payload: self.send_payload(declaration, identity)?,
+                    receiver: has_receiver
+                        .then(|| self.reference_target(declaration, ReferenceKind::SendTarget)),
+                    then_source,
+                }
+            }
             DeclarationKind::ActionUsage | DeclarationKind::PerformActionUsage => {
                 PublishedActionStep::Action {
                     identity,
@@ -162,8 +191,7 @@ impl ResolvedSemanticModel {
                     steps: self.action_steps(declaration)?,
                 }
             }
-            DeclarationKind::SendActionUsage
-            | DeclarationKind::TerminateActionUsage
+            DeclarationKind::TerminateActionUsage
             | DeclarationKind::ForLoop
             | DeclarationKind::Decide
             | DeclarationKind::Merge
@@ -248,6 +276,93 @@ impl ResolvedSemanticModel {
         element: SymbolId,
     ) -> Result<PublishedExpression, ()> {
         self.published_expression(declaration, element).ok_or(())
+    }
+
+    /// The payload of a send step.
+    ///
+    /// A settled expression is published as itself. `send new Signal()` is a constructor, which
+    /// the expression slice does not structure, so the send declaration has no expression row.
+    /// The constructor's callee is the signal type. When that constructor has no arguments, the
+    /// payload is a reference to that type. Arguments stay unpublished rather than being dropped.
+    fn send_payload(
+        &self,
+        declaration: DeclarationId,
+        element: SymbolId,
+    ) -> Result<PublishedExpression, ()> {
+        let expression = self.expression_of(declaration, element)?;
+        if expression.outcome == ExpressionOutcome::Resolved {
+            return Ok(expression);
+        }
+        let Some(payload) = self.signal_constructor(declaration, element) else {
+            return Ok(expression);
+        };
+        Ok(payload)
+    }
+
+    fn signal_constructor(
+        &self,
+        declaration: DeclarationId,
+        element: SymbolId,
+    ) -> Option<PublishedExpression> {
+        let expressions = self
+            .child_declarations(declaration)
+            .iter()
+            .copied()
+            .filter(|child| {
+                self.storage
+                    .declaration(*child)
+                    .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlExpression)
+            })
+            .collect::<Vec<_>>();
+        let [expression] = expressions.as_slice() else {
+            return None;
+        };
+        if self.owns_argument(*expression) {
+            return None;
+        }
+        let relationships =
+            self.relationships_of_kinds(*expression, &[ReferenceKind::InvocationCallee]);
+        let [relationship] = relationships.as_ref() else {
+            return None;
+        };
+        let RelationshipTarget::Resolved(symbol) = relationship.target else {
+            return None;
+        };
+        let location = relationship.location?;
+        let authored = relationship.authored.clone().unwrap_or_else(|| {
+            self.symbol_name(symbol)
+                .unwrap_or("<signal>")
+                .to_owned()
+                .into_boxed_str()
+        });
+        Some(PublishedExpression {
+            element,
+            outcome: ExpressionOutcome::Resolved,
+            result_typing: ExpressionResultTyping::NotApplicable,
+            nodes: Box::new([ExpressionNode {
+                kind: ExpressionNodeKind::FeatureReference {
+                    symbol: Some(symbol),
+                    authored,
+                },
+                location,
+            }]),
+            root: Some(0),
+        })
+    }
+
+    fn owns_argument(&self, declaration: DeclarationId) -> bool {
+        let mut pending = self.child_declarations(declaration).to_vec();
+        while let Some(child) = pending.pop() {
+            if self
+                .storage
+                .declaration_facts(child)
+                .is_some_and(|facts| facts.instantiation_argument.is_some())
+            {
+                return true;
+            }
+            pending.extend(self.child_declarations(child).iter().copied());
+        }
+        false
     }
 
     fn then_source_symbol(&self, declaration: DeclarationId) -> Option<SymbolId> {

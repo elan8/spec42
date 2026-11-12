@@ -13,6 +13,7 @@ const DOCUMENT: &str = "file:///workspace/firmware.sysml";
 
 const SOURCE: &str = r#"
 package Timer {
+    item def IncrementPressed;
     enum def TimerMode { idle; }
     part def Firmware {
         attribute mode : TimerMode;
@@ -30,6 +31,9 @@ package Timer {
             }
             then accept after 1;
             then assign remaining := 0;
+        }
+        action ping {
+            send new IncrementPressed() to Firmware;
         }
         action step {
             if remaining > maximumSetpoint {
@@ -239,6 +243,27 @@ fn countdown_actions_publish_their_steps() {
         "else assignment was {}",
         expression_text(value)
     );
+}
+
+#[test]
+fn publishes_a_send_and_its_receiver() {
+    let model = model();
+    let body = body(&model, "Timer::Firmware::ping");
+    let PublishedActionStep::Send {
+        payload, receiver, ..
+    } = &body.steps[0]
+    else {
+        panic!("expected a send, got {:?}", body.steps[0]);
+    };
+    assert!(
+        expression_text(payload).contains("IncrementPressed"),
+        "payload was {}",
+        expression_text(payload)
+    );
+    let Some(RelationshipTarget::Resolved(target)) = receiver else {
+        panic!("receiver did not resolve: {receiver:?}");
+    };
+    assert_eq!(model.symbol_name(*target), Some("Firmware"));
 }
 
 #[test]
