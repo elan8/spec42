@@ -5632,7 +5632,7 @@ impl<D> SemanticModel<D> {
         })
     }
 
-    fn reference_target(
+    pub(crate) fn reference_target(
         &self,
         declaration: DeclarationId,
         kind: ReferenceKind,

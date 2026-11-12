@@ -41,11 +41,12 @@ pub use sysml_resolution::{
     NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
     ProjectedContextualEvaluation, ProjectedElement, ProjectedExposure, ProjectedMultiplicity,
     ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublicationCompleteness,
-    PublicationIdentity, PublicationModelDigest, PublicationObstacle, PublishedConnectionGraph,
-    PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics, PublishedEffect,
-    PublishedElement, PublishedExpression, PublishedGuard, PublishedMetadataAnnotation,
-    PublishedModelProjection, PublishedState, PublishedStateMachine, PublishedTransition,
-    PublishedTrigger, QualificationCandidate, QualifiedElementReference, QualifiedReferenceOutcome,
+    PublicationIdentity, PublicationModelDigest, PublicationObstacle, PublishedActionBody,
+    PublishedActionBranch, PublishedActionStep, PublishedConnectionGraph, PublishedConnector,
+    PublishedConnectorEnd, PublishedDiagnostics, PublishedEffect, PublishedElement,
+    PublishedExpression, PublishedGuard, PublishedMetadataAnnotation, PublishedModelProjection,
+    PublishedState, PublishedStateMachine, PublishedTransition, PublishedTrigger,
+    QualificationCandidate, QualifiedElementReference, QualifiedReferenceOutcome,
     QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
     RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferenceRepair,
     ReferenceRepairOutcome, ReferencedDetails, RelatedLocation, RelationshipFamily,
@@ -460,6 +461,14 @@ impl StructureQueries<'_> {
     /// outcome; it is not omitted.
     pub fn state_machine(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedStateMachine>> {
         self.model.state_machine(symbol)
+    }
+
+    /// The steps one action usage or definition owns, in source order.
+    ///
+    /// `None` when `symbol` is not an action. Conditions and assigned values are the
+    /// settled expression trees. An unmarked `if` branch is not reported as empty.
+    pub fn action_body(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedActionBody>> {
+        self.model.action_body(symbol)
     }
 }
 

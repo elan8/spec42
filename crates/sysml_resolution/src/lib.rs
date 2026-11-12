@@ -12,6 +12,7 @@ use source_identity::{
     ContentDigest, RootDigest, SourceLanguage, SourceManifest, SourceManifestEntry, SourceRole,
 };
 
+mod action_body;
 mod action_query;
 mod check;
 mod connection_query;
@@ -69,6 +70,7 @@ mod type_query;
 mod verification;
 mod view_query;
 
+pub use action_body::{PublishedActionBody, PublishedActionBranch, PublishedActionStep};
 pub use action_query::{
     ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
     ActionDerivedFactPrerequisite, ActionInputParameterId, ActionOwnedMembershipId,
@@ -1053,6 +1055,15 @@ impl PublishedResolution {
     /// no new analysis and does not require a state-transition view.
     pub fn state_machine(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedStateMachine>> {
         self.model.state_machine(symbol)
+    }
+
+    /// The steps one action usage or definition owns, in source order.
+    ///
+    /// `Ok(None)` when `symbol` is not an action. Each condition and assigned value is the
+    /// expression publication already settled. An `if` branch whose actions were not marked
+    /// stays unmarked rather than being merged into the other branch.
+    pub fn action_body(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedActionBody>> {
+        self.model.action_body(symbol)
     }
 
     /// The effective expression body and bindings in a derived type or typed usage, with
