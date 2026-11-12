@@ -52,7 +52,7 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        run: rustup toolchain install
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2

@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Rust
         if: matrix.language == 'rust'
-        uses: dtolnay/rust-toolchain@stable
+        run: rustup toolchain install
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4

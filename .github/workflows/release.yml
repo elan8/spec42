@@ -17,8 +17,6 @@ permissions:
 env:
   BINARY_NAME: spec42
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  # Keep in sync with `channel` in rust-toolchain.toml; bump both deliberately.
-  RUST_TOOLCHAIN_VERSION: "1.97.1"
 
 jobs:
   preflight:
@@ -30,11 +28,7 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
-          components: clippy
-          targets: wasm32-unknown-unknown
+        run: rustup toolchain install && rustup target add wasm32-unknown-unknown
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -168,10 +162,7 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
-          targets: ${{ matrix.target }}
+        run: rustup toolchain install && rustup target add ${{ matrix.target }}
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -306,10 +297,7 @@ jobs:
             vscode/package-lock.json
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
-          targets: wasm32-unknown-unknown
+        run: rustup toolchain install && rustup target add wasm32-unknown-unknown
 
       - name: Install vscode deps and package
         run: |
@@ -355,10 +343,7 @@ jobs:
           ref: ${{ steps.version.outputs.tag || github.ref }}
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
-          targets: wasm32-wasip2
+        run: rustup toolchain install && rustup target add wasm32-wasip2
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2

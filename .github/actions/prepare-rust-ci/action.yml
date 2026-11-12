@@ -2,12 +2,8 @@ name: Prepare Rust CI
 description: Install the pinned toolchain, restore Cargo caches, and fetch library bundles.
 
 inputs:
-  components:
-    description: Extra rustup components, comma-separated (for example clippy).
-    required: false
-    default: ""
   targets:
-    description: Extra rustup targets, comma-separated (for example wasm32-unknown-unknown).
+    description: Extra rustup targets, space-separated (for example wasm32-unknown-unknown).
     required: false
     default: ""
   install-deny:
@@ -18,12 +14,14 @@ inputs:
 runs:
   using: composite
   steps:
+    # Installs the toolchain pinned in rust-toolchain.toml (and its listed components).
     - name: Install Rust
-      uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
-        components: ${{ inputs.components }}
-        targets: ${{ inputs.targets }}
+      shell: bash
+      env:
+        TARGETS: ${{ inputs.targets }}
+      run: |
+        rustup toolchain install
+        if [ -n "$TARGETS" ]; then rustup target add $TARGETS; fi
 
     - name: Cache cargo
       uses: Swatinem/rust-cache@v2
