@@ -246,7 +246,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
         let output = tempfile::tempdir().expect("output directory");
         let run = |view: Option<&str>, format: DiagramFormat, file: &str| {
             let path = output.path().join(file);
-            spec42::diagram::run_diagram(
+            let _ = spec42::diagram::run_diagram(
                 &stdlib_cli(),
                 &DiagramArgs {
                     path: workspace.clone(),
