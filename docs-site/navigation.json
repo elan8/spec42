@@ -1,0 +1,24 @@
+[
+  { "title": "Start here", "pages": [
+    ["index", "Overview", null],
+    ["getting-started", "Getting started", "docs/user/GETTING-STARTED.md"],
+    ["examples", "Examples", "docs/user/EXAMPLES.md"]
+  ]},
+  { "title": "Use Spec42", "pages": [
+    ["features", "Features and support", "docs/user/SUPPORTED-WORKFLOWS.md"],
+    ["diagrams", "Diagram views", "docs/user/DIAGRAM-VIEW.md"],
+    ["inspector", "Feature Inspector", "docs/user/FEATURE-INSPECTOR.md"],
+    ["libraries", "Projects and libraries", "docs/user/LIBRARIES.md"],
+    ["validation", "Validation and diagnostics", "docs/user/VALIDATION.md"],
+    ["calculations", "Calculation expressions", "docs/user/CALCULATION-EXPRESSIONS.md"]
+  ]},
+  { "title": "Automate", "pages": [
+    ["github-action", "GitHub Actions", "docs/user/GITHUB-ACTION.md"],
+    ["assistants", "AI assistants", "docs/user/AI-ASSISTANTS.md"]
+  ]},
+  { "title": "Help and reference", "pages": [
+    ["troubleshooting", "Troubleshooting", "docs/user/TROUBLESHOOTING.md"],
+    ["included", "What's included", "docs/reference/WHATS-INCLUDED.md"],
+    ["domain-libraries", "Domain libraries", "docs/reference/DOMAIN-LIBRARIES.md"]
+  ]}
+]

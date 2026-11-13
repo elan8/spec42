@@ -2,7 +2,10 @@
 
 Lean reference docs for Spec42. Open work lives in [GitHub Issues](https://github.com/elan8/spec42/issues) (milestone [1.0](https://github.com/elan8/spec42/milestone/1)) — do not track TODOs in Markdown.
 
-The user guide lives here in `docs/user/` and on GitHub — there is no separate hosted docs site.
+Read the [versioned user guide](https://elan8.github.io/spec42/) for installation, features,
+project setup, automation and troubleshooting. Choose the version matching your installation;
+Development describes unreleased changes. The Markdown in `docs/user/` remains the source.
+See [publishing and previewing the site](../docs-site/README.md) for the release policy.
 
 ## User docs
 
