@@ -5,3 +5,23 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+
+  # Every Cargo workspace in the repo; each has its own Cargo.lock.
+  - package-ecosystem: "cargo"
+    directories:
+      - "/"
+      - "/zed"
+      - "/generator-plugins"
+      - "/generator-tests/plugins"
+      - "/fuzz"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+    # One PR per workspace for all minor/patch bumps; major bumps stay individual PRs.
+    groups:
+      cargo-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
