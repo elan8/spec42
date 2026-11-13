@@ -1623,6 +1623,10 @@ impl DebugQueries<'_> {
         self.model.write_metadata_annotations_sexpr(output)
     }
 
+    /// Stream canonical directional binding paths for snapshot inspection.
+    pub fn write_binding_paths_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_binding_paths_sexpr(output)
+    }
     pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.write_connections_sexpr(output)
     }

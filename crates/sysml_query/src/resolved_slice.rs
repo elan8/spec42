@@ -12,8 +12,8 @@ pub use sysml_resolution::{
     ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AdmittedSourceCounts,
     AffectedDocument, AnalysisEvaluation, AnnotationForm, AnonymousElementReference, AuthoredUnit,
     AuthoredValue, BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
-    BindingConnectorValidationPrerequisite, BuildMeasurements, CompletionImports, Conformance,
-    ConformanceObstacle, ConnectedElement, ConnectorEndpoint, ConnectorKind,
+    BindingConnectorValidationPrerequisite, BindingEndpoint, BuildMeasurements, CompletionImports,
+    Conformance, ConformanceObstacle, ConnectedElement, ConnectorEndpoint, ConnectorKind,
     ContextualEvaluationOutcome, DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome,
     DefinitionUsageDerivedPrerequisite, DerivationEndpoint, DerivationRelationship,
     DerivedElementOwner, Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation,
@@ -1098,6 +1098,10 @@ impl DebugQueries<'_> {
         self.model.debug().write_metadata_annotations_sexpr(output)
     }
 
+    /// Stream canonical directional binding paths for snapshot inspection.
+    pub fn write_binding_paths_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.debug().write_binding_paths_sexpr(output)
+    }
     pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.debug().write_connections_sexpr(output)
     }

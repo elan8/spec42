@@ -2650,3 +2650,60 @@ mod tests {
         assert_eq!(output, "(navigation\n)");
     }
 }
+
+/// Canonical binding occurrence paths, opt-in snapshot projection.
+pub(crate) fn write_binding_paths_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    fn target(
+        model: &ResolvedSemanticModel,
+        value: &crate::inspection::RelationshipTarget,
+        output: &mut dyn fmt::Write,
+    ) -> fmt::Result {
+        use crate::inspection::RelationshipTarget;
+        match value {
+            RelationshipTarget::Resolved(symbol) => match model.declaration_of(*symbol) {
+                Some(id) => write_node_identity(model, id, output),
+                None => output.write_str("unresolved"),
+            },
+            RelationshipTarget::Unresolved => output.write_str("unresolved"),
+            RelationshipTarget::Unsupported => output.write_str("unsupported"),
+            RelationshipTarget::Ambiguous(values) => {
+                output.write_str("(ambiguous")?;
+                for value in values {
+                    output.write_char(' ')?;
+                    target(model, &RelationshipTarget::Resolved(*value), output)?;
+                }
+                output.write_char(')')
+            }
+        }
+    }
+    writeln!(output, "(binding-paths")?;
+    match model.binding_connectors().answer {
+        crate::QueryAnswer::Resolved(bindings) => {
+            for binding in bindings.iter() {
+                output.write_str("  (binding ")?;
+                target(
+                    model,
+                    &crate::inspection::RelationshipTarget::Resolved(binding.identity),
+                    output,
+                )?;
+                for (name, path) in [
+                    ("source", &binding.source_path),
+                    ("target", &binding.target_path),
+                ] {
+                    write!(output, " ({name}")?;
+                    for hop in path.iter() {
+                        output.write_char(' ')?;
+                        target(model, hop, output)?;
+                    }
+                    output.write_char(')')?;
+                }
+                writeln!(output, ")")?;
+            }
+        }
+        other => writeln!(output, "  (outcome {other:?})")?,
+    }
+    writeln!(output, ")")
+}

@@ -95,6 +95,9 @@ pub enum BindingEndpoint {
 /// which preserves duplicates and makes a partially settled end explicit.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BindingConnector {
+    /// Canonical directional feature paths, including every unresolved/ambiguous hop.
+    pub source_path: Box<[crate::inspection::RelationshipTarget]>,
+    pub target_path: Box<[crate::inspection::RelationshipTarget]>,
     /// Stable identity of the authored binding-connector declaration or anonymous `bind`
     /// statement. Separate authored statements remain separate facts even when their endpoints
     /// are identical.

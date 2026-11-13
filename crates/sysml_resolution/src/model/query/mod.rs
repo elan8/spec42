@@ -1010,6 +1010,12 @@ impl ResolvedSemanticModel {
         writer::write_metadata_annotations_only(self, output)
     }
 
+    pub(crate) fn write_binding_paths_sexpr(
+        &self,
+        output: &mut dyn std::fmt::Write,
+    ) -> std::fmt::Result {
+        writer::write_binding_paths_only(self, output)
+    }
     pub(crate) fn write_connections_sexpr(
         &self,
         output: &mut dyn std::fmt::Write,
@@ -4955,6 +4961,35 @@ impl<D> SemanticModel<D> {
             binding::BindingEndpointFact::Unresolved => BindingEndpoint::Unresolved,
             binding::BindingEndpointFact::Unsupported => BindingEndpoint::Unsupported,
         };
+        let path = |connector, kind| {
+            let references: Vec<_> = self
+                .outgoing_reference_ids(connector)
+                .iter()
+                .copied()
+                .filter(|id| {
+                    self.storage
+                        .references
+                        .get(id.index())
+                        .is_some_and(|r| r.kind == kind)
+                })
+                .collect();
+            if references.len() != 1 {
+                return vec![RelationshipTarget::Unsupported].into_boxed_slice();
+            }
+            if let Some(path) = self.resolution.member_access_paths.get(&references[0]) {
+                return path
+                    .iter()
+                    .map(|status| self.relationship_target_from_status(Some(*status)))
+                    .collect();
+            }
+            match self.connector_endpoint(references[0]) {
+                ConnectorEndpoint::Feature(target) => vec![target].into_boxed_slice(),
+                ConnectorEndpoint::FeatureChain { path, .. } => path,
+                ConnectorEndpoint::Unconnected => {
+                    vec![RelationshipTarget::Unresolved].into_boxed_slice()
+                }
+            }
+        };
         let mut values = self
             .bindings
             .facts()
@@ -4971,6 +5006,8 @@ impl<D> SemanticModel<D> {
                     return None;
                 }
                 Some(BindingConnector {
+                    source_path: path(connector, ReferenceKind::BindSource),
+                    target_path: path(connector, ReferenceKind::BindTarget),
                     identity: self.symbol_id(connector)?,
                     source: endpoint(&fact.source),
                     target: endpoint(&fact.target),
