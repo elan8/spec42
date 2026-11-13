@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { buildSite, releases, version } from './build.mjs';
-import navigation from './navigation.json' with { type: 'json' };
+import documentation from '../vscode/src/help/documentation.json' with { type: 'json' };
 
 test('stable versions sort numerically and retain every major/minor and patch', () => {
   assert.deepEqual(releases(['v0.59.0', 'v0.60.2', 'v0.60.10', 'v1.0.0', 'v2.0.0', 'v0.61.0', 'v2.1.0-rc.1', 'v01.0.0', 'v0.60.2']),
@@ -22,7 +22,7 @@ test('snapshots use tagged content, preserve links and isolate unreleased change
     git('init');
     git('config', 'user.email', 'docs-test@example.invalid');
     git('config', 'user.name', 'Documentation test');
-    for (const [, , source] of navigation.flatMap(group => group.pages)) {
+    for (const { source } of Object.values(documentation.pages)) {
       if (source && !source.endsWith('CALCULATION-EXPRESSIONS.md')) write(source, '# A guide\n\n## A section\n\nReleased content.\n');
     }
     write('docs/user/GETTING-STARTED.md', '# Install\n\n[Examples](EXAMPLES.md#a-section)\n\n[Source](../../README.md)\n');

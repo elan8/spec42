@@ -6,8 +6,12 @@ publishes the site; configure that repository setting once when adopting this wo
 
 ## Author and preview
 
-Edit `docs/user/` and the generated references' authoritative inputs. `navigation.json` selects
-the user-facing pages and groups them by task. `index.md` is the common navigation overview;
+Edit `docs/user/` and the generated references' authoritative inputs.
+`vscode/src/help/documentation.json` owns the public base URL and page routes shared by the
+website and extension Help links, and groups the user-facing pages by task.
+Production extensions link to their exact release; development and prerelease builds use Development.
+The embedded quick reference remains offline, with a link to that same version of the guide.
+`index.md` is the common navigation overview;
 keep it free of release-specific feature claims. Architecture and contributor material stays
 on GitHub, linked at the selected release tag. Guides absent from an older tag are omitted from
 that version's navigation and search; their version-switch URL explains that the guide is unavailable.

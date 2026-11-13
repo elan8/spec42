@@ -6,6 +6,7 @@ on:
       - 'docs-site/**'
       - 'docs/user/**'
       - 'docs/reference/**'
+      - 'vscode/src/help/documentation.json'
       - '.github/workflows/docs.yml'
   push:
     branches: [main]
@@ -13,6 +14,7 @@ on:
       - 'docs-site/**'
       - 'docs/user/**'
       - 'docs/reference/**'
+      - 'vscode/src/help/documentation.json'
       - '.github/workflows/docs.yml'
   # A release created by GITHUB_TOKEN does not trigger another release-event workflow.
   # Run after the existing release workflow instead, including manually retried releases.

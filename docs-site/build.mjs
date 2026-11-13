@@ -6,7 +6,8 @@ import MarkdownIt from 'markdown-it';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepo = path.resolve(here, '..');
-const navigation = JSON.parse(fs.readFileSync(path.join(here, 'navigation.json'), 'utf8'));
+const documentation = JSON.parse(fs.readFileSync(path.join(here, '../vscode/src/help/documentation.json'), 'utf8'));
+const navigation = [...new Set(Object.values(documentation.pages).map(page => page.group))].map(title => ({ title, pages: Object.values(documentation.pages).filter(page => page.group === title).map(page => [page.route, page.title, page.source]) }));
 const pages = navigation.flatMap(group => group.pages);
 const escape = text => String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const git = (repo, ...args) => execFileSync('git', args, { cwd: repo, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
@@ -31,7 +32,7 @@ function slug(text) {
   return text.toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-');
 }
 
-export function buildSite({ repo = defaultRepo, out = path.join(defaultRepo, 'target/docs-site'), tags, base = '/spec42/' } = {}) {
+export function buildSite({ repo = defaultRepo, out = path.join(defaultRepo, 'target/docs-site'), tags, base = new URL(documentation.baseUrl).pathname } = {}) {
   if (!/^\/[a-zA-Z0-9/_-]*\/$/.test(base)) throw new Error('Base must be an absolute directory URL ending in /');
   const stable = releases(tags ?? git(repo, 'tag', '--list', 'v*').trim().split(/\s+/));
   if (!stable.length) throw new Error('No published stable releases at or after v0.60.0');
