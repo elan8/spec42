@@ -434,7 +434,7 @@ fn next_session_owner() -> u64 {
 
     static NEXT_SESSION_OWNER: AtomicU64 = AtomicU64::new(1);
     NEXT_SESSION_OWNER
-        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |owner| {
+        .try_update(Ordering::Relaxed, Ordering::Relaxed, |owner| {
             owner.checked_add(1)
         })
         .expect("publication session owner identities exhausted")

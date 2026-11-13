@@ -27,7 +27,7 @@ impl EditorRevision {
         Self {
             open_identity: Arc::new(()),
             token: NEXT_OPEN_INTERVAL
-                .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| n.checked_add(1))
+                .try_update(Ordering::Relaxed, Ordering::Relaxed, |n| n.checked_add(1))
                 .expect("editor interval identities exhausted"),
             version,
         }

@@ -4,5 +4,5 @@
 # `cargo` invocations, via rustup's toolchain-file auto-detection) can't be broken by a new
 # stable Rust release adding a default-warn lint on an unrelated day. This file is the single
 # source of truth: CI installs from it with a bare `rustup toolchain install`. Bump deliberately.
-channel = "1.97.1"
+channel = "1.100.0"
 components = ["clippy", "rustfmt"]

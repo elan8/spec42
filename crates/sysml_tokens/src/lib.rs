@@ -392,7 +392,7 @@ mod tests {
         let full = semantic_tokens_for_text(text);
         let mut column = 0;
         let mut found = false;
-        for token in full.data.chunks_exact(5) {
+        for token in full.data.as_chunks::<5>().0 {
             column += token[1];
             if column == start {
                 assert_eq!((token[2], token[3]), (5, TYPE_CLASS));
