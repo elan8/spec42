@@ -134,7 +134,10 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(examplesTreeView);
 
   const helpTreeView = vscode.window.createTreeView("spec42Help", {
-    treeDataProvider: new HelpViewProvider(),
+    treeDataProvider: new HelpViewProvider(
+      context.extension.packageJSON.version,
+      context.extensionMode !== vscode.ExtensionMode.Production
+    ),
   });
   context.subscriptions.push(helpTreeView);
 

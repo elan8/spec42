@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import documentation from "./documentation.json";
+import { documentationUrl, DocumentationPage } from "./documentation";
 
 type HelpItemKind = "action" | "link";
 
@@ -17,6 +19,16 @@ class HelpItem extends vscode.TreeItem {
 }
 
 export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
+  constructor(private readonly version: string, private readonly development: boolean) {}
+
+  private documentationItem(page: DocumentationPage, label = documentation.pages[page].title): HelpItem {
+    return new HelpItem(label, "link-external", {
+      command: "vscode.open",
+      title: `Open ${label}`,
+      arguments: [vscode.Uri.parse(documentationUrl(this.version, page, this.development))],
+    }, "link");
+  }
+
   getTreeItem(element: HelpItem): vscode.TreeItem {
     return element;
   }
@@ -43,24 +55,12 @@ export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
         "book",
         { command: "spec42.help.openReference", title: "SysML v2 Quick Reference" }
       ),
-      new HelpItem(
-        "Spec42 documentation",
-        "link-external",
-        { command: "vscode.open", title: "Open Docs", arguments: [vscode.Uri.parse("https://github.com/elan8/spec42/blob/HEAD/docs/README.md")] },
-        "link"
-      ),
-      new HelpItem(
-        "What's included",
-        "link-external",
-        { command: "vscode.open", title: "Open What's Included", arguments: [vscode.Uri.parse("https://github.com/elan8/spec42/blob/HEAD/docs/reference/WHATS-INCLUDED.md")] },
-        "link"
-      ),
-      new HelpItem(
-        "Domain libraries",
-        "link-external",
-        { command: "vscode.open", title: "Open Domain Libraries", arguments: [vscode.Uri.parse("https://github.com/elan8/spec42/blob/HEAD/docs/user/LIBRARIES.md")] },
-        "link"
-      ),
+      this.documentationItem("overview", "Spec42 documentation"),
+      this.documentationItem("gettingStarted"),
+      this.documentationItem("troubleshooting"),
+      this.documentationItem("included"),
+      this.documentationItem("libraries"),
+      this.documentationItem("domainLibraries"),
       new HelpItem(
         "SysML v2 language specification",
         "link-external",
