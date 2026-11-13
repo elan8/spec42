@@ -1,0 +1,7 @@
+version: 2
+updates:
+  - package-ecosystem: "rust-toolchain"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
