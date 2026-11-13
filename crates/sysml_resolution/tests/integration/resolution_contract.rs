@@ -2107,8 +2107,8 @@ fn bind_statement_with_dotted_feature_chain_operands_resolves_both_ends() {
         "expected an owned bind declaration, got:\n{output}"
     );
     assert!(
-        output.matches("(kind memberAccessOperand)").count() >= 2,
-        "expected both dotted bind operands to lower as memberAccessOperand references, \
+        output.contains("(kind bindSource)") && output.contains("(kind bindTarget)"),
+        "expected dotted bind operands to retain their directional roles, \
          got:\n{output}"
     );
     assert!(

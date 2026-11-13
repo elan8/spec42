@@ -3126,6 +3126,8 @@ fn regenerate_snapshot(
     } else {
         replace_section(&fixture, "CONNECTIONS", &canonical.connections).unwrap_or(fixture)
     };
+    // Binding occurrence paths are opt-in, like the full projection section.
+    let fixture = replace_section(&fixture, "BINDINGS", &canonical.bindings).unwrap_or(fixture);
     // The whole-model projection section is opt-in: a fixture carries it only if it already
     // declares a `# PROJECTION` section. It is not corpus-wide -- the deep content is covered by
     // the sibling sections, and this one exists for the composition, ordering and envelope.
@@ -7484,6 +7486,7 @@ struct OwnedSections {
     expressions: String,
     metadata_annotations: String,
     connections: String,
+    bindings: String,
     projection: String,
     diagnostics: String,
     navigation: String,
@@ -7542,6 +7545,11 @@ fn render_owned_sections(
         .debug()
         .write_metadata_annotations_sexpr(&mut metadata_annotations)
         .map_err(|error| format!("metadata-annotation rendering failed: {error}"))?;
+    let mut bindings = String::new();
+    model
+        .debug()
+        .write_binding_paths_sexpr(&mut bindings)
+        .map_err(|e| format!("binding-path rendering: {e}"))?;
     let mut connections = String::new();
     model
         .debug()
@@ -7579,6 +7587,7 @@ fn render_owned_sections(
         expressions,
         metadata_annotations,
         connections,
+        bindings,
         projection,
         diagnostics,
         navigation,
@@ -7684,6 +7693,7 @@ fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
     ensure_balanced("EXPRESSIONS", &sections.expressions)?;
     ensure_balanced("METADATA ANNOTATIONS", &sections.metadata_annotations)?;
     ensure_balanced("CONNECTIONS", &sections.connections)?;
+    ensure_balanced("BINDINGS", &sections.bindings)?;
     ensure_balanced("PROJECTION", &sections.projection)?;
     ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
     ensure_balanced("NAVIGATION", &sections.navigation)?;
@@ -8419,6 +8429,7 @@ const SECTION_ORDER: &[&str] = &[
     "EXPRESSIONS",
     "METADATA ANNOTATIONS",
     "CONNECTIONS",
+    "BINDINGS",
     "PROJECTION",
     "NAVIGATION",
     "EDITOR RESULTS",

@@ -12,8 +12,8 @@ pub use sysml_resolution::{
     ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AdmittedSourceCounts,
     AffectedDocument, AnalysisEvaluation, AnnotationForm, AnonymousElementReference, AuthoredUnit,
     AuthoredValue, BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
-    BindingConnectorValidationPrerequisite, BuildMeasurements, CompletionImports, Conformance,
-    ConformanceObstacle, ConnectedElement, ConnectorEndpoint, ConnectorKind,
+    BindingConnectorValidationPrerequisite, BindingEndpoint, BuildMeasurements, CompletionImports,
+    Conformance, ConformanceObstacle, ConnectedElement, ConnectorEndpoint, ConnectorKind,
     ContextualEvaluationOutcome, DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome,
     DefinitionUsageDerivedPrerequisite, DerivationEndpoint, DerivationRelationship,
     DerivedElementOwner, Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation,
@@ -41,9 +41,11 @@ pub use sysml_resolution::{
     NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
     ProjectedContextualEvaluation, ProjectedElement, ProjectedExposure, ProjectedMultiplicity,
     ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublicationCompleteness,
-    PublicationIdentity, PublicationModelDigest, PublicationObstacle, PublishedConnectionGraph,
-    PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics, PublishedElement,
-    PublishedExpression, PublishedMetadataAnnotation, PublishedModelProjection,
+    PublicationIdentity, PublicationModelDigest, PublicationObstacle, PublishedActionBody,
+    PublishedActionBranch, PublishedActionStep, PublishedConnectionGraph, PublishedConnector,
+    PublishedConnectorEnd, PublishedDiagnostics, PublishedEffect, PublishedElement,
+    PublishedExpression, PublishedGuard, PublishedMetadataAnnotation, PublishedModelProjection,
+    PublishedState, PublishedStateMachine, PublishedTransition, PublishedTrigger,
     QualificationCandidate, QualifiedElementReference, QualifiedReferenceOutcome,
     QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
     RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferenceRepair,
@@ -450,6 +452,23 @@ impl StructureQueries<'_> {
     /// `None` when `symbol` is not a workspace `connect` / `interface` connector.
     pub fn connector(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedConnector>> {
         self.model.connector(symbol)
+    }
+
+    /// The states and transitions one state usage or state definition owns directly.
+    ///
+    /// `None` when `symbol` is not a state usage or state definition. Nested states are
+    /// separate machines. An unresolved source, target, trigger or effect stays that
+    /// outcome; it is not omitted.
+    pub fn state_machine(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedStateMachine>> {
+        self.model.state_machine(symbol)
+    }
+
+    /// The steps one action usage or definition owns, in source order.
+    ///
+    /// `None` when `symbol` is not an action. Conditions and assigned values are the
+    /// settled expression trees. An unmarked `if` branch is not reported as empty.
+    pub fn action_body(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedActionBody>> {
+        self.model.action_body(symbol)
     }
 }
 
@@ -1079,6 +1098,10 @@ impl DebugQueries<'_> {
         self.model.debug().write_metadata_annotations_sexpr(output)
     }
 
+    /// Stream canonical directional binding paths for snapshot inspection.
+    pub fn write_binding_paths_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.debug().write_binding_paths_sexpr(output)
+    }
     pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.debug().write_connections_sexpr(output)
     }

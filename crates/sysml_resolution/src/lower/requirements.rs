@@ -697,10 +697,13 @@ impl SemanticModelBuilder {
                 // A dotted `allocate` end keeps its `AllocateSource` / `AllocateTarget` role --
                 // the resolver walks both hop-by-hop (`member_access_slots`), and the endpoint
                 // completeness check reads them by kind. Every other operand role (`satisfy`,
-                // `bind`, flows, …) is only recognised by the lexical pass, which does not walk a
+                // flows, …) is only recognised by the lexical pass, which does not walk a
                 // dotted chain, so those stay `MemberAccessOperand`.
                 let member_access_kind = match kind {
-                    ReferenceKind::AllocateSource | ReferenceKind::AllocateTarget => kind,
+                    ReferenceKind::AllocateSource
+                    | ReferenceKind::AllocateTarget
+                    | ReferenceKind::BindSource
+                    | ReferenceKind::BindTarget => kind,
                     _ => ReferenceKind::MemberAccessOperand,
                 };
                 if self

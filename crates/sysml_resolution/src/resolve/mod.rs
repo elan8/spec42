@@ -553,6 +553,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::ExplicitRelationshipEndpoint
                     | ReferenceKind::AllocateSource
                     | ReferenceKind::AllocateTarget
+                    | ReferenceKind::BindSource
+                    | ReferenceKind::BindTarget
             ) || (reference.kind() == ReferenceKind::Redefinition
                 && root_narrowing(reference).is_some())
                 || (reference.flags().dotted

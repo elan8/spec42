@@ -12,6 +12,7 @@ use source_identity::{
     ContentDigest, RootDigest, SourceLanguage, SourceManifest, SourceManifestEntry, SourceRole,
 };
 
+mod action_body;
 mod action_query;
 mod check;
 mod connection_query;
@@ -40,6 +41,7 @@ mod redefinition_query;
 mod requirement_query;
 mod resolve;
 mod specialization_query;
+mod state_query;
 pub mod syntax;
 
 /// The semantic contract version every resolved publication is recorded under.
@@ -68,6 +70,7 @@ mod type_query;
 mod verification;
 mod view_query;
 
+pub use action_body::{PublishedActionBody, PublishedActionBranch, PublishedActionStep};
 pub use action_query::{
     ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
     ActionDerivedFactPrerequisite, ActionInputParameterId, ActionOwnedMembershipId,
@@ -151,6 +154,10 @@ pub use requirement_query::{
 };
 pub use specialization_query::{
     SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
+};
+pub use state_query::{
+    PublishedEffect, PublishedGuard, PublishedState, PublishedStateMachine, PublishedTransition,
+    PublishedTrigger,
 };
 pub use sysml_contract::EffectiveNameProvenance;
 pub use traceability::{
@@ -1041,6 +1048,24 @@ impl PublishedResolution {
         self.model.connector(symbol)
     }
 
+    /// The states and transitions one state usage or state definition owns directly.
+    ///
+    /// `Ok(None)` when `symbol` is not a state usage or state definition. Sources, targets,
+    /// triggers, guards and effects are the facts resolution already settled; this performs
+    /// no new analysis and does not require a state-transition view.
+    pub fn state_machine(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedStateMachine>> {
+        self.model.state_machine(symbol)
+    }
+
+    /// The steps one action usage or definition owns, in source order.
+    ///
+    /// `Ok(None)` when `symbol` is not an action. Each condition and assigned value is the
+    /// expression publication already settled. An `if` branch whose actions were not marked
+    /// stays unmarked rather than being merged into the other branch.
+    pub fn action_body(&self, symbol: SymbolId) -> QueryOutcome<Option<PublishedActionBody>> {
+        self.model.action_body(symbol)
+    }
+
     /// The effective expression body and bindings in a derived type or typed usage, with
     /// authored provenance retained. Invalid contexts are unresolved; competing bindings
     /// return a typed ambiguity rather than an asserted tree.
@@ -1598,6 +1623,10 @@ impl DebugQueries<'_> {
         self.model.write_metadata_annotations_sexpr(output)
     }
 
+    /// Stream canonical directional binding paths for snapshot inspection.
+    pub fn write_binding_paths_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_binding_paths_sexpr(output)
+    }
     pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.write_connections_sexpr(output)
     }
