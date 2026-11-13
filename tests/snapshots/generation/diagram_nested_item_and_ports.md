@@ -58,7 +58,7 @@ package NestedOwners {
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "bundle::a")) (memberAccessOperand (reference "src::out1")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "bundle::a")) (bindTarget (reference "src::out1")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::bundle"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Bundle")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::destination"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Destination")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::second"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Bundle")))))
@@ -89,10 +89,10 @@ package NestedOwners {
     (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "StandardViewDefinitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions")))))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0))
       (authored-target "bundle::a")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Bundle::a")))))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind bindTarget) (ordinal 0))
       (authored-target "src::out1")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Source::out1")))))
     (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::bundle"))) (kind featureTyping) (ordinal 0))
@@ -139,8 +139,8 @@ package NestedOwners {
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly")))))
   )
   (relationships
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Bundle::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
-    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Source::out1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1)))
+    (relationship (kind bindSource) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Bundle::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0)))
+    (relationship (kind bindTarget) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Source::out1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind bindTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::bundle"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Bundle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::bundle"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::destination"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Destination"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::destination"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::second"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Bundle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Assembly::second"))) (kind featureTyping) (ordinal 0)))
@@ -609,12 +609,12 @@ package NestedOwners {
     )
   )
   (query (document "memory://snapshot/model.sysml") (range (start 15 13) (end 15 21)) (probe (position 15 13))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "bundle::a")
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0) (authored-target "bundle::a")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Bundle::a")))))
     )
   )
   (query (document "memory://snapshot/model.sysml") (range (start 15 24) (end 15 32)) (probe (position 15 24))
-    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1) (authored-target "src::out1")
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "NestedOwners")) (named (kind part-def) (name "Assembly")) (anonymous (kind bind) (ordinal 0))))) (kind bindTarget) (ordinal 0) (authored-target "src::out1")
       (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "NestedOwners::Source::out1")))))
     )
   )
@@ -1093,13 +1093,13 @@ package NestedOwners {
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "memberAccessOperand",
+      "relationshipKind": "bindSource",
       "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "memberAccessOperand",
+      "relationshipKind": "bindTarget",
       "source": 1
     },
     {
@@ -1934,7 +1934,7 @@ package NestedOwners {
     ],
     "relationships": [
       {
-        "kind": "memberAccessOperand",
+        "kind": "bindSource",
         "navigation": 24,
         "provenance": "authored",
         "reference": 27,
@@ -1945,7 +1945,7 @@ package NestedOwners {
         }
       },
       {
-        "kind": "memberAccessOperand",
+        "kind": "bindTarget",
         "navigation": 25,
         "provenance": "authored",
         "reference": 28,
