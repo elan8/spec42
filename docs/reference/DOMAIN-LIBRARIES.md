@@ -7,9 +7,9 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 
 | | |
 | --- | --- |
-| Bundled version | `0.5.0` |
+| Bundled version | `0.6.0` |
 | Format | `kpar` |
-| Artifact | `elan8-domain-libraries-0.5.0.kpar` |
+| Artifact | `elan8-domain-libraries-0.6.0.kpar` |
 | Packages / files | 27 packages · 24 source files |
 | Source | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
 
