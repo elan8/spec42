@@ -140,7 +140,7 @@ fn embed_stdlib() {
         process::exit(1);
     });
 
-    let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
+    let _embedded_digest = lower_hex(&Sha256::digest(fs::read(&out_zip).unwrap()));
 }
 
 fn validate_stdlib_projects(config: &StdlibConfig, directory: &Path) -> Result<(), String> {
@@ -724,4 +724,14 @@ fn embed_stdlib_from_kpar_dir(kpar_dir: &Path, out_path: &Path) -> Result<(), St
     }
     writer.finish().map_err(|e| format!("finish zip: {e}"))?;
     Ok(())
+}
+
+/// Lowercase hexadecimal of a digest; sha2 0.11 digests no longer implement `LowerHex`.
+fn lower_hex(bytes: &[u8]) -> String {
+    use std::fmt::Write as _;
+    let mut text = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        let _ = write!(text, "{byte:02x}");
+    }
+    text
 }

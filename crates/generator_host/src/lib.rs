@@ -1459,7 +1459,7 @@ fn diagnostic_level(level: i32) -> wasmtime::Result<GeneratorDiagnosticLevel> {
 /// the digest a later reader computes over the bytes on disk. The two must be the same string for
 /// the same bytes, so the format is declared once, here, where artifacts are produced.
 pub fn artifact_digest(bytes: &[u8]) -> String {
-    format!("sha256:{:x}", Sha256::digest(bytes))
+    format!("sha256:{}", lower_hex(&Sha256::digest(bytes)))
 }
 
 fn bounded_message(mut message: String) -> String {
@@ -1536,6 +1536,16 @@ fn classify_wasmtime_error(
         phase,
         message,
     }
+}
+
+/// Lowercase hexadecimal of a digest; sha2 0.11 digests no longer implement `LowerHex`.
+fn lower_hex(bytes: &[u8]) -> String {
+    use std::fmt::Write as _;
+    let mut text = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        let _ = write!(text, "{byte:02x}");
+    }
+    text
 }
 
 #[cfg(test)]

@@ -246,15 +246,16 @@ pub(crate) enum DiagramPresentationResult {
 
 pub(crate) fn diagram_presentation_typescript() -> String {
     use ts_rs::TS;
+    let config = ts_rs::Config::new();
     let declarations = [
-        DiagramRangeChoice::decl(),
-        DiagramReferenceChoice::decl(),
-        DiagramViewSourceChoice::decl(),
-        DiagramViewChoice::decl(),
-        DiagramSelection::decl(),
-        KnownDiagramProduct::decl(),
-        DiagramPresentationParams::decl(),
-        DiagramPresentationResult::decl(),
+        DiagramRangeChoice::decl(&config),
+        DiagramReferenceChoice::decl(&config),
+        DiagramViewSourceChoice::decl(&config),
+        DiagramViewChoice::decl(&config),
+        DiagramSelection::decl(&config),
+        KnownDiagramProduct::decl(&config),
+        DiagramPresentationParams::decl(&config),
+        DiagramPresentationResult::decl(&config),
     ];
     let mut output =
         String::from("// Generated from the Rust diagram presentation protocol. Do not edit.\n");
@@ -495,7 +496,7 @@ impl GeneratorService {
             ));
         }
         let runtime = self.runtime.as_ref().map_err(Clone::clone)?;
-        let digest = format!("sha256:{:x}", Sha256::digest(module_bytes));
+        let digest = format!("sha256:{}", lower_hex(&Sha256::digest(module_bytes)));
         let prepare_started = Instant::now();
         let cached = {
             let cache = self
@@ -727,6 +728,16 @@ fn evict_one<K: Clone + Eq + std::hash::Hash + Ord, V>(cache: &mut HashMap<K, V>
     if let Some(key) = cache.keys().min().cloned() {
         cache.remove(&key);
     }
+}
+
+/// Lowercase hexadecimal of a digest; sha2 0.11 digests no longer implement `LowerHex`.
+fn lower_hex(bytes: &[u8]) -> String {
+    use std::fmt::Write as _;
+    let mut text = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        let _ = write!(text, "{byte:02x}");
+    }
+    text
 }
 
 #[cfg(test)]

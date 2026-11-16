@@ -20,5 +20,5 @@ tempfile = { workspace = true }
 [dev-dependencies]
 kpar = { path = "../kpar" }
 library_catalog = { path = "../library_catalog" }
-syn = { version = "2", features = ["full", "visit"] }
+syn = { version = "3", features = ["full", "visit"] }
 proc-macro2 = { version = "1", features = ["span-locations"] }
