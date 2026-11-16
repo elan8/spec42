@@ -2209,7 +2209,7 @@ version = "0.60.2"
 dependencies = [
  "proc-macro2",
  "serde_json",
- "syn 2.0.119",
+ "syn 3.0.3",
  "sysml_contract",
  "sysml_resolution",
  "toml 0.8.23",
@@ -3128,7 +3128,7 @@ dependencies = [
  "proc-macro2",
  "serde",
  "serde_json",
- "syn 2.0.119",
+ "syn 3.0.3",
  "sysml_diagnostics",
  "sysml_query",
  "tempfile",
