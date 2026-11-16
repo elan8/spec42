@@ -25,7 +25,22 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          fetch-depth: 0
           submodules: recursive
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: docs-site/package-lock.json
+
+      - name: Validate release documentation
+        working-directory: docs-site
+        run: |
+          npm ci --ignore-scripts
+          npm test
+          npm run build
 
       - name: Install Rust
         run: rustup toolchain install && rustup target add wasm32-unknown-unknown
@@ -472,9 +487,10 @@ jobs:
 
           ## Documentation
 
-          - GitHub Action usage: docs/user/GITHUB-ACTION.md
-          - Assistant setup: docs/user/AI-ASSISTANTS.md
-          - Troubleshooting: docs/user/TROUBLESHOOTING.md
+          - [User guide for ${TAG}](https://elan8.github.io/spec42/${TAG}/index.html)
+          - [Getting started](https://elan8.github.io/spec42/${TAG}/getting-started.html)
+          - [GitHub Actions](https://elan8.github.io/spec42/${TAG}/github-action.html)
+          - [Troubleshooting](https://elan8.github.io/spec42/${TAG}/troubleshooting.html)
           EOF
           } > RELEASE_NOTES.txt
 

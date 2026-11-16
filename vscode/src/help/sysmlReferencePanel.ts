@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { documentationUrl } from "./documentation";
 
 export class SysmlReferencePanel {
   private static current: SysmlReferencePanel | undefined;
@@ -18,15 +19,19 @@ export class SysmlReferencePanel {
     SysmlReferencePanel.current = new SysmlReferencePanel(panel, context);
   }
 
-  private constructor(panel: vscode.WebviewPanel, _context: vscode.ExtensionContext) {
+  private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
     this.panel = panel;
-    this.panel.webview.html = this.buildHtml();
+    this.panel.webview.html = this.buildHtml(documentationUrl(
+      context.extension.packageJSON.version,
+      "overview",
+      context.extensionMode !== vscode.ExtensionMode.Production
+    ));
     this.panel.onDidDispose(() => {
       SysmlReferencePanel.current = undefined;
     });
   }
 
-  private buildHtml(): string {
+  private buildHtml(docsUrl: string): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,7 +58,7 @@ export class SysmlReferencePanel {
 </head>
 <body>
 <h1>SysML v2 Quick Reference</h1>
-<p class="subtitle">Core concepts for Spec42 / SysML v2. See the <a href="https://github.com/elan8/spec42/blob/HEAD/docs/README.md" style="color: var(--vscode-textLink-foreground);">Spec42 docs</a> or the <a href="https://www.omg.org/spec/SysML/2.0/" style="color: var(--vscode-textLink-foreground);">OMG SysML v2 Language Specification</a>.</p>
+<p class="subtitle">Core concepts for Spec42 / SysML v2. See the <a href="${docsUrl}" style="color: var(--vscode-textLink-foreground);">Spec42 docs</a> or the <a href="https://www.omg.org/spec/SysML/2.0/" style="color: var(--vscode-textLink-foreground);">OMG SysML v2 Language Specification</a>.</p>
 
 <h2>Definitions</h2>
 <p class="note">Definitions declare reusable types. Usages instantiate them in context. Every usage keyword has a matching <code>def</code> form.</p>

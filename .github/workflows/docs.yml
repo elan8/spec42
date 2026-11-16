@@ -1,0 +1,82 @@
+name: Documentation
+
+on:
+  pull_request:
+    paths:
+      - 'docs-site/**'
+      - 'docs/user/**'
+      - 'docs/reference/**'
+      - 'vscode/src/help/documentation.json'
+      - '.github/workflows/docs.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs-site/**'
+      - 'docs/user/**'
+      - 'docs/reference/**'
+      - 'vscode/src/help/documentation.json'
+      - '.github/workflows/docs.yml'
+  # A release created by GITHUB_TOKEN does not trigger another release-event workflow.
+  # Run after the existing release workflow instead, including manually retried releases.
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.event_name == 'pull_request' && github.ref || 'publish' }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # workflow_run must build trusted site tooling from main, not the triggering ref.
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: docs-site/package-lock.json
+      - name: Install pinned documentation dependencies
+        run: npm ci --ignore-scripts
+        working-directory: docs-site
+      - name: Test version selection and link validation
+        run: npm test
+        working-directory: docs-site
+      - name: Find published stable releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p target
+          gh api --paginate repos/elan8/spec42/releases --jq '.[] | select(.draft == false and .prerelease == false) | .tag_name' > target/docs-release-tags.txt
+      - name: Build all published versions and check links
+        run: node docs-site/build.mjs --releases-file target/docs-release-tags.txt
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target/docs-site
+
+  deploy:
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_run')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish versioned user guides
+        id: deployment
+        uses: actions/deploy-pages@v4

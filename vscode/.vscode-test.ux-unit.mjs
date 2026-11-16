@@ -8,6 +8,7 @@ const testOut = process.env.SPEC42_VSCODE_TEST_OUT || "out";
 
 export default defineConfig({
   files: [
+    path.join(__dirname, testOut, "test/suite/documentation.test.js"),
     path.join(__dirname, testOut, "test/suite/lspDocumentSelector.test.js"),
     path.join(__dirname, testOut, "test/suite/diagramViewProvider.test.js"),
     path.join(__dirname, testOut, "test/suite/examplesViewProvider.test.js"),

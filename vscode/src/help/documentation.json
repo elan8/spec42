@@ -1,0 +1,19 @@
+{
+  "baseUrl": "https://elan8.github.io/spec42/",
+  "pages": {
+    "overview": { "route": "index", "title": "Overview", "source": null, "group": "Start here" },
+    "gettingStarted": { "route": "getting-started", "title": "Getting started", "source": "docs/user/GETTING-STARTED.md", "group": "Start here" },
+    "examples": { "route": "examples", "title": "Examples", "source": "docs/user/EXAMPLES.md", "group": "Start here" },
+    "features": { "route": "features", "title": "Features and support", "source": "docs/user/SUPPORTED-WORKFLOWS.md", "group": "Use Spec42" },
+    "diagrams": { "route": "diagrams", "title": "Diagram views", "source": "docs/user/DIAGRAM-VIEW.md", "group": "Use Spec42" },
+    "inspector": { "route": "inspector", "title": "Feature Inspector", "source": "docs/user/FEATURE-INSPECTOR.md", "group": "Use Spec42" },
+    "libraries": { "route": "libraries", "title": "Projects and libraries", "source": "docs/user/LIBRARIES.md", "group": "Use Spec42" },
+    "validation": { "route": "validation", "title": "Validation and diagnostics", "source": "docs/user/VALIDATION.md", "group": "Use Spec42" },
+    "calculations": { "route": "calculations", "title": "Calculation expressions", "source": "docs/user/CALCULATION-EXPRESSIONS.md", "group": "Use Spec42" },
+    "githubAction": { "route": "github-action", "title": "GitHub Actions", "source": "docs/user/GITHUB-ACTION.md", "group": "Automate" },
+    "assistants": { "route": "assistants", "title": "AI assistants", "source": "docs/user/AI-ASSISTANTS.md", "group": "Automate" },
+    "troubleshooting": { "route": "troubleshooting", "title": "Troubleshooting", "source": "docs/user/TROUBLESHOOTING.md", "group": "Help and reference" },
+    "included": { "route": "included", "title": "What's included", "source": "docs/reference/WHATS-INCLUDED.md", "group": "Help and reference" },
+    "domainLibraries": { "route": "domain-libraries", "title": "Domain libraries", "source": "docs/reference/DOMAIN-LIBRARIES.md", "group": "Help and reference" }
+  }
+}

@@ -2,6 +2,14 @@
 
 Guidance for building, testing, and contributing to Spec42.
 
+## User documentation and releases
+
+The [versioned user guide](https://elan8.github.io/spec42/) is built from `docs/user/` and selected
+generated reference pages. See [site authoring, preview and release policy](docs-site/README.md).
+Update affected user guides before every major or minor release; patch releases also publish a
+snapshot. Release preflight checks the site build and links. After publishing, verify that the
+separate **Documentation** workflow succeeds and the new version appears in the selector.
+
 ## Architecture
 
 The enduring architecture — which crate is the authority for what, the services consumers work

@@ -173,6 +173,10 @@ copy or extend them, but do not broaden an unrelated change solely to remove the
 
 ## Documentation lifecycle
 
+- Update affected user guides before every major or minor release. The versioned GitHub Pages
+  site publishes tagged documentation for every stable release, including patches; keep user
+  content in `docs/user/`, not in a second copy maintained for the site. Follow
+  `docs-site/README.md` for site checks and verify the Documentation deployment after a release.
 - Planning documents contain only active decisions, blockers, and remaining work. Remove an item
   when it is completed; do not retain completion summaries, execution diaries, resolved-item
   indexes, historical context sections, or superseded plans.

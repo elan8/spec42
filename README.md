@@ -12,6 +12,9 @@ Spec42 is open, local-first tooling for [SysML v2](https://www.omg.org/sysml/sys
 
 ## Why Spec42
 
+**[User documentation](https://elan8.github.io/spec42/)** — getting started, features,
+project setup and troubleshooting, with a version selector for published releases.
+
 One analysis engine backs the editor, the CLI, GitHub Actions, generators and assistant
 integrations, so what you see while modeling is what CI checks. The language server, standard
 library and Elan8 domain libraries ship with Spec42: it works offline, and your models stay in your
