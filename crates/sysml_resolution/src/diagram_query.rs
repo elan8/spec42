@@ -798,6 +798,20 @@ impl PublishedResolution {
             let load_members = view_entry.kind != DiagramViewKind::Browser
                 || owner_occurrence.semantic_path.len() == 1
                 || expanded(owner_occurrence.stable_key());
+            // The namespaces that declare the elements below this occurrence's root. A feature
+            // they declare is already laid out on this path; repeating it one level down is the
+            // recursion of a type through its own features (an enumeration value typed by its
+            // enumeration has the enumeration's values as features). Expanding those repeats
+            // every ordering of the features, factorial in their number. A browser shows that
+            // membership, one opened branch at a time, so it keeps it.
+            let path_declarers = if view_entry.kind == DiagramViewKind::Browser {
+                BTreeSet::new()
+            } else {
+                owner_occurrence.semantic_path[1..]
+                    .iter()
+                    .filter_map(|element| all.get(element).and_then(|entry| entry.owner))
+                    .collect::<BTreeSet<_>>()
+            };
             let mut has_members = false;
             for child in &children {
                 // An inherited library port is still a port of this contextual part. Omitting
@@ -825,6 +839,15 @@ impl PublishedResolution {
                 if !workspace.contains(&child.identity)
                     && !library_ends.contains(&child.identity)
                     && !inherited_port
+                {
+                    continue;
+                }
+                // The element itself repeating keeps its cycle-closing occurrence (below); a
+                // different feature of a declaration already on the path is not presented again.
+                if !owner_occurrence.contains(child.identity)
+                    && child
+                        .owner
+                        .is_some_and(|declarer| path_declarers.contains(&declarer))
                 {
                     continue;
                 }
