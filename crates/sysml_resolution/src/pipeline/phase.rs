@@ -135,8 +135,28 @@ pub(crate) fn resolve_facts(
     let admitted_library = library.filter(|library| library.admits(storage));
     let seed = admitted_library.map(|library| library.outcomes.as_ref());
     let library_anchors = library_specialization_anchors(storage);
-    let provisional_library_specializations =
-        crate::resolve::implied::provisional_library_specializations(storage, &library_anchors)?;
+    let provisional_library_specializations = {
+        let mut relationships = crate::resolve::implied::provisional_library_specializations(
+            storage,
+            &library_anchors,
+        )?
+        .into_vec();
+        // `accept payload : T` names a transition parameter that subsets the trigger's typed
+        // payload parameter (`checkTransitionUsagePayloadSpecialization`). The chain is owned by
+        // lowering alone, so name resolution must see it from the first pass: a guard or effect
+        // such as `payload.attribute` resolves its member through the type inherited along it.
+        if storage
+            .declaration_facts
+            .iter()
+            .any(|facts| facts.is_transition_payload_parameter)
+        {
+            relationships
+                .extend(synthesize_transition_payload_subsettings(storage)?.implied_relationships);
+            relationships.sort_by_key(|edge| (edge.kind, edge.source.0, edge.target.0));
+            relationships.dedup();
+        }
+        relationships.into_boxed_slice()
+    };
     let shadowed_library_roots = crate::resolve::library_seed::shadowed_library_roots(storage);
     // Semantic metadata can introduce supertypes whose inherited members are needed by
     // authored references, including further metadata baseType redefinitions. Feed the
