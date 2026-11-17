@@ -2,10 +2,18 @@
   "name": "spec42-user-docs",
   "private": true,
   "type": "module",
+  "license": "MIT",
   "scripts": {
-    "build": "node build.mjs",
-    "test": "node --test test.mjs",
-    "preview": "node preview.mjs"
+    "prepare": "node scripts/prepare.mjs",
+    "dev": "node scripts/prepare.mjs --quick && vitepress dev site --host 127.0.0.1",
+    "build": "node scripts/prepare.mjs && vitepress build site && node scripts/postbuild.mjs",
+    "preview": "vitepress preview site --host 127.0.0.1",
+    "test": "node --test tests/*.test.mjs"
   },
-  "dependencies": { "markdown-it": "15.0.3" }
+  "devDependencies": {
+    "@viteplus/versions": "3.0.0",
+    "typescript": "7.0.2",
+    "vitepress": "2.0.0-alpha.21",
+    "vue": "3.5.45"
+  }
 }
