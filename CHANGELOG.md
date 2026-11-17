@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.61.0] - 2026-11-16
+
+- **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
+  `state-trigger-labels-v74`, diagram products stay schema 12, model export schema 2 and the
+  generator ABI version 7. Building from source uses Rust 1.100.0, pinned in
+  `rust-toolchain.toml`.
+
+- **Diagram views no longer run out of memory on enumerations.** A view whose elements have an
+  enumeration-typed or self-typed feature showed every ordering of the values, so an enumeration
+  with eight values could exhaust memory. Each value or recursive feature is now shown once.
+
+- **Versioned user guides.** Each stable release publishes searchable user guides for its version.
+  Help in the extension opens the guide that matches the installed release, with direct links to
+  getting started and troubleshooting.
+
+- **Domain library 0.6.0 is bundled**, with diagram depth and verdict-file metadata in its
+  vocabulary.
+
+- **Published models expose behaviour.** The published model gives state machines without
+  requiring a state-transition view, the steps of an action with the expressions they settle,
+  send steps (including a no-argument constructor as the signal), and canonical directional
+  binding occurrence paths.
+
+- **Dependency updates**, including `sha2` 0.11, `syn` 3, `quick-xml` 0.42 and `ts-rs` 12. Digests,
+  generated TypeScript bindings and published identities are unchanged.
+
 ## [0.60.2] - 2026-11-10
 
 - **Upgrade notes.** Project settings now live in `spec42.toml`; Spec42 no longer reads
