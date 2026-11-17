@@ -32,3 +32,4 @@ docs-site/site/archive/
 docs-site/.generated.json
 docs-site/site/.vitepress/dist/
 docs-site/site/.vitepress/cache/
+docs-site/site/public/logo.svg
