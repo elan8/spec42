@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.61.1] - 2026-11-17
+
+- **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
+  `state-trigger-labels-v74`, diagram products stay schema 12, model export schema 2 and the
+  generator ABI version 7.
+
+- **Named accept payloads now resolve in transition guards and effects.** In
+  `transition t first a accept command : Command if command.enabled then b;`, the guard reported
+  `unresolved_reference` for `command.enabled` even though the payload type was known. Attributes
+  of the payload, including inherited and nested ones, now resolve; misspelled names are still
+  reported. This also removes the same false warning from the SysML v2 Annex A simple vehicle model.
+
 ## [0.61.0] - 2026-11-16
 
 - **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
