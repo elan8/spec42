@@ -344,7 +344,7 @@ dependencies = [
 
 [[package]]
 name = "generator_api"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "serde",
  "sha2",
@@ -580,7 +580,7 @@ dependencies = [
 
 [[package]]
 name = "language_service"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -902,7 +902,7 @@ checksum = "8ed6a63f02c8539c91a8685a86f4099661ba3da017932f6ebbea6de3f0fa7c90"
 
 [[package]]
 name = "source_identity"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "blake3",
  "serde",
@@ -911,7 +911,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-constraint-manifest"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "clap",
  "quick-xml",
@@ -935,7 +935,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-generator-protocol"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "postcard-schema",
  "serde",
@@ -1023,7 +1023,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_contract"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "serde",
  "source_identity",
@@ -1031,7 +1031,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_query"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "sysml_contract",
  "sysml_resolution",
@@ -1039,7 +1039,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_resolution"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "hashbrown",
  "rayon",
@@ -1053,7 +1053,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_source"
-version = "0.61.0"
+version = "0.61.1"
 dependencies = [
  "globset",
  "ignore",
