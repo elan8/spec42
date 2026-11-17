@@ -94,6 +94,19 @@ export function rewriteLinks(markdown, { route, source, ref, exists, repository 
     (whole, bang, label, href, title) => (href === undefined ? whole : `${bang}[${label}](${resolve(href, bang === '!')}${title})`)));
 }
 
+/**
+ * The site logo is the repository's own mark (`vscode/design/logo.svg`, a `currentColor` glyph) on the
+ * Elan8 cyan tile that the extension icon uses. It is derived at build time so it cannot drift.
+ */
+export function writeLogo({ siteRoot = siteDir } = {}) {
+  const glyph = fs.readFileSync(path.join(defaultRepo, 'vscode/design/logo.svg'), 'utf8');
+  if (!glyph.includes('currentColor')) throw new Error('vscode/design/logo.svg must draw with currentColor');
+  const inner = glyph.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').replaceAll('currentColor', '#ecfeff');
+  fs.mkdirSync(path.join(siteRoot, 'public'), { recursive: true });
+  fs.writeFileSync(path.join(siteRoot, 'public/logo.svg'),
+    `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spec42">\n  <rect width="64" height="64" rx="14" fill="#0891b2"/>${inner}</svg>\n`);
+}
+
 const stub = title => `# ${title}\n\nThis release does not include this guide. Browse the [overview](index.md) or [features and support](features.md) for this version.`;
 
 export function prepare({ repo = defaultRepo, tags, siteRoot = siteDir, manifestPath = manifestFile, quick = false } = {}) {
@@ -102,6 +115,7 @@ export function prepare({ repo = defaultRepo, tags, siteRoot = siteDir, manifest
   // Only the generated folders may be replaced.
   for (const generated of ['src', 'archive']) fs.rmSync(path.join(siteRoot, generated), { recursive: true, force: true });
   fs.rmSync(manifestPath, { force: true });
+  writeLogo({ siteRoot });
 
   const missing = {};
   for (const edition of [...stable, 'dev']) {
