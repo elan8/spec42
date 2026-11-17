@@ -1,4 +1,4 @@
-# Views
+# Diagram views
 
 The **Views** panel renders views authored in your model as SVG. It lives in the
 **secondary side bar** (right side of VS Code), in the **Spec42** container next to the
@@ -63,43 +63,21 @@ selection.
 
 ## View kinds
 
-Spec42 projects the standard SysML view kinds — General, Interconnection, Action Flow, State
-Transition, Sequence, Browser, Grid, and (partially) Geometry. Where a view's typed projection is
-still incomplete the panel reports the typed reason rather than guessing. Coverage is tracked in
-the [conformance matrix](../reference/CONFORMANCE-MATRIX.md).
+A view's kind comes from the standard view definition that types it. Spec42 renders all of the
+standard SysML view kinds:
 
-## Action flow notation
+| View kind | Shows |
+| --- | --- |
+| **General View** | Exposed elements with containment and the authored subclassification, subsetting, redefinition and typing between them. |
+| **Interconnection View** | Nested parts, their ports on the node boundary, and connections as edges. |
+| **Action Flow View** | Actions and control nodes joined by ordered flows. Action inputs and outputs appear as small squares on the action boundary: inputs on the left, outputs on the right. |
+| **State Transition View** | States and control nodes, with transitions labelled by their trigger, guard and effect. |
+| **Sequence View** | Lifelines and the messages sent between them. |
+| **Browser View** | The ownership tree of the exposed scope, collapsible. |
+| **Grid View** | Rows, columns and cells built from exposed elements and their relationships. |
+| **Geometry View** | Partial: only 2D shapes with authored coordinates. Other exposed elements are reported as incomplete. |
 
-Action inputs and outputs appear as small squares on the action boundary, including inherited
-parameters. These are action parameters, rather than structural ports (`port` usages). Input
-parameters appear on the left and output parameters on the right; item flows connect their squares.
-This follows SysML 2.0 §8.2.3.17.
-
-The `then` shorthand follows the language's lexical source rule (§7.17.4). For example:
-
-```sysml
-action def Process {
-    action a;
-    action b;
-    action c;
-    first a;
-    then b;
-    then c;
-}
-```
-
-Both successions start at `a`: `a → b` and `a → c`. A succession does not become the
-source of the next succession. To express a chain, write `first a then b; first b then c;`,
-or introduce the actions inline:
-
-```sysml
-action def Process {
-    first start;
-    then action a;
-    then action b;
-    then action c;
-}
-```
-
-Keywords are lowercase. A loop can be named with its action prefix, for example
-`action iteration for x : Integer in (1, 2, 3) { action visit; }`.
+Where a view cannot be drawn completely, the panel reports the reason instead of guessing. Coverage
+per release is tracked in the [conformance matrix](../reference/CONFORMANCE-MATRIX.md), and how
+each drawn symbol compares with the specification's notation in the
+[diagram notation assessment](../reference/DIAGRAM-NOTATION-ASSESSMENT.md).

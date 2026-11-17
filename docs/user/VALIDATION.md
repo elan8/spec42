@@ -1,4 +1,4 @@
-# Validation and Diagnostics
+# Validation and diagnostics
 
 Run the same Spec42 analysis in your editor and in automation. `spec42 check` validates a SysML/KerML file or a workspace directory and can emit reports for people and CI systems.
 
@@ -53,6 +53,15 @@ One mistake can make later analysis fail too. Spec42 reports such cascades by th
 - **`--strict-diagnostics` hides reference cascades.** With this flag, `spec42 check` drops `unresolved_type_reference`, `unresolved_import_target`, `unresolved_specializes_reference`, `unresolved_reference`, `ambiguous_reference` and `ambiguous_import_target` diagnostics that start on a line before the document's first parse error. The editor never applies this rule.
 - **Each participant in a cycle is reported.** Every declaration in a specialization cycle gets its own `specialization_cycle` error, so the cycle can be broken at any of them.
 - **Fix the earliest error first when recovery dominates.** When a document's report is mostly parser recovery, `spec42 check` adds advice to fix the earliest error in each file first; that usually removes the rest.
+
+## Connection and port diagnostics
+
+SysML v2 allows logical **part-to-part** `connect` statements (for example `connect navigation to system` between part usages). Spec42 does **not** emit `connection_endpoint_not_port` when both endpoints are part-like.
+
+Port compatibility checks apply when endpoints are ports:
+
+- `port_type_mismatch` compares port features and definitions. If two ports share a simple type name (for example `FillState`) but resolve to different `port def` elements in different packages, the message names the qualified definitions so you can align imports or reuse one port definition.
+- Conjugation and direction mismatches are reported separately when feature lists are unavailable.
 
 ## Running in CI
 

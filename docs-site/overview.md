@@ -1,5 +1,9 @@
 # Build your first SysML model
 
+Spec42 is open, local-first tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML:
+edit textual models with live feedback, understand structure and behavior beyond the source, and
+keep the same analysis engine in the editor, CI, and assistant workflows.
+
 Install Spec42, open an example, and explore your model with the editor and command-line tools.
 Choose the documentation version that matches your installation. Run `spec42 --version`
 to check your CLI version, or check the installed extension version in VS Code.

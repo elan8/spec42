@@ -1,10 +1,10 @@
-# Supported Workflows
+# Features and support
 
-This document describes what the project currently supports well, what is usable with caveats, and what is still experimental on the path to `1.0`.
+What Spec42 supports well, what works with caveats, and what it does not support yet.
 
-## Stable Core Workflows
+## Supported
 
-These are the workflows the project is actively hardening for `1.0` and treats as release-gating:
+These workflows are actively hardened and treated as release-gating:
 
 - Editing `.sysml` and `.kerml` files in VS Code without crashing the server
 - Diagnostics for invalid intermediate text while typing
@@ -18,54 +18,34 @@ These are the workflows the project is actively hardening for `1.0` and treats a
 - Folding ranges
 - Deterministic CLI validation reports for CI (`text`, `json`, `sarif`, `junit`)
 - Optional Sysand package-manager detection and dependency-root ingestion
-- Generator plugins over the immutable model query API.
-- Generated conformance reporting for language, validation, views, CLI, and Sysand integration
+- Generator plugins over the immutable model query API
+- Diagram views: the General, Interconnection, Action Flow, State Transition, Sequence, Browser
+  and Grid views render through the packaged generator and the VS Code viewer (see
+  [Diagram views](DIAGRAM-VIEW.md) for what each shows)
 
-## Usable With Caveats
+Coverage for the language, validation, views, CLI and Sysand integration is generated from the
+project's metadata in the [conformance matrix](../reference/CONFORMANCE-MATRIX.md).
 
-These workflows are available and useful, but still have known limits that should be assumed by users and contributors:
+## Works with caveats
 
-- Workspace indexing in larger repositories
-  The extension can truncate discovery per workspace folder and file type based on `spec42.workspace.maxFilesPerPattern` (legacy `sysml-language-server.workspace.maxFilesPerPattern` is still supported).
-- Library path indexing
-  Useful for hover, definition, and completion, but dependent on parser coverage and available files.
-- The VS Code diagram command exercises a packaged WASM generator, versioned JSON render product,
-  and D3/ELK webview for all eight declared views. State-transition views use the implemented typed
-  projection; the other views show explicit incomplete-query states.
+These workflows are useful today but have known limits:
 
-## Experimental Areas
+- **Workspace indexing in larger repositories.** The extension can truncate discovery per workspace
+  folder and file type based on `spec42.workspace.maxFilesPerPattern` (the legacy
+  `sysml-language-server.workspace.maxFilesPerPattern` is still supported).
+- **Library path indexing.** Useful for hover, definition and completion, but dependent on parser
+  coverage and the files available.
+- **Geometry views.** Only 2D shapes with authored coordinates are drawn; other exposed elements
+  are reported as incomplete.
+- **Diagram rendering outside VS Code.** SVG produced by `spec42 diagram` does not yet match the
+  VS Code viewer's rendering in every detail.
 
-The following areas are intentionally not release-gating for `1.0`:
+## Not supported yet
 
-- Typed semantic projections for general, interconnection, action-flow, sequence, browser, grid,
-  and geometry diagram products
-- Full visual parity between CLI SVG and the VS Code renderer; the 1.0 CLI target is stable ELK layout/routing parity for routed views
-- Broader SysML v2 language coverage outside the currently well-tested subset
-- Deep semantic validation beyond the currently published typed rules
-- Editable table/matrix views
-- Python automation APIs and ReqIF/DOORS/Polarion bridges
-
-## Current Support Boundaries
-
-The project does not currently claim:
-
-- Full OMG SysML v2 specification coverage
-- Full semantic validation for all constructs
-- Stable behavior for every visualization type
+- Full OMG SysML v2 specification coverage; Spec42 supports a well-tested subset
+- Deep semantic validation beyond the published typed rules
+- Editable table and matrix views
+- Python automation APIs and ReqIF, DOORS or Polarion bridges
 - Production-grade performance for very large repositories without tuning
 
-## What `1.0` Means
-
-For this project, `1.0` means:
-
-- safe daily use for core editing workflows
-- clear failure states and recovery in VS Code
-- deterministic CI coverage for editor, validation, report, package-detection, and shared-renderer workflows
-- a credible open/local-first alternative for teams comparing SysML v2 tooling ecosystems
-
-It does not mean:
-
-- every planned SysML feature is implemented
-- every visualization is stable
-- the full specification is covered
-- Spec42 replaces Sysand; Sysand is treated as optional package infrastructure
+Spec42 does not replace Sysand: Sysand is treated as optional package infrastructure.
