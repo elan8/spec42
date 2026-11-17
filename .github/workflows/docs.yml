@@ -49,7 +49,7 @@ jobs:
       - name: Install pinned documentation dependencies
         run: npm ci --ignore-scripts
         working-directory: docs-site
-      - name: Test version selection and link validation
+      - name: Test version selection, link rewriting and link validation
         run: npm test
         working-directory: docs-site
       - name: Find published stable releases
@@ -59,11 +59,15 @@ jobs:
           mkdir -p target
           gh api --paginate repos/elan8/spec42/releases --jq '.[] | select(.draft == false and .prerelease == false) | .tag_name' > target/docs-release-tags.txt
       - name: Build all published versions and check links
-        run: node docs-site/build.mjs --releases-file target/docs-release-tags.txt
+        working-directory: docs-site
+        run: |
+          node scripts/prepare.mjs --releases-file ../target/docs-release-tags.txt
+          npx vitepress build site
+          node scripts/postbuild.mjs
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: target/docs-site
+          path: docs-site/site/.vitepress/dist
 
   deploy:
     if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_run')

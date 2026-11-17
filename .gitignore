@@ -25,3 +25,10 @@ __pycache__/
 
 *.vsix
 docs-site/node_modules/
+
+# VitePress documentation site (generated)
+docs-site/site/src/
+docs-site/site/archive/
+docs-site/.generated.json
+docs-site/site/.vitepress/dist/
+docs-site/site/.vitepress/cache/

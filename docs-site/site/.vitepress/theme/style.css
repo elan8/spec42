@@ -1,0 +1,33 @@
+/* Elan8 documentation theme: the VitePress default theme with the Elan8 cyan brand. */
+:root {
+  --vp-c-brand-1: #0e7490;
+  --vp-c-brand-2: #0891b2;
+  --vp-c-brand-3: #0891b2;
+  --vp-c-brand-soft: #0891b21a;
+  --vp-font-family-base: Inter, system-ui, sans-serif;
+}
+.dark {
+  --vp-c-brand-1: #67e8f9;
+  --vp-c-brand-2: #22d3ee;
+  --vp-c-brand-3: #0891b2;
+}
+
+.version-notice {
+  margin: 0 0 24px;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+}
+.version-notice.development {
+  color: var(--vp-c-warning-1);
+  background: var(--vp-c-warning-soft);
+}
+.source-link {
+  margin-top: 48px;
+  padding-top: 16px;
+  font-size: 14px;
+  border-top: 1px solid var(--vp-c-divider);
+}
