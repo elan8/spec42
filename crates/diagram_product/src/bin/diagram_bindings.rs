@@ -34,8 +34,8 @@ fn run() -> Result<(), String> {
         .join("target")
         .join(format!("diagram-bindings-{}", std::process::id()));
     fs::create_dir_all(&temporary).map_err(|error| error.to_string())?;
-    std::env::set_var("TS_RS_EXPORT_DIR", &temporary);
-    DiagramProduct::export_all().map_err(|error| error.to_string())?;
+    let config = ts_rs::Config::new().with_out_dir(&temporary);
+    DiagramProduct::export_all(&config).map_err(|error| error.to_string())?;
     // ts-rs leaves spaces before line breaks around documented fields. Normalize at the
     // generation owner so both publishing and --check use identical whitespace-clean bytes.
     for entry in fs::read_dir(&temporary).map_err(|error| error.to_string())? {

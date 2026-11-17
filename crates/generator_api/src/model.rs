@@ -2546,7 +2546,7 @@ fn diagram_presentation_key(
     let mut hash = Sha256::new();
     hash.update(b"spec42-diagram-presentation-v1\0");
     hash.update(occurrence.stable_key().as_bytes());
-    format!("p:{:x}", hash.finalize())
+    format!("p:{}", lower_hex(&hash.finalize()))
 }
 
 /// The catalog handle of `view` (a boundary token) as one of its diagram kinds.
@@ -2556,14 +2556,14 @@ fn diagram_handle(view: &str, kind: sysml_query::resolved_slice::DiagramViewKind
     hash.update(view.as_bytes());
     hash.update(b"\0");
     hash.update(format!("{:?}", diagram_kind(kind)).as_bytes());
-    format!("h:{:x}", hash.finalize())
+    format!("h:{}", lower_hex(&hash.finalize()))
 }
 
 fn handle_from_semantic_id(id: &str) -> String {
     let mut hash = Sha256::new();
     hash.update(b"spec42-generator-handle-v2\0");
     hash.update(id.as_bytes());
-    format!("h:{:x}", hash.finalize())
+    format!("h:{}", lower_hex(&hash.finalize()))
 }
 fn summary_order(a: &ElementSummary, b: &ElementSummary) -> std::cmp::Ordering {
     a.qualified_name
@@ -2888,6 +2888,16 @@ fn generator_relationship_kind(kind: &str) -> &str {
         "subclassification" | "specialization" => "specializes",
         other => other,
     }
+}
+
+/// Lowercase hexadecimal of a digest; sha2 0.11 digests no longer implement `LowerHex`.
+fn lower_hex(bytes: &[u8]) -> String {
+    use std::fmt::Write as _;
+    let mut text = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        let _ = write!(text, "{byte:02x}");
+    }
+    text
 }
 
 #[cfg(test)]

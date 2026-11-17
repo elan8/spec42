@@ -1984,12 +1984,8 @@ fn attributes(
     Ok(values)
 }
 
-fn local_name(name: &[u8]) -> &str {
-    std::str::from_utf8(name)
-        .unwrap_or("")
-        .rsplit(':')
-        .next()
-        .unwrap_or("")
+fn local_name(name: &str) -> &str {
+    name.rsplit(':').next().unwrap_or("")
 }
 
 fn render_manifest(
@@ -2051,7 +2047,17 @@ fn audit_manifest(
 }
 
 fn sha256_hex(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    lower_hex(&Sha256::digest(bytes))
+}
+
+/// Lowercase hexadecimal of a digest; sha2 0.11 digests no longer implement `LowerHex`.
+fn lower_hex(bytes: &[u8]) -> String {
+    use std::fmt::Write as _;
+    let mut text = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        let _ = write!(text, "{byte:02x}");
+    }
+    text
 }
 
 #[cfg(test)]
