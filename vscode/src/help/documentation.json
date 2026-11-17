@@ -12,6 +12,7 @@
     "calculations": { "route": "calculations", "title": "Calculation expressions", "source": "docs/user/CALCULATION-EXPRESSIONS.md", "group": "Use Spec42" },
     "githubAction": { "route": "github-action", "title": "GitHub Actions", "source": "docs/user/GITHUB-ACTION.md", "group": "Automate" },
     "assistants": { "route": "assistants", "title": "AI assistants", "source": "docs/user/AI-ASSISTANTS.md", "group": "Automate" },
+    "cliReference": { "route": "cli", "title": "CLI reference", "source": "docs/user/CLI-REFERENCE.md", "group": "Help and reference" },
     "troubleshooting": { "route": "troubleshooting", "title": "Troubleshooting", "source": "docs/user/TROUBLESHOOTING.md", "group": "Help and reference" },
     "included": { "route": "included", "title": "What's included", "source": "docs/reference/WHATS-INCLUDED.md", "group": "Help and reference" },
     "domainLibraries": { "route": "domain-libraries", "title": "Domain libraries", "source": "docs/reference/DOMAIN-LIBRARIES.md", "group": "Help and reference" }

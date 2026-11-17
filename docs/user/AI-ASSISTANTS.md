@@ -27,7 +27,7 @@ Point the host at the `spec42` binary directly, driven by a per-host skill/instr
 
 ## CLI commands (agent workflow)
 
-Recommended order when debugging a workspace:
+See the [CLI reference](CLI-REFERENCE.md) for every command and option. Recommended order when debugging a workspace:
 
 1. **`spec42 doctor`** — standard library, config dirs, library paths, Sysand detection
 2. **`spec42 check`** — validation report (`summary.error_count`, per-file `diagnostics[].code`, `advice`)

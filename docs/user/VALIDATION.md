@@ -1,6 +1,6 @@
 # Validation and diagnostics
 
-Run the same Spec42 analysis in your editor and in automation. `spec42 check` validates a SysML/KerML file or a workspace directory and can emit reports for people and CI systems.
+Run the same Spec42 analysis in your editor and in automation. `spec42 check` validates a SysML/KerML file or a workspace directory and can emit reports for people and CI systems. All commands and options are listed in the [CLI reference](CLI-REFERENCE.md).
 
 ## Check a workspace
 
