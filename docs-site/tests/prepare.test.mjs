@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { documentation, prepare, releases, rewriteLinks, version, withoutHtmlComments } from '../scripts/prepare.mjs';
+import { documentation, prepare, releases, rewriteLinks, version, withoutHtmlComments, writeLogo } from '../scripts/prepare.mjs';
 
 test('stable versions sort numerically and retain every major/minor and patch', () => {
   assert.deepEqual(releases(['v0.59.0', 'v0.60.2', 'v0.60.10', 'v1.0.0', 'v2.0.0', 'v0.61.0', 'v2.1.0-rc.1', 'v01.0.0', 'v0.60.2']),
@@ -93,5 +93,22 @@ test('snapshots use tagged content, preserve links and isolate unreleased change
   } finally {
     if (!repo.startsWith(path.join(os.tmpdir(), 'spec42-docs-'))) throw new Error('Unexpected test directory');
     fs.rmSync(repo, { recursive: true, force: true });
+  }
+});
+
+test('the site logo is derived from the repository mark, not a second copy', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'spec42-logo-'));
+  try {
+    writeLogo({ siteRoot: root });
+    const svg = fs.readFileSync(path.join(root, 'public/logo.svg'), 'utf8');
+    const mark = fs.readFileSync(new URL('../../vscode/design/logo.svg', import.meta.url), 'utf8');
+    assert.ok(svg.includes('fill="#0891b2"'), 'cyan tile');
+    assert.ok(!svg.includes('currentColor'), 'the glyph is drawn in the tile foreground colour');
+    // Every shape of the source mark is in the derived logo.
+    for (const [, d] of mark.matchAll(/\sd="([^"]+)"/g)) assert.ok(svg.includes(d), d);
+    for (const [, x, y] of mark.matchAll(/<rect x="(\d+)" y="(\d+)"/g)) assert.ok(svg.includes(`<rect x="${x}" y="${y}"`), `rect ${x},${y}`);
+  } finally {
+    if (!root.startsWith(path.join(os.tmpdir(), 'spec42-logo-'))) throw new Error('Unexpected test directory');
+    fs.rmSync(root, { recursive: true, force: true });
   }
 });
