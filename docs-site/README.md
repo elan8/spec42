@@ -35,6 +35,15 @@ External URLs and fragments on GitHub source pages are not fetched. Search is lo
 version and requires JavaScript; the guides, navigation and version permalink remain readable
 without JavaScript. The version selector requires JavaScript.
 
+## Look and feel
+
+`site.css` is a readable stylesheet driven by tokens at the top of the file. The tokens mirror the
+Doc42 documentation site (the VitePress default theme with the Elan8 cyan brand), so both sites read
+as one product family. Change a token, not individual rules, and keep the two sites in step.
+Light and dark follow the operating system; the header toggle stores the choice under the same
+`localStorage` key as the Doc42 site, which is served from the same origin. `logo.svg` is the
+Spec42 mark and favicon.
+
 ## Release policy
 
 - Every published stable major, minor **and patch** release from 0.60.0 has a permanent

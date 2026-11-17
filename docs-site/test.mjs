@@ -4,8 +4,14 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { buildSite, releases, version } from './build.mjs';
+import { buildSite, releases, version, withoutHtmlComments } from './build.mjs';
 import documentation from '../vscode/src/help/documentation.json' with { type: 'json' };
+
+test('generated-file comments are hidden but comments in code fences are kept', () => {
+  const fence = '```';
+  const kept = ['# Title', `${fence}html`, '<!-- example -->', fence, ''].join('\n');
+  assert.equal(withoutHtmlComments(`<!-- GENERATED -->\n${kept}`), kept);
+});
 
 test('stable versions sort numerically and retain every major/minor and patch', () => {
   assert.deepEqual(releases(['v0.59.0', 'v0.60.2', 'v0.60.10', 'v1.0.0', 'v2.0.0', 'v0.61.0', 'v2.1.0-rc.1', 'v01.0.0', 'v0.60.2']),
@@ -47,6 +53,14 @@ test('snapshots use tagged content, preserve links and isolate unreleased change
     assert.match(fs.readFileSync(path.join(out, 'latest/index.html'), 'utf8'), /url=\/spec42\/v1.0.0\/index.html/);
     assert.match(fs.readFileSync(path.join(out, 'v0.60.0/calculations.html'), 'utf8'), /This release does not include this guide/);
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(out, 'versions.json'))).latest, 'v1.0.0');
+    // Shared look with the Doc42 site: brand mark, header links, theme toggle and favicon.
+    assert.ok(start.includes('assets/logo.svg'));
+    assert.ok(start.includes('id="theme"'));
+    assert.ok(start.includes('href="https://www.elan8.com/products/spec42"'));
+    assert.ok(start.includes('releases/tag/v0.60.0">Download 0.60.0<'));
+    assert.ok(dev.includes('>Releases<'));
+    assert.ok(fs.existsSync(path.join(out, 'assets/logo.svg')));
+    assert.ok(fs.readFileSync(path.join(out, '404.html'), 'utf8').includes('assets/site.css'));
     buildSite({ repo, out, tags: ['v0.60.0'] });
     assert.equal(fs.existsSync(path.join(out, 'v1.0.0')), false, 'removed releases leave no stale output');
     write('docs/user/GETTING-STARTED.md', '# Install\n\n[Broken anchor](EXAMPLES.md#missing)\n');

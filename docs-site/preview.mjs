@@ -6,7 +6,7 @@ import documentation from '../vscode/src/help/documentation.json' with { type: '
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../target/docs-site');
 const base = new URL(documentation.baseUrl).pathname;
-const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json' };
+const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml' };
 http.createServer((request, response) => {
   const url = new URL(request.url, 'http://localhost');
   if (!url.pathname.startsWith(base)) {

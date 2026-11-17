@@ -35,3 +35,12 @@ searchInput.addEventListener('input', async () => {
     index = undefined;
   }
 });
+
+const root = document.documentElement;
+const dark = window.matchMedia('(prefers-color-scheme: dark)');
+document.querySelector('#theme').addEventListener('click', () => {
+  // The preference key is shared with the Doc42 site, which is served from the same origin.
+  const next = (root.dataset.theme ?? (dark.matches ? 'dark' : 'light')) === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = next;
+  try { localStorage.setItem('vitepress-theme-appearance', next); } catch { /* storage unavailable; the choice lasts for this page */ }
+});

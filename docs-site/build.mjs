@@ -12,6 +12,17 @@ const pages = navigation.flatMap(group => group.pages);
 const escape = text => String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const git = (repo, ...args) => execFileSync('git', args, { cwd: repo, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
 
+// Generated guides begin with an HTML comment marking them as generated. The renderer keeps raw
+// HTML disabled, so the comment would otherwise print as visible text. Comments inside code
+// fences are examples and stay.
+export function withoutHtmlComments(markdown) {
+  let fenced = false;
+  return markdown.split('\n').filter(line => {
+    if (/^\s*(```|~~~)/.test(line)) fenced = !fenced;
+    return fenced || !/^\s*<!--.*-->\s*$/.test(line);
+  }).join('\n');
+}
+
 export function version(tag) {
   const match = /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.exec(tag);
   return match ? match.slice(1).map(Number) : null;
@@ -135,7 +146,7 @@ export function buildSite({ repo = defaultRepo, out = path.join(defaultRepo, 'ta
         links.push({ from: route, to: target, anchor: '' });
         return self.renderToken(tokens, idx, options);
       };
-      const body = md.render(markdown);
+      const body = md.render(withoutHtmlComments(markdown));
       anchors.set(route, ids);
       rendered.set(route, { title, source: missing ? null : source, missing, body, headings, text: markdown.replace(/```[\s\S]*?```/g, '').replace(/[#*`|]/g, '') });
     }
@@ -147,11 +158,13 @@ export function buildSite({ repo = defaultRepo, out = path.join(defaultRepo, 'ta
     const search = [];
     for (const [route, { title, source, missing, body, headings, text }] of rendered) {
       const sidebar = navigation.map(group => `<section><h2>${escape(group.title)}</h2>${group.pages.filter(([id]) => !rendered.get(id).missing).map(([id, name]) => `<a href="${id}.html"${id === route ? ' aria-current="page"' : ''}>${escape(name)}</a>`).join('')}</section>`).join('');
+      const downloadUrl = isDev ? 'https://github.com/elan8/spec42/releases' : `https://github.com/elan8/spec42/releases/tag/${edition}`;
+      const downloadLabel = isDev ? 'Releases' : `Download ${edition.slice(1)}`;
       const notice = isDev ? 'Development documentation describes unreleased changes.' : edition === stable[0] ? `Latest stable release: ${edition}.` : `You are reading ${edition}. <a href="${base}${stable[0]}/${route}.html">Read the latest stable guide</a>.`;
       write(`${edition}/${route}.html`, `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · Spec42 ${edition}</title><meta name="description" content="Spec42 ${edition} user guide: ${escape(title)}">${isDev ? '<meta name="robots" content="noindex">' : ''}<link rel="stylesheet" href="${base}assets/site.css"><script src="${base}assets/site.js" defer></script></head>
-<body data-version="${edition}" data-page="${route}" data-base="${base}"><a class="skip" href="#content">Skip to content</a><header><a class="brand" href="index.html"><span class="brand-mark">S42</span> Spec42 <span class="wordmark-detail">Documentation</span></a><div class="header-actions"><label for="version">Version</label><select id="version">${selector(edition)}</select><a href="https://github.com/elan8/spec42">GitHub</a></div></header>
-<div class="layout"><nav aria-label="Documentation"><details open><summary>Browse documentation</summary><label class="search-label" for="search">Search this version</label><input id="search" type="search" placeholder="Search guides…" autocomplete="off"><ul id="search-results" aria-live="polite"></ul>${sidebar}</details></nav><main id="content"><div class="notice${isDev ? ' development' : ''}">${notice}</div><article>${body}</article><footer>${source ? `<a href="https://github.com/elan8/spec42/blob/${ref}/${source}">View source for this version</a>` : `<a href="getting-started.html">Start with the installation guide →</a>`}<span>${edition} · ${commit.slice(0, 7)} · MIT License</span></footer></main><aside aria-label="On this page"><p>On this page</p>${headings.map(h => `<a href="#${escape(h.id)}">${escape(h.text)}</a>`).join('')}</aside></div></body></html>`);
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} · Spec42 ${edition}</title><meta name="description" content="Spec42 ${edition} user guide: ${escape(title)}">${isDev ? '<meta name="robots" content="noindex">' : ''}<link rel="icon" type="image/svg+xml" href="${base}assets/logo.svg"><script>try{var t=localStorage.getItem('vitepress-theme-appearance');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}</script><link rel="stylesheet" href="${base}assets/site.css"><script src="${base}assets/site.js" defer></script></head>
+<body data-version="${edition}" data-page="${route}" data-base="${base}"><a class="skip" href="#content">Skip to content</a><header><a class="brand" href="index.html"><img class="brand-mark" src="${base}assets/logo.svg" alt="" width="28" height="28"><span>Spec42</span><span class="wordmark-detail">docs</span></a><div class="header-actions"><div class="version-picker"><label for="version">Version</label><select id="version">${selector(edition)}</select></div><a class="optional" href="https://www.elan8.com">Elan8</a><a class="optional" href="https://www.elan8.com/products/spec42">Product</a><a class="download" href="${downloadUrl}">${downloadLabel}</a><a href="https://github.com/elan8/spec42">GitHub</a><button id="theme" type="button" aria-label="Switch between light and dark theme"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></div></header>
+<div class="layout"><nav aria-label="Documentation"><details open><summary>Browse documentation</summary><label class="search-label" for="search">Search this version</label><input id="search" type="search" placeholder="Search guides…" autocomplete="off"><ul id="search-results" aria-live="polite"></ul>${sidebar}</details></nav><main id="content"><div class="notice${isDev ? ' development' : ''}">${notice}</div><article>${body}</article><footer>${source ? `<a href="https://github.com/elan8/spec42/blob/${ref}/${source}">View source for this version</a>` : `<a href="getting-started.html">Start with the installation guide →</a>`}<span>${edition} · ${commit.slice(0, 7)} · MIT License · © <a href="https://www.elan8.com">Elan8</a></span></footer></main><aside aria-label="On this page"><p>On this page</p>${headings.map(h => `<a href="#${escape(h.id)}">${escape(h.text)}</a>`).join('')}</aside></div></body></html>`);
       if (!missing) search.push({ title, url: `${route}.html`, text });
     }
     write(`${edition}/search.json`, JSON.stringify(search));
@@ -165,10 +178,10 @@ export function buildSite({ repo = defaultRepo, out = path.join(defaultRepo, 'ta
   redirect('reference/index.html', `${base}${stable[0]}/included.html`);
   redirect('guide/getting-started.html', `${base}${stable[0]}/getting-started.html`);
   redirect('reference/whats-included.html', `${base}${stable[0]}/included.html`);
-  write('404.html', `<!doctype html><html lang="en"><meta charset="utf-8"><title>Page not found · Spec42</title><h1>Page not found</h1><p><a href="${base}">Choose a guide from the documentation home</a>.</p></html>`);
+  write('404.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Page not found · Spec42</title><link rel="icon" type="image/svg+xml" href="${base}assets/logo.svg"><link rel="stylesheet" href="${base}assets/site.css"></head><body><main style="max-width:640px;margin:15vh auto;padding:0 20px"><h1>Page not found</h1><p>This page does not exist in the Spec42 documentation.</p><p><a href="${base}">Choose a guide from the documentation home</a>.</p></main></body></html>`);
   write('versions.json', JSON.stringify({ latest: stable[0], versions: manifests }, null, 2));
   write('.nojekyll', '');
-  for (const file of ['site.css', 'site.js']) write(`assets/${file}`, fs.readFileSync(path.join(here, file)));
+  for (const file of ['site.css', 'site.js', 'logo.svg']) write(`assets/${file}`, fs.readFileSync(path.join(here, file)));
   return { releases: stable, pages: pages.length * editions.length };
 }
 

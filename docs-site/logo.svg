@@ -1,0 +1,10 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spec42">
+  <rect width="64" height="64" rx="14" fill="#0891b2"/>
+  <!-- A SysML block with two ports, joined by a connector -->
+  <rect x="12" y="14" width="40" height="22" rx="4" fill="#ecfeff"/>
+  <rect x="8" y="21" width="8" height="8" rx="2" fill="#0e7490" stroke="#ecfeff" stroke-width="2"/>
+  <rect x="48" y="21" width="8" height="8" rx="2" fill="#0e7490" stroke="#ecfeff" stroke-width="2"/>
+  <path d="M32 36 V44 H20 M32 44 H44" fill="none" stroke="#ecfeff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="14" y="44" width="12" height="8" rx="2.5" fill="#ecfeff"/>
+  <rect x="38" y="44" width="12" height="8" rx="2.5" fill="#ecfeff"/>
+</svg>
