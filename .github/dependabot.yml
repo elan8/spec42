@@ -13,11 +13,27 @@ updates:
       - "/zed"
       - "/generator-plugins"
       - "/generator-tests/plugins"
-      - "/fuzz"
     schedule:
       interval: "weekly"
       day: "tuesday"
     # One PR per workspace for all minor/patch bumps; major bumps stay individual PRs.
+    groups:
+      cargo-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "cargo"
+    directory: "/fuzz"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+    # Fuzz reaches toml through path dependencies that inherit the root declaration.
+    # Refresh fuzz/Cargo.lock in the same PR whenever the root toml requirement changes.
+    ignore:
+      - dependency-name: "toml"
     groups:
       cargo-minor-and-patch:
         patterns:

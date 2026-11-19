@@ -52,7 +52,7 @@ sha2 = "0.11"
 blake3 = "1"
 sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "176ca9c529c312c625d221747c2db3a8fb23285e", features = ["serde"] }
 ts-rs = { version = "12", features = ["serde-compat", "serde-json-impl"] }
-toml = "0.8"
+toml = "0.9"
 walkdir = "2"
 zip = { version = "9.0.5", default-features = false, features = ["deflate"] }
 insta = "1"
