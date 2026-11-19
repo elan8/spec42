@@ -1298,10 +1298,8 @@ fn dependency_inherits_workspace(value: &toml::Value) -> bool {
 #[test]
 fn shared_dependencies_are_inherited_from_the_workspace() {
     let root = repository_root();
-    let workspace_toml: toml::Value = fs::read_to_string(root.join("Cargo.toml"))
-        .expect("root Cargo.toml")
-        .parse()
-        .expect("parse root Cargo.toml");
+    let source = fs::read_to_string(root.join("Cargo.toml")).expect("root Cargo.toml");
+    let workspace_toml: toml::Value = toml::from_str(&source).expect("parse root Cargo.toml");
     let workspace_keys = workspace_dependency_keys(&workspace_toml);
     for name in WORKSPACE_HOISTED_CRATES {
         assert!(
@@ -1321,9 +1319,8 @@ fn shared_dependencies_are_inherited_from_the_workspace() {
             continue;
         }
         let source = fs::read_to_string(&manifest).expect("member Cargo.toml");
-        let parsed: toml::Value = source
-            .parse()
-            .unwrap_or_else(|error| panic!("parse {relative}: {error}"));
+        let parsed: toml::Value =
+            toml::from_str(&source).unwrap_or_else(|error| panic!("parse {relative}: {error}"));
         for table_name in ["dependencies", "dev-dependencies", "build-dependencies"] {
             let Some(table) = parsed.get(table_name).and_then(toml::Value::as_table) else {
                 continue;
