@@ -21,6 +21,8 @@ The extension includes its own copy of the tool. To use `spec42` in a terminal o
 3. Check the installation with `spec42 --version`. It should match the documentation version you
    are reading.
 
+The [CLI reference](CLI-REFERENCE.md) describes every command.
+
 For GitHub Actions, use the [Spec42 GitHub Action](GITHUB-ACTION.md) instead; it installs the
 matching release for you.
 
