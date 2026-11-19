@@ -9,7 +9,7 @@ directories = "5"
 generator_api = { path = "../generator_api" }
 spec42-generator-protocol = { path = "../generator_protocol" }
 wasmtime = { version = "49.0.6", default-features = false, features = ["cache", "cranelift", "runtime", "std"] }
-wasmparser = "0.253"
+wasmparser = "0.263"
 postcard = { workspace = true }
 serde = { workspace = true }
 sha2 = { workspace = true }

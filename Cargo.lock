@@ -954,7 +954,7 @@ dependencies = [
  "sysml_query",
  "tempfile",
  "thiserror 2.0.21",
- "wasmparser 0.253.0",
+ "wasmparser 0.263.0",
  "wasmtime",
  "wat",
 ]
@@ -2868,19 +2868,6 @@ dependencies = [
 
 [[package]]
 name = "wasmparser"
-version = "0.253.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19db11f87d2486580e1e8b6f494c54df7e0566b87d0b599db843c24019667339"
-dependencies = [
- "bitflags 2.13.1",
- "hashbrown 0.17.1",
- "indexmap",
- "semver",
- "serde",
-]
-
-[[package]]
-name = "wasmparser"
 version = "0.258.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe9269dd817e0e7021bf534ccd9761bc2d64778b6708e41228b8439d75eaa0b1"
@@ -2899,8 +2886,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4f5fa0a054ae153606df820eb0a84213e28cda41bbe04ba2628e71b6ba100fcb"
 dependencies = [
  "bitflags 2.13.1",
+ "hashbrown 0.17.1",
  "indexmap",
  "semver",
+ "serde",
 ]
 
 [[package]]
