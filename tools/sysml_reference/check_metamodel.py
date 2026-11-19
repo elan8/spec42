@@ -3,20 +3,34 @@
 import argparse
 import hashlib
 from pathlib import Path
+import re
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 
 
-# OMG 20250201; normalized SHA-256 from Open-MBEE/sysml-toolkit@7d740b37,
-# tools/fetch-spec-refs.pins. These are separate from the official corpus pin.
-PINS = {
-    "KerML": "45b18775afe2b2fcdc70e24f37c6d2f344defcc3f38a02075a193354e2d7b466",
-    "SysML": "caa65d54f56798bf7582d173f7567e1eea37a49c45984f8bd7df145011cf8c6f",
-}
+# The OMG 20250201 XMI digests are pinned once, in the constraint manifest; they
+# match Open-MBEE/sysml-toolkit@7d740b37 tools/fetch-spec-refs.pins.
+MANIFEST = Path(__file__).resolve().parents[1] / "constraint_manifest" / "src" / "lib.rs"
+
+
+def manifest_pins():
+    """`{"KerML": sha256, "SysML": sha256}` from the constraint manifest's pinned specifications."""
+    source = MANIFEST.read_text(encoding="utf-8")
+    pins = {}
+    for language in ("KerML", "SysML"):
+        found = re.search(
+            rf'name:\s*"{language}",.*?expected_sha256:\s*"([0-9a-f]{{64}})"',
+            source,
+            re.DOTALL,
+        )
+        if found is None:
+            raise ValueError(f"no pinned {language} XMI digest in {MANIFEST.name}")
+        pins[language] = found[1]
+    return pins
 XMI = "{http://www.omg.org/spec/XMI/20161101}"
 
 
-def read_reference(directory, language, fetch):
+def read_reference(directory, language, fetch, pins):
     path = directory / f"{language}.xmi"
     if fetch:
         url = f"https://www.omg.org/spec/{language}/20250201/{language}.xmi"
@@ -25,7 +39,7 @@ def read_reference(directory, language, fetch):
     else:
         data = path.read_bytes()
     data = data.replace(b"\r\n", b"\n")
-    if hashlib.sha256(data).hexdigest() != PINS[language]:
+    if hashlib.sha256(data).hexdigest() != pins[language]:
         raise ValueError(f"SHA-256 mismatch for {path.name}")
     if fetch:
         path.write_bytes(data)
@@ -55,7 +69,8 @@ def main():
     try:
         if args.fetch:
             args.directory.mkdir(parents=True, exist_ok=True)
-        refs = {name: read_reference(args.directory, name, args.fetch) for name in PINS}
+        pins = manifest_pins()
+        refs = {name: read_reference(args.directory, name, args.fetch, pins) for name in pins}
         check_metamodel(refs["KerML"], refs["SysML"])
     except (OSError, ValueError, ET.ParseError, KeyError) as error:
         parser.exit(1, f"Metamodel reference check: {error}\n")

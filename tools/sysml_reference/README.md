@@ -31,10 +31,12 @@ checks explicit. Use `--strict-input` when an unavailable input must fail.
 
 ## Metamodel reference pilot
 
-CI audits the OMG 20250201 XMI metamodel files using the SHA-256 pins from
+`check_metamodel.py` audits the OMG 20250201 XMI metamodel files against the SHA-256
+digests pinned once in `tools/constraint_manifest/src/lib.rs`, which match
 [Open-MBEE's reference toolkit](https://github.com/Open-MBEE/sysml-toolkit/blob/7d740b37c0666be18bee2de1b467c86a234788bc/tools/fetch-spec-refs.pins).
-The fetch is explicit. Keep the files in a local cache and retain the existing official
-release pin for the model corpus.
+The fetch is explicit and needs `www.omg.org`, so pull-request CI does not run it; the
+scheduled conformance gap audit does. Keep the files in a local cache and retain the
+existing official release pin for the model corpus.
 
 ```sh
 python3 tools/sysml_reference/check_metamodel.py .cache/spec-refs --fetch
@@ -45,7 +47,8 @@ cargo test -p server --test integration cli_model_export_preserves_authored_item
 ```
 
 The audit checks the metaclass and property facts used by the pilot. The snapshot and CLI
-test check Spec42 behavior. The semantic redefinition fixture omits `ref` on the anonymous
+test check Spec42 behavior; pull-request CI already runs them with the full snapshot corpus
+and the `cli_ai_tools` integration tests. The semantic redefinition fixture omits `ref` on the anonymous
 redefinition so it runs on the current parser pin. The parser pilot covers the explicit
 `ref attribute :>>` spelling. Use that spelling in the Spec42 fixture once its parser pin
 includes the parser fix.
