@@ -4,12 +4,6 @@ on:
   schedule:
     - cron: '23 4 * * 1'
   workflow_dispatch:
-  pull_request:
-    paths:
-      - '.github/workflows/conformance-audit.yml'
-      - 'tools/sysml_reference/conformance_audit.py'
-      - 'tools/sysml_reference/check_metamodel.py'
-      - 'tools/sysml_reference/test_tools.py'
 
 permissions:
   contents: read
