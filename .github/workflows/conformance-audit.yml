@@ -8,6 +8,7 @@ on:
     paths:
       - '.github/workflows/conformance-audit.yml'
       - 'tools/sysml_reference/conformance_audit.py'
+      - 'tools/sysml_reference/check_metamodel.py'
       - 'tools/sysml_reference/test_tools.py'
 
 permissions:
@@ -28,18 +29,34 @@ jobs:
         id: parser
         run: python3 tools/sysml_reference/conformance_audit.py parser-pin >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v6
-        with:
-          repository: ${{ steps.parser.outputs.repository }}
-          ref: ${{ steps.parser.outputs.revision }}
-          path: .cache/audit-parser
+      # Outside the Spec42 checkout: inside it, Cargo takes Spec42's root Cargo.toml
+      # as the parser's workspace and refuses to build. actions/checkout can only
+      # check out under the workspace, so clone the pinned revision directly.
+      - name: Check out Spec42's pinned parser revision
+        env:
+          REPOSITORY: ${{ steps.parser.outputs.repository }}
+          REVISION: ${{ steps.parser.outputs.revision }}
+        run: |
+          parser="$RUNNER_TEMP/audit-parser"
+          git init --quiet "$parser"
+          git -C "$parser" fetch --quiet --depth 1 "https://github.com/$REPOSITORY.git" "$REVISION"
+          git -C "$parser" checkout --quiet --detach FETCH_HEAD
+          test "$(git -C "$parser" rev-parse HEAD)" = "$REVISION"
+          echo "AUDIT_PARSER=$parser" >> "$GITHUB_ENV"
 
       - name: Prepare report directory
         if: ${{ !cancelled() }}
         run: mkdir -p conformance-out
 
+      # Needs www.omg.org, so it runs here rather than in pull-request CI.
+      - name: Pinned OMG metamodel facts
+        if: ${{ !cancelled() }}
+        run: |
+          python3 tools/sysml_reference/check_metamodel.py "$RUNNER_TEMP/spec-refs" --fetch \
+            | tee conformance-out/metamodel-facts.txt
+
       - name: Parser scorecard against the pinned OMG release
-        working-directory: .cache/audit-parser
+        working-directory: ${{ env.AUDIT_PARSER }}
         env:
           CONFORMANCE_SCORECARD_DIR: ${{ github.workspace }}/conformance-out
           CONFORMANCE_SCORECARD_L2: "1"
@@ -50,7 +67,7 @@ jobs:
 
       - name: Differential parser audit
         if: ${{ !cancelled() }}
-        working-directory: .cache/audit-parser
+        working-directory: ${{ env.AUDIT_PARSER }}
         run: |
           status=0
           bash scripts/parser-oracle.sh || status=$?
@@ -70,7 +87,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           python3 tools/sysml_reference/conformance_audit.py summarize \
-            conformance-out .cache/audit-parser/docs/bnf_coverage.map \
+            conformance-out "$AUDIT_PARSER/docs/bnf_coverage.map" \
             --spec42-revision "$GITHUB_SHA" \
             --parser-revision "${{ steps.parser.outputs.revision }}"
 
