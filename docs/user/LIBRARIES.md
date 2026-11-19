@@ -1,8 +1,8 @@
-# Library & Dependencies
+# Projects and libraries
 
 Spec42 bundles the SysML v2 standard library plus the Elan8 domain libraries. For exact release pins, see [What's included](../reference/WHATS-INCLUDED.md).
 
-## Standard Library
+## Standard library
 
 The SysML v2 standard library is bundled with Spec42 — no separate installation needed. It provides base definitions like `Part`, `AttributeValue`, `ScalarValue`, SI units, and more.
 
@@ -16,13 +16,13 @@ You can:
 - Copy a qualified name or import statement from a result.
 - Open details for the standard library and the bundled domain libraries.
 
-## Domain Libraries
+## Domain libraries
 
 Elan8 domain libraries extend the standard library with reusable vocabulary for domain and technical modeling (for example robotics, software, electronics, and communication). They are bundled and available automatically.
 
 See the [Domain libraries](../reference/DOMAIN-LIBRARIES.md) reference for the bundled version and the KPAR package/file tree.
 
-## Custom Libraries
+## Custom libraries
 
 You can add your own library paths in the **Library** section:
 
@@ -63,14 +63,6 @@ them as library roots, in addition to `--library-path` and `spec42.libraryPaths`
 admitted is not loaded twice. Files under a library root keep library provenance when that root
 also sits inside the workspace.
 
-`model-export` returns workspace elements by default. Use `--library-elements referenced` to
-include the transitive closure of typing, specialization, subsetting, and redefinition targets,
-and the members owned by those library definitions. Unrelated library definitions remain out of
-the export. `--library-elements all` includes every admitted library and external element;
-`--library-elements none` explicitly selects the default workspace scope. Standard-library
-targets may appear in `referenced`, but their owned members are not expanded and `all` omits
-standard-library elements. `--max-nodes` still limits the returned element count.
-
 Source selection is shared by the CLI and VS Code; opening or changing an excluded file does not
 add it to the editor's project publication. A check or export whose requested sources were all
 excluded does not report a successful empty model. VS Code watches these project inputs and
@@ -99,8 +91,6 @@ invokes installation during analysis. No Sysand executable is required to read a
 The reader supports resource-form `.project.json` usages, Sysand lock versions `0.5`/`0.6`, and
 installed-environment versions `0.1`/`0.2`. Other usage forms, including Sysand-specific typed index
 and directory usages, are not yet supported by the KPAR project decoder and fail explicitly.
-The external format baseline is
-[sensmetry/sysand at `5d0b2d8`](https://github.com/sensmetry/sysand/tree/5d0b2d8de33c0bcc1e1c0fe6849b93b446e7a8f5/core/src).
 
 The **Library** panel shows Sysand availability and detected dependencies. **Refresh** restarts the
 language server after dependencies are installed or updated. Manifest, lock, source configuration,

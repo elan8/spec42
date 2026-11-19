@@ -1,8 +1,8 @@
-# Spec42 Troubleshooting
+# Troubleshooting
 
-This guide now covers both the CLI and the VS Code extension.
+Fixes for common problems with the Spec42 CLI and the VS Code extension.
 
-## Start With `spec42 doctor`
+## Start with `spec42 doctor`
 
 Run:
 
@@ -24,7 +24,7 @@ If you need machine-readable output:
 spec42 doctor --format json
 ```
 
-## CLI Validation Looks Different From The Editor
+## CLI validation looks different from the editor
 
 Run:
 
@@ -53,7 +53,7 @@ For restricted development environments, point Spec42's user directories at writ
 SPEC42_CONFIG_DIR=/tmp/spec42/config SPEC42_DATA_DIR=/tmp/spec42/data spec42 check path/to/model-or-workspace
 ```
 
-## No Standard Library Is Found
+## No standard library is found
 
 Check:
 
@@ -80,7 +80,7 @@ What to do:
 4. Use `spec42 stdlib clear-cache` only to delete materialized files (they are re-extracted on next run).
 5. Use `--no-stdlib` only when you intentionally want to validate without it.
 
-## Server Does Not Start In VS Code
+## The server does not start in VS Code
 
 Common causes:
 
@@ -95,7 +95,7 @@ What to do:
 3. Open `SysML: Show SysML Output (Logs)`.
 4. Restart the server after fixing the path.
 
-## Missing Hover, Definition, Or References
+## Missing hover, definition or references
 
 Common causes:
 
@@ -110,7 +110,7 @@ What to do:
 3. Validate `spec42.libraryPaths` and remove broken paths.
 4. Restart the server if the document was already open during a crash.
 
-## Workspace Results Are Incomplete
+## Workspace results are incomplete
 
 Workspace indexing uses `spec42.workspace.maxFilesPerPattern`.
 
@@ -118,12 +118,3 @@ What to do:
 
 1. Increase `spec42.workspace.maxFilesPerPattern` for larger repositories.
 2. Use smaller focused workspaces if indexing becomes too slow.
-
-## Connection And Port Semantic Warnings
-
-SysML v2 allows logical **part-to-part** `connect` statements (for example `connect navigation to system` between part usages). Spec42 does **not** emit `connection_endpoint_not_port` when both endpoints are part-like.
-
-Port compatibility checks apply when endpoints are ports:
-
-- `port_type_mismatch` compares port features and definitions. If two ports share a simple type name (for example `FillState`) but resolve to different `port def` elements in different packages, the message names the qualified definitions so you can align imports or reuse one port definition.
-- Conjugation and direction mismatches are reported separately when feature lists are unavailable.
