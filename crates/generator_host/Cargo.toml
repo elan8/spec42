@@ -5,7 +5,7 @@ edition.workspace = true
 description = "Sandboxed WebAssembly module host for Spec42 generators"
 
 [dependencies]
-directories = "5"
+directories = "6"
 generator_api = { path = "../generator_api" }
 spec42-generator-protocol = { path = "../generator_protocol" }
 wasmtime = { version = "49.0.6", default-features = false, features = ["cache", "cranelift", "runtime", "std"] }
