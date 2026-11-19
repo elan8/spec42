@@ -1408,6 +1408,8 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.identification.name)?;
         let short_name = self.intern_short_name(document, node.identification.short_name)?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1417,6 +1419,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
+                    is_abstract,
+                    variation,
                     individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
