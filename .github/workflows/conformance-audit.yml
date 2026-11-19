@@ -1,0 +1,83 @@
+name: Conformance gap audit
+
+on:
+  schedule:
+    - cron: '23 4 * * 1'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/conformance-audit.yml'
+      - 'tools/sysml_reference/conformance_audit.py'
+      - 'tools/sysml_reference/test_tools.py'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/prepare-rust-ci
+
+      - name: Resolve Spec42's parser pin
+        id: parser
+        run: python3 tools/sysml_reference/conformance_audit.py parser-pin >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v6
+        with:
+          repository: ${{ steps.parser.outputs.repository }}
+          ref: ${{ steps.parser.outputs.revision }}
+          path: .cache/audit-parser
+
+      - name: Prepare report directory
+        if: ${{ !cancelled() }}
+        run: mkdir -p conformance-out
+
+      - name: Parser scorecard against the pinned OMG release
+        working-directory: .cache/audit-parser
+        env:
+          CONFORMANCE_SCORECARD_DIR: ${{ github.workspace }}/conformance-out
+          CONFORMANCE_SCORECARD_L2: "1"
+          CI: "true"
+        run: |
+          bash scripts/fetch-sysml-v2-release.sh
+          cargo test --locked --test conformance_scorecard -- --nocapture
+
+      - name: Differential parser audit
+        if: ${{ !cancelled() }}
+        working-directory: .cache/audit-parser
+        run: |
+          status=0
+          bash scripts/parser-oracle.sh || status=$?
+          if [[ -d conformance-out ]]; then
+            cp conformance-out/parser-oracle-*.md "$GITHUB_WORKSPACE/conformance-out/"
+          fi
+          exit "$status"
+
+      - name: Spec42 semantic evidence report
+        if: ${{ !cancelled() }}
+        run: |
+          status=0
+          cargo snapshot report --format json > conformance-out/snapshot-report.json || status=$?
+          echo "$status" > conformance-out/snapshot-report.exit
+
+      - name: Summarize conformance evidence
+        if: ${{ !cancelled() }}
+        run: |
+          python3 tools/sysml_reference/conformance_audit.py summarize \
+            conformance-out .cache/audit-parser/docs/bnf_coverage.map \
+            --spec42-revision "$GITHUB_SHA" \
+            --parser-revision "${{ steps.parser.outputs.revision }}"
+
+      - name: Upload conformance evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: conformance-gap-audit
+          path: conformance-out/
+          if-no-files-found: error

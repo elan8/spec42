@@ -52,3 +52,19 @@ and the `cli_ai_tools` integration tests. The semantic redefinition fixture omit
 redefinition so it runs on the current parser pin. The parser pilot covers the explicit
 `ref attribute :>>` spelling. Use that spelling in the Spec42 fixture once its parser pin
 includes the parser fix.
+
+## Conformance gap audit
+
+The **Conformance gap audit** workflow runs weekly and can be dispatched manually.
+It checks out the exact parser revision in Spec42's root manifest and runs the parser's
+official-release scorecard and pinned Open-MBEE oracle, then runs Spec42's read-only
+semantic coverage report. Download the `conformance-gap-audit` artifact and start with
+`gap-audit.md`. It prioritizes definitions, usages, and specialization. The raw reports
+include the rest of the corpus, including the diagnostic evidence for oracle disagreements.
+
+Missing fixture evidence is reported without failing the workflow. Report errors, stale
+snapshots or blockers, failed expectations, and changes against the parser oracle baseline
+fail the corresponding check. To confirm a suspected deviation, reduce it to a minimal model,
+record the pinned versions and normative clause, and add the expectation to the owning
+repository's snapshot corpus. This audit reuses the existing corpora. It does not generate
+new models or adjudicate oracle disagreements.
