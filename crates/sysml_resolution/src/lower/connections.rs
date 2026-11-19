@@ -948,7 +948,7 @@ impl SemanticModelBuilder {
 
     /// Lowers a package/definition/usage-level `interface` feature member (BNF InterfaceUsage),
     /// mirroring `lower_connection_usage`: ownership, membership, an optional `:` typing target,
-    /// `subsets`/`redefines` subsetting relationships, and connector-end structure (`connect`
+    /// `subsets`/`redefines`/`references` relationships, and connector-end structure (`connect`
     /// endpoints via `lower_interface_connector_expression`, reusing the same
     /// `ReferenceKind::ConnectorEnd` machinery `interface def`/`connection` usage use). Resolved
     /// upstream in `0757de13` (planning/UPSTREAM_PARSER_GAPS.md #6).
@@ -992,27 +992,41 @@ impl SemanticModelBuilder {
                     (prefix, None, None, None, None, &no_multiplicity_modifiers)
                 }
             };
-        let (subsets, redefines, ends, body) = match &node.value {
+        let (subsets, redefines, references, ends, body) = match &node.value {
             ParserInterfaceUsage::TypedConnect {
                 subsets,
                 redefines,
+                references,
                 part,
                 body,
                 ..
-            }
-            | ParserInterfaceUsage::Connection {
+            } => (
+                subsets.as_ref(),
+                redefines.as_ref(),
+                references.as_ref(),
+                Some(part),
+                body,
+            ),
+            ParserInterfaceUsage::Connection {
                 subsets,
                 redefines,
                 part,
                 body,
                 ..
-            } => (subsets.as_ref(), redefines.as_ref(), Some(part), body),
+            } => (subsets.as_ref(), redefines.as_ref(), None, Some(part), body),
             ParserInterfaceUsage::Declaration {
                 subsets,
                 redefines,
+                references,
                 body,
                 ..
-            } => (subsets.as_ref(), redefines.as_ref(), None, body),
+            } => (
+                subsets.as_ref(),
+                redefines.as_ref(),
+                references.as_ref(),
+                None,
+                body,
+            ),
         };
         let name = self.intern_declaration_name(document, name)?;
         let short_name = self.intern_short_name(document, short_name)?;
@@ -1064,6 +1078,9 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(relationship) = redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = references {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(part) = ends {
@@ -1531,6 +1548,9 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.references {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(source) = &node.value.source {

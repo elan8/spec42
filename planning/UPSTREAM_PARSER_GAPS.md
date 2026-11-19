@@ -1,7 +1,7 @@
 # Upstream sysml-v2-parser gaps
 
-The parser baseline is `elan8/sysml-v2-parser@8cee8c16e5bb26327bb5062a4e54767610f943ef`
-(v0.58.0, AST 284). This file records remaining parser and lowering gaps. The immutable dependency
+The parser baseline is `elan8/sysml-v2-parser@ef6817efb160faea1b2993689277c7be4de989f6`
+(v0.61.0, AST 295). This file records remaining parser and lowering gaps. The immutable dependency
 pin is owned by `Cargo.toml`; consumed parser changes are covered by the semantic snapshot corpus.
 
 ## Ownership and evidence rules
@@ -33,7 +33,8 @@ rerun against the exact replacement revision when fixed.
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
 | occurrence-usage-typings | Every typing target of an `occurrence` usage: `ast::OccurrenceUsage::type_name` is one `QualifiedReferenceId`, so `occurrence x : A, B;` silently keeps only `A` (no recovery diagnostic), unlike `PartUsage`'s structured `typing` clause | Give `OccurrenceUsage` the same structured `TypingRelationship` clause `PartUsage`/`AttributeUsage` carry (every comma-separated target); prove `occurrence x : A, B;` produces both targets in order, so spec42 can lower each FeatureTyping |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
-| 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
+| 55 | Lossless note/trivia fidelity for `//` and `//* ... */` | Decide whether note trivia needs a public retention API; preserve authored kind and source spans if it does |
+| adjacent-not-assert | `assert not;` is parsed as an assertion referencing a feature named `not`, while `assert not ;` correctly reports malformed syntax | Reject both incomplete spellings without a referenced constraint, while retaining valid `assert not target;` and inline constraint assertions |
 
 - Gap 61. One member spelling of three remains unrepresentable in a calc-shaped body, and it is
   rejected honestly rather than shredded: `classifier C { message m of T; }` is
@@ -48,11 +49,13 @@ rerun against the exact replacement revision when fixed.
   `(that as Occurrence).member`. Needs `"that"` reserved, or a dedicated `Expression::ImplicitThat`
   variant, before there is anything here to resolve.
 
-- Gap 55. Two comment forms remain unreachable from the AST (`//` and `//* ... */` are consumed
-  as trivia; `/** ... */` is a plain block comment), and `DocComment.text` is the raw byte slice
-  with no normalization policy. A keyword-less `/* ... */` in member position is a real
-  annotating element with `keyword_span: None`. Keeping trivia out of the AST is a defensible
-  design; the entry stays so the ceiling on documentation fidelity is not rediscovered.
+- Gap 55. `//` and `//* ... */` are consumed as note trivia rather than exposed as semantic AST
+  members. Keeping trivia out of the semantic AST is a defensible design; a public retention
+  decision remains separate from documentation-body handling. `DocComment.body` is already
+  source-backed `CommentBody`, with `ParsedDocument::comment_body` and
+  `ParsedDocument::normalized_comment_body` owning raw and normalized access. Body normalization
+  is not an upstream gap. A keyword-less `/* ... */` in member position is a real annotating
+  element with `keyword_span: None`; `/** ... */` is a regular block comment.
 
 - Bare n-ary `connect (e1, e2, e3)` (`NaryConnectorPart` as the ConnectionUsage alternative
   `'connect' ConnectorPart`) recovers as `recovered_part_def_body_element` in a part definition

@@ -48,7 +48,5 @@ cargo test -p server --test integration cli_model_export_preserves_authored_item
 
 The audit checks the metaclass and property facts used by the pilot. The snapshot and CLI
 test check Spec42 behavior; pull-request CI already runs them with the full snapshot corpus
-and the `cli_ai_tools` integration tests. The semantic redefinition fixture omits `ref` on the anonymous
-redefinition so it runs on the current parser pin. The parser pilot covers the explicit
-`ref attribute :>>` spelling. Use that spelling in the Spec42 fixture once its parser pin
-includes the parser fix.
+and the `cli_ai_tools` integration tests. The semantic redefinition fixture uses the explicit
+`ref attribute :>>` spelling supported by the parser pin.
