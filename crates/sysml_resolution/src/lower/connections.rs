@@ -505,6 +505,43 @@ impl SemanticModelBuilder {
                             UnsupportedFamily::ConnectionDefinitionMember,
                             node,
                         )?,
+                    // A connection definition body is a `DefinitionBody` (SysML BNF 664, 234), so
+                    // its behavior members lower as they do in a part definition body.
+                    ConnectionDefBodyElement::ActionDef(action_def) => {
+                        self.lower_action_def(document, Some(declaration), action_def)?;
+                    }
+                    ConnectionDefBodyElement::ActionUsage(action_usage) => {
+                        self.lower_action_usage(document, Some(declaration), action_usage)?;
+                    }
+                    ConnectionDefBodyElement::StateDef(state_def) => {
+                        self.lower_state_def(document, Some(declaration), state_def)?;
+                    }
+                    ConnectionDefBodyElement::StateUsage(state_usage) => {
+                        self.lower_state_usage(document, Some(declaration), state_usage)?;
+                    }
+                    ConnectionDefBodyElement::ExhibitState(node) => {
+                        self.lower_exhibit_state(
+                            document,
+                            Some(declaration),
+                            UnsupportedFamily::ConnectionDefinitionMember,
+                            node,
+                        )?;
+                    }
+                    ConnectionDefBodyElement::CalcDef(calc_def) => {
+                        self.lower_calc_def(document, Some(declaration), calc_def)?;
+                    }
+                    ConnectionDefBodyElement::CalcUsage(calc_usage) => {
+                        self.lower_calc_usage(document, Some(declaration), calc_usage)?;
+                    }
+                    ConnectionDefBodyElement::ConstraintDef(constraint_def) => {
+                        self.lower_constraint_def(document, Some(declaration), constraint_def)?;
+                    }
+                    ConnectionDefBodyElement::ConstraintUsage(constraint_usage) => {
+                        self.lower_constraint_usage(document, Some(declaration), constraint_usage)?;
+                    }
+                    ConnectionDefBodyElement::Perform(perform) => {
+                        self.lower_perform(document, Some(declaration), perform)?;
+                    }
                 }
             }
         }

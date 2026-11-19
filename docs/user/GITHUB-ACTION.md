@@ -1,9 +1,9 @@
-# GitHub Action
+# GitHub Actions
 
 Spec42 ships a composite GitHub Action for validating SysML v2 and KerML models in CI.
 The Action downloads the matching release binary for the runner platform, optionally runs `spec42 doctor`, and then runs `spec42 check`.
 
-## Basic Usage
+## Basic usage
 
 ```yaml
 name: Spec42
@@ -50,7 +50,7 @@ When `format` is `sarif`, the Action writes `spec42.sarif`, uploads it to GitHub
 | `upload-sarif` | `true` | Upload SARIF to GitHub Code Scanning when `format` is `sarif`. |
 | `sarif-file` | `spec42.sarif` | SARIF output file path. |
 
-## Installing Only
+## Installing only
 
 The Action exposes the installed binary path as `executable-path`, so workflows can run additional CLI commands after validation.
 
@@ -73,10 +73,3 @@ The Action exposes the installed binary path as `executable-path`, so workflows 
 - **Permissions** — SARIF upload needs `security-events: write`. On pull requests from forks, upload often fails even when validation passes; the Action uploads with `continue-on-error` so the job still fails only on `spec42 check` results.
 - **`warnings-as-errors`** — When `true`, any warning fails the job. Large example repos may need `false` or a narrower `path` while tuning models.
 - **Explicit version workaround** — If an older Action tag cannot resolve its ref, set `version: vX.Y.Z` in `with:`.
-
-## Publishing Notes
-
-The Action is available when this repository has a GitHub release/tag that contains the platform archives produced by `.github/workflows/release.yml`.
-Use a version tag that includes this Action, such as the next Spec42 release tag, in downstream workflows so the Action code and downloaded CLI release stay aligned.
-
-Spec42 validates `action.yml` in CI via `.github/workflows/action-smoke.yml` (actionlint + a real `spec42 check` against a published release).
