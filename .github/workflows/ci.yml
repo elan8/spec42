@@ -103,6 +103,16 @@ jobs:
           RUST_MIN_STACK: "16777216"
         run: cargo test -p lsp_server --test lsp_integration lsp_workspace_scan_sysml_release -- --nocapture
 
+      - name: Fetch checksum-pinned OMG metamodel references
+        run: python3 tools/sysml_reference/check_metamodel.py "$RUNNER_TEMP/spec-refs" --fetch
+
+      - name: Check metamodel references and item-definition semantics
+        run: |
+          python3 tools/sysml_reference/check_metamodel.py "$RUNNER_TEMP/spec-refs"
+          cargo snapshot check --fixture item_definition_modifiers.md
+          cargo snapshot check --fixture conformance/reference_attribute_redefinition.md
+          cargo test -p server --test integration cli_model_export_preserves_authored_item_abstractness
+
   rust-tests-server:
     name: Rust tests (server)
     runs-on: ubuntu-24.04

@@ -11,6 +11,32 @@ fn kitchen_timer_path() -> PathBuf {
 }
 
 #[test]
+fn cli_model_export_preserves_authored_item_abstractness() {
+    with_isolated_data_dir(|| {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("items.sysml");
+        std::fs::write(
+            &path,
+            "package Pilot { abstract item def AbstractItem; item def ConcreteItem; }",
+        )
+        .unwrap();
+        let output = run_spec42_json(&["model-export", path.to_str().unwrap(), "--format", "json"]);
+        assert_eq!(output["projection"]["envelope"]["complete"], true);
+        let elements = output["projection"]["elements"].as_array().unwrap();
+        for (name, modifiers) in [
+            ("AbstractItem", serde_json::json!(["abstract"])),
+            ("ConcreteItem", serde_json::json!([])),
+        ] {
+            let item = elements
+                .iter()
+                .find(|element| element["name"] == name && element["kind"] == "ItemDefinition")
+                .unwrap_or_else(|| panic!("missing item definition {name}"));
+            assert_eq!(item["modifiers"], modifiers, "{name}");
+        }
+    });
+}
+
+#[test]
 fn cli_model_export_serializes_complete_connector_paths() {
     with_isolated_data_dir(|| {
         let directory = tempfile::tempdir().unwrap();
