@@ -33,7 +33,7 @@ tokio = { version = "1.53.3", features = ["full"] }
 serde_json = { workspace = true }
 clap = { workspace = true }
 serde = { workspace = true }
-directories = "5"
+directories = "6"
 # Native prepare + elkrs layout + SVG drawing for headless export (#176).
 diagram_draw = { path = "../diagram_draw" }
 diagram_product = { path = "../diagram_product" }

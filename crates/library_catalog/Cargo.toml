@@ -28,5 +28,5 @@ serde_json = { workspace = true }
 semver = "1"
 toml = { workspace = true }
 zip = { workspace = true }
-directories = "5"
+directories = "6"
 walkdir = { workspace = true }
