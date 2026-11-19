@@ -103,6 +103,7 @@ jobs:
           RUST_MIN_STACK: "16777216"
         run: cargo test -p lsp_server --test lsp_integration lsp_workspace_scan_sysml_release -- --nocapture
 
+
   rust-tests-server:
     name: Rust tests (server)
     runs-on: ubuntu-24.04
