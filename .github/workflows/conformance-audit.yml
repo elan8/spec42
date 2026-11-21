@@ -1,0 +1,94 @@
+name: Conformance gap audit
+
+on:
+  schedule:
+    - cron: '23 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/prepare-rust-ci
+
+      - name: Resolve Spec42's parser pin
+        id: parser
+        run: python3 tools/sysml_reference/conformance_audit.py parser-pin >> "$GITHUB_OUTPUT"
+
+      # Outside the Spec42 checkout: inside it, Cargo takes Spec42's root Cargo.toml
+      # as the parser's workspace and refuses to build. actions/checkout can only
+      # check out under the workspace, so clone the pinned revision directly.
+      - name: Check out Spec42's pinned parser revision
+        env:
+          REPOSITORY: ${{ steps.parser.outputs.repository }}
+          REVISION: ${{ steps.parser.outputs.revision }}
+        run: |
+          parser="$RUNNER_TEMP/audit-parser"
+          git init --quiet "$parser"
+          git -C "$parser" fetch --quiet --depth 1 "https://github.com/$REPOSITORY.git" "$REVISION"
+          git -C "$parser" checkout --quiet --detach FETCH_HEAD
+          test "$(git -C "$parser" rev-parse HEAD)" = "$REVISION"
+          echo "AUDIT_PARSER=$parser" >> "$GITHUB_ENV"
+
+      - name: Prepare report directory
+        if: ${{ !cancelled() }}
+        run: mkdir -p conformance-out
+
+      # Needs www.omg.org, so it runs here rather than in pull-request CI.
+      - name: Pinned OMG metamodel facts
+        if: ${{ !cancelled() }}
+        run: |
+          python3 tools/sysml_reference/check_metamodel.py "$RUNNER_TEMP/spec-refs" --fetch \
+            | tee conformance-out/metamodel-facts.txt
+
+      - name: Parser scorecard against the pinned OMG release
+        working-directory: ${{ env.AUDIT_PARSER }}
+        env:
+          CONFORMANCE_SCORECARD_DIR: ${{ github.workspace }}/conformance-out
+          CONFORMANCE_SCORECARD_L2: "1"
+          CI: "true"
+        run: |
+          bash scripts/fetch-sysml-v2-release.sh
+          cargo test --locked --test conformance_scorecard -- --nocapture
+
+      - name: Differential parser audit
+        if: ${{ !cancelled() }}
+        working-directory: ${{ env.AUDIT_PARSER }}
+        run: |
+          status=0
+          bash scripts/parser-oracle.sh || status=$?
+          if [[ -d conformance-out ]]; then
+            cp conformance-out/parser-oracle-*.md "$GITHUB_WORKSPACE/conformance-out/"
+          fi
+          exit "$status"
+
+      - name: Spec42 semantic evidence report
+        if: ${{ !cancelled() }}
+        run: |
+          status=0
+          cargo snapshot report --format json > conformance-out/snapshot-report.json || status=$?
+          echo "$status" > conformance-out/snapshot-report.exit
+
+      - name: Summarize conformance evidence
+        if: ${{ !cancelled() }}
+        run: |
+          python3 tools/sysml_reference/conformance_audit.py summarize \
+            conformance-out "$AUDIT_PARSER/docs/bnf_coverage.map" \
+            --spec42-revision "$GITHUB_SHA" \
+            --parser-revision "${{ steps.parser.outputs.revision }}"
+
+      - name: Upload conformance evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: conformance-gap-audit
+          path: conformance-out/
+          if-no-files-found: error

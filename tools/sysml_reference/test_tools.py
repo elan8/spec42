@@ -2,6 +2,7 @@
 """Smoke tests for the portable reference tooling."""
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import tarfile
@@ -18,6 +19,53 @@ def run(*arguments: str) -> subprocess.CompletedProcess[str]:
 
 
 class ToolsTest(unittest.TestCase):
+    def test_conformance_audit_distinguishes_missing_evidence_from_failures(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            scorecard = {
+                "target": {"release_tag": "2026-04"},
+                "release_stamp": {"matches_pin": True},
+                "layers": {
+                    "L1_syntax_acceptance": {
+                        "status": "incomplete", "bnf_productions": {"implemented": 1, "expected": 2},
+                    },
+                    "L2_structured_ast": {"status": "pass"},
+                },
+            }
+            semantic = {
+                "schema_version": 2,
+                "fixtures": [],
+                "processing_failures": [],
+                "stale_generated_snapshots": [],
+                "manifest_audit": {
+                    "state": "complete",
+                    "audit": {"missing_rule_ids": ["sysml-2.0:8.3:deriveUsageDefinition"]},
+                },
+            }
+            (directory / "conformance-scorecard.json").write_text(json.dumps(scorecard), encoding="utf-8")
+            report = directory / "snapshot-report.json"
+            report.write_text(json.dumps(semantic), encoding="utf-8")
+            (directory / "snapshot-report.exit").write_text("1", encoding="utf-8")
+            coverage = directory / "bnf_coverage.map"
+            coverage.write_text("SysML PartUsage partial\nSysML PartDefinition implemented\n", encoding="utf-8")
+            command = (
+                "tools/sysml_reference/conformance_audit.py", "summarize", temporary, str(coverage),
+                "--spec42-revision", "spec42-test", "--parser-revision", "parser-test",
+            )
+            result = run(*command)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            summary = directory / "gap-audit.md"
+            text = summary.read_text(encoding="utf-8")
+            self.assertIn("PartUsage", text)
+            self.assertNotIn("PartDefinition", text)
+            self.assertIn("deriveUsageDefinition", text)
+
+            semantic["processing_failures"] = [{"path": "probe.md", "error": "failed to evaluate"}]
+            report.write_text(json.dumps(semantic), encoding="utf-8")
+            result = run(*command)
+            self.assertEqual(result.returncode, 1, result.stderr)
+            self.assertIn("fixture processing failures", summary.read_text(encoding="utf-8"))
+
     def test_grammar_lookup_finds_part_usage(self) -> None:
         result = run("tools/sysml_reference/query_grammar.py", "show", "PartUsage")
         self.assertEqual(result.returncode, 0, result.stderr)
