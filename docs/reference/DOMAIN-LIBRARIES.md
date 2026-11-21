@@ -7,10 +7,10 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 
 | | |
 | --- | --- |
-| Bundled version | `0.6.0` |
+| Bundled version | `0.7.0` |
 | Format | `kpar` |
-| Artifact | `elan8-domain-libraries-0.6.0.kpar` |
-| Packages / files | 27 packages · 24 source files |
+| Artifact | `elan8-domain-libraries-0.7.0.kpar` |
+| Packages / files | 29 packages · 26 source files |
 | Source | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
 
 ## Package tree
@@ -59,6 +59,10 @@ Tree of source files inside the KPAR. Package names are scanned from each `.sysm
     - **mechanical/**
       - **drivetrain/**
         - `model/technical/mechanical/drivetrain/DrivetrainDomain.sysml` — `Drivetrain`
+      - **rotational/**
+        - `model/technical/mechanical/rotational/RotationalDomain.sysml` — `Rotational`
+      - **translational/**
+        - `model/technical/mechanical/translational/TranslationalDomain.sysml` — `Translational`
       - `model/technical/mechanical/Mechanical.sysml` — `Mechanical::Core`, `Mechanical::Interconnection`
     - **software/**
       - **bindings/**
