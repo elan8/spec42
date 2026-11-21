@@ -25,15 +25,15 @@ package P {
     (diagnostics
       (diagnostic
         (severity error)
-        (code "unexpected_keyword_in_scope")
+        (code "recovered_calc_body_element")
         (source "parser")
         (range (start 8 8) (end 9 8))
       )
       (diagnostic
-        (severity error)
-        (code "unexpected_keyword_in_scope")
+        (severity warning)
+        (code "recovery_cascade_suppressed")
         (source "parser")
-        (range (start 9 8) (end 10 4))
+        (range (start 8 8) (end 9 8))
       )
     )
   )

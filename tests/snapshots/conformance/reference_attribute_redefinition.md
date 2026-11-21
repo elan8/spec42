@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Anonymous attribute redefinition resolves to the inherited reference attribute
+description=Explicit reference attribute redefinition resolves to the inherited reference attribute
 type=file
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
@@ -21,7 +21,7 @@ package ReferenceRedefinitionProbe {
         ref attribute quantity : ScalarValues::Real;
     }
     part def Derived :> Base {
-        attribute :>> quantity = value;
+        ref attribute :>> quantity = value;
     }
     part example : Derived;
 }
@@ -48,13 +48,13 @@ package ReferenceRedefinitionProbe {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cb7302c7835b4b690130d620a31e9d45ed7e981bb2daa42472773b3aa2839af0") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:abbe384ca1f5a05e1d430c55db32b8f371e9af18f355ec8ddb2638655210918f") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (qualified-name "ReferenceRedefinitionProbe"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (qualified-name "ReferenceRedefinitionProbe::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (qualified-name "ReferenceRedefinitionProbe::Base::quantity"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real")))))
     (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (qualified-name "ReferenceRedefinitionProbe::Derived"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
-    (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (effective-identification (name "quantity") (short-name absent) (provenance first-redefinition)) (feature-value (kind bind) (value (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "quantity")))))
+    (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (effective-identification (name "quantity") (short-name absent) (provenance first-redefinition)) (feature-value (kind bind) (value (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "quantity")))))
     (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "value")))))
     (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/reference_attribute_redefinition.md") (qualified-name "ReferenceRedefinitionProbe::example"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Derived")))))
@@ -290,12 +290,12 @@ package ReferenceRedefinitionProbe {
       (outcome (status resolved) (target (node (document "memory://snapshot/reference_attribute_redefinition.md") (qualified-name "ReferenceRedefinitionProbe::Base")))))
     )
   )
-  (query (document "memory://snapshot/reference_attribute_redefinition.md") (range (start 6 22) (end 6 30)) (probe (position 6 22))
+  (query (document "memory://snapshot/reference_attribute_redefinition.md") (range (start 6 26) (end 6 34)) (probe (position 6 26))
     (reference (id (source (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0))))) (kind redefinition) (ordinal 0) (authored-target "quantity")
       (outcome (status resolved) (target (node (document "memory://snapshot/reference_attribute_redefinition.md") (qualified-name "ReferenceRedefinitionProbe::Base::quantity")))))
     )
   )
-  (query (document "memory://snapshot/reference_attribute_redefinition.md") (range (start 6 33) (end 6 38)) (probe (position 6 33))
+  (query (document "memory://snapshot/reference_attribute_redefinition.md") (range (start 6 37) (end 6 42)) (probe (position 6 37))
     (reference (id (source (node (document "memory://snapshot/reference_attribute_redefinition.md") (path (named (kind package) (name "ReferenceRedefinitionProbe")) (named (kind part-def) (name "Derived")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "value")
       (outcome (status resolved) (target (node (document "memory://snapshot/reference_attribute_redefinition.md") (qualified-name "ReferenceRedefinitionProbe::value")))))
     )

@@ -473,6 +473,9 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
+        if let Some(relationship) = &node.value.references {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         // `ActionUsageDeclaration = UsageDeclaration ValuePart?`.
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(document, declaration, feature_value)?;

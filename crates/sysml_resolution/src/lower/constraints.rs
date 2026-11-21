@@ -835,6 +835,9 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
+        if let Some(relationship) = &node.value.references {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         self.lower_constraint_def_body(document, declaration, &node.value.body)
     }
 
@@ -1458,6 +1461,9 @@ impl SemanticModelBuilder {
             }
         }
         if let Some(relationship) = &node.value.subsets {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.references {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         self.lower_calc_def_body(document, declaration, &node.value.body)

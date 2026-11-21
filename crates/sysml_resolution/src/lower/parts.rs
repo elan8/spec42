@@ -1388,6 +1388,9 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
+        if let Some(relationship) = &node.value.references {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         // `Usage`'s `ValuePart` (`enum size : SizeChoice = SizeChoice::small;`).
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(document, declaration, feature_value)?;
@@ -1563,6 +1566,9 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(relationship) = &node.value.references {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         self.lower_attribute_body(document, declaration, &node.value.body)
