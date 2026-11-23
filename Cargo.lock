@@ -613,7 +613,7 @@ dependencies = [
 
 [[package]]
 name = "diagram_draw"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "diagram_layout",
  "diagram_product",
@@ -623,7 +623,7 @@ dependencies = [
 
 [[package]]
 name = "diagram_layout"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "elkrs",
  "serde_json",
@@ -632,7 +632,7 @@ dependencies = [
 
 [[package]]
 name = "diagram_product"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -922,7 +922,7 @@ dependencies = [
 
 [[package]]
 name = "generator_api"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "serde",
  "sha2 0.11.1",
@@ -935,7 +935,7 @@ dependencies = [
 
 [[package]]
 name = "generator_conformance"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "clap",
  "generator_api",
@@ -950,7 +950,7 @@ dependencies = [
 
 [[package]]
 name = "generator_host"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "directories",
  "generator_api",
@@ -1295,7 +1295,7 @@ dependencies = [
 
 [[package]]
 name = "kpar"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "chrono",
  "crc32fast",
@@ -1311,7 +1311,7 @@ dependencies = [
 
 [[package]]
 name = "language_service"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -1346,7 +1346,7 @@ checksum = "b6d2cec3eae94f9f509c767b45932f1ada8350c4bdb85af2fcab4a3c14807981"
 
 [[package]]
 name = "library_catalog"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "directories",
  "kpar",
@@ -1412,7 +1412,7 @@ dependencies = [
 
 [[package]]
 name = "lsp_server"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "base64 0.23.1",
  "clap",
@@ -1990,7 +1990,7 @@ dependencies = [
 
 [[package]]
 name = "server"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -2019,7 +2019,7 @@ dependencies = [
 
 [[package]]
 name = "session_actor"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "thiserror 2.0.21",
  "tokio",
@@ -2112,7 +2112,7 @@ dependencies = [
 
 [[package]]
 name = "source_identity"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "blake3",
  "serde",
@@ -2121,7 +2121,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-constraint-manifest"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "clap",
  "quick-xml",
@@ -2134,7 +2134,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-generator-protocol"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "postcard-schema",
  "serde",
@@ -2142,7 +2142,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-generator-sdk"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "postcard",
  "serde",
@@ -2151,7 +2151,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-query-bench"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "blake3",
  "clap",
@@ -2163,7 +2163,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-resolution-benchmark"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "clap",
  "serde",
@@ -2173,7 +2173,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-semantic-benchmark"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "blake3",
  "clap",
@@ -2184,7 +2184,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-snapshot"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "clap",
  "diagram_product",
@@ -2282,7 +2282,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_contract"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "serde",
  "source_identity",
@@ -2290,7 +2290,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_diagnostics"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "sysml_query",
  "url",
@@ -2298,7 +2298,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_query"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "proc-macro2",
  "serde_json",
@@ -2310,7 +2310,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_resolution"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "hashbrown 0.17.1",
  "insta",
@@ -2326,7 +2326,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_source"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "globset",
  "ignore",
@@ -2340,7 +2340,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_tokens"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "serde",
  "sysml_query",
@@ -3165,7 +3165,7 @@ checksum = "8c3b93199df0ab874cdf0c6a94f0a0dc3423fe41f1cafb62b8bd7b1deb277aef"
 
 [[package]]
 name = "workspace"
-version = "0.61.1"
+version = "0.62.0"
 dependencies = [
  "kpar",
  "language_service",
