@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.62.0]
+
+- **Connection and reference modeling.** Connection definitions support action, state,
+  exhibit state, calculation, constraint and perform members. Connection usages preserve a
+  multiplicity after redefinition, as in `connection c :>> lines[3]`. Parser v0.61.0
+  preserves reference subsetting across more usage kinds.
+- **Model export.** Item definitions retain their `abstract` and `variation` modifiers.
+- **Bundled domain library 0.9.0.** Adds translational and rotational mechanics parts,
+  permanent-magnet and brushless DC motors, and a stepper motor. The bundled teaching examples
+  match the current upstream revision.
+- **User guides.** The versioned documentation has clearer setup and workflow guides,
+  and a CLI reference covering local commands and CI use.
+- **Dependency updates.** Wasmtime 50.0.3 includes upstream security fixes, and the Rust
+  `url` dependency is updated to 2.5.9 in the main, fuzz and Zed lockfiles.
+- **Compatibility.** The semantic contract remains `state-trigger-labels-v74`, diagram
+  products use schema 12, model export uses schema 2, and generators use ABI 7. Doc42 0.8.1
+  embeds domain library 0.6.0. For models you plan to use in both tools, use vocabulary
+  available in both bundles.
+
 ## [0.61.1] - 2026-11-17
 
 - **Upgrade notes.** No contract, schema or ABI changes: the semantic contract stays
