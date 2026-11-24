@@ -8,7 +8,7 @@ description = "Sandboxed WebAssembly module host for Spec42 generators"
 directories = "6"
 generator_api = { path = "../generator_api" }
 spec42-generator-protocol = { path = "../generator_protocol" }
-wasmtime = { version = "50.0.3", default-features = false, features = ["cache", "cranelift", "runtime", "std"] }
+wasmtime = { version = "51.0.0", default-features = false, features = ["cache", "cranelift", "runtime", "std"] }
 wasmparser = "0.263"
 postcard = { workspace = true }
 serde = { workspace = true }
