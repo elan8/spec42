@@ -4,6 +4,18 @@ Spec42 distinguishes parsing, semantic resolution and evaluation. A parsed expre
 resolve its references without being executable by the model-level evaluator. A clean
 validation result therefore does not guarantee a computed value.
 
+## Inherited roll-ups
+
+Define a roll-up such as `attribute totalMass : MassValue = chassis.mass + supply.mass;`
+on the architecture. A usage of a specialized architecture can supply different part
+designs through redefinition. Spec42 evaluates the inherited roll-up using the effective
+attribute values of that usage, so candidates can produce different totals from the
+same expression.
+
+Use [model-export](CLI-REFERENCE.md#model-export) to read each candidate's result. When
+an input attribute has no value binding, the export can name it by its authored path,
+such as `supply.mass`.
+
 ## Collection callbacks
 
 A collection body has its own scope for parameters, local members and the result expression:

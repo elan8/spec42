@@ -40,7 +40,7 @@ restart, or a stalled webview all recover with no user action.
 | --- | --- |
 | **Go to definition** | Open the selected view declaration in the editor. |
 | **Home** | Fit and center the whole diagram. |
-| **JSON** | Copy the generated diagram product (schema-versioned JSON) to the clipboard. |
+| **JSON** | Copy the diagram product (schema 13 in Spec42 0.63.0) to the clipboard. |
 | **SVG** | Export the current diagram as a standalone SVG file. |
 | **PNG** | Export the current view as a PNG. |
 | **Transparent export** | Export SVG/PNG without a canvas background; keep element fills. |
@@ -68,8 +68,8 @@ standard SysML view kinds:
 
 | View kind | Shows |
 | --- | --- |
-| **General View** | Exposed elements with containment and the authored subclassification, subsetting, redefinition and typing between them. |
-| **Interconnection View** | Nested parts, their ports on the node boundary, and connections as edges. |
+| **General View** | Exposed elements with containment and the authored subclassification, subsetting, redefinition and typing between them. Anonymous required constraints display their authored expression. |
+| **Interconnection View** | Nested parts, their ports on the node boundary, and connections as edges. Port tooltips show declared multiplicities. |
 | **Action Flow View** | Actions and control nodes joined by ordered flows. Action inputs and outputs appear as small squares on the action boundary: inputs on the left, outputs on the right. |
 | **State Transition View** | States and control nodes, with transitions labelled by their trigger, guard and effect. |
 | **Sequence View** | Lifelines and the messages sent between them. |

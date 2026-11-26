@@ -184,7 +184,12 @@ structure. The top-level keys are `workspace_root`, `summary` and `projection`.
 spec42 model-export model --max-nodes 500 --format json
 ```
 
-The [model export reference](../reference/MODEL-EXPORT.md) describes the fields.
+For an inherited roll-up, look up the candidate usage in `projection.elements` and
+read its `contextual_evaluations`. Match the entry's `element` to the roll-up attribute's
+token. A non-constant result can list unbound attributes under
+`outcome.evaluation.unbound_inputs`, with authored names such as `supply.mass` and
+effective feature tokens. The [model export reference](../reference/MODEL-EXPORT.md)
+describes the fields.
 
 ## generate
 
@@ -193,7 +198,9 @@ spec42 generate <GENERATOR> <PATH> [options] [-- <GENERATOR_ARGS>...]
 ```
 
 Runs a sandboxed WebAssembly generator, a core module implementing the Spec42 generator ABI, against
-the resolved model and writes the files it produces. Arguments after `--` are passed to the
+the resolved model and writes the files it produces. For Spec42 0.63.0, rebuild existing
+plugins against the matching [generator contract](../generation/ABI.md) to pick up the
+new compatibility token. Arguments after `--` are passed to the
 generator unchanged.
 
 | Option | Effect |
