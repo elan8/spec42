@@ -2074,11 +2074,9 @@ impl SemanticModelBuilder {
     /// structured `TypingRelationship`, but does carry an independent `type_is_conjugated` flag
     /// (mirrored as an explicit `RelationshipFlags::conjugated` fact on the pushed `FeatureTyping`
     /// reference, the same convention `lower_typing_relationship` uses for `PortUsage`). Individual/
-    /// event/portion-of-life prefixes (`individual`/`then`/`event`/`ref`/`abstract`/`constant`,
-    /// `portion_kind`) and the `event path` occurrence-reference shorthand are explicitly out of
-    /// scope -- only the ordinary declaration/typing/subsetting shape is lowered. Owned members
-    /// lower through the shared `lower_occurrence_body_element` (both def and usage share
-    /// `OccurrenceBodyElement`).
+    /// event/portion-of-life prefixes retain their occurrence facts. The `event path` shorthand
+    /// owns a ReferenceSubsetting to the referenced occurrence. Owned members use the shared
+    /// `lower_occurrence_body_element` dispatcher.
     pub(crate) fn lower_occurrence_usage(
         &mut self,
         document: DocumentIdx,
@@ -2153,6 +2151,23 @@ impl SemanticModelBuilder {
         }
         if let Some(relationship) = &node.value.references {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        if let Some(target) = node.value.occurrence_reference {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::References,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
         }
         if let Some(relationship) = &node.value.crosses {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
