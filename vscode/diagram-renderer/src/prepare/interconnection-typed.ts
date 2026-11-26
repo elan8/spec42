@@ -138,6 +138,7 @@ function interconnectionSceneFromTypedProjection(input: {
           ownerNodeId: idFor(owner),
           name: element.name ?? idFor(index),
           typeName: typeName(element),
+          multiplicity: element.multiplicity ?? undefined,
           // Authored, resolved facts (never derived from `name` or `typeName`): the query
           // reports `direction: null` / `conjugated: false` rather than omitting them, so an
           // absent authored direction is a fact this adapter forwards, not a gap it fills in.
