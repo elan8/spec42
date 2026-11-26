@@ -1,7 +1,7 @@
 //! Port of `views/state-transition.ts`.
 
 use crate::behavior_common::{
-    build_self_loop_path, edge_label_position_from_sections, fallback_edge_path, node_kind,
+    build_self_loop_path, fallback_edge_path, node_kind, place_unpositioned_edge_label,
     truncate_label, BehaviorLayoutResult, LaidOutRect, PreparedNode, PreparedView,
 };
 use crate::hit_target::{mark_visible_edge, path_edge_hit_target};
@@ -307,6 +307,7 @@ pub fn render_state_transition_view(
     };
 
     let mut edge_layer = Element::new("g").attr("class", "state-transitions");
+    let mut occupied_labels = layout.occupied_edge_labels();
     for edge in &prepared.edges {
         let (Some(source), Some(target)) = (
             layout.positions.get(&edge.source),
@@ -362,10 +363,14 @@ pub fn render_state_transition_view(
                 .edge_labels_by_id
                 .get(&edge.id)
                 .and_then(|labels| labels.first());
-            let label_from_sections = edge_label_position_from_sections(sections);
             let (label_x, label_y) = match elk_label {
                 Some(elk) => (elk.x + elk.width / 2.0, elk.y + elk.height / 2.0),
-                None => label_from_sections.unwrap_or((fallback.label_x, fallback.label_y)),
+                None => place_unpositioned_edge_label(
+                    if self_loop { None } else { sections },
+                    &fallback,
+                    &label,
+                    &mut occupied_labels,
+                ),
             };
             let label_width = elk_label
                 .map(|elk| elk.width)
