@@ -229,12 +229,7 @@ impl SemanticModelBuilder {
                         self.lower_part_usage(document, Some(declaration), part_usage)?;
                     }
                     PortBodyElement::OccurrenceUsage(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::PortUsageMember,
-                            node.span,
-                        );
+                        self.lower_occurrence_usage(document, Some(declaration), node)?;
                     }
                     PortBodyElement::VariantUsage(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
