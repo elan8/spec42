@@ -141,7 +141,7 @@ package References {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/sysml_usage_is_reference_derivation.md") (qualified-name "References::Link"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/sysml_usage_is_reference_derivation.md") (qualified-name "References::Link"))) (kind connection) (end (name (node (document "memory://snapshot/sysml_usage_is_reference_derivation.md") (qualified-name "References::Link::source"))) unconnected) (end (name (node (document "memory://snapshot/sysml_usage_is_reference_derivation.md") (qualified-name "References::Link::target"))) unconnected))
 )
 ~~~
 # NAVIGATION

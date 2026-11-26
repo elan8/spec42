@@ -158,8 +158,8 @@ package Connectors {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::lone"))) (kind connection))
-  (connector (id (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::pair"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::lone"))) (kind connection) (end (name (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::lone::only"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::a"))))))
+  (connector (id (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::pair"))) (kind connection) (end (name (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::pair::e1"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::a"))))) (end (name (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::pair::e2"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::b"))))))
 )
 ~~~
 # NAVIGATION

@@ -706,7 +706,7 @@ package GeneratedKernel {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector"))) (kind connection) (end (name (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (feature (resolved (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::a"))))) (end (name (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (feature (resolved (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::b"))))))
 )
 ~~~
 # NAVIGATION

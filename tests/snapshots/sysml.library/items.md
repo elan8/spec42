@@ -1509,7 +1509,7 @@ standard library package Items {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Touches"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Touches"))) (kind connection) (end (name (node (document "memory://snapshot/items.md") (qualified-name "Items::Touches::touchedItemToo"))) unconnected) (end (name (node (document "memory://snapshot/items.md") (qualified-name "Items::Touches::touchedItem"))) unconnected))
 )
 ~~~
 # NAVIGATION

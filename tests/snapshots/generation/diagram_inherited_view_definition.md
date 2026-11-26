@@ -545,7 +545,7 @@ package InheritedViews {
 ~~~sexpr
 (connections
   (connector (id (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Assembly::link"))) (kind interface) (type (resolved (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Link")))) (end bare (feature-chain (root (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Assembly::sender"))) (terminal (resolved (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Sender::p")))) (path (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Assembly::sender")) (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Sender::p"))) "sender::p")) (end bare (feature-chain (root (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Assembly::receiver"))) (terminal (resolved (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Receiver::p")))) (path (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Assembly::receiver")) (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Receiver::p"))) "receiver::p")))
-  (connector (id (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Link"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Link"))) (kind interface) (end (name (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Link::x"))) unconnected) (end (name (node (document "memory://snapshot/model.sysml") (qualified-name "InheritedViews::Link::y"))) unconnected))
 )
 ~~~
 # NAVIGATION

@@ -162,7 +162,7 @@ package BinaryConnectorSpecialization {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization::Holder::pair"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization::Holder::pair"))) (kind connection) (end (name (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization::Holder::pair::source"))) (feature (resolved (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization::Holder::a"))))) (end (name (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization::Holder::pair::target"))) (feature (resolved (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization::Holder::b"))))))
 )
 ~~~
 # NAVIGATION

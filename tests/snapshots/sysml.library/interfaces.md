@@ -762,7 +762,7 @@ standard library package Interfaces {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface"))) (kind interface) (end (name (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface::source"))) unconnected) (end (name (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface::target"))) unconnected))
   (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::Interface"))) (kind interface))
   (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (kind interface) (type (resolved (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface")))))
   (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::interfaces"))) (kind interface) (type (resolved (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::Interface")))))

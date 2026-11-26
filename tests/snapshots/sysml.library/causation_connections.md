@@ -570,7 +570,7 @@ standard library package CausationConnections {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation"))) (kind connection) (end (name (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation::theCause"))) unconnected) (end (name (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation::theEffect"))) unconnected))
   (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation"))) (kind connection))
   (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::causations"))) (kind connection) (type (resolved (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation")))))
   (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::multicausations"))) (kind connection) (type (resolved (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation")))))
