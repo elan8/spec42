@@ -1966,7 +1966,7 @@ impl SemanticModelBuilder {
                 ),
                 modifiers: DeclarationModifiers {
                     ordered: usage.is_some_and(|usage| usage.multiplicity_modifiers.is_ordered()),
-                    nonunique: usage.is_some_and(|usage| usage.multiplicity_modifiers.is_unique()),
+                    nonunique: usage.is_some_and(|usage| !usage.multiplicity_modifiers.is_unique()),
                     ..DeclarationModifiers::default()
                 },
                 action_input_parameter_position: Some(2),
