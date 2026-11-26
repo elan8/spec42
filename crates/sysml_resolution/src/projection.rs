@@ -178,6 +178,7 @@ pub struct ProjectedContextualEvaluation {
     pub authored_element: SymbolId,
     pub effective_element: SymbolId,
     pub outcome: ContextualEvaluationOutcome,
+    pub unbound_inputs: Box<[crate::PublishedUnboundInput]>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

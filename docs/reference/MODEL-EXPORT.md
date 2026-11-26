@@ -40,7 +40,11 @@ remain explicit.
 inherited expression evaluated in a usage. For a roll-up inherited from a part definition, read
 the array on each candidate usage and match the entry's `element` to the roll-up attribute's
 `token`. Its `outcome.evaluation` carries the result for that candidate, including
-`non-constant` when the model has no values to fold. A false contextual constraint reports at that usage
+`non-constant` when the model has no values to fold. A `non-constant` result can include
+`outcome.evaluation.unbound_inputs` for resolved attributes with no value binding. Each entry
+contains the authored operand spelling (for example, `supply.mass`) and the effective `feature`
+token. The field is omitted when evaluation identifies no unbound inputs.
+A false contextual constraint reports at that usage
 and links to its authored declaration. Derived values use the same evaluator with contextual
 bindings; cycles and nonconstant inputs remain explicit. Quantity comparisons currently fold
 matching unit spellings only; unit conversion and arbitrary user calculation execution remain

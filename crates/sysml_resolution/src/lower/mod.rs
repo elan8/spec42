@@ -1210,6 +1210,7 @@ impl SemanticModelBuilder {
         } else {
             Box::default()
         };
+        let operand_spelling = self.intern_operand_spelling(&parsed, kind, span)?;
         let ordinal = self
             .next_reference_ordinals
             .entry((source, kind))
@@ -1222,6 +1223,7 @@ impl SemanticModelBuilder {
             kind,
             target: ParserReferenceId { document, local },
             path,
+            operand_spelling,
             ordinal: authored_ordinal,
             import,
             flags,
@@ -1230,6 +1232,30 @@ impl SemanticModelBuilder {
             span,
         });
         Ok(id)
+    }
+
+    fn intern_operand_spelling(
+        &mut self,
+        parsed: &ParsedDocument,
+        kind: ReferenceKind,
+        span: Span,
+    ) -> Result<Option<NameId>, ConstructionError> {
+        if !matches!(
+            kind,
+            ReferenceKind::ExpressionOperand | ReferenceKind::MemberAccessOperand
+        ) {
+            return Ok(None);
+        }
+        let end = span
+            .offset
+            .checked_add(span.len)
+            .ok_or(ConstructionError::Capacity)?;
+        let spelling = parsed
+            .source
+            .as_str()
+            .get(span.offset..end)
+            .ok_or(ConstructionError::InvalidParserReference)?;
+        self.intern_name(spelling).map(Some)
     }
 
     /// Reserves one authored-reference position for a grammar-owned endpoint that has no name to
@@ -1486,6 +1512,7 @@ impl SemanticModelBuilder {
         segments.clear();
         self.path_scratch = segments;
         let path = path?;
+        let operand_spelling = self.intern_operand_spelling(&parsed, kind, span)?;
         let ordinal = self
             .next_reference_ordinals
             .entry((source, kind))
@@ -1503,6 +1530,7 @@ impl SemanticModelBuilder {
                     .ok_or(ConstructionError::InvalidParserReference)?,
             },
             path,
+            operand_spelling,
             ordinal: authored_ordinal,
             import: None,
             flags: RelationshipFlags::default(),

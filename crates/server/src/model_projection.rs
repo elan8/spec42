@@ -411,7 +411,16 @@ fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
         "contextual_evaluations": element.contextual_evaluations.iter().map(|entry| {
             use sysml_query::resolved_slice::ContextualEvaluationOutcome;
             let outcome = match &entry.outcome {
-                ContextualEvaluationOutcome::Resolved(state) => json!({ "status": "resolved", "evaluation": { "status": state.as_str(), "value": state.value().map(scalar_json) } }),
+                ContextualEvaluationOutcome::Resolved(state) => {
+                    let mut evaluation = json!({ "status": state.as_str(), "value": state.value().map(scalar_json) });
+                    if !entry.unbound_inputs.is_empty() {
+                        evaluation["unbound_inputs"] = json!(entry.unbound_inputs.iter().map(|input| json!({
+                            "authored": model.text(input.authored),
+                            "feature": token(model, input.feature),
+                        })).collect::<Vec<_>>());
+                    }
+                    json!({ "status": "resolved", "evaluation": evaluation })
+                },
                 ContextualEvaluationOutcome::Unresolved => json!({ "status": "unresolved" }),
                 ContextualEvaluationOutcome::Ambiguous(candidates) => json!({ "status": "ambiguous", "candidates": symbol_tokens(model, candidates.iter().copied()) }),
             };

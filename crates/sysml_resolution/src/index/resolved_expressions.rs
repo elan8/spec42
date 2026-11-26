@@ -241,6 +241,7 @@ impl ResolvedExpressionIndex {
                         (context, element),
                         ContextualExpressionRow {
                             evaluation: crate::EvaluationState::NotRun,
+                            unbound_inputs: Box::default(),
                             authored: element,
                             effective: element,
                             result: ContextualExpressionResult::Ambiguous(
@@ -285,6 +286,7 @@ impl ResolvedExpressionIndex {
                         (context, element),
                         ContextualExpressionRow {
                             evaluation: crate::EvaluationState::NotRun,
+                            unbound_inputs: Box::default(),
                             authored: element,
                             effective,
                             result: ContextualExpressionResult::Ambiguous(
@@ -424,6 +426,7 @@ impl ResolvedExpressionIndex {
                     (context, element),
                     ContextualExpressionRow {
                         evaluation: crate::EvaluationState::NotRun,
+                        unbound_inputs: Box::default(),
                         authored: origin,
                         effective,
                         result: if unresolved {
@@ -997,11 +1000,15 @@ impl<D> SemanticModel<D> {
         let Some(result_typing) = self.project_result_typing(&row.result_typing) else {
             return self.query_outcome(QueryAnswer::Unresolved);
         };
+        let Some(unbound_inputs) = self.project_unbound_inputs(contextual) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
         self.resolved_outcome(ContextualExpressionOutcome::Resolved(
             PublishedContextualExpression {
                 context,
                 authored_element,
                 evaluation: contextual.evaluation.clone(),
+                unbound_inputs,
                 expression: PublishedExpression {
                     element: effective_element,
                     outcome: row.outcome,
@@ -1011,6 +1018,22 @@ impl<D> SemanticModel<D> {
                 },
             },
         ))
+    }
+
+    pub(crate) fn project_unbound_inputs(
+        &self,
+        contextual: &ContextualExpressionRow,
+    ) -> Option<Box<[crate::PublishedUnboundInput]>> {
+        contextual
+            .unbound_inputs
+            .iter()
+            .map(|input| {
+                Some(crate::PublishedUnboundInput {
+                    authored: crate::TextId::from_index(input.authored.index())?,
+                    feature: self.symbol_id(input.feature)?,
+                })
+            })
+            .collect()
     }
 
     /// The resolved structure of one element's authored constraint / calc / value expression.

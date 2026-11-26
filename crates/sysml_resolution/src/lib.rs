@@ -112,6 +112,7 @@ pub use evaluation::{
 pub use expression::{
     ContextualExpressionOutcome, ExpressionNode, ExpressionNodeKind, ExpressionOperator,
     ExpressionOutcome, ExpressionResultTyping, PublishedContextualExpression, PublishedExpression,
+    PublishedUnboundInput,
 };
 pub use feature_query::FeatureDerivedRelationshipCollection;
 pub use inspection::{

@@ -37,6 +37,54 @@ fn cli_model_export_preserves_authored_item_abstractness() {
 }
 
 #[test]
+fn cli_model_export_serializes_contextual_unbound_input_names_and_tokens() {
+    with_isolated_data_dir(|| {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("rollup.sysml");
+        std::fs::write(
+            &path,
+            "package P {
+                part def Component { attribute mass; }
+                part def Architecture {
+                    part left : Component;
+                    part right : Component;
+                    attribute total = left.mass + right.mass;
+                }
+                part candidate : Architecture;
+            }",
+        )
+        .unwrap();
+        let output = run_spec42_json(&["model-export", path.to_str().unwrap(), "--format", "json"]);
+        let elements = output["projection"]["elements"].as_array().unwrap();
+        let element = |name: &str| {
+            elements
+                .iter()
+                .find(|element| element["qualified_name"] == name)
+                .unwrap_or_else(|| panic!("missing projected element {name}"))
+        };
+        let total = &element("P::Architecture::total")["token"];
+        let mass = &element("P::Component::mass")["token"];
+        let evaluation = element("P::candidate")["contextual_evaluations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["element"] == *total)
+            .unwrap();
+        assert_eq!(
+            evaluation["outcome"]["evaluation"],
+            serde_json::json!({
+                "status": "non-constant",
+                "value": null,
+                "unbound_inputs": [
+                    { "authored": "left.mass", "feature": mass },
+                    { "authored": "right.mass", "feature": mass }
+                ]
+            }),
+        );
+    });
+}
+
+#[test]
 fn cli_model_export_serializes_complete_connector_paths() {
     with_isolated_data_dir(|| {
         let directory = tempfile::tempdir().unwrap();

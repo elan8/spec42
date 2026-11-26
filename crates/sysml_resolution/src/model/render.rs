@@ -160,6 +160,13 @@ pub(crate) fn write_expressions(
                         output.write_char(' ')?;
                         write_evaluated_scalar(value, output)?;
                     }
+                    write_unbound_inputs(
+                        model,
+                        contextual.unbound_inputs.iter().map(|input| {
+                            (model.storage.symbol(input.authored), Some(input.feature))
+                        }),
+                        output,
+                    )?;
                     if let Some(root) = row.root {
                         output.write_char(' ')?;
                         write_resolved_expression_node(model, &row.nodes, root, output)?;
@@ -573,6 +580,16 @@ pub(crate) fn write_projection(
                         output.write_char(' ')?;
                         write_evaluated_scalar(value, output)?;
                     }
+                    write_unbound_inputs(
+                        model,
+                        contextual.unbound_inputs.iter().map(|input| {
+                            (
+                                model.text(input.authored),
+                                model.declaration_of(input.feature),
+                            )
+                        }),
+                        output,
+                    )?;
                 }
                 crate::ContextualEvaluationOutcome::Unresolved => {
                     output.write_str(" (status unresolved)")?
@@ -2142,6 +2159,21 @@ pub(crate) fn write_reference_path(
         write_escaped(output, model.storage.symbol(*segment).ok_or(fmt::Error)?)?;
     }
     output.write_char('"')
+}
+
+fn write_unbound_inputs<'a>(
+    model: &ResolvedSemanticModel,
+    inputs: impl Iterator<Item = (Option<&'a str>, Option<DeclarationId>)>,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    for (authored, feature) in inputs {
+        output.write_str(" (unbound-input (authored ")?;
+        write_quoted(output, authored.ok_or(fmt::Error)?)?;
+        output.write_str(") (feature ")?;
+        write_node_identity(model, feature.ok_or(fmt::Error)?, output)?;
+        output.write_str("))")?;
+    }
+    Ok(())
 }
 
 pub(crate) fn write_quoted(output: &mut dyn fmt::Write, value: &str) -> fmt::Result {

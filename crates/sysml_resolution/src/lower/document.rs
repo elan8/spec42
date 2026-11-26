@@ -356,6 +356,10 @@ impl SemanticModelBuilder {
                 kind: reference.kind,
                 target: relocation.parser_reference(reference.target),
                 path: relocation.path(reference.path)?,
+                operand_spelling: reference
+                    .operand_spelling
+                    .map(|spelling| relocation.symbol(spelling))
+                    .transpose()?,
                 ordinal: reference.ordinal,
                 import: reference.import,
                 flags: reference.flags,

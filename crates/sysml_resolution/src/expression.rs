@@ -17,7 +17,7 @@
 //! owned slice and a child is named by its `u32` index into it, the same shape the scope and
 //! type indexes use.
 
-use crate::model::{AuthoredReferenceId, DeclarationId, DocumentIdx};
+use crate::model::{AuthoredReferenceId, DeclarationId, DocumentIdx, NameId};
 use crate::{EvaluatedScalar, SourceLocation, SymbolId};
 
 /// One element's authored expression, resolved and settled.
@@ -69,6 +69,15 @@ pub struct PublishedContextualExpression {
     /// Evaluation after substituting the effective bindings of this context. The
     /// authored declaration's evaluation remains unchanged.
     pub evaluation: crate::EvaluationState,
+    pub unbound_inputs: Box<[PublishedUnboundInput]>,
+}
+
+/// An attribute read by contextual evaluation whose effective feature has no value.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PublishedUnboundInput {
+    /// The operand's spelling in the authored expression, including any feature chain.
+    pub authored: crate::TextId,
+    pub feature: SymbolId,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -278,6 +287,13 @@ pub(crate) struct ContextualExpressionRow {
     pub(crate) effective: DeclarationId,
     pub(crate) result: ContextualExpressionResult,
     pub(crate) evaluation: crate::EvaluationState,
+    pub(crate) unbound_inputs: Box<[UnboundInput]>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct UnboundInput {
+    pub(crate) authored: NameId,
+    pub(crate) feature: DeclarationId,
 }
 
 #[derive(Debug)]
