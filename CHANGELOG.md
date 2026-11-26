@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.63.0]
+
+- **Upgrade notes.** Diagram products now use schema 13. Update consumers that read
+  diagram JSON and rebuild WebAssembly generator plugins against the 0.63.0 generator
+  protocol. The ABI number is still 7 and the compatibility token is now
+  `0x120f57825dc9bd06`. Model export uses schema 2.
+- **Model export.** Named connector end ports retain their resolved paths. Inherited
+  roll-ups evaluate in each usage's context, and a non-constant result can list each
+  unbound attribute by its authored name and effective feature token.
+- **Modeling.** Port usages support event occurrence members and resolve their authored
+  references. Explicit `while`, `loop`, and `for` body actions retain their declarations
+  and owned members, including declared parameter uniqueness.
+- **Diagrams.** General Views display the authored expression for anonymous required
+  constraints. Interconnection tooltips show declared port multiplicities. State and
+  action diagrams place unpositioned edge labels along longer route segments.
+- **Dependencies.** Updated Wasmtime to 51.0.0 along with other Rust dependencies.
+
 ## [0.62.0]
 
 - **Connection and reference modeling.** Connection definitions support action, state,
