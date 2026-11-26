@@ -8676,7 +8676,7 @@ package TimerGrid {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:a43aedce3bf1dbbdb1cf90e6fe8952246ae15273a1f4401df197a064440d43e0",
   "documents": [
     {

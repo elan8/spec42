@@ -488,7 +488,7 @@ package SequenceCycle {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:4d381cc9f655f5607efec4d80c0bb1bd1f8497ae36b63337f940de68d621bd17",
   "documents": [
     {

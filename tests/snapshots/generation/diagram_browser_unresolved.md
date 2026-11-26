@@ -135,7 +135,7 @@ package BrowserNegative {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:d0b9fc39fba39a87219bc3c765b3857bc77d4358974fd375bf5758495eaef278",
   "documents": [
     {

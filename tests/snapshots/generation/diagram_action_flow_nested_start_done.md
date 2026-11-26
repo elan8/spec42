@@ -438,7 +438,7 @@ package Nested {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:745c0c7e0f8a9eeee9fa1a5665fdbcc936070e9c8dc60a122381e3c0fd8c2368",
   "documents": [
     {

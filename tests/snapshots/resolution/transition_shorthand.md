@@ -850,7 +850,7 @@ package Shorthand {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:3254f03acb2f6a7692828606f2971277c8ab866ef7c1b6e4fe2a41fa7e47a3fa",
   "documents": [
     {

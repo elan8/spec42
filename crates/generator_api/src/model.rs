@@ -1095,6 +1095,7 @@ impl GeneratorModelView {
                     sysml_query::resolved_slice::FeatureDirection::InOut => "inout",
                 }.to_owned()),
                 conjugated: element.conjugated,
+                required_constraint_text: element.required_constraint_text.as_deref().map(str::to_owned),
                 state_subaction: element.state_subaction.map(|kind| match kind {
                     sysml_query::resolved_slice::StateSubactionKind::Entry => "entry",
                     sysml_query::resolved_slice::StateSubactionKind::Do => "do",

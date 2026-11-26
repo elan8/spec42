@@ -1,5 +1,5 @@
 //! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
-//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-12 typed
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-13 typed
 //! products.
 
 use std::collections::{HashMap, HashSet};
@@ -3346,7 +3346,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                 && composite_unless_ref(&as_string(field(element, "metaclass"), ""));
             json!({
                 "id": format!("n:{index}"),
-                "label": as_string(field(element, "name"), ""),
+                "label": as_string(first_present([field(element, "name"), field(element, "requiredConstraintText")]), ""),
                 "kind": as_string(field(element, "metaclass"), "Unrecognized"),
                 "uri": field(&source, "uri"),
                 "range": field(&source, "range"),
@@ -3356,6 +3356,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "owner": field(element, "owner"),
                     "typingStatus": field(typing, "status"),
                     "typedByName": typed_by_name,
+                    "requiredConstraint": field(element, "requiredConstraintText").is_string(),
                     "multiplicity": field(element, "multiplicity"),
                     // A port's aggregate flow direction supplies IBD arrows, not an
                     // authored `in`/`out` prefix on the port itself. Directed members

@@ -524,6 +524,8 @@ pub(crate) struct DeclarationFacts {
     pub(crate) implicit_transition_source: Option<DeclarationId>,
     /// On a conditional succession: when it is taken.
     pub(crate) succession_guard: Option<SuccessionGuard>,
+    /// Authored result expression text for an anonymous required constraint's notation.
+    pub(crate) required_constraint_text: Option<Box<str>>,
     /// On the expression a conditional succession owns as its guard. `GuardedSuccession` is a
     /// `TransitionUsage`, so this is the same `GuardExpressionMember` a transition owns.
     pub(crate) is_succession_guard: bool,

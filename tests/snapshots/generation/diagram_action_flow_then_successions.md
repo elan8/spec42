@@ -894,7 +894,7 @@ package Flow {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:7033263101f654336ddc31cac1929ee53c2d4deba93b84542f79d875085d2575",
   "documents": [
     {

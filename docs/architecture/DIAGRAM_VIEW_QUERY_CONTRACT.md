@@ -15,7 +15,7 @@ authoritative tooling/library IDs may be used when published; unnamed elements u
 source/ownership anchor. Publication-scoped `SymbolId` handles and opaque `SymbolToken` encodings
 never cross into diagram JSON. Every projection repeats its public reference and carries ordered
 elements, relationships, typed view metadata, provenance, and typed incomplete reasons. Ordering
-is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 12
+is semantic-ID order unless a view owns a stronger authored order. Diagram JSON schema version 13
 is the sole renderer product for this contract.
 
 Each projected element carries an opaque `presentationKey`, a domain-separated SHA-256 encoding
@@ -34,6 +34,8 @@ unnamed redefinition displays the name it inherits from its first redefined feat
 not replace the syntax-owned authored identification or its naming provenance. An absent or
 unresolved effective name stays absent; consumers do not reconstruct it from qualified names,
 redefinition edges, source text, or product-local layout keys.
+For an anonymous required constraint in a General View, the optional `requiredConstraintText`
+field carries the authored result expression used for `«require constraint»` notation.
 
 A custom view definition inherits the most specific standard diagram kinds reachable through its
 canonical subclassification closure: `ActionFlowView` and `StateTransitionView` specialize
@@ -138,7 +140,7 @@ complete item/part subtree; a descendant never becomes a loose root because its 
 
 ## Generated consumer contract
 
-The schema-12 wire shape is declared in `crates/diagram_product/src/wire.rs`. Unsupported-syntax
+The schema-13 wire shape is declared in `crates/diagram_product/src/wire.rs`. Unsupported-syntax
 reasons carry `diagnostics`, each with a `code`, `message`, and interned `source` index.
 Its `projection` is a discriminated union keyed by the view kind, so each view carries only its own metadata and scene
 shape. The Rust publisher validates every product against this contract before returning it.

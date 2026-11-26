@@ -234,7 +234,7 @@ package ConnectorIncomplete {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:3fcc4e274a5a7b292d484095151cc90825ab3f76f17f3fa9a4ee48cd2aac12be",
   "documents": [
     {

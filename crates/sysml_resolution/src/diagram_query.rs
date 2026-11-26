@@ -120,6 +120,8 @@ pub struct DiagramElement {
     /// KerML effectiveName for display, including an unnamed redefinition's inherited name.
     /// Authored identification and naming provenance remain owned by the publication.
     pub name: Option<Box<str>>,
+    /// The authored result expression of an anonymous required constraint in a General View.
+    pub required_constraint_text: Option<Box<str>>,
     /// Authored FeatureTyping for compact labels; not the effective-type closure.
     pub typing: DiagramElementTyping,
     pub owner: Option<DiagramOccurrenceIdentity>,
@@ -1089,6 +1091,14 @@ impl PublishedResolution {
                             | crate::EffectiveName::NonConverged => None,
                         })
                         .or_else(|| entry.name.clone()),
+                    required_constraint_text: if view_entry.kind == DiagramViewKind::General {
+                        self.model
+                            .declaration_of(entry.identity)
+                            .and_then(|id| self.model.storage.declaration_facts(id))
+                            .and_then(|facts| facts.required_constraint_text.clone())
+                    } else {
+                        None
+                    },
                     typing: diagram_element_typing(self.element_details(entry.identity)),
                     owner: owner.clone(),
                     source: entry.location,

@@ -405,7 +405,13 @@ pub fn collect_compartments(
 
     let fallback = |key: &str| detail_items(attributes, key);
     Compartments {
-        stereotype: if kind.is_empty() {
+        stereotype: if attributes
+            .get("requiredConstraint")
+            .and_then(Value::as_bool)
+            == Some(true)
+        {
+            "require constraint".to_string()
+        } else if kind.is_empty() {
             "element".to_string()
         } else if attributes.get("authoredReference").and_then(Value::as_bool) == Some(true) {
             format!("ref {kind}")

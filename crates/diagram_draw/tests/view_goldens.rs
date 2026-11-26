@@ -11,6 +11,7 @@ use diagram_draw::{render_svg_from_payload, xml};
 const VIEWS: &[&str] = &[
     "diagram_general_complete",
     "diagram_general_multiplicity",
+    "diagram_required_constraint_text",
     "diagram_occurrence_presentation",
     "diagram_interconnection_complete",
     "diagram_port_families",

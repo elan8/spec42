@@ -155,7 +155,7 @@ package BrowserProbe {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:2234461f210650fd36a3325d63811e2f179ff9dc114144235a4159821292b930",
   "documents": [
     {

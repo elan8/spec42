@@ -425,7 +425,10 @@ export function collectCompartments(node: {
       : collapsibleSections;
 
   return {
-    header: { stereotype: node.kind || "element", name: node.label || "Unnamed" },
+    header: {
+      stereotype: attributes.requiredConstraint === true ? "require constraint" : node.kind || "element",
+      name: node.label || "Unnamed",
+    },
     typedByName,
     attributes: directAttributes.length > 0 ? directAttributes : fallbackDetailItems(attributes, "attributes"),
     parts: directParts.length > 0 ? directParts : fallbackDetailItems(attributes, "parts"),

@@ -325,7 +325,7 @@ package Shop {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:8ad12a5631c5dba3d3650b59a1bfbaf8292a2810478ef0314bfb2ad84a780fe4",
   "documents": [
     {

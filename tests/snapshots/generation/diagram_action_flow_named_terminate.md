@@ -898,7 +898,7 @@ package Control {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:6ab32a41f420a07beb943eb773f34e33cfd9474e02313397e572d71f374ebd00",
   "documents": [
     {

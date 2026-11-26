@@ -310,7 +310,7 @@ package WarningView {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:880fea6937da1203c584e7bbe7583b0c2fe332725ba804b3676a08bf0ebffb6e",
   "documents": [
     {

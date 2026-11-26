@@ -1268,6 +1268,9 @@ pub struct DiagramElement {
     /// Canonical effective name for display; authored names and their provenance remain in
     /// the semantic publication. An unnamed redefinition can therefore have a display name.
     pub name: Option<String>,
+    /// The authored result expression of an anonymous required constraint.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub required_constraint_text: Option<String>,
     /// Authored FeatureTyping for compact labels; not the effective-type closure.
     pub typing: DiagramElementTyping,
     pub owner: Option<DiagramOccurrenceIdentity>,
@@ -1797,7 +1800,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x748412de5667fe3c,
+            SCHEMA_FINGERPRINT, 0xf0ede3e41c14bb8d,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1805,7 +1808,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x429556ffc491fc61,
+            COMPATIBILITY_TOKEN, 0x120f57825dc9bd06,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

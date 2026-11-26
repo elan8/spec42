@@ -168,7 +168,7 @@ package GridExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:8187a1dadc24a2dadf4090aae616d74c004f746842a4b3177cec8ae9aaccc5aa",
   "documents": [
     {

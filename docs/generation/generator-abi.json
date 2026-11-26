@@ -3,8 +3,8 @@
   "semanticApiVersion": "0.5.0",
   "namespace": "spec42:generator-abi/7",
   "importModule": "spec42",
-  "schemaFingerprint": "0x748412de5667fe3c",
-  "compatibilityToken": "0x429556ffc491fc61",
+  "schemaFingerprint": "0xf0ede3e41c14bb8d",
+  "compatibilityToken": "0x120f57825dc9bd06",
   "operations": [
     { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
     { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },

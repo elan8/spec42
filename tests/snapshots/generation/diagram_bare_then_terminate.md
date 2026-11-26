@@ -226,7 +226,7 @@ package BareTerminate {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:379483aa5e1b16033ef52f66fb5dda2d0eafd875e9be873ea0e1571e444678be",
   "documents": [
     {

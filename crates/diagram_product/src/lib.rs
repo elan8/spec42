@@ -1,4 +1,4 @@
-//! The schema-12 diagram product: a typed diagram view projection
+//! The schema-13 diagram product: a typed diagram view projection
 //! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
 //! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
 //! once and referenced by index.
@@ -15,7 +15,7 @@ use serde_json::{json, Value};
 use spec42_generator_protocol as model;
 
 /// Version of the product format `diagram_draw` consumes.
-pub const SCHEMA_VERSION: u32 = 12;
+pub const SCHEMA_VERSION: u32 = 13;
 
 /// The file name under which generators publish the product.
 pub const ARTIFACT_PATH: &str = "diagram.json";
@@ -476,7 +476,7 @@ impl NormalizedProduct {
             model::DiagramElementTyping::Recovery => json!({ "status": "recovery" }),
             model::DiagramElementTyping::Incomplete => json!({ "status": "incomplete" }),
         };
-        Ok(json!({
+        let mut node = json!({
             "reference": self.reference(&value.reference)?,
             "presentationKey": value.presentation_key,
             "metaclass": value.metaclass.as_str(),
@@ -496,7 +496,11 @@ impl NormalizedProduct {
             "stateSubaction": value.state_subaction,
             "successionGuard": value.succession_guard,
             "featureDirection": value.feature_direction,
-        }))
+        });
+        if let Some(text) = &value.required_constraint_text {
+            node["requiredConstraintText"] = json!(text);
+        }
+        Ok(node)
     }
 
     fn relationship(&self, value: &model::DiagramRelationship) -> Result<Value, String> {
@@ -1315,6 +1319,7 @@ mod tests {
             multiplicity: None,
             direction: None,
             conjugated: false,
+            required_constraint_text: None,
             state_subaction: None,
             succession_guard: None,
             feature_direction: None,
@@ -1363,6 +1368,7 @@ mod tests {
             multiplicity: None,
             direction: None,
             conjugated: false,
+            required_constraint_text: None,
             state_subaction: None,
             succession_guard: None,
             feature_direction: None,
@@ -1445,6 +1451,7 @@ mod tests {
                 multiplicity: None,
                 direction: None,
                 conjugated: false,
+                required_constraint_text: None,
                 state_subaction: None,
                 succession_guard: None,
                 feature_direction: None,

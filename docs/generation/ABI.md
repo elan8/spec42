@@ -5,7 +5,7 @@ specification; `crates/generator_sdk` is one implementation of it, not its defin
 guest written in any language that can emit the imports and exports below is equally valid.
 
 <!-- generated:abi-header -->
-Current version: **ABI 7**. Compatibility token: `0x429556ffc491fc61`.
+Current version: **ABI 7**. Compatibility token: `0x120f57825dc9bd06`.
 <!-- /generated:abi-header -->
 
 Expression literals carry an `ExpressionLiteral` with a typed `LiteralValue` (`Boolean`,

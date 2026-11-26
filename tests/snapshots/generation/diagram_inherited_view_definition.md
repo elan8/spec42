@@ -657,7 +657,7 @@ package InheritedViews {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:33ee14008f035f858157bd446a560faed02e75a8a070e03611e5f845a9852404",
   "documents": [
     {

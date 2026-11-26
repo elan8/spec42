@@ -1419,7 +1419,7 @@ package Controls {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:ea3f46ad456b9b9c33a7bd20e94c65965f77adfcd773c16f2b07b43f1785c1ad",
   "documents": [
     {

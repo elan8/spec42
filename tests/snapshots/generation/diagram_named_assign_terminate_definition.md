@@ -850,7 +850,7 @@ package NamedNodes {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:8e422b821d09b11daf71f05ec9975454d5c2c5d8941a0ed06eb394e0f99da06b",
   "documents": [
     {

@@ -389,7 +389,7 @@ package GeneralSubsetting {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:5196ae6a362effbde98d019467e0a0a04798da0f0f4a16cf3d2ff336f5559eed",
   "documents": [
     {

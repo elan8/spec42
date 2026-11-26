@@ -1,4 +1,4 @@
-//! The schema-12 JSON wire contract. The Rust writer validates against these types before
+//! The schema-13 JSON wire contract. The Rust writer validates against these types before
 //! publication, and TypeScript bindings are generated from the same declarations.
 
 use serde::Deserialize;
@@ -189,6 +189,10 @@ pub struct DiagramNode {
     pub metaclass: String,
     pub notation_role: NotationRole,
     pub name: Option<String>,
+    /// The authored result expression of an anonymous required constraint.
+    #[serde(default)]
+    #[ts(optional)]
+    pub required_constraint_text: Option<String>,
     pub typing: NodeTyping,
     pub owner: Option<usize>,
     pub source: usize,

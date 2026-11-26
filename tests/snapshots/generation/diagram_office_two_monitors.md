@@ -731,7 +731,7 @@ package Office {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:b29fa694bf075c2fa45a250127ca50e8c2451618c5d01a6a77b1d1db23328d86",
   "documents": [
     {
