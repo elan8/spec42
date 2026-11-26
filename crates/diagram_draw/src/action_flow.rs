@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use serde_json::Value;
 
 use crate::behavior_common::{
-    edge_label_position_from_sections, fallback_edge_path, node_kind, path_from_sections,
+    fallback_edge_path, node_kind, path_from_sections, place_unpositioned_edge_label,
     truncate_label, BehaviorLayoutResult, PreparedNode, PreparedView,
 };
 use crate::hit_target::{mark_visible_edge, path_edge_hit_target};
@@ -652,6 +652,7 @@ pub fn render_action_flow_view(
     }
 
     let mut flow_layer = Element::new("g").attr("class", "activity-flows");
+    let mut occupied_labels = layout.occupied_edge_labels();
     for edge in &prepared.edges {
         let (Some(source), Some(target)) = (
             layout.positions.get(&edge.source),
@@ -735,15 +736,19 @@ pub fn render_action_flow_view(
                 .edge_labels_by_id
                 .get(&edge.id)
                 .and_then(|labels| labels.first());
-            let label_from_sections = edge_label_position_from_sections(sections);
-            let (label_x, label_y) = match elk_label {
-                Some(elk) => (elk.x + elk.width / 2.0, elk.y + elk.height / 2.0),
-                None => label_from_sections.unwrap_or((fallback.label_x, fallback.label_y)),
-            };
             let display_label = if label.starts_with('[') {
                 label.clone()
             } else {
                 format!("[{label}]")
+            };
+            let (label_x, label_y) = match elk_label {
+                Some(elk) => (elk.x + elk.width / 2.0, elk.y + elk.height / 2.0),
+                None => place_unpositioned_edge_label(
+                    sections,
+                    &fallback,
+                    &display_label,
+                    &mut occupied_labels,
+                ),
             };
             if let Some(elk) = elk_label {
                 flow_layer = flow_layer.child(

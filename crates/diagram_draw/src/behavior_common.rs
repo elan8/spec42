@@ -76,6 +76,21 @@ pub struct BehaviorLayoutResult {
     pub shared_label_edge_ids: std::collections::BTreeSet<String>,
 }
 
+impl BehaviorLayoutResult {
+    pub(crate) fn occupied_edge_labels(&self) -> Vec<LaidOutRect> {
+        self.edge_labels_by_id
+            .values()
+            .filter_map(|labels| labels.first())
+            .map(|label| LaidOutRect {
+                x: label.x,
+                y: label.y,
+                width: label.width,
+                height: label.height,
+            })
+            .collect()
+    }
+}
+
 /// Port of `nodeKind`: `String(node.kind || "action").toLowerCase()`.
 pub fn node_kind(node: &PreparedNode) -> String {
     if node.kind.is_empty() {
@@ -257,15 +272,109 @@ pub fn truncate_label(text: &str, max: usize) -> String {
     }
 }
 
-/// Port of `edgeLabelPositionFromSections`.
-pub fn edge_label_position_from_sections(sections: Option<&[EdgeSection]>) -> Option<(f64, f64)> {
-    let section = sections?.first()?;
-    if section.start_point.is_none() || section.end_point.is_none() {
-        return None;
+fn ranked_edge_label_positions(sections: Option<&[EdgeSection]>) -> Vec<(f64, f64)> {
+    let mut runs = Vec::new();
+    for section in sections.into_iter().flatten() {
+        if section.start_point.is_none() || section.end_point.is_none() {
+            continue;
+        }
+        for pair in section_points(section).windows(2) {
+            let (start, end) = (pair[0], pair[1]);
+            let (dx, dy) = (end.x - start.x, end.y - start.y);
+            let length = dx.hypot(dy);
+            if length > 0.0 {
+                runs.push((
+                    dy.abs() < 1e-6 && length >= 24.0,
+                    length,
+                    ((start.x + end.x) / 2.0, (start.y + end.y) / 2.0 - 6.0),
+                ));
+            }
+        }
     }
-    let points = section_points(section);
-    let mid_index = (points.len() - 1) / 2;
-    let start = points[mid_index];
-    let end = points.get(mid_index + 1).copied().unwrap_or(start);
-    Some(((start.x + end.x) / 2.0, (start.y + end.y) / 2.0 - 6.0))
+    // Stable sorting keeps the authored route's first run on a tie.
+    runs.sort_by(|a, b| b.0.cmp(&a.0).then_with(|| b.1.total_cmp(&a.1)));
+    runs.into_iter().map(|(_, _, position)| position).collect()
+}
+
+/// The position beside the preferred run of a routed behavior edge.
+pub fn edge_label_position_from_sections(sections: Option<&[EdgeSection]>) -> Option<(f64, f64)> {
+    ranked_edge_label_positions(sections).into_iter().next()
+}
+
+/// Place a behavior label for which layout supplied only the route. Try the preferred run first,
+/// then other runs when its midpoint is occupied by an existing label.
+pub(crate) fn place_unpositioned_edge_label(
+    sections: Option<&[EdgeSection]>,
+    fallback: &FallbackPath,
+    text: &str,
+    occupied: &mut Vec<LaidOutRect>,
+) -> (f64, f64) {
+    const GAP: f64 = 2.0;
+    let width = (text.encode_utf16().count() as f64 * 6.0 + 10.0).max(42.0);
+    let bounds = |(x, y)| LaidOutRect {
+        x: x - width / 2.0,
+        y: y - 10.0,
+        width,
+        height: 18.0,
+    };
+    let overlaps = |a: LaidOutRect, b: LaidOutRect| {
+        a.x < b.x + b.width + GAP
+            && b.x < a.x + a.width + GAP
+            && a.y < b.y + b.height + GAP
+            && b.y < a.y + a.height + GAP
+    };
+    let positions = ranked_edge_label_positions(sections);
+    let mut label = positions
+        .iter()
+        .copied()
+        .map(bounds)
+        .find(|&rect| !occupied.iter().any(|&other| overlaps(rect, other)))
+        .unwrap_or_else(|| {
+            bounds(
+                positions
+                    .first()
+                    .copied()
+                    .unwrap_or((fallback.label_x, fallback.label_y)),
+            )
+        });
+    // If every routed midpoint is occupied, move just far enough above the obstructing label.
+    while let Some(blocker) = occupied.iter().find(|&&other| overlaps(label, other)) {
+        label.y = blocker.y - label.height - GAP;
+    }
+    occupied.push(label);
+    (label.x + label.width / 2.0, label.y + 10.0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn routed_label_prefers_the_long_run_and_avoids_an_occupied_midpoint() {
+        let section: EdgeSection = serde_json::from_value(serde_json::json!({
+            "startPoint": { "x": 746, "y": 189 },
+            "bendPoints": [
+                { "x": 746, "y": 99 },
+                { "x": 218, "y": 99 },
+                { "x": 218, "y": 108 }
+            ],
+            "endPoint": { "x": 200, "y": 108 }
+        }))
+        .unwrap();
+        let sections = Some(std::slice::from_ref(&section));
+        let fallback = FallbackPath {
+            path: String::new(),
+            label_x: 0.0,
+            label_y: 0.0,
+        };
+        let mut occupied = Vec::new();
+        assert_eq!(
+            place_unpositioned_edge_label(sections, &fallback, "Fault", &mut occupied),
+            (482.0, 93.0)
+        );
+        assert_eq!(
+            place_unpositioned_edge_label(sections, &fallback, "Reset", &mut occupied),
+            (746.0, 138.0)
+        );
+    }
 }
