@@ -29,7 +29,7 @@ use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use std::sync::Arc;
 use sysml_v2_parser::ast::{
-    ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
+    ActionBodyParameter, ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
     ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, ActionUsageKeyword,
     AssignStmt, ControlNodeDeclaration, DefinitionBody, DefinitionBodyElement, Expression,
     FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage,
@@ -330,7 +330,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::While,
                 node.span,
                 Some(&node.value.condition),
-                &node.value.body.body,
+                &node.value.body,
                 node.value.until.as_ref(),
                 &node.value.prefix,
             )?,
@@ -341,7 +341,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Loop,
                 node.span,
                 None,
-                &node.value.body.body,
+                &node.value.body,
                 node.value.until.as_ref(),
                 &node.value.prefix,
             )?,
@@ -798,7 +798,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::While,
                 node.span,
                 Some(&node.value.condition),
-                &node.value.body.body,
+                &node.value.body,
                 node.value.until.as_ref(),
                 &node.value.prefix,
             )?,
@@ -809,7 +809,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Loop,
                 node.span,
                 None,
-                &node.value.body.body,
+                &node.value.body,
                 node.value.until.as_ref(),
                 &node.value.prefix,
             )?,
@@ -1499,7 +1499,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::While,
                 stmt.span,
                 Some(&stmt.value.condition),
-                &stmt.value.body.body,
+                &stmt.value.body,
                 stmt.value.until.as_ref(),
                 &stmt.value.prefix,
             )?,
@@ -1510,7 +1510,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Loop,
                 stmt.span,
                 None,
-                &stmt.value.body.body,
+                &stmt.value.body,
                 stmt.value.until.as_ref(),
                 &stmt.value.prefix,
             )?,
@@ -1731,7 +1731,7 @@ impl SemanticModelBuilder {
         decl_kind: DeclarationKind,
         span: Span,
         condition: Option<&Node<Expression>>,
-        body: &ActionDefBody,
+        body: &ActionBodyParameter,
         until: Option<&sysml_v2_parser::ast::UntilParameter>,
         prefix: &sysml_v2_parser::ast::ActionNodePrefix,
     ) -> Result<(), ConstructionError> {
@@ -1744,9 +1744,7 @@ impl SemanticModelBuilder {
             );
             self.lower_constraint_expression(document, declaration, family, condition)?;
         }
-        let body_start = self.declarations.len();
-        self.lower_action_def_body(document, declaration, body)?;
-        self.mark_single_action_input_parameter(declaration, body_start, 2);
+        self.lower_loop_body(document, declaration, body)?;
         if let Some(until) = until {
             // The optional third input is a distinct expression. Do not replace the while
             // condition or evaluate it at construction time as if it were the loop's result.
@@ -1928,10 +1926,64 @@ impl SemanticModelBuilder {
             false,
             None,
         )?;
-        let body_start = self.declarations.len();
-        self.lower_action_def_body(document, declaration, &node.body.body)?;
-        self.mark_single_action_input_parameter(declaration, body_start, 2);
-        Ok(())
+        self.lower_loop_body(document, declaration, &node.body)
+    }
+
+    fn lower_loop_body(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        body: &ActionBodyParameter,
+    ) -> Result<(), ConstructionError> {
+        let Some(action) = &body.action_declaration else {
+            let body_start = self.declarations.len();
+            self.lower_action_def_body(document, owner, &body.body)?;
+            self.mark_single_action_input_parameter(owner, body_start, 2);
+            return Ok(());
+        };
+        let usage = action.value.declaration.as_ref();
+        let name = self
+            .intern_declaration_name(document, usage.and_then(|usage| usage.identification.name))?;
+        let short_name = self.intern_short_name(
+            document,
+            usage.and_then(|usage| usage.identification.short_name),
+        )?;
+        let span = match &body.body {
+            ActionDefBody::Brace { close, .. } => action.span.covering(close.span()),
+            ActionDefBody::Semicolon { .. } => action.span,
+        };
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::ActionUsage,
+            name,
+            span,
+            DeclarationFacts {
+                short_name,
+                direction: Some(ParameterDirection::In),
+                multiplicity: multiplicity_facts(
+                    usage.and_then(|usage| usage.multiplicity.as_ref()),
+                ),
+                modifiers: DeclarationModifiers {
+                    ordered: usage.is_some_and(|usage| usage.multiplicity_modifiers.is_ordered()),
+                    nonunique: usage.is_some_and(|usage| !usage.multiplicity_modifiers.is_unique()),
+                    ..DeclarationModifiers::default()
+                },
+                action_input_parameter_position: Some(2),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_role_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            crate::MembershipRole::Parameter,
+            action.span,
+        )?;
+        if let Some(usage) = usage {
+            self.lower_usage_declaration_clauses(document, declaration, usage, false, None)?;
+        }
+        self.lower_action_def_body(document, declaration, &body.body)
     }
 
     /// Lowers a `then accept ...;` (BNF `ThenTarget::Accept`, `ast::TransitionAccept`) as the
