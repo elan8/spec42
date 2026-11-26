@@ -401,8 +401,8 @@ package ProductSelection_N_ary_SysML {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (kind connection))
-  (connector (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (kind connection) (end (name (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (multiplicity (lower 1) (upper 1)) unconnected) (end (name (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (multiplicity (lower 1) (upper 1)) unconnected) (end (name (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (multiplicity (lower 1) (upper 1)) unconnected))
+  (connector (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (kind connection) (end (name (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::cart"))) (multiplicity (lower 1) (upper 1)) unconnected) (end (name (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::selectedProduct"))) (multiplicity (lower 1) (upper 1)) unconnected) (end (name (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1::account"))) (multiplicity (lower 1) (upper 1)) unconnected))
 )
 ~~~
 # NAVIGATION

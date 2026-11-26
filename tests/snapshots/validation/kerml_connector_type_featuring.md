@@ -250,9 +250,9 @@ package Connectors {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::loose"))) (kind connection))
-  (connector (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::mixed"))) (kind connection))
-  (connector (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::loose"))) (kind connection) (end (name (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::loose::e1"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::x"))))) (end (name (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::loose::e2"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::y"))))))
+  (connector (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::mixed"))) (kind connection) (end (name (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::mixed::e1"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))))) (end (name (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::mixed::e2"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Sub::c"))))))
+  (connector (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair"))) (kind connection) (end (name (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))))) (end (name (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2"))) (feature (resolved (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))))))
 )
 ~~~
 # NAVIGATION

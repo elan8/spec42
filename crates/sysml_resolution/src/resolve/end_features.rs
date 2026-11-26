@@ -65,20 +65,19 @@ fn is_reference_subsetting(kind: ReferenceKind) -> bool {
     )
 }
 
-/// The single derivation of the `relatedFeature` member one connector end contributes.
+/// The authored ReferenceSubsetting that supplies one connector end's related feature.
 ///
 /// `outgoing` yields a declared end's authored references in canonical (authored) order; the
 /// published model supplies its index, and resolver phases a map built from the same storage.
-pub(crate) fn end_related_feature<I>(
+pub(crate) fn end_reference<I>(
     storage: &SemanticModelStorage,
-    resolution: &ResolutionResults,
     end: OwnedEndFeature,
     outgoing: impl Fn(DeclarationId) -> I,
-) -> EndRelatedFeature
+) -> Option<AuthoredReferenceId>
 where
     I: IntoIterator<Item = AuthoredReferenceId>,
 {
-    let reference = match end {
+    match end {
         OwnedEndFeature::Bare(reference) | OwnedEndFeature::Flow { reference, .. } => {
             Some(reference)
         }
@@ -90,8 +89,20 @@ where
                     .is_some_and(|reference| is_reference_subsetting(reference.kind))
             })
         }
-    };
-    match reference.map(|reference| resolution.outcome(reference)) {
+    }
+}
+
+/// The single derivation of the `relatedFeature` member one connector end contributes.
+pub(crate) fn end_related_feature<I>(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    end: OwnedEndFeature,
+    outgoing: impl Fn(DeclarationId) -> I,
+) -> EndRelatedFeature
+where
+    I: IntoIterator<Item = AuthoredReferenceId>,
+{
+    match end_reference(storage, end, outgoing).map(|reference| resolution.outcome(reference)) {
         None => EndRelatedFeature::Absent,
         Some(Some(ResolutionStatus::Resolved(target))) => EndRelatedFeature::Resolved(target),
         Some(_) => EndRelatedFeature::Unsettled,

@@ -122,8 +122,8 @@ package TypedFeatureScope {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::Carrier"))) (kind connection))
-  (connector (id (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::invocation"))) (kind connection) (type (resolved (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::Carrier")))))
+  (connector (id (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::Carrier"))) (kind connection) (end (name (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::Carrier::source"))) unconnected) (end (name (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::Carrier::target"))) unconnected))
+  (connector (id (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::invocation"))) (kind connection) (type (resolved (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::Carrier")))) (end (name (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::invocation::source"))) unconnected) (end (name (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::invocation::target"))) unconnected))
 )
 ~~~
 # NAVIGATION

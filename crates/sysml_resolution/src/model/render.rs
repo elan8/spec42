@@ -631,7 +631,7 @@ pub(crate) fn write_connections(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
-    use crate::model::query::connector_kind;
+    use crate::model::query::{connector_kind, ends::ConnectorEndSource};
 
     fn write_end_reference(
         model: &ResolvedSemanticModel,
@@ -699,19 +699,6 @@ pub(crate) fn write_connections(
         }
     }
 
-    fn is_end_reference(model: &ResolvedSemanticModel, reference_id: AuthoredReferenceId) -> bool {
-        model
-            .storage
-            .references
-            .get(reference_id.index())
-            .is_some_and(|reference| {
-                matches!(
-                    reference.kind,
-                    ReferenceKind::ConnectorEnd | ReferenceKind::MemberAccessOperand
-                )
-            })
-    }
-
     writeln!(output, "(connections")?;
     for index in canonical_declaration_indices(model) {
         let connector = DeclarationId(index as u32);
@@ -777,54 +764,27 @@ pub(crate) fn write_connections(
             Ok(())
         }
 
-        // Connected ends (bare on the connector, or on a named child), in authored reference order.
-        let mut connected: Vec<(usize, Option<DeclarationId>, AuthoredReferenceId)> = Vec::new();
-        for reference_id in model.outgoing_reference_ids(connector) {
-            if is_end_reference(model, *reference_id) {
-                connected.push((reference_id.index(), None, *reference_id));
-            }
-        }
-        let mut unconnected: Vec<DeclarationId> = Vec::new();
-        for child in model.child_declarations(connector) {
-            if model
-                .storage
-                .declaration_facts(*child)
-                .and_then(|facts| facts.positional_end)
-                .is_none()
-            {
-                continue;
-            }
-            match model
-                .outgoing_reference_ids(*child)
-                .iter()
-                .copied()
-                .find(|id| is_end_reference(model, *id))
-            {
-                Some(reference_id) => {
-                    connected.push((reference_id.index(), Some(*child), reference_id))
-                }
-                None => unconnected.push(*child),
-            }
-        }
-        connected.sort_by_key(|(position, _, _)| *position);
-        for (_, child, reference_id) in connected {
-            match child {
-                Some(child) => {
-                    write_named_end_head(model, child, output)?;
+        for end in model.connector_end_sources(connector) {
+            match end {
+                ConnectorEndSource::Declared {
+                    declaration,
+                    reference,
+                } => {
+                    write_named_end_head(model, declaration, output)?;
                     output.write_char(' ')?;
-                    write_end_reference(model, reference_id, output)?;
+                    if let Some(reference) = reference {
+                        write_end_reference(model, reference, output)?;
+                    } else {
+                        output.write_str("unconnected")?;
+                    }
                     output.write_char(')')?;
                 }
-                None => {
+                ConnectorEndSource::Bare(reference) => {
                     output.write_str(" (end bare ")?;
-                    write_end_reference(model, reference_id, output)?;
+                    write_end_reference(model, reference, output)?;
                     output.write_char(')')?;
                 }
             }
-        }
-        for child in unconnected {
-            write_named_end_head(model, child, output)?;
-            output.write_str(" unconnected)")?;
         }
         writeln!(output, ")")?;
     }

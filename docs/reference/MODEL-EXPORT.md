@@ -12,8 +12,11 @@ is `when`, `at` or `after`; its `expression` tree carries the condition, instant
 Read connector topology from `projection.connectors`, whose ordered `ends` retain each
 feature-chain endpoint's `root`, `terminal` and full `path` with per-hop resolution outcomes.
 For example, `connect left.output to right.input;` retains the `left` and `right` occurrence
-roots even when both ports are inherited from shared definitions. Generic element relationships
-alone do not describe that topology. End order does not by itself imply directed signal flow.
+roots even when both ports are inherited from shared definitions. A named end, including an
+`end port` declared in the connector body, carries a `declaration` token that identifies its
+entry in `projection.elements`. An unwired declared end has endpoint kind `unconnected`.
+Generic element relationships alone do not describe that topology. End order does not by itself
+imply directed signal flow.
 
 Elements retain authored `name` and `qualified_name` separately from
 `effective_name` and `effective_qualified_name`. Use the effective fields to find unnamed

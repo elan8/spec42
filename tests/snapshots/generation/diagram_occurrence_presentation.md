@@ -845,7 +845,7 @@ package Presentation {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/model.sysml") (qualified-name "Presentation::I"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/model.sysml") (qualified-name "Presentation::I"))) (kind interface) (end (name (node (document "memory://snapshot/model.sysml") (qualified-name "Presentation::I::x"))) unconnected) (end (name (node (document "memory://snapshot/model.sysml") (qualified-name "Presentation::I::y"))) unconnected))
 )
 ~~~
 # NAVIGATION
