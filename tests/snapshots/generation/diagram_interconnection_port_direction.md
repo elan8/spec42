@@ -333,7 +333,7 @@ package PortDirectionExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:f3bc2a73ed99a2050c9cb692ca9a454f2a9804610dedca61062ceda47591c989",
   "documents": [
     {

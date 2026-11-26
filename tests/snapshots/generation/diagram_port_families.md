@@ -1403,7 +1403,7 @@ package Families {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:82956503c31a1ba85346e4959bf61e952e354cf903ffbb95adc46e5f9077fc1b",
   "documents": [
     {

@@ -113,7 +113,7 @@ package M {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:4559dde689426bbdbbef2d734fb840f58e019d6741c4d08a72e4b5ec386e66b2",
   "documents": [
     {

@@ -8,7 +8,11 @@ export type DiagramNode = {
  * Opaque canonical contextual identity for transferring presentation state. It is not
  * a semantic lookup handle or a product-local node index.
  */
-presentationKey: string, reference: number, metaclass: string, notationRole: NotationRole, name: string | null, typing: NodeTyping, owner: number | null, source: number, compartments: Array<Compartment>,
+presentationKey: string, reference: number, metaclass: string, notationRole: NotationRole, name: string | null,
+/**
+ * The authored result expression of an anonymous required constraint.
+ */
+requiredConstraintText?: string, typing: NodeTyping, owner: number | null, source: number, compartments: Array<Compartment>,
 /**
  * The authored multiplicity as written in a label (`"[6]"`, `"[0..*]"`), or `null` when none
  * was authored or a bound is an expression.

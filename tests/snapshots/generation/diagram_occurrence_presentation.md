@@ -947,7 +947,7 @@ package Presentation {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:cd851e2165de586a599dcc3045240bad7b8611a1f5d80e53f3220dca09590d9f",
   "documents": [
     {

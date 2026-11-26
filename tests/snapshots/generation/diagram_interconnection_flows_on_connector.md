@@ -641,7 +641,7 @@ package Dispatch {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:f7844444ee24739a8837f437baa9e565ca5518996f3ab2a3bfce95f195311042",
   "documents": [
     {

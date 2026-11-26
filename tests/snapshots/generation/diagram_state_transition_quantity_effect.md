@@ -1192,7 +1192,7 @@ package Timer {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:a66aef1f1284bfecfbdf175b2bd216d102f75203fceb2f4e3605e70de920ef59",
   "documents": [
     {

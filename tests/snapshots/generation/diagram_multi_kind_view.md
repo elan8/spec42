@@ -312,7 +312,7 @@ package Garage {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:7c8ef6f8ed42d7a2a9c1d565eb4728d5c1e1ad2f25d330fdf45141b80ade85ad",
   "documents": [
     {

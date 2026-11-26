@@ -643,7 +643,7 @@ package Tree {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:7df6efe5793c45688934ce5169553484e8d535a42e5f20db47b119146a8aba1b",
   "documents": [
     {

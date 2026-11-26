@@ -291,7 +291,7 @@ package Model {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:d7eb1bba7ff6acbdabadcf1cfe2cac092817979f2831eb22fb3d347c77ee8f5d",
   "documents": [
     {

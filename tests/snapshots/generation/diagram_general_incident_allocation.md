@@ -632,7 +632,7 @@ package Deployment {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:5141219810d78eb9848d46b444aeee979022c73a7f26917cbddf4c15871e4c84",
   "documents": [
     {

@@ -227,12 +227,13 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       : [];
     return {
       id: `n:${index}`,
-      label: element.name ?? element.metaclass,
+      label: element.name ?? element.requiredConstraintText ?? element.metaclass,
       kind: element.metaclass,
       uri: source.uri,
       range: source.range as PreparedNode["range"],
       attributes: {
         notationRole: element.notationRole,
+        requiredConstraint: element.requiredConstraintText !== undefined ? true : undefined,
         semanticReference: references[element.reference],
         owner: element.owner,
         typingStatus: typing.status,

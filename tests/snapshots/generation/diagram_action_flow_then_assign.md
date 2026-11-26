@@ -1029,7 +1029,7 @@ package Counting {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:6a36278d79d03484d27020f234d2611588b80658956e3fc0147f1e27e46d9370",
   "documents": [
     {

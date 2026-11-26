@@ -963,6 +963,28 @@ impl SemanticModelBuilder {
         } else {
             super::facts::DeclaredName::Absent
         };
+        let required_constraint_text = match &node.value.body {
+            ConstraintDefBody::Brace { elements, .. }
+                if !node.value.is_assume
+                    && node.value.has_constraint_keyword
+                    && node.value.name.is_none() =>
+            {
+                let mut expressions = elements.iter().filter_map(|element| match &element.value {
+                    ConstraintDefBodyElement::Expression(expression) => Some(expression.span),
+                    _ => None,
+                });
+                match (expressions.next(), expressions.next()) {
+                    (Some(span), None) => self.documents[document.index()]
+                        .parsed
+                        .source
+                        .as_str()
+                        .get(span.offset..span.offset + span.len)
+                        .map(Into::into),
+                    _ => None,
+                }
+            }
+            _ => None,
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -976,7 +998,10 @@ impl SemanticModelBuilder {
             // `has_constraint_keyword` selects the authored form (checked above) rather than
             // modifying the declaration; `is_assume` rides the declaration kind, because it is
             // what makes `RequirementConstraintMembership.kind` derivable.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                required_constraint_text,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,

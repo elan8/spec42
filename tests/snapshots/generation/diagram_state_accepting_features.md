@@ -2343,7 +2343,7 @@ package Behavior {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:b3d06db170f5f377e20fab657b35d82aaf6be94f123c65096856e5a3b56c35e4",
   "documents": [
     {

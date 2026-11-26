@@ -216,7 +216,7 @@ package ActionFlowExample {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:06cb9c6335375732622d91320f3f4fc61f5e716315f2a9289e313d61f7c4f796",
   "documents": [
     {

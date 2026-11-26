@@ -247,7 +247,7 @@ package Filters {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:57f8b49e98a3f327af06999fb558136608262ba3e1080a76e6a16e7a868057d4",
   "documents": [
     {

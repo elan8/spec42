@@ -1692,7 +1692,7 @@ package CrowdedPorts {
 ## diagram.json
 ~~~json
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "modelDigest": "blake3:2b4c6d8a2f29f41cfde47a6a81d2d1a58ba45e824a84c3a76dd4cc907875d28e",
   "documents": [
     {
