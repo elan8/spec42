@@ -1241,6 +1241,8 @@ pub(crate) struct AuthoredReference {
     pub(crate) kind: ReferenceKind,
     pub(crate) target: ParserReferenceId,
     pub(crate) path: SymbolPathId,
+    /// Exact authored spelling for expression operands, including chain separators.
+    pub(crate) operand_spelling: Option<NameId>,
     pub(crate) ordinal: u32,
     pub(crate) import: Option<AuthoredImportFacts>,
     pub(crate) flags: RelationshipFlags,

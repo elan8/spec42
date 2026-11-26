@@ -7,10 +7,10 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use super::classify::{classify_authored, ExpressionEvalShape};
 use super::fold::{fold_eval_node_pending, CallTarget, EvalOperand};
-use crate::expression::{ContextualExpressionResult, RawExpressionNodeKind};
+use crate::expression::{ContextualExpressionResult, RawExpressionNodeKind, UnboundInput};
 use crate::lower::storage::ParsedSources;
 use crate::model::resolver::SemanticModel;
-use crate::model::{DeclarationId, EvaluatedValue, ReferenceKind};
+use crate::model::{DeclarationId, DeclarationKind, EvaluatedValue, NameId, ReferenceKind};
 use crate::resolve::results::ResolutionError;
 use crate::{EvaluatedScalar, EvaluationFailure, EvaluationState};
 
@@ -47,8 +47,13 @@ struct Program {
     authored: DeclarationId,
     expression: DeclarationId,
     shape: ExpressionEvalShape,
-    operands: BTreeMap<EvalOperand, Option<DeclarationId>>,
+    operands: BTreeMap<EvalOperand, Option<(DeclarationId, NameId)>>,
     skipped: bool,
+}
+
+struct Outcome {
+    value: EvaluatedValue,
+    unbound_inputs: BTreeSet<UnboundInput>,
 }
 
 pub(crate) fn settle<D>(
@@ -117,14 +122,22 @@ pub(crate) fn settle<D>(
                     .get(reference.index())
                     .ok_or(ResolutionError::InvalidStorage)?;
                 if let Some(operand) = super::operand_key(reference) {
+                    let input = if let Some(target) = *target {
+                        let authored = reference
+                            .operand_spelling
+                            .ok_or(ResolutionError::InvalidStorage)?;
+                        Some((target, authored))
+                    } else {
+                        None
+                    };
                     operands
                         .entry(operand)
                         .and_modify(|existing| {
-                            if *existing != *target {
+                            if *existing != input {
                                 *existing = None;
                             }
                         })
-                        .or_insert(*target);
+                        .or_insert(input);
                 }
                 if reference.kind == ReferenceKind::InvocationCallee {
                     let end = reference
@@ -187,30 +200,58 @@ pub(crate) fn settle<D>(
                 }
             };
             if let Some(initial) = initial {
-                outcomes.insert(*element, initial);
+                outcomes.insert(
+                    *element,
+                    Outcome {
+                        value: initial,
+                        unbound_inputs: BTreeSet::new(),
+                    },
+                );
             }
         }
-        let fold_program =
-            |program: &Program, outcomes: &BTreeMap<DeclarationId, EvaluatedValue>| {
-                let ExpressionEvalShape::HasOperand(tree) = &program.shape else {
-                    return None;
-                };
-                fold_eval_node_pending(tree, &mut |operand| {
-                    let Some(target) = program.operands.get(&operand).copied().flatten() else {
-                        return Some(EvaluatedValue::UnresolvedOperand);
-                    };
-                    if programs.contains_key(&target) {
-                        return outcomes.get(&target).cloned();
-                    }
-                    let expression = model.value_expression(target).unwrap_or(target);
-                    Some(
-                        global
-                            .get(&expression)
-                            .cloned()
-                            .unwrap_or(EvaluatedValue::NonConstant),
-                    )
-                })
+        let fold_program = |program: &Program, outcomes: &BTreeMap<DeclarationId, Outcome>| {
+            let ExpressionEvalShape::HasOperand(tree) = &program.shape else {
+                return None;
             };
+            let mut unbound_inputs = BTreeSet::new();
+            let value = fold_eval_node_pending(tree, &mut |operand| {
+                let Some((target, authored)) = program.operands.get(&operand).copied().flatten()
+                else {
+                    return Some(EvaluatedValue::UnresolvedOperand);
+                };
+                if programs.contains_key(&target) {
+                    let outcome = outcomes.get(&target)?;
+                    unbound_inputs.extend(outcome.unbound_inputs.iter().copied());
+                    return Some(outcome.value.clone());
+                }
+                let expression = model.value_expression(target);
+                if let Some(value) = global.get(&expression.unwrap_or(target)) {
+                    return Some(value.clone());
+                }
+                if expression.is_none()
+                    && model.authored_value(target).is_none()
+                    && model
+                        .storage
+                        .declaration(target)
+                        .is_some_and(|declaration| {
+                            declaration.kind == DeclarationKind::AttributeUsage
+                        })
+                {
+                    unbound_inputs.insert(UnboundInput {
+                        authored,
+                        feature: target,
+                    });
+                }
+                Some(EvaluatedValue::NonConstant)
+            })?;
+            if !matches!(value, EvaluatedValue::NonConstant) {
+                unbound_inputs.clear();
+            }
+            Some(Outcome {
+                value,
+                unbound_inputs,
+            })
+        };
         // Most contexts settle in one ordered pass. Only pending programs allocate a worklist;
         // thereafter retries follow their own settled inputs, bounding folds by O(P + E) even
         // for reverse-authored chains. Individual-input retries preserve conditional folding.
@@ -230,7 +271,7 @@ pub(crate) fn settle<D>(
         let mut queued = BTreeSet::new();
         for element in pending {
             let mut ready = false;
-            for target in programs[&element].operands.values().flatten() {
+            for (target, _) in programs[&element].operands.values().flatten() {
                 if programs.contains_key(target) {
                     if outcomes.contains_key(target) {
                         ready = true;
@@ -263,6 +304,7 @@ pub(crate) fn settle<D>(
             let ambiguity = conflicts
                 .get(&element)
                 .map(|candidates| candidates.iter().copied().collect::<Box<[_]>>());
+            let outcome = outcomes.get(&element);
             let state = if program.skipped {
                 EvaluationState::NotRun
             } else if ambiguity.is_some() {
@@ -271,16 +313,22 @@ pub(crate) fn settle<D>(
                 EvaluationState::Unsupported
             } else {
                 crate::model::evaluation::evaluation_state(
-                    outcomes
-                        .get(&element)
+                    outcome
+                        .map(|outcome| &outcome.value)
                         .unwrap_or(&EvaluatedValue::NonConverged),
                     &program.shape,
                 )
             };
-            updates.push((key, ambiguity, state));
+            let mut unbound_inputs = outcome
+                .into_iter()
+                .flat_map(|outcome| outcome.unbound_inputs.iter().copied())
+                .collect::<Vec<_>>();
+            unbound_inputs
+                .sort_by_key(|input| (model.storage.symbol(input.authored), input.feature));
+            updates.push((key, ambiguity, state, unbound_inputs.into_boxed_slice()));
         }
     }
-    for (key, ambiguity, state) in updates {
+    for (key, ambiguity, state, unbound_inputs) in updates {
         let row = model
             .resolved_expressions
             .contextual
@@ -290,6 +338,7 @@ pub(crate) fn settle<D>(
             row.result = ContextualExpressionResult::Ambiguous(candidates);
         }
         row.evaluation = state;
+        row.unbound_inputs = unbound_inputs;
     }
     Ok(())
 }

@@ -5428,6 +5428,7 @@ impl<D> SemanticModel<D> {
                     element: self.symbol_id(*element)?,
                     authored_element: self.symbol_id(contextual.authored)?,
                     effective_element: self.symbol_id(contextual.effective)?,
+                    unbound_inputs: self.project_unbound_inputs(contextual)?,
                     outcome: match &contextual.result {
                         ContextualExpressionResult::Resolved(_) => {
                             ContextualEvaluationOutcome::Resolved(contextual.evaluation.clone())

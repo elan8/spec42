@@ -5,6 +5,7 @@ use std::fmt;
 use crate::source::Url;
 pub use sysml_resolution::{
     published_relationship_kinds, ContextualExpressionOutcome, PublishedContextualExpression,
+    PublishedUnboundInput,
 };
 
 pub use sysml_resolution::{
