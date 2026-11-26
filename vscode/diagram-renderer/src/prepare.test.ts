@@ -142,6 +142,7 @@ describe("shared prepareViewData", () => {
             notationRole: "usage",
             name: "input",
             typing: { status: "absent" },
+            multiplicity: "[4]",
             owner: 0,
             source: 2,
             compartments: [],
@@ -194,8 +195,10 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes.map((node) => node.label)).toEqual(["Assembly", "nested"]);
     expect(prepared.nodes.map((node) => node.kind)).toEqual(["part", "part"]);
     expect(prepared.nodes[1]?.attributes?.containerId).toBe("n:0");
-    const assemblyPorts = prepared.nodes[0]?.attributes?.portDetails as Array<{ name: string; id: string }>;
-    expect(assemblyPorts.map((port) => port.name)).toEqual(["input", "output"]);
+    expect(prepared.nodes[0]?.attributes?.portDetails).toMatchObject([
+      { name: "input", multiplicity: "[4]" },
+      { name: "output", multiplicity: "[1]" },
+    ]);
     expect(prepared.nodes.some((node) => node.kind.toLowerCase().includes("port"))).toBe(false);
     expect(prepared.edges).toHaveLength(1);
     expect(prepared.edges[0]).toMatchObject({
