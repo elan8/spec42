@@ -2,7 +2,8 @@
 //!
 //! Every rule here reads what [`super::expression`] settled -- an evaluation state, a unit's
 //! resolution, the measurement reference a type requires -- and asks a specialization question
-//! about it. None of them reads authored text, compares a type by name, or re-resolves anything.
+//! about it. The temporary standard-library volt exception identifies resolved library
+//! declarations by their qualified names and affects reporting only.
 //!
 //! # What the legacy check did instead
 //!
@@ -568,7 +569,10 @@ impl<D> SemanticModel<D> {
                 // did not supply.
                 UnitOutcome::UnsupportedExpression | UnitOutcome::CatalogUnavailable => {}
                 UnitOutcome::Unresolved => {}
-                UnitOutcome::Resolved { dimensions, .. } => {
+                UnitOutcome::Resolved {
+                    unit: resolved_unit,
+                    dimensions,
+                } => {
                     let receiver = self
                         .storage
                         .declaration_facts(unit.declaration)
@@ -597,6 +601,13 @@ impl<D> SemanticModel<D> {
                     }) {
                         continue;
                     }
+                    if self.is_standard_volt_difference_mismatch(
+                        *resolved_unit,
+                        dimensions,
+                        expected,
+                    ) {
+                        continue;
+                    }
                     let mut related = Vec::with_capacity(expected.len());
                     for want in expected.iter() {
                         related.push(self.related_declaration(*want, RELATED_EXPECTED_DIMENSION)?);
@@ -615,6 +626,38 @@ impl<D> SemanticModel<D> {
             }
         }
         Ok(())
+    }
+
+    /// Temporary reporting exception for the standard library's volt typing (issue #519).
+    /// The two ISQ unit types have identical physical dimensions.
+    fn is_standard_volt_difference_mismatch(
+        &self,
+        unit: DeclarationId,
+        actual: &[DeclarationId],
+        expected: &[DeclarationId],
+    ) -> bool {
+        let ([actual], [expected]) = (actual, expected) else {
+            return false;
+        };
+        [
+            (unit, "SI::volt"),
+            (*actual, "ISQElectromagnetism::ElectricPotentialUnit"),
+            (
+                *expected,
+                "ISQElectromagnetism::ElectricPotentialDifferenceUnit",
+            ),
+        ]
+        .into_iter()
+        .all(|(id, name)| {
+            self.qualified_names.qualified_name(id) == Some(name)
+                && self
+                    .storage
+                    .declaration(id)
+                    .and_then(|declaration| self.storage.document(declaration.document))
+                    .is_some_and(|document| {
+                        document.role == source_identity::SourceRole::StandardLibrary
+                    })
+        })
     }
 
     /// Reports constraint bodies and view filters that evaluate to something other than a Boolean.
