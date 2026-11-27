@@ -67,9 +67,9 @@ export function resolveDoc42LibraryPaths(root: string, editorPaths: string[], do
 export function runDoc42(
   executable: string,
   args: string[],
-  options: { cwd?: string; signal?: AbortSignal; input?: string; timeout?: number } = {},
+  options: { cwd?: string; signal?: AbortSignal; timeout?: number } = {},
 ): Promise<ProcessResult> {
-  const { input, signal, ...processOptions } = options;
+  const { signal, ...processOptions } = options;
   return new Promise((resolve, reject) => {
     signal?.throwIfAborted();
     const child = execFile(executable, args, {
@@ -91,7 +91,7 @@ export function runDoc42(
     child.stdin?.on("error", () => {
       // The exit callback reports failures if the process closes stdin early.
     });
-    child.stdin?.end(input);
+    child.stdin?.end();
   });
 }
 

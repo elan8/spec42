@@ -84,12 +84,18 @@ After opening a SysML workspace, the **Spec42** sidebar includes these sections.
    available. Use **Installation guide** for platform requirements and manual setup.
 3. Select a discovered document to generate its PDF, or choose **Generate All** for that
    project. If the list is empty, **Add a Doc42 document…** opens a model example. If Doc42
-   needs access, use **Connect Elan8 account…** with an API token from your Elan8 account.
-   **Check document…** is available without an account.
+   needs access, use **Enter Elan8 API token…** with a [token from Elan8](https://www.elan8.com/account?section=tokens).
+   The sidebar shows **Doc42 access verified** when Doc42 can use an existing license.
+   **Check document…** is available without a token.
 4. Review the PDF in the editor tab. It opens at **Fit Page**. Scroll to read successive pages
    and use the zoom controls to change the size. After a batch build, choose which PDF to preview.
    Use **Save As…** to keep a copy or **Open Externally** to open it in your system PDF viewer.
    **Open last build…** lets you reopen any PDF from the project's most recent successful build.
+
+Under **Elan8 Tools → Elan8 API token**, choose **Check Elan8 API token…** to check the
+workstation’s token online, or **Enter Elan8 API token…** to verify and save a token for Elan8
+tools on this workstation. Both actions work before you install any Elan8 tool. A valid token
+and access to Doc42 are checked separately.
 
 Doc42 generates from saved project files. It loads its bundled libraries, project libraries
 in `spec42.toml`, and extra roots from `spec42.libraryPaths` by default. If the editor uses a

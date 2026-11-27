@@ -7,13 +7,15 @@ import {
   resolveDoc42LibraryPaths, runDoc42,
 } from "./doc42Cli";
 import { Doc42Preview, Doc42Result } from "./doc42Preview";
+import { checkElan8Token, elan8TokensPage, enterElan8TokenLabel, saveElan8Token } from "./elan8Token";
 import { Elan8ToolsView, ToolGroup, toolAction } from "./elan8ToolsView";
 import { appendLibraryPathArgs } from "../lmTools/spec42CliArgs";
 
 const command = {
   install: "spec42.doc42.install",
   guide: "spec42.doc42.installationGuide",
-  login: "spec42.doc42.connectAccount",
+  login: "spec42.elan8Tools.enterApiToken",
+  checkToken: "spec42.elan8Tools.checkToken",
   generate: "spec42.doc42.generate",
   generateAll: "spec42.doc42.generateAll",
   check: "spec42.doc42.check",
@@ -38,7 +40,14 @@ export function registerElan8Tools(context: vscode.ExtensionContext): void {
   const doc42 = new Doc42Controller(context);
   const tool = new ToolGroup("Doc42", "file-pdf", true, signal => doc42.actions(signal));
   tool.id = "doc42";
-  const view = new Elan8ToolsView([tool]);
+  const tokenCheck = toolAction("Check Elan8 API token…", command.checkToken, "checklist");
+  const token = new ToolGroup("Elan8 API token", "key", false, async () => [
+    tokenCheck,
+    toolAction(enterElan8TokenLabel, command.login, "edit"),
+  ]);
+  token.id = "elan8-api-token";
+  const localDesktop = vscode.env.uiKind === vscode.UIKind.Desktop && !vscode.env.remoteName;
+  const view = new Elan8ToolsView(localDesktop ? [tool, token] : [tool]);
   const tree = vscode.window.createTreeView("spec42Elan8Tools", { treeDataProvider: view });
   const watcher = vscode.workspace.createFileSystemWatcher("**/{*.sysml,*.kerml,.project.json,spec42.toml}");
   let timer: NodeJS.Timeout | undefined;
@@ -56,11 +65,28 @@ export function registerElan8Tools(context: vscode.ExtensionContext): void {
         view.refresh();
       }
     }),
-    vscode.commands.registerCommand(command.refresh, () => view.refresh()),
+    vscode.commands.registerCommand(command.refresh, () => {
+      doc42.refreshAccess();
+      tokenCheck.description = undefined;
+      view.refresh();
+    }),
     vscode.commands.registerCommand(command.guide, () => vscode.env.openExternal(vscode.Uri.parse(DOC42_INSTALL_GUIDE))),
     vscode.commands.registerCommand(command.addDocumentGuide, () => vscode.env.openExternal(vscode.Uri.parse(addDocumentGuide))),
     vscode.commands.registerCommand(command.install, async () => { await doc42.install(); view.refresh(); }),
-    vscode.commands.registerCommand(command.login, () => doc42.login()),
+    vscode.commands.registerCommand(command.login, async () => {
+      if (!localDesktop) return;
+      await doc42.enterApiToken();
+      tokenCheck.description = undefined;
+      view.refresh();
+    }),
+    vscode.commands.registerCommand(command.checkToken, async () => {
+      if (!localDesktop) return;
+      const status = await doc42.checkToken();
+      if (!status) return;
+      tokenCheck.description = `Last check · ${status}`;
+      doc42.refreshAccess();
+      view.refresh();
+    }),
     vscode.commands.registerCommand(command.check, (root?: string, all = false) =>
       doc42.chooseAndRun("check", root, all ? "all" : undefined)),
     vscode.commands.registerCommand(command.generate, async (root?: string, name?: string) => {
@@ -83,6 +109,7 @@ class Doc42Controller implements vscode.Disposable {
   private readonly preview: Doc42Preview;
   private readonly storage: string;
   private readonly outputRoot: string;
+  private access?: { executable: string; expires: number; usable: Promise<boolean> };
   private busy = false;
 
   constructor(private readonly context: vscode.ExtensionContext) {
@@ -112,6 +139,7 @@ class Doc42Controller implements vscode.Disposable {
       return [button, ...last, guide];
     }
     const executable = install.compatible.path;
+    const access = this.accessStatus(executable);
     const folders = this.folders;
     const active = vscode.window.activeTextEditor?.document.uri;
     const activeFolder = active && vscode.workspace.getWorkspaceFolder(active);
@@ -129,7 +157,48 @@ class Doc42Controller implements vscode.Disposable {
         return item;
       });
     }
-    return [...projects, toolAction("Connect Elan8 account…", command.login, "account"), guide];
+    return [...projects, await access, guide];
+  }
+
+  refreshAccess(): void {
+    this.access = undefined;
+  }
+
+  async checkToken(): Promise<string | undefined> {
+    const status = await this.progress("Checking Elan8 API token online", signal => checkElan8Token(signal));
+    if (!status) return;
+    const result = {
+      valid: { label: "Valid token", message: "Elan8 accepted this workstation’s API token." },
+      noAccess: { label: "Valid token, no license issued", message: "The API token is valid. Elan8 could not issue a new license for its account." },
+      missing: { label: "No token found", message: "No Elan8 API token was found on this workstation." },
+      invalid: { label: "Token invalid", message: "The Elan8 API token is malformed, expired, or revoked." },
+      unverified: { label: "Could not verify", message: "The Elan8 API token could not be verified. Try again when Elan8 is reachable." },
+    }[status];
+    if (status === "missing" || status === "invalid") {
+      void vscode.window.showInformationMessage(result.message, "Open Elan8 API tokens").then(action => {
+        if (action) return vscode.env.openExternal(vscode.Uri.parse(elan8TokensPage));
+      });
+    } else {
+      void vscode.window.showInformationMessage(result.message);
+    }
+    return result.label;
+  }
+
+  private async accessStatus(executable: string): Promise<vscode.TreeItem> {
+    // Model-file edits can refresh the tree often. Doc42 owns the signed license cache.
+    if (this.access?.executable !== executable || Date.now() >= this.access.expires) {
+      const usable = runDoc42(executable, ["license"], { signal: this.lifetime.signal, timeout: 5000 })
+        .then(result => result.exitCode === 0, () => false);
+      this.access = { executable, expires: Date.now() + 60_000, usable };
+    }
+    if (await this.access.usable) {
+      const item = new vscode.TreeItem("Doc42 access verified");
+      item.iconPath = new vscode.ThemeIcon("pass");
+      return item;
+    }
+    const item = toolAction(enterElan8TokenLabel, command.login, "key");
+    item.description = "Doc42 access not verified";
+    return item;
   }
 
   private async projectActions(folder: vscode.WorkspaceFolder, executable: string, signal: AbortSignal): Promise<vscode.TreeItem[]> {
@@ -198,13 +267,9 @@ class Doc42Controller implements vscode.Disposable {
     });
   }
 
-  async login(): Promise<void> {
-    if (!this.requireTrust() || !this.supported) return;
+  async enterApiToken(): Promise<void> {
     await this.exclusive(async () => {
-      const installation = await this.requireInstallation(this.lifetime.signal);
-      if (await this.connect(installation.path)) {
-        void vscode.window.showInformationMessage("Doc42 is connected to your Elan8 account.");
-      }
+      await this.saveApiToken();
     });
   }
 
@@ -233,13 +298,13 @@ class Doc42Controller implements vscode.Disposable {
         runDoc42(installation.path, ["license"], { signal }),
       );
       if (!licensed) return;
+      this.access = { executable: installation.path, expires: Date.now() + 60_000, usable: Promise.resolve(licensed.exitCode === 0) };
       if (licensed.exitCode !== 0) {
-        const connect = "Connect Elan8 account…";
         const action = await vscode.window.showErrorMessage(
           licensed.stderr.trim() || "Doc42 needs an active Elan8 license to generate PDFs.",
-          connect,
+          enterElan8TokenLabel,
         );
-        if (action !== connect || !await this.connect(installation.path)) return;
+        if (action !== enterElan8TokenLabel || !await this.saveApiToken()) return;
         if (!await this.saveProjectEdits(project)) return;
         report = await this.check(installation.path, project.root, checkArgs);
         if (!report) return;
@@ -318,31 +383,37 @@ class Doc42Controller implements vscode.Disposable {
     return compatible;
   }
 
-  private async connect(executable: string): Promise<boolean> {
-    const action = await vscode.window.showInformationMessage(
-      "Doc42 uses an Elan8 API token. Create one in your Elan8 account, then enter it here.",
-      "Open Elan8 account", "Enter token",
-    );
-    if (!action) return false;
-    if (action === "Open Elan8 account") {
-      await vscode.env.openExternal(vscode.Uri.parse("https://www.elan8.com/account?section=tokens"));
-    }
+  private async saveApiToken(): Promise<boolean> {
     const token = (await vscode.window.showInputBox({
-      title: "Connect Doc42 to your Elan8 account",
-      prompt: "Paste your Elan8 API token",
+      title: "Enter Elan8 API token",
+      prompt: "Paste a valid Elan8 API token",
       password: true,
       ignoreFocusOut: true,
       validateInput: value => value.trim() ? undefined : "Enter your Elan8 API token.",
     }))?.trim();
     if (!token) return false;
-    const connected = await this.progress("Connecting Doc42", async signal => {
-      const result = await runDoc42(executable, ["login"], { input: `${token}\n`, signal });
-      if (result.exitCode !== 0) {
-        throw new Error((result.stderr.trim() || "Doc42 could not connect to Elan8.").split(token).join("[redacted]"));
-      }
-      return true;
-    });
-    return connected === true;
+    let status;
+    try {
+      status = await this.progress("Verifying Elan8 API token", signal => saveElan8Token(token, signal));
+    } catch {
+      void vscode.window.showErrorMessage("Could not write to the shared Elan8 API token store.");
+      return false;
+    }
+    if (!status) return false;
+    if (status === "invalid" || status === "unverified" || status === "missing") {
+      void vscode.window.showErrorMessage(status === "invalid"
+        ? "Enter an Elan8 API token that is valid and has not expired."
+        : "Could not verify the Elan8 API token. Try again when Elan8 is reachable.");
+      return false;
+    }
+    this.refreshAccess();
+    const message = process.env.ELAN8_TOKEN?.trim()
+      ? "Elan8 API token saved. Tools in this session use the ELAN8_TOKEN environment variable first."
+      : status === "noAccess"
+        ? "Elan8 API token saved. Elan8 could not issue a new license for its account."
+        : "Elan8 API token saved.";
+    void vscode.window.showInformationMessage(message);
+    return true;
   }
 
   private async selectProject(root?: string, onlyWithResults = false): Promise<Project | undefined> {

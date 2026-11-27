@@ -158,7 +158,8 @@
     "commands": [
       { "command": "spec42.doc42.install", "title": "Install Doc42", "category": "Spec42" },
       { "command": "spec42.doc42.installationGuide", "title": "Open Doc42 Installation Guide", "category": "Spec42" },
-      { "command": "spec42.doc42.connectAccount", "title": "Connect Doc42 to Elan8", "category": "Spec42" },
+      { "command": "spec42.elan8Tools.enterApiToken", "title": "Enter Elan8 API Token", "category": "Spec42" },
+      { "command": "spec42.elan8Tools.checkToken", "title": "Check Elan8 API Token", "category": "Spec42" },
       { "command": "spec42.doc42.generate", "title": "Generate Doc42 PDF", "category": "Spec42" },
       { "command": "spec42.doc42.generateAll", "title": "Generate All Doc42 PDFs", "category": "Spec42" },
       { "command": "spec42.doc42.check", "title": "Check Doc42 Document", "category": "Spec42" },
@@ -700,7 +701,7 @@
     "compile": "npm run typecheck && tsc -p ./ && npm run build:extension && npm run build:diagram-webview && npm run build:pdf-preview",
     "test:lm-cli-unit": "tsc -p ./ && node --test out/test/suite/spec42Cli.test.js",
     "test:diagram-unit": "tsc -p ./ && node --test out/test/suite/diagramViewerCore.test.js",
-    "test:doc42-unit": "tsc -p ./ && node --test out/test/suite/doc42Cli.test.js",
+    "test:doc42-unit": "tsc -p ./ && node --test out/test/suite/doc42Cli.test.js out/test/suite/elan8Token.test.js",
     "typecheck": "tsc -p ./ --noEmit",
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",
