@@ -61,26 +61,37 @@ export class Doc42Preview implements vscode.Disposable {
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}' ${source}; style-src 'nonce-${nonce}'; connect-src ${source}; worker-src blob:; img-src blob: data:; font-src blob: data:;">
   <title>Doc42 PDF preview</title>
   <style nonce="${nonce}">
-    body { margin: 0; }
-    header { position: sticky; top: 0; z-index: 1; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 8px 12px; background: var(--vscode-editor-background); border-bottom: 1px solid var(--vscode-panel-border); }
+    body { margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    header { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 8px 12px; background: var(--vscode-editor-background); border-bottom: 1px solid var(--vscode-panel-border); }
+    .zoom-controls { display: flex; gap: 4px; align-items: center; }
     button { padding: 4px 9px; color: var(--vscode-button-secondaryForeground); background: var(--vscode-button-secondaryBackground); border: 1px solid transparent; border-radius: 2px; cursor: pointer; font: inherit; }
     button:hover:enabled { background: var(--vscode-button-secondaryHoverBackground); }
     button:focus-visible { outline: 1px solid var(--vscode-focusBorder); }
     button:disabled { opacity: .5; cursor: default; }
+    button[aria-pressed="true"] { border-color: var(--vscode-focusBorder); }
     #status { flex: 1; }
-    main { padding: 12px; }
-    canvas:not([hidden]) { display: block; margin: 0 auto; max-width: 100%; height: auto; background: white; }
+    #zoom-level { min-width: 4em; text-align: center; }
+    #viewport { flex: 1; min-height: 0; position: relative; overflow: auto; overflow-anchor: none; scrollbar-gutter: stable; background: var(--vscode-editorWidget-background); }
+    #viewport:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px; }
+    #pages { box-sizing: border-box; min-width: 100%; width: max-content; padding: 12px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+    .pdf-page { position: relative; display: grid; place-items: center; overflow: hidden; background: white; color: #333; box-shadow: 0 1px 6px #0005; }
+    .pdf-page canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+    .pdf-page p { margin: 12px; text-align: center; }
   </style>
 </head>
 <body data-pdf="${pdfUri}">
   <header aria-label="PDF controls">
-    <button id="previous" disabled>Previous</button>
-    <button id="next" disabled>Next</button>
+    <div class="zoom-controls" role="group" aria-label="Zoom controls">
+      <button id="fit-page" aria-pressed="true" disabled>Fit Page</button>
+      <button id="zoom-out" aria-label="Zoom out" disabled>−</button>
+      <span id="zoom-level" aria-label="Zoom level">—</span>
+      <button id="zoom-in" aria-label="Zoom in" disabled>+</button>
+    </div>
     <span id="status" role="status">Loading PDF…</span>
     <button id="save">Save As…</button>
     <button id="open">Open Externally</button>
   </header>
-  <main><canvas id="page" aria-label="Rendered PDF page" hidden></canvas></main>
+  <main id="viewport" aria-label="PDF pages" tabindex="0"><div id="pages"></div></main>
   <script type="module" nonce="${nonce}" src="${assetUri}/preview.mjs"></script>
 </body>
 </html>`;

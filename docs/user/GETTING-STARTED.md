@@ -86,7 +86,8 @@ After opening a SysML workspace, the **Spec42** sidebar includes these sections.
    project. If the list is empty, **Add a Doc42 document…** opens a model example. If Doc42
    needs access, use **Connect Elan8 account…** with an API token from your Elan8 account.
    **Check document…** is available without an account.
-4. Review the PDF in the editor tab. After a batch build, choose which PDF to preview.
+4. Review the PDF in the editor tab. It opens at **Fit Page**. Scroll to read successive pages
+   and use the zoom controls to change the size. After a batch build, choose which PDF to preview.
    Use **Save As…** to keep a copy or **Open Externally** to open it in your system PDF viewer.
    **Open last build…** lets you reopen any PDF from the project's most recent successful build.
 
