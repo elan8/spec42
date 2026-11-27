@@ -45,12 +45,6 @@ package States {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_state_subaction_derived_facts.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 1 4) (end 6 5))
-      )
     )
   )
 )

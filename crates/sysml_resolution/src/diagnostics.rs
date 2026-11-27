@@ -778,7 +778,7 @@ semantic_diagnostic_codes! {
         "A transition guard must evaluate to a Boolean.";
     }
     Advisory {
-    /// A state definition owns states but declares no initial transition.
+    /// Retired advisory code, retained for compatibility; initial transitions are optional.
     MissingInitialState => "missing_initial_state",
         "This state definition owns states but declares no initial transition.";
     /// Retired advisory code, retained for compatibility; finality is optional in SysML.

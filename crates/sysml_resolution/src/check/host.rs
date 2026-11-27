@@ -1008,8 +1008,6 @@ impl<D> SemanticModel<D> {
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        let mut initial_by_context: BTreeMap<DeclarationId, Vec<DeclarationId>> = BTreeMap::new();
-
         for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
             self.collect_succession_guard(id, diagnostics)?;
@@ -1073,9 +1071,6 @@ impl<D> SemanticModel<D> {
                             ),
                             Some((target, RELATED_TARGET)),
                         )?);
-                    }
-                    if let Some(context) = self.enclosing(id, is_state_kind) {
-                        initial_by_context.entry(context).or_default().push(id);
                     }
                 }
                 DeclarationKind::Succession => {
@@ -1147,7 +1142,6 @@ impl<D> SemanticModel<D> {
             }
         }
 
-        self.collect_state_machine_shape(declared, &initial_by_context, diagnostics)?;
         Ok(())
     }
 
@@ -1310,59 +1304,6 @@ impl<D> SemanticModel<D> {
                 ]);
                 diagnostics.push(diagnostic);
             }
-        }
-        Ok(())
-    }
-
-    /// The cardinality and completeness rules of each state definition in `document`.
-    pub(crate) fn collect_state_machine_shape(
-        &self,
-        declared: &[DeclarationId],
-        initial_by_context: &BTreeMap<DeclarationId, Vec<DeclarationId>>,
-        diagnostics: &mut Vec<Diagnostic>,
-    ) -> Result<(), ResolutionError> {
-        // The cardinality of initial transitions is deliberately not reported. The pinned parser
-        // gives a bare `then <state>;` initial marker and a `then <state>;` continuation after a
-        // nested state the same shape, so both lower as an initial-state declaration, and counting
-        // them would report an ordinary continuation as a second initial transition. Distinguishing
-        // them needs a parser fact this publication does not have.
-        for id in declared.iter().copied() {
-            if self.kind_of(id) != Some(DeclarationKind::StateDefinition) {
-                continue;
-            }
-            if self.storage.declaration_facts(id).is_some_and(|facts| {
-                facts
-                    .modifiers
-                    .effectively_abstract(DeclarationKind::StateDefinition)
-            }) {
-                continue;
-            }
-            let states = self
-                .child_declarations(id)
-                .iter()
-                .filter(|child| {
-                    matches!(
-                        self.kind_of(**child),
-                        Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
-                    )
-                })
-                .count();
-            if states == 0 {
-                continue;
-            }
-            if !initial_by_context.contains_key(&id) {
-                diagnostics.push(self.declaration_message_diagnostic(
-                    id,
-                    DiagnosticCode::MissingInitialState,
-                    DiagnosticSeverity::Information,
-                    Some(format!(
-                        "State definition '{}' owns states but declares no initial transition.",
-                        self.display_name(id)
-                    )),
-                )?);
-            }
-            // SysML 7.18.2-3 permits state behavior without a transition to `done`.
-            // A finality indicator is optional even when there is no transition cycle.
         }
         Ok(())
     }

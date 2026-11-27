@@ -857,8 +857,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "missing_initial_state",
         severity: "information",
-        meaning: "Modeling guidance: a state definition has state usages but no initial transition (including guarded entry successions).",
-        typical_fix: "Add a `then` or `first` transition from entry to designate how execution enters the state machine.",
+        meaning: "Retired modeling guidance; no longer emitted. SysML 7.18.2 does not require an explicit initial transition.",
+        typical_fix: "No change required. Specify an entry succession when the model needs to designate an initial substate.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

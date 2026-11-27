@@ -39,12 +39,6 @@ package GeneratedActionForms {
 (fixture-diagnostics
   (document "memory://snapshot/generated_library_specialization_send_terminate_transition.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 6 4) (end 10 5))
-      )
     )
   )
 )

@@ -28,12 +28,6 @@ package StateUsageExclusiveSpecialization {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_state_usage_exclusive_specialization.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 1 4) (end 3 5))
-      )
     )
   )
 )

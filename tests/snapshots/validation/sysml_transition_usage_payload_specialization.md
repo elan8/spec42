@@ -36,12 +36,6 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_transition_usage_payload_specialization.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 3 4) (end 12 5))
-      )
     )
   )
 )
