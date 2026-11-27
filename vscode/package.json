@@ -166,7 +166,7 @@
       { "command": "spec42.doc42.addDocumentGuide", "title": "Add a Doc42 Document", "category": "Spec42" },
       { "command": "spec42.doc42.openLastPdf", "title": "Open Last Doc42 Build", "category": "Spec42" },
       { "command": "spec42.elan8Tools.plans", "title": "View Elan8 Plans and Trials", "category": "Spec42" },
-      { "command": "spec42.elan8Tools.refresh", "title": "Refresh Engineering Apps", "category": "Spec42", "icon": "$(refresh)" },
+      { "command": "spec42.elan8Tools.refresh", "title": "Refresh ModelApps", "category": "Spec42", "icon": "$(refresh)" },
       {
         "command": "sysml.formatDocument",
         "title": "Format SysML Document",
@@ -470,7 +470,7 @@
         },
         {
           "id": "spec42Elan8Tools",
-          "name": "Engineering Apps"
+          "name": "ModelApps"
         }
       ],
       "sysmlInspectorContainer": [

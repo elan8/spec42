@@ -405,7 +405,7 @@ class Doc42Controller implements vscode.Disposable {
 
   private async requireInstallation(signal: AbortSignal) {
     const { compatible } = await this.find(signal);
-    if (!compatible) throw new Error(`Install Doc42 ${DOC42_VERSION} from Engineering Apps first.`);
+    if (!compatible) throw new Error(`Install Doc42 ${DOC42_VERSION} from ModelApps first.`);
     return compatible;
   }
 
