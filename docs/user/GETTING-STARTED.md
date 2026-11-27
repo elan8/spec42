@@ -73,13 +73,14 @@ After opening a SysML workspace, the **Spec42** sidebar includes these sections.
 - **Examples** for opening bundled sample workspaces.
 - **Help** for quick reference links and the quick-reference panel.
 - **Library** for searching the bundled standard/domain libraries and any custom libraries you add.
-- **Elan8 Tools** for installing and running tools such as Doc42.
+- **Engineering Apps** for installing and running apps such as Doc42. **Plans and trials**
+  opens Elan8’s current offers and availability.
 
 ## Generate a PDF with Doc42
 
 1. Open your model project folder in desktop VS Code. In a multi-root workspace, expand the
    project folder you want under Doc42.
-2. Open **Spec42 → Elan8 Tools → Doc42** and click **Install Doc42**. Managed installation
+2. Open **Spec42 → Engineering Apps → Doc42** and click **Install Doc42**. Managed installation
    supports local Windows x64 and Linux x64 and reuses a compatible Doc42 on your PATH if
    available. Use **Installation guide** for platform requirements and manual setup.
 3. Select a discovered document to generate its PDF, or choose **Generate All** for that
@@ -92,8 +93,8 @@ After opening a SysML workspace, the **Spec42** sidebar includes these sections.
    Use **Save As…** to keep a copy or **Open Externally** to open it in your system PDF viewer.
    **Open last build…** lets you reopen any PDF from the project's most recent successful build.
 
-Under **Elan8 Tools → Elan8 API token**, choose **Check Elan8 API token…** to check the
-workstation’s token online, or **Enter Elan8 API token…** to verify and save a token for Elan8
+Under **Engineering Apps → Elan8 API token**, choose **Check token…** to check the
+workstation’s token online, or **Enter token…** to verify and save a token for Elan8
 tools on this workstation. Both actions work before you install any Elan8 tool. A valid token
 and access to Doc42 are checked separately.
 

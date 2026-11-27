@@ -22,7 +22,7 @@ export class Elan8ToolsView implements vscode.TreeDataProvider<vscode.TreeItem>,
   private scan = new AbortController();
   readonly onDidChangeTreeData = this.changed.event;
 
-  constructor(private readonly tools: ToolGroup[]) {}
+  constructor(private readonly tools: vscode.TreeItem[]) {}
 
   getTreeItem(item: vscode.TreeItem): vscode.TreeItem {
     return item;
