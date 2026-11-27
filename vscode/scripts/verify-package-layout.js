@@ -21,6 +21,10 @@ if (!fs.existsSync(vsixPath)) {
 
 const requiredEntries = new Set([
   "extension/package.json",
+  "extension/media/pdfjs/LICENSE",
+  "extension/media/pdfjs/pdf.min.mjs",
+  "extension/media/pdfjs/pdf.worker.min.mjs",
+  "extension/media/pdfjs/preview.mjs",
 ]);
 
 yauzl.open(vsixPath, { lazyEntries: true }, (openError, archive) => {
@@ -38,7 +42,7 @@ yauzl.open(vsixPath, { lazyEntries: true }, (openError, archive) => {
         `VSIX is missing required entries: ${[...requiredEntries].sort().join(", ")}`,
       );
     }
-    console.log(`Verified generated diagram Wasm in ${path.basename(vsixPath)}`);
+    console.log(`Verified required assets in ${path.basename(vsixPath)}`);
   });
   archive.readEntry();
 });

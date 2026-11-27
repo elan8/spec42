@@ -324,6 +324,9 @@ jobs:
       - name: LM CLI argv unit tests
         run: cd vscode && npm run test:lm-cli-unit
 
+      - name: Doc42 integration unit tests
+        run: cd vscode && npm run test:doc42-unit
+
       - name: Library view model unit tests
         run: cd vscode && npm run test:library-unit
 

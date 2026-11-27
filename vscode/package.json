@@ -34,7 +34,8 @@
   ],
   "activationEvents": [
     "workspaceContains:**/*.sysml",
-    "workspaceContains:**/*.kerml"
+    "workspaceContains:**/*.kerml",
+    "onView:spec42Elan8Tools"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -155,6 +156,15 @@
       }
     ],
     "commands": [
+      { "command": "spec42.doc42.install", "title": "Install Doc42", "category": "Spec42" },
+      { "command": "spec42.doc42.installationGuide", "title": "Open Doc42 Installation Guide", "category": "Spec42" },
+      { "command": "spec42.doc42.connectAccount", "title": "Connect Doc42 to Elan8", "category": "Spec42" },
+      { "command": "spec42.doc42.generate", "title": "Generate Doc42 PDF", "category": "Spec42" },
+      { "command": "spec42.doc42.generateAll", "title": "Generate All Doc42 PDFs", "category": "Spec42" },
+      { "command": "spec42.doc42.check", "title": "Check Doc42 Document", "category": "Spec42" },
+      { "command": "spec42.doc42.addDocumentGuide", "title": "Add a Doc42 Document", "category": "Spec42" },
+      { "command": "spec42.doc42.openLastPdf", "title": "Open Last Doc42 Build", "category": "Spec42" },
+      { "command": "spec42.elan8Tools.refresh", "title": "Refresh Elan8 Tools", "category": "Spec42", "icon": "$(refresh)" },
       {
         "command": "sysml.formatDocument",
         "title": "Format SysML Document",
@@ -327,6 +337,7 @@
     ],
     "menus": {
       "view/title": [
+        { "command": "spec42.elan8Tools.refresh", "when": "view == spec42Elan8Tools", "group": "navigation" },
         {
           "command": "sysml.library.refresh",
           "when": "view == spec42Library",
@@ -454,6 +465,10 @@
           "name": "Library",
           "type": "webview",
           "contextualTitle": "Spec42 Library"
+        },
+        {
+          "id": "spec42Elan8Tools",
+          "name": "Elan8 Tools"
         }
       ],
       "sysmlInspectorContainer": [
@@ -592,6 +607,13 @@
           "default": [],
           "description": "Custom paths to additional SysML library roots. Files under these paths are indexed for hover, go-to-definition, and completion."
         },
+        "spec42.doc42.libraryPaths": {
+          "type": ["array", "null"],
+          "items": { "type": "string" },
+          "default": null,
+          "scope": "resource",
+          "description": "Extra library roots for Doc42, relative to the workspace folder. Null uses spec42.libraryPaths. An empty list uses Doc42's bundled libraries and the project's spec42.toml settings."
+        },
         "spec42.disabledLibraries": {
           "type": "array",
           "items": {
@@ -674,9 +696,11 @@
     "stage:package-content": "node scripts/stage-package-content.js",
     "build:extension": "node scripts/build-extension.js",
     "build:diagram-webview": "node scripts/build-diagram-webview.js",
-    "compile": "npm run typecheck && tsc -p ./ && npm run build:extension && npm run build:diagram-webview",
+    "build:pdf-preview": "node scripts/stage-pdf-preview.js",
+    "compile": "npm run typecheck && tsc -p ./ && npm run build:extension && npm run build:diagram-webview && npm run build:pdf-preview",
     "test:lm-cli-unit": "tsc -p ./ && node --test out/test/suite/spec42Cli.test.js",
     "test:diagram-unit": "tsc -p ./ && node --test out/test/suite/diagramViewerCore.test.js",
+    "test:doc42-unit": "tsc -p ./ && node --test out/test/suite/doc42Cli.test.js",
     "typecheck": "tsc -p ./ --noEmit",
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",
@@ -695,6 +719,7 @@
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^4.1.0",
     "esbuild": "^0.25.12",
+    "pdfjs-dist": "5.7.284",
     "typescript": "~5.6.0",
     "yauzl": "^2.10.0"
   },
