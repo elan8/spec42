@@ -10,6 +10,38 @@ use crate::common::*;
 use sysml_resolution::*;
 
 #[test]
+fn failed_required_constraint_messages_use_authored_names() {
+    let workspace = r#"package Requirements {
+        requirement def MassLimit {
+            require constraint { false }
+            require constraint margin { false }
+        }
+        requirement def <'REQ-2'> {
+            require constraint { false }
+        }
+        requirement def {
+            require constraint { false }
+        }
+    }"#;
+    let publication = publication_for(&[("memory://requirements.sysml", workspace)]);
+    let messages: Vec<_> = publication
+        .diagnostics()
+        .iter()
+        .filter(|diagnostic| diagnostic.code() == &DiagnosticCode::AnalysisConstraintFailed)
+        .map(|diagnostic| diagnostic.message())
+        .collect();
+    assert_eq!(
+        messages,
+        [
+            "Required constraint in requirement 'MassLimit' evaluated to false.",
+            "Required constraint 'margin' in requirement 'MassLimit' evaluated to false.",
+            "Required constraint in requirement 'REQ-2' evaluated to false.",
+            "Required constraint evaluated to false.",
+        ]
+    );
+}
+
+#[test]
 fn skipping_evaluation_publishes_not_run_rather_than_nothing() {
     let source = "package P { attribute mass : Integer = 5; }";
     let request = || {
