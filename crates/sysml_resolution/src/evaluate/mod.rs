@@ -19,8 +19,8 @@ use crate::model::evaluation;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DocumentIdx;
-use crate::model::EvaluatedValue;
 use crate::model::ReferenceKind;
+use crate::model::{EvaluatedValue, QuantityUnitBinding};
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
 use crate::resolve::results::SolverStatus;
@@ -104,36 +104,79 @@ fn numerical_callees(
 }
 
 fn bind_callees(shape: &mut ExpressionEvalShape, document: DocumentIdx, callees: &CalleeTargets) {
-    fn bind(node: &mut EvalNode, document: DocumentIdx, callees: &CalleeTargets) {
-        match node {
-            EvalNode::Call(target, arguments) => {
+    if let ExpressionEvalShape::HasOperand(tree) = shape {
+        tree.visit_mut(&mut |node| {
+            if let EvalNode::Call(target, _) = node {
                 if let CallTarget::AuthoredEnd(end) = target {
                     *target = callees
                         .get(&(document, *end))
                         .copied()
                         .unwrap_or(CallTarget::Unsupported);
                 }
-                for argument in arguments {
-                    bind(argument, document, callees);
-                }
             }
-            EvalNode::Invocation(arguments) | EvalNode::Sequence(arguments) => {
-                for argument in arguments {
-                    bind(argument, document, callees);
-                }
-            }
-            EvalNode::Comparison(_, left, right)
-            | EvalNode::Arithmetic(_, left, right)
-            | EvalNode::Logical(_, left, right) => {
-                bind(left, document, callees);
-                bind(right, document, callees);
-            }
-            EvalNode::Unary(_, operand) => bind(operand, document, callees),
-            EvalNode::Literal(_) | EvalNode::Operand(_) => {}
-        }
+        });
     }
-    if let ExpressionEvalShape::HasOperand(tree) = shape {
-        bind(tree, document, callees);
+}
+
+/// Lookup by source occurrence, shared by authored and contextual evaluation.
+#[derive(Default)]
+pub(crate) struct UnitBindings {
+    by_site: std::collections::BTreeMap<(DocumentIdx, usize, usize), UnitBinding>,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum UnitBinding {
+    Resolved(DeclarationId),
+    Invalid,
+    Unsupported,
+}
+
+impl UnitBindings {
+    pub(crate) fn new(units: &[expression::SettledUnit]) -> Self {
+        let mut bindings = Self::default();
+        for unit in units {
+            let binding = match unit.outcome {
+                expression::UnitOutcome::Resolved { unit, .. } => UnitBinding::Resolved(unit),
+                expression::UnitOutcome::UnknownSymbol
+                | expression::UnitOutcome::Unresolved
+                | expression::UnitOutcome::Ambiguous(_) => UnitBinding::Invalid,
+                expression::UnitOutcome::UnsupportedExpression
+                | expression::UnitOutcome::CatalogUnavailable => UnitBinding::Unsupported,
+            };
+            bindings
+                .by_site
+                .entry((unit.document, unit.span.offset, unit.span.len))
+                .and_modify(|previous| {
+                    if *previous != binding {
+                        *previous = UnitBinding::Invalid;
+                    }
+                })
+                .or_insert(binding);
+        }
+        bindings
+    }
+
+    fn bind(&self, tree: &mut EvalNode, document: DocumentIdx) {
+        tree.visit_mut(&mut |node| {
+            let EvalNode::Literal(value) = node else {
+                return;
+            };
+            let EvaluatedValue::Quantity(_, unit) = value else {
+                return;
+            };
+            let QuantityUnitBinding::Authored { offset, len } = unit.binding else {
+                return;
+            };
+            match self.by_site.get(&(document, offset, len)) {
+                Some(UnitBinding::Resolved(id)) => {
+                    unit.binding = QuantityUnitBinding::Resolved(*id)
+                }
+                Some(UnitBinding::Invalid) => *value = EvaluatedValue::UnresolvedOperand,
+                Some(UnitBinding::Unsupported) | None => {
+                    unit.binding = QuantityUnitBinding::Unsupported
+                }
+            }
+        });
     }
 }
 
@@ -148,14 +191,13 @@ fn bind_callees(shape: &mut ExpressionEvalShape, document: DocumentIdx, callees:
 pub(crate) struct EvaluationFact {
     pub(crate) declaration: DeclarationId,
     pub(crate) state: EvaluationState,
+    /// Identity of the unit carried by a quantity result, including computed values.
+    pub(crate) unit: Option<DeclarationId>,
 }
 
 /// Slice 2 of the constraint/calc expression fact family (see `4ca42166` for slice 1). Runs
-/// strictly after `resolve_dense`'s resolution fixed point settles, mirroring where slice 1's own
-/// `ExpressionOperand` references are resolved: literal-only expressions never depend on
-/// resolution and could in principle fold earlier, but folding here keeps evaluation a single
-/// pass over one immutable resolved state, with no risk of an evaluation fact observing a
-/// mid-fixed-point resolution outcome.
+/// strictly after `resolve_dense`'s resolution fixed point settles. Both expression operands and
+/// bracketed unit occurrences read the same immutable resolution product.
 ///
 /// If resolution itself did not converge, no evaluation fact is published: an expression whose
 /// operand's own resolution outcome is not settled cannot be conservatively classified as
@@ -179,6 +221,7 @@ pub(crate) fn compute_evaluation(
     sources: &ParsedSources,
     resolution: &ResolutionResults,
     policy: EvaluationPolicy,
+    units: &UnitBindings,
 ) -> SettledEvaluation {
     if policy == EvaluationPolicy::Skip {
         // A declared outcome, not an absent one: every element that has an expression reports
@@ -196,13 +239,14 @@ pub(crate) fn compute_evaluation(
                 .iter()
                 .map(|pending| EvaluationFact {
                     declaration: pending.declaration,
-                    state: skipped(&classify_authored(sources, &pending.expression)),
+                    state: skipped(&classify_authored(sources, &pending.expression, units)),
+                    unit: None,
                 })
                 .collect(),
             filters: {
                 let operand_targets = operand_targets(storage, resolution);
                 settled_filters(storage, |condition| {
-                    let shape = classify_authored(sources, &condition.expression);
+                    let shape = classify_authored(sources, &condition.expression, units);
                     (
                         skipped(&shape),
                         evaluability_inputs(&shape, condition.owner, &operand_targets),
@@ -226,7 +270,7 @@ pub(crate) fn compute_evaluation(
         .evaluation_facts
         .iter()
         .map(|pending| {
-            let mut shape = classify_authored(sources, &pending.expression);
+            let mut shape = classify_authored(sources, &pending.expression, units);
             bind_callees(&mut shape, pending.expression.document, &callees);
             shape
         })
@@ -319,6 +363,7 @@ pub(crate) fn compute_evaluation(
             facts.push(EvaluationFact {
                 declaration: pending.declaration,
                 state: EvaluationState::Unsupported,
+                unit: None,
             });
             continue;
         }
@@ -328,6 +373,10 @@ pub(crate) fn compute_evaluation(
         facts.push(EvaluationFact {
             declaration: pending.declaration,
             state: evaluation::evaluation_state(outcome, shape),
+            unit: match outcome {
+                EvaluatedValue::Quantity(_, unit) => unit.identity(),
+                _ => None,
+            },
         });
     }
 
@@ -335,7 +384,7 @@ pub(crate) fn compute_evaluation(
     // read-only consumers of it: a condition defines no declaration's value, so nothing can depend
     // on one, and folding them here cannot change what any declaration evaluated to.
     let filters = settled_filters(storage, |condition| {
-        let mut shape = classify_authored(sources, &condition.expression);
+        let mut shape = classify_authored(sources, &condition.expression, units);
         bind_callees(&mut shape, condition.expression.document, &callees);
         (
             fold_settled_expression(

@@ -1268,6 +1268,7 @@ mod tests {
             &empty_parsed_sources(),
             &resolution_with_status(SolverStatus::Converged),
             EvaluationPolicy::Evaluate,
+            &crate::evaluate::UnitBindings::default(),
         );
         let SettledEvaluation::Settled { filters, .. } = settled else {
             panic!("a converged publication settles its filter conditions");
@@ -1294,6 +1295,7 @@ mod tests {
             &empty_parsed_sources(),
             &resolution_with_status(SolverStatus::NonConverged),
             EvaluationPolicy::Evaluate,
+            &crate::evaluate::UnitBindings::default(),
         );
         assert!(
             matches!(settled, SettledEvaluation::Vacuous),

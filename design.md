@@ -137,8 +137,9 @@ pipeline ─► lower ─► resolve ─► evaluate ─► index ─► diagnos
   moved, not borrowed mutably, so there is no write-back and no half-built model to observe.
 - Every derived fact has one writer. Evaluation is decided in `evaluate`, never at lowering time.
   The settled type closure and unit outcomes are built from resolved facts before authored
-  evaluation and carried into the indexes that publish them. Indexed construction first binds
-  contextual expression records and static result types, then invokes the same evaluator with
+  evaluation and carried into the indexes that publish them. Authored and contextual quantity
+  folding use the same unit identities and preserve the authored spelling for display. Indexed
+  construction first binds contextual expression records and static result types, then invokes the same evaluator with
   those frozen bindings to settle contextual values before publishing `Indexed`. Shared expression
   records live at the semantic boundary in `expression`; the evaluator does not depend on index
   construction code.

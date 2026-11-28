@@ -16,6 +16,7 @@
 use crate::evaluate::compute_evaluation;
 use crate::evaluate::EvaluationFact;
 use crate::evaluate::SettledEvaluation;
+use crate::evaluate::UnitBindings;
 use crate::evaluation::EvaluationPolicy;
 use crate::index::bindings::BindingConnectorIndex;
 use crate::index::connector_context::context_featuring_candidates;
@@ -101,6 +102,7 @@ pub(crate) struct Evaluated {
     resolution: ResolutionResults,
     types: TypeIndex,
     units: SettledUnits,
+    unit_bindings: UnitBindings,
     evaluation: Box<[EvaluationFact]>,
     filter_conditions: Option<Box<[SettledFilter]>>,
     completeness: PublicationCompleteness,
@@ -811,11 +813,17 @@ impl Resolved {
             resolution: &self.resolution,
             types: &types,
         })?;
-        let (evaluation, filter_conditions) =
-            match compute_evaluation(&self.storage, &self.sources, &self.resolution, policy) {
-                SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
-                SettledEvaluation::Vacuous => (Box::default(), None),
-            };
+        let unit_bindings = UnitBindings::new(units.all_units());
+        let (evaluation, filter_conditions) = match compute_evaluation(
+            &self.storage,
+            &self.sources,
+            &self.resolution,
+            policy,
+            &unit_bindings,
+        ) {
+            SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
+            SettledEvaluation::Vacuous => (Box::default(), None),
+        };
         Ok(Evaluated {
             storage: self.storage,
             sources: self.sources,
@@ -826,6 +834,7 @@ impl Resolved {
             resolution: self.resolution,
             types,
             units,
+            unit_bindings,
             evaluation,
             filter_conditions,
             completeness: self.completeness,
@@ -899,7 +908,7 @@ impl Evaluated {
             },
         };
         crate::index::expression_typing::settle(&mut indexed);
-        crate::evaluate::contextual::settle(&mut indexed, &self.sources)?;
+        crate::evaluate::contextual::settle(&mut indexed, &self.sources, &self.unit_bindings)?;
         Ok((indexed, self.sources))
     }
 }

@@ -29,9 +29,8 @@ pub enum EvaluatedScalar {
     String(Box<str>),
     /// A magnitude with an authored unit token, e.g. `10 [kg]`.
     ///
-    /// The unit is the raw authored text (`kg`, `SI::s`, `m/s^2`), never a resolved declaration:
-    /// units may contain operators, so the parser hands them over as opaque text rather than as a
-    /// qualified reference, and this layer does not invent a resolution the parser cannot support.
+    /// The unit field retains the authored spelling for display. Quantity operations use the
+    /// resolved declaration when one was established by unit resolution.
     Quantity {
         magnitude: Box<EvaluatedScalar>,
         unit: Box<str>,

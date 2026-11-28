@@ -1525,6 +1525,34 @@ impl ReferenceKind {
     }
 }
 
+/// Unit evidence used by the folding algebra. The authored spelling travels separately.
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) struct QuantityUnit {
+    pub(crate) text: String,
+    pub(crate) binding: QuantityUnitBinding,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum QuantityUnitBinding {
+    Authored { offset: usize, len: usize },
+    Resolved(DeclarationId),
+    Unsupported,
+}
+
+impl QuantityUnit {
+    pub(crate) fn identity(&self) -> Option<DeclarationId> {
+        match self.binding {
+            QuantityUnitBinding::Resolved(id) => Some(id),
+            QuantityUnitBinding::Authored { .. } | QuantityUnitBinding::Unsupported => None,
+        }
+    }
+
+    pub(crate) fn same_unit(&self, other: &Self) -> bool {
+        self.identity()
+            .is_some_and(|id| other.identity() == Some(id))
+    }
+}
+
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
 /// (slice 2 of the constraint/calc expression fact family; slice 1, `4ca42166`, only resolved
 /// operand references and never evaluated anything). Only expressions within slice 1's supported
@@ -1544,23 +1572,8 @@ pub(crate) enum EvaluatedValue {
     /// LiteralString`). Only equality comparison (`==`/`!=`, see `fold_literal_comparison`) is
     /// folded for strings; `Lt`/`Le`/`Gt`/`Ge` are out of scope (no lexicographic ordering).
     String(String),
-    /// A genuinely computed constant quantity-with-unit result: a literal leaf carrying both a
-    /// numeric magnitude and an authored unit token, e.g. `0[kg]`, `27316/100[K]`'s numerator
-    /// literal `27316[K]`... (`Expression::LiteralWithUnit`, see `quantity_unit_text`). The unit is
-    /// stored as the raw authored token text (`kg`, `SI::s`, `m/s^2`), never as a resolved
-    /// declaration reference: the parser hands the bracketed text to this layer as an opaque
-    /// string (`Expression::Unit(String)`), not a `QualifiedReferenceId` that lexical lookup could
-    /// resolve (units may contain operators like `/`/`^`, so they are deliberately not qualified
-    /// references upstream either). The magnitude is boxed so it stays exactly the `Boolean`/
-    /// `Integer`/`Real`/`String` variant the wrapped literal would have folded to on its own --
-    /// this is a widen, not a new numeric type, matching the minimal-but-honest posture of not
-    /// fabricating a richer "physical quantity" concept the semantic model does not
-    /// anticipates. `fold_literal_comparison`/`fold_arithmetic`/`fold_unary` do not special-case
-    /// this variant: their generic numeric-widening fallback (`as_f64`) does not match it, so any
-    /// Same-unit addition/subtraction and numeric scaling preserve the unit spelling. Operations
-    /// needing conversion or dimensional algebra fail explicitly instead of reporting a
-    /// constant operand as nonconstant.
-    Quantity(Box<EvaluatedValue>, String),
+    /// A numeric magnitude with its measurement unit and display spelling.
+    Quantity(Box<EvaluatedValue>, QuantityUnit),
     /// A constant quantity operation needs unsupported conversion or dimensional algebra.
     UnsupportedUnitOperation,
     /// Evaluation did not run for this expression. Reserved for a future evaluation-policy gate;

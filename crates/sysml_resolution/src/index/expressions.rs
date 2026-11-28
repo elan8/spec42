@@ -421,6 +421,10 @@ pub(crate) struct SettledUnits {
 }
 
 impl SettledUnits {
+    pub(crate) fn all_units(&self) -> &[SettledUnit] {
+        &self.units
+    }
+
     pub(crate) fn build(model: &ExpressionInputs<'_>) -> Result<Self, ResolutionError> {
         let storage = model.storage;
         let anchors = LibraryAnchors::build(storage);
@@ -447,9 +451,7 @@ impl SettledUnits {
                     .reference
                     .and_then(|ordinal| unit_references.get(&(token.declaration, ordinal)))
                 {
-                    Some(id) => {
-                        catalog.settle(model, &anchors, token.text, model.resolution.outcome(*id))
-                    }
+                    Some(id) => catalog.settle(model, &anchors, model.resolution.outcome(*id)),
                     None => catalog.resolve(storage, token.text),
                 },
             })
@@ -737,7 +739,6 @@ impl UnitCatalog {
         &self,
         model: &ExpressionInputs<'_>,
         anchors: &LibraryAnchors,
-        text: NameId,
         outcome: Option<ResolutionStatus>,
     ) -> UnitOutcome {
         if !self.admitted {
@@ -758,7 +759,17 @@ impl UnitCatalog {
                 None => UnitOutcome::UnknownSymbol,
             },
             Some(ResolutionStatus::Unresolved) => UnitOutcome::Unresolved,
-            _ => self.resolve(model.storage, text),
+            Some(ResolutionStatus::Ambiguous(range)) => {
+                let candidates = model.resolution.ambiguous_candidates(range);
+                if candidates.iter().all(|id| self.dimensions.contains_key(id)) {
+                    UnitOutcome::Ambiguous(candidates.into())
+                } else {
+                    UnitOutcome::Unresolved
+                }
+            }
+            Some(ResolutionStatus::Unsupported | ResolutionStatus::NonConverged) | None => {
+                UnitOutcome::UnsupportedExpression
+            }
         }
     }
 

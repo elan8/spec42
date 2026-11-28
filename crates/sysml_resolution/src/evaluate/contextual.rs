@@ -7,28 +7,41 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use super::classify::{classify_authored, ExpressionEvalShape};
 use super::fold::{fold_eval_node_pending, CallTarget, EvalOperand};
+use super::UnitBindings;
 use crate::expression::{ContextualExpressionResult, RawExpressionNodeKind, UnboundInput};
 use crate::lower::storage::ParsedSources;
 use crate::model::resolver::SemanticModel;
-use crate::model::{DeclarationId, DeclarationKind, EvaluatedValue, NameId, ReferenceKind};
+use crate::model::{
+    DeclarationId, DeclarationKind, EvaluatedValue, NameId, QuantityUnit, QuantityUnitBinding,
+    ReferenceKind,
+};
 use crate::resolve::results::ResolutionError;
 use crate::{EvaluatedScalar, EvaluationFailure, EvaluationState};
 
-fn scalar(value: &EvaluatedScalar) -> EvaluatedValue {
+fn scalar(value: &EvaluatedScalar, identity: Option<DeclarationId>) -> EvaluatedValue {
     match value {
         EvaluatedScalar::Boolean(value) => EvaluatedValue::Boolean(*value),
         EvaluatedScalar::Integer(value) => EvaluatedValue::Integer(*value),
         EvaluatedScalar::Real(value) => EvaluatedValue::Real(*value),
         EvaluatedScalar::String(value) => EvaluatedValue::String(value.to_string()),
-        EvaluatedScalar::Quantity { magnitude, unit } => {
-            EvaluatedValue::Quantity(Box::new(scalar(magnitude)), unit.to_string())
-        }
+        EvaluatedScalar::Quantity { magnitude, unit } => EvaluatedValue::Quantity(
+            Box::new(scalar(magnitude, None)),
+            QuantityUnit {
+                text: unit.to_string(),
+                binding: identity.map_or(
+                    QuantityUnitBinding::Unsupported,
+                    QuantityUnitBinding::Resolved,
+                ),
+            },
+        ),
     }
 }
 
-fn value(state: &EvaluationState) -> EvaluatedValue {
+fn value(state: &EvaluationState, identity: Option<DeclarationId>) -> EvaluatedValue {
     match state {
-        EvaluationState::Literal(value) | EvaluationState::Evaluated(value) => scalar(value),
+        EvaluationState::Literal(value) | EvaluationState::Evaluated(value) => {
+            scalar(value, identity)
+        }
         EvaluationState::NotRun => EvaluatedValue::NotEvaluated,
         EvaluationState::Cyclic => EvaluatedValue::NonConverged,
         EvaluationState::Failed(failure) => match failure {
@@ -59,6 +72,7 @@ struct Outcome {
 pub(crate) fn settle<D>(
     model: &mut SemanticModel<D>,
     sources: &ParsedSources,
+    units: &UnitBindings,
 ) -> Result<(), ResolutionError> {
     let pending = model
         .storage
@@ -69,7 +83,7 @@ pub(crate) fn settle<D>(
     let global = model
         .evaluation
         .iter()
-        .map(|fact| (fact.declaration, value(&fact.state)))
+        .map(|fact| (fact.declaration, value(&fact.state, fact.unit)))
         .collect::<BTreeMap<_, _>>();
     let contexts = model
         .resolved_expressions
@@ -158,7 +172,7 @@ pub(crate) fn settle<D>(
             }
             let mut shape = shapes
                 .entry(expression)
-                .or_insert_with(|| classify_authored(sources, authored))
+                .or_insert_with(|| classify_authored(sources, authored, units))
                 .clone();
             super::bind_callees(&mut shape, row.document, &callees);
             let program = Program {
