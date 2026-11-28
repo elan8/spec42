@@ -51,9 +51,7 @@ use crate::DiagnosticSeverity;
 use crate::RelatedLocation;
 use sysml_contract::ElementKind;
 
-pub(crate) use crate::model::metaclass::{
-    classify, descends_from, descends_from_occurrence, Family, Role,
-};
+pub(crate) use crate::model::metaclass::{classify, descends_from, Family, Role};
 
 /// Which of the KerML classifier metaclasses the specialization rules distinguish a metaclass
 /// conforms to, read from the canonical metaclass hierarchy [`ElementKind::conforms_to`]: an

@@ -297,8 +297,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "flow_payload_type_not_occurrence",
         severity: "error",
-        meaning: "A flow payload is typed by a value type rather than an occurrence type.",
-        typical_fix: "Use a part, item, or occurrence definition for the payload type.",
+        meaning: "Retired; SysML 7.16.1 allows flow payloads to carry attribute values or occurrences.",
+        typical_fix: "No change required.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

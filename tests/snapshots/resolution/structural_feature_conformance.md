@@ -11,8 +11,8 @@ package Structural {
     attribute def Reading;
     action def Pumping;
 
-    // A flow payload carries an occurrence. A part definition is one; an attribute definition is a
-    // value type and is not.
+    // SysML 7.16.1 allows both occurrences and attribute values as flow payloads.
+    // Here Pump is an occurrence type and Reading is a value type.
     action def Moving {
         action a;
         action b;
@@ -89,23 +89,74 @@ package Structural {
     action badChoice : Pumping;
 }
 ~~~
-# DIAGNOSTICS
+# EXPECTED DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/structural_feature_conformance.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "flow_payload_type_not_occurrence")
+        (severity warning)
+        (code "incomplete_connection_like_end_pair")
         (source "semantic")
-        (range (start 12 16) (end 12 23))
+        (range (start 21 4) (end 23 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_binary_connection_like_end_count")
+        (source "semantic")
+        (range (start 29 4) (end 33 5))
+      )
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 53 27) (end 53 40))
         (related-information
           (related
             (uri "memory://snapshot/structural_feature_conformance.md")
-            (range (start 3 4) (end 3 26))
+            (range (start 47 8) (end 47 36))
           )
         )
       )
+      (diagnostic
+        (severity warning)
+        (code "redefinition_direction_mismatch")
+        (source "semantic")
+        (range (start 63 8) (end 63 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "subsetting_uniqueness_mismatch")
+        (source "semantic")
+        (range (start 71 56) (end 71 60))
+        (related-information
+          (related
+            (uri "memory://snapshot/structural_feature_conformance.md")
+            (range (start 70 8) (end 70 39))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_variation_member_kind")
+        (source "semantic")
+        (range (start 78 16) (end 78 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/structural_feature_conformance.md")
+            (range (start 81 4) (end 81 31))
+          )
+        )
+      )
+    )
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/structural_feature_conformance.md"
+    (diagnostics
       (diagnostic
         (severity warning)
         (code "incomplete_connection_like_end_pair")
@@ -167,7 +218,7 @@ package Structural {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3818c4e236071fe61af9e0cd43337db258ffde67ba266b81965db738806cfd24"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c5945e54b091549b9720d0aa1e2ae5992c13c393c761b73e0e9a9dac11e9672c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete"))) (kind connection-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))

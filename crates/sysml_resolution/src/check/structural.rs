@@ -851,22 +851,6 @@ impl<D> SemanticModel<D> {
                 )?);
             }
             match reference.kind {
-                // SysML 8.4.4: a flow payload carries an occurrence, not a value. The occurrence
-                // families are exactly those descending from `Occurrence` in the metamodel, so this
-                // asks the same hierarchy the kind rules do rather than naming library types.
-                ReferenceKind::FlowPayloadType => {
-                    let Some((family, _)) = self.declaration_family(target) else {
-                        continue;
-                    };
-                    if !conformance::descends_from_occurrence(family) {
-                        diagnostics.push(self.reference_diagnostic(
-                            reference,
-                            DiagnosticCode::FlowPayloadTypeNotOccurrence,
-                            DiagnosticSeverity::Error,
-                            Some(target),
-                        )?);
-                    }
-                }
                 // SysML 8.4.3: a reference-form `variant` member must target a usage compatible
                 // with the owning variation's kind. The reference source is the anonymous
                 // ReferenceUsage owned by the VariantMembership, so applicability comes from its
