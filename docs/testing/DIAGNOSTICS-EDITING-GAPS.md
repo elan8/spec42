@@ -15,7 +15,6 @@ accepts the model and Spec42 rejects it).
 
 | ID | Classification | Gap | Rule | Evidence |
 | --- | --- | --- | --- | --- |
-| E6 | missing check | A quantity value for a scalar feature is accepted: `attribute n : Real = 2 [SI::kg]`. A string value for `Real` is reported. | KerML 8.3.4.10.2 `checkFeatureValueBindingConnector` (bound value conformance) | `expression_result_typing.md` |
 | E7 | location | `missing_type_reference` and `missing_semicolon` ranges run onto the next line instead of marking the insertion point. | — | `incomplete_source.md` (`a.sysml`, `b.sysml`) |
 | E8 | cascade | `--strict-diagnostics` drops unresolved/ambiguous reference diagnostics *before* the first parse error, although `PostprocessPolicy` documents dropping those a parse error earlier in the document explains. | — | `crates/sysml_diagnostics/src/postprocess.rs` |
 | E9 | optional advice | `[*..2]` is accepted while `[3..1]` is reported as `invalid_multiplicity`. | — | `expression_result_typing.md` |

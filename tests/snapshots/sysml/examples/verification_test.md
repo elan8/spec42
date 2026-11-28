@@ -166,7 +166,7 @@ package VerificationTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind part) (name "verificationContext")) (named (kind verification) (name "verificationPlan")) (named (kind subject) (name "v")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/verification_test.md") (path (named (kind package) (name "VerificationTest")) (named (kind part) (name "verificationContext")) (named (kind verification) (name "verificationPlan")) (named (kind subject) (name "v")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (state unresolved-operand))
   )
 )
 ~~~
@@ -266,7 +266,7 @@ package VerificationTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (outcome unsupported) (result-typing (status unsupported)))
+  (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::VerificationCase"))) (outcome resolved) (result-typing (status unresolved)) (invocation (callee (feature-reference "VerificationCases::PassIf" (target unresolved))) (arguments (operator "==" (feature-reference "v::m" (target (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::V::m")))) (literal (value (kind integer) (integer 0)))))))
 )
 ~~~
 # NAVIGATION

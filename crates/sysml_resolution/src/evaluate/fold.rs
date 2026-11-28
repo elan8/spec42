@@ -68,10 +68,7 @@ pub(crate) enum EvalNode {
     /// `chassisMass + engine.mass` as a comparison operand), so a constraint body's `EvalNode` tree
     /// may now contain both `Comparison`/`Logical` and `Arithmetic` nodes, unlike slices 1-3.
     Arithmetic(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
-    /// A logical `BinaryOp` (`and`/`or`/`xor`/`implies`, `is_logical_operator`) combining two
-    /// constraint-body sub-expressions, each of which folds to a `Boolean` (typically a
-    /// `Comparison`). Only `classify_constraint_node` builds this variant -- calc bodies stay
-    /// comparison/logical-free, unchanged.
+    /// A logical `BinaryOp` (`and`/`or`/`xor`/`implies`) combining Boolean operands.
     Logical(BinaryOperator, Box<EvalNode>, Box<EvalNode>),
     /// An `Expression::Invocation`/`Expression::Constructor` node (reference-resolution slice; see
     /// `ReferenceKind::InvocationCallee`). Carries each argument's own classified `EvalNode` purely

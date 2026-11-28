@@ -430,9 +430,9 @@ semantic_diagnostic_codes! {
     /// A subsetting feature's types do not conform to the subsetted feature's.
     SubsettingTypeIncompatible => "subsetting_type_incompatible",
         "This feature's types do not conform to the feature it subsets.";
-    /// A flow payload is typed by something that is not an occurrence.
+    /// Retired diagnostic. SysML 7.16.1 allows attribute values and occurrences as payloads.
     FlowPayloadTypeNotOccurrence => "flow_payload_type_not_occurrence",
-        "A flow payload must be typed by an occurrence.";
+        "Retired; flow payloads may carry attribute values or occurrences.";
     /// A binary connection-like declaration has one end where it needs two.
     IncompleteConnectionLikeEndPair => "incomplete_connection_like_end_pair",
         "This connection-like definition declares one end where it needs at least two.";
@@ -659,6 +659,9 @@ semantic_diagnostic_codes! {
     /// A quantity value is measured in a unit whose dimension its feature's type does not admit.
     IncompatibleUnitDimension => "incompatible_unit_dimension",
         "This value's unit has a dimension the feature's type does not admit.";
+    /// SysML 9.8.9.1 requires matching dimensions for additive and comparison operations.
+    IncompatibleQuantityDimensions => "incompatible_quantity_dimensions",
+        "This operator combines incompatible quantity dimensions.";
     /// A constraint's expression evaluates to something other than a Boolean.
     NonBooleanConstraintExpression => "non_boolean_expression",
         "A constraint expression must evaluate to a Boolean.";

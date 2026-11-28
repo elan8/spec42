@@ -663,7 +663,11 @@ impl TreeBuilder<'_> {
     }
     fn push(&mut self, kind: RawExpressionNodeKind, span: Span) -> u32 {
         let index = self.nodes.len() as u32;
-        self.nodes.push(RawExpressionNode { kind, span });
+        self.nodes.push(RawExpressionNode {
+            kind,
+            span,
+            operator_span: None,
+        });
         index
     }
 
@@ -788,13 +792,17 @@ impl TreeBuilder<'_> {
             {
                 let left_node = self.walk(&left.value, left.span)?;
                 let right_node = self.walk(&right.value, right.span)?;
-                Some(self.push(
+                let operator = binary_operator(op)?;
+                let index = self.push(
                     RawExpressionNodeKind::Operator {
-                        operator: binary_operator(op)?,
+                        operator,
                         operands: Box::from([left_node, right_node]),
                     },
                     left.span.covering(&right.span),
-                ))
+                );
+                self.nodes[index as usize].operator_span =
+                    binary_operator_span(self.parsed, left.span, right.span, operator);
+                Some(index)
             }
             // `select`'s selector is an operand leaf; its base is walked first, matching the
             // classifier. The pair is an unsupported shape here (a `select` is not yet a node
@@ -919,6 +927,30 @@ fn binary_operator(op: &BinaryOperator) -> Option<ExpressionOperator> {
         BinaryOperator::Xor => ExpressionOperator::Xor,
         BinaryOperator::Implies => ExpressionOperator::Implies,
         BinaryOperator::Range | BinaryOperator::NullCoalesce => return None,
+    })
+}
+
+/// Source location only. The AST already owns the identity of the operator.
+fn binary_operator_span(
+    parsed: Option<&ParsedDocument>,
+    left: Span,
+    right: Span,
+    operator: ExpressionOperator,
+) -> Option<Span> {
+    let start = left.offset.checked_add(left.len)?;
+    let between = parsed?.source.slice(&Span {
+        offset: start,
+        len: right.offset.checked_sub(start)?,
+        ..left
+    })?;
+    let token = between.trim();
+    if token != operator.as_str() {
+        return None;
+    }
+    Some(Span {
+        offset: start + between.len() - between.trim_start().len(),
+        len: token.len(),
+        ..left
     })
 }
 

@@ -44,6 +44,12 @@ spec42 explain-diagnostic --code unresolved_type_reference --path model
 
 Common next checks are to correct a type or package path, include the defining file in the workspace, or configure the library that owns an external type. The editor can also offer a relevant quick fix when one is available.
 
+## Quantity diagnostics
+
+`incompatible_quantity_dimensions` highlights an addition, subtraction, or comparison of quantities whose resolved operands have different physical dimensions. The message includes both dimensions. Spec42 uses the declared types and resolved units to derive dimensions through multiplication, division, unary minus, and integer powers. An unresolved operand can leave its expression's dimension unknown.
+
+With the pinned OMG library, use `20 [SI::'°C']` for a temperature difference or a `CelsiusTemperatureValue`, which measures the difference from the ice point. Use `293.15 [SI::K]` for a `ThermodynamicTemperatureValue`. The library also defines `SI::'°C_abs'` as an absolute interval scale. Spec42 resolves that scale and leaves scale expressions unevaluated. The dimension check does not convert units or apply temperature offsets.
+
 ## How follow-on diagnostics are reported
 
 One mistake can make later analysis fail too. Spec42 reports such cascades by these rules, identically in the editor and in `spec42 check` unless a rule says otherwise:

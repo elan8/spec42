@@ -26,7 +26,7 @@ package SequenceExample {
         message result from server.serve to client.reply;
         succession first call then result;
     }
-    state def Machine { constraint pending { true } }
+    variation attribute def Pending { variant attribute option; }
     view selected : SequenceView { expose Interaction; }
 }
 ~~~
@@ -37,9 +37,9 @@ package SequenceExample {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_state_definition_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 16 24) (end 16 51))
+        (range (start 16 38) (end 16 63))
       )
     )
   )
@@ -52,9 +52,9 @@ package SequenceExample {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unsupported_state_definition_member")
+        (code "unsupported_attribute_member")
         (source "semantic")
-        (range (start 16 24) (end 16 51))
+        (range (start 16 38) (end 16 63))
       )
     )
   )
@@ -63,7 +63,7 @@ package SequenceExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:6c97156cd4b4bc62268b8ea2bb86c43e11c1042819f4cb827b92d856868bb9d8") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:dac2c88fbae03e786a12c3cbc959d5ee0a9d0210837cdd896bbb07f18aa997be") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (path (named (kind package) (name "SequenceExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -85,7 +85,7 @@ package SequenceExample {
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (path (named (kind package) (name "SequenceExample")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "result")) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Interaction::server"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Server")))))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Interaction::server::serve"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
-    (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Pending"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Server"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::selected"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SequenceView")))))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (path (named (kind package) (name "SequenceExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "Interaction")))))
@@ -181,7 +181,7 @@ package SequenceExample {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Interaction::server"))) (target (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Interaction"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Interaction::server::serve"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Interaction::server::serve"))) (target (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Interaction::server"))) (provenance implied))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Machine"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Pending"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Server"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (path (named (kind package) (name "SequenceExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::selected"))) (provenance implied))
@@ -413,14 +413,9 @@ package SequenceExample {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
     )
-    (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Machine")))
-      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Pending")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any subclassification))
-      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unsupported_details.md") (qualified-name "SequenceExample::Server")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
@@ -523,7 +518,7 @@ package SequenceExample {
 ~~~json
 {
   "schemaVersion": 13,
-  "modelDigest": "blake3:e09551f17885e04075b52b9ccd3ccde3da5b75fa198cd3ef2129b053215ac7f7",
+  "modelDigest": "blake3:20b4582609e4e88f138d8cefbd286b709acd020b67f7d83945e21b0968e0fa4b",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unsupported_details.md",
@@ -688,9 +683,9 @@ package SequenceExample {
       "document": 0,
       "range": [
         16,
-        24,
+        38,
         16,
-        51
+        63
       ]
     },
     {
@@ -1019,7 +1014,7 @@ package SequenceExample {
         "code": "unsupported-syntax",
         "diagnostics": [
           {
-            "code": "unsupported_state_definition_member",
+            "code": "unsupported_attribute_member",
             "message": "This member is parsed but not modelled by the semantic publication.",
             "source": 17
           }

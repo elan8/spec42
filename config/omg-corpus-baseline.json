@@ -1,0 +1,3399 @@
+{
+  "libraryVersion": "2026-04",
+  "releaseCommit": "9baca5908ca28b53da085de69336fde48420ea8f",
+  "corpora": [
+    {
+      "corpus": "sysml/src/validation",
+      "files": 56,
+      "diagnostics": [
+        {
+          "file": "02-Parts Interconnection/2a-Parts Interconnection.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 102,
+              "character": 37
+            },
+            "end": {
+              "line": 102,
+              "character": 48
+            }
+          }
+        },
+        {
+          "file": "02-Parts Interconnection/2a-Parts Interconnection.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 96,
+              "character": 11
+            },
+            "end": {
+              "line": 96,
+              "character": 22
+            }
+          }
+        },
+        {
+          "file": "02-Parts Interconnection/2a-Parts Interconnection.sysml",
+          "severity": 2,
+          "code": "unsupported_connection_definition_member",
+          "range": {
+            "start": {
+              "line": 97,
+              "character": 4
+            },
+            "end": {
+              "line": 100,
+              "character": 7
+            }
+          }
+        },
+        {
+          "file": "02-Parts Interconnection/2a-Parts Interconnection.sysml",
+          "severity": 2,
+          "code": "unsupported_interface_definition_member",
+          "range": {
+            "start": {
+              "line": 134,
+              "character": 5
+            },
+            "end": {
+              "line": 139,
+              "character": 6
+            }
+          }
+        },
+        {
+          "file": "04-Functional Allocation/4a-Functional Allocation.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 46,
+              "character": 8
+            },
+            "end": {
+              "line": 46,
+              "character": 20
+            }
+          }
+        },
+        {
+          "file": "04-Functional Allocation/4a-Functional Allocation.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 60,
+              "character": 7
+            },
+            "end": {
+              "line": 60,
+              "character": 19
+            }
+          }
+        },
+        {
+          "file": "04-Functional Allocation/4a-Functional Allocation.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 61,
+              "character": 8
+            },
+            "end": {
+              "line": 61,
+              "character": 26
+            }
+          }
+        },
+        {
+          "file": "04-Functional Allocation/4a-Functional Allocation.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 75,
+              "character": 7
+            },
+            "end": {
+              "line": 75,
+              "character": 25
+            }
+          }
+        },
+        {
+          "file": "04-Functional Allocation/4a-Functional Allocation.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 76,
+              "character": 8
+            },
+            "end": {
+              "line": 76,
+              "character": 24
+            }
+          }
+        },
+        {
+          "file": "04-Functional Allocation/4a-Functional Allocation.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 90,
+              "character": 7
+            },
+            "end": {
+              "line": 90,
+              "character": 23
+            }
+          }
+        },
+        {
+          "file": "05-State-based Behavior/5-State-based Behavior-1a.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 209,
+              "character": 7
+            },
+            "end": {
+              "line": 209,
+              "character": 14
+            }
+          }
+        },
+        {
+          "file": "07-Variant Configuration/7b-Variant Configurations.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 94,
+              "character": 26
+            },
+            "end": {
+              "line": 94,
+              "character": 69
+            }
+          }
+        },
+        {
+          "file": "09-Verification/9-Verification-simplified.sysml",
+          "severity": 2,
+          "code": "perform_target_invalid_kind",
+          "range": {
+            "start": {
+              "line": 78,
+              "character": 11
+            },
+            "end": {
+              "line": 78,
+              "character": 26
+            }
+          }
+        },
+        {
+          "file": "09-Verification/9-Verification-simplified.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 54,
+              "character": 38
+            },
+            "end": {
+              "line": 54,
+              "character": 53
+            }
+          }
+        },
+        {
+          "file": "09-Verification/9-Verification-simplified.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 88,
+              "character": 17
+            },
+            "end": {
+              "line": 88,
+              "character": 28
+            }
+          }
+        },
+        {
+          "file": "09-Verification/9-Verification-simplified.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 91,
+              "character": 19
+            },
+            "end": {
+              "line": 91,
+              "character": 35
+            }
+          }
+        },
+        {
+          "file": "09-Verification/9-Verification-simplified.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 93,
+              "character": 13
+            },
+            "end": {
+              "line": 93,
+              "character": 25
+            }
+          }
+        },
+        {
+          "file": "11-View and Viewpoint/11b-Safety and Security Feature Views.sysml",
+          "severity": 2,
+          "code": "unsupported_package_member",
+          "range": {
+            "start": {
+              "line": 56,
+              "character": 22
+            },
+            "end": {
+              "line": 56,
+              "character": 45
+            }
+          }
+        },
+        {
+          "file": "12-Dependency Relationships/12b-Allocation-1.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 53,
+              "character": 45
+            },
+            "end": {
+              "line": 53,
+              "character": 77
+            }
+          }
+        },
+        {
+          "file": "12-Dependency Relationships/12b-Allocation.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 23,
+              "character": 11
+            },
+            "end": {
+              "line": 23,
+              "character": 41
+            }
+          }
+        },
+        {
+          "file": "12-Dependency Relationships/12b-Allocation.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 23,
+              "character": 45
+            },
+            "end": {
+              "line": 23,
+              "character": 77
+            }
+          }
+        },
+        {
+          "file": "13-Model Containment/13a-Model Containment.sysml",
+          "severity": 1,
+          "code": "ambiguous_reference",
+          "range": {
+            "start": {
+              "line": 20,
+              "character": 27
+            },
+            "end": {
+              "line": 20,
+              "character": 38
+            }
+          }
+        },
+        {
+          "file": "13-Model Containment/13b-Safety and Security Features Element Group-1.sysml",
+          "severity": 2,
+          "code": "unsupported_package_member",
+          "range": {
+            "start": {
+              "line": 53,
+              "character": 21
+            },
+            "end": {
+              "line": 53,
+              "character": 44
+            }
+          }
+        },
+        {
+          "file": "13-Model Containment/13b-Safety and Security Features Element Group-2.sysml",
+          "severity": 2,
+          "code": "unsupported_filtered_import",
+          "range": {
+            "start": {
+              "line": 34,
+              "character": 16
+            },
+            "end": {
+              "line": 34,
+              "character": 36
+            }
+          }
+        },
+        {
+          "file": "13-Model Containment/13b-Safety and Security Features Element Group-2.sysml",
+          "severity": 2,
+          "code": "unsupported_filtered_import",
+          "range": {
+            "start": {
+              "line": 39,
+              "character": 16
+            },
+            "end": {
+              "line": 39,
+              "character": 38
+            }
+          }
+        },
+        {
+          "file": "13-Model Containment/13b-Safety and Security Features Element Group-2.sysml",
+          "severity": 2,
+          "code": "unsupported_filtered_import",
+          "range": {
+            "start": {
+              "line": 44,
+              "character": 16
+            },
+            "end": {
+              "line": 44,
+              "character": 49
+            }
+          }
+        },
+        {
+          "file": "13-Model Containment/13b-Safety and Security Features Element Group-2.sysml",
+          "severity": 2,
+          "code": "unsupported_filtered_import",
+          "range": {
+            "start": {
+              "line": 49,
+              "character": 16
+            },
+            "end": {
+              "line": 49,
+              "character": 64
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "connection_context_invalid",
+          "range": {
+            "start": {
+              "line": 162,
+              "character": 15
+            },
+            "end": {
+              "line": 162,
+              "character": 50
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "connection_context_invalid",
+          "range": {
+            "start": {
+              "line": 186,
+              "character": 13
+            },
+            "end": {
+              "line": 186,
+              "character": 52
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "connection_context_invalid",
+          "range": {
+            "start": {
+              "line": 187,
+              "character": 14
+            },
+            "end": {
+              "line": 187,
+              "character": 53
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 165,
+              "character": 8
+            },
+            "end": {
+              "line": 165,
+              "character": 14
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 171,
+              "character": 8
+            },
+            "end": {
+              "line": 171,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 181,
+              "character": 8
+            },
+            "end": {
+              "line": 181,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 162,
+              "character": 3
+            },
+            "end": {
+              "line": 162,
+              "character": 14
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 168,
+              "character": 3
+            },
+            "end": {
+              "line": 168,
+              "character": 13
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 174,
+              "character": 3
+            },
+            "end": {
+              "line": 174,
+              "character": 13
+            }
+          }
+        },
+        {
+          "file": "14-Language Extensions/14c-Language Extensions.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 178,
+              "character": 3
+            },
+            "end": {
+              "line": 178,
+              "character": 13
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_12-Compound Value Type.sysml",
+          "severity": 1,
+          "code": "attribute_value_type_mismatch",
+          "range": {
+            "start": {
+              "line": 27,
+              "character": 31
+            },
+            "end": {
+              "line": 27,
+              "character": 43
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 67,
+              "character": 40
+            },
+            "end": {
+              "line": 67,
+              "character": 51
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 67,
+              "character": 70
+            },
+            "end": {
+              "line": 67,
+              "character": 80
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 69,
+              "character": 40
+            },
+            "end": {
+              "line": 69,
+              "character": 51
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 69,
+              "character": 70
+            },
+            "end": {
+              "line": 69,
+              "character": 80
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 71,
+              "character": 40
+            },
+            "end": {
+              "line": 71,
+              "character": 51
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 71,
+              "character": 70
+            },
+            "end": {
+              "line": 71,
+              "character": 80
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 67,
+              "character": 21
+            },
+            "end": {
+              "line": 67,
+              "character": 33
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 69,
+              "character": 21
+            },
+            "end": {
+              "line": 69,
+              "character": 33
+            }
+          }
+        },
+        {
+          "file": "15-Properties-Values-Expressions/15_13-Discretely Sampled Function Value.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 71,
+              "character": 21
+            },
+            "end": {
+              "line": 71,
+              "character": 33
+            }
+          }
+        },
+        {
+          "file": "18-Use Case/18-Use Case.sysml",
+          "severity": 2,
+          "code": "unsupported_use_case_definition_member",
+          "range": {
+            "start": {
+              "line": 23,
+              "character": 2
+            },
+            "end": {
+              "line": 28,
+              "character": 3
+            }
+          }
+        },
+        {
+          "file": "18-Use Case/18-Use Case.sysml",
+          "severity": 2,
+          "code": "unsupported_use_case_definition_member",
+          "range": {
+            "start": {
+              "line": 62,
+              "character": 2
+            },
+            "end": {
+              "line": 67,
+              "character": 3
+            }
+          }
+        }
+      ]
+    },
+    {
+      "corpus": "sysml/src/examples",
+      "files": 95,
+      "diagnostics": [
+        {
+          "file": "Analysis Examples/Dynamics.sysml",
+          "severity": 2,
+          "code": "incompatible_quantity_dimensions",
+          "range": {
+            "start": {
+              "line": 8,
+              "character": 34
+            },
+            "end": {
+              "line": 8,
+              "character": 35
+            }
+          }
+        },
+        {
+          "file": "Analysis Examples/Vehicle Analysis Demo.sysml",
+          "severity": 2,
+          "code": "redefinition_direction_mismatch",
+          "range": {
+            "start": {
+              "line": 65,
+              "character": 25
+            },
+            "end": {
+              "line": 65,
+              "character": 29
+            }
+          }
+        },
+        {
+          "file": "Analysis Examples/Vehicle Analysis Demo.sysml",
+          "severity": 2,
+          "code": "redefinition_direction_mismatch",
+          "range": {
+            "start": {
+              "line": 70,
+              "character": 29
+            },
+            "end": {
+              "line": 70,
+              "character": 33
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 85,
+              "character": 21
+            },
+            "end": {
+              "line": 85,
+              "character": 40
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 85,
+              "character": 8
+            },
+            "end": {
+              "line": 85,
+              "character": 17
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 87,
+              "character": 23
+            },
+            "end": {
+              "line": 87,
+              "character": 46
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 87,
+              "character": 8
+            },
+            "end": {
+              "line": 87,
+              "character": 19
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 89,
+              "character": 19
+            },
+            "end": {
+              "line": 89,
+              "character": 28
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 89,
+              "character": 8
+            },
+            "end": {
+              "line": 89,
+              "character": 15
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 91,
+              "character": 24
+            },
+            "end": {
+              "line": 91,
+              "character": 46
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 91,
+              "character": 8
+            },
+            "end": {
+              "line": 91,
+              "character": 20
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 93,
+              "character": 35
+            },
+            "end": {
+              "line": 93,
+              "character": 46
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 93,
+              "character": 8
+            },
+            "end": {
+              "line": 93,
+              "character": 31
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 95,
+              "character": 23
+            },
+            "end": {
+              "line": 95,
+              "character": 32
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 95,
+              "character": 8
+            },
+            "end": {
+              "line": 95,
+              "character": 19
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unsupported_occurrence_definition_member",
+          "range": {
+            "start": {
+              "line": 46,
+              "character": 3
+            },
+            "end": {
+              "line": 46,
+              "character": 45
+            }
+          }
+        },
+        {
+          "file": "Arrowhead Framework Example/AHFSequences.sysml",
+          "severity": 2,
+          "code": "unsupported_occurrence_definition_member",
+          "range": {
+            "start": {
+              "line": 52,
+              "character": 3
+            },
+            "end": {
+              "line": 52,
+              "character": 45
+            }
+          }
+        },
+        {
+          "file": "Cause and Effect Examples/CauseAndEffectExample.sysml",
+          "severity": 1,
+          "code": "recovered_package_body_element",
+          "range": {
+            "start": {
+              "line": 24,
+              "character": 17
+            },
+            "end": {
+              "line": 26,
+              "character": 51
+            }
+          }
+        },
+        {
+          "file": "Cause and Effect Examples/CauseAndEffectExample.sysml",
+          "severity": 2,
+          "code": "connection_context_invalid",
+          "range": {
+            "start": {
+              "line": 48,
+              "character": 12
+            },
+            "end": {
+              "line": 53,
+              "character": 2
+            }
+          }
+        },
+        {
+          "file": "Cause and Effect Examples/CauseAndEffectExample.sysml",
+          "severity": 2,
+          "code": "recovery_cascade_suppressed",
+          "range": {
+            "start": {
+              "line": 24,
+              "character": 17
+            },
+            "end": {
+              "line": 26,
+              "character": 51
+            }
+          }
+        },
+        {
+          "file": "Cause and Effect Examples/CauseAndEffectExample.sysml",
+          "severity": 2,
+          "code": "unsupported_package_member",
+          "range": {
+            "start": {
+              "line": 24,
+              "character": 1
+            },
+            "end": {
+              "line": 24,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "Cause and Effect Examples/CauseAndEffectExample.sysml",
+          "severity": 2,
+          "code": "unsupported_package_member",
+          "range": {
+            "start": {
+              "line": 45,
+              "character": 1
+            },
+            "end": {
+              "line": 45,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "Flashlight Example/Flashlight Example.sysml",
+          "severity": 2,
+          "code": "perform_target_invalid_kind",
+          "range": {
+            "start": {
+              "line": 22,
+              "character": 11
+            },
+            "end": {
+              "line": 22,
+              "character": 40
+            }
+          }
+        },
+        {
+          "file": "Flashlight Example/Flashlight Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 17,
+              "character": 8
+            },
+            "end": {
+              "line": 17,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "Flashlight Example/Flashlight Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 29,
+              "character": 7
+            },
+            "end": {
+              "line": 29,
+              "character": 15
+            }
+          }
+        },
+        {
+          "file": "Flashlight Example/Flashlight Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 30,
+              "character": 8
+            },
+            "end": {
+              "line": 30,
+              "character": 13
+            }
+          }
+        },
+        {
+          "file": "Flashlight Example/Flashlight Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 39,
+              "character": 7
+            },
+            "end": {
+              "line": 39,
+              "character": 12
+            }
+          }
+        },
+        {
+          "file": "Geometry Examples/VehicleGeometryAndCoordinateFrames.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 61,
+              "character": 4
+            },
+            "end": {
+              "line": 61,
+              "character": 23
+            }
+          }
+        },
+        {
+          "file": "Individuals Examples/AnalysisIndividualExample.sysml",
+          "severity": 2,
+          "code": "incompatible_unit_dimension",
+          "range": {
+            "start": {
+              "line": 87,
+              "character": 30
+            },
+            "end": {
+              "line": 87,
+              "character": 33
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceOutsideRealization-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 88,
+              "character": 8
+            },
+            "end": {
+              "line": 88,
+              "character": 55
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceOutsideRealization-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 89,
+              "character": 8
+            },
+            "end": {
+              "line": 89,
+              "character": 57
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceOutsideRealization-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 90,
+              "character": 8
+            },
+            "end": {
+              "line": 90,
+              "character": 61
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceOutsideRealization-3.sysml",
+          "severity": 2,
+          "code": "redefinition_direction_mismatch",
+          "range": {
+            "start": {
+              "line": 103,
+              "character": 16
+            },
+            "end": {
+              "line": 103,
+              "character": 25
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceOutsideRealization-3.sysml",
+          "severity": 2,
+          "code": "redefinition_direction_mismatch",
+          "range": {
+            "start": {
+              "line": 104,
+              "character": 15
+            },
+            "end": {
+              "line": 104,
+              "character": 22
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceOutsideRealization-3.sysml",
+          "severity": 2,
+          "code": "redefinition_direction_mismatch",
+          "range": {
+            "start": {
+              "line": 31,
+              "character": 16
+            },
+            "end": {
+              "line": 31,
+              "character": 23
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceRealization-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 93,
+              "character": 8
+            },
+            "end": {
+              "line": 93,
+              "character": 55
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceRealization-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 94,
+              "character": 8
+            },
+            "end": {
+              "line": 94,
+              "character": 57
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceRealization-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 95,
+              "character": 8
+            },
+            "end": {
+              "line": 95,
+              "character": 61
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceRealization-3.sysml",
+          "severity": 2,
+          "code": "redefinition_direction_mismatch",
+          "range": {
+            "start": {
+              "line": 31,
+              "character": 16
+            },
+            "end": {
+              "line": 31,
+              "character": 23
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceRealization-3.sysml",
+          "severity": 2,
+          "code": "redefinition_direction_mismatch",
+          "range": {
+            "start": {
+              "line": 97,
+              "character": 16
+            },
+            "end": {
+              "line": 97,
+              "character": 25
+            }
+          }
+        },
+        {
+          "file": "Interaction Sequencing Examples/ServerSequenceRealization-3.sysml",
+          "severity": 2,
+          "code": "redefinition_direction_mismatch",
+          "range": {
+            "start": {
+              "line": 98,
+              "character": 15
+            },
+            "end": {
+              "line": 98,
+              "character": 22
+            }
+          }
+        },
+        {
+          "file": "Metadata Examples/RequirementMetadataExample.sysml",
+          "severity": 2,
+          "code": "incompatible_subset_redefine_kind",
+          "range": {
+            "start": {
+              "line": 17,
+              "character": 12
+            },
+            "end": {
+              "line": 17,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "Metadata Examples/RequirementMetadataExample.sysml",
+          "severity": 2,
+          "code": "unsupported_requirement_definition_member",
+          "range": {
+            "start": {
+              "line": 30,
+              "character": 5
+            },
+            "end": {
+              "line": 30,
+              "character": 42
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/ActionTest.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 32,
+              "character": 20
+            },
+            "end": {
+              "line": 32,
+              "character": 32
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/ActionTest.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 34,
+              "character": 10
+            },
+            "end": {
+              "line": 34,
+              "character": 17
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/ActionTest.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 37,
+              "character": 11
+            },
+            "end": {
+              "line": 37,
+              "character": 23
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/AssignmentTest.sysml",
+          "severity": 2,
+          "code": "unsupported_action_usage_member",
+          "range": {
+            "start": {
+              "line": 49,
+              "character": 35
+            },
+            "end": {
+              "line": 49,
+              "character": 68
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/ConnectionTest.sysml",
+          "severity": 1,
+          "code": "recovered_connection_def_body_element",
+          "range": {
+            "start": {
+              "line": 52,
+              "character": 2
+            },
+            "end": {
+              "line": 53,
+              "character": 2
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/FeaturePathTest.sysml",
+          "severity": 2,
+          "code": "unsupported_part_usage_member",
+          "range": {
+            "start": {
+              "line": 40,
+              "character": 11
+            },
+            "end": {
+              "line": 40,
+              "character": 24
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/PartTest.sysml",
+          "severity": 2,
+          "code": "unsupported_part_definition_member",
+          "range": {
+            "start": {
+              "line": 22,
+              "character": 2
+            },
+            "end": {
+              "line": 22,
+              "character": 15
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/UseCaseTest.sysml",
+          "severity": 2,
+          "code": "perform_target_invalid_kind",
+          "range": {
+            "start": {
+              "line": 33,
+              "character": 10
+            },
+            "end": {
+              "line": 33,
+              "character": 11
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/UseCaseTest.sysml",
+          "severity": 2,
+          "code": "unsupported_part_usage_member",
+          "range": {
+            "start": {
+              "line": 32,
+              "character": 2
+            },
+            "end": {
+              "line": 32,
+              "character": 14
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/VariabilityTest.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 20,
+              "character": 14
+            },
+            "end": {
+              "line": 20,
+              "character": 18
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/VariabilityTest.sysml",
+          "severity": 2,
+          "code": "unsupported_action_definition_member",
+          "range": {
+            "start": {
+              "line": 23,
+              "character": 2
+            },
+            "end": {
+              "line": 23,
+              "character": 20
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/VariabilityTest.sysml",
+          "severity": 2,
+          "code": "unsupported_action_definition_member",
+          "range": {
+            "start": {
+              "line": 24,
+              "character": 2
+            },
+            "end": {
+              "line": 24,
+              "character": 20
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/ViewTest.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 15,
+              "character": 14
+            },
+            "end": {
+              "line": 15,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/ViewTest.sysml",
+          "severity": 2,
+          "code": "unsupported_view_definition_member",
+          "range": {
+            "start": {
+              "line": 37,
+              "character": 3
+            },
+            "end": {
+              "line": 37,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/ViewTest.sysml",
+          "severity": 2,
+          "code": "unsupported_view_definition_member",
+          "range": {
+            "start": {
+              "line": 39,
+              "character": 3
+            },
+            "end": {
+              "line": 39,
+              "character": 20
+            }
+          }
+        },
+        {
+          "file": "Simple Tests/ViewTest.sysml",
+          "severity": 2,
+          "code": "unsupported_view_definition_member",
+          "range": {
+            "start": {
+              "line": 41,
+              "character": 3
+            },
+            "end": {
+              "line": 41,
+              "character": 20
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 41,
+              "character": 44
+            },
+            "end": {
+              "line": 41,
+              "character": 55
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 45,
+              "character": 35
+            },
+            "end": {
+              "line": 45,
+              "character": 54
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 34,
+              "character": 27
+            },
+            "end": {
+              "line": 34,
+              "character": 36
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 35,
+              "character": 29
+            },
+            "end": {
+              "line": 35,
+              "character": 39
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 36,
+              "character": 33
+            },
+            "end": {
+              "line": 36,
+              "character": 42
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 39,
+              "character": 27
+            },
+            "end": {
+              "line": 39,
+              "character": 36
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 40,
+              "character": 32
+            },
+            "end": {
+              "line": 40,
+              "character": 41
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 44,
+              "character": 37
+            },
+            "end": {
+              "line": 44,
+              "character": 46
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/CartSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 54,
+              "character": 29
+            },
+            "end": {
+              "line": 54,
+              "character": 41
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 237,
+              "character": 36
+            },
+            "end": {
+              "line": 237,
+              "character": 75
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 248,
+              "character": 41
+            },
+            "end": {
+              "line": 248,
+              "character": 59
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 259,
+              "character": 52
+            },
+            "end": {
+              "line": 259,
+              "character": 98
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 260,
+              "character": 39
+            },
+            "end": {
+              "line": 260,
+              "character": 78
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 292,
+              "character": 36
+            },
+            "end": {
+              "line": 292,
+              "character": 75
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 303,
+              "character": 41
+            },
+            "end": {
+              "line": 303,
+              "character": 59
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 314,
+              "character": 26
+            },
+            "end": {
+              "line": 314,
+              "character": 72
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 315,
+              "character": 39
+            },
+            "end": {
+              "line": 315,
+              "character": 78
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 164,
+              "character": 23
+            },
+            "end": {
+              "line": 164,
+              "character": 35
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 165,
+              "character": 25
+            },
+            "end": {
+              "line": 165,
+              "character": 38
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 166,
+              "character": 29
+            },
+            "end": {
+              "line": 166,
+              "character": 41
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 175,
+              "character": 27
+            },
+            "end": {
+              "line": 175,
+              "character": 39
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 176,
+              "character": 29
+            },
+            "end": {
+              "line": 176,
+              "character": 42
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 177,
+              "character": 33
+            },
+            "end": {
+              "line": 177,
+              "character": 45
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 188,
+              "character": 27
+            },
+            "end": {
+              "line": 188,
+              "character": 37
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 189,
+              "character": 29
+            },
+            "end": {
+              "line": 189,
+              "character": 40
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 190,
+              "character": 33
+            },
+            "end": {
+              "line": 190,
+              "character": 43
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 200,
+              "character": 27
+            },
+            "end": {
+              "line": 200,
+              "character": 36
+            }
+          }
+        },
+        {
+          "file": "State Space Representation Examples/EVSample.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 201,
+              "character": 29
+            },
+            "end": {
+              "line": 201,
+              "character": 39
+            }
+          }
+        },
+        {
+          "file": "Timeslice and Snapshot Examples/TimeVaryingAttribute.sysml",
+          "severity": 2,
+          "code": "attribute_value_type_mismatch",
+          "range": {
+            "start": {
+              "line": 40,
+              "character": 31
+            },
+            "end": {
+              "line": 40,
+              "character": 49
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "analysis_evaluation_unresolved",
+          "range": {
+            "start": {
+              "line": 106,
+              "character": 10
+            },
+            "end": {
+              "line": 109,
+              "character": 11
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "analysis_evaluation_unresolved",
+          "range": {
+            "start": {
+              "line": 136,
+              "character": 7
+            },
+            "end": {
+              "line": 143,
+              "character": 8
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "analysis_evaluation_unresolved",
+          "range": {
+            "start": {
+              "line": 87,
+              "character": 13
+            },
+            "end": {
+              "line": 90,
+              "character": 12
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 107,
+              "character": 25
+            },
+            "end": {
+              "line": 107,
+              "character": 45
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 107,
+              "character": 66
+            },
+            "end": {
+              "line": 107,
+              "character": 98
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 108,
+              "character": 25
+            },
+            "end": {
+              "line": 108,
+              "character": 45
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 108,
+              "character": 66
+            },
+            "end": {
+              "line": 108,
+              "character": 101
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 137,
+              "character": 30
+            },
+            "end": {
+              "line": 137,
+              "character": 64
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 138,
+              "character": 29
+            },
+            "end": {
+              "line": 138,
+              "character": 63
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 140,
+              "character": 30
+            },
+            "end": {
+              "line": 140,
+              "character": 64
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 141,
+              "character": 29
+            },
+            "end": {
+              "line": 141,
+              "character": 66
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 154,
+              "character": 27
+            },
+            "end": {
+              "line": 154,
+              "character": 47
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 155,
+              "character": 33
+            },
+            "end": {
+              "line": 155,
+              "character": 65
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 88,
+              "character": 28
+            },
+            "end": {
+              "line": 88,
+              "character": 47
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 88,
+              "character": 73
+            },
+            "end": {
+              "line": 88,
+              "character": 106
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 89,
+              "character": 29
+            },
+            "end": {
+              "line": 89,
+              "character": 48
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 89,
+              "character": 74
+            },
+            "end": {
+              "line": 89,
+              "character": 107
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 71,
+              "character": 7
+            },
+            "end": {
+              "line": 71,
+              "character": 39
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 72,
+              "character": 7
+            },
+            "end": {
+              "line": 72,
+              "character": 39
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unsupported_port_usage_member",
+          "range": {
+            "start": {
+              "line": 79,
+              "character": 12
+            },
+            "end": {
+              "line": 79,
+              "character": 35
+            }
+          }
+        },
+        {
+          "file": "Variability Examples/VehicleVariabilityModel.sysml",
+          "severity": 2,
+          "code": "unsupported_port_usage_member",
+          "range": {
+            "start": {
+              "line": 80,
+              "character": 12
+            },
+            "end": {
+              "line": 80,
+              "character": 35
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 1,
+          "code": "recovered_requirement_body_element",
+          "range": {
+            "start": {
+              "line": 1097,
+              "character": 20
+            },
+            "end": {
+              "line": 1097,
+              "character": 80
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 1,
+          "code": "recovered_requirement_body_element",
+          "range": {
+            "start": {
+              "line": 1218,
+              "character": 20
+            },
+            "end": {
+              "line": 1220,
+              "character": 21
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 1,
+          "code": "unexpected_keyword_in_scope",
+          "range": {
+            "start": {
+              "line": 1083,
+              "character": 16
+            },
+            "end": {
+              "line": 1084,
+              "character": 16
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "connection_endpoint_not_port",
+          "range": {
+            "start": {
+              "line": 1477,
+              "character": 20
+            },
+            "end": {
+              "line": 1477,
+              "character": 24
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "flow_direction_incompatible",
+          "range": {
+            "start": {
+              "line": 1476,
+              "character": 12
+            },
+            "end": {
+              "line": 1476,
+              "character": 67
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "incompatible_unit_dimension",
+          "range": {
+            "start": {
+              "line": 1263,
+              "character": 48
+            },
+            "end": {
+              "line": 1263,
+              "character": 49
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "perform_target_invalid_kind",
+          "range": {
+            "start": {
+              "line": 1239,
+              "character": 24
+            },
+            "end": {
+              "line": 1239,
+              "character": 33
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "perform_target_invalid_kind",
+          "range": {
+            "start": {
+              "line": 1447,
+              "character": 20
+            },
+            "end": {
+              "line": 1447,
+              "character": 38
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "subsetting_target_not_accessible",
+          "range": {
+            "start": {
+              "line": 1068,
+              "character": 34
+            },
+            "end": {
+              "line": 1068,
+              "character": 40
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "subsetting_target_not_accessible",
+          "range": {
+            "start": {
+              "line": 1081,
+              "character": 29
+            },
+            "end": {
+              "line": 1081,
+              "character": 35
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 1000,
+              "character": 100
+            },
+            "end": {
+              "line": 1000,
+              "character": 129
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 1000,
+              "character": 51
+            },
+            "end": {
+              "line": 1000,
+              "character": 82
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 1004,
+              "character": 100
+            },
+            "end": {
+              "line": 1004,
+              "character": 129
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 1004,
+              "character": 51
+            },
+            "end": {
+              "line": 1004,
+              "character": 82
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 1008,
+              "character": 100
+            },
+            "end": {
+              "line": 1008,
+              "character": 129
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 1008,
+              "character": 51
+            },
+            "end": {
+              "line": 1008,
+              "character": 82
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 656,
+              "character": 61
+            },
+            "end": {
+              "line": 656,
+              "character": 74
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 718,
+              "character": 48
+            },
+            "end": {
+              "line": 718,
+              "character": 58
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 719,
+              "character": 48
+            },
+            "end": {
+              "line": 719,
+              "character": 62
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 758,
+              "character": 53
+            },
+            "end": {
+              "line": 758,
+              "character": 73
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 780,
+              "character": 64
+            },
+            "end": {
+              "line": 780,
+              "character": 84
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 780,
+              "character": 88
+            },
+            "end": {
+              "line": 780,
+              "character": 104
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 781,
+              "character": 56
+            },
+            "end": {
+              "line": 781,
+              "character": 74
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 781,
+              "character": 78
+            },
+            "end": {
+              "line": 781,
+              "character": 93
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 93,
+              "character": 40
+            },
+            "end": {
+              "line": 93,
+              "character": 61
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 1497,
+              "character": 32
+            },
+            "end": {
+              "line": 1497,
+              "character": 76
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 1498,
+              "character": 32
+            },
+            "end": {
+              "line": 1498,
+              "character": 77
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unsupported_interface_definition_member",
+          "range": {
+            "start": {
+              "line": 327,
+              "character": 16
+            },
+            "end": {
+              "line": 327,
+              "character": 72
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+          "severity": 2,
+          "code": "unsupported_package_member",
+          "range": {
+            "start": {
+              "line": 1538,
+              "character": 31
+            },
+            "end": {
+              "line": 1538,
+              "character": 54
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/VehicleUsages.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 92,
+              "character": 34
+            },
+            "end": {
+              "line": 92,
+              "character": 55
+            }
+          }
+        },
+        {
+          "file": "Vehicle Example/VehicleUsages.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 92,
+              "character": 8
+            },
+            "end": {
+              "line": 92,
+              "character": 30
+            }
+          }
+        }
+      ]
+    },
+    {
+      "corpus": "sysml/src/training",
+      "files": 100,
+      "diagnostics": [
+        {
+          "file": "14. Action Definitions/Action Succession Example-2.sysml",
+          "severity": 2,
+          "code": "duplicate_root_package",
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 23,
+              "character": 1
+            }
+          }
+        },
+        {
+          "file": "16. Conditional Succession/Conditional Succession Example-1.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 21,
+              "character": 6
+            },
+            "end": {
+              "line": 21,
+              "character": 31
+            }
+          }
+        },
+        {
+          "file": "16. Conditional Succession/Conditional Succession Example-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 20,
+              "character": 5
+            },
+            "end": {
+              "line": 20,
+              "character": 30
+            }
+          }
+        },
+        {
+          "file": "21. Asynchronous Messaging/Messaging Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 19,
+              "character": 19
+            },
+            "end": {
+              "line": 19,
+              "character": 32
+            }
+          }
+        },
+        {
+          "file": "21. Asynchronous Messaging/Messaging with Ports.sysml",
+          "severity": 2,
+          "code": "duplicate_root_package",
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 39,
+              "character": 1
+            }
+          }
+        },
+        {
+          "file": "21. Asynchronous Messaging/Messaging with Ports.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 25,
+              "character": 20
+            },
+            "end": {
+              "line": 25,
+              "character": 33
+            }
+          }
+        },
+        {
+          "file": "24. States/State Decomposition-2.sysml",
+          "severity": 2,
+          "code": "duplicate_root_package",
+          "range": {
+            "start": {
+              "line": 0,
+              "character": 0
+            },
+            "end": {
+              "line": 31,
+              "character": 1
+            }
+          }
+        },
+        {
+          "file": "34. Verification/Verification Case Definition Example.sysml",
+          "severity": 2,
+          "code": "invocation_argument_redefines_no_parameter",
+          "range": {
+            "start": {
+              "line": 40,
+              "character": 57
+            },
+            "end": {
+              "line": 40,
+              "character": 83
+            }
+          }
+        },
+        {
+          "file": "34. Verification/Verification Case Usage Example.sysml",
+          "severity": 2,
+          "code": "perform_target_invalid_kind",
+          "range": {
+            "start": {
+              "line": 15,
+              "character": 10
+            },
+            "end": {
+              "line": 15,
+              "character": 25
+            }
+          }
+        },
+        {
+          "file": "34. Verification/Verification Case Usage Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 19,
+              "character": 16
+            },
+            "end": {
+              "line": 19,
+              "character": 27
+            }
+          }
+        },
+        {
+          "file": "34. Verification/Verification Case Usage Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 22,
+              "character": 18
+            },
+            "end": {
+              "line": 22,
+              "character": 34
+            }
+          }
+        },
+        {
+          "file": "34. Verification/Verification Case Usage Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 24,
+              "character": 12
+            },
+            "end": {
+              "line": 24,
+              "character": 24
+            }
+          }
+        },
+        {
+          "file": "35. Use Cases/Use Case Usage Example.sysml",
+          "severity": 1,
+          "code": "implicit_redefinition_without_operator",
+          "range": {
+            "start": {
+              "line": 13,
+              "character": 3
+            },
+            "end": {
+              "line": 13,
+              "character": 51
+            }
+          }
+        },
+        {
+          "file": "35. Use Cases/Use Case Usage Example.sysml",
+          "severity": 1,
+          "code": "implicit_redefinition_without_operator",
+          "range": {
+            "start": {
+              "line": 14,
+              "character": 3
+            },
+            "end": {
+              "line": 14,
+              "character": 59
+            }
+          }
+        },
+        {
+          "file": "35. Use Cases/Use Case Usage Example.sysml",
+          "severity": 1,
+          "code": "implicit_redefinition_without_operator",
+          "range": {
+            "start": {
+              "line": 30,
+              "character": 3
+            },
+            "end": {
+              "line": 30,
+              "character": 51
+            }
+          }
+        },
+        {
+          "file": "35. Use Cases/Use Case Usage Example.sysml",
+          "severity": 1,
+          "code": "implicit_redefinition_without_operator",
+          "range": {
+            "start": {
+              "line": 31,
+              "character": 3
+            },
+            "end": {
+              "line": 31,
+              "character": 59
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Configuration.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 10,
+              "character": 32
+            },
+            "end": {
+              "line": 10,
+              "character": 64
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Configuration.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 4,
+              "character": 26
+            },
+            "end": {
+              "line": 4,
+              "character": 46
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Configuration.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 5,
+              "character": 32
+            },
+            "end": {
+              "line": 5,
+              "character": 64
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Configuration.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 9,
+              "character": 26
+            },
+            "end": {
+              "line": 9,
+              "character": 46
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Definitions.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 25,
+              "character": 2
+            },
+            "end": {
+              "line": 25,
+              "character": 43
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Definitions.sysml",
+          "severity": 2,
+          "code": "unsupported_attribute_member",
+          "range": {
+            "start": {
+              "line": 26,
+              "character": 2
+            },
+            "end": {
+              "line": 26,
+              "character": 44
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Usages.sysml",
+          "severity": 2,
+          "code": "analysis_evaluation_unresolved",
+          "range": {
+            "start": {
+              "line": 16,
+              "character": 2
+            },
+            "end": {
+              "line": 21,
+              "character": 3
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Usages.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 17,
+              "character": 14
+            },
+            "end": {
+              "line": 17,
+              "character": 34
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Usages.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 18,
+              "character": 20
+            },
+            "end": {
+              "line": 18,
+              "character": 52
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Usages.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 19,
+              "character": 14
+            },
+            "end": {
+              "line": 19,
+              "character": 34
+            }
+          }
+        },
+        {
+          "file": "36. Variability/Variation Usages.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 20,
+              "character": 20
+            },
+            "end": {
+              "line": 20,
+              "character": 55
+            }
+          }
+        },
+        {
+          "file": "38. Allocation/Allocation Usage Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 29,
+              "character": 12
+            },
+            "end": {
+              "line": 29,
+              "character": 42
+            }
+          }
+        },
+        {
+          "file": "38. Allocation/Allocation Usage Example.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 29,
+              "character": 46
+            },
+            "end": {
+              "line": 29,
+              "character": 78
+            }
+          }
+        },
+        {
+          "file": "39. Metadata/Metadata Example-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 6,
+              "character": 3
+            },
+            "end": {
+              "line": 6,
+              "character": 11
+            }
+          }
+        },
+        {
+          "file": "39. Metadata/Metadata Example-2.sysml",
+          "severity": 2,
+          "code": "unresolved_reference",
+          "range": {
+            "start": {
+              "line": 7,
+              "character": 3
+            },
+            "end": {
+              "line": 7,
+              "character": 6
+            }
+          }
+        },
+        {
+          "file": "39. Metadata/Metadata Example-2.sysml",
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "range": {
+            "start": {
+              "line": 5,
+              "character": 11
+            },
+            "end": {
+              "line": 5,
+              "character": 24
+            }
+          }
+        },
+        {
+          "file": "39. Metadata/Metadata Example-2.sysml",
+          "severity": 2,
+          "code": "unsupported_action_usage_member",
+          "range": {
+            "start": {
+              "line": 3,
+              "character": 2
+            },
+            "end": {
+              "line": 3,
+              "character": 36
+            }
+          }
+        },
+        {
+          "file": "40. Filtering/Filtering Example-1.sysml",
+          "severity": 2,
+          "code": "unsupported_package_member",
+          "range": {
+            "start": {
+              "line": 34,
+              "character": 21
+            },
+            "end": {
+              "line": 34,
+              "character": 44
+            }
+          }
+        },
+        {
+          "file": "40. Filtering/Filtering Example-2.sysml",
+          "severity": 2,
+          "code": "unsupported_filtered_import",
+          "range": {
+            "start": {
+              "line": 27,
+              "character": 16
+            },
+            "end": {
+              "line": 27,
+              "character": 36
+            }
+          }
+        },
+        {
+          "file": "40. Filtering/Filtering Example-2.sysml",
+          "severity": 2,
+          "code": "unsupported_filtered_import",
+          "range": {
+            "start": {
+              "line": 32,
+              "character": 16
+            },
+            "end": {
+              "line": 32,
+              "character": 64
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
