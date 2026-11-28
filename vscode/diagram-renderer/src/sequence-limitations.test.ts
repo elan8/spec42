@@ -81,10 +81,10 @@ describe("canonical sequence limitation presentation", () => {
     send(fixture("diagram_sequence_unsupported_details"));
     await vi.waitFor(() => expect(document.querySelector("#limitations code")!.textContent).toBe("unsupported-syntax"));
     const diagnosticLink = document.querySelector<HTMLButtonElement>("#limitations li button")!;
-    expect(diagnosticLink.textContent).toContain("unsupported_state_definition_member");
+    expect(diagnosticLink.textContent).toContain("unsupported_attribute_member");
     diagnosticLink.click();
     expect(postMessage).toHaveBeenCalledWith({ type: "openSource", target: {
-      uri: "memory://snapshot/diagram_sequence_unsupported_details.md", startLine: 16, startCharacter: 24, endLine: 16, endCharacter: 51,
+      uri: "memory://snapshot/diagram_sequence_unsupported_details.md", startLine: 16, startCharacter: 38, endLine: 16, endCharacter: 63,
     } });
 
     document.querySelector<HTMLDetailsElement>("details")!.open = true;
