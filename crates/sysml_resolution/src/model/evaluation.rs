@@ -66,7 +66,7 @@ pub(crate) fn evaluated_scalar(outcome: &EvaluatedValue) -> Option<EvaluatedScal
         EvaluatedValue::String(value) => Some(EvaluatedScalar::String(value.as_str().into())),
         EvaluatedValue::Quantity(magnitude, unit) => Some(EvaluatedScalar::Quantity {
             magnitude: Box::new(evaluated_scalar(magnitude)?),
-            unit: unit.as_str().into(),
+            unit: unit.text.as_str().into(),
         }),
         EvaluatedValue::NotEvaluated
         | EvaluatedValue::UnresolvedOperand
@@ -134,7 +134,13 @@ mod tests {
 
     #[test]
     fn a_quantity_keeps_its_magnitude_and_authored_unit() {
-        let outcome = EvaluatedValue::Quantity(Box::new(EvaluatedValue::Integer(10)), "kg".into());
+        let outcome = EvaluatedValue::Quantity(
+            Box::new(EvaluatedValue::Integer(10)),
+            crate::model::QuantityUnit {
+                text: "kg".into(),
+                binding: crate::model::QuantityUnitBinding::Unsupported,
+            },
+        );
         assert_eq!(
             evaluation_state(&outcome, &literal(outcome.clone())),
             EvaluationState::Literal(EvaluatedScalar::Quantity {
