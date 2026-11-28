@@ -108,7 +108,22 @@ jobs:
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Clone SysML-v2-Release
-        run: git clone --depth 1 --branch 2026-04 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
+        run: git clone --depth 1 --branch "$SPEC42_STDLIB_VERSION" https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
+
+      - name: Report OMG corpus diagnostics
+        env:
+          SPEC42_DATA_DIR: ${{ runner.temp }}/omg-corpus-spec42
+        run: |
+          cargo build --locked -p server --bin spec42
+          node scripts/report-omg-corpus.mjs target/debug/spec42 sysml-v2-release "$RUNNER_TEMP/omg-corpus-report"
+          cat "$RUNNER_TEMP/omg-corpus-report/summary.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload OMG corpus diagnostic inventory
+        uses: actions/upload-artifact@v6
+        with:
+          name: omg-corpus-report
+          path: ${{ runner.temp }}/omg-corpus-report/
+          if-no-files-found: error
 
       - name: Check SysML graphical notation inventory
         env:
