@@ -33,18 +33,6 @@ package States {
   (document "memory://snapshot/sysml_state_definition_parallel_subactions.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 2 4) (end 5 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 8 4) (end 12 5))
-      )
-      (diagnostic
         (severity warning)
         (code "parallel_state_substate_transition")
         (source "semantic")
@@ -59,18 +47,6 @@ package States {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_state_definition_parallel_subactions.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 2 4) (end 5 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 8 4) (end 12 5))
-      )
       (diagnostic
         (severity warning)
         (code "parallel_state_substate_transition")

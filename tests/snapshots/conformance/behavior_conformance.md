@@ -57,7 +57,7 @@ package Behavior {
     }
 }
 ~~~
-# DIAGNOSTICS
+# EXPECTED DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/behavior_conformance.md"
@@ -114,11 +114,66 @@ package Behavior {
           )
         )
       )
+    )
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/behavior_conformance.md"
+    (diagnostics
       (diagnostic
-        (severity information)
-        (code "missing_initial_state")
+        (severity warning)
+        (code "perform_target_invalid_kind")
         (source "semantic")
-        (range (start 40 4) (end 44 5))
+        (range (start 9 31) (end 9 40))
+        (related-information
+          (related
+            (uri "memory://snapshot/behavior_conformance.md")
+            (range (start 2 4) (end 2 23))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "transition_endpoint_invalid_state")
+        (source "semantic")
+        (range (start 21 8) (end 21 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/behavior_conformance.md")
+            (range (start 20 8) (end 20 20))
+          )
+          (related
+            (uri "memory://snapshot/behavior_conformance.md")
+            (range (start 2 4) (end 2 23))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "succession_endpoint_invalid")
+        (source "semantic")
+        (range (start 33 14) (end 33 23))
+        (related-information
+          (related
+            (uri "memory://snapshot/behavior_conformance.md")
+            (range (start 31 8) (end 31 35))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "accept_payload_incompatible")
+        (source "semantic")
+        (range (start 37 26) (end 37 30))
+        (related-information
+          (related
+            (uri "memory://snapshot/behavior_conformance.md")
+            (range (start 1 4) (end 1 20))
+          )
+        )
       )
     )
   )

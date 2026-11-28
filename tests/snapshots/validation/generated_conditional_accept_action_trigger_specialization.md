@@ -30,12 +30,6 @@ package AcceptActionTriggerSpecialization {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_accept_action_trigger_specialization.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 1 4) (end 5 5))
-      )
     )
   )
 )

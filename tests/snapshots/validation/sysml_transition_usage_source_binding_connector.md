@@ -31,12 +31,6 @@ package Transitions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_transition_usage_source_binding_connector.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 1 4) (end 5 5))
-      )
     )
   )
 )

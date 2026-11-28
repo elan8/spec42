@@ -46,12 +46,6 @@ package BodyRecovery {
         (range (start 9 16) (end 9 30))
       )
       (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 11 4) (end 14 5))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -89,12 +83,6 @@ package BodyRecovery {
         (code "variant_outside_variation")
         (source "semantic")
         (range (start 9 16) (end 9 30))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 11 4) (end 14 5))
       )
       (diagnostic
         (severity error)

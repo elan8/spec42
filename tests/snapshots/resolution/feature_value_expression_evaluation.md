@@ -178,12 +178,6 @@ package Values {
         (range (start 54 8) (end 54 58))
       )
       (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 57 4) (end 62 5))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
