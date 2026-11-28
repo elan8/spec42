@@ -97,6 +97,12 @@ package Guards {
         (source "semantic")
         (range (start 23 25) (end 23 57))
       )
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 24 27) (end 24 39))
+      )
     )
   )
 )

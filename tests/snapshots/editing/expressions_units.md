@@ -70,6 +70,12 @@ package Expr {
         (source "semantic")
         (range (start 11 22) (end 11 25))
       )
+      (diagnostic
+        (severity error)
+        (code "attribute_value_type_mismatch")
+        (source "semantic")
+        (range (start 13 27) (end 13 35))
+      )
     )
   )
 )

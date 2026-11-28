@@ -104,8 +104,8 @@ impl<D> SemanticModel<D> {
     /// and what the receiving feature is typed by -- so they differ only in where the receiving
     /// feature comes from and where the diagnostic is reported.
     ///
-    /// Unit-bearing values have no scalar datatype and are checked by dimension instead. Bare
-    /// scalar values still have to satisfy the receiving feature's types, including quantity types.
+    /// A measured quantity cannot bind a scalar datatype. Quantity-typed receivers also check
+    /// unit compatibility. Bare scalar values have to satisfy the receiving feature's types.
     /// A value written as an expression body (`default {true}`) is an Expression, not a scalar, and
     /// is not compared.
     pub(crate) fn collect_value_conformance(
@@ -263,10 +263,11 @@ impl<D> SemanticModel<D> {
         expression: DeclarationId,
         receiver: DeclarationId,
     ) -> Option<DiagnosticSeverity> {
-        let row = self.resolved_expressions.body(expression).or_else(|| {
-            self.resolved_expressions
-                .body(self.value_expression(expression)?)
-        });
+        let value_expression = self.value_expression(expression).unwrap_or(expression);
+        let row = self
+            .resolved_expressions
+            .body(expression)
+            .or_else(|| self.resolved_expressions.body(value_expression));
         if let Some(row) = row {
             if self.is_reference_value_receiver(receiver) {
                 let structural = row
@@ -282,15 +283,26 @@ impl<D> SemanticModel<D> {
                     return Some(severity);
                 }
             }
-            let literal = row
+            let root = row
                 .root
                 .and_then(|root| row.nodes.get(root as usize))
-                .is_some_and(|node| {
-                    matches!(
-                        node.kind,
-                        crate::index::resolved_expressions::RawExpressionNodeKind::Literal(_)
-                    )
-                });
+                .map(|node| &node.kind);
+            use crate::expression::RawExpressionNodeKind::Literal;
+            if matches!(root, Some(Literal(EvaluatedScalar::Quantity { .. })))
+                && self
+                    .expressions
+                    .units(value_expression)
+                    .iter()
+                    .any(|unit| matches!(unit.outcome, UnitOutcome::Resolved { .. }))
+                && self
+                    .types
+                    .effective_types(receiver)
+                    .iter()
+                    .any(|(target, _)| self.is_scalar_datatype(*target))
+            {
+                return Some(DiagnosticSeverity::Error);
+            }
+            let literal = matches!(root, Some(Literal(_)));
             if !literal {
                 if let crate::index::expression_typing::RawResultTyping::Resolved(actual) =
                     &row.result_typing
@@ -300,22 +312,11 @@ impl<D> SemanticModel<D> {
                     // not a directional test of their declared nominal result types.
                     // Defaults are FeatureValues too: their result must satisfy the receiving
                     // feature's type even though invocation decides whether they are applied.
-                    let scalar_anchors = [
-                        self.expressions.anchors.boolean,
-                        self.expressions.anchors.string,
-                        self.expressions.anchors.real,
-                        self.expressions.anchors.integer,
-                    ];
                     let mut declared = self
                         .types
                         .effective_types(receiver)
                         .iter()
-                        .filter(|(target, _)| {
-                            scalar_anchors
-                                .iter()
-                                .flatten()
-                                .any(|anchor| conforms(&self.types, *target, *anchor))
-                        })
+                        .filter(|(target, _)| self.is_scalar_datatype(*target))
                         .peekable();
                     if declared.peek().is_some() {
                         let mut narrowing = false;
@@ -355,6 +356,19 @@ impl<D> SemanticModel<D> {
         // Anything must not make an incompatible, more specific typing disappear.
         (!declared.all(|target| comparable(&self.types, target, value_type)))
             .then_some(DiagnosticSeverity::Error)
+    }
+
+    fn is_scalar_datatype(&self, target: DeclarationId) -> bool {
+        let anchors = &self.expressions.anchors;
+        [
+            anchors.boolean,
+            anchors.string,
+            anchors.real,
+            anchors.integer,
+        ]
+        .into_iter()
+        .flatten()
+        .any(|anchor| conforms(&self.types, target, anchor))
     }
 
     fn is_reference_value_receiver(&self, receiver: DeclarationId) -> bool {
