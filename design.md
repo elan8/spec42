@@ -140,7 +140,9 @@ pipeline ─► lower ─► resolve ─► evaluate ─► index ─► diagnos
   evaluation and carried into the indexes that publish them. Authored and contextual quantity
   folding use the same unit identities and preserve the authored spelling for display. Indexed
   construction first binds contextual expression records and static result types, then invokes the same evaluator with
-  those frozen bindings to settle contextual values before publishing `Indexed`. Shared expression
+  those frozen bindings to settle contextual values. The index derives expression dimensions from
+  settled operand types, unit bindings, and the standard library's quantity power factors before
+  publishing `Indexed`. Shared expression
   records live at the semantic boundary in `expression`; the evaluator does not depend on index
   construction code.
   Authored and contextual evaluation stores remain distinct, with no write-back to authored values.

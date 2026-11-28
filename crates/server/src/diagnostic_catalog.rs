@@ -708,6 +708,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "incompatible_quantity_dimensions",
+        severity: "warning",
+        meaning: "An additive or comparison operator combines quantities of different dimensions.",
+        typical_fix: "Check the quantity types and operators on both sides of the expression.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "non_boolean_expression",
         severity: "warning",
         meaning: "A constraint, assert, guard, or filter expression must evaluate to Boolean.",

@@ -899,6 +899,7 @@ impl Evaluated {
             resolution: self.resolution,
             evaluation: self.evaluation,
             expressions,
+            physical_dimensions: Default::default(),
             resolved_expressions,
             diagnostics: NotYetDiagnosed,
             metadata: PublicationMetadata {
@@ -909,6 +910,7 @@ impl Evaluated {
         };
         crate::index::expression_typing::settle(&mut indexed);
         crate::evaluate::contextual::settle(&mut indexed, &self.sources, &self.unit_bindings)?;
+        indexed.physical_dimensions = crate::index::physical_dimensions::settle(&indexed);
         Ok((indexed, self.sources))
     }
 }
@@ -951,6 +953,7 @@ impl Indexed {
                 resolution: self.resolution,
                 evaluation: self.evaluation,
                 expressions: self.expressions,
+                physical_dimensions: self.physical_dimensions,
                 resolved_expressions: self.resolved_expressions,
                 diagnostics: SettledDiagnostics {
                     diagnostics,

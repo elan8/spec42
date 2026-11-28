@@ -230,10 +230,7 @@ pub(crate) fn classify_filter_predicate(
     }
 }
 
-/// Recursively builds the `EvalNode` mirror for a calc-body expression, mirroring
-/// `lower_calc_expression`'s supported shapes: no comparison-operator support (calc bodies stay
-/// comparison-free, per slice 1), plus slice 4's arithmetic `BinaryOp` (`Add`/`Sub`/`Mul`/`Div`/
-/// `Mod`) support.
+/// Recursively classifies a calculation expression using the authored operand order.
 pub(crate) fn classify_calc_node(
     parsed: &ParsedDocument,
     node: &Expression,
@@ -300,6 +297,17 @@ pub(crate) fn classify_calc_node(
                 Box::new(left),
                 Box::new(right),
             ))
+        }
+        Expression::BinaryOp { op, left, right }
+            if is_comparison_operator(op) || is_logical_operator(op) =>
+        {
+            let left = Box::new(classify_calc_node(parsed, &left.value, ordinal)?);
+            let right = Box::new(classify_calc_node(parsed, &right.value, ordinal)?);
+            if is_comparison_operator(op) {
+                Some(EvalNode::Comparison(op.clone(), left, right))
+            } else {
+                Some(EvalNode::Logical(op.clone(), left, right))
+            }
         }
         Expression::Invocation { callee, args } => {
             let mut children = Vec::with_capacity(args.len());

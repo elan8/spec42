@@ -659,6 +659,9 @@ semantic_diagnostic_codes! {
     /// A quantity value is measured in a unit whose dimension its feature's type does not admit.
     IncompatibleUnitDimension => "incompatible_unit_dimension",
         "This value's unit has a dimension the feature's type does not admit.";
+    /// SysML 9.8.9.1 requires matching dimensions for additive and comparison operations.
+    IncompatibleQuantityDimensions => "incompatible_quantity_dimensions",
+        "This operator combines incompatible quantity dimensions.";
     /// A constraint's expression evaluates to something other than a Boolean.
     NonBooleanConstraintExpression => "non_boolean_expression",
         "A constraint expression must evaluate to a Boolean.";

@@ -2,8 +2,7 @@
 //!
 //! Every rule here reads what [`super::expression`] settled -- an evaluation state, a unit's
 //! resolution, the measurement reference a type requires -- and asks a specialization question
-//! about it. The temporary standard-library volt exception identifies resolved library
-//! declarations by their qualified names and affects reporting only.
+//! about it. The pinned standard-library exceptions affect reporting only.
 //!
 //! # What the legacy check did instead
 //!
@@ -22,6 +21,7 @@
 
 use crate::check::conformance;
 use crate::index::expressions::conforms;
+use crate::index::expressions::owner_path_matches;
 use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
 use crate::index::types::TypeIndex;
@@ -82,6 +82,37 @@ impl<D> SemanticModel<D> {
         self.collect_value_conformance(document, diagnostics)?;
         self.collect_assignment_time_variation(document, diagnostics)?;
         self.collect_unit_conformance(document, diagnostics)?;
+        if let Some(mismatches) = self.physical_dimensions.mismatches.get(&document) {
+            for mismatch in mismatches {
+                let name = |id| {
+                    self.storage
+                        .declaration_facts(id)
+                        .and_then(|facts| facts.short_name.resolved())
+                        .and_then(|name| self.storage.symbol(name))
+                        .unwrap_or_else(|| self.display_name(id))
+                        .to_owned()
+                };
+                diagnostics.push(Diagnostic {
+                    payload: None,
+                    message: format!(
+                        "Operator '{}' combines incompatible quantity dimensions {} and {}.",
+                        mismatch.operator.as_str(),
+                        mismatch.left.display(name),
+                        mismatch.right.display(name),
+                    )
+                    .into(),
+                    code: DiagnosticCode::IncompatibleQuantityDimensions,
+                    severity: DiagnosticSeverity::Warning,
+                    origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_id(mismatch.declaration),
+                    location: DiagnosticLocation {
+                        document: writer::document_identity(self, document).into(),
+                        range: document_range(&self.storage, document, &mismatch.span)?,
+                    },
+                    related: Box::default(),
+                });
+            }
+        }
         self.collect_boolean_expressions(document, declared, diagnostics)?;
         self.collect_invocation_arity(document, diagnostics)?;
         self.collect_invocation_instantiated_types(document, diagnostics)?;
@@ -615,7 +646,7 @@ impl<D> SemanticModel<D> {
                     }) {
                         continue;
                     }
-                    if self.is_standard_volt_difference_mismatch(
+                    if self.has_documented_standard_unit_compatibility(
                         *resolved_unit,
                         dimensions,
                         expected,
@@ -642,9 +673,9 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// Temporary reporting exception for the standard library's volt typing (issue #519).
-    /// The two ISQ unit types have identical physical dimensions.
-    fn is_standard_volt_difference_mismatch(
+    /// Recognize the pinned library's documented uses that its nominal types do not express.
+    /// The resolved unit and its nominal type are preserved in the semantic model.
+    fn has_documented_standard_unit_compatibility(
         &self,
         unit: DeclarationId,
         actual: &[DeclarationId],
@@ -653,25 +684,29 @@ impl<D> SemanticModel<D> {
         let ([actual], [expected]) = (actual, expected) else {
             return false;
         };
-        [
-            (unit, "SI::volt"),
-            (*actual, "ISQElectromagnetism::ElectricPotentialUnit"),
-            (
-                *expected,
-                "ISQElectromagnetism::ElectricPotentialDifferenceUnit",
-            ),
-        ]
-        .into_iter()
-        .all(|(id, name)| {
-            self.qualified_names.qualified_name(id) == Some(name)
-                && self
-                    .storage
-                    .declaration(id)
-                    .and_then(|declaration| self.storage.document(declaration.document))
+        let is_standard = |id, package, member| {
+            self.storage.declaration(id).is_some_and(|declaration| {
+                self.storage
+                    .document(declaration.document)
                     .is_some_and(|document| {
                         document.role == source_identity::SourceRole::StandardLibrary
                     })
-        })
+                    && declaration
+                        .name
+                        .resolved()
+                        .and_then(|name| self.storage.symbol(name))
+                        == Some(member)
+                    && owner_path_matches(&self.storage, declaration.owner, &[package])
+            })
+        };
+        // Standard volt typing (issue #519).
+        (is_standard(unit, "SI", "volt")
+            && is_standard(*actual, "ISQElectromagnetism", "ElectricPotentialUnit")
+            && is_standard(*expected, "ISQElectromagnetism", "ElectricPotentialDifferenceUnit"))
+            // ISQThermodynamics documents °C for the difference from the ice point.
+            || (is_standard(unit, "SI", "degree celsius (temperature difference)")
+                && is_standard(*actual, "ISQ", "TemperatureDifferenceUnit")
+                && is_standard(*expected, "ISQThermodynamics", "CelsiusTemperatureUnit"))
     }
 
     /// Reports constraint bodies and view filters that evaluate to something other than a Boolean.

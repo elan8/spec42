@@ -240,6 +240,7 @@ impl ExpressionOperator {
 pub(crate) struct RawExpressionNode {
     pub(crate) kind: RawExpressionNodeKind,
     pub(crate) span: sysml_v2_parser::ast::Span,
+    pub(crate) operator_span: Option<sysml_v2_parser::ast::Span>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
