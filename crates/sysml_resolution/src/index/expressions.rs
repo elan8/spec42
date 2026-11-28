@@ -414,18 +414,15 @@ pub(crate) struct ExpressionInputs<'a> {
     pub(crate) types: &'a TypeIndex,
 }
 
-impl ExpressionIndex {
-    /// Assembles the settled expression facts of one publication.
-    ///
-    /// `filters` is `None` when resolution did not converge: nothing was evaluated, so no filter
-    /// condition has an outcome to publish. The authored conditions are still in storage; what is
-    /// absent is any claim about what they evaluate to.
-    pub(crate) fn build(
-        model: &ExpressionInputs<'_>,
-        filters: Option<Box<[SettledFilter]>>,
-    ) -> Result<Self, ResolutionError> {
+/// The unit outcomes derived from settled name resolution and type conformance.
+pub(crate) struct SettledUnits {
+    anchors: LibraryAnchors,
+    units: Box<[SettledUnit]>,
+}
+
+impl SettledUnits {
+    pub(crate) fn build(model: &ExpressionInputs<'_>) -> Result<Self, ResolutionError> {
         let storage = model.storage;
-        let count = storage.declarations.len();
         let anchors = LibraryAnchors::build(storage);
         let catalog = UnitCatalog::build(model, &anchors)?;
 
@@ -458,6 +455,27 @@ impl ExpressionIndex {
             })
             .collect::<Vec<_>>();
         units.sort_by_key(|unit| (unit.declaration, unit.ordinal));
+        Ok(Self {
+            anchors,
+            units: units.into_boxed_slice(),
+        })
+    }
+}
+
+impl ExpressionIndex {
+    /// Assembles the settled expression facts of one publication.
+    ///
+    /// `filters` is `None` when resolution did not converge: nothing was evaluated, so no filter
+    /// condition has an outcome to publish. The authored conditions are still in storage; what is
+    /// absent is any claim about what they evaluate to.
+    pub(crate) fn build(
+        model: &ExpressionInputs<'_>,
+        settled_units: SettledUnits,
+        filters: Option<Box<[SettledFilter]>>,
+    ) -> Result<Self, ResolutionError> {
+        let storage = model.storage;
+        let count = storage.declarations.len();
+        let SettledUnits { anchors, units } = settled_units;
         let mut unit_ranges = Vec::with_capacity(count);
         let mut cursor = 0usize;
         for index in 0..count {
@@ -508,7 +526,7 @@ impl ExpressionIndex {
             ranges_for_sorted_owners(count, filters.iter().map(|filter| filter.owner))?;
         Ok(Self {
             anchors,
-            units: units.into_boxed_slice(),
+            units,
             unit_ranges: unit_ranges.into_boxed_slice(),
             required: required.into_boxed_slice(),
             filters: filters.into_boxed_slice(),

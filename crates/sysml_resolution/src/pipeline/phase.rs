@@ -25,6 +25,7 @@ use crate::index::elements::ElementFactIndex;
 use crate::index::expressions::ExpressionIndex;
 use crate::index::expressions::ExpressionInputs;
 use crate::index::expressions::SettledFilter;
+use crate::index::expressions::SettledUnits;
 use crate::index::identity::IdentityIndex;
 use crate::index::qualified::QualifiedNameIndex;
 use crate::index::resolved_expressions::ResolvedExpressionIndex;
@@ -98,6 +99,8 @@ pub(crate) struct Evaluated {
     exported_imports: NameIndex,
     memberships: MembershipIndex,
     resolution: ResolutionResults,
+    types: TypeIndex,
+    units: SettledUnits,
     evaluation: Box<[EvaluationFact]>,
     filter_conditions: Option<Box<[SettledFilter]>>,
     completeness: PublicationCompleteness,
@@ -800,13 +803,20 @@ impl Lowered {
 
 impl Resolved {
     /// Phase 5: the single evaluation writer.
-    pub(crate) fn evaluate(self, policy: EvaluationPolicy) -> Evaluated {
+    pub(crate) fn evaluate(self, policy: EvaluationPolicy) -> Result<Evaluated, ResolutionError> {
+        // Both facts derive from settled resolution. They feed nothing back into name lookup.
+        let types = TypeIndex::build(&self.storage, &self.resolution)?;
+        let units = SettledUnits::build(&ExpressionInputs {
+            storage: &self.storage,
+            resolution: &self.resolution,
+            types: &types,
+        })?;
         let (evaluation, filter_conditions) =
             match compute_evaluation(&self.storage, &self.sources, &self.resolution, policy) {
                 SettledEvaluation::Settled { facts, filters } => (facts, Some(filters)),
                 SettledEvaluation::Vacuous => (Box::default(), None),
             };
-        Evaluated {
+        Ok(Evaluated {
             storage: self.storage,
             sources: self.sources,
             direct_names: self.direct_names,
@@ -814,10 +824,12 @@ impl Resolved {
             exported_imports: self.exported_imports,
             memberships: self.memberships,
             resolution: self.resolution,
+            types,
+            units,
             evaluation,
             filter_conditions,
             completeness: self.completeness,
-        }
+        })
     }
 }
 
@@ -837,11 +849,7 @@ impl Evaluated {
             &self.resolution.inherited_names,
         )?;
         let facts = ElementFactIndex::build(&self.storage, &self.resolution, &self.evaluation)?;
-        // A barrier product, not a solver family: every type fact here is derived from settled
-        // outcomes and feeds nothing back into scope, imports or inheritance. The resolver's own
-        // ancestor closure for inherited names stays separate and unchanged -- widening that one
-        // would silently change name resolution.
-        let types = TypeIndex::build(&self.storage, &self.resolution)?;
+        let types = self.types;
         // Result binding connectors relate a Function's or Expression's result, which may be
         // inherited over the settled type closure.
         let bindings = BindingConnectorIndex::build(&self.storage, &self.resolution, &types)?;
@@ -853,6 +861,7 @@ impl Evaluated {
                 resolution: &self.resolution,
                 types: &types,
             },
+            self.units,
             self.filter_conditions,
         )?;
         let resolved_expressions = ResolvedExpressionIndex::build(&ResolvedExpressionInputs {
@@ -983,7 +992,9 @@ pub(crate) fn build_model(
     let resolve = started.elapsed();
     let started = std::time::Instant::now();
     controls.checkpoint(crate::ConstructionPhase::Evaluation)?;
-    let evaluated = resolved.evaluate(policy);
+    let evaluated = resolved
+        .evaluate(policy)
+        .map_err(|error| failure(crate::ConstructionPhase::Evaluation, error))?;
     let evaluation = started.elapsed();
     let started = std::time::Instant::now();
     controls.checkpoint(crate::ConstructionPhase::Indexing)?;
