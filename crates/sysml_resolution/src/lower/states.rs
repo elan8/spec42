@@ -131,23 +131,13 @@ impl SemanticModelBuilder {
                     self.push_recovery(document, error.span);
                 }
                 StateDefBodyElement::PartUsage(node) => {
-                    // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::StateDefinitionMember,
-                        node.span,
-                    );
+                    self.lower_part_usage(document, Some(owner), node)?;
                 }
                 StateDefBodyElement::PortUsage(node) => {
                     self.lower_port_usage(document, Some(owner), node)?;
                 }
                 StateDefBodyElement::ConstraintUsage(node) => {
-                    // New upstream member kind: kept visible as unsupported rather than dropped.
-                    self.push_unsupported(
-                        document,
-                        UnsupportedFamily::StateDefinitionMember,
-                        node.span,
-                    );
+                    self.lower_constraint_usage(document, Some(owner), node)?;
                 }
                 StateDefBodyElement::StateUsage(state_usage) => {
                     self.lower_state_usage(document, Some(owner), state_usage)?;

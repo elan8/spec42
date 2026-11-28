@@ -19,7 +19,7 @@ package Library {
         part right { event occurrence received; }
         message exchange from left.sent to right.received;
     }
-    state def Machine { constraint pending { true } }
+    variation attribute def Pending { variant attribute option; }
 }
 ~~~
 ## model.sysml
@@ -61,7 +61,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:215cf40f173b57088db6fdaebccdc5b405243f66005d9d7021ef6288d836a50d") (admitted (standard-library 1)))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:1026857998391471fd4d8be65a9c97ea376325226fad87b449f48250579cfbd1") (admitted (standard-library 1)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Model::selected"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StandardViewDefinitions::SequenceView")))))
@@ -117,7 +117,7 @@ package Model {
 ~~~json
 {
   "schemaVersion": 13,
-  "modelDigest": "blake3:4af2914c820048d04162a1c752560cebb374a19b5538d0426d49408529ad50ae",
+  "modelDigest": "blake3:9b9663f8f42180d57513a0f10a44ffeed8e3323ee548b16d72ba0c5547d79778",
   "documents": [
     {
       "uri": "memory://snapshot/library.sysml",
@@ -142,9 +142,9 @@ package Model {
       "document": 0,
       "range": [
         7,
-        24,
+        38,
         7,
-        51
+        63
       ]
     },
     {
@@ -182,7 +182,7 @@ package Model {
         "code": "unsupported-syntax",
         "diagnostics": [
           {
-            "code": "unsupported_state_definition_member",
+            "code": "unsupported_attribute_member",
             "message": "This member is parsed but not modelled by the semantic publication.",
             "source": 1
           }
