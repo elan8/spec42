@@ -43,9 +43,8 @@ jobs:
         run: bash scripts/npm-audit.sh
 
   sysml-release-validation:
-    name: SysML release validation (informational)
+    name: SysML release validation
     runs-on: ubuntu-24.04
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v6
         with:
@@ -126,12 +125,19 @@ jobs:
           if-no-files-found: error
 
       - name: Check SysML graphical notation inventory
+        continue-on-error: true
         env:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
         run: node scripts/generate-notation-inventory.mjs --check
 
       - name: Check SysML/KerML textual syntax inventory
+        continue-on-error: true
         run: node scripts/generate-textual-syntax-inventory.mjs --check
+
+      - name: Check the pinned SysML diagnostic baseline
+        run: |
+          node --test scripts/omg-corpus-baseline.test.mjs
+          node scripts/omg-corpus-baseline.mjs config/omg-corpus-baseline.json "$RUNNER_TEMP/omg-corpus-report/diagnostics.json"
 
       - name: Run workspace scan test with SysML release
         env:
