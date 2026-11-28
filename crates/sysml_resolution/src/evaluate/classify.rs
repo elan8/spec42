@@ -9,6 +9,7 @@ use crate::evaluate::fold::CallTarget;
 use crate::evaluate::fold::{
     eval_node_is_pure_literal, fold_eval_node, literal_expression_value, EvalNode, EvalOperand,
 };
+use crate::evaluate::UnitBindings;
 use crate::lower::facts::{AuthoredExpression, ExpressionGrammar, FilterPredicate};
 use crate::lower::storage::ParsedSources;
 use crate::model::EvaluatedValue;
@@ -372,11 +373,12 @@ pub(crate) fn classify_calc_node(
 pub(crate) fn classify_authored(
     sources: &ParsedSources,
     expression: &AuthoredExpression,
+    units: &UnitBindings,
 ) -> ExpressionEvalShape {
     let Some(parsed) = sources.parsed(expression.document) else {
         return ExpressionEvalShape::Unsupported;
     };
-    classify_expression(parsed, expression)
+    classify_expression(parsed, expression, units)
 }
 
 /// Classifies an expression exactly along `lower_constraint_expression`/`lower_calc_expression`'s
@@ -391,9 +393,13 @@ pub(crate) fn classify_authored(
 pub(crate) fn classify_expression(
     parsed: &ParsedDocument,
     expression: &AuthoredExpression,
+    units: &UnitBindings,
 ) -> ExpressionEvalShape {
     let mut ordinal = expression.operand_start;
-    let classified = classify_authored_node(parsed, expression, &mut ordinal);
+    let mut classified = classify_authored_node(parsed, expression, &mut ordinal);
+    if let Some(tree) = &mut classified {
+        units.bind(tree, expression.document);
+    }
     match classified {
         None => ExpressionEvalShape::Unsupported,
         Some(tree) if eval_node_is_pure_literal(&tree) => {

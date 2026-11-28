@@ -5,7 +5,7 @@ use sysml_v2_parser::{
     ParsedDocument,
 };
 
-use crate::model::EvaluatedValue;
+use crate::model::{EvaluatedValue, QuantityUnit, QuantityUnitBinding};
 
 /// Authored occurrence keys join the classifier to canonical resolved reference facts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -98,6 +98,27 @@ pub(crate) enum EvalNode {
     Unary(UnaryOperator, Box<EvalNode>),
 }
 
+impl EvalNode {
+    pub(crate) fn visit_mut(&mut self, visit: &mut impl FnMut(&mut Self)) {
+        visit(self);
+        match self {
+            Self::Call(_, children) | Self::Invocation(children) | Self::Sequence(children) => {
+                for child in children {
+                    child.visit_mut(visit);
+                }
+            }
+            Self::Comparison(_, left, right)
+            | Self::Arithmetic(_, left, right)
+            | Self::Logical(_, left, right) => {
+                left.visit_mut(visit);
+                right.visit_mut(visit);
+            }
+            Self::Unary(_, operand) => operand.visit_mut(visit),
+            Self::Literal(_) | Self::Operand(_) => {}
+        }
+    }
+}
+
 /// Folds a comparison of two already-literal operands to a `Boolean` outcome. Integer/Real
 /// operands compare numerically (mixed Integer/Real is widened to `f64`); Boolean operands
 /// support only `Eq`/`Ne`, mirroring `is_comparison_operator`'s scope. Any other literal-type
@@ -124,7 +145,7 @@ pub(crate) fn fold_literal_comparison(
             EvaluatedValue::Quantity(left, left_unit),
             EvaluatedValue::Quantity(right, right_unit),
         ) => {
-            if left_unit != right_unit {
+            if !left_unit.same_unit(&right_unit) {
                 return EvaluatedValue::UnsupportedUnitOperation;
             }
             return fold_literal_comparison(op, *left, *right);
@@ -203,7 +224,9 @@ pub(crate) fn fold_arithmetic(
             EvaluatedValue::Quantity(left, left_unit),
             EvaluatedValue::Quantity(right, right_unit),
         ) => {
-            if left_unit != right_unit || !matches!(op, BinaryOperator::Add | BinaryOperator::Sub) {
+            if !left_unit.same_unit(&right_unit)
+                || !matches!(op, BinaryOperator::Add | BinaryOperator::Sub)
+            {
                 return EvaluatedValue::UnsupportedUnitOperation;
             }
             quantity_result(fold_arithmetic(op, *left, *right), left_unit)
@@ -376,10 +399,13 @@ pub(crate) fn fold_unary(op: &UnaryOperator, value: EvaluatedValue) -> Evaluated
 }
 
 /// Keep failures outside a quantity value; only a numeric magnitude can carry a unit.
-fn quantity_result(magnitude: EvaluatedValue, unit: String) -> EvaluatedValue {
+fn quantity_result(magnitude: EvaluatedValue, unit: QuantityUnit) -> EvaluatedValue {
     match magnitude {
-        EvaluatedValue::Integer(_) | EvaluatedValue::Real(_) => {
+        EvaluatedValue::Integer(_) | EvaluatedValue::Real(_) if unit.identity().is_some() => {
             EvaluatedValue::Quantity(Box::new(magnitude), unit)
+        }
+        EvaluatedValue::Integer(_) | EvaluatedValue::Real(_) => {
+            EvaluatedValue::UnsupportedUnitOperation
         }
         other => other,
     }
@@ -403,13 +429,22 @@ pub(crate) fn literal_expression_value(
         Expression::Bracket { base, operands, .. } => {
             let magnitude = literal_expression_value(parsed, &base.value)?;
             let unit_text = quantity_unit_text(parsed, &operands.value)?;
-            Some(EvaluatedValue::Quantity(Box::new(magnitude), unit_text))
+            Some(EvaluatedValue::Quantity(
+                Box::new(magnitude),
+                QuantityUnit {
+                    text: unit_text,
+                    binding: QuantityUnitBinding::Authored {
+                        offset: operands.span.offset,
+                        len: operands.span.len,
+                    },
+                },
+            ))
         }
         _ => None,
     }
 }
 
-/// The unit identity authored inside `[...]` for a `value [unit]` quantity literal.
+/// The unit spelling authored inside `[...]` for a `value [unit]` quantity literal.
 ///
 /// The pinned parser models `27316[K]` as `Expression::Bracket`, whose operands are ordinary
 /// typed expressions rather than a copied unit string: a unit-looking `SI::mm` stays a
@@ -625,7 +660,7 @@ fn fold_numerical(function: NumericalFunction, values: Vec<EvaluatedValue>) -> E
                         (
                             EvaluatedValue::Quantity(left, left_unit),
                             EvaluatedValue::Quantity(right, right_unit),
-                        ) if left_unit == right_unit => fold_literal_comparison(
+                        ) if left_unit.same_unit(right_unit) => fold_literal_comparison(
                             BinaryOperator::Ge,
                             *left.clone(),
                             *right.clone(),
