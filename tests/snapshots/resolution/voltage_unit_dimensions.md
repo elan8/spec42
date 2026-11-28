@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Voltage unit compatibility baseline for Spec42 issue 519, with a conforming nominal type and a physically incompatible unit as controls
+description=Standard volt reporting exception for issue 519, with a conforming nominal type and a physically incompatible unit as controls
 type=file
 libraries=standard
 ~~~
@@ -14,7 +14,7 @@ package VoltageCheck {
     attribute wrongDimension : ElectricPotentialDifferenceValue = 24 [kg];
 }
 ~~~
-# DIAGNOSTICS
+# EXPECTED DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/voltage_unit_dimensions.md"
@@ -23,7 +23,7 @@ package VoltageCheck {
         (severity warning)
         (code "incompatible_unit_dimension")
         (source "semantic")
-        (range (start 3 70) (end 3 71))
+        (range (start 5 70) (end 5 72))
         (related-information
           (related
             (uri "memory://snapshot/sysml.library/isq_electromagnetism.md")
@@ -31,6 +31,15 @@ package VoltageCheck {
           )
         )
       )
+    )
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/voltage_unit_dimensions.md"
+    (diagnostics
       (diagnostic
         (severity warning)
         (code "incompatible_unit_dimension")
