@@ -29,6 +29,7 @@ import {
   resetSemanticIndexTracking,
 } from "./activation/workspaceIndexing";
 import { registerDiagramViewer } from "./diagram/diagramViewer";
+import { registerElan8Tools } from "./elan8Tools/doc42Controller";
 
 export function activate(context: vscode.ExtensionContext): void {
   const startupTraceId = `startup-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -120,6 +121,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
   registerLibraryCommands(context, libraryWebviewProvider, handles);
   registerDiagramViewer(context, handles);
+  registerElan8Tools(context);
 
   registerRestartServerCommand(context, handles, {
     onBeforeRestart: resetSemanticIndexTracking,

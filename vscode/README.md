@@ -40,6 +40,8 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
   syntax has clickable diagnostic locations in the view details.
   **Spec42: Open Views** focuses the panel.
 - Built-in Copilot Language Model Tools for check, doctor, model export, and diagnostic explanation.
+- **ModelApps** in the Spec42 sidebar can install Doc42 on Windows and Linux x64, generate PDFs
+  from document definitions in your project, and open the results in an editor tab.
 
 ## Views
 

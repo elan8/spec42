@@ -4,8 +4,10 @@
 node_modules/**
 src/**
 testFixture/**
+target/**
 scripts/**
 diagram-renderer/**
+media/doc42-preview.mjs
 tests/**
 out/test/**
 out/**

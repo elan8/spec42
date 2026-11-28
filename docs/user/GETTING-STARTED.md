@@ -68,11 +68,43 @@ spec42 init my-model
 
 ## Exploring your model
 
-After opening a SysML workspace, the **Spec42** sidebar gives you three tools:
+After opening a SysML workspace, the **Spec42** sidebar includes these sections.
 
 - **Examples** for opening bundled sample workspaces.
 - **Help** for quick reference links and the quick-reference panel.
 - **Library** for searching the bundled standard/domain libraries and any custom libraries you add.
+- **ModelApps** for installing and running apps such as Doc42. **Plans and trials**
+  opens Elan8’s current offers and availability.
+
+## Generate a PDF with Doc42
+
+1. Open your model project folder in desktop VS Code. In a multi-root workspace, expand the
+   project folder you want under Doc42.
+2. Open **Spec42 → ModelApps → Doc42** and click **Install Doc42**. Managed installation
+   supports local Windows x64 and Linux x64 and reuses a compatible Doc42 on your PATH if
+   available. Use **Installation guide** for platform requirements and manual setup.
+3. Select a discovered document to generate its PDF, or choose **Generate All** for that
+   project. If the list is empty, **Add a Doc42 document…** opens a model example. If Doc42
+   needs access, use **Enter Elan8 API token…** with a [token from Elan8](https://www.elan8.com/account?section=tokens).
+   The sidebar shows **Doc42 access verified** when Doc42 can use an existing license.
+   **Check document…** is available without a token.
+4. Review the PDF in the editor tab. It opens at **Fit Page**. Scroll to read successive pages
+   and use the zoom controls to change the size. After a batch build, choose which PDF to preview.
+   Use **Save As…** to keep a copy or **Open Externally** to open it in your system PDF viewer.
+   **Open last build…** lets you reopen any PDF from the project's most recent successful build.
+
+Under **ModelApps → Elan8 API token**, choose **Check token…** to check the
+workstation’s token online, or **Enter token…** to verify and save a token for Elan8
+tools on this workstation. Both actions work before you install any Elan8 tool. A valid token
+and access to Doc42 are checked separately.
+
+Doc42 generates from saved project files. It loads its bundled libraries, project libraries
+in `spec42.toml`, and extra roots from `spec42.libraryPaths` by default. If the editor uses a
+source checkout that overlaps with Doc42's bundled libraries, set `spec42.doc42.libraryPaths`
+to `[]` in the workspace settings to omit the editor's extra roots. Supply a list if Doc42
+needs other roots. See the
+[Doc42 getting started guide](https://github.com/elan8/doc42-release/blob/main/docs/getting-started.md#create-your-own-document)
+for a sample document and the model annotations.
 
 ## Opening the Views panel
 
