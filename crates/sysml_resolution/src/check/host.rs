@@ -2141,6 +2141,28 @@ impl<D> SemanticModel<D> {
     // Analysis status
     // ------------------------------------------------------------------------------------------
 
+    fn required_constraint_label(&self, id: DeclarationId) -> Option<String> {
+        if self.kind_of(id) != Some(DeclarationKind::RequireConstraintUsage) {
+            return None;
+        }
+        let name = |id| {
+            let declaration = self.storage.declaration(id)?;
+            let name = declaration
+                .name
+                .resolved()
+                .or_else(|| self.storage.declaration_facts(id)?.short_name.resolved())?;
+            self.storage.symbol(name)
+        };
+        let mut label = "Required constraint".to_owned();
+        if let Some(constraint) = name(id) {
+            label = format!("{label} '{constraint}'");
+        }
+        if let Some(requirement) = self.enclosing(id, is_requirement_kind).and_then(name) {
+            label = format!("{label} in requirement '{requirement}'");
+        }
+        Some(label)
+    }
+
     /// Reports the settled verdict of an authored analysis, and the analyses that could not settle.
     ///
     /// Authored failures are reported at their declaration. A concrete false verdict after
@@ -2163,14 +2185,14 @@ impl<D> SemanticModel<D> {
             match self.evaluation_for(id) {
                 EvaluationState::Literal(EvaluatedScalar::Boolean(false))
                 | EvaluationState::Evaluated(EvaluatedScalar::Boolean(false)) => {
+                    let label = self.required_constraint_label(id).unwrap_or_else(|| {
+                        format!("Analysis constraint on '{}'", self.display_name(id))
+                    });
                     diagnostics.push(self.declaration_message_diagnostic(
                         id,
                         DiagnosticCode::AnalysisConstraintFailed,
                         DiagnosticSeverity::Warning,
-                        Some(format!(
-                            "Analysis constraint on '{}' evaluated to false.",
-                            self.display_name(id)
-                        )),
+                        Some(format!("{label} evaluated to false.")),
                     )?);
                 }
                 EvaluationState::Failed(failure) => {
@@ -2209,13 +2231,17 @@ impl<D> SemanticModel<D> {
                 {
                     continue;
                 }
+                let label = self
+                    .required_constraint_label(contextual.authored)
+                    .unwrap_or_else(|| {
+                        format!("Constraint '{}'", self.display_name(contextual.authored))
+                    });
                 let mut diagnostic = self.declaration_message_diagnostic(
                     context,
                     DiagnosticCode::AnalysisConstraintFailed,
                     DiagnosticSeverity::Warning,
                     Some(format!(
-                        "Constraint '{}' evaluated to false in '{}'.",
-                        self.display_name(contextual.authored),
+                        "{label} evaluated to false in '{}'.",
                         self.display_name(context)
                     )),
                 )?;
